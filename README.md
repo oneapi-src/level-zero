@@ -1,9 +1,9 @@
 # Contents
 This repo contains the following:
-- Intel(R) OneApi Level Zero Specification API C/C++ header files.
+- oneAPI Level Zero Specification API C/C++ header files.
   https://spec.oneapi.com/versions/latest/elements/l0/source/index.html
 
-- Intel(R) OneApi Level Zero loader
+- oneAPI Level Zero loader
 
 # Building
 Project is defined using [CMake](https://cmake.org/).
