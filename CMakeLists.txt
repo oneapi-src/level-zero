@@ -62,11 +62,9 @@ endif()
 # Use same CL version defined in the runtimes
 add_definitions(-DCL_TARGET_OPENCL_VERSION=220)
 find_path(OpenCL_INCLUDE_DIR
-  NAMES CL
+  NAMES CL/cl.h
   PATHS
     ${OPENCL_PATH}
-    "/usr/include/"
-  NO_DEFAULT_PATH
 )
 if(OpenCL_INCLUDE_DIR STREQUAL "OpenCL_INCLUDE_DIR-NOTFOUND")
   message(FATAL_ERROR "OpenCL headers required for interop APIs")
