@@ -11,7 +11,7 @@ namespace loader
 {
     ///////////////////////////////////////////////////////////////////////////////
     static const char* known_driver_names[] = {
-        MAKE_LIBRARY_NAME( "ze_intel_gpu", "0.4"),
+        MAKE_LIBRARY_NAME( "ze_intel_gpu", "0.8"),
     };
 
     static const size_t num_known_driver_names =
