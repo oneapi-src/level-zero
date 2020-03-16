@@ -34,6 +34,6 @@ file(GLOB LEVEL_ZERO_WRAPPER_TOOLS_INCLUDES
 )
 
 install(FILES ${LEVEL_ZERO_WRAPPER_TOOLS_INCLUDES}
-    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/level_zero/wrapper/tools
+    DESTINATION ${CMAKE_INSTALL_PREFIX}/include/level_zero/wrapper/tools
     COMPONENT level-zero-devel
 )

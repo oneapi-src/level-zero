@@ -38,6 +38,6 @@ file(GLOB LEVEL_ZERO_LOADER_INCLUDES
 )
 
 install(FILES ${LEVEL_ZERO_LOADER_INCLUDES}
-    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/level_zero/lib/loader
+    DESTINATION ${CMAKE_INSTALL_PREFIX}/include/level_zero/lib/loader
     COMPONENT level-zero-devel
 )

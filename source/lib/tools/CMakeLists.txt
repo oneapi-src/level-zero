@@ -57,6 +57,6 @@ file(GLOB LEVEL_ZERO_LIBRARY_TOOLS_INCLUDES
 )
 
 install(FILES ${LEVEL_ZERO_LIBRARY_TOOLS_INCLUDES}
-    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/level_zero/lib/tools
+    DESTINATION ${CMAKE_INSTALL_PREFIX}/include/level_zero/lib/tools
     COMPONENT level-zero-devel
 )

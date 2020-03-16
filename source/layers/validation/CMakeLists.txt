@@ -40,6 +40,6 @@ install(TARGETS ze_validation_layer
 )
 
 install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/ze_layer.h
-    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/level_zero/layers/validation
+    DESTINATION ${CMAKE_INSTALL_PREFIX}/include/level_zero/layers/validation
     COMPONENT level-zero-devel
 )

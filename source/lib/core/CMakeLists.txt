@@ -65,6 +65,6 @@ file(GLOB LEVEL_ZERO_LIBRARY_CORE_INCLUDES
 )
 
 install(FILES ${LEVEL_ZERO_LIBRARY_CORE_INCLUDES}
-    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/level_zero/lib/core
+    DESTINATION ${CMAKE_INSTALL_PREFIX}/include/level_zero/lib/core
     COMPONENT level-zero-devel
 )
