@@ -2,21 +2,18 @@
 # SPDX-License-Identifier: MIT
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/inc)
 
-if(UNIX)
 set(TARGET_LOADER_NAME ze_loader)
 include(GNUInstallDirs)
 add_library(${TARGET_LOADER_NAME}
     SHARED
     ""
 )
-endif()
 
 add_subdirectory(lib)
 add_subdirectory(loader)
 add_subdirectory(layers)
 add_subdirectory(wrapper)
 
-if(UNIX)
 target_compile_definitions(${TARGET_LOADER_NAME}
     PRIVATE
         ZE_ENABLE_OCL_INTEROP=1
@@ -30,8 +27,6 @@ set_target_properties(${TARGET_LOADER_NAME} PROPERTIES
 target_link_libraries(${TARGET_LOADER_NAME}
     ${CMAKE_DL_LIBS}
 )
-
-endif()
 
 install(TARGETS ze_loader
     LIBRARY
