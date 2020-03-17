@@ -11,30 +11,32 @@ project(level-zero VERSION 0.91)
 # major/minor tag (e.g., v1.0). If not building in a git repository, then get
 # the patch version from a VERSION_PATCH file that would be shipped with a
 # source distribution.
-if(EXISTS "${CMAKE_SOURCE_DIR}/VERSION_PATCH")
-	file(READ "${CMAKE_SOURCE_DIR}/VERSION_PATCH" VERSION_PATCH)
+if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/VERSION_PATCH")
+	file(READ "${CMAKE_CURRENT_SOURCE_DIR}/VERSION_PATCH" VERSION_PATCH)
 	string(STRIP "${VERSION_PATCH}" PROJECT_VERSION_PATCH)
 	message(STATUS "Using patch version from VERSION_PATCH file in source tree: ${PROJECT_VERSION_PATCH}")
 else()
 	find_program(GIT_EXE NAMES "git" REQUIRED)
-	if(NOT EXISTS "${CMAKE_SOURCE_DIR}/.git")
-		message(ERROR "Cannot determine patch version - VERSION_PATCH file is not in source tree and source tree does not appear to be a git repository")
+	if(NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/.git")
+		message(FATAL_ERROR "Cannot determine patch version - VERSION_PATCH file is not in source tree and source tree does not appear to be a git repository")
 	endif()
 	set(GIT_TAG "v${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}")
 	if(MSVC)
 		execute_process(
 			COMMAND CMD /c git rev-list ${GIT_TAG}..HEAD --count
 			OUTPUT_VARIABLE VERSION_PATCH
+			WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
 		)
 	else()
 		execute_process(
 			COMMAND git rev-list ${GIT_TAG}..HEAD --count
 			OUTPUT_VARIABLE VERSION_PATCH
+			WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
 		)
 	endif()
 	string(STRIP "${VERSION_PATCH}" PROJECT_VERSION_PATCH)
 	if(PROJECT_VERSION_PATCH STREQUAL "")
-		message(ERROR "Cannot determine patch version - couldn't find ${GIT_TAG} tag in repository")
+		message(FATAL_ERROR "Cannot determine patch version - couldn't find ${GIT_TAG} tag in repository")
 	endif()
 	message(STATUS "Using patch version from commit count in git repository: ${PROJECT_VERSION_PATCH}")
 endif()
