@@ -28,6 +28,10 @@ target_link_libraries(${TARGET_LOADER_NAME}
     ${CMAKE_DL_LIBS}
 )
 
+if(WIN32)
+    target_link_libraries (${TARGET_LOADER_NAME} cfgmgr32.lib)
+endif()
+
 install(TARGETS ze_loader
     LIBRARY
         DESTINATION ${CMAKE_INSTALL_LIBDIR}

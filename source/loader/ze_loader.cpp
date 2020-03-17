@@ -7,17 +7,10 @@
  */
 #include "ze_loader.h"
 
+#include "driver_discovery.h"
+
 namespace loader
 {
-    ///////////////////////////////////////////////////////////////////////////////
-    static const char* known_driver_names[] = {
-        MAKE_LIBRARY_NAME( "ze_intel_gpu", "0.8"),
-    };
-
-    static const size_t num_known_driver_names =
-        sizeof( known_driver_names ) / sizeof( known_driver_names[ 0 ] );
-
-
     ///////////////////////////////////////////////////////////////////////////////
     context_t context;
 
@@ -25,10 +18,12 @@ namespace loader
     ///////////////////////////////////////////////////////////////////////////////
     context_t::context_t()
     {
-        drivers.reserve( num_known_driver_names );
-        for( auto name : known_driver_names )
+        auto discoveredDrivers = discoverEnabledDrivers();
+
+        drivers.reserve( discoveredDrivers.size() );
+        for( auto name : discoveredDrivers )
         {
-            auto handle = LOAD_DRIVER_LIBRARY( name );
+            auto handle = LOAD_DRIVER_LIBRARY( name.c_str() );
             if( NULL != handle )
             {
                 drivers.emplace_back();
