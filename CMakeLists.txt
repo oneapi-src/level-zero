@@ -23,12 +23,12 @@ else()
 	set(GIT_TAG "v${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}")
 	if(MSVC)
 		execute_process(
-			COMMAND CMD /c git rev-list ${GIT_TAG}..HEAD --count
+			COMMAND CMD /c git -C "${CMAKE_SOURCE_DIR}" rev-list ${GIT_TAG}..HEAD --count
 			OUTPUT_VARIABLE VERSION_PATCH
 		)
 	else()
 		execute_process(
-			COMMAND git rev-list ${GIT_TAG}..HEAD --count
+			COMMAND git -C "${CMAKE_SOURCE_DIR}" rev-list ${GIT_TAG}..HEAD --count
 			OUTPUT_VARIABLE VERSION_PATCH
 		)
 	endif()
