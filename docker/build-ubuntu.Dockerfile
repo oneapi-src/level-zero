@@ -15,6 +15,7 @@ RUN apt-get update && apt-get install -y \
         cmake \
         file \
         git \
+        ninja-build \
         opencl-headers \
     && rm -rf /var/lib/apt/lists/*
 

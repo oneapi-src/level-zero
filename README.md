@@ -31,7 +31,7 @@ docker run \
   $(docker build -q \
       --build-arg UID=$(id -u) \
       --build-arg GID=$(id -g) \
-      - < docker/build-linux.Dockerfile) \
+      - < docker/build-ubuntu.Dockerfile) \
   cmake \
     -G Ninja \
     -D CMAKE_C_COMPILER_LAUNCHER=ccache \
@@ -48,6 +48,6 @@ docker run \
   $(docker build -q \
       --build-arg UID=$(id -u) \
       --build-arg GID=$(id -g) \
-      - < docker/build-linux.Dockerfile) \
+      - < docker/build-ubuntu.Dockerfile) \
   cmake --build . --config Release
 ~~~
