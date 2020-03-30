@@ -3,6 +3,10 @@
 
 cmake_minimum_required(VERSION 3.2.0 FATAL_ERROR)
 
+if(MSVC AND (MSVC_VERSION LESS 1900))
+    message(FATAL_ERROR "Visual Studio Compiler Version >= 1900 Required to build.")
+endif()
+
 # This project follows semantic versioning (https://semver.org/). Only set the
 # major and minor version here - patch version is determined dynamically.
 project(level-zero VERSION 0.91)
@@ -57,6 +61,9 @@ set(CUSTOM_COMMAND_BINARY_DIR ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
 if(MSVC)
     #MSVC implicitly adds $<CONFIG> to the output path
     set(CUSTOM_COMMAND_BINARY_DIR ${CUSTOM_COMMAND_BINARY_DIR}/$<CONFIG>)
+    #enabling Control Flow Guard
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /guard:cf")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /guard:cf")
 endif()
 
 # Use same CL version defined in the runtimes
