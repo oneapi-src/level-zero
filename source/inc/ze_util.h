@@ -17,15 +17,7 @@
 #define L0_VALIDATION_LAYER_SUPPORTED_VERSION "0.91"
 
 ///////////////////////////////////////////////////////////////////////////////
-#if defined(__linux__)
-#  include <dlfcn.h>
-#  define HMODULE void*
-#  define MAKE_LIBRARY_NAME(NAME, VERSION)    "lib" NAME ".so." VERSION
-#  define MAKE_VALIDATION_LAYER_NAME(NAME)    "lib" NAME ".so." L0_VALIDATION_LAYER_SUPPORTED_VERSION
-#  define LOAD_DRIVER_LIBRARY(NAME) dlopen(NAME, RTLD_LAZY|RTLD_LOCAL)
-#  define FREE_DRIVER_LIBRARY(LIB)  if(LIB) dlclose(LIB)
-#  define GET_FUNCTION_PTR(LIB, FUNC_NAME) dlsym(LIB, FUNC_NAME)
-#elif defined(_WIN32)
+#if defined(_WIN32)
 #  include <Windows.h>
 #  define MAKE_LIBRARY_NAME(NAME, VERSION)    NAME".dll"
 #  define MAKE_VALIDATION_LAYER_NAME(NAME)    NAME".dll"
@@ -33,7 +25,13 @@
 #  define FREE_DRIVER_LIBRARY(LIB)  if(LIB) FreeLibrary(LIB)
 #  define GET_FUNCTION_PTR(LIB, FUNC_NAME) GetProcAddress(LIB, FUNC_NAME)
 #else
-#  error "Unsupported OS"
+#  include <dlfcn.h>
+#  define HMODULE void*
+#  define MAKE_LIBRARY_NAME(NAME, VERSION)    "lib" NAME ".so." VERSION
+#  define MAKE_VALIDATION_LAYER_NAME(NAME)    "lib" NAME ".so." L0_VALIDATION_LAYER_SUPPORTED_VERSION
+#  define LOAD_DRIVER_LIBRARY(NAME) dlopen(NAME, RTLD_LAZY|RTLD_LOCAL)
+#  define FREE_DRIVER_LIBRARY(LIB)  if(LIB) dlclose(LIB)
+#  define GET_FUNCTION_PTR(LIB, FUNC_NAME) dlsym(LIB, FUNC_NAME)
 #endif
 
 ///////////////////////////////////////////////////////////////////////////////
