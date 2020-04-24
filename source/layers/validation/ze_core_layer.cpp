@@ -2219,9 +2219,6 @@ namespace layer
             if( nullptr == desc->pBuildFlags )
                 return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-            if( nullptr == desc->pConstants )
-                return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
-
             if( nullptr == phModule )
                 return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
