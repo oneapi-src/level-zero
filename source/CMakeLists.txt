@@ -33,6 +33,7 @@ if(WIN32)
 endif()
 
 install(TARGETS ze_loader
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
     LIBRARY
         DESTINATION ${CMAKE_INSTALL_LIBDIR}
         COMPONENT level-zero
@@ -40,6 +41,7 @@ install(TARGETS ze_loader
 )
 
 install(TARGETS ze_loader
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
     LIBRARY
         DESTINATION ${CMAKE_INSTALL_LIBDIR}
         COMPONENT level-zero-devel
