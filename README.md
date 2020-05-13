@@ -21,6 +21,9 @@ The versions of the Level Zero API are listed in the file
 
 Project is defined using [CMake](https://cmake.org/).
 
+The OpenCL headers are required for interop support. If they are installed in a
+non-standard location, specify their prefix with `-D OPENCL_PATH=<prefix>`.
+
 ## Linux
 
 ### General
