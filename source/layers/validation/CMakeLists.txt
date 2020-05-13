@@ -26,6 +26,7 @@ set_target_properties(${TARGET_NAME} PROPERTIES
 )
 
 install(TARGETS ze_validation_layer
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
     LIBRARY
         DESTINATION ${CMAKE_INSTALL_LIBDIR}
         COMPONENT level-zero
@@ -33,6 +34,7 @@ install(TARGETS ze_validation_layer
 )
 
 install(TARGETS ze_validation_layer
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
     LIBRARY
         DESTINATION ${CMAKE_INSTALL_LIBDIR}
         COMPONENT level-zero-devel
