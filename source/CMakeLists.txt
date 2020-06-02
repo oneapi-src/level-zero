@@ -2,11 +2,17 @@
 # SPDX-License-Identifier: MIT
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/inc)
 
+configure_file(
+    ${CMAKE_CURRENT_SOURCE_DIR}/ZeLoaderVersion.rc.in
+    ${CMAKE_CURRENT_BINARY_DIR}/ZeLoaderVersion.rc
+    @ONLY)
+
 set(TARGET_LOADER_NAME ze_loader)
 include(GNUInstallDirs)
 add_library(${TARGET_LOADER_NAME}
     SHARED
     ""
+    ${CMAKE_CURRENT_BINARY_DIR}/ZeLoaderVersion.rc
 )
 
 add_subdirectory(lib)

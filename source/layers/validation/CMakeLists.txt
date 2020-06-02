@@ -2,12 +2,18 @@
 # SPDX-License-Identifier: MIT
 set(TARGET_NAME ze_validation_layer)
 
+configure_file(
+    ${CMAKE_CURRENT_SOURCE_DIR}/ZeValidationLayerVersion.rc.in
+    ${CMAKE_CURRENT_BINARY_DIR}/ZeValidationLayerVersion.rc
+    @ONLY)
+
 add_library(${TARGET_NAME}
     SHARED
         ${CMAKE_CURRENT_SOURCE_DIR}/ze_layer.h
         ${CMAKE_CURRENT_SOURCE_DIR}/ze_layer.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/ze_core_layer.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/ze_tools_layer.cpp
+        ${CMAKE_CURRENT_BINARY_DIR}/ZeValidationLayerVersion.rc
 )
 
 target_include_directories(${TARGET_NAME}
