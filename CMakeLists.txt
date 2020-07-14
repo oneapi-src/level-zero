@@ -9,40 +9,45 @@ endif()
 
 # This project follows semantic versioning (https://semver.org/). Only set the
 # major and minor version here - patch version is determined dynamically.
-project(level-zero VERSION 0.91)
+project(level-zero VERSION 1.0)
 
 # Patch version corresponds to # of commits on master since last version
 # major/minor tag (e.g., v1.0). If not building in a git repository, then get
 # the patch version from a VERSION_PATCH file that would be shipped with a
-# source distribution.
+# source distribution. Otherwise, use 0.
+set(PROJECT_VERSION_PATCH 0)
+find_package(Git)
 if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/VERSION_PATCH")
 	file(READ "${CMAKE_CURRENT_SOURCE_DIR}/VERSION_PATCH" VERSION_PATCH)
 	string(STRIP "${VERSION_PATCH}" PROJECT_VERSION_PATCH)
 	message(STATUS "Using patch version from VERSION_PATCH file in source tree: ${PROJECT_VERSION_PATCH}")
-else()
-	find_program(GIT_EXE NAMES "git" REQUIRED)
+elseif(Git_FOUND)
 	if(NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/.git")
-		message(FATAL_ERROR "Cannot determine patch version - VERSION_PATCH file is not in source tree and source tree does not appear to be a git repository")
-	endif()
-	set(GIT_TAG "v${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}")
-	if(MSVC)
-		execute_process(
-			COMMAND CMD /c git rev-list ${GIT_TAG}..HEAD --count
-			OUTPUT_VARIABLE VERSION_PATCH
-			WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-		)
+		message(WARNING "Cannot determine patch version - VERSION_PATCH file is not in source tree and source tree does not appear to be a git repository. Using 0 as patch version.")
+		set(PROJECT_VERSION_PATCH 0)
 	else()
-		execute_process(
-			COMMAND git rev-list ${GIT_TAG}..HEAD --count
-			OUTPUT_VARIABLE VERSION_PATCH
-			WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-		)
+		set(GIT_TAG "v${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}")
+		if(MSVC)
+			execute_process(
+				COMMAND CMD /c ${GIT_EXECUTABLE} rev-list ${GIT_TAG}..HEAD --count
+				OUTPUT_VARIABLE VERSION_PATCH
+				WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+			)
+		else()
+			execute_process(
+				COMMAND ${GIT_EXECUTABLE} rev-list ${GIT_TAG}..HEAD --count
+				OUTPUT_VARIABLE VERSION_PATCH
+				WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+			)
+		endif()
+		string(STRIP "${VERSION_PATCH}" PROJECT_VERSION_PATCH)
+		if(PROJECT_VERSION_PATCH STREQUAL "")
+			message(WARNING "Cannot determine patch version - couldn't find ${GIT_TAG} tag in repository. Using 0 as patch version.")
+			set(PROJECT_VERSION_PATCH 0)
+		else()
+			message(STATUS "Using patch version from commit count in git repository: ${PROJECT_VERSION_PATCH}")
+		endif()
 	endif()
-	string(STRIP "${VERSION_PATCH}" PROJECT_VERSION_PATCH)
-	if(PROJECT_VERSION_PATCH STREQUAL "")
-		message(FATAL_ERROR "Cannot determine patch version - couldn't find ${GIT_TAG} tag in repository")
-	endif()
-	message(STATUS "Using patch version from commit count in git repository: ${PROJECT_VERSION_PATCH}")
 endif()
 
 # Update other relevant variables to include the patch
@@ -68,18 +73,6 @@ if(MSVC)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Qspectre")
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /Qspectre")
 endif()
-
-# Use same CL version defined in the runtimes
-add_definitions(-DCL_TARGET_OPENCL_VERSION=220)
-find_path(OpenCL_INCLUDE_DIR
-  NAMES CL/cl.h
-  PATHS
-    ${OPENCL_PATH}
-)
-if(OpenCL_INCLUDE_DIR STREQUAL "OpenCL_INCLUDE_DIR-NOTFOUND")
-  message(FATAL_ERROR "OpenCL headers required for interop APIs")
-endif()
-include_directories(${OpenCL_INCLUDE_DIR})
 
 #CXX compiler support
 if(NOT MSVC)
@@ -112,19 +105,19 @@ if(MSVC)
     set(CMAKE_SHARED_LINKER_FLAGS_RELEASE "${CMAKE_SHARED_LINKER_FLAGS_RELEASE} /DEBUG /OPT:REF /OPT:ICF")
 endif()
 
-# Option to disable tests
-option(${PROJECT_NAME}_BUILD_TESTS "Build unit tests." ON)
-
-
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include/core)
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include/tools)
-
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/source/wrapper/core)
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/source/wrapper/tools)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/source/wrapper/include)
 
 include_directories("${CMAKE_CURRENT_SOURCE_DIR}")
 
+set(TARGET_LOADER_NAME ze_loader)
+
+
 add_subdirectory(source)
+
+if(NOT MSVC)
+	add_subdirectory(samples)
+endif()
 
 include("os_release_info.cmake")
 get_os_release_info(os_name os_version os_codename)
@@ -184,7 +177,7 @@ if(CPACK_GENERATOR MATCHES "RPM")
 	set(CPACK_RPM_LEVEL-ZERO-DEVEL_PACKAGE_NAME "${PROJECT_NAME}-devel")
 	set(CPACK_RPM_LEVEL-ZERO_FILE_NAME "${PROJECT_NAME}-${PROJECT_VERSION}-${os_name}${os_version}.${CPACK_RPM_PACKAGE_ARCHITECTURE}.rpm")
 	set(CPACK_RPM_LEVEL-ZERO-DEVEL_FILE_NAME "${PROJECT_NAME}-devel-${PROJECT_VERSION}-${os_name}${os_version}.${CPACK_RPM_PACKAGE_ARCHITECTURE}.rpm")
-	set(CPACK_RPM_LEVEL-ZERO-DEVEL_PACKAGE_REQUIRES "opencl-headers >= 2.2-0, level-zero = ${PROJECT_VERSION}")
+	set(CPACK_RPM_LEVEL-ZERO-DEVEL_PACKAGE_REQUIRES "level-zero = ${PROJECT_VERSION}")
 
 
 	set(CPACK_RPM_EXCLUDE_FROM_AUTO_FILELIST_ADDITION
@@ -204,7 +197,7 @@ if(CPACK_GENERATOR MATCHES "DEB")
 	set(CPACK_DEBIAN_LEVEL-ZERO-DEVEL_PACKAGE_NAME "${PROJECT_NAME}-devel")
     set(CPACK_DEBIAN_LEVEL-ZERO_FILE_NAME "${PROJECT_NAME}_${PROJECT_VERSION}+${os_name}${os_version}_${CPACK_DEBIAN_PACKAGE_ARCHITECTURE}.deb")
     set(CPACK_DEBIAN_LEVEL-ZERO-DEVEL_FILE_NAME "${PROJECT_NAME}-devel_${PROJECT_VERSION}+${os_name}${os_version}_${CPACK_DEBIAN_PACKAGE_ARCHITECTURE}.deb")
-    set(CPACK_DEBIAN_LEVEL-ZERO-DEVEL_PACKAGE_DEPENDS "opencl-headers (>= 2.2~0), level-zero(=${PROJECT_VERSION})")
+    set(CPACK_DEBIAN_LEVEL-ZERO-DEVEL_PACKAGE_DEPENDS "level-zero(=${PROJECT_VERSION})")
     set(CPACK_DEB_COMPONENT_INSTALL ON)
     set(CPACK_ARCHIVE_COMPONENT_INSTALL ON)
 endif()

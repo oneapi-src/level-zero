@@ -4,35 +4,42 @@
  *
  * SPDX-License-Identifier: MIT
  *
- * @file ze_layer.h
+ * @file ze_lib.h
  *
  */
 #pragma once
+#include "ze_api.h"
 #include "ze_ddi.h"
+#include "zet_api.h"
 #include "zet_ddi.h"
+#include "zes_api.h"
 #include "zes_ddi.h"
 #include "ze_util.h"
+#include <vector>
 
-namespace layer
+namespace ze_lib
 {
     ///////////////////////////////////////////////////////////////////////////////
-    class __zedlllocal context_t
+    class context_t
     {
     public:
-        ze_api_version_t version = ZE_API_VERSION_1_0;
-
-        bool enableParameterValidation = false;
-        bool enableHandleLifetime = false;
-        bool enableMemoryTracker = false;
-        bool enableThreadingValidation = false;
-
-        ze_dditable_t   zeDdiTable = {};
-        zet_dditable_t  zetDdiTable = {};
-        zes_dditable_t  zesDdiTable = {};
+        HMODULE loader = nullptr;
 
         context_t();
         ~context_t();
+
+        ze_result_t Init();
+
+        ze_result_t zeInit();
+        ze_dditable_t   zeDdiTable = {};
+
+        ze_result_t zetInit();
+        zet_dditable_t  zetDdiTable = {};
+
+        ze_result_t zesInit();
+        zes_dditable_t  zesDdiTable = {};
     };
 
     extern context_t context;
-}
+
+} // namespace ze_lib

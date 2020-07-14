@@ -12,10 +12,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-/* Major.Minor Loader & Validation layer Supported */
-#define L0_LOADER_VERSION "0.91"
-#define L0_VALIDATION_LAYER_SUPPORTED_VERSION "0.91"
-
 ///////////////////////////////////////////////////////////////////////////////
 #if defined(_WIN32)
 #  include <Windows.h>
@@ -32,6 +28,13 @@
 #  define LOAD_DRIVER_LIBRARY(NAME) dlopen(NAME, RTLD_LAZY|RTLD_LOCAL)
 #  define FREE_DRIVER_LIBRARY(LIB)  if(LIB) dlclose(LIB)
 #  define GET_FUNCTION_PTR(LIB, FUNC_NAME) dlsym(LIB, FUNC_NAME)
+#endif
+
+//////////////////////////////////////////////////////////////////////////
+#if !defined(_WIN32) && (__GNUC__ >= 4)
+#define __zedlllocal  __attribute__ ((visibility ("hidden")))
+#else
+#define __zedlllocal
 #endif
 
 ///////////////////////////////////////////////////////////////////////////////

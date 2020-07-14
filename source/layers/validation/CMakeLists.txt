@@ -11,8 +11,9 @@ add_library(${TARGET_NAME}
     SHARED
         ${CMAKE_CURRENT_SOURCE_DIR}/ze_layer.h
         ${CMAKE_CURRENT_SOURCE_DIR}/ze_layer.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/ze_core_layer.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/ze_tools_layer.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/ze_valddi.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/zet_valddi.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/zes_valddi.cpp
         ${CMAKE_CURRENT_BINARY_DIR}/ZeValidationLayerVersion.rc
 )
 
@@ -21,14 +22,14 @@ target_include_directories(${TARGET_NAME}
         ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
-target_compile_definitions(${TARGET_NAME}
-    PRIVATE
-        ZE_ENABLE_OCL_INTEROP=1
-)
+if(UNIX)
+    set(GCC_COVERAGE_COMPILE_FLAGS "-fvisibility=hidden -fvisibility-inlines-hidden")
+    set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} ${GCC_COVERAGE_COMPILE_FLAGS}")
+endif()
 
 set_target_properties(${TARGET_NAME} PROPERTIES
     VERSION "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH}"
-    SOVERSION  "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}"
+    SOVERSION  "${PROJECT_VERSION_MAJOR}"
 )
 
 install(TARGETS ze_validation_layer
@@ -47,7 +48,3 @@ install(TARGETS ze_validation_layer
         NAMELINK_ONLY
 )
 
-install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/ze_layer.h
-    DESTINATION ${CMAKE_INSTALL_PREFIX}/include/level_zero/layers/validation
-    COMPONENT level-zero-devel
-)

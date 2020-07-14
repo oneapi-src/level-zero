@@ -1,5 +1,9 @@
 # Copyright (C) 2020 Intel Corporation
 # SPDX-License-Identifier: MIT
+
+add_definitions(-DL0_LOADER_VERSION="${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}")
+add_definitions(-DL0_VALIDATION_LAYER_SUPPORTED_VERSION="${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}")
+
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/inc)
 
 configure_file(
@@ -7,7 +11,6 @@ configure_file(
     ${CMAKE_CURRENT_BINARY_DIR}/ZeLoaderVersion.rc
     @ONLY)
 
-set(TARGET_LOADER_NAME ze_loader)
 include(GNUInstallDirs)
 add_library(${TARGET_LOADER_NAME}
     SHARED
@@ -19,15 +22,11 @@ add_subdirectory(lib)
 add_subdirectory(loader)
 add_subdirectory(layers)
 add_subdirectory(wrapper)
-
-target_compile_definitions(${TARGET_LOADER_NAME}
-    PRIVATE
-        ZE_ENABLE_OCL_INTEROP=1
-)
+add_subdirectory(drivers)
 
 set_target_properties(${TARGET_LOADER_NAME} PROPERTIES
     VERSION "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH}"
-    SOVERSION "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}"
+    SOVERSION "${PROJECT_VERSION_MAJOR}"
 )
 
 target_link_libraries(${TARGET_LOADER_NAME}
@@ -52,11 +51,4 @@ install(TARGETS ze_loader
         DESTINATION ${CMAKE_INSTALL_LIBDIR}
         COMPONENT level-zero-devel
         NAMELINK_ONLY
-)
-
-file(GLOB_RECURSE LEVEL_ZERO_SOURCE_UTILITY_HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/inc/*.h")
-
-install(FILES ${LEVEL_ZERO_SOURCE_UTILITY_HEADERS}
-    DESTINATION ${CMAKE_INSTALL_PREFIX}/include/level_zero/
-    COMPONENT level-zero-devel
 )

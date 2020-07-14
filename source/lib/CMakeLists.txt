@@ -1,4 +1,13 @@
-# Copyright (C) 2020 Intel Corporation
-# SPDX-License-Identifier: MIT
-add_subdirectory(core)
-add_subdirectory(tools)
+
+
+target_sources(${TARGET_LOADER_NAME}
+    PRIVATE
+        ${CMAKE_CURRENT_SOURCE_DIR}/ze_libapi.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/ze_libddi.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/zet_libapi.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/zet_libddi.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/zes_libapi.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/zes_libddi.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/ze_lib.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/ze_lib.cpp
+)

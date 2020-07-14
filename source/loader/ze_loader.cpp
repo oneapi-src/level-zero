@@ -20,7 +20,17 @@ namespace loader
     {
         auto discoveredDrivers = discoverEnabledDrivers();
 
-        drivers.reserve( discoveredDrivers.size() );
+        drivers.reserve( discoveredDrivers.size() + getenv_tobool( "ZE_ENABLE_NULL_DRIVER" ) );
+        if( getenv_tobool( "ZE_ENABLE_NULL_DRIVER" ) )
+        {
+            auto handle = LOAD_DRIVER_LIBRARY( MAKE_LIBRARY_NAME( "ze_null", L0_LOADER_VERSION ) );
+            if( NULL != handle )
+            {
+                drivers.emplace_back();
+                drivers.rbegin()->handle = handle;
+            }
+        }
+
         for( auto name : discoveredDrivers )
         {
             auto handle = LOAD_DRIVER_LIBRARY( name.c_str() );

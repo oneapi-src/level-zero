@@ -4,6 +4,8 @@
  *
  * SPDX-License-Identifier: MIT
  *
+ * @file ze_object.h
+ *
  */
 #pragma once
 #include "ze_singleton.h"
@@ -13,11 +15,12 @@ struct dditable_t
 {
     ze_dditable_t   ze;
     zet_dditable_t  zet;
+    zes_dditable_t  zes;
 };
 
 //////////////////////////////////////////////////////////////////////////
 template<typename _handle_t>
-class object_t
+class __zedlllocal object_t
 {
 public:
     using handle_t = _handle_t;
