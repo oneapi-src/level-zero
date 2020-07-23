@@ -64,28 +64,33 @@ namespace loader
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
 
-        uint32_t total_count = 0;
+        uint32_t total_driver_handle_count = 0;
 
         for( auto& drv : context.drivers )
         {
-            uint32_t count = 0;
+            uint32_t library_driver_handle_count = 0;
 
-            result = drv.dditable.ze.Driver.pfnGet( &count, nullptr );
+            result = drv.dditable.ze.Driver.pfnGet( &library_driver_handle_count, nullptr );
             if( ZE_RESULT_SUCCESS != result ) break;
 
-            if( ( 0 < *pCount ) && ( *pCount > total_count + count ) )
+            if( ( 0 < *pCount ) && ( *pCount == total_driver_handle_count))
                 break;
 
-            if( nullptr != phDrivers )
+            if( nullptr != phDrivers && pCount !=0)
             {
-                result = drv.dditable.ze.Driver.pfnGet( &count, &phDrivers[ total_count ] );
+                if( total_driver_handle_count + library_driver_handle_count > *pCount) {
+                    library_driver_handle_count = *pCount - total_driver_handle_count;
+                }
+                result = drv.dditable.ze.Driver.pfnGet( &library_driver_handle_count, &phDrivers[ total_driver_handle_count ] );
                 if( ZE_RESULT_SUCCESS != result ) break;
 
                 try
                 {
-                    for( uint32_t i = total_count; i < count; ++i )
-                        phDrivers[ i ] = reinterpret_cast<ze_driver_handle_t>( 
-                            ze_driver_factory.getInstance( phDrivers[ i ], &drv.dditable ) );
+                    for( uint32_t i = 0; i < library_driver_handle_count; ++i ) {
+                        uint32_t driver_index = total_driver_handle_count + i;
+                        phDrivers[ driver_index ] = reinterpret_cast<ze_driver_handle_t>(
+                            ze_driver_factory.getInstance( phDrivers[ driver_index ], &drv.dditable ) );
+                    }
                 }
                 catch( std::bad_alloc& )
                 {
@@ -93,11 +98,11 @@ namespace loader
                 }
             }
 
-            total_count += count;
+            total_driver_handle_count += library_driver_handle_count;
         }
 
         if( ZE_RESULT_SUCCESS == result )
-            *pCount = total_count;
+            *pCount = total_driver_handle_count;
 
         return result;
     }
