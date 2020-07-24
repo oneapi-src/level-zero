@@ -5,6 +5,7 @@
  * SPDX-License-Identifier: MIT
  *
  * @file zes_wprapi.cpp
+ * @version v1.0-r1.0.4.8
  *
  * @brief C++ wrapper of zes
  *
@@ -17,9 +18,15 @@
 
 namespace zes
 {
+#if !defined(__GNUC__)
 #pragma region common
+#endif
+#if !defined(__GNUC__)
 #pragma endregion
+#endif
+#if !defined(__GNUC__)
 #pragma region device
+#endif
     ///////////////////////////////////////////////////////////////////////////////
     /// @brief Get properties about the device
     /// 
@@ -220,8 +227,12 @@ namespace zes
             throw exception_t( result, __FILE__, ZE_STRING(__LINE__), "zes::Device::PciGetStats" );
     }
 
+#if !defined(__GNUC__)
 #pragma endregion
+#endif
+#if !defined(__GNUC__)
 #pragma region diagnostics
+#endif
     ///////////////////////////////////////////////////////////////////////////////
     Diagnostics::Diagnostics( 
         diag_handle_t handle,                           ///< [in] handle of Sysman object
@@ -374,8 +385,12 @@ namespace zes
             throw exception_t( result, __FILE__, ZE_STRING(__LINE__), "zes::Diagnostics::RunTests" );
     }
 
+#if !defined(__GNUC__)
 #pragma endregion
+#endif
+#if !defined(__GNUC__)
 #pragma region engine
+#endif
     ///////////////////////////////////////////////////////////////////////////////
     Engine::Engine( 
         engine_handle_t handle,                         ///< [in] handle of Sysman object
@@ -481,8 +496,12 @@ namespace zes
             throw exception_t( result, __FILE__, ZE_STRING(__LINE__), "zes::Engine::GetActivity" );
     }
 
+#if !defined(__GNUC__)
 #pragma endregion
+#endif
+#if !defined(__GNUC__)
 #pragma region events
+#endif
     ///////////////////////////////////////////////////////////////////////////////
     /// @brief Specify the list of events to listen to for a given device
     /// 
@@ -552,8 +571,12 @@ namespace zes
             throw exception_t( result, __FILE__, ZE_STRING(__LINE__), "zes::Driver::EventListen" );
     }
 
+#if !defined(__GNUC__)
 #pragma endregion
+#endif
+#if !defined(__GNUC__)
 #pragma region fabric
+#endif
     ///////////////////////////////////////////////////////////////////////////////
     FabricPort::FabricPort( 
         fabric_port_handle_t handle,                    ///< [in] handle of Sysman object
@@ -744,8 +767,12 @@ namespace zes
             throw exception_t( result, __FILE__, ZE_STRING(__LINE__), "zes::FabricPort::GetThroughput" );
     }
 
+#if !defined(__GNUC__)
 #pragma endregion
+#endif
+#if !defined(__GNUC__)
 #pragma region fan
+#endif
     ///////////////////////////////////////////////////////////////////////////////
     Fan::Fan( 
         fan_handle_t handle,                            ///< [in] handle of Sysman object
@@ -941,8 +968,12 @@ namespace zes
             throw exception_t( result, __FILE__, ZE_STRING(__LINE__), "zes::Fan::GetState" );
     }
 
+#if !defined(__GNUC__)
 #pragma endregion
+#endif
+#if !defined(__GNUC__)
 #pragma region firmware
+#endif
     ///////////////////////////////////////////////////////////////////////////////
     Firmware::Firmware( 
         firmware_handle_t handle,                       ///< [in] handle of Sysman object
@@ -1050,8 +1081,12 @@ namespace zes
             throw exception_t( result, __FILE__, ZE_STRING(__LINE__), "zes::Firmware::Flash" );
     }
 
+#if !defined(__GNUC__)
 #pragma endregion
+#endif
+#if !defined(__GNUC__)
 #pragma region frequency
+#endif
     ///////////////////////////////////////////////////////////////////////////////
     Frequency::Frequency( 
         freq_handle_t handle,                           ///< [in] handle of Sysman object
@@ -1526,8 +1561,12 @@ namespace zes
             throw exception_t( result, __FILE__, ZE_STRING(__LINE__), "zes::Frequency::OcSetTjMax" );
     }
 
+#if !defined(__GNUC__)
 #pragma endregion
+#endif
+#if !defined(__GNUC__)
 #pragma region led
+#endif
     ///////////////////////////////////////////////////////////////////////////////
     Led::Led( 
         led_handle_t handle,                            ///< [in] handle of Sysman object
@@ -1674,8 +1713,12 @@ namespace zes
             throw exception_t( result, __FILE__, ZE_STRING(__LINE__), "zes::Led::SetColor" );
     }
 
+#if !defined(__GNUC__)
 #pragma endregion
+#endif
+#if !defined(__GNUC__)
 #pragma region memory
+#endif
     ///////////////////////////////////////////////////////////////////////////////
     Memory::Memory( 
         mem_handle_t handle,                            ///< [in] handle of Sysman object
@@ -1802,8 +1845,12 @@ namespace zes
             throw exception_t( result, __FILE__, ZE_STRING(__LINE__), "zes::Memory::GetBandwidth" );
     }
 
+#if !defined(__GNUC__)
 #pragma endregion
+#endif
+#if !defined(__GNUC__)
 #pragma region performance
+#endif
     ///////////////////////////////////////////////////////////////////////////////
     PerformanceFactor::PerformanceFactor( 
         perf_handle_t handle,                           ///< [in] handle of Sysman object
@@ -1938,8 +1985,12 @@ namespace zes
             throw exception_t( result, __FILE__, ZE_STRING(__LINE__), "zes::PerformanceFactor::SetConfig" );
     }
 
+#if !defined(__GNUC__)
 #pragma endregion
+#endif
+#if !defined(__GNUC__)
 #pragma region power
+#endif
     ///////////////////////////////////////////////////////////////////////////////
     Power::Power( 
         pwr_handle_t handle,                            ///< [in] handle of Sysman object
@@ -2158,8 +2209,12 @@ namespace zes
             throw exception_t( result, __FILE__, ZE_STRING(__LINE__), "zes::Power::SetEnergyThreshold" );
     }
 
+#if !defined(__GNUC__)
 #pragma endregion
+#endif
+#if !defined(__GNUC__)
 #pragma region psu
+#endif
     ///////////////////////////////////////////////////////////////////////////////
     Psu::Psu( 
         psu_handle_t handle,                            ///< [in] handle of Sysman object
@@ -2264,8 +2319,12 @@ namespace zes
             throw exception_t( result, __FILE__, ZE_STRING(__LINE__), "zes::Psu::GetState" );
     }
 
+#if !defined(__GNUC__)
 #pragma endregion
+#endif
+#if !defined(__GNUC__)
 #pragma region ras
+#endif
     ///////////////////////////////////////////////////////////////////////////////
     Ras::Ras( 
         ras_handle_t handle,                            ///< [in] handle of Sysman object
@@ -2450,8 +2509,12 @@ namespace zes
             throw exception_t( result, __FILE__, ZE_STRING(__LINE__), "zes::Ras::GetState" );
     }
 
+#if !defined(__GNUC__)
 #pragma endregion
+#endif
+#if !defined(__GNUC__)
 #pragma region scheduler
+#endif
     ///////////////////////////////////////////////////////////////////////////////
     Scheduler::Scheduler( 
         sched_handle_t handle,                          ///< [in] handle of Sysman object
@@ -2714,8 +2777,12 @@ namespace zes
             throw exception_t( result, __FILE__, ZE_STRING(__LINE__), "zes::Scheduler::SetComputeUnitDebugMode" );
     }
 
+#if !defined(__GNUC__)
 #pragma endregion
+#endif
+#if !defined(__GNUC__)
 #pragma region standby
+#endif
     ///////////////////////////////////////////////////////////////////////////////
     Standby::Standby( 
         standby_handle_t handle,                        ///< [in] handle of Sysman object
@@ -2841,8 +2908,12 @@ namespace zes
             throw exception_t( result, __FILE__, ZE_STRING(__LINE__), "zes::Standby::SetMode" );
     }
 
+#if !defined(__GNUC__)
 #pragma endregion
+#endif
+#if !defined(__GNUC__)
 #pragma region temperature
+#endif
     ///////////////////////////////////////////////////////////////////////////////
     Temperature::Temperature( 
         temp_handle_t handle,                           ///< [in] handle of Sysman object
@@ -3004,12 +3075,16 @@ namespace zes
             throw exception_t( result, __FILE__, ZE_STRING(__LINE__), "zes::Temperature::GetState" );
     }
 
+#if !defined(__GNUC__)
 #pragma endregion
+#endif
 } // namespace zes
 
 namespace zes
 {
+#if !defined(__GNUC__)
 #pragma region common
+#endif
     ///////////////////////////////////////////////////////////////////////////////
     /// @brief Converts structure_type_t to std::string
     std::string to_string( const structure_type_t val )
@@ -3271,8 +3346,12 @@ namespace zes
         return str;
     }
 
+#if !defined(__GNUC__)
 #pragma endregion
+#endif
+#if !defined(__GNUC__)
 #pragma region device
+#endif
     ///////////////////////////////////////////////////////////////////////////////
     /// @brief Converts Driver::event_type_flags_t to std::string
     std::string to_string( const Driver::event_type_flags_t val )
@@ -3939,8 +4018,12 @@ namespace zes
         return str;
     }
 
+#if !defined(__GNUC__)
 #pragma endregion
+#endif
+#if !defined(__GNUC__)
 #pragma region diagnostics
+#endif
     ///////////////////////////////////////////////////////////////////////////////
     /// @brief Converts Diagnostics::diag_result_t to std::string
     std::string to_string( const Diagnostics::diag_result_t val )
@@ -4027,8 +4110,12 @@ namespace zes
         return str;
     }
 
+#if !defined(__GNUC__)
 #pragma endregion
+#endif
+#if !defined(__GNUC__)
 #pragma region engine
+#endif
     ///////////////////////////////////////////////////////////////////////////////
     /// @brief Converts Engine::group_t to std::string
     std::string to_string( const Engine::group_t val )
@@ -4131,10 +4218,18 @@ namespace zes
         return str;
     }
 
+#if !defined(__GNUC__)
 #pragma endregion
+#endif
+#if !defined(__GNUC__)
 #pragma region events
+#endif
+#if !defined(__GNUC__)
 #pragma endregion
+#endif
+#if !defined(__GNUC__)
 #pragma region fabric
+#endif
     ///////////////////////////////////////////////////////////////////////////////
     /// @brief Converts FabricPort::status_t to std::string
     std::string to_string( const FabricPort::status_t val )
@@ -4409,8 +4504,12 @@ namespace zes
         return str;
     }
 
+#if !defined(__GNUC__)
 #pragma endregion
+#endif
+#if !defined(__GNUC__)
 #pragma region fan
+#endif
     ///////////////////////////////////////////////////////////////////////////////
     /// @brief Converts Fan::speed_mode_t to std::string
     std::string to_string( const Fan::speed_mode_t val )
@@ -4604,8 +4703,12 @@ namespace zes
         return str;
     }
 
+#if !defined(__GNUC__)
 #pragma endregion
+#endif
+#if !defined(__GNUC__)
 #pragma region firmware
+#endif
     ///////////////////////////////////////////////////////////////////////////////
     /// @brief Converts Firmware::properties_t to std::string
     std::string to_string( const Firmware::properties_t val )
@@ -4647,8 +4750,12 @@ namespace zes
         return str;
     }
 
+#if !defined(__GNUC__)
 #pragma endregion
+#endif
+#if !defined(__GNUC__)
 #pragma region frequency
+#endif
     ///////////////////////////////////////////////////////////////////////////////
     /// @brief Converts Frequency::freq_throttle_reason_flags_t to std::string
     std::string to_string( const Frequency::freq_throttle_reason_flags_t val )
@@ -4919,8 +5026,12 @@ namespace zes
         return str;
     }
 
+#if !defined(__GNUC__)
 #pragma endregion
+#endif
+#if !defined(__GNUC__)
 #pragma region led
+#endif
     ///////////////////////////////////////////////////////////////////////////////
     /// @brief Converts Led::properties_t to std::string
     std::string to_string( const Led::properties_t val )
@@ -5008,8 +5119,12 @@ namespace zes
         return str;
     }
 
+#if !defined(__GNUC__)
 #pragma endregion
+#endif
+#if !defined(__GNUC__)
 #pragma region memory
+#endif
     ///////////////////////////////////////////////////////////////////////////////
     /// @brief Converts Memory::mem_type_t to std::string
     std::string to_string( const Memory::mem_type_t val )
@@ -5249,8 +5364,12 @@ namespace zes
         return str;
     }
 
+#if !defined(__GNUC__)
 #pragma endregion
+#endif
+#if !defined(__GNUC__)
 #pragma region performance
+#endif
     ///////////////////////////////////////////////////////////////////////////////
     /// @brief Converts PerformanceFactor::perf_properties_t to std::string
     std::string to_string( const PerformanceFactor::perf_properties_t val )
@@ -5284,8 +5403,12 @@ namespace zes
         return str;
     }
 
+#if !defined(__GNUC__)
 #pragma endregion
+#endif
+#if !defined(__GNUC__)
 #pragma region power
+#endif
     ///////////////////////////////////////////////////////////////////////////////
     /// @brief Converts Power::properties_t to std::string
     std::string to_string( const Power::properties_t val )
@@ -5428,8 +5551,12 @@ namespace zes
         return str;
     }
 
+#if !defined(__GNUC__)
 #pragma endregion
+#endif
+#if !defined(__GNUC__)
 #pragma region psu
+#endif
     ///////////////////////////////////////////////////////////////////////////////
     /// @brief Converts Psu::voltage_status_t to std::string
     std::string to_string( const Psu::voltage_status_t val )
@@ -5536,8 +5663,12 @@ namespace zes
         return str;
     }
 
+#if !defined(__GNUC__)
 #pragma endregion
+#endif
+#if !defined(__GNUC__)
 #pragma region ras
+#endif
     ///////////////////////////////////////////////////////////////////////////////
     /// @brief Converts Ras::error_type_t to std::string
     std::string to_string( const Ras::error_type_t val )
@@ -5701,8 +5832,12 @@ namespace zes
         return str;
     }
 
+#if !defined(__GNUC__)
 #pragma endregion
+#endif
+#if !defined(__GNUC__)
 #pragma region scheduler
+#endif
     ///////////////////////////////////////////////////////////////////////////////
     /// @brief Converts Scheduler::sched_properties_t to std::string
     std::string to_string( const Scheduler::sched_properties_t val )
@@ -5744,8 +5879,12 @@ namespace zes
         return str;
     }
 
+#if !defined(__GNUC__)
 #pragma endregion
+#endif
+#if !defined(__GNUC__)
 #pragma region standby
+#endif
     ///////////////////////////////////////////////////////////////////////////////
     /// @brief Converts Standby::type_t to std::string
     std::string to_string( const Standby::type_t val )
@@ -5823,8 +5962,12 @@ namespace zes
         return str;
     }
 
+#if !defined(__GNUC__)
 #pragma endregion
+#endif
+#if !defined(__GNUC__)
 #pragma region temperature
+#endif
     ///////////////////////////////////////////////////////////////////////////////
     /// @brief Converts Temperature::temp_sensors_t to std::string
     std::string to_string( const Temperature::temp_sensors_t val )
@@ -5968,5 +6111,7 @@ namespace zes
         return str;
     }
 
+#if !defined(__GNUC__)
 #pragma endregion
+#endif
 } // namespace zes

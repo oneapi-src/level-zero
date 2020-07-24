@@ -5,6 +5,7 @@
  * SPDX-License-Identifier: MIT
  *
  * @file ze_api.hpp
+ * @version v1.0-r1.0.4.8
  *
  */
 #ifndef _ZE_API_HPP
@@ -25,7 +26,9 @@
 #include <sstream>
 
 // Intel 'oneAPI' Level-Zero API common types
+#if !defined(__GNUC__)
 #pragma region common
+#endif
 ///////////////////////////////////////////////////////////////////////////////
 #ifndef ZE_MAKE_VERSION
 /// @brief Generates generic 'oneAPI' API versions
@@ -400,9 +403,13 @@ namespace ze
     };
 
 } // namespace ze
+#if !defined(__GNUC__)
 #pragma endregion
+#endif
 // Intel 'oneAPI' Level-Zero APIs
+#if !defined(__GNUC__)
 #pragma region driver
+#endif
 ///////////////////////////////////////////////////////////////////////////////
 #ifndef ZE_MAX_DRIVER_UUID_SIZE
 /// @brief Maximum driver universal unique id (UUID) size in bytes
@@ -688,9 +695,13 @@ namespace ze
     std::string to_string( const Driver::extension_properties_t val );
 
 } // namespace ze
+#if !defined(__GNUC__)
 #pragma endregion
+#endif
 // Intel 'oneAPI' Level-Zero APIs for Device
+#if !defined(__GNUC__)
 #pragma region device
+#endif
 ///////////////////////////////////////////////////////////////////////////////
 #ifndef ZE_MAX_DEVICE_UUID_SIZE
 /// @brief Maximum device universal unique id (UUID) size in bytes
@@ -1526,9 +1537,13 @@ namespace ze
     std::string to_string( const Device::p2p_properties_t val );
 
 } // namespace ze
+#if !defined(__GNUC__)
 #pragma endregion
+#endif
 // Intel 'oneAPI' Level-Zero APIs for Context
+#if !defined(__GNUC__)
 #pragma region context
+#endif
 namespace ze
 {
     ///////////////////////////////////////////////////////////////////////////////
@@ -1781,9 +1796,13 @@ namespace ze
     std::string to_string( const Context::raytracing_mem_alloc_ext_desc_t val );
 
 } // namespace ze
+#if !defined(__GNUC__)
 #pragma endregion
+#endif
 // Intel 'oneAPI' Level-Zero APIs for Command Queue
+#if !defined(__GNUC__)
 #pragma region cmdqueue
+#endif
 namespace ze
 {
     ///////////////////////////////////////////////////////////////////////////////
@@ -2000,9 +2019,13 @@ namespace ze
     std::string to_string( const CommandQueue::desc_t val );
 
 } // namespace ze
+#if !defined(__GNUC__)
 #pragma endregion
+#endif
 // Intel 'oneAPI' Level-Zero APIs for Command List
+#if !defined(__GNUC__)
 #pragma region cmdlist
+#endif
 namespace ze
 {
     ///////////////////////////////////////////////////////////////////////////////
@@ -2272,9 +2295,6 @@ namespace ze
         ///       signaled prior to the execution of the barrier.
         ///     - This command blocks all following commands from beginning until the
         ///       execution of the barrier completes.
-        ///     - The application must ensure the signal event was **not** created from
-        ///       an event pool that was created using
-        ///       ::ZE_EVENT_POOL_FLAG_KERNEL_TIMESTAMP flag.
         ///     - The application must **not** call this function from simultaneous
         ///       threads with the same command list handle.
         ///     - The implementation of this function should be lock-free.
@@ -2305,9 +2325,6 @@ namespace ze
         ///       signaled prior to the execution of the barrier.
         ///     - This command blocks all following commands from beginning until the
         ///       execution of the barrier completes.
-        ///     - The application must ensure the signal event was **not** created from
-        ///       an event pool that was created using
-        ///       ::ZE_EVENT_POOL_FLAG_KERNEL_TIMESTAMP flag.
         ///     - The application must **not** call this function from simultaneous
         ///       threads with the same command list handle.
         ///     - The implementation of this function should be lock-free.
@@ -2335,9 +2352,6 @@ namespace ze
         ///       until execution.
         ///     - The application must ensure the events are accessible by the device on
         ///       which the command list was created.
-        ///     - The application must ensure the signal event was **not** created from
-        ///       an event pool that was created using
-        ///       ::ZE_EVENT_POOL_FLAG_KERNEL_TIMESTAMP flag.
         ///     - The application must ensure the command list and events were created,
         ///       and the memory was allocated, on the same context.
         ///     - The application must **not** call this function from simultaneous
@@ -2378,9 +2392,6 @@ namespace ze
         ///       ::ze_command_queue_group_properties_t.maxMemoryFillPatternSize.
         ///     - The application must ensure the events are accessible by the device on
         ///       which the command list was created.
-        ///     - The application must ensure the signal event was **not** created from
-        ///       an event pool that was created using
-        ///       ::ZE_EVENT_POOL_FLAG_KERNEL_TIMESTAMP flag.
         ///     - The application must enusre the command list and events were created,
         ///       and the memory was allocated, on the same context.
         ///     - The application must **not** call this function from simultaneous
@@ -2420,9 +2431,6 @@ namespace ze
         ///     - The src and dst regions cannot be overlapping.
         ///     - The application must ensure the events are accessible by the device on
         ///       which the command list was created.
-        ///     - The application must ensure the signal event was **not** created from
-        ///       an event pool that was created using
-        ///       ::ZE_EVENT_POOL_FLAG_KERNEL_TIMESTAMP flag.
         ///     - The application must ensure the command list and events were created,
         ///       and the memory was allocated, on the same context.
         ///     - The application must **not** call this function from simultaneous
@@ -2462,9 +2470,6 @@ namespace ze
         ///       until execution.
         ///     - The application must ensure the events are accessible by the device on
         ///       which the command list was created.
-        ///     - The application must ensure the signal event was **not** created from
-        ///       an event pool that was created using
-        ///       ::ZE_EVENT_POOL_FLAG_KERNEL_TIMESTAMP flag.
         ///     - The application must ensure the command list and events were created,
         ///       and the memory was allocated, on the same context.
         ///     - The application must **not** call this function from simultaneous
@@ -2492,9 +2497,6 @@ namespace ze
         ///       device on which the command list was created.
         ///     - The application must ensure the image format descriptors for both
         ///       source and destination images are the same.
-        ///     - The application must ensure the signal event was **not** created from
-        ///       an event pool that was created using
-        ///       ::ZE_EVENT_POOL_FLAG_KERNEL_TIMESTAMP flag.
         ///     - The application must ensure the command list, images and events were
         ///       created on the same context.
         ///     - The application must **not** call this function from simultaneous
@@ -2527,9 +2529,6 @@ namespace ze
         ///     - The src and dst regions cannot be overlapping.
         ///     - The application must ensure the image format descriptors for both
         ///       source and destination images are the same.
-        ///     - The application must ensure the signal event was **not** created from
-        ///       an event pool that was created using
-        ///       ::ZE_EVENT_POOL_FLAG_KERNEL_TIMESTAMP flag.
         ///     - The application must ensure the command list, images and events were
         ///       created, and the memory was allocated, on the same context.
         ///     - The application must **not** call this function from simultaneous
@@ -2562,9 +2561,6 @@ namespace ze
         ///       device on which the command list was created.
         ///     - The application must ensure the image format descriptor for the source
         ///       image is not a media format.
-        ///     - The application must ensure the signal event was **not** created from
-        ///       an event pool that was created using
-        ///       ::ZE_EVENT_POOL_FLAG_KERNEL_TIMESTAMP flag.
         ///     - The application must ensure the command list, image and events were
         ///       created, and the memory was allocated, on the same context.
         ///     - The application must **not** call this function from simultaneous
@@ -2600,9 +2596,6 @@ namespace ze
         ///       device on which the command list was created.
         ///     - The application must ensure the image format descriptor for the
         ///       destination image is not a media format.
-        ///     - The application must ensure the signal event was **not** created from
-        ///       an event pool that was created using
-        ///       ::ZE_EVENT_POOL_FLAG_KERNEL_TIMESTAMP flag.
         ///     - The application must ensure the command list, image and events were
         ///       created, and the memory was allocated, on the same context.
         ///     - The application must **not** call this function from simultaneous
@@ -2698,9 +2691,10 @@ namespace ze
         /// @details
         ///     - The application must ensure the events are accessible by the device on
         ///       which the command list was created.
-        ///     - The application must ensure the signal event was **not** created from
-        ///       an event pool that was created using
-        ///       ::ZE_EVENT_POOL_FLAG_KERNEL_TIMESTAMP flag.
+        ///     - The duration of an event created from an event pool that was created
+        ///       using ::ZE_EVENT_POOL_FLAG_KERNEL_TIMESTAMP flag is undefined.
+        ///       However, for consistency and orthogonality the event will report
+        ///       correctly as signaled when used by other event API functionality.
         ///     - The application must ensure the command list and events were created
         ///       on the same context.
         ///     - The application must **not** call this function from simultaneous
@@ -2948,9 +2942,13 @@ namespace ze
     std::string to_string( const CommandList::group_count_t val );
 
 } // namespace ze
+#if !defined(__GNUC__)
 #pragma endregion
+#endif
 // Intel 'oneAPI' Level-Zero APIs for Barrier
+#if !defined(__GNUC__)
 #pragma region barrier
+#endif
 namespace ze
 {
 } // namespace ze
@@ -2958,9 +2956,13 @@ namespace ze
 namespace ze
 {
 } // namespace ze
+#if !defined(__GNUC__)
 #pragma endregion
+#endif
 // Intel 'oneAPI' Level-Zero APIs for Copies
+#if !defined(__GNUC__)
 #pragma region copy
+#endif
 namespace ze
 {
 } // namespace ze
@@ -2968,9 +2970,13 @@ namespace ze
 namespace ze
 {
 } // namespace ze
+#if !defined(__GNUC__)
 #pragma endregion
+#endif
 // Intel 'oneAPI' Level-Zero APIs for Event
+#if !defined(__GNUC__)
 #pragma region event
+#endif
 namespace ze
 {
     ///////////////////////////////////////////////////////////////////////////////
@@ -3245,8 +3251,8 @@ namespace ze
         /// @details
         ///     - An event is used to communicate fine-grain host-to-device,
         ///       device-to-host or device-to-device dependencies have completed.
-        ///     - The application must ensure multiple events do not use the same
-        ///       location within the same pool.
+        ///     - The application must ensure the location in the pool is not being used
+        ///       by another event.
         ///     - The application must **not** call this function from simultaneous
         ///       threads with the same event pool handle.
         ///     - The implementation of this function should be lock-free.
@@ -3291,9 +3297,10 @@ namespace ze
         /// @brief Signals a event from host.
         /// 
         /// @details
-        ///     - The application must ensure the signal event was **not** created from
-        ///       an event pool that was created using
-        ///       ::ZE_EVENT_POOL_FLAG_KERNEL_TIMESTAMP flag.
+        ///     - The duration of an event created from an event pool that was created
+        ///       using ::ZE_EVENT_POOL_FLAG_KERNEL_TIMESTAMP flag is undefined.
+        ///       However, for consistency and orthogonality the event will report
+        ///       correctly as signaled when used by other event API functionality.
         ///     - The application may call this function from simultaneous threads.
         ///     - The implementation of this function should be lock-free.
         /// 
@@ -3414,9 +3421,13 @@ namespace ze
     std::string to_string( const Event::kernel_timestamp_result_t val );
 
 } // namespace ze
+#if !defined(__GNUC__)
 #pragma endregion
+#endif
 // Intel 'oneAPI' Level-Zero APIs for Fence
+#if !defined(__GNUC__)
 #pragma region fence
+#endif
 namespace ze
 {
     ///////////////////////////////////////////////////////////////////////////////
@@ -3599,9 +3610,13 @@ namespace ze
     std::string to_string( const Fence::desc_t val );
 
 } // namespace ze
+#if !defined(__GNUC__)
 #pragma endregion
+#endif
 // Intel 'oneAPI' Level-Zero APIs for Images
+#if !defined(__GNUC__)
 #pragma region image
+#endif
 namespace ze
 {
     ///////////////////////////////////////////////////////////////////////////////
@@ -3914,9 +3929,13 @@ namespace ze
     std::string to_string( const Image::properties_t val );
 
 } // namespace ze
+#if !defined(__GNUC__)
 #pragma endregion
+#endif
 // Intel 'oneAPI' Level-Zero APIs for Memory
+#if !defined(__GNUC__)
 #pragma region memory
+#endif
 namespace ze
 {
     ///////////////////////////////////////////////////////////////////////////////
@@ -4359,9 +4378,13 @@ namespace ze
     std::string to_string( const Mem::external_memory_export_fd_t val );
 
 } // namespace ze
+#if !defined(__GNUC__)
 #pragma endregion
+#endif
 // Intel 'oneAPI' Level-Zero APIs for Module
+#if !defined(__GNUC__)
 #pragma region module
+#endif
 ///////////////////////////////////////////////////////////////////////////////
 #ifndef ZE_MAX_KERNEL_UUID_SIZE
 /// @brief Maximum kernel universal unique id (UUID) size in bytes
@@ -5132,9 +5155,13 @@ namespace ze
     std::string to_string( const Kernel::properties_t val );
 
 } // namespace ze
+#if !defined(__GNUC__)
 #pragma endregion
+#endif
 // Intel 'oneAPI' Level-Zero Extension APIs for Raytracing
+#if !defined(__GNUC__)
 #pragma region raytracing
+#endif
 ///////////////////////////////////////////////////////////////////////////////
 #ifndef ZE_RAYTRACING_EXT_NAME
 /// @brief Raytracing Extension Name
@@ -5162,9 +5189,13 @@ namespace ze
     std::string to_string( const raytracing_ext_version_t val );
 
 } // namespace ze
+#if !defined(__GNUC__)
 #pragma endregion
+#endif
 // Intel 'oneAPI' Level-Zero APIs for Memory Residency
+#if !defined(__GNUC__)
 #pragma region residency
+#endif
 namespace ze
 {
 } // namespace ze
@@ -5172,9 +5203,13 @@ namespace ze
 namespace ze
 {
 } // namespace ze
+#if !defined(__GNUC__)
 #pragma endregion
+#endif
 // Intel 'oneAPI' Level-Zero APIs for Sampler
+#if !defined(__GNUC__)
 #pragma region sampler
+#endif
 namespace ze
 {
     ///////////////////////////////////////////////////////////////////////////////
@@ -5304,9 +5339,13 @@ namespace ze
     std::string to_string( const Sampler::desc_t val );
 
 } // namespace ze
+#if !defined(__GNUC__)
 #pragma endregion
+#endif
 // Intel 'oneAPI' Level-Zero APIs for Virtual Memory Management
+#if !defined(__GNUC__)
 #pragma region virtual
+#endif
 namespace ze
 {
     ///////////////////////////////////////////////////////////////////////////////
@@ -5608,6 +5647,9 @@ namespace ze
     std::string to_string( const PhysicalMem::desc_t val );
 
 } // namespace ze
+#if !defined(__GNUC__)
 #pragma endregion
+#endif
+
 #endif // defined(__cplusplus)
 #endif // _ZE_API_HPP

@@ -1215,9 +1215,6 @@ zeCommandListAppendWriteGlobalTimestamp(
 ///       signaled prior to the execution of the barrier.
 ///     - This command blocks all following commands from beginning until the
 ///       execution of the barrier completes.
-///     - The application must ensure the signal event was **not** created from
-///       an event pool that was created using
-///       ::ZE_EVENT_POOL_FLAG_KERNEL_TIMESTAMP flag.
 ///     - The application must **not** call this function from simultaneous
 ///       threads with the same command list handle.
 ///     - The implementation of this function should be lock-free.
@@ -1265,9 +1262,6 @@ zeCommandListAppendBarrier(
 ///       signaled prior to the execution of the barrier.
 ///     - This command blocks all following commands from beginning until the
 ///       execution of the barrier completes.
-///     - The application must ensure the signal event was **not** created from
-///       an event pool that was created using
-///       ::ZE_EVENT_POOL_FLAG_KERNEL_TIMESTAMP flag.
 ///     - The application must **not** call this function from simultaneous
 ///       threads with the same command list handle.
 ///     - The implementation of this function should be lock-free.
@@ -1348,9 +1342,6 @@ zeContextSystemBarrier(
 ///       until execution.
 ///     - The application must ensure the events are accessible by the device on
 ///       which the command list was created.
-///     - The application must ensure the signal event was **not** created from
-///       an event pool that was created using
-///       ::ZE_EVENT_POOL_FLAG_KERNEL_TIMESTAMP flag.
 ///     - The application must ensure the command list and events were created,
 ///       and the memory was allocated, on the same context.
 ///     - The application must **not** call this function from simultaneous
@@ -1411,9 +1402,6 @@ zeCommandListAppendMemoryCopy(
 ///       ::ze_command_queue_group_properties_t.maxMemoryFillPatternSize.
 ///     - The application must ensure the events are accessible by the device on
 ///       which the command list was created.
-///     - The application must ensure the signal event was **not** created from
-///       an event pool that was created using
-///       ::ZE_EVENT_POOL_FLAG_KERNEL_TIMESTAMP flag.
 ///     - The application must enusre the command list and events were created,
 ///       and the memory was allocated, on the same context.
 ///     - The application must **not** call this function from simultaneous
@@ -1473,9 +1461,6 @@ zeCommandListAppendMemoryFill(
 ///     - The src and dst regions cannot be overlapping.
 ///     - The application must ensure the events are accessible by the device on
 ///       which the command list was created.
-///     - The application must ensure the signal event was **not** created from
-///       an event pool that was created using
-///       ::ZE_EVENT_POOL_FLAG_KERNEL_TIMESTAMP flag.
 ///     - The application must ensure the command list and events were created,
 ///       and the memory was allocated, on the same context.
 ///     - The application must **not** call this function from simultaneous
@@ -1538,9 +1523,6 @@ zeCommandListAppendMemoryCopyRegion(
 ///       until execution.
 ///     - The application must ensure the events are accessible by the device on
 ///       which the command list was created.
-///     - The application must ensure the signal event was **not** created from
-///       an event pool that was created using
-///       ::ZE_EVENT_POOL_FLAG_KERNEL_TIMESTAMP flag.
 ///     - The application must ensure the command list and events were created,
 ///       and the memory was allocated, on the same context.
 ///     - The application must **not** call this function from simultaneous
@@ -1589,9 +1571,6 @@ zeCommandListAppendMemoryCopyFromContext(
 ///       device on which the command list was created.
 ///     - The application must ensure the image format descriptors for both
 ///       source and destination images are the same.
-///     - The application must ensure the signal event was **not** created from
-///       an event pool that was created using
-///       ::ZE_EVENT_POOL_FLAG_KERNEL_TIMESTAMP flag.
 ///     - The application must ensure the command list, images and events were
 ///       created on the same context.
 ///     - The application must **not** call this function from simultaneous
@@ -1643,9 +1622,6 @@ zeCommandListAppendImageCopy(
 ///     - The src and dst regions cannot be overlapping.
 ///     - The application must ensure the image format descriptors for both
 ///       source and destination images are the same.
-///     - The application must ensure the signal event was **not** created from
-///       an event pool that was created using
-///       ::ZE_EVENT_POOL_FLAG_KERNEL_TIMESTAMP flag.
 ///     - The application must ensure the command list, images and events were
 ///       created, and the memory was allocated, on the same context.
 ///     - The application must **not** call this function from simultaneous
@@ -1698,9 +1674,6 @@ zeCommandListAppendImageCopyRegion(
 ///       device on which the command list was created.
 ///     - The application must ensure the image format descriptor for the source
 ///       image is not a media format.
-///     - The application must ensure the signal event was **not** created from
-///       an event pool that was created using
-///       ::ZE_EVENT_POOL_FLAG_KERNEL_TIMESTAMP flag.
 ///     - The application must ensure the command list, image and events were
 ///       created, and the memory was allocated, on the same context.
 ///     - The application must **not** call this function from simultaneous
@@ -1756,9 +1729,6 @@ zeCommandListAppendImageCopyToMemory(
 ///       device on which the command list was created.
 ///     - The application must ensure the image format descriptor for the
 ///       destination image is not a media format.
-///     - The application must ensure the signal event was **not** created from
-///       an event pool that was created using
-///       ::ZE_EVENT_POOL_FLAG_KERNEL_TIMESTAMP flag.
 ///     - The application must ensure the command list, image and events were
 ///       created, and the memory was allocated, on the same context.
 ///     - The application must **not** call this function from simultaneous
@@ -1926,7 +1896,7 @@ zeCommandListAppendMemAdvise(
 ///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
 ///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
 ///     - ::ZE_RESULT_ERROR_INVALID_SIZE
-///         + 0 < desc->count
+///         + `0 < desc->count`
 ///         + `(nullptr == phDevices) && (0 < numDevices)`
 ze_result_t ZE_APICALL
 zeEventPoolCreate(
@@ -1987,8 +1957,8 @@ zeEventPoolDestroy(
 /// @details
 ///     - An event is used to communicate fine-grain host-to-device,
 ///       device-to-host or device-to-device dependencies have completed.
-///     - The application must ensure multiple events do not use the same
-///       location within the same pool.
+///     - The application must ensure the location in the pool is not being used
+///       by another event.
 ///     - The application must **not** call this function from simultaneous
 ///       threads with the same event pool handle.
 ///     - The implementation of this function should be lock-free.
@@ -2158,9 +2128,10 @@ zeEventPoolCloseIpcHandle(
 /// @details
 ///     - The application must ensure the events are accessible by the device on
 ///       which the command list was created.
-///     - The application must ensure the signal event was **not** created from
-///       an event pool that was created using
-///       ::ZE_EVENT_POOL_FLAG_KERNEL_TIMESTAMP flag.
+///     - The duration of an event created from an event pool that was created
+///       using ::ZE_EVENT_POOL_FLAG_KERNEL_TIMESTAMP flag is undefined.
+///       However, for consistency and orthogonality the event will report
+///       correctly as signaled when used by other event API functionality.
 ///     - The application must ensure the command list and events were created
 ///       on the same context.
 ///     - The application must **not** call this function from simultaneous
@@ -2233,9 +2204,10 @@ zeCommandListAppendWaitOnEvents(
 /// @brief Signals a event from host.
 /// 
 /// @details
-///     - The application must ensure the signal event was **not** created from
-///       an event pool that was created using
-///       ::ZE_EVENT_POOL_FLAG_KERNEL_TIMESTAMP flag.
+///     - The duration of an event created from an event pool that was created
+///       using ::ZE_EVENT_POOL_FLAG_KERNEL_TIMESTAMP flag is undefined.
+///       However, for consistency and orthogonality the event will report
+///       correctly as signaled when used by other event API functionality.
 ///     - The application may call this function from simultaneous threads.
 ///     - The implementation of this function should be lock-free.
 /// 

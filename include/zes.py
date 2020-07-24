@@ -4,6 +4,7 @@
  SPDX-License-Identifier: MIT
 
  @file zes.py
+ @version v1.0-r1.0.4.8
 
  """
 import platform
@@ -1596,6 +1597,21 @@ class zes_temp_config_t(Structure):
 __use_win_types = "Windows" == platform.uname()[0]
 
 ###############################################################################
+## @brief Function-pointer for zesDriverEventListen
+if __use_win_types:
+    _zesDriverEventListen_t = WINFUNCTYPE( ze_result_t, ze_driver_handle_t, c_ulong, c_ulong, POINTER(zes_device_handle_t), POINTER(c_ulong), POINTER(zes_event_type_flags_t) )
+else:
+    _zesDriverEventListen_t = CFUNCTYPE( ze_result_t, ze_driver_handle_t, c_ulong, c_ulong, POINTER(zes_device_handle_t), POINTER(c_ulong), POINTER(zes_event_type_flags_t) )
+
+
+###############################################################################
+## @brief Table of Driver functions pointers
+class _zes_driver_dditable_t(Structure):
+    _fields_ = [
+        ("pfnEventListen", c_void_p)                                    ## _zesDriverEventListen_t
+    ]
+
+###############################################################################
 ## @brief Function-pointer for zesDeviceGetProperties
 if __use_win_types:
     _zesDeviceGetProperties_t = WINFUNCTYPE( ze_result_t, zes_device_handle_t, POINTER(zes_device_properties_t) )
@@ -1795,205 +1811,160 @@ class _zes_device_dditable_t(Structure):
     ]
 
 ###############################################################################
-## @brief Function-pointer for zesDriverEventListen
+## @brief Function-pointer for zesSchedulerGetProperties
 if __use_win_types:
-    _zesDriverEventListen_t = WINFUNCTYPE( ze_result_t, ze_driver_handle_t, c_ulong, c_ulong, POINTER(zes_device_handle_t), POINTER(c_ulong), POINTER(zes_event_type_flags_t) )
+    _zesSchedulerGetProperties_t = WINFUNCTYPE( ze_result_t, zes_sched_handle_t, POINTER(zes_sched_properties_t) )
 else:
-    _zesDriverEventListen_t = CFUNCTYPE( ze_result_t, ze_driver_handle_t, c_ulong, c_ulong, POINTER(zes_device_handle_t), POINTER(c_ulong), POINTER(zes_event_type_flags_t) )
+    _zesSchedulerGetProperties_t = CFUNCTYPE( ze_result_t, zes_sched_handle_t, POINTER(zes_sched_properties_t) )
+
+###############################################################################
+## @brief Function-pointer for zesSchedulerGetCurrentMode
+if __use_win_types:
+    _zesSchedulerGetCurrentMode_t = WINFUNCTYPE( ze_result_t, zes_sched_handle_t, POINTER(zes_sched_mode_t) )
+else:
+    _zesSchedulerGetCurrentMode_t = CFUNCTYPE( ze_result_t, zes_sched_handle_t, POINTER(zes_sched_mode_t) )
+
+###############################################################################
+## @brief Function-pointer for zesSchedulerGetTimeoutModeProperties
+if __use_win_types:
+    _zesSchedulerGetTimeoutModeProperties_t = WINFUNCTYPE( ze_result_t, zes_sched_handle_t, ze_bool_t, POINTER(zes_sched_timeout_properties_t) )
+else:
+    _zesSchedulerGetTimeoutModeProperties_t = CFUNCTYPE( ze_result_t, zes_sched_handle_t, ze_bool_t, POINTER(zes_sched_timeout_properties_t) )
+
+###############################################################################
+## @brief Function-pointer for zesSchedulerGetTimesliceModeProperties
+if __use_win_types:
+    _zesSchedulerGetTimesliceModeProperties_t = WINFUNCTYPE( ze_result_t, zes_sched_handle_t, ze_bool_t, POINTER(zes_sched_timeslice_properties_t) )
+else:
+    _zesSchedulerGetTimesliceModeProperties_t = CFUNCTYPE( ze_result_t, zes_sched_handle_t, ze_bool_t, POINTER(zes_sched_timeslice_properties_t) )
+
+###############################################################################
+## @brief Function-pointer for zesSchedulerSetTimeoutMode
+if __use_win_types:
+    _zesSchedulerSetTimeoutMode_t = WINFUNCTYPE( ze_result_t, zes_sched_handle_t, POINTER(zes_sched_timeout_properties_t), POINTER(ze_bool_t) )
+else:
+    _zesSchedulerSetTimeoutMode_t = CFUNCTYPE( ze_result_t, zes_sched_handle_t, POINTER(zes_sched_timeout_properties_t), POINTER(ze_bool_t) )
+
+###############################################################################
+## @brief Function-pointer for zesSchedulerSetTimesliceMode
+if __use_win_types:
+    _zesSchedulerSetTimesliceMode_t = WINFUNCTYPE( ze_result_t, zes_sched_handle_t, POINTER(zes_sched_timeslice_properties_t), POINTER(ze_bool_t) )
+else:
+    _zesSchedulerSetTimesliceMode_t = CFUNCTYPE( ze_result_t, zes_sched_handle_t, POINTER(zes_sched_timeslice_properties_t), POINTER(ze_bool_t) )
+
+###############################################################################
+## @brief Function-pointer for zesSchedulerSetExclusiveMode
+if __use_win_types:
+    _zesSchedulerSetExclusiveMode_t = WINFUNCTYPE( ze_result_t, zes_sched_handle_t, POINTER(ze_bool_t) )
+else:
+    _zesSchedulerSetExclusiveMode_t = CFUNCTYPE( ze_result_t, zes_sched_handle_t, POINTER(ze_bool_t) )
+
+###############################################################################
+## @brief Function-pointer for zesSchedulerSetComputeUnitDebugMode
+if __use_win_types:
+    _zesSchedulerSetComputeUnitDebugMode_t = WINFUNCTYPE( ze_result_t, zes_sched_handle_t, POINTER(ze_bool_t) )
+else:
+    _zesSchedulerSetComputeUnitDebugMode_t = CFUNCTYPE( ze_result_t, zes_sched_handle_t, POINTER(ze_bool_t) )
 
 
 ###############################################################################
-## @brief Table of Driver functions pointers
-class _zes_driver_dditable_t(Structure):
+## @brief Table of Scheduler functions pointers
+class _zes_scheduler_dditable_t(Structure):
     _fields_ = [
-        ("pfnEventListen", c_void_p)                                    ## _zesDriverEventListen_t
+        ("pfnGetProperties", c_void_p),                                 ## _zesSchedulerGetProperties_t
+        ("pfnGetCurrentMode", c_void_p),                                ## _zesSchedulerGetCurrentMode_t
+        ("pfnGetTimeoutModeProperties", c_void_p),                      ## _zesSchedulerGetTimeoutModeProperties_t
+        ("pfnGetTimesliceModeProperties", c_void_p),                    ## _zesSchedulerGetTimesliceModeProperties_t
+        ("pfnSetTimeoutMode", c_void_p),                                ## _zesSchedulerSetTimeoutMode_t
+        ("pfnSetTimesliceMode", c_void_p),                              ## _zesSchedulerSetTimesliceMode_t
+        ("pfnSetExclusiveMode", c_void_p),                              ## _zesSchedulerSetExclusiveMode_t
+        ("pfnSetComputeUnitDebugMode", c_void_p)                        ## _zesSchedulerSetComputeUnitDebugMode_t
     ]
 
 ###############################################################################
-## @brief Function-pointer for zesDiagnosticsGetProperties
+## @brief Function-pointer for zesPerformanceFactorGetProperties
 if __use_win_types:
-    _zesDiagnosticsGetProperties_t = WINFUNCTYPE( ze_result_t, zes_diag_handle_t, POINTER(zes_diag_properties_t) )
+    _zesPerformanceFactorGetProperties_t = WINFUNCTYPE( ze_result_t, zes_perf_handle_t, POINTER(zes_perf_properties_t) )
 else:
-    _zesDiagnosticsGetProperties_t = CFUNCTYPE( ze_result_t, zes_diag_handle_t, POINTER(zes_diag_properties_t) )
+    _zesPerformanceFactorGetProperties_t = CFUNCTYPE( ze_result_t, zes_perf_handle_t, POINTER(zes_perf_properties_t) )
 
 ###############################################################################
-## @brief Function-pointer for zesDiagnosticsGetTests
+## @brief Function-pointer for zesPerformanceFactorGetConfig
 if __use_win_types:
-    _zesDiagnosticsGetTests_t = WINFUNCTYPE( ze_result_t, zes_diag_handle_t, POINTER(c_ulong), POINTER(zes_diag_test_t) )
+    _zesPerformanceFactorGetConfig_t = WINFUNCTYPE( ze_result_t, zes_perf_handle_t, POINTER(c_double) )
 else:
-    _zesDiagnosticsGetTests_t = CFUNCTYPE( ze_result_t, zes_diag_handle_t, POINTER(c_ulong), POINTER(zes_diag_test_t) )
+    _zesPerformanceFactorGetConfig_t = CFUNCTYPE( ze_result_t, zes_perf_handle_t, POINTER(c_double) )
 
 ###############################################################################
-## @brief Function-pointer for zesDiagnosticsRunTests
+## @brief Function-pointer for zesPerformanceFactorSetConfig
 if __use_win_types:
-    _zesDiagnosticsRunTests_t = WINFUNCTYPE( ze_result_t, zes_diag_handle_t, c_ulong, c_ulong, POINTER(zes_diag_result_t) )
+    _zesPerformanceFactorSetConfig_t = WINFUNCTYPE( ze_result_t, zes_perf_handle_t, c_double )
 else:
-    _zesDiagnosticsRunTests_t = CFUNCTYPE( ze_result_t, zes_diag_handle_t, c_ulong, c_ulong, POINTER(zes_diag_result_t) )
+    _zesPerformanceFactorSetConfig_t = CFUNCTYPE( ze_result_t, zes_perf_handle_t, c_double )
 
 
 ###############################################################################
-## @brief Table of Diagnostics functions pointers
-class _zes_diagnostics_dditable_t(Structure):
+## @brief Table of PerformanceFactor functions pointers
+class _zes_performance_factor_dditable_t(Structure):
     _fields_ = [
-        ("pfnGetProperties", c_void_p),                                 ## _zesDiagnosticsGetProperties_t
-        ("pfnGetTests", c_void_p),                                      ## _zesDiagnosticsGetTests_t
-        ("pfnRunTests", c_void_p)                                       ## _zesDiagnosticsRunTests_t
+        ("pfnGetProperties", c_void_p),                                 ## _zesPerformanceFactorGetProperties_t
+        ("pfnGetConfig", c_void_p),                                     ## _zesPerformanceFactorGetConfig_t
+        ("pfnSetConfig", c_void_p)                                      ## _zesPerformanceFactorSetConfig_t
     ]
 
 ###############################################################################
-## @brief Function-pointer for zesEngineGetProperties
+## @brief Function-pointer for zesPowerGetProperties
 if __use_win_types:
-    _zesEngineGetProperties_t = WINFUNCTYPE( ze_result_t, zes_engine_handle_t, POINTER(zes_engine_properties_t) )
+    _zesPowerGetProperties_t = WINFUNCTYPE( ze_result_t, zes_pwr_handle_t, POINTER(zes_power_properties_t) )
 else:
-    _zesEngineGetProperties_t = CFUNCTYPE( ze_result_t, zes_engine_handle_t, POINTER(zes_engine_properties_t) )
+    _zesPowerGetProperties_t = CFUNCTYPE( ze_result_t, zes_pwr_handle_t, POINTER(zes_power_properties_t) )
 
 ###############################################################################
-## @brief Function-pointer for zesEngineGetActivity
+## @brief Function-pointer for zesPowerGetEnergyCounter
 if __use_win_types:
-    _zesEngineGetActivity_t = WINFUNCTYPE( ze_result_t, zes_engine_handle_t, POINTER(zes_engine_stats_t) )
+    _zesPowerGetEnergyCounter_t = WINFUNCTYPE( ze_result_t, zes_pwr_handle_t, POINTER(zes_power_energy_counter_t) )
 else:
-    _zesEngineGetActivity_t = CFUNCTYPE( ze_result_t, zes_engine_handle_t, POINTER(zes_engine_stats_t) )
+    _zesPowerGetEnergyCounter_t = CFUNCTYPE( ze_result_t, zes_pwr_handle_t, POINTER(zes_power_energy_counter_t) )
+
+###############################################################################
+## @brief Function-pointer for zesPowerGetLimits
+if __use_win_types:
+    _zesPowerGetLimits_t = WINFUNCTYPE( ze_result_t, zes_pwr_handle_t, POINTER(zes_power_sustained_limit_t), POINTER(zes_power_burst_limit_t), POINTER(zes_power_peak_limit_t) )
+else:
+    _zesPowerGetLimits_t = CFUNCTYPE( ze_result_t, zes_pwr_handle_t, POINTER(zes_power_sustained_limit_t), POINTER(zes_power_burst_limit_t), POINTER(zes_power_peak_limit_t) )
+
+###############################################################################
+## @brief Function-pointer for zesPowerSetLimits
+if __use_win_types:
+    _zesPowerSetLimits_t = WINFUNCTYPE( ze_result_t, zes_pwr_handle_t, POINTER(zes_power_sustained_limit_t), POINTER(zes_power_burst_limit_t), POINTER(zes_power_peak_limit_t) )
+else:
+    _zesPowerSetLimits_t = CFUNCTYPE( ze_result_t, zes_pwr_handle_t, POINTER(zes_power_sustained_limit_t), POINTER(zes_power_burst_limit_t), POINTER(zes_power_peak_limit_t) )
+
+###############################################################################
+## @brief Function-pointer for zesPowerGetEnergyThreshold
+if __use_win_types:
+    _zesPowerGetEnergyThreshold_t = WINFUNCTYPE( ze_result_t, zes_pwr_handle_t, POINTER(zes_energy_threshold_t) )
+else:
+    _zesPowerGetEnergyThreshold_t = CFUNCTYPE( ze_result_t, zes_pwr_handle_t, POINTER(zes_energy_threshold_t) )
+
+###############################################################################
+## @brief Function-pointer for zesPowerSetEnergyThreshold
+if __use_win_types:
+    _zesPowerSetEnergyThreshold_t = WINFUNCTYPE( ze_result_t, zes_pwr_handle_t, c_double )
+else:
+    _zesPowerSetEnergyThreshold_t = CFUNCTYPE( ze_result_t, zes_pwr_handle_t, c_double )
 
 
 ###############################################################################
-## @brief Table of Engine functions pointers
-class _zes_engine_dditable_t(Structure):
+## @brief Table of Power functions pointers
+class _zes_power_dditable_t(Structure):
     _fields_ = [
-        ("pfnGetProperties", c_void_p),                                 ## _zesEngineGetProperties_t
-        ("pfnGetActivity", c_void_p)                                    ## _zesEngineGetActivity_t
-    ]
-
-###############################################################################
-## @brief Function-pointer for zesFabricPortGetProperties
-if __use_win_types:
-    _zesFabricPortGetProperties_t = WINFUNCTYPE( ze_result_t, zes_fabric_port_handle_t, POINTER(zes_fabric_port_properties_t) )
-else:
-    _zesFabricPortGetProperties_t = CFUNCTYPE( ze_result_t, zes_fabric_port_handle_t, POINTER(zes_fabric_port_properties_t) )
-
-###############################################################################
-## @brief Function-pointer for zesFabricPortGetLinkType
-if __use_win_types:
-    _zesFabricPortGetLinkType_t = WINFUNCTYPE( ze_result_t, zes_fabric_port_handle_t, POINTER(zes_fabric_link_type_t) )
-else:
-    _zesFabricPortGetLinkType_t = CFUNCTYPE( ze_result_t, zes_fabric_port_handle_t, POINTER(zes_fabric_link_type_t) )
-
-###############################################################################
-## @brief Function-pointer for zesFabricPortGetConfig
-if __use_win_types:
-    _zesFabricPortGetConfig_t = WINFUNCTYPE( ze_result_t, zes_fabric_port_handle_t, POINTER(zes_fabric_port_config_t) )
-else:
-    _zesFabricPortGetConfig_t = CFUNCTYPE( ze_result_t, zes_fabric_port_handle_t, POINTER(zes_fabric_port_config_t) )
-
-###############################################################################
-## @brief Function-pointer for zesFabricPortSetConfig
-if __use_win_types:
-    _zesFabricPortSetConfig_t = WINFUNCTYPE( ze_result_t, zes_fabric_port_handle_t, POINTER(zes_fabric_port_config_t) )
-else:
-    _zesFabricPortSetConfig_t = CFUNCTYPE( ze_result_t, zes_fabric_port_handle_t, POINTER(zes_fabric_port_config_t) )
-
-###############################################################################
-## @brief Function-pointer for zesFabricPortGetState
-if __use_win_types:
-    _zesFabricPortGetState_t = WINFUNCTYPE( ze_result_t, zes_fabric_port_handle_t, POINTER(zes_fabric_port_state_t) )
-else:
-    _zesFabricPortGetState_t = CFUNCTYPE( ze_result_t, zes_fabric_port_handle_t, POINTER(zes_fabric_port_state_t) )
-
-###############################################################################
-## @brief Function-pointer for zesFabricPortGetThroughput
-if __use_win_types:
-    _zesFabricPortGetThroughput_t = WINFUNCTYPE( ze_result_t, zes_fabric_port_handle_t, POINTER(zes_fabric_port_throughput_t) )
-else:
-    _zesFabricPortGetThroughput_t = CFUNCTYPE( ze_result_t, zes_fabric_port_handle_t, POINTER(zes_fabric_port_throughput_t) )
-
-
-###############################################################################
-## @brief Table of FabricPort functions pointers
-class _zes_fabric_port_dditable_t(Structure):
-    _fields_ = [
-        ("pfnGetProperties", c_void_p),                                 ## _zesFabricPortGetProperties_t
-        ("pfnGetLinkType", c_void_p),                                   ## _zesFabricPortGetLinkType_t
-        ("pfnGetConfig", c_void_p),                                     ## _zesFabricPortGetConfig_t
-        ("pfnSetConfig", c_void_p),                                     ## _zesFabricPortSetConfig_t
-        ("pfnGetState", c_void_p),                                      ## _zesFabricPortGetState_t
-        ("pfnGetThroughput", c_void_p)                                  ## _zesFabricPortGetThroughput_t
-    ]
-
-###############################################################################
-## @brief Function-pointer for zesFanGetProperties
-if __use_win_types:
-    _zesFanGetProperties_t = WINFUNCTYPE( ze_result_t, zes_fan_handle_t, POINTER(zes_fan_properties_t) )
-else:
-    _zesFanGetProperties_t = CFUNCTYPE( ze_result_t, zes_fan_handle_t, POINTER(zes_fan_properties_t) )
-
-###############################################################################
-## @brief Function-pointer for zesFanGetConfig
-if __use_win_types:
-    _zesFanGetConfig_t = WINFUNCTYPE( ze_result_t, zes_fan_handle_t, POINTER(zes_fan_config_t) )
-else:
-    _zesFanGetConfig_t = CFUNCTYPE( ze_result_t, zes_fan_handle_t, POINTER(zes_fan_config_t) )
-
-###############################################################################
-## @brief Function-pointer for zesFanSetDefaultMode
-if __use_win_types:
-    _zesFanSetDefaultMode_t = WINFUNCTYPE( ze_result_t, zes_fan_handle_t )
-else:
-    _zesFanSetDefaultMode_t = CFUNCTYPE( ze_result_t, zes_fan_handle_t )
-
-###############################################################################
-## @brief Function-pointer for zesFanSetFixedSpeedMode
-if __use_win_types:
-    _zesFanSetFixedSpeedMode_t = WINFUNCTYPE( ze_result_t, zes_fan_handle_t, POINTER(zes_fan_speed_t) )
-else:
-    _zesFanSetFixedSpeedMode_t = CFUNCTYPE( ze_result_t, zes_fan_handle_t, POINTER(zes_fan_speed_t) )
-
-###############################################################################
-## @brief Function-pointer for zesFanSetSpeedTableMode
-if __use_win_types:
-    _zesFanSetSpeedTableMode_t = WINFUNCTYPE( ze_result_t, zes_fan_handle_t, POINTER(zes_fan_speed_table_t) )
-else:
-    _zesFanSetSpeedTableMode_t = CFUNCTYPE( ze_result_t, zes_fan_handle_t, POINTER(zes_fan_speed_table_t) )
-
-###############################################################################
-## @brief Function-pointer for zesFanGetState
-if __use_win_types:
-    _zesFanGetState_t = WINFUNCTYPE( ze_result_t, zes_fan_handle_t, zes_fan_speed_units_t, POINTER(c_int32_t) )
-else:
-    _zesFanGetState_t = CFUNCTYPE( ze_result_t, zes_fan_handle_t, zes_fan_speed_units_t, POINTER(c_int32_t) )
-
-
-###############################################################################
-## @brief Table of Fan functions pointers
-class _zes_fan_dditable_t(Structure):
-    _fields_ = [
-        ("pfnGetProperties", c_void_p),                                 ## _zesFanGetProperties_t
-        ("pfnGetConfig", c_void_p),                                     ## _zesFanGetConfig_t
-        ("pfnSetDefaultMode", c_void_p),                                ## _zesFanSetDefaultMode_t
-        ("pfnSetFixedSpeedMode", c_void_p),                             ## _zesFanSetFixedSpeedMode_t
-        ("pfnSetSpeedTableMode", c_void_p),                             ## _zesFanSetSpeedTableMode_t
-        ("pfnGetState", c_void_p)                                       ## _zesFanGetState_t
-    ]
-
-###############################################################################
-## @brief Function-pointer for zesFirmwareGetProperties
-if __use_win_types:
-    _zesFirmwareGetProperties_t = WINFUNCTYPE( ze_result_t, zes_firmware_handle_t, POINTER(zes_firmware_properties_t) )
-else:
-    _zesFirmwareGetProperties_t = CFUNCTYPE( ze_result_t, zes_firmware_handle_t, POINTER(zes_firmware_properties_t) )
-
-###############################################################################
-## @brief Function-pointer for zesFirmwareFlash
-if __use_win_types:
-    _zesFirmwareFlash_t = WINFUNCTYPE( ze_result_t, zes_firmware_handle_t, c_void_p, c_ulong )
-else:
-    _zesFirmwareFlash_t = CFUNCTYPE( ze_result_t, zes_firmware_handle_t, c_void_p, c_ulong )
-
-
-###############################################################################
-## @brief Table of Firmware functions pointers
-class _zes_firmware_dditable_t(Structure):
-    _fields_ = [
-        ("pfnGetProperties", c_void_p),                                 ## _zesFirmwareGetProperties_t
-        ("pfnFlash", c_void_p)                                          ## _zesFirmwareFlash_t
+        ("pfnGetProperties", c_void_p),                                 ## _zesPowerGetProperties_t
+        ("pfnGetEnergyCounter", c_void_p),                              ## _zesPowerGetEnergyCounter_t
+        ("pfnGetLimits", c_void_p),                                     ## _zesPowerGetLimits_t
+        ("pfnSetLimits", c_void_p),                                     ## _zesPowerSetLimits_t
+        ("pfnGetEnergyThreshold", c_void_p),                            ## _zesPowerGetEnergyThreshold_t
+        ("pfnSetEnergyThreshold", c_void_p)                             ## _zesPowerSetEnergyThreshold_t
     ]
 
 ###############################################################################
@@ -2140,42 +2111,80 @@ class _zes_frequency_dditable_t(Structure):
     ]
 
 ###############################################################################
-## @brief Function-pointer for zesLedGetProperties
+## @brief Function-pointer for zesEngineGetProperties
 if __use_win_types:
-    _zesLedGetProperties_t = WINFUNCTYPE( ze_result_t, zes_led_handle_t, POINTER(zes_led_properties_t) )
+    _zesEngineGetProperties_t = WINFUNCTYPE( ze_result_t, zes_engine_handle_t, POINTER(zes_engine_properties_t) )
 else:
-    _zesLedGetProperties_t = CFUNCTYPE( ze_result_t, zes_led_handle_t, POINTER(zes_led_properties_t) )
+    _zesEngineGetProperties_t = CFUNCTYPE( ze_result_t, zes_engine_handle_t, POINTER(zes_engine_properties_t) )
 
 ###############################################################################
-## @brief Function-pointer for zesLedGetState
+## @brief Function-pointer for zesEngineGetActivity
 if __use_win_types:
-    _zesLedGetState_t = WINFUNCTYPE( ze_result_t, zes_led_handle_t, POINTER(zes_led_state_t) )
+    _zesEngineGetActivity_t = WINFUNCTYPE( ze_result_t, zes_engine_handle_t, POINTER(zes_engine_stats_t) )
 else:
-    _zesLedGetState_t = CFUNCTYPE( ze_result_t, zes_led_handle_t, POINTER(zes_led_state_t) )
-
-###############################################################################
-## @brief Function-pointer for zesLedSetState
-if __use_win_types:
-    _zesLedSetState_t = WINFUNCTYPE( ze_result_t, zes_led_handle_t, ze_bool_t )
-else:
-    _zesLedSetState_t = CFUNCTYPE( ze_result_t, zes_led_handle_t, ze_bool_t )
-
-###############################################################################
-## @brief Function-pointer for zesLedSetColor
-if __use_win_types:
-    _zesLedSetColor_t = WINFUNCTYPE( ze_result_t, zes_led_handle_t, POINTER(zes_led_color_t) )
-else:
-    _zesLedSetColor_t = CFUNCTYPE( ze_result_t, zes_led_handle_t, POINTER(zes_led_color_t) )
+    _zesEngineGetActivity_t = CFUNCTYPE( ze_result_t, zes_engine_handle_t, POINTER(zes_engine_stats_t) )
 
 
 ###############################################################################
-## @brief Table of Led functions pointers
-class _zes_led_dditable_t(Structure):
+## @brief Table of Engine functions pointers
+class _zes_engine_dditable_t(Structure):
     _fields_ = [
-        ("pfnGetProperties", c_void_p),                                 ## _zesLedGetProperties_t
-        ("pfnGetState", c_void_p),                                      ## _zesLedGetState_t
-        ("pfnSetState", c_void_p),                                      ## _zesLedSetState_t
-        ("pfnSetColor", c_void_p)                                       ## _zesLedSetColor_t
+        ("pfnGetProperties", c_void_p),                                 ## _zesEngineGetProperties_t
+        ("pfnGetActivity", c_void_p)                                    ## _zesEngineGetActivity_t
+    ]
+
+###############################################################################
+## @brief Function-pointer for zesStandbyGetProperties
+if __use_win_types:
+    _zesStandbyGetProperties_t = WINFUNCTYPE( ze_result_t, zes_standby_handle_t, POINTER(zes_standby_properties_t) )
+else:
+    _zesStandbyGetProperties_t = CFUNCTYPE( ze_result_t, zes_standby_handle_t, POINTER(zes_standby_properties_t) )
+
+###############################################################################
+## @brief Function-pointer for zesStandbyGetMode
+if __use_win_types:
+    _zesStandbyGetMode_t = WINFUNCTYPE( ze_result_t, zes_standby_handle_t, POINTER(zes_standby_promo_mode_t) )
+else:
+    _zesStandbyGetMode_t = CFUNCTYPE( ze_result_t, zes_standby_handle_t, POINTER(zes_standby_promo_mode_t) )
+
+###############################################################################
+## @brief Function-pointer for zesStandbySetMode
+if __use_win_types:
+    _zesStandbySetMode_t = WINFUNCTYPE( ze_result_t, zes_standby_handle_t, zes_standby_promo_mode_t )
+else:
+    _zesStandbySetMode_t = CFUNCTYPE( ze_result_t, zes_standby_handle_t, zes_standby_promo_mode_t )
+
+
+###############################################################################
+## @brief Table of Standby functions pointers
+class _zes_standby_dditable_t(Structure):
+    _fields_ = [
+        ("pfnGetProperties", c_void_p),                                 ## _zesStandbyGetProperties_t
+        ("pfnGetMode", c_void_p),                                       ## _zesStandbyGetMode_t
+        ("pfnSetMode", c_void_p)                                        ## _zesStandbySetMode_t
+    ]
+
+###############################################################################
+## @brief Function-pointer for zesFirmwareGetProperties
+if __use_win_types:
+    _zesFirmwareGetProperties_t = WINFUNCTYPE( ze_result_t, zes_firmware_handle_t, POINTER(zes_firmware_properties_t) )
+else:
+    _zesFirmwareGetProperties_t = CFUNCTYPE( ze_result_t, zes_firmware_handle_t, POINTER(zes_firmware_properties_t) )
+
+###############################################################################
+## @brief Function-pointer for zesFirmwareFlash
+if __use_win_types:
+    _zesFirmwareFlash_t = WINFUNCTYPE( ze_result_t, zes_firmware_handle_t, c_void_p, c_ulong )
+else:
+    _zesFirmwareFlash_t = CFUNCTYPE( ze_result_t, zes_firmware_handle_t, c_void_p, c_ulong )
+
+
+###############################################################################
+## @brief Table of Firmware functions pointers
+class _zes_firmware_dditable_t(Structure):
+    _fields_ = [
+        ("pfnGetProperties", c_void_p),                                 ## _zesFirmwareGetProperties_t
+        ("pfnFlash", c_void_p)                                          ## _zesFirmwareFlash_t
     ]
 
 ###############################################################################
@@ -2210,253 +2219,58 @@ class _zes_memory_dditable_t(Structure):
     ]
 
 ###############################################################################
-## @brief Function-pointer for zesPerformanceFactorGetProperties
+## @brief Function-pointer for zesFabricPortGetProperties
 if __use_win_types:
-    _zesPerformanceFactorGetProperties_t = WINFUNCTYPE( ze_result_t, zes_perf_handle_t, POINTER(zes_perf_properties_t) )
+    _zesFabricPortGetProperties_t = WINFUNCTYPE( ze_result_t, zes_fabric_port_handle_t, POINTER(zes_fabric_port_properties_t) )
 else:
-    _zesPerformanceFactorGetProperties_t = CFUNCTYPE( ze_result_t, zes_perf_handle_t, POINTER(zes_perf_properties_t) )
+    _zesFabricPortGetProperties_t = CFUNCTYPE( ze_result_t, zes_fabric_port_handle_t, POINTER(zes_fabric_port_properties_t) )
 
 ###############################################################################
-## @brief Function-pointer for zesPerformanceFactorGetConfig
+## @brief Function-pointer for zesFabricPortGetLinkType
 if __use_win_types:
-    _zesPerformanceFactorGetConfig_t = WINFUNCTYPE( ze_result_t, zes_perf_handle_t, POINTER(c_double) )
+    _zesFabricPortGetLinkType_t = WINFUNCTYPE( ze_result_t, zes_fabric_port_handle_t, POINTER(zes_fabric_link_type_t) )
 else:
-    _zesPerformanceFactorGetConfig_t = CFUNCTYPE( ze_result_t, zes_perf_handle_t, POINTER(c_double) )
+    _zesFabricPortGetLinkType_t = CFUNCTYPE( ze_result_t, zes_fabric_port_handle_t, POINTER(zes_fabric_link_type_t) )
 
 ###############################################################################
-## @brief Function-pointer for zesPerformanceFactorSetConfig
+## @brief Function-pointer for zesFabricPortGetConfig
 if __use_win_types:
-    _zesPerformanceFactorSetConfig_t = WINFUNCTYPE( ze_result_t, zes_perf_handle_t, c_double )
+    _zesFabricPortGetConfig_t = WINFUNCTYPE( ze_result_t, zes_fabric_port_handle_t, POINTER(zes_fabric_port_config_t) )
 else:
-    _zesPerformanceFactorSetConfig_t = CFUNCTYPE( ze_result_t, zes_perf_handle_t, c_double )
+    _zesFabricPortGetConfig_t = CFUNCTYPE( ze_result_t, zes_fabric_port_handle_t, POINTER(zes_fabric_port_config_t) )
+
+###############################################################################
+## @brief Function-pointer for zesFabricPortSetConfig
+if __use_win_types:
+    _zesFabricPortSetConfig_t = WINFUNCTYPE( ze_result_t, zes_fabric_port_handle_t, POINTER(zes_fabric_port_config_t) )
+else:
+    _zesFabricPortSetConfig_t = CFUNCTYPE( ze_result_t, zes_fabric_port_handle_t, POINTER(zes_fabric_port_config_t) )
+
+###############################################################################
+## @brief Function-pointer for zesFabricPortGetState
+if __use_win_types:
+    _zesFabricPortGetState_t = WINFUNCTYPE( ze_result_t, zes_fabric_port_handle_t, POINTER(zes_fabric_port_state_t) )
+else:
+    _zesFabricPortGetState_t = CFUNCTYPE( ze_result_t, zes_fabric_port_handle_t, POINTER(zes_fabric_port_state_t) )
+
+###############################################################################
+## @brief Function-pointer for zesFabricPortGetThroughput
+if __use_win_types:
+    _zesFabricPortGetThroughput_t = WINFUNCTYPE( ze_result_t, zes_fabric_port_handle_t, POINTER(zes_fabric_port_throughput_t) )
+else:
+    _zesFabricPortGetThroughput_t = CFUNCTYPE( ze_result_t, zes_fabric_port_handle_t, POINTER(zes_fabric_port_throughput_t) )
 
 
 ###############################################################################
-## @brief Table of PerformanceFactor functions pointers
-class _zes_performance_factor_dditable_t(Structure):
+## @brief Table of FabricPort functions pointers
+class _zes_fabric_port_dditable_t(Structure):
     _fields_ = [
-        ("pfnGetProperties", c_void_p),                                 ## _zesPerformanceFactorGetProperties_t
-        ("pfnGetConfig", c_void_p),                                     ## _zesPerformanceFactorGetConfig_t
-        ("pfnSetConfig", c_void_p)                                      ## _zesPerformanceFactorSetConfig_t
-    ]
-
-###############################################################################
-## @brief Function-pointer for zesPowerGetProperties
-if __use_win_types:
-    _zesPowerGetProperties_t = WINFUNCTYPE( ze_result_t, zes_pwr_handle_t, POINTER(zes_power_properties_t) )
-else:
-    _zesPowerGetProperties_t = CFUNCTYPE( ze_result_t, zes_pwr_handle_t, POINTER(zes_power_properties_t) )
-
-###############################################################################
-## @brief Function-pointer for zesPowerGetEnergyCounter
-if __use_win_types:
-    _zesPowerGetEnergyCounter_t = WINFUNCTYPE( ze_result_t, zes_pwr_handle_t, POINTER(zes_power_energy_counter_t) )
-else:
-    _zesPowerGetEnergyCounter_t = CFUNCTYPE( ze_result_t, zes_pwr_handle_t, POINTER(zes_power_energy_counter_t) )
-
-###############################################################################
-## @brief Function-pointer for zesPowerGetLimits
-if __use_win_types:
-    _zesPowerGetLimits_t = WINFUNCTYPE( ze_result_t, zes_pwr_handle_t, POINTER(zes_power_sustained_limit_t), POINTER(zes_power_burst_limit_t), POINTER(zes_power_peak_limit_t) )
-else:
-    _zesPowerGetLimits_t = CFUNCTYPE( ze_result_t, zes_pwr_handle_t, POINTER(zes_power_sustained_limit_t), POINTER(zes_power_burst_limit_t), POINTER(zes_power_peak_limit_t) )
-
-###############################################################################
-## @brief Function-pointer for zesPowerSetLimits
-if __use_win_types:
-    _zesPowerSetLimits_t = WINFUNCTYPE( ze_result_t, zes_pwr_handle_t, POINTER(zes_power_sustained_limit_t), POINTER(zes_power_burst_limit_t), POINTER(zes_power_peak_limit_t) )
-else:
-    _zesPowerSetLimits_t = CFUNCTYPE( ze_result_t, zes_pwr_handle_t, POINTER(zes_power_sustained_limit_t), POINTER(zes_power_burst_limit_t), POINTER(zes_power_peak_limit_t) )
-
-###############################################################################
-## @brief Function-pointer for zesPowerGetEnergyThreshold
-if __use_win_types:
-    _zesPowerGetEnergyThreshold_t = WINFUNCTYPE( ze_result_t, zes_pwr_handle_t, POINTER(zes_energy_threshold_t) )
-else:
-    _zesPowerGetEnergyThreshold_t = CFUNCTYPE( ze_result_t, zes_pwr_handle_t, POINTER(zes_energy_threshold_t) )
-
-###############################################################################
-## @brief Function-pointer for zesPowerSetEnergyThreshold
-if __use_win_types:
-    _zesPowerSetEnergyThreshold_t = WINFUNCTYPE( ze_result_t, zes_pwr_handle_t, c_double )
-else:
-    _zesPowerSetEnergyThreshold_t = CFUNCTYPE( ze_result_t, zes_pwr_handle_t, c_double )
-
-
-###############################################################################
-## @brief Table of Power functions pointers
-class _zes_power_dditable_t(Structure):
-    _fields_ = [
-        ("pfnGetProperties", c_void_p),                                 ## _zesPowerGetProperties_t
-        ("pfnGetEnergyCounter", c_void_p),                              ## _zesPowerGetEnergyCounter_t
-        ("pfnGetLimits", c_void_p),                                     ## _zesPowerGetLimits_t
-        ("pfnSetLimits", c_void_p),                                     ## _zesPowerSetLimits_t
-        ("pfnGetEnergyThreshold", c_void_p),                            ## _zesPowerGetEnergyThreshold_t
-        ("pfnSetEnergyThreshold", c_void_p)                             ## _zesPowerSetEnergyThreshold_t
-    ]
-
-###############################################################################
-## @brief Function-pointer for zesPsuGetProperties
-if __use_win_types:
-    _zesPsuGetProperties_t = WINFUNCTYPE( ze_result_t, zes_psu_handle_t, POINTER(zes_psu_properties_t) )
-else:
-    _zesPsuGetProperties_t = CFUNCTYPE( ze_result_t, zes_psu_handle_t, POINTER(zes_psu_properties_t) )
-
-###############################################################################
-## @brief Function-pointer for zesPsuGetState
-if __use_win_types:
-    _zesPsuGetState_t = WINFUNCTYPE( ze_result_t, zes_psu_handle_t, POINTER(zes_psu_state_t) )
-else:
-    _zesPsuGetState_t = CFUNCTYPE( ze_result_t, zes_psu_handle_t, POINTER(zes_psu_state_t) )
-
-
-###############################################################################
-## @brief Table of Psu functions pointers
-class _zes_psu_dditable_t(Structure):
-    _fields_ = [
-        ("pfnGetProperties", c_void_p),                                 ## _zesPsuGetProperties_t
-        ("pfnGetState", c_void_p)                                       ## _zesPsuGetState_t
-    ]
-
-###############################################################################
-## @brief Function-pointer for zesRasGetProperties
-if __use_win_types:
-    _zesRasGetProperties_t = WINFUNCTYPE( ze_result_t, zes_ras_handle_t, POINTER(zes_ras_properties_t) )
-else:
-    _zesRasGetProperties_t = CFUNCTYPE( ze_result_t, zes_ras_handle_t, POINTER(zes_ras_properties_t) )
-
-###############################################################################
-## @brief Function-pointer for zesRasGetConfig
-if __use_win_types:
-    _zesRasGetConfig_t = WINFUNCTYPE( ze_result_t, zes_ras_handle_t, POINTER(zes_ras_config_t) )
-else:
-    _zesRasGetConfig_t = CFUNCTYPE( ze_result_t, zes_ras_handle_t, POINTER(zes_ras_config_t) )
-
-###############################################################################
-## @brief Function-pointer for zesRasSetConfig
-if __use_win_types:
-    _zesRasSetConfig_t = WINFUNCTYPE( ze_result_t, zes_ras_handle_t, POINTER(zes_ras_config_t) )
-else:
-    _zesRasSetConfig_t = CFUNCTYPE( ze_result_t, zes_ras_handle_t, POINTER(zes_ras_config_t) )
-
-###############################################################################
-## @brief Function-pointer for zesRasGetState
-if __use_win_types:
-    _zesRasGetState_t = WINFUNCTYPE( ze_result_t, zes_ras_handle_t, ze_bool_t, POINTER(zes_ras_state_t) )
-else:
-    _zesRasGetState_t = CFUNCTYPE( ze_result_t, zes_ras_handle_t, ze_bool_t, POINTER(zes_ras_state_t) )
-
-
-###############################################################################
-## @brief Table of Ras functions pointers
-class _zes_ras_dditable_t(Structure):
-    _fields_ = [
-        ("pfnGetProperties", c_void_p),                                 ## _zesRasGetProperties_t
-        ("pfnGetConfig", c_void_p),                                     ## _zesRasGetConfig_t
-        ("pfnSetConfig", c_void_p),                                     ## _zesRasSetConfig_t
-        ("pfnGetState", c_void_p)                                       ## _zesRasGetState_t
-    ]
-
-###############################################################################
-## @brief Function-pointer for zesSchedulerGetProperties
-if __use_win_types:
-    _zesSchedulerGetProperties_t = WINFUNCTYPE( ze_result_t, zes_sched_handle_t, POINTER(zes_sched_properties_t) )
-else:
-    _zesSchedulerGetProperties_t = CFUNCTYPE( ze_result_t, zes_sched_handle_t, POINTER(zes_sched_properties_t) )
-
-###############################################################################
-## @brief Function-pointer for zesSchedulerGetCurrentMode
-if __use_win_types:
-    _zesSchedulerGetCurrentMode_t = WINFUNCTYPE( ze_result_t, zes_sched_handle_t, POINTER(zes_sched_mode_t) )
-else:
-    _zesSchedulerGetCurrentMode_t = CFUNCTYPE( ze_result_t, zes_sched_handle_t, POINTER(zes_sched_mode_t) )
-
-###############################################################################
-## @brief Function-pointer for zesSchedulerGetTimeoutModeProperties
-if __use_win_types:
-    _zesSchedulerGetTimeoutModeProperties_t = WINFUNCTYPE( ze_result_t, zes_sched_handle_t, ze_bool_t, POINTER(zes_sched_timeout_properties_t) )
-else:
-    _zesSchedulerGetTimeoutModeProperties_t = CFUNCTYPE( ze_result_t, zes_sched_handle_t, ze_bool_t, POINTER(zes_sched_timeout_properties_t) )
-
-###############################################################################
-## @brief Function-pointer for zesSchedulerGetTimesliceModeProperties
-if __use_win_types:
-    _zesSchedulerGetTimesliceModeProperties_t = WINFUNCTYPE( ze_result_t, zes_sched_handle_t, ze_bool_t, POINTER(zes_sched_timeslice_properties_t) )
-else:
-    _zesSchedulerGetTimesliceModeProperties_t = CFUNCTYPE( ze_result_t, zes_sched_handle_t, ze_bool_t, POINTER(zes_sched_timeslice_properties_t) )
-
-###############################################################################
-## @brief Function-pointer for zesSchedulerSetTimeoutMode
-if __use_win_types:
-    _zesSchedulerSetTimeoutMode_t = WINFUNCTYPE( ze_result_t, zes_sched_handle_t, POINTER(zes_sched_timeout_properties_t), POINTER(ze_bool_t) )
-else:
-    _zesSchedulerSetTimeoutMode_t = CFUNCTYPE( ze_result_t, zes_sched_handle_t, POINTER(zes_sched_timeout_properties_t), POINTER(ze_bool_t) )
-
-###############################################################################
-## @brief Function-pointer for zesSchedulerSetTimesliceMode
-if __use_win_types:
-    _zesSchedulerSetTimesliceMode_t = WINFUNCTYPE( ze_result_t, zes_sched_handle_t, POINTER(zes_sched_timeslice_properties_t), POINTER(ze_bool_t) )
-else:
-    _zesSchedulerSetTimesliceMode_t = CFUNCTYPE( ze_result_t, zes_sched_handle_t, POINTER(zes_sched_timeslice_properties_t), POINTER(ze_bool_t) )
-
-###############################################################################
-## @brief Function-pointer for zesSchedulerSetExclusiveMode
-if __use_win_types:
-    _zesSchedulerSetExclusiveMode_t = WINFUNCTYPE( ze_result_t, zes_sched_handle_t, POINTER(ze_bool_t) )
-else:
-    _zesSchedulerSetExclusiveMode_t = CFUNCTYPE( ze_result_t, zes_sched_handle_t, POINTER(ze_bool_t) )
-
-###############################################################################
-## @brief Function-pointer for zesSchedulerSetComputeUnitDebugMode
-if __use_win_types:
-    _zesSchedulerSetComputeUnitDebugMode_t = WINFUNCTYPE( ze_result_t, zes_sched_handle_t, POINTER(ze_bool_t) )
-else:
-    _zesSchedulerSetComputeUnitDebugMode_t = CFUNCTYPE( ze_result_t, zes_sched_handle_t, POINTER(ze_bool_t) )
-
-
-###############################################################################
-## @brief Table of Scheduler functions pointers
-class _zes_scheduler_dditable_t(Structure):
-    _fields_ = [
-        ("pfnGetProperties", c_void_p),                                 ## _zesSchedulerGetProperties_t
-        ("pfnGetCurrentMode", c_void_p),                                ## _zesSchedulerGetCurrentMode_t
-        ("pfnGetTimeoutModeProperties", c_void_p),                      ## _zesSchedulerGetTimeoutModeProperties_t
-        ("pfnGetTimesliceModeProperties", c_void_p),                    ## _zesSchedulerGetTimesliceModeProperties_t
-        ("pfnSetTimeoutMode", c_void_p),                                ## _zesSchedulerSetTimeoutMode_t
-        ("pfnSetTimesliceMode", c_void_p),                              ## _zesSchedulerSetTimesliceMode_t
-        ("pfnSetExclusiveMode", c_void_p),                              ## _zesSchedulerSetExclusiveMode_t
-        ("pfnSetComputeUnitDebugMode", c_void_p)                        ## _zesSchedulerSetComputeUnitDebugMode_t
-    ]
-
-###############################################################################
-## @brief Function-pointer for zesStandbyGetProperties
-if __use_win_types:
-    _zesStandbyGetProperties_t = WINFUNCTYPE( ze_result_t, zes_standby_handle_t, POINTER(zes_standby_properties_t) )
-else:
-    _zesStandbyGetProperties_t = CFUNCTYPE( ze_result_t, zes_standby_handle_t, POINTER(zes_standby_properties_t) )
-
-###############################################################################
-## @brief Function-pointer for zesStandbyGetMode
-if __use_win_types:
-    _zesStandbyGetMode_t = WINFUNCTYPE( ze_result_t, zes_standby_handle_t, POINTER(zes_standby_promo_mode_t) )
-else:
-    _zesStandbyGetMode_t = CFUNCTYPE( ze_result_t, zes_standby_handle_t, POINTER(zes_standby_promo_mode_t) )
-
-###############################################################################
-## @brief Function-pointer for zesStandbySetMode
-if __use_win_types:
-    _zesStandbySetMode_t = WINFUNCTYPE( ze_result_t, zes_standby_handle_t, zes_standby_promo_mode_t )
-else:
-    _zesStandbySetMode_t = CFUNCTYPE( ze_result_t, zes_standby_handle_t, zes_standby_promo_mode_t )
-
-
-###############################################################################
-## @brief Table of Standby functions pointers
-class _zes_standby_dditable_t(Structure):
-    _fields_ = [
-        ("pfnGetProperties", c_void_p),                                 ## _zesStandbyGetProperties_t
-        ("pfnGetMode", c_void_p),                                       ## _zesStandbyGetMode_t
-        ("pfnSetMode", c_void_p)                                        ## _zesStandbySetMode_t
+        ("pfnGetProperties", c_void_p),                                 ## _zesFabricPortGetProperties_t
+        ("pfnGetLinkType", c_void_p),                                   ## _zesFabricPortGetLinkType_t
+        ("pfnGetConfig", c_void_p),                                     ## _zesFabricPortGetConfig_t
+        ("pfnSetConfig", c_void_p),                                     ## _zesFabricPortSetConfig_t
+        ("pfnGetState", c_void_p),                                      ## _zesFabricPortGetState_t
+        ("pfnGetThroughput", c_void_p)                                  ## _zesFabricPortGetThroughput_t
     ]
 
 ###############################################################################
@@ -2499,25 +2313,212 @@ class _zes_temperature_dditable_t(Structure):
     ]
 
 ###############################################################################
+## @brief Function-pointer for zesPsuGetProperties
+if __use_win_types:
+    _zesPsuGetProperties_t = WINFUNCTYPE( ze_result_t, zes_psu_handle_t, POINTER(zes_psu_properties_t) )
+else:
+    _zesPsuGetProperties_t = CFUNCTYPE( ze_result_t, zes_psu_handle_t, POINTER(zes_psu_properties_t) )
+
+###############################################################################
+## @brief Function-pointer for zesPsuGetState
+if __use_win_types:
+    _zesPsuGetState_t = WINFUNCTYPE( ze_result_t, zes_psu_handle_t, POINTER(zes_psu_state_t) )
+else:
+    _zesPsuGetState_t = CFUNCTYPE( ze_result_t, zes_psu_handle_t, POINTER(zes_psu_state_t) )
+
+
+###############################################################################
+## @brief Table of Psu functions pointers
+class _zes_psu_dditable_t(Structure):
+    _fields_ = [
+        ("pfnGetProperties", c_void_p),                                 ## _zesPsuGetProperties_t
+        ("pfnGetState", c_void_p)                                       ## _zesPsuGetState_t
+    ]
+
+###############################################################################
+## @brief Function-pointer for zesFanGetProperties
+if __use_win_types:
+    _zesFanGetProperties_t = WINFUNCTYPE( ze_result_t, zes_fan_handle_t, POINTER(zes_fan_properties_t) )
+else:
+    _zesFanGetProperties_t = CFUNCTYPE( ze_result_t, zes_fan_handle_t, POINTER(zes_fan_properties_t) )
+
+###############################################################################
+## @brief Function-pointer for zesFanGetConfig
+if __use_win_types:
+    _zesFanGetConfig_t = WINFUNCTYPE( ze_result_t, zes_fan_handle_t, POINTER(zes_fan_config_t) )
+else:
+    _zesFanGetConfig_t = CFUNCTYPE( ze_result_t, zes_fan_handle_t, POINTER(zes_fan_config_t) )
+
+###############################################################################
+## @brief Function-pointer for zesFanSetDefaultMode
+if __use_win_types:
+    _zesFanSetDefaultMode_t = WINFUNCTYPE( ze_result_t, zes_fan_handle_t )
+else:
+    _zesFanSetDefaultMode_t = CFUNCTYPE( ze_result_t, zes_fan_handle_t )
+
+###############################################################################
+## @brief Function-pointer for zesFanSetFixedSpeedMode
+if __use_win_types:
+    _zesFanSetFixedSpeedMode_t = WINFUNCTYPE( ze_result_t, zes_fan_handle_t, POINTER(zes_fan_speed_t) )
+else:
+    _zesFanSetFixedSpeedMode_t = CFUNCTYPE( ze_result_t, zes_fan_handle_t, POINTER(zes_fan_speed_t) )
+
+###############################################################################
+## @brief Function-pointer for zesFanSetSpeedTableMode
+if __use_win_types:
+    _zesFanSetSpeedTableMode_t = WINFUNCTYPE( ze_result_t, zes_fan_handle_t, POINTER(zes_fan_speed_table_t) )
+else:
+    _zesFanSetSpeedTableMode_t = CFUNCTYPE( ze_result_t, zes_fan_handle_t, POINTER(zes_fan_speed_table_t) )
+
+###############################################################################
+## @brief Function-pointer for zesFanGetState
+if __use_win_types:
+    _zesFanGetState_t = WINFUNCTYPE( ze_result_t, zes_fan_handle_t, zes_fan_speed_units_t, POINTER(c_int32_t) )
+else:
+    _zesFanGetState_t = CFUNCTYPE( ze_result_t, zes_fan_handle_t, zes_fan_speed_units_t, POINTER(c_int32_t) )
+
+
+###############################################################################
+## @brief Table of Fan functions pointers
+class _zes_fan_dditable_t(Structure):
+    _fields_ = [
+        ("pfnGetProperties", c_void_p),                                 ## _zesFanGetProperties_t
+        ("pfnGetConfig", c_void_p),                                     ## _zesFanGetConfig_t
+        ("pfnSetDefaultMode", c_void_p),                                ## _zesFanSetDefaultMode_t
+        ("pfnSetFixedSpeedMode", c_void_p),                             ## _zesFanSetFixedSpeedMode_t
+        ("pfnSetSpeedTableMode", c_void_p),                             ## _zesFanSetSpeedTableMode_t
+        ("pfnGetState", c_void_p)                                       ## _zesFanGetState_t
+    ]
+
+###############################################################################
+## @brief Function-pointer for zesLedGetProperties
+if __use_win_types:
+    _zesLedGetProperties_t = WINFUNCTYPE( ze_result_t, zes_led_handle_t, POINTER(zes_led_properties_t) )
+else:
+    _zesLedGetProperties_t = CFUNCTYPE( ze_result_t, zes_led_handle_t, POINTER(zes_led_properties_t) )
+
+###############################################################################
+## @brief Function-pointer for zesLedGetState
+if __use_win_types:
+    _zesLedGetState_t = WINFUNCTYPE( ze_result_t, zes_led_handle_t, POINTER(zes_led_state_t) )
+else:
+    _zesLedGetState_t = CFUNCTYPE( ze_result_t, zes_led_handle_t, POINTER(zes_led_state_t) )
+
+###############################################################################
+## @brief Function-pointer for zesLedSetState
+if __use_win_types:
+    _zesLedSetState_t = WINFUNCTYPE( ze_result_t, zes_led_handle_t, ze_bool_t )
+else:
+    _zesLedSetState_t = CFUNCTYPE( ze_result_t, zes_led_handle_t, ze_bool_t )
+
+###############################################################################
+## @brief Function-pointer for zesLedSetColor
+if __use_win_types:
+    _zesLedSetColor_t = WINFUNCTYPE( ze_result_t, zes_led_handle_t, POINTER(zes_led_color_t) )
+else:
+    _zesLedSetColor_t = CFUNCTYPE( ze_result_t, zes_led_handle_t, POINTER(zes_led_color_t) )
+
+
+###############################################################################
+## @brief Table of Led functions pointers
+class _zes_led_dditable_t(Structure):
+    _fields_ = [
+        ("pfnGetProperties", c_void_p),                                 ## _zesLedGetProperties_t
+        ("pfnGetState", c_void_p),                                      ## _zesLedGetState_t
+        ("pfnSetState", c_void_p),                                      ## _zesLedSetState_t
+        ("pfnSetColor", c_void_p)                                       ## _zesLedSetColor_t
+    ]
+
+###############################################################################
+## @brief Function-pointer for zesRasGetProperties
+if __use_win_types:
+    _zesRasGetProperties_t = WINFUNCTYPE( ze_result_t, zes_ras_handle_t, POINTER(zes_ras_properties_t) )
+else:
+    _zesRasGetProperties_t = CFUNCTYPE( ze_result_t, zes_ras_handle_t, POINTER(zes_ras_properties_t) )
+
+###############################################################################
+## @brief Function-pointer for zesRasGetConfig
+if __use_win_types:
+    _zesRasGetConfig_t = WINFUNCTYPE( ze_result_t, zes_ras_handle_t, POINTER(zes_ras_config_t) )
+else:
+    _zesRasGetConfig_t = CFUNCTYPE( ze_result_t, zes_ras_handle_t, POINTER(zes_ras_config_t) )
+
+###############################################################################
+## @brief Function-pointer for zesRasSetConfig
+if __use_win_types:
+    _zesRasSetConfig_t = WINFUNCTYPE( ze_result_t, zes_ras_handle_t, POINTER(zes_ras_config_t) )
+else:
+    _zesRasSetConfig_t = CFUNCTYPE( ze_result_t, zes_ras_handle_t, POINTER(zes_ras_config_t) )
+
+###############################################################################
+## @brief Function-pointer for zesRasGetState
+if __use_win_types:
+    _zesRasGetState_t = WINFUNCTYPE( ze_result_t, zes_ras_handle_t, ze_bool_t, POINTER(zes_ras_state_t) )
+else:
+    _zesRasGetState_t = CFUNCTYPE( ze_result_t, zes_ras_handle_t, ze_bool_t, POINTER(zes_ras_state_t) )
+
+
+###############################################################################
+## @brief Table of Ras functions pointers
+class _zes_ras_dditable_t(Structure):
+    _fields_ = [
+        ("pfnGetProperties", c_void_p),                                 ## _zesRasGetProperties_t
+        ("pfnGetConfig", c_void_p),                                     ## _zesRasGetConfig_t
+        ("pfnSetConfig", c_void_p),                                     ## _zesRasSetConfig_t
+        ("pfnGetState", c_void_p)                                       ## _zesRasGetState_t
+    ]
+
+###############################################################################
+## @brief Function-pointer for zesDiagnosticsGetProperties
+if __use_win_types:
+    _zesDiagnosticsGetProperties_t = WINFUNCTYPE( ze_result_t, zes_diag_handle_t, POINTER(zes_diag_properties_t) )
+else:
+    _zesDiagnosticsGetProperties_t = CFUNCTYPE( ze_result_t, zes_diag_handle_t, POINTER(zes_diag_properties_t) )
+
+###############################################################################
+## @brief Function-pointer for zesDiagnosticsGetTests
+if __use_win_types:
+    _zesDiagnosticsGetTests_t = WINFUNCTYPE( ze_result_t, zes_diag_handle_t, POINTER(c_ulong), POINTER(zes_diag_test_t) )
+else:
+    _zesDiagnosticsGetTests_t = CFUNCTYPE( ze_result_t, zes_diag_handle_t, POINTER(c_ulong), POINTER(zes_diag_test_t) )
+
+###############################################################################
+## @brief Function-pointer for zesDiagnosticsRunTests
+if __use_win_types:
+    _zesDiagnosticsRunTests_t = WINFUNCTYPE( ze_result_t, zes_diag_handle_t, c_ulong, c_ulong, POINTER(zes_diag_result_t) )
+else:
+    _zesDiagnosticsRunTests_t = CFUNCTYPE( ze_result_t, zes_diag_handle_t, c_ulong, c_ulong, POINTER(zes_diag_result_t) )
+
+
+###############################################################################
+## @brief Table of Diagnostics functions pointers
+class _zes_diagnostics_dditable_t(Structure):
+    _fields_ = [
+        ("pfnGetProperties", c_void_p),                                 ## _zesDiagnosticsGetProperties_t
+        ("pfnGetTests", c_void_p),                                      ## _zesDiagnosticsGetTests_t
+        ("pfnRunTests", c_void_p)                                       ## _zesDiagnosticsRunTests_t
+    ]
+
+###############################################################################
 class _zes_dditable_t(Structure):
     _fields_ = [
-        ("Device", _zes_device_dditable_t),
         ("Driver", _zes_driver_dditable_t),
-        ("Diagnostics", _zes_diagnostics_dditable_t),
-        ("Engine", _zes_engine_dditable_t),
-        ("FabricPort", _zes_fabric_port_dditable_t),
-        ("Fan", _zes_fan_dditable_t),
-        ("Firmware", _zes_firmware_dditable_t),
-        ("Frequency", _zes_frequency_dditable_t),
-        ("Led", _zes_led_dditable_t),
-        ("Memory", _zes_memory_dditable_t),
+        ("Device", _zes_device_dditable_t),
+        ("Scheduler", _zes_scheduler_dditable_t),
         ("PerformanceFactor", _zes_performance_factor_dditable_t),
         ("Power", _zes_power_dditable_t),
-        ("Psu", _zes_psu_dditable_t),
-        ("Ras", _zes_ras_dditable_t),
-        ("Scheduler", _zes_scheduler_dditable_t),
+        ("Frequency", _zes_frequency_dditable_t),
+        ("Engine", _zes_engine_dditable_t),
         ("Standby", _zes_standby_dditable_t),
-        ("Temperature", _zes_temperature_dditable_t)
+        ("Firmware", _zes_firmware_dditable_t),
+        ("Memory", _zes_memory_dditable_t),
+        ("FabricPort", _zes_fabric_port_dditable_t),
+        ("Temperature", _zes_temperature_dditable_t),
+        ("Psu", _zes_psu_dditable_t),
+        ("Fan", _zes_fan_dditable_t),
+        ("Led", _zes_led_dditable_t),
+        ("Ras", _zes_ras_dditable_t),
+        ("Diagnostics", _zes_diagnostics_dditable_t)
     ]
 
 ###############################################################################
@@ -2532,6 +2533,16 @@ class ZES_DDI:
 
         # fill the ddi tables
         self.__dditable = _zes_dditable_t()
+
+        # call driver to get function pointers
+        _Driver = _zes_driver_dditable_t()
+        r = ze_result_v(self.__dll.zesGetDriverProcAddrTable(version, byref(_Driver)))
+        if r != ze_result_v.SUCCESS:
+            raise Exception(r)
+        self.__dditable.Driver = _Driver
+
+        # attach function interface to function address
+        self.zesDriverEventListen = _zesDriverEventListen_t(self.__dditable.Driver.pfnEventListen)
 
         # call driver to get function pointers
         _Device = _zes_device_dditable_t()
@@ -2567,129 +2578,21 @@ class ZES_DDI:
         self.zesDeviceEnumTemperatureSensors = _zesDeviceEnumTemperatureSensors_t(self.__dditable.Device.pfnEnumTemperatureSensors)
 
         # call driver to get function pointers
-        _Driver = _zes_driver_dditable_t()
-        r = ze_result_v(self.__dll.zesGetDriverProcAddrTable(version, byref(_Driver)))
+        _Scheduler = _zes_scheduler_dditable_t()
+        r = ze_result_v(self.__dll.zesGetSchedulerProcAddrTable(version, byref(_Scheduler)))
         if r != ze_result_v.SUCCESS:
             raise Exception(r)
-        self.__dditable.Driver = _Driver
+        self.__dditable.Scheduler = _Scheduler
 
         # attach function interface to function address
-        self.zesDriverEventListen = _zesDriverEventListen_t(self.__dditable.Driver.pfnEventListen)
-
-        # call driver to get function pointers
-        _Diagnostics = _zes_diagnostics_dditable_t()
-        r = ze_result_v(self.__dll.zesGetDiagnosticsProcAddrTable(version, byref(_Diagnostics)))
-        if r != ze_result_v.SUCCESS:
-            raise Exception(r)
-        self.__dditable.Diagnostics = _Diagnostics
-
-        # attach function interface to function address
-        self.zesDiagnosticsGetProperties = _zesDiagnosticsGetProperties_t(self.__dditable.Diagnostics.pfnGetProperties)
-        self.zesDiagnosticsGetTests = _zesDiagnosticsGetTests_t(self.__dditable.Diagnostics.pfnGetTests)
-        self.zesDiagnosticsRunTests = _zesDiagnosticsRunTests_t(self.__dditable.Diagnostics.pfnRunTests)
-
-        # call driver to get function pointers
-        _Engine = _zes_engine_dditable_t()
-        r = ze_result_v(self.__dll.zesGetEngineProcAddrTable(version, byref(_Engine)))
-        if r != ze_result_v.SUCCESS:
-            raise Exception(r)
-        self.__dditable.Engine = _Engine
-
-        # attach function interface to function address
-        self.zesEngineGetProperties = _zesEngineGetProperties_t(self.__dditable.Engine.pfnGetProperties)
-        self.zesEngineGetActivity = _zesEngineGetActivity_t(self.__dditable.Engine.pfnGetActivity)
-
-        # call driver to get function pointers
-        _FabricPort = _zes_fabric_port_dditable_t()
-        r = ze_result_v(self.__dll.zesGetFabricPortProcAddrTable(version, byref(_FabricPort)))
-        if r != ze_result_v.SUCCESS:
-            raise Exception(r)
-        self.__dditable.FabricPort = _FabricPort
-
-        # attach function interface to function address
-        self.zesFabricPortGetProperties = _zesFabricPortGetProperties_t(self.__dditable.FabricPort.pfnGetProperties)
-        self.zesFabricPortGetLinkType = _zesFabricPortGetLinkType_t(self.__dditable.FabricPort.pfnGetLinkType)
-        self.zesFabricPortGetConfig = _zesFabricPortGetConfig_t(self.__dditable.FabricPort.pfnGetConfig)
-        self.zesFabricPortSetConfig = _zesFabricPortSetConfig_t(self.__dditable.FabricPort.pfnSetConfig)
-        self.zesFabricPortGetState = _zesFabricPortGetState_t(self.__dditable.FabricPort.pfnGetState)
-        self.zesFabricPortGetThroughput = _zesFabricPortGetThroughput_t(self.__dditable.FabricPort.pfnGetThroughput)
-
-        # call driver to get function pointers
-        _Fan = _zes_fan_dditable_t()
-        r = ze_result_v(self.__dll.zesGetFanProcAddrTable(version, byref(_Fan)))
-        if r != ze_result_v.SUCCESS:
-            raise Exception(r)
-        self.__dditable.Fan = _Fan
-
-        # attach function interface to function address
-        self.zesFanGetProperties = _zesFanGetProperties_t(self.__dditable.Fan.pfnGetProperties)
-        self.zesFanGetConfig = _zesFanGetConfig_t(self.__dditable.Fan.pfnGetConfig)
-        self.zesFanSetDefaultMode = _zesFanSetDefaultMode_t(self.__dditable.Fan.pfnSetDefaultMode)
-        self.zesFanSetFixedSpeedMode = _zesFanSetFixedSpeedMode_t(self.__dditable.Fan.pfnSetFixedSpeedMode)
-        self.zesFanSetSpeedTableMode = _zesFanSetSpeedTableMode_t(self.__dditable.Fan.pfnSetSpeedTableMode)
-        self.zesFanGetState = _zesFanGetState_t(self.__dditable.Fan.pfnGetState)
-
-        # call driver to get function pointers
-        _Firmware = _zes_firmware_dditable_t()
-        r = ze_result_v(self.__dll.zesGetFirmwareProcAddrTable(version, byref(_Firmware)))
-        if r != ze_result_v.SUCCESS:
-            raise Exception(r)
-        self.__dditable.Firmware = _Firmware
-
-        # attach function interface to function address
-        self.zesFirmwareGetProperties = _zesFirmwareGetProperties_t(self.__dditable.Firmware.pfnGetProperties)
-        self.zesFirmwareFlash = _zesFirmwareFlash_t(self.__dditable.Firmware.pfnFlash)
-
-        # call driver to get function pointers
-        _Frequency = _zes_frequency_dditable_t()
-        r = ze_result_v(self.__dll.zesGetFrequencyProcAddrTable(version, byref(_Frequency)))
-        if r != ze_result_v.SUCCESS:
-            raise Exception(r)
-        self.__dditable.Frequency = _Frequency
-
-        # attach function interface to function address
-        self.zesFrequencyGetProperties = _zesFrequencyGetProperties_t(self.__dditable.Frequency.pfnGetProperties)
-        self.zesFrequencyGetAvailableClocks = _zesFrequencyGetAvailableClocks_t(self.__dditable.Frequency.pfnGetAvailableClocks)
-        self.zesFrequencyGetRange = _zesFrequencyGetRange_t(self.__dditable.Frequency.pfnGetRange)
-        self.zesFrequencySetRange = _zesFrequencySetRange_t(self.__dditable.Frequency.pfnSetRange)
-        self.zesFrequencyGetState = _zesFrequencyGetState_t(self.__dditable.Frequency.pfnGetState)
-        self.zesFrequencyGetThrottleTime = _zesFrequencyGetThrottleTime_t(self.__dditable.Frequency.pfnGetThrottleTime)
-        self.zesFrequencyOcGetCapabilities = _zesFrequencyOcGetCapabilities_t(self.__dditable.Frequency.pfnOcGetCapabilities)
-        self.zesFrequencyOcGetFrequencyTarget = _zesFrequencyOcGetFrequencyTarget_t(self.__dditable.Frequency.pfnOcGetFrequencyTarget)
-        self.zesFrequencyOcSetFrequencyTarget = _zesFrequencyOcSetFrequencyTarget_t(self.__dditable.Frequency.pfnOcSetFrequencyTarget)
-        self.zesFrequencyOcGetVoltageTarget = _zesFrequencyOcGetVoltageTarget_t(self.__dditable.Frequency.pfnOcGetVoltageTarget)
-        self.zesFrequencyOcSetVoltageTarget = _zesFrequencyOcSetVoltageTarget_t(self.__dditable.Frequency.pfnOcSetVoltageTarget)
-        self.zesFrequencyOcSetMode = _zesFrequencyOcSetMode_t(self.__dditable.Frequency.pfnOcSetMode)
-        self.zesFrequencyOcGetMode = _zesFrequencyOcGetMode_t(self.__dditable.Frequency.pfnOcGetMode)
-        self.zesFrequencyOcGetIccMax = _zesFrequencyOcGetIccMax_t(self.__dditable.Frequency.pfnOcGetIccMax)
-        self.zesFrequencyOcSetIccMax = _zesFrequencyOcSetIccMax_t(self.__dditable.Frequency.pfnOcSetIccMax)
-        self.zesFrequencyOcGetTjMax = _zesFrequencyOcGetTjMax_t(self.__dditable.Frequency.pfnOcGetTjMax)
-        self.zesFrequencyOcSetTjMax = _zesFrequencyOcSetTjMax_t(self.__dditable.Frequency.pfnOcSetTjMax)
-
-        # call driver to get function pointers
-        _Led = _zes_led_dditable_t()
-        r = ze_result_v(self.__dll.zesGetLedProcAddrTable(version, byref(_Led)))
-        if r != ze_result_v.SUCCESS:
-            raise Exception(r)
-        self.__dditable.Led = _Led
-
-        # attach function interface to function address
-        self.zesLedGetProperties = _zesLedGetProperties_t(self.__dditable.Led.pfnGetProperties)
-        self.zesLedGetState = _zesLedGetState_t(self.__dditable.Led.pfnGetState)
-        self.zesLedSetState = _zesLedSetState_t(self.__dditable.Led.pfnSetState)
-        self.zesLedSetColor = _zesLedSetColor_t(self.__dditable.Led.pfnSetColor)
-
-        # call driver to get function pointers
-        _Memory = _zes_memory_dditable_t()
-        r = ze_result_v(self.__dll.zesGetMemoryProcAddrTable(version, byref(_Memory)))
-        if r != ze_result_v.SUCCESS:
-            raise Exception(r)
-        self.__dditable.Memory = _Memory
-
-        # attach function interface to function address
-        self.zesMemoryGetProperties = _zesMemoryGetProperties_t(self.__dditable.Memory.pfnGetProperties)
-        self.zesMemoryGetState = _zesMemoryGetState_t(self.__dditable.Memory.pfnGetState)
-        self.zesMemoryGetBandwidth = _zesMemoryGetBandwidth_t(self.__dditable.Memory.pfnGetBandwidth)
+        self.zesSchedulerGetProperties = _zesSchedulerGetProperties_t(self.__dditable.Scheduler.pfnGetProperties)
+        self.zesSchedulerGetCurrentMode = _zesSchedulerGetCurrentMode_t(self.__dditable.Scheduler.pfnGetCurrentMode)
+        self.zesSchedulerGetTimeoutModeProperties = _zesSchedulerGetTimeoutModeProperties_t(self.__dditable.Scheduler.pfnGetTimeoutModeProperties)
+        self.zesSchedulerGetTimesliceModeProperties = _zesSchedulerGetTimesliceModeProperties_t(self.__dditable.Scheduler.pfnGetTimesliceModeProperties)
+        self.zesSchedulerSetTimeoutMode = _zesSchedulerSetTimeoutMode_t(self.__dditable.Scheduler.pfnSetTimeoutMode)
+        self.zesSchedulerSetTimesliceMode = _zesSchedulerSetTimesliceMode_t(self.__dditable.Scheduler.pfnSetTimesliceMode)
+        self.zesSchedulerSetExclusiveMode = _zesSchedulerSetExclusiveMode_t(self.__dditable.Scheduler.pfnSetExclusiveMode)
+        self.zesSchedulerSetComputeUnitDebugMode = _zesSchedulerSetComputeUnitDebugMode_t(self.__dditable.Scheduler.pfnSetComputeUnitDebugMode)
 
         # call driver to get function pointers
         _PerformanceFactor = _zes_performance_factor_dditable_t()
@@ -2719,6 +2622,106 @@ class ZES_DDI:
         self.zesPowerSetEnergyThreshold = _zesPowerSetEnergyThreshold_t(self.__dditable.Power.pfnSetEnergyThreshold)
 
         # call driver to get function pointers
+        _Frequency = _zes_frequency_dditable_t()
+        r = ze_result_v(self.__dll.zesGetFrequencyProcAddrTable(version, byref(_Frequency)))
+        if r != ze_result_v.SUCCESS:
+            raise Exception(r)
+        self.__dditable.Frequency = _Frequency
+
+        # attach function interface to function address
+        self.zesFrequencyGetProperties = _zesFrequencyGetProperties_t(self.__dditable.Frequency.pfnGetProperties)
+        self.zesFrequencyGetAvailableClocks = _zesFrequencyGetAvailableClocks_t(self.__dditable.Frequency.pfnGetAvailableClocks)
+        self.zesFrequencyGetRange = _zesFrequencyGetRange_t(self.__dditable.Frequency.pfnGetRange)
+        self.zesFrequencySetRange = _zesFrequencySetRange_t(self.__dditable.Frequency.pfnSetRange)
+        self.zesFrequencyGetState = _zesFrequencyGetState_t(self.__dditable.Frequency.pfnGetState)
+        self.zesFrequencyGetThrottleTime = _zesFrequencyGetThrottleTime_t(self.__dditable.Frequency.pfnGetThrottleTime)
+        self.zesFrequencyOcGetCapabilities = _zesFrequencyOcGetCapabilities_t(self.__dditable.Frequency.pfnOcGetCapabilities)
+        self.zesFrequencyOcGetFrequencyTarget = _zesFrequencyOcGetFrequencyTarget_t(self.__dditable.Frequency.pfnOcGetFrequencyTarget)
+        self.zesFrequencyOcSetFrequencyTarget = _zesFrequencyOcSetFrequencyTarget_t(self.__dditable.Frequency.pfnOcSetFrequencyTarget)
+        self.zesFrequencyOcGetVoltageTarget = _zesFrequencyOcGetVoltageTarget_t(self.__dditable.Frequency.pfnOcGetVoltageTarget)
+        self.zesFrequencyOcSetVoltageTarget = _zesFrequencyOcSetVoltageTarget_t(self.__dditable.Frequency.pfnOcSetVoltageTarget)
+        self.zesFrequencyOcSetMode = _zesFrequencyOcSetMode_t(self.__dditable.Frequency.pfnOcSetMode)
+        self.zesFrequencyOcGetMode = _zesFrequencyOcGetMode_t(self.__dditable.Frequency.pfnOcGetMode)
+        self.zesFrequencyOcGetIccMax = _zesFrequencyOcGetIccMax_t(self.__dditable.Frequency.pfnOcGetIccMax)
+        self.zesFrequencyOcSetIccMax = _zesFrequencyOcSetIccMax_t(self.__dditable.Frequency.pfnOcSetIccMax)
+        self.zesFrequencyOcGetTjMax = _zesFrequencyOcGetTjMax_t(self.__dditable.Frequency.pfnOcGetTjMax)
+        self.zesFrequencyOcSetTjMax = _zesFrequencyOcSetTjMax_t(self.__dditable.Frequency.pfnOcSetTjMax)
+
+        # call driver to get function pointers
+        _Engine = _zes_engine_dditable_t()
+        r = ze_result_v(self.__dll.zesGetEngineProcAddrTable(version, byref(_Engine)))
+        if r != ze_result_v.SUCCESS:
+            raise Exception(r)
+        self.__dditable.Engine = _Engine
+
+        # attach function interface to function address
+        self.zesEngineGetProperties = _zesEngineGetProperties_t(self.__dditable.Engine.pfnGetProperties)
+        self.zesEngineGetActivity = _zesEngineGetActivity_t(self.__dditable.Engine.pfnGetActivity)
+
+        # call driver to get function pointers
+        _Standby = _zes_standby_dditable_t()
+        r = ze_result_v(self.__dll.zesGetStandbyProcAddrTable(version, byref(_Standby)))
+        if r != ze_result_v.SUCCESS:
+            raise Exception(r)
+        self.__dditable.Standby = _Standby
+
+        # attach function interface to function address
+        self.zesStandbyGetProperties = _zesStandbyGetProperties_t(self.__dditable.Standby.pfnGetProperties)
+        self.zesStandbyGetMode = _zesStandbyGetMode_t(self.__dditable.Standby.pfnGetMode)
+        self.zesStandbySetMode = _zesStandbySetMode_t(self.__dditable.Standby.pfnSetMode)
+
+        # call driver to get function pointers
+        _Firmware = _zes_firmware_dditable_t()
+        r = ze_result_v(self.__dll.zesGetFirmwareProcAddrTable(version, byref(_Firmware)))
+        if r != ze_result_v.SUCCESS:
+            raise Exception(r)
+        self.__dditable.Firmware = _Firmware
+
+        # attach function interface to function address
+        self.zesFirmwareGetProperties = _zesFirmwareGetProperties_t(self.__dditable.Firmware.pfnGetProperties)
+        self.zesFirmwareFlash = _zesFirmwareFlash_t(self.__dditable.Firmware.pfnFlash)
+
+        # call driver to get function pointers
+        _Memory = _zes_memory_dditable_t()
+        r = ze_result_v(self.__dll.zesGetMemoryProcAddrTable(version, byref(_Memory)))
+        if r != ze_result_v.SUCCESS:
+            raise Exception(r)
+        self.__dditable.Memory = _Memory
+
+        # attach function interface to function address
+        self.zesMemoryGetProperties = _zesMemoryGetProperties_t(self.__dditable.Memory.pfnGetProperties)
+        self.zesMemoryGetState = _zesMemoryGetState_t(self.__dditable.Memory.pfnGetState)
+        self.zesMemoryGetBandwidth = _zesMemoryGetBandwidth_t(self.__dditable.Memory.pfnGetBandwidth)
+
+        # call driver to get function pointers
+        _FabricPort = _zes_fabric_port_dditable_t()
+        r = ze_result_v(self.__dll.zesGetFabricPortProcAddrTable(version, byref(_FabricPort)))
+        if r != ze_result_v.SUCCESS:
+            raise Exception(r)
+        self.__dditable.FabricPort = _FabricPort
+
+        # attach function interface to function address
+        self.zesFabricPortGetProperties = _zesFabricPortGetProperties_t(self.__dditable.FabricPort.pfnGetProperties)
+        self.zesFabricPortGetLinkType = _zesFabricPortGetLinkType_t(self.__dditable.FabricPort.pfnGetLinkType)
+        self.zesFabricPortGetConfig = _zesFabricPortGetConfig_t(self.__dditable.FabricPort.pfnGetConfig)
+        self.zesFabricPortSetConfig = _zesFabricPortSetConfig_t(self.__dditable.FabricPort.pfnSetConfig)
+        self.zesFabricPortGetState = _zesFabricPortGetState_t(self.__dditable.FabricPort.pfnGetState)
+        self.zesFabricPortGetThroughput = _zesFabricPortGetThroughput_t(self.__dditable.FabricPort.pfnGetThroughput)
+
+        # call driver to get function pointers
+        _Temperature = _zes_temperature_dditable_t()
+        r = ze_result_v(self.__dll.zesGetTemperatureProcAddrTable(version, byref(_Temperature)))
+        if r != ze_result_v.SUCCESS:
+            raise Exception(r)
+        self.__dditable.Temperature = _Temperature
+
+        # attach function interface to function address
+        self.zesTemperatureGetProperties = _zesTemperatureGetProperties_t(self.__dditable.Temperature.pfnGetProperties)
+        self.zesTemperatureGetConfig = _zesTemperatureGetConfig_t(self.__dditable.Temperature.pfnGetConfig)
+        self.zesTemperatureSetConfig = _zesTemperatureSetConfig_t(self.__dditable.Temperature.pfnSetConfig)
+        self.zesTemperatureGetState = _zesTemperatureGetState_t(self.__dditable.Temperature.pfnGetState)
+
+        # call driver to get function pointers
         _Psu = _zes_psu_dditable_t()
         r = ze_result_v(self.__dll.zesGetPsuProcAddrTable(version, byref(_Psu)))
         if r != ze_result_v.SUCCESS:
@@ -2728,6 +2731,34 @@ class ZES_DDI:
         # attach function interface to function address
         self.zesPsuGetProperties = _zesPsuGetProperties_t(self.__dditable.Psu.pfnGetProperties)
         self.zesPsuGetState = _zesPsuGetState_t(self.__dditable.Psu.pfnGetState)
+
+        # call driver to get function pointers
+        _Fan = _zes_fan_dditable_t()
+        r = ze_result_v(self.__dll.zesGetFanProcAddrTable(version, byref(_Fan)))
+        if r != ze_result_v.SUCCESS:
+            raise Exception(r)
+        self.__dditable.Fan = _Fan
+
+        # attach function interface to function address
+        self.zesFanGetProperties = _zesFanGetProperties_t(self.__dditable.Fan.pfnGetProperties)
+        self.zesFanGetConfig = _zesFanGetConfig_t(self.__dditable.Fan.pfnGetConfig)
+        self.zesFanSetDefaultMode = _zesFanSetDefaultMode_t(self.__dditable.Fan.pfnSetDefaultMode)
+        self.zesFanSetFixedSpeedMode = _zesFanSetFixedSpeedMode_t(self.__dditable.Fan.pfnSetFixedSpeedMode)
+        self.zesFanSetSpeedTableMode = _zesFanSetSpeedTableMode_t(self.__dditable.Fan.pfnSetSpeedTableMode)
+        self.zesFanGetState = _zesFanGetState_t(self.__dditable.Fan.pfnGetState)
+
+        # call driver to get function pointers
+        _Led = _zes_led_dditable_t()
+        r = ze_result_v(self.__dll.zesGetLedProcAddrTable(version, byref(_Led)))
+        if r != ze_result_v.SUCCESS:
+            raise Exception(r)
+        self.__dditable.Led = _Led
+
+        # attach function interface to function address
+        self.zesLedGetProperties = _zesLedGetProperties_t(self.__dditable.Led.pfnGetProperties)
+        self.zesLedGetState = _zesLedGetState_t(self.__dditable.Led.pfnGetState)
+        self.zesLedSetState = _zesLedSetState_t(self.__dditable.Led.pfnSetState)
+        self.zesLedSetColor = _zesLedSetColor_t(self.__dditable.Led.pfnSetColor)
 
         # call driver to get function pointers
         _Ras = _zes_ras_dditable_t()
@@ -2743,45 +2774,15 @@ class ZES_DDI:
         self.zesRasGetState = _zesRasGetState_t(self.__dditable.Ras.pfnGetState)
 
         # call driver to get function pointers
-        _Scheduler = _zes_scheduler_dditable_t()
-        r = ze_result_v(self.__dll.zesGetSchedulerProcAddrTable(version, byref(_Scheduler)))
+        _Diagnostics = _zes_diagnostics_dditable_t()
+        r = ze_result_v(self.__dll.zesGetDiagnosticsProcAddrTable(version, byref(_Diagnostics)))
         if r != ze_result_v.SUCCESS:
             raise Exception(r)
-        self.__dditable.Scheduler = _Scheduler
+        self.__dditable.Diagnostics = _Diagnostics
 
         # attach function interface to function address
-        self.zesSchedulerGetProperties = _zesSchedulerGetProperties_t(self.__dditable.Scheduler.pfnGetProperties)
-        self.zesSchedulerGetCurrentMode = _zesSchedulerGetCurrentMode_t(self.__dditable.Scheduler.pfnGetCurrentMode)
-        self.zesSchedulerGetTimeoutModeProperties = _zesSchedulerGetTimeoutModeProperties_t(self.__dditable.Scheduler.pfnGetTimeoutModeProperties)
-        self.zesSchedulerGetTimesliceModeProperties = _zesSchedulerGetTimesliceModeProperties_t(self.__dditable.Scheduler.pfnGetTimesliceModeProperties)
-        self.zesSchedulerSetTimeoutMode = _zesSchedulerSetTimeoutMode_t(self.__dditable.Scheduler.pfnSetTimeoutMode)
-        self.zesSchedulerSetTimesliceMode = _zesSchedulerSetTimesliceMode_t(self.__dditable.Scheduler.pfnSetTimesliceMode)
-        self.zesSchedulerSetExclusiveMode = _zesSchedulerSetExclusiveMode_t(self.__dditable.Scheduler.pfnSetExclusiveMode)
-        self.zesSchedulerSetComputeUnitDebugMode = _zesSchedulerSetComputeUnitDebugMode_t(self.__dditable.Scheduler.pfnSetComputeUnitDebugMode)
-
-        # call driver to get function pointers
-        _Standby = _zes_standby_dditable_t()
-        r = ze_result_v(self.__dll.zesGetStandbyProcAddrTable(version, byref(_Standby)))
-        if r != ze_result_v.SUCCESS:
-            raise Exception(r)
-        self.__dditable.Standby = _Standby
-
-        # attach function interface to function address
-        self.zesStandbyGetProperties = _zesStandbyGetProperties_t(self.__dditable.Standby.pfnGetProperties)
-        self.zesStandbyGetMode = _zesStandbyGetMode_t(self.__dditable.Standby.pfnGetMode)
-        self.zesStandbySetMode = _zesStandbySetMode_t(self.__dditable.Standby.pfnSetMode)
-
-        # call driver to get function pointers
-        _Temperature = _zes_temperature_dditable_t()
-        r = ze_result_v(self.__dll.zesGetTemperatureProcAddrTable(version, byref(_Temperature)))
-        if r != ze_result_v.SUCCESS:
-            raise Exception(r)
-        self.__dditable.Temperature = _Temperature
-
-        # attach function interface to function address
-        self.zesTemperatureGetProperties = _zesTemperatureGetProperties_t(self.__dditable.Temperature.pfnGetProperties)
-        self.zesTemperatureGetConfig = _zesTemperatureGetConfig_t(self.__dditable.Temperature.pfnGetConfig)
-        self.zesTemperatureSetConfig = _zesTemperatureSetConfig_t(self.__dditable.Temperature.pfnSetConfig)
-        self.zesTemperatureGetState = _zesTemperatureGetState_t(self.__dditable.Temperature.pfnGetState)
+        self.zesDiagnosticsGetProperties = _zesDiagnosticsGetProperties_t(self.__dditable.Diagnostics.pfnGetProperties)
+        self.zesDiagnosticsGetTests = _zesDiagnosticsGetTests_t(self.__dditable.Diagnostics.pfnGetTests)
+        self.zesDiagnosticsRunTests = _zesDiagnosticsRunTests_t(self.__dditable.Diagnostics.pfnRunTests)
 
         # success!

@@ -5,6 +5,7 @@
  * SPDX-License-Identifier: MIT
  *
  * @file zes_api.h
+ * @version v1.0-r1.0.4.8
  *
  */
 #ifndef _ZES_API_H
@@ -21,7 +22,9 @@ extern "C" {
 #endif
 
 // Intel 'oneAPI' Level-Zero Sysman API common types
+#if !defined(__GNUC__)
 #pragma region common
+#endif
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief Handle to a driver instance
 typedef ze_driver_handle_t zes_driver_handle_t;
@@ -423,9 +426,13 @@ typedef struct _zes_temp_threshold_t zes_temp_threshold_t;
 typedef struct _zes_temp_config_t zes_temp_config_t;
 
 
+#if !defined(__GNUC__)
 #pragma endregion
+#endif
 // Intel 'oneAPI' Level-Zero Tool APIs for System Resource Management (Sysman) - Device management
+#if !defined(__GNUC__)
 #pragma region device
+#endif
 ///////////////////////////////////////////////////////////////////////////////
 #ifndef ZES_STRING_PROPERTY_SIZE
 /// @brief Maximum number of characters in string properties.
@@ -893,9 +900,13 @@ zesDevicePciGetStats(
     zes_pci_stats_t* pStats                         ///< [in,out] Will contain a snapshot of the latest stats.
     );
 
+#if !defined(__GNUC__)
 #pragma endregion
+#endif
 // Intel 'oneAPI' Level-Zero Tool APIs for System Resource Management (Sysman) - Firmware management
+#if !defined(__GNUC__)
 #pragma region diagnostics
+#endif
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief Diagnostic results
 typedef enum _zes_diag_result_t
@@ -1064,9 +1075,13 @@ zesDiagnosticsRunTests(
     zes_diag_result_t* pResult                      ///< [in,out] The result of the diagnostics
     );
 
+#if !defined(__GNUC__)
 #pragma endregion
+#endif
 // Intel 'oneAPI' Level-Zero Tool APIs for System Resource Management (Sysman) - Engine groups
+#if !defined(__GNUC__)
 #pragma region engine
+#endif
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief Accelerator engine groups
 typedef enum _zes_engine_group_t
@@ -1211,9 +1226,13 @@ zesEngineGetActivity(
                                                     ///< counters.
     );
 
+#if !defined(__GNUC__)
 #pragma endregion
+#endif
 // Intel 'oneAPI' Level-Zero Tool APIs for System Resource Management (Sysman) - Event management
+#if !defined(__GNUC__)
 #pragma region events
+#endif
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief Event types
 typedef uint32_t zes_event_type_flags_t;
@@ -1314,9 +1333,13 @@ zesDriverEventListen(
                                                     ///< entry will be zero.
     );
 
+#if !defined(__GNUC__)
 #pragma endregion
+#endif
 // Intel 'oneAPI' Level-Zero Tool APIs for System Resource Management (Sysman) - Firmware management
+#if !defined(__GNUC__)
 #pragma region fabric
+#endif
 ///////////////////////////////////////////////////////////////////////////////
 #ifndef ZES_MAX_FABRIC_PORT_MODEL_SIZE
 /// @brief Maximum Fabric port model string size
@@ -1652,9 +1675,13 @@ zesFabricPortGetThroughput(
     zes_fabric_port_throughput_t* pThroughput       ///< [in,out] Will contain the Fabric port throughput counters.
     );
 
+#if !defined(__GNUC__)
 #pragma endregion
+#endif
 // Intel 'oneAPI' Level-Zero Tool APIs for System Resource Management (Sysman) - Firmware management
+#if !defined(__GNUC__)
 #pragma region fan
+#endif
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief Fan resource speed mode
 typedef enum _zes_fan_speed_mode_t
@@ -1925,9 +1952,13 @@ zesFanGetState(
                                                     ///< measured.
     );
 
+#if !defined(__GNUC__)
 #pragma endregion
+#endif
 // Intel 'oneAPI' Level-Zero Tool APIs for System Resource Management (Sysman) - Firmware management
+#if !defined(__GNUC__)
 #pragma region firmware
+#endif
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief Firmware properties
 typedef struct _zes_firmware_properties_t
@@ -2021,9 +2052,13 @@ zesFirmwareFlash(
     uint32_t size                                   ///< [in] Size of the flash image.
     );
 
+#if !defined(__GNUC__)
 #pragma endregion
+#endif
 // Intel 'oneAPI' Level-Zero Tool APIs for System Resource Management (Sysman) - Frequency domains
+#if !defined(__GNUC__)
 #pragma region frequency
+#endif
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief Frequency domains.
 typedef enum _zes_freq_domain_t
@@ -2691,9 +2726,13 @@ zesFrequencyOcSetTjMax(
     double ocTjMax                                  ///< [in] The new maximum temperature limit in degrees Celsius.
     );
 
+#if !defined(__GNUC__)
 #pragma endregion
+#endif
 // Intel 'oneAPI' Level-Zero Tool APIs for System Resource Management (Sysman) - Firmware management
+#if !defined(__GNUC__)
 #pragma region led
+#endif
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief LED properties
 typedef struct _zes_led_properties_t
@@ -2850,9 +2889,13 @@ zesLedSetColor(
     const zes_led_color_t* pColor                   ///< [in] New color of the LED.
     );
 
+#if !defined(__GNUC__)
 #pragma endregion
+#endif
 // Intel 'oneAPI' Level-Zero Tool APIs for System Resource Management (Sysman) - Memory management
+#if !defined(__GNUC__)
 #pragma region memory
+#endif
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief Memory module types
 typedef enum _zes_mem_type_t
@@ -3054,9 +3097,13 @@ zesMemoryGetBandwidth(
                                                     ///< size.
     );
 
+#if !defined(__GNUC__)
 #pragma endregion
+#endif
 // Intel 'oneAPI' Level-Zero Tool APIs for System Resource Management (Sysman) - Performance factor
+#if !defined(__GNUC__)
 #pragma region performance
+#endif
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief Static information about a Performance Factor domain
 typedef struct _zes_perf_properties_t
@@ -3170,9 +3217,13 @@ zesPerformanceFactorSetConfig(
     double factor                                   ///< [in] The new Performance Factor.
     );
 
+#if !defined(__GNUC__)
 #pragma endregion
+#endif
 // Intel 'oneAPI' Level-Zero Tool APIs for System Resource Management (Sysman) - Scheduler management
+#if !defined(__GNUC__)
 #pragma region power
+#endif
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief Properties related to device power settings
 typedef struct _zes_power_properties_t
@@ -3470,9 +3521,13 @@ zesPowerSetEnergyThreshold(
     double threshold                                ///< [in] The energy threshold to be set in joules.
     );
 
+#if !defined(__GNUC__)
 #pragma endregion
+#endif
 // Intel 'oneAPI' Level-Zero Tool APIs for System Resource Management (Sysman) - Firmware management
+#if !defined(__GNUC__)
 #pragma region psu
+#endif
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief PSU voltage status
 typedef enum _zes_psu_voltage_status_t
@@ -3588,9 +3643,13 @@ zesPsuGetState(
     zes_psu_state_t* pState                         ///< [in,out] Will contain the current state of the power supply.
     );
 
+#if !defined(__GNUC__)
 #pragma endregion
+#endif
 // Intel 'oneAPI' Level-Zero Tool APIs for System Resource Management (Sysman) - Firmware management
+#if !defined(__GNUC__)
 #pragma region ras
+#endif
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief RAS error type
 typedef enum _zes_ras_error_type_t
@@ -3833,9 +3892,13 @@ zesRasGetState(
     zes_ras_state_t* pState                         ///< [in,out] Breakdown of where errors have occurred
     );
 
+#if !defined(__GNUC__)
 #pragma endregion
+#endif
 // Intel 'oneAPI' Level-Zero Tool APIs for System Resource Management (Sysman) - Scheduler management
+#if !defined(__GNUC__)
 #pragma region scheduler
+#endif
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief Scheduler mode
 typedef enum _zes_sched_mode_t
@@ -4164,9 +4227,13 @@ zesSchedulerSetComputeUnitDebugMode(
                                                     ///< apply the new scheduler mode.
     );
 
+#if !defined(__GNUC__)
 #pragma endregion
+#endif
 // Intel 'oneAPI' Level-Zero Tool APIs for System Resource Management (Sysman) - Standby domains
+#if !defined(__GNUC__)
 #pragma region standby
+#endif
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief Standby hardware components
 typedef enum _zes_standby_type_t
@@ -4294,9 +4361,13 @@ zesStandbySetMode(
     zes_standby_promo_mode_t mode                   ///< [in] New standby mode.
     );
 
+#if !defined(__GNUC__)
 #pragma endregion
+#endif
 // Intel 'oneAPI' Level-Zero Tool APIs for System Resource Management (Sysman) - Firmware management
+#if !defined(__GNUC__)
 #pragma region temperature
+#endif
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief Temperature sensors
 typedef enum _zes_temp_sensors_t
@@ -4505,7 +4576,9 @@ zesTemperatureGetState(
                                                     ///< in degrees Celsius.
     );
 
+#if !defined(__GNUC__)
 #pragma endregion
+#endif
 
 #if defined(__cplusplus)
 } // extern "C"

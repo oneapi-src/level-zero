@@ -1490,6 +1490,9 @@ namespace layer
             if( 0x7 < desc->flags )
                 return ZE_RESULT_ERROR_INVALID_ENUMERATION;
 
+            if( 0 < desc->count )
+                return ZE_RESULT_ERROR_INVALID_SIZE;
+
             if( (nullptr == phDevices) && (0 < numDevices) )
                 return ZE_RESULT_ERROR_INVALID_SIZE;
 

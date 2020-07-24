@@ -4,6 +4,7 @@
  SPDX-License-Identifier: MIT
 
  @file ze.py
+ @version v1.0-r1.0.4.8
 
  """
 import platform
@@ -2062,6 +2063,100 @@ class _ze_command_list_dditable_t(Structure):
     ]
 
 ###############################################################################
+## @brief Function-pointer for zeFenceCreate
+if __use_win_types:
+    _zeFenceCreate_t = WINFUNCTYPE( ze_result_t, ze_command_queue_handle_t, POINTER(ze_fence_desc_t), POINTER(ze_fence_handle_t) )
+else:
+    _zeFenceCreate_t = CFUNCTYPE( ze_result_t, ze_command_queue_handle_t, POINTER(ze_fence_desc_t), POINTER(ze_fence_handle_t) )
+
+###############################################################################
+## @brief Function-pointer for zeFenceDestroy
+if __use_win_types:
+    _zeFenceDestroy_t = WINFUNCTYPE( ze_result_t, ze_fence_handle_t )
+else:
+    _zeFenceDestroy_t = CFUNCTYPE( ze_result_t, ze_fence_handle_t )
+
+###############################################################################
+## @brief Function-pointer for zeFenceHostSynchronize
+if __use_win_types:
+    _zeFenceHostSynchronize_t = WINFUNCTYPE( ze_result_t, ze_fence_handle_t, c_ulonglong )
+else:
+    _zeFenceHostSynchronize_t = CFUNCTYPE( ze_result_t, ze_fence_handle_t, c_ulonglong )
+
+###############################################################################
+## @brief Function-pointer for zeFenceQueryStatus
+if __use_win_types:
+    _zeFenceQueryStatus_t = WINFUNCTYPE( ze_result_t, ze_fence_handle_t )
+else:
+    _zeFenceQueryStatus_t = CFUNCTYPE( ze_result_t, ze_fence_handle_t )
+
+###############################################################################
+## @brief Function-pointer for zeFenceReset
+if __use_win_types:
+    _zeFenceReset_t = WINFUNCTYPE( ze_result_t, ze_fence_handle_t )
+else:
+    _zeFenceReset_t = CFUNCTYPE( ze_result_t, ze_fence_handle_t )
+
+
+###############################################################################
+## @brief Table of Fence functions pointers
+class _ze_fence_dditable_t(Structure):
+    _fields_ = [
+        ("pfnCreate", c_void_p),                                        ## _zeFenceCreate_t
+        ("pfnDestroy", c_void_p),                                       ## _zeFenceDestroy_t
+        ("pfnHostSynchronize", c_void_p),                               ## _zeFenceHostSynchronize_t
+        ("pfnQueryStatus", c_void_p),                                   ## _zeFenceQueryStatus_t
+        ("pfnReset", c_void_p)                                          ## _zeFenceReset_t
+    ]
+
+###############################################################################
+## @brief Function-pointer for zeEventPoolCreate
+if __use_win_types:
+    _zeEventPoolCreate_t = WINFUNCTYPE( ze_result_t, ze_context_handle_t, POINTER(ze_event_pool_desc_t), c_ulong, POINTER(ze_device_handle_t), POINTER(ze_event_pool_handle_t) )
+else:
+    _zeEventPoolCreate_t = CFUNCTYPE( ze_result_t, ze_context_handle_t, POINTER(ze_event_pool_desc_t), c_ulong, POINTER(ze_device_handle_t), POINTER(ze_event_pool_handle_t) )
+
+###############################################################################
+## @brief Function-pointer for zeEventPoolDestroy
+if __use_win_types:
+    _zeEventPoolDestroy_t = WINFUNCTYPE( ze_result_t, ze_event_pool_handle_t )
+else:
+    _zeEventPoolDestroy_t = CFUNCTYPE( ze_result_t, ze_event_pool_handle_t )
+
+###############################################################################
+## @brief Function-pointer for zeEventPoolGetIpcHandle
+if __use_win_types:
+    _zeEventPoolGetIpcHandle_t = WINFUNCTYPE( ze_result_t, ze_event_pool_handle_t, POINTER(ze_ipc_event_pool_handle_t) )
+else:
+    _zeEventPoolGetIpcHandle_t = CFUNCTYPE( ze_result_t, ze_event_pool_handle_t, POINTER(ze_ipc_event_pool_handle_t) )
+
+###############################################################################
+## @brief Function-pointer for zeEventPoolOpenIpcHandle
+if __use_win_types:
+    _zeEventPoolOpenIpcHandle_t = WINFUNCTYPE( ze_result_t, ze_context_handle_t, ze_ipc_event_pool_handle_t, POINTER(ze_event_pool_handle_t) )
+else:
+    _zeEventPoolOpenIpcHandle_t = CFUNCTYPE( ze_result_t, ze_context_handle_t, ze_ipc_event_pool_handle_t, POINTER(ze_event_pool_handle_t) )
+
+###############################################################################
+## @brief Function-pointer for zeEventPoolCloseIpcHandle
+if __use_win_types:
+    _zeEventPoolCloseIpcHandle_t = WINFUNCTYPE( ze_result_t, ze_event_pool_handle_t )
+else:
+    _zeEventPoolCloseIpcHandle_t = CFUNCTYPE( ze_result_t, ze_event_pool_handle_t )
+
+
+###############################################################################
+## @brief Table of EventPool functions pointers
+class _ze_event_pool_dditable_t(Structure):
+    _fields_ = [
+        ("pfnCreate", c_void_p),                                        ## _zeEventPoolCreate_t
+        ("pfnDestroy", c_void_p),                                       ## _zeEventPoolDestroy_t
+        ("pfnGetIpcHandle", c_void_p),                                  ## _zeEventPoolGetIpcHandle_t
+        ("pfnOpenIpcHandle", c_void_p),                                 ## _zeEventPoolOpenIpcHandle_t
+        ("pfnCloseIpcHandle", c_void_p)                                 ## _zeEventPoolCloseIpcHandle_t
+    ]
+
+###############################################################################
 ## @brief Function-pointer for zeEventCreate
 if __use_win_types:
     _zeEventCreate_t = WINFUNCTYPE( ze_result_t, ze_event_pool_handle_t, POINTER(ze_event_desc_t), POINTER(ze_event_handle_t) )
@@ -2125,100 +2220,6 @@ class _ze_event_dditable_t(Structure):
     ]
 
 ###############################################################################
-## @brief Function-pointer for zeEventPoolCreate
-if __use_win_types:
-    _zeEventPoolCreate_t = WINFUNCTYPE( ze_result_t, ze_context_handle_t, POINTER(ze_event_pool_desc_t), c_ulong, POINTER(ze_device_handle_t), POINTER(ze_event_pool_handle_t) )
-else:
-    _zeEventPoolCreate_t = CFUNCTYPE( ze_result_t, ze_context_handle_t, POINTER(ze_event_pool_desc_t), c_ulong, POINTER(ze_device_handle_t), POINTER(ze_event_pool_handle_t) )
-
-###############################################################################
-## @brief Function-pointer for zeEventPoolDestroy
-if __use_win_types:
-    _zeEventPoolDestroy_t = WINFUNCTYPE( ze_result_t, ze_event_pool_handle_t )
-else:
-    _zeEventPoolDestroy_t = CFUNCTYPE( ze_result_t, ze_event_pool_handle_t )
-
-###############################################################################
-## @brief Function-pointer for zeEventPoolGetIpcHandle
-if __use_win_types:
-    _zeEventPoolGetIpcHandle_t = WINFUNCTYPE( ze_result_t, ze_event_pool_handle_t, POINTER(ze_ipc_event_pool_handle_t) )
-else:
-    _zeEventPoolGetIpcHandle_t = CFUNCTYPE( ze_result_t, ze_event_pool_handle_t, POINTER(ze_ipc_event_pool_handle_t) )
-
-###############################################################################
-## @brief Function-pointer for zeEventPoolOpenIpcHandle
-if __use_win_types:
-    _zeEventPoolOpenIpcHandle_t = WINFUNCTYPE( ze_result_t, ze_context_handle_t, ze_ipc_event_pool_handle_t, POINTER(ze_event_pool_handle_t) )
-else:
-    _zeEventPoolOpenIpcHandle_t = CFUNCTYPE( ze_result_t, ze_context_handle_t, ze_ipc_event_pool_handle_t, POINTER(ze_event_pool_handle_t) )
-
-###############################################################################
-## @brief Function-pointer for zeEventPoolCloseIpcHandle
-if __use_win_types:
-    _zeEventPoolCloseIpcHandle_t = WINFUNCTYPE( ze_result_t, ze_event_pool_handle_t )
-else:
-    _zeEventPoolCloseIpcHandle_t = CFUNCTYPE( ze_result_t, ze_event_pool_handle_t )
-
-
-###############################################################################
-## @brief Table of EventPool functions pointers
-class _ze_event_pool_dditable_t(Structure):
-    _fields_ = [
-        ("pfnCreate", c_void_p),                                        ## _zeEventPoolCreate_t
-        ("pfnDestroy", c_void_p),                                       ## _zeEventPoolDestroy_t
-        ("pfnGetIpcHandle", c_void_p),                                  ## _zeEventPoolGetIpcHandle_t
-        ("pfnOpenIpcHandle", c_void_p),                                 ## _zeEventPoolOpenIpcHandle_t
-        ("pfnCloseIpcHandle", c_void_p)                                 ## _zeEventPoolCloseIpcHandle_t
-    ]
-
-###############################################################################
-## @brief Function-pointer for zeFenceCreate
-if __use_win_types:
-    _zeFenceCreate_t = WINFUNCTYPE( ze_result_t, ze_command_queue_handle_t, POINTER(ze_fence_desc_t), POINTER(ze_fence_handle_t) )
-else:
-    _zeFenceCreate_t = CFUNCTYPE( ze_result_t, ze_command_queue_handle_t, POINTER(ze_fence_desc_t), POINTER(ze_fence_handle_t) )
-
-###############################################################################
-## @brief Function-pointer for zeFenceDestroy
-if __use_win_types:
-    _zeFenceDestroy_t = WINFUNCTYPE( ze_result_t, ze_fence_handle_t )
-else:
-    _zeFenceDestroy_t = CFUNCTYPE( ze_result_t, ze_fence_handle_t )
-
-###############################################################################
-## @brief Function-pointer for zeFenceHostSynchronize
-if __use_win_types:
-    _zeFenceHostSynchronize_t = WINFUNCTYPE( ze_result_t, ze_fence_handle_t, c_ulonglong )
-else:
-    _zeFenceHostSynchronize_t = CFUNCTYPE( ze_result_t, ze_fence_handle_t, c_ulonglong )
-
-###############################################################################
-## @brief Function-pointer for zeFenceQueryStatus
-if __use_win_types:
-    _zeFenceQueryStatus_t = WINFUNCTYPE( ze_result_t, ze_fence_handle_t )
-else:
-    _zeFenceQueryStatus_t = CFUNCTYPE( ze_result_t, ze_fence_handle_t )
-
-###############################################################################
-## @brief Function-pointer for zeFenceReset
-if __use_win_types:
-    _zeFenceReset_t = WINFUNCTYPE( ze_result_t, ze_fence_handle_t )
-else:
-    _zeFenceReset_t = CFUNCTYPE( ze_result_t, ze_fence_handle_t )
-
-
-###############################################################################
-## @brief Table of Fence functions pointers
-class _ze_fence_dditable_t(Structure):
-    _fields_ = [
-        ("pfnCreate", c_void_p),                                        ## _zeFenceCreate_t
-        ("pfnDestroy", c_void_p),                                       ## _zeFenceDestroy_t
-        ("pfnHostSynchronize", c_void_p),                               ## _zeFenceHostSynchronize_t
-        ("pfnQueryStatus", c_void_p),                                   ## _zeFenceQueryStatus_t
-        ("pfnReset", c_void_p)                                          ## _zeFenceReset_t
-    ]
-
-###############################################################################
 ## @brief Function-pointer for zeImageGetProperties
 if __use_win_types:
     _zeImageGetProperties_t = WINFUNCTYPE( ze_result_t, ze_device_handle_t, POINTER(ze_image_desc_t), POINTER(ze_image_properties_t) )
@@ -2247,6 +2248,100 @@ class _ze_image_dditable_t(Structure):
         ("pfnGetProperties", c_void_p),                                 ## _zeImageGetProperties_t
         ("pfnCreate", c_void_p),                                        ## _zeImageCreate_t
         ("pfnDestroy", c_void_p)                                        ## _zeImageDestroy_t
+    ]
+
+###############################################################################
+## @brief Function-pointer for zeModuleCreate
+if __use_win_types:
+    _zeModuleCreate_t = WINFUNCTYPE( ze_result_t, ze_context_handle_t, ze_device_handle_t, POINTER(ze_module_desc_t), POINTER(ze_module_handle_t), POINTER(ze_module_build_log_handle_t) )
+else:
+    _zeModuleCreate_t = CFUNCTYPE( ze_result_t, ze_context_handle_t, ze_device_handle_t, POINTER(ze_module_desc_t), POINTER(ze_module_handle_t), POINTER(ze_module_build_log_handle_t) )
+
+###############################################################################
+## @brief Function-pointer for zeModuleDestroy
+if __use_win_types:
+    _zeModuleDestroy_t = WINFUNCTYPE( ze_result_t, ze_module_handle_t )
+else:
+    _zeModuleDestroy_t = CFUNCTYPE( ze_result_t, ze_module_handle_t )
+
+###############################################################################
+## @brief Function-pointer for zeModuleDynamicLink
+if __use_win_types:
+    _zeModuleDynamicLink_t = WINFUNCTYPE( ze_result_t, c_ulong, POINTER(ze_module_handle_t), POINTER(ze_module_build_log_handle_t) )
+else:
+    _zeModuleDynamicLink_t = CFUNCTYPE( ze_result_t, c_ulong, POINTER(ze_module_handle_t), POINTER(ze_module_build_log_handle_t) )
+
+###############################################################################
+## @brief Function-pointer for zeModuleGetNativeBinary
+if __use_win_types:
+    _zeModuleGetNativeBinary_t = WINFUNCTYPE( ze_result_t, ze_module_handle_t, POINTER(c_size_t), POINTER(c_ubyte) )
+else:
+    _zeModuleGetNativeBinary_t = CFUNCTYPE( ze_result_t, ze_module_handle_t, POINTER(c_size_t), POINTER(c_ubyte) )
+
+###############################################################################
+## @brief Function-pointer for zeModuleGetGlobalPointer
+if __use_win_types:
+    _zeModuleGetGlobalPointer_t = WINFUNCTYPE( ze_result_t, ze_module_handle_t, c_char_p, POINTER(c_size_t), POINTER(c_void_p) )
+else:
+    _zeModuleGetGlobalPointer_t = CFUNCTYPE( ze_result_t, ze_module_handle_t, c_char_p, POINTER(c_size_t), POINTER(c_void_p) )
+
+###############################################################################
+## @brief Function-pointer for zeModuleGetKernelNames
+if __use_win_types:
+    _zeModuleGetKernelNames_t = WINFUNCTYPE( ze_result_t, ze_module_handle_t, POINTER(c_ulong), POINTER(c_char_p) )
+else:
+    _zeModuleGetKernelNames_t = CFUNCTYPE( ze_result_t, ze_module_handle_t, POINTER(c_ulong), POINTER(c_char_p) )
+
+###############################################################################
+## @brief Function-pointer for zeModuleGetProperties
+if __use_win_types:
+    _zeModuleGetProperties_t = WINFUNCTYPE( ze_result_t, ze_module_handle_t, POINTER(ze_module_properties_t) )
+else:
+    _zeModuleGetProperties_t = CFUNCTYPE( ze_result_t, ze_module_handle_t, POINTER(ze_module_properties_t) )
+
+###############################################################################
+## @brief Function-pointer for zeModuleGetFunctionPointer
+if __use_win_types:
+    _zeModuleGetFunctionPointer_t = WINFUNCTYPE( ze_result_t, ze_module_handle_t, c_char_p, POINTER(c_void_p) )
+else:
+    _zeModuleGetFunctionPointer_t = CFUNCTYPE( ze_result_t, ze_module_handle_t, c_char_p, POINTER(c_void_p) )
+
+
+###############################################################################
+## @brief Table of Module functions pointers
+class _ze_module_dditable_t(Structure):
+    _fields_ = [
+        ("pfnCreate", c_void_p),                                        ## _zeModuleCreate_t
+        ("pfnDestroy", c_void_p),                                       ## _zeModuleDestroy_t
+        ("pfnDynamicLink", c_void_p),                                   ## _zeModuleDynamicLink_t
+        ("pfnGetNativeBinary", c_void_p),                               ## _zeModuleGetNativeBinary_t
+        ("pfnGetGlobalPointer", c_void_p),                              ## _zeModuleGetGlobalPointer_t
+        ("pfnGetKernelNames", c_void_p),                                ## _zeModuleGetKernelNames_t
+        ("pfnGetProperties", c_void_p),                                 ## _zeModuleGetProperties_t
+        ("pfnGetFunctionPointer", c_void_p)                             ## _zeModuleGetFunctionPointer_t
+    ]
+
+###############################################################################
+## @brief Function-pointer for zeModuleBuildLogDestroy
+if __use_win_types:
+    _zeModuleBuildLogDestroy_t = WINFUNCTYPE( ze_result_t, ze_module_build_log_handle_t )
+else:
+    _zeModuleBuildLogDestroy_t = CFUNCTYPE( ze_result_t, ze_module_build_log_handle_t )
+
+###############################################################################
+## @brief Function-pointer for zeModuleBuildLogGetString
+if __use_win_types:
+    _zeModuleBuildLogGetString_t = WINFUNCTYPE( ze_result_t, ze_module_build_log_handle_t, POINTER(c_size_t), c_char_p )
+else:
+    _zeModuleBuildLogGetString_t = CFUNCTYPE( ze_result_t, ze_module_build_log_handle_t, POINTER(c_size_t), c_char_p )
+
+
+###############################################################################
+## @brief Table of ModuleBuildLog functions pointers
+class _ze_module_build_log_dditable_t(Structure):
+    _fields_ = [
+        ("pfnDestroy", c_void_p),                                       ## _zeModuleBuildLogDestroy_t
+        ("pfnGetString", c_void_p)                                      ## _zeModuleBuildLogGetString_t
     ]
 
 ###############################################################################
@@ -2353,6 +2448,52 @@ class _ze_kernel_dditable_t(Structure):
     ]
 
 ###############################################################################
+## @brief Function-pointer for zeSamplerCreate
+if __use_win_types:
+    _zeSamplerCreate_t = WINFUNCTYPE( ze_result_t, ze_context_handle_t, ze_device_handle_t, POINTER(ze_sampler_desc_t), POINTER(ze_sampler_handle_t) )
+else:
+    _zeSamplerCreate_t = CFUNCTYPE( ze_result_t, ze_context_handle_t, ze_device_handle_t, POINTER(ze_sampler_desc_t), POINTER(ze_sampler_handle_t) )
+
+###############################################################################
+## @brief Function-pointer for zeSamplerDestroy
+if __use_win_types:
+    _zeSamplerDestroy_t = WINFUNCTYPE( ze_result_t, ze_sampler_handle_t )
+else:
+    _zeSamplerDestroy_t = CFUNCTYPE( ze_result_t, ze_sampler_handle_t )
+
+
+###############################################################################
+## @brief Table of Sampler functions pointers
+class _ze_sampler_dditable_t(Structure):
+    _fields_ = [
+        ("pfnCreate", c_void_p),                                        ## _zeSamplerCreate_t
+        ("pfnDestroy", c_void_p)                                        ## _zeSamplerDestroy_t
+    ]
+
+###############################################################################
+## @brief Function-pointer for zePhysicalMemCreate
+if __use_win_types:
+    _zePhysicalMemCreate_t = WINFUNCTYPE( ze_result_t, ze_context_handle_t, ze_device_handle_t, POINTER(ze_physical_mem_desc_t), POINTER(ze_physical_mem_handle_t) )
+else:
+    _zePhysicalMemCreate_t = CFUNCTYPE( ze_result_t, ze_context_handle_t, ze_device_handle_t, POINTER(ze_physical_mem_desc_t), POINTER(ze_physical_mem_handle_t) )
+
+###############################################################################
+## @brief Function-pointer for zePhysicalMemDestroy
+if __use_win_types:
+    _zePhysicalMemDestroy_t = WINFUNCTYPE( ze_result_t, ze_context_handle_t, ze_physical_mem_handle_t )
+else:
+    _zePhysicalMemDestroy_t = CFUNCTYPE( ze_result_t, ze_context_handle_t, ze_physical_mem_handle_t )
+
+
+###############################################################################
+## @brief Table of PhysicalMem functions pointers
+class _ze_physical_mem_dditable_t(Structure):
+    _fields_ = [
+        ("pfnCreate", c_void_p),                                        ## _zePhysicalMemCreate_t
+        ("pfnDestroy", c_void_p)                                        ## _zePhysicalMemDestroy_t
+    ]
+
+###############################################################################
 ## @brief Function-pointer for zeMemAllocShared
 if __use_win_types:
     _zeMemAllocShared_t = WINFUNCTYPE( ze_result_t, ze_context_handle_t, POINTER(ze_device_mem_alloc_desc_t), POINTER(ze_host_mem_alloc_desc_t), c_size_t, c_size_t, ze_device_handle_t, POINTER(c_void_p) )
@@ -2432,146 +2573,6 @@ class _ze_mem_dditable_t(Structure):
     ]
 
 ###############################################################################
-## @brief Function-pointer for zeModuleCreate
-if __use_win_types:
-    _zeModuleCreate_t = WINFUNCTYPE( ze_result_t, ze_context_handle_t, ze_device_handle_t, POINTER(ze_module_desc_t), POINTER(ze_module_handle_t), POINTER(ze_module_build_log_handle_t) )
-else:
-    _zeModuleCreate_t = CFUNCTYPE( ze_result_t, ze_context_handle_t, ze_device_handle_t, POINTER(ze_module_desc_t), POINTER(ze_module_handle_t), POINTER(ze_module_build_log_handle_t) )
-
-###############################################################################
-## @brief Function-pointer for zeModuleDestroy
-if __use_win_types:
-    _zeModuleDestroy_t = WINFUNCTYPE( ze_result_t, ze_module_handle_t )
-else:
-    _zeModuleDestroy_t = CFUNCTYPE( ze_result_t, ze_module_handle_t )
-
-###############################################################################
-## @brief Function-pointer for zeModuleDynamicLink
-if __use_win_types:
-    _zeModuleDynamicLink_t = WINFUNCTYPE( ze_result_t, c_ulong, POINTER(ze_module_handle_t), POINTER(ze_module_build_log_handle_t) )
-else:
-    _zeModuleDynamicLink_t = CFUNCTYPE( ze_result_t, c_ulong, POINTER(ze_module_handle_t), POINTER(ze_module_build_log_handle_t) )
-
-###############################################################################
-## @brief Function-pointer for zeModuleGetNativeBinary
-if __use_win_types:
-    _zeModuleGetNativeBinary_t = WINFUNCTYPE( ze_result_t, ze_module_handle_t, POINTER(c_size_t), POINTER(c_ubyte) )
-else:
-    _zeModuleGetNativeBinary_t = CFUNCTYPE( ze_result_t, ze_module_handle_t, POINTER(c_size_t), POINTER(c_ubyte) )
-
-###############################################################################
-## @brief Function-pointer for zeModuleGetGlobalPointer
-if __use_win_types:
-    _zeModuleGetGlobalPointer_t = WINFUNCTYPE( ze_result_t, ze_module_handle_t, c_char_p, POINTER(c_size_t), POINTER(c_void_p) )
-else:
-    _zeModuleGetGlobalPointer_t = CFUNCTYPE( ze_result_t, ze_module_handle_t, c_char_p, POINTER(c_size_t), POINTER(c_void_p) )
-
-###############################################################################
-## @brief Function-pointer for zeModuleGetKernelNames
-if __use_win_types:
-    _zeModuleGetKernelNames_t = WINFUNCTYPE( ze_result_t, ze_module_handle_t, POINTER(c_ulong), POINTER(c_char_p) )
-else:
-    _zeModuleGetKernelNames_t = CFUNCTYPE( ze_result_t, ze_module_handle_t, POINTER(c_ulong), POINTER(c_char_p) )
-
-###############################################################################
-## @brief Function-pointer for zeModuleGetProperties
-if __use_win_types:
-    _zeModuleGetProperties_t = WINFUNCTYPE( ze_result_t, ze_module_handle_t, POINTER(ze_module_properties_t) )
-else:
-    _zeModuleGetProperties_t = CFUNCTYPE( ze_result_t, ze_module_handle_t, POINTER(ze_module_properties_t) )
-
-###############################################################################
-## @brief Function-pointer for zeModuleGetFunctionPointer
-if __use_win_types:
-    _zeModuleGetFunctionPointer_t = WINFUNCTYPE( ze_result_t, ze_module_handle_t, c_char_p, POINTER(c_void_p) )
-else:
-    _zeModuleGetFunctionPointer_t = CFUNCTYPE( ze_result_t, ze_module_handle_t, c_char_p, POINTER(c_void_p) )
-
-
-###############################################################################
-## @brief Table of Module functions pointers
-class _ze_module_dditable_t(Structure):
-    _fields_ = [
-        ("pfnCreate", c_void_p),                                        ## _zeModuleCreate_t
-        ("pfnDestroy", c_void_p),                                       ## _zeModuleDestroy_t
-        ("pfnDynamicLink", c_void_p),                                   ## _zeModuleDynamicLink_t
-        ("pfnGetNativeBinary", c_void_p),                               ## _zeModuleGetNativeBinary_t
-        ("pfnGetGlobalPointer", c_void_p),                              ## _zeModuleGetGlobalPointer_t
-        ("pfnGetKernelNames", c_void_p),                                ## _zeModuleGetKernelNames_t
-        ("pfnGetProperties", c_void_p),                                 ## _zeModuleGetProperties_t
-        ("pfnGetFunctionPointer", c_void_p)                             ## _zeModuleGetFunctionPointer_t
-    ]
-
-###############################################################################
-## @brief Function-pointer for zeModuleBuildLogDestroy
-if __use_win_types:
-    _zeModuleBuildLogDestroy_t = WINFUNCTYPE( ze_result_t, ze_module_build_log_handle_t )
-else:
-    _zeModuleBuildLogDestroy_t = CFUNCTYPE( ze_result_t, ze_module_build_log_handle_t )
-
-###############################################################################
-## @brief Function-pointer for zeModuleBuildLogGetString
-if __use_win_types:
-    _zeModuleBuildLogGetString_t = WINFUNCTYPE( ze_result_t, ze_module_build_log_handle_t, POINTER(c_size_t), c_char_p )
-else:
-    _zeModuleBuildLogGetString_t = CFUNCTYPE( ze_result_t, ze_module_build_log_handle_t, POINTER(c_size_t), c_char_p )
-
-
-###############################################################################
-## @brief Table of ModuleBuildLog functions pointers
-class _ze_module_build_log_dditable_t(Structure):
-    _fields_ = [
-        ("pfnDestroy", c_void_p),                                       ## _zeModuleBuildLogDestroy_t
-        ("pfnGetString", c_void_p)                                      ## _zeModuleBuildLogGetString_t
-    ]
-
-###############################################################################
-## @brief Function-pointer for zePhysicalMemCreate
-if __use_win_types:
-    _zePhysicalMemCreate_t = WINFUNCTYPE( ze_result_t, ze_context_handle_t, ze_device_handle_t, POINTER(ze_physical_mem_desc_t), POINTER(ze_physical_mem_handle_t) )
-else:
-    _zePhysicalMemCreate_t = CFUNCTYPE( ze_result_t, ze_context_handle_t, ze_device_handle_t, POINTER(ze_physical_mem_desc_t), POINTER(ze_physical_mem_handle_t) )
-
-###############################################################################
-## @brief Function-pointer for zePhysicalMemDestroy
-if __use_win_types:
-    _zePhysicalMemDestroy_t = WINFUNCTYPE( ze_result_t, ze_context_handle_t, ze_physical_mem_handle_t )
-else:
-    _zePhysicalMemDestroy_t = CFUNCTYPE( ze_result_t, ze_context_handle_t, ze_physical_mem_handle_t )
-
-
-###############################################################################
-## @brief Table of PhysicalMem functions pointers
-class _ze_physical_mem_dditable_t(Structure):
-    _fields_ = [
-        ("pfnCreate", c_void_p),                                        ## _zePhysicalMemCreate_t
-        ("pfnDestroy", c_void_p)                                        ## _zePhysicalMemDestroy_t
-    ]
-
-###############################################################################
-## @brief Function-pointer for zeSamplerCreate
-if __use_win_types:
-    _zeSamplerCreate_t = WINFUNCTYPE( ze_result_t, ze_context_handle_t, ze_device_handle_t, POINTER(ze_sampler_desc_t), POINTER(ze_sampler_handle_t) )
-else:
-    _zeSamplerCreate_t = CFUNCTYPE( ze_result_t, ze_context_handle_t, ze_device_handle_t, POINTER(ze_sampler_desc_t), POINTER(ze_sampler_handle_t) )
-
-###############################################################################
-## @brief Function-pointer for zeSamplerDestroy
-if __use_win_types:
-    _zeSamplerDestroy_t = WINFUNCTYPE( ze_result_t, ze_sampler_handle_t )
-else:
-    _zeSamplerDestroy_t = CFUNCTYPE( ze_result_t, ze_sampler_handle_t )
-
-
-###############################################################################
-## @brief Table of Sampler functions pointers
-class _ze_sampler_dditable_t(Structure):
-    _fields_ = [
-        ("pfnCreate", c_void_p),                                        ## _zeSamplerCreate_t
-        ("pfnDestroy", c_void_p)                                        ## _zeSamplerDestroy_t
-    ]
-
-###############################################################################
 ## @brief Function-pointer for zeVirtualMemReserve
 if __use_win_types:
     _zeVirtualMemReserve_t = WINFUNCTYPE( ze_result_t, ze_context_handle_t, c_void_p, c_size_t, POINTER(c_void_p) )
@@ -2643,16 +2644,16 @@ class _ze_dditable_t(Structure):
         ("Context", _ze_context_dditable_t),
         ("CommandQueue", _ze_command_queue_dditable_t),
         ("CommandList", _ze_command_list_dditable_t),
-        ("Event", _ze_event_dditable_t),
-        ("EventPool", _ze_event_pool_dditable_t),
         ("Fence", _ze_fence_dditable_t),
+        ("EventPool", _ze_event_pool_dditable_t),
+        ("Event", _ze_event_dditable_t),
         ("Image", _ze_image_dditable_t),
-        ("Kernel", _ze_kernel_dditable_t),
-        ("Mem", _ze_mem_dditable_t),
         ("Module", _ze_module_dditable_t),
         ("ModuleBuildLog", _ze_module_build_log_dditable_t),
-        ("PhysicalMem", _ze_physical_mem_dditable_t),
+        ("Kernel", _ze_kernel_dditable_t),
         ("Sampler", _ze_sampler_dditable_t),
+        ("PhysicalMem", _ze_physical_mem_dditable_t),
+        ("Mem", _ze_mem_dditable_t),
         ("VirtualMem", _ze_virtual_mem_dditable_t)
     ]
 
@@ -2782,20 +2783,18 @@ class ZE_DDI:
         self.zeCommandListAppendLaunchMultipleKernelsIndirect = _zeCommandListAppendLaunchMultipleKernelsIndirect_t(self.__dditable.CommandList.pfnAppendLaunchMultipleKernelsIndirect)
 
         # call driver to get function pointers
-        _Event = _ze_event_dditable_t()
-        r = ze_result_v(self.__dll.zeGetEventProcAddrTable(version, byref(_Event)))
+        _Fence = _ze_fence_dditable_t()
+        r = ze_result_v(self.__dll.zeGetFenceProcAddrTable(version, byref(_Fence)))
         if r != ze_result_v.SUCCESS:
             raise Exception(r)
-        self.__dditable.Event = _Event
+        self.__dditable.Fence = _Fence
 
         # attach function interface to function address
-        self.zeEventCreate = _zeEventCreate_t(self.__dditable.Event.pfnCreate)
-        self.zeEventDestroy = _zeEventDestroy_t(self.__dditable.Event.pfnDestroy)
-        self.zeEventHostSignal = _zeEventHostSignal_t(self.__dditable.Event.pfnHostSignal)
-        self.zeEventHostSynchronize = _zeEventHostSynchronize_t(self.__dditable.Event.pfnHostSynchronize)
-        self.zeEventQueryStatus = _zeEventQueryStatus_t(self.__dditable.Event.pfnQueryStatus)
-        self.zeEventHostReset = _zeEventHostReset_t(self.__dditable.Event.pfnHostReset)
-        self.zeEventQueryKernelTimestamp = _zeEventQueryKernelTimestamp_t(self.__dditable.Event.pfnQueryKernelTimestamp)
+        self.zeFenceCreate = _zeFenceCreate_t(self.__dditable.Fence.pfnCreate)
+        self.zeFenceDestroy = _zeFenceDestroy_t(self.__dditable.Fence.pfnDestroy)
+        self.zeFenceHostSynchronize = _zeFenceHostSynchronize_t(self.__dditable.Fence.pfnHostSynchronize)
+        self.zeFenceQueryStatus = _zeFenceQueryStatus_t(self.__dditable.Fence.pfnQueryStatus)
+        self.zeFenceReset = _zeFenceReset_t(self.__dditable.Fence.pfnReset)
 
         # call driver to get function pointers
         _EventPool = _ze_event_pool_dditable_t()
@@ -2812,18 +2811,20 @@ class ZE_DDI:
         self.zeEventPoolCloseIpcHandle = _zeEventPoolCloseIpcHandle_t(self.__dditable.EventPool.pfnCloseIpcHandle)
 
         # call driver to get function pointers
-        _Fence = _ze_fence_dditable_t()
-        r = ze_result_v(self.__dll.zeGetFenceProcAddrTable(version, byref(_Fence)))
+        _Event = _ze_event_dditable_t()
+        r = ze_result_v(self.__dll.zeGetEventProcAddrTable(version, byref(_Event)))
         if r != ze_result_v.SUCCESS:
             raise Exception(r)
-        self.__dditable.Fence = _Fence
+        self.__dditable.Event = _Event
 
         # attach function interface to function address
-        self.zeFenceCreate = _zeFenceCreate_t(self.__dditable.Fence.pfnCreate)
-        self.zeFenceDestroy = _zeFenceDestroy_t(self.__dditable.Fence.pfnDestroy)
-        self.zeFenceHostSynchronize = _zeFenceHostSynchronize_t(self.__dditable.Fence.pfnHostSynchronize)
-        self.zeFenceQueryStatus = _zeFenceQueryStatus_t(self.__dditable.Fence.pfnQueryStatus)
-        self.zeFenceReset = _zeFenceReset_t(self.__dditable.Fence.pfnReset)
+        self.zeEventCreate = _zeEventCreate_t(self.__dditable.Event.pfnCreate)
+        self.zeEventDestroy = _zeEventDestroy_t(self.__dditable.Event.pfnDestroy)
+        self.zeEventHostSignal = _zeEventHostSignal_t(self.__dditable.Event.pfnHostSignal)
+        self.zeEventHostSynchronize = _zeEventHostSynchronize_t(self.__dditable.Event.pfnHostSynchronize)
+        self.zeEventQueryStatus = _zeEventQueryStatus_t(self.__dditable.Event.pfnQueryStatus)
+        self.zeEventHostReset = _zeEventHostReset_t(self.__dditable.Event.pfnHostReset)
+        self.zeEventQueryKernelTimestamp = _zeEventQueryKernelTimestamp_t(self.__dditable.Event.pfnQueryKernelTimestamp)
 
         # call driver to get function pointers
         _Image = _ze_image_dditable_t()
@@ -2836,45 +2837,6 @@ class ZE_DDI:
         self.zeImageGetProperties = _zeImageGetProperties_t(self.__dditable.Image.pfnGetProperties)
         self.zeImageCreate = _zeImageCreate_t(self.__dditable.Image.pfnCreate)
         self.zeImageDestroy = _zeImageDestroy_t(self.__dditable.Image.pfnDestroy)
-
-        # call driver to get function pointers
-        _Kernel = _ze_kernel_dditable_t()
-        r = ze_result_v(self.__dll.zeGetKernelProcAddrTable(version, byref(_Kernel)))
-        if r != ze_result_v.SUCCESS:
-            raise Exception(r)
-        self.__dditable.Kernel = _Kernel
-
-        # attach function interface to function address
-        self.zeKernelCreate = _zeKernelCreate_t(self.__dditable.Kernel.pfnCreate)
-        self.zeKernelDestroy = _zeKernelDestroy_t(self.__dditable.Kernel.pfnDestroy)
-        self.zeKernelSetCacheConfig = _zeKernelSetCacheConfig_t(self.__dditable.Kernel.pfnSetCacheConfig)
-        self.zeKernelSetGroupSize = _zeKernelSetGroupSize_t(self.__dditable.Kernel.pfnSetGroupSize)
-        self.zeKernelSuggestGroupSize = _zeKernelSuggestGroupSize_t(self.__dditable.Kernel.pfnSuggestGroupSize)
-        self.zeKernelSuggestMaxCooperativeGroupCount = _zeKernelSuggestMaxCooperativeGroupCount_t(self.__dditable.Kernel.pfnSuggestMaxCooperativeGroupCount)
-        self.zeKernelSetArgumentValue = _zeKernelSetArgumentValue_t(self.__dditable.Kernel.pfnSetArgumentValue)
-        self.zeKernelSetIndirectAccess = _zeKernelSetIndirectAccess_t(self.__dditable.Kernel.pfnSetIndirectAccess)
-        self.zeKernelGetIndirectAccess = _zeKernelGetIndirectAccess_t(self.__dditable.Kernel.pfnGetIndirectAccess)
-        self.zeKernelGetSourceAttributes = _zeKernelGetSourceAttributes_t(self.__dditable.Kernel.pfnGetSourceAttributes)
-        self.zeKernelGetProperties = _zeKernelGetProperties_t(self.__dditable.Kernel.pfnGetProperties)
-        self.zeKernelGetName = _zeKernelGetName_t(self.__dditable.Kernel.pfnGetName)
-
-        # call driver to get function pointers
-        _Mem = _ze_mem_dditable_t()
-        r = ze_result_v(self.__dll.zeGetMemProcAddrTable(version, byref(_Mem)))
-        if r != ze_result_v.SUCCESS:
-            raise Exception(r)
-        self.__dditable.Mem = _Mem
-
-        # attach function interface to function address
-        self.zeMemAllocShared = _zeMemAllocShared_t(self.__dditable.Mem.pfnAllocShared)
-        self.zeMemAllocDevice = _zeMemAllocDevice_t(self.__dditable.Mem.pfnAllocDevice)
-        self.zeMemAllocHost = _zeMemAllocHost_t(self.__dditable.Mem.pfnAllocHost)
-        self.zeMemFree = _zeMemFree_t(self.__dditable.Mem.pfnFree)
-        self.zeMemGetAllocProperties = _zeMemGetAllocProperties_t(self.__dditable.Mem.pfnGetAllocProperties)
-        self.zeMemGetAddressRange = _zeMemGetAddressRange_t(self.__dditable.Mem.pfnGetAddressRange)
-        self.zeMemGetIpcHandle = _zeMemGetIpcHandle_t(self.__dditable.Mem.pfnGetIpcHandle)
-        self.zeMemOpenIpcHandle = _zeMemOpenIpcHandle_t(self.__dditable.Mem.pfnOpenIpcHandle)
-        self.zeMemCloseIpcHandle = _zeMemCloseIpcHandle_t(self.__dditable.Mem.pfnCloseIpcHandle)
 
         # call driver to get function pointers
         _Module = _ze_module_dditable_t()
@@ -2905,15 +2867,25 @@ class ZE_DDI:
         self.zeModuleBuildLogGetString = _zeModuleBuildLogGetString_t(self.__dditable.ModuleBuildLog.pfnGetString)
 
         # call driver to get function pointers
-        _PhysicalMem = _ze_physical_mem_dditable_t()
-        r = ze_result_v(self.__dll.zeGetPhysicalMemProcAddrTable(version, byref(_PhysicalMem)))
+        _Kernel = _ze_kernel_dditable_t()
+        r = ze_result_v(self.__dll.zeGetKernelProcAddrTable(version, byref(_Kernel)))
         if r != ze_result_v.SUCCESS:
             raise Exception(r)
-        self.__dditable.PhysicalMem = _PhysicalMem
+        self.__dditable.Kernel = _Kernel
 
         # attach function interface to function address
-        self.zePhysicalMemCreate = _zePhysicalMemCreate_t(self.__dditable.PhysicalMem.pfnCreate)
-        self.zePhysicalMemDestroy = _zePhysicalMemDestroy_t(self.__dditable.PhysicalMem.pfnDestroy)
+        self.zeKernelCreate = _zeKernelCreate_t(self.__dditable.Kernel.pfnCreate)
+        self.zeKernelDestroy = _zeKernelDestroy_t(self.__dditable.Kernel.pfnDestroy)
+        self.zeKernelSetCacheConfig = _zeKernelSetCacheConfig_t(self.__dditable.Kernel.pfnSetCacheConfig)
+        self.zeKernelSetGroupSize = _zeKernelSetGroupSize_t(self.__dditable.Kernel.pfnSetGroupSize)
+        self.zeKernelSuggestGroupSize = _zeKernelSuggestGroupSize_t(self.__dditable.Kernel.pfnSuggestGroupSize)
+        self.zeKernelSuggestMaxCooperativeGroupCount = _zeKernelSuggestMaxCooperativeGroupCount_t(self.__dditable.Kernel.pfnSuggestMaxCooperativeGroupCount)
+        self.zeKernelSetArgumentValue = _zeKernelSetArgumentValue_t(self.__dditable.Kernel.pfnSetArgumentValue)
+        self.zeKernelSetIndirectAccess = _zeKernelSetIndirectAccess_t(self.__dditable.Kernel.pfnSetIndirectAccess)
+        self.zeKernelGetIndirectAccess = _zeKernelGetIndirectAccess_t(self.__dditable.Kernel.pfnGetIndirectAccess)
+        self.zeKernelGetSourceAttributes = _zeKernelGetSourceAttributes_t(self.__dditable.Kernel.pfnGetSourceAttributes)
+        self.zeKernelGetProperties = _zeKernelGetProperties_t(self.__dditable.Kernel.pfnGetProperties)
+        self.zeKernelGetName = _zeKernelGetName_t(self.__dditable.Kernel.pfnGetName)
 
         # call driver to get function pointers
         _Sampler = _ze_sampler_dditable_t()
@@ -2925,6 +2897,35 @@ class ZE_DDI:
         # attach function interface to function address
         self.zeSamplerCreate = _zeSamplerCreate_t(self.__dditable.Sampler.pfnCreate)
         self.zeSamplerDestroy = _zeSamplerDestroy_t(self.__dditable.Sampler.pfnDestroy)
+
+        # call driver to get function pointers
+        _PhysicalMem = _ze_physical_mem_dditable_t()
+        r = ze_result_v(self.__dll.zeGetPhysicalMemProcAddrTable(version, byref(_PhysicalMem)))
+        if r != ze_result_v.SUCCESS:
+            raise Exception(r)
+        self.__dditable.PhysicalMem = _PhysicalMem
+
+        # attach function interface to function address
+        self.zePhysicalMemCreate = _zePhysicalMemCreate_t(self.__dditable.PhysicalMem.pfnCreate)
+        self.zePhysicalMemDestroy = _zePhysicalMemDestroy_t(self.__dditable.PhysicalMem.pfnDestroy)
+
+        # call driver to get function pointers
+        _Mem = _ze_mem_dditable_t()
+        r = ze_result_v(self.__dll.zeGetMemProcAddrTable(version, byref(_Mem)))
+        if r != ze_result_v.SUCCESS:
+            raise Exception(r)
+        self.__dditable.Mem = _Mem
+
+        # attach function interface to function address
+        self.zeMemAllocShared = _zeMemAllocShared_t(self.__dditable.Mem.pfnAllocShared)
+        self.zeMemAllocDevice = _zeMemAllocDevice_t(self.__dditable.Mem.pfnAllocDevice)
+        self.zeMemAllocHost = _zeMemAllocHost_t(self.__dditable.Mem.pfnAllocHost)
+        self.zeMemFree = _zeMemFree_t(self.__dditable.Mem.pfnFree)
+        self.zeMemGetAllocProperties = _zeMemGetAllocProperties_t(self.__dditable.Mem.pfnGetAllocProperties)
+        self.zeMemGetAddressRange = _zeMemGetAddressRange_t(self.__dditable.Mem.pfnGetAddressRange)
+        self.zeMemGetIpcHandle = _zeMemGetIpcHandle_t(self.__dditable.Mem.pfnGetIpcHandle)
+        self.zeMemOpenIpcHandle = _zeMemOpenIpcHandle_t(self.__dditable.Mem.pfnOpenIpcHandle)
+        self.zeMemCloseIpcHandle = _zeMemCloseIpcHandle_t(self.__dditable.Mem.pfnCloseIpcHandle)
 
         # call driver to get function pointers
         _VirtualMem = _ze_virtual_mem_dditable_t()

@@ -5,6 +5,7 @@
  * SPDX-License-Identifier: MIT
  *
  * @file zet_wprapi.cpp
+ * @version v1.0-r1.0.4.8
  *
  * @brief C++ wrapper of zet
  *
@@ -17,15 +18,33 @@
 
 namespace zet
 {
+#if !defined(__GNUC__)
 #pragma region common
+#endif
+#if !defined(__GNUC__)
 #pragma endregion
+#endif
+#if !defined(__GNUC__)
 #pragma region device
+#endif
+#if !defined(__GNUC__)
 #pragma endregion
+#endif
+#if !defined(__GNUC__)
 #pragma region context
+#endif
+#if !defined(__GNUC__)
 #pragma endregion
+#endif
+#if !defined(__GNUC__)
 #pragma region cmdlist
+#endif
+#if !defined(__GNUC__)
 #pragma endregion
+#endif
+#if !defined(__GNUC__)
 #pragma region module
+#endif
     ///////////////////////////////////////////////////////////////////////////////
     /// @brief Retrieve debug info from module.
     /// 
@@ -55,8 +74,12 @@ namespace zet
             throw exception_t( result, __FILE__, ZE_STRING(__LINE__), "zet::Module::GetDebugInfo" );
     }
 
+#if !defined(__GNUC__)
 #pragma endregion
+#endif
+#if !defined(__GNUC__)
 #pragma region debug
+#endif
     ///////////////////////////////////////////////////////////////////////////////
     Debug::Debug( 
         debug_session_handle_t handle                   ///< [in] debug session handle
@@ -359,8 +382,12 @@ namespace zet
             throw exception_t( result, __FILE__, ZE_STRING(__LINE__), "zet::Debug::WriteRegisters" );
     }
 
+#if !defined(__GNUC__)
 #pragma endregion
+#endif
+#if !defined(__GNUC__)
 #pragma region metric
+#endif
     ///////////////////////////////////////////////////////////////////////////////
     MetricGroup::MetricGroup( 
         metric_group_handle_t handle,                   ///< [in] handle of metric group object
@@ -636,9 +663,10 @@ namespace zet
     /// @details
     ///     - The notification event must have been created from an event pool that
     ///       was created using ::ZE_EVENT_POOL_FLAG_HOST_VISIBLE flag.
-    ///     - The notification event must **not** have been created from an event
-    ///       pool that was created using ::ZE_EVENT_POOL_FLAG_KERNEL_TIMESTAMP
-    ///       flag.
+    ///     - The duration of the signal event created from an event pool that was
+    ///       created using ::ZE_EVENT_POOL_FLAG_KERNEL_TIMESTAMP flag is undefined.
+    ///       However, for consistency and orthogonality the event will report
+    ///       correctly as signaled when used by other event API functionality.
     ///     - The application must **not** call this function from simultaneous
     ///       threads with the same device handle.
     /// 
@@ -965,9 +993,10 @@ namespace zet
     ///       by the device on which the command list was created.
     ///     - The application must ensure the command list, events and metric query
     ///       were created on the same context.
-    ///     - The application must ensure the signal event was **not** created from
-    ///       an event pool that was created using
-    ///       ::ZE_EVENT_POOL_FLAG_KERNEL_TIMESTAMP flag.
+    ///     - The duration of the signal event created from an event pool that was
+    ///       created using ::ZE_EVENT_POOL_FLAG_KERNEL_TIMESTAMP flag is undefined.
+    ///       However, for consistency and orthogonality the event will report
+    ///       correctly as signaled when used by other event API functionality.
     ///     - The application must **not** call this function from simultaneous
     ///       threads with the same command list handle.
     /// 
@@ -1048,8 +1077,12 @@ namespace zet
             throw exception_t( result, __FILE__, ZE_STRING(__LINE__), "zet::MetricQuery::GetData" );
     }
 
+#if !defined(__GNUC__)
 #pragma endregion
+#endif
+#if !defined(__GNUC__)
 #pragma region pin
+#endif
     ///////////////////////////////////////////////////////////////////////////////
     /// @brief Retrieve profiling information generated for the kernel.
     /// 
@@ -1082,8 +1115,12 @@ namespace zet
         return *reinterpret_cast<profile_properties_t*>( &profileProperties );
     }
 
+#if !defined(__GNUC__)
 #pragma endregion
+#endif
+#if !defined(__GNUC__)
 #pragma region tracing
+#endif
     ///////////////////////////////////////////////////////////////////////////////
     TracerExp::TracerExp( 
         tracer_exp_handle_t handle,                     ///< [in] handle of tracer object
@@ -1242,12 +1279,16 @@ namespace zet
             throw exception_t( result, __FILE__, ZE_STRING(__LINE__), "zet::TracerExp::SetEnabled" );
     }
 
+#if !defined(__GNUC__)
 #pragma endregion
+#endif
 } // namespace zet
 
 namespace zet
 {
+#if !defined(__GNUC__)
 #pragma region common
+#endif
     ///////////////////////////////////////////////////////////////////////////////
     /// @brief Converts structure_type_t to std::string
     std::string to_string( const structure_type_t val )
@@ -1424,8 +1465,12 @@ namespace zet
         return str;
     }
 
+#if !defined(__GNUC__)
 #pragma endregion
+#endif
+#if !defined(__GNUC__)
 #pragma region device
+#endif
     ///////////////////////////////////////////////////////////////////////////////
     /// @brief Converts Device::debug_property_flags_t to std::string
     std::string to_string( const Device::debug_property_flags_t val )
@@ -1470,12 +1515,24 @@ namespace zet
         return str;
     }
 
+#if !defined(__GNUC__)
 #pragma endregion
+#endif
+#if !defined(__GNUC__)
 #pragma region context
+#endif
+#if !defined(__GNUC__)
 #pragma endregion
+#endif
+#if !defined(__GNUC__)
 #pragma region cmdlist
+#endif
+#if !defined(__GNUC__)
 #pragma endregion
+#endif
+#if !defined(__GNUC__)
 #pragma region module
+#endif
     ///////////////////////////////////////////////////////////////////////////////
     /// @brief Converts Module::debug_info_format_t to std::string
     std::string to_string( const Module::debug_info_format_t val )
@@ -1605,8 +1662,12 @@ namespace zet
         return str;
     }
 
+#if !defined(__GNUC__)
 #pragma endregion
+#endif
+#if !defined(__GNUC__)
 #pragma region debug
+#endif
     ///////////////////////////////////////////////////////////////////////////////
     /// @brief Converts Debug::event_flags_t to std::string
     std::string to_string( const Debug::event_flags_t val )
@@ -1953,8 +2014,12 @@ namespace zet
         return str;
     }
 
+#if !defined(__GNUC__)
 #pragma endregion
+#endif
+#if !defined(__GNUC__)
 #pragma region metric
+#endif
     ///////////////////////////////////////////////////////////////////////////////
     /// @brief Converts MetricGroup::sampling_type_flags_t to std::string
     std::string to_string( const MetricGroup::sampling_type_flags_t val )
@@ -2221,10 +2286,18 @@ namespace zet
         return str;
     }
 
+#if !defined(__GNUC__)
 #pragma endregion
+#endif
+#if !defined(__GNUC__)
 #pragma region pin
+#endif
+#if !defined(__GNUC__)
 #pragma endregion
+#endif
+#if !defined(__GNUC__)
 #pragma region tracing
+#endif
     ///////////////////////////////////////////////////////////////////////////////
     /// @brief Converts api_tracing_exp_version_t to std::string
     std::string to_string( const api_tracing_exp_version_t val )
@@ -2274,5 +2347,7 @@ namespace zet
         return str;
     }
 
+#if !defined(__GNUC__)
 #pragma endregion
+#endif
 } // namespace zet

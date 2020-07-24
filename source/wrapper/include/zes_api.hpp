@@ -5,6 +5,7 @@
  * SPDX-License-Identifier: MIT
  *
  * @file zes_api.hpp
+ * @version v1.0-r1.0.4.8
  *
  */
 #ifndef _ZES_API_HPP
@@ -19,7 +20,9 @@
 #include "ze_api.hpp"
 
 // Intel 'oneAPI' Level-Zero Sysman API common types
+#if !defined(__GNUC__)
 #pragma region common
+#endif
 namespace zes
 {
     ///////////////////////////////////////////////////////////////////////////////
@@ -248,9 +251,13 @@ namespace zes
     using exception_t = ze::exception_t;
 
 } // namespace zes
+#if !defined(__GNUC__)
 #pragma endregion
+#endif
 // Intel 'oneAPI' Level-Zero Tool APIs for System Resource Management (Sysman) - Device management
+#if !defined(__GNUC__)
 #pragma region device
+#endif
 ///////////////////////////////////////////////////////////////////////////////
 #ifndef ZES_STRING_PROPERTY_SIZE
 /// @brief Maximum number of characters in string properties.
@@ -1268,9 +1275,13 @@ namespace zes
     std::string to_string( const Device::sched_timeslice_properties_t val );
 
 } // namespace zes
+#if !defined(__GNUC__)
 #pragma endregion
+#endif
 // Intel 'oneAPI' Level-Zero Tool APIs for System Resource Management (Sysman) - Firmware management
+#if !defined(__GNUC__)
 #pragma region diagnostics
+#endif
 ///////////////////////////////////////////////////////////////////////////////
 #ifndef ZES_DIAG_FIRST_TEST_INDEX
 /// @brief Diagnostic test index to use for the very first test.
@@ -1433,9 +1444,13 @@ namespace zes
     std::string to_string( const Diagnostics::diag_properties_t val );
 
 } // namespace zes
+#if !defined(__GNUC__)
 #pragma endregion
+#endif
 // Intel 'oneAPI' Level-Zero Tool APIs for System Resource Management (Sysman) - Engine groups
+#if !defined(__GNUC__)
 #pragma region engine
+#endif
 namespace zes
 {
     ///////////////////////////////////////////////////////////////////////////////
@@ -1585,9 +1600,13 @@ namespace zes
     std::string to_string( const Engine::stats_t val );
 
 } // namespace zes
+#if !defined(__GNUC__)
 #pragma endregion
+#endif
 // Intel 'oneAPI' Level-Zero Tool APIs for System Resource Management (Sysman) - Event management
+#if !defined(__GNUC__)
 #pragma region events
+#endif
 namespace zes
 {
 } // namespace zes
@@ -1595,9 +1614,13 @@ namespace zes
 namespace zes
 {
 } // namespace zes
+#if !defined(__GNUC__)
 #pragma endregion
+#endif
 // Intel 'oneAPI' Level-Zero Tool APIs for System Resource Management (Sysman) - Firmware management
+#if !defined(__GNUC__)
 #pragma region fabric
+#endif
 ///////////////////////////////////////////////////////////////////////////////
 #ifndef ZES_MAX_FABRIC_PORT_MODEL_SIZE
 /// @brief Maximum Fabric port model string size
@@ -1940,9 +1963,13 @@ namespace zes
     std::string to_string( const FabricPort::throughput_t val );
 
 } // namespace zes
+#if !defined(__GNUC__)
 #pragma endregion
+#endif
 // Intel 'oneAPI' Level-Zero Tool APIs for System Resource Management (Sysman) - Firmware management
+#if !defined(__GNUC__)
 #pragma region fan
+#endif
 ///////////////////////////////////////////////////////////////////////////////
 #ifndef ZES_FAN_TEMP_SPEED_PAIR_COUNT
 /// @brief Maximum number of fan temperature/speed pairs in the fan speed table.
@@ -2185,9 +2212,13 @@ namespace zes
     std::string to_string( const Fan::config_t val );
 
 } // namespace zes
+#if !defined(__GNUC__)
 #pragma endregion
+#endif
 // Intel 'oneAPI' Level-Zero Tool APIs for System Resource Management (Sysman) - Firmware management
+#if !defined(__GNUC__)
 #pragma region firmware
+#endif
 namespace zes
 {
     ///////////////////////////////////////////////////////////////////////////////
@@ -2276,9 +2307,13 @@ namespace zes
     std::string to_string( const Firmware::properties_t val );
 
 } // namespace zes
+#if !defined(__GNUC__)
 #pragma endregion
+#endif
 // Intel 'oneAPI' Level-Zero Tool APIs for System Resource Management (Sysman) - Frequency domains
+#if !defined(__GNUC__)
 #pragma region frequency
+#endif
 namespace zes
 {
     ///////////////////////////////////////////////////////////////////////////////
@@ -2766,9 +2801,13 @@ namespace zes
     std::string to_string( const Frequency::oc_capabilities_t val );
 
 } // namespace zes
+#if !defined(__GNUC__)
 #pragma endregion
+#endif
 // Intel 'oneAPI' Level-Zero Tool APIs for System Resource Management (Sysman) - Firmware management
+#if !defined(__GNUC__)
 #pragma region led
+#endif
 namespace zes
 {
     ///////////////////////////////////////////////////////////////////////////////
@@ -2908,9 +2947,13 @@ namespace zes
     std::string to_string( const Led::state_t val );
 
 } // namespace zes
+#if !defined(__GNUC__)
 #pragma endregion
+#endif
 // Intel 'oneAPI' Level-Zero Tool APIs for System Resource Management (Sysman) - Memory management
+#if !defined(__GNUC__)
 #pragma region memory
+#endif
 namespace zes
 {
     ///////////////////////////////////////////////////////////////////////////////
@@ -3118,9 +3161,13 @@ namespace zes
     std::string to_string( const Memory::mem_bandwidth_t val );
 
 } // namespace zes
+#if !defined(__GNUC__)
 #pragma endregion
+#endif
 // Intel 'oneAPI' Level-Zero Tool APIs for System Resource Management (Sysman) - Performance factor
+#if !defined(__GNUC__)
 #pragma region performance
+#endif
 namespace zes
 {
     ///////////////////////////////////////////////////////////////////////////////
@@ -3222,9 +3269,13 @@ namespace zes
     std::string to_string( const PerformanceFactor::perf_properties_t val );
 
 } // namespace zes
+#if !defined(__GNUC__)
 #pragma endregion
+#endif
 // Intel 'oneAPI' Level-Zero Tool APIs for System Resource Management (Sysman) - Scheduler management
+#if !defined(__GNUC__)
 #pragma region power
+#endif
 namespace zes
 {
     ///////////////////////////////////////////////////////////////////////////////
@@ -3495,9 +3546,13 @@ namespace zes
     std::string to_string( const Power::energy_threshold_t val );
 
 } // namespace zes
+#if !defined(__GNUC__)
 #pragma endregion
+#endif
 // Intel 'oneAPI' Level-Zero Tool APIs for System Resource Management (Sysman) - Firmware management
+#if !defined(__GNUC__)
 #pragma region psu
+#endif
 namespace zes
 {
     ///////////////////////////////////////////////////////////////////////////////
@@ -3618,9 +3673,13 @@ namespace zes
     std::string to_string( const Psu::state_t val );
 
 } // namespace zes
+#if !defined(__GNUC__)
 #pragma endregion
+#endif
 // Intel 'oneAPI' Level-Zero Tool APIs for System Resource Management (Sysman) - Firmware management
+#if !defined(__GNUC__)
 #pragma region ras
+#endif
 ///////////////////////////////////////////////////////////////////////////////
 #ifndef ZES_MAX_RAS_ERROR_CATEGORY_COUNT
 /// @brief The maximum number of categories
@@ -3842,9 +3901,13 @@ namespace zes
     std::string to_string( const Ras::config_t val );
 
 } // namespace zes
+#if !defined(__GNUC__)
 #pragma endregion
+#endif
 // Intel 'oneAPI' Level-Zero Tool APIs for System Resource Management (Sysman) - Scheduler management
+#if !defined(__GNUC__)
 #pragma region scheduler
+#endif
 ///////////////////////////////////////////////////////////////////////////////
 #ifndef ZES_SCHED_WATCHDOG_DISABLE
 /// @brief Disable forward progress guard timeout.
@@ -4037,9 +4100,13 @@ namespace zes
     std::string to_string( const Scheduler::sched_properties_t val );
 
 } // namespace zes
+#if !defined(__GNUC__)
 #pragma endregion
+#endif
 // Intel 'oneAPI' Level-Zero Tool APIs for System Resource Management (Sysman) - Standby domains
+#if !defined(__GNUC__)
 #pragma region standby
+#endif
 namespace zes
 {
     ///////////////////////////////////////////////////////////////////////////////
@@ -4161,9 +4228,13 @@ namespace zes
     std::string to_string( const Standby::promo_mode_t val );
 
 } // namespace zes
+#if !defined(__GNUC__)
 #pragma endregion
+#endif
 // Intel 'oneAPI' Level-Zero Tool APIs for System Resource Management (Sysman) - Firmware management
+#if !defined(__GNUC__)
 #pragma region temperature
+#endif
 namespace zes
 {
     ///////////////////////////////////////////////////////////////////////////////
@@ -4348,6 +4419,9 @@ namespace zes
     std::string to_string( const Temperature::temp_config_t val );
 
 } // namespace zes
+#if !defined(__GNUC__)
 #pragma endregion
+#endif
+
 #endif // defined(__cplusplus)
 #endif // _ZES_API_HPP

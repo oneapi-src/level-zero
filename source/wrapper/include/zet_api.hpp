@@ -5,6 +5,7 @@
  * SPDX-License-Identifier: MIT
  *
  * @file zet_api.hpp
+ * @version v1.0-r1.0.4.8
  *
  */
 #ifndef _ZET_API_HPP
@@ -19,7 +20,9 @@
 #include "ze_api.hpp"
 
 // Intel 'oneAPI' Level-Zero Tool API common types
+#if !defined(__GNUC__)
 #pragma region common
+#endif
 namespace zet
 {
     ///////////////////////////////////////////////////////////////////////////////
@@ -205,9 +208,13 @@ namespace zet
     using exception_t = ze::exception_t;
 
 } // namespace zet
+#if !defined(__GNUC__)
 #pragma endregion
+#endif
 // Intel 'oneAPI' Level-Zero Tool APIs for Device
+#if !defined(__GNUC__)
 #pragma region device
+#endif
 namespace zet
 {
     ///////////////////////////////////////////////////////////////////////////////
@@ -307,9 +314,13 @@ namespace zet
     std::string to_string( const Device::debug_properties_t val );
 
 } // namespace zet
+#if !defined(__GNUC__)
 #pragma endregion
+#endif
 // Intel 'oneAPI' Level-Zero Tool APIs for Context
+#if !defined(__GNUC__)
 #pragma region context
+#endif
 namespace zet
 {
     ///////////////////////////////////////////////////////////////////////////////
@@ -367,9 +378,13 @@ namespace zet
 namespace zet
 {
 } // namespace zet
+#if !defined(__GNUC__)
 #pragma endregion
+#endif
 // Intel 'oneAPI' Level-Zero Tool APIs for Command List
+#if !defined(__GNUC__)
 #pragma region cmdlist
+#endif
 namespace zet
 {
     ///////////////////////////////////////////////////////////////////////////////
@@ -437,9 +452,10 @@ namespace zet
         ///       by the device on which the command list was created.
         ///     - The application must ensure the command list, events and metric query
         ///       were created on the same context.
-        ///     - The application must ensure the signal event was **not** created from
-        ///       an event pool that was created using
-        ///       ::ZE_EVENT_POOL_FLAG_KERNEL_TIMESTAMP flag.
+        ///     - The duration of the signal event created from an event pool that was
+        ///       created using ::ZE_EVENT_POOL_FLAG_KERNEL_TIMESTAMP flag is undefined.
+        ///       However, for consistency and orthogonality the event will report
+        ///       correctly as signaled when used by other event API functionality.
         ///     - The application must **not** call this function from simultaneous
         ///       threads with the same command list handle.
         /// @throws result_t
@@ -472,9 +488,13 @@ namespace zet
 namespace zet
 {
 } // namespace zet
+#if !defined(__GNUC__)
 #pragma endregion
+#endif
 // Intel 'oneAPI' Level-Zero Tool APIs for Module
+#if !defined(__GNUC__)
 #pragma region module
+#endif
 namespace zet
 {
     ///////////////////////////////////////////////////////////////////////////////
@@ -663,9 +683,13 @@ namespace zet
     std::string to_string( const Kernel::profile_register_sequence_t val );
 
 } // namespace zet
+#if !defined(__GNUC__)
 #pragma endregion
+#endif
 // Intel 'oneAPI' Level-Zero Tool APIs for Program Debug
+#if !defined(__GNUC__)
 #pragma region debug
+#endif
 namespace zet
 {
     ///////////////////////////////////////////////////////////////////////////////
@@ -1069,9 +1093,13 @@ namespace zet
     std::string to_string( const Debug::regset_properties_t val );
 
 } // namespace zet
+#if !defined(__GNUC__)
 #pragma endregion
+#endif
 // Intel 'oneAPI' Level-Zero Tool APIs for Metric
+#if !defined(__GNUC__)
 #pragma region metric
+#endif
 ///////////////////////////////////////////////////////////////////////////////
 #ifndef ZET_MAX_METRIC_GROUP_NAME
 /// @brief Maximum metric group name string size
@@ -1389,9 +1417,10 @@ namespace zet
         /// @details
         ///     - The notification event must have been created from an event pool that
         ///       was created using ::ZE_EVENT_POOL_FLAG_HOST_VISIBLE flag.
-        ///     - The notification event must **not** have been created from an event
-        ///       pool that was created using ::ZE_EVENT_POOL_FLAG_KERNEL_TIMESTAMP
-        ///       flag.
+        ///     - The duration of the signal event created from an event pool that was
+        ///       created using ::ZE_EVENT_POOL_FLAG_KERNEL_TIMESTAMP flag is undefined.
+        ///       However, for consistency and orthogonality the event will report
+        ///       correctly as signaled when used by other event API functionality.
         ///     - The application must **not** call this function from simultaneous
         ///       threads with the same device handle.
         /// @returns
@@ -1668,9 +1697,13 @@ namespace zet
     std::string to_string( const MetricQueryPool::desc_t val );
 
 } // namespace zet
+#if !defined(__GNUC__)
 #pragma endregion
+#endif
 // Intel 'oneAPI' Level-Zero Tool APIs for Program Instrumentation (PIN)
+#if !defined(__GNUC__)
 #pragma region pin
+#endif
 namespace zet
 {
 } // namespace zet
@@ -1678,9 +1711,13 @@ namespace zet
 namespace zet
 {
 } // namespace zet
+#if !defined(__GNUC__)
 #pragma endregion
+#endif
 // Intel 'oneAPI' Level-Zero Tool Experimental Extension APIs for API Tracing
+#if !defined(__GNUC__)
 #pragma region tracing
+#endif
 ///////////////////////////////////////////////////////////////////////////////
 #ifndef ZET_API_TRACING_EXP_NAME
 /// @brief API Tracing Experimental Extension Name
@@ -1843,6 +1880,9 @@ namespace zet
     std::string to_string( const TracerExp::desc_t val );
 
 } // namespace zet
+#if !defined(__GNUC__)
 #pragma endregion
+#endif
+
 #endif // defined(__cplusplus)
 #endif // _ZET_API_HPP

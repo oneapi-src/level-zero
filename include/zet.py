@@ -4,6 +4,7 @@
  SPDX-License-Identifier: MIT
 
  @file zet.py
+ @version v1.0-r1.0.4.8
 
  """
 import platform
@@ -607,6 +608,21 @@ class _zet_command_list_dditable_t(Structure):
     ]
 
 ###############################################################################
+## @brief Function-pointer for zetModuleGetDebugInfo
+if __use_win_types:
+    _zetModuleGetDebugInfo_t = WINFUNCTYPE( ze_result_t, zet_module_handle_t, zet_module_debug_info_format_t, POINTER(c_size_t), POINTER(c_ubyte) )
+else:
+    _zetModuleGetDebugInfo_t = CFUNCTYPE( ze_result_t, zet_module_handle_t, zet_module_debug_info_format_t, POINTER(c_size_t), POINTER(c_ubyte) )
+
+
+###############################################################################
+## @brief Table of Module functions pointers
+class _zet_module_dditable_t(Structure):
+    _fields_ = [
+        ("pfnGetDebugInfo", c_void_p)                                   ## _zetModuleGetDebugInfo_t
+    ]
+
+###############################################################################
 ## @brief Function-pointer for zetKernelGetProfileInfo
 if __use_win_types:
     _zetKernelGetProfileInfo_t = WINFUNCTYPE( ze_result_t, zet_kernel_handle_t, POINTER(zet_profile_properties_t) )
@@ -622,18 +638,197 @@ class _zet_kernel_dditable_t(Structure):
     ]
 
 ###############################################################################
-## @brief Function-pointer for zetModuleGetDebugInfo
+## @brief Function-pointer for zetMetricGroupGet
 if __use_win_types:
-    _zetModuleGetDebugInfo_t = WINFUNCTYPE( ze_result_t, zet_module_handle_t, zet_module_debug_info_format_t, POINTER(c_size_t), POINTER(c_ubyte) )
+    _zetMetricGroupGet_t = WINFUNCTYPE( ze_result_t, zet_device_handle_t, POINTER(c_ulong), POINTER(zet_metric_group_handle_t) )
 else:
-    _zetModuleGetDebugInfo_t = CFUNCTYPE( ze_result_t, zet_module_handle_t, zet_module_debug_info_format_t, POINTER(c_size_t), POINTER(c_ubyte) )
+    _zetMetricGroupGet_t = CFUNCTYPE( ze_result_t, zet_device_handle_t, POINTER(c_ulong), POINTER(zet_metric_group_handle_t) )
+
+###############################################################################
+## @brief Function-pointer for zetMetricGroupGetProperties
+if __use_win_types:
+    _zetMetricGroupGetProperties_t = WINFUNCTYPE( ze_result_t, zet_metric_group_handle_t, POINTER(zet_metric_group_properties_t) )
+else:
+    _zetMetricGroupGetProperties_t = CFUNCTYPE( ze_result_t, zet_metric_group_handle_t, POINTER(zet_metric_group_properties_t) )
+
+###############################################################################
+## @brief Function-pointer for zetMetricGroupCalculateMetricValues
+if __use_win_types:
+    _zetMetricGroupCalculateMetricValues_t = WINFUNCTYPE( ze_result_t, zet_metric_group_handle_t, zet_metric_group_calculation_type_t, c_size_t, POINTER(c_ubyte), POINTER(c_ulong), POINTER(zet_typed_value_t) )
+else:
+    _zetMetricGroupCalculateMetricValues_t = CFUNCTYPE( ze_result_t, zet_metric_group_handle_t, zet_metric_group_calculation_type_t, c_size_t, POINTER(c_ubyte), POINTER(c_ulong), POINTER(zet_typed_value_t) )
 
 
 ###############################################################################
-## @brief Table of Module functions pointers
-class _zet_module_dditable_t(Structure):
+## @brief Table of MetricGroup functions pointers
+class _zet_metric_group_dditable_t(Structure):
     _fields_ = [
-        ("pfnGetDebugInfo", c_void_p)                                   ## _zetModuleGetDebugInfo_t
+        ("pfnGet", c_void_p),                                           ## _zetMetricGroupGet_t
+        ("pfnGetProperties", c_void_p),                                 ## _zetMetricGroupGetProperties_t
+        ("pfnCalculateMetricValues", c_void_p)                          ## _zetMetricGroupCalculateMetricValues_t
+    ]
+
+###############################################################################
+## @brief Function-pointer for zetMetricGet
+if __use_win_types:
+    _zetMetricGet_t = WINFUNCTYPE( ze_result_t, zet_metric_group_handle_t, POINTER(c_ulong), POINTER(zet_metric_handle_t) )
+else:
+    _zetMetricGet_t = CFUNCTYPE( ze_result_t, zet_metric_group_handle_t, POINTER(c_ulong), POINTER(zet_metric_handle_t) )
+
+###############################################################################
+## @brief Function-pointer for zetMetricGetProperties
+if __use_win_types:
+    _zetMetricGetProperties_t = WINFUNCTYPE( ze_result_t, zet_metric_handle_t, POINTER(zet_metric_properties_t) )
+else:
+    _zetMetricGetProperties_t = CFUNCTYPE( ze_result_t, zet_metric_handle_t, POINTER(zet_metric_properties_t) )
+
+
+###############################################################################
+## @brief Table of Metric functions pointers
+class _zet_metric_dditable_t(Structure):
+    _fields_ = [
+        ("pfnGet", c_void_p),                                           ## _zetMetricGet_t
+        ("pfnGetProperties", c_void_p)                                  ## _zetMetricGetProperties_t
+    ]
+
+###############################################################################
+## @brief Function-pointer for zetMetricStreamerOpen
+if __use_win_types:
+    _zetMetricStreamerOpen_t = WINFUNCTYPE( ze_result_t, zet_context_handle_t, zet_device_handle_t, zet_metric_group_handle_t, POINTER(zet_metric_streamer_desc_t), ze_event_handle_t, POINTER(zet_metric_streamer_handle_t) )
+else:
+    _zetMetricStreamerOpen_t = CFUNCTYPE( ze_result_t, zet_context_handle_t, zet_device_handle_t, zet_metric_group_handle_t, POINTER(zet_metric_streamer_desc_t), ze_event_handle_t, POINTER(zet_metric_streamer_handle_t) )
+
+###############################################################################
+## @brief Function-pointer for zetMetricStreamerClose
+if __use_win_types:
+    _zetMetricStreamerClose_t = WINFUNCTYPE( ze_result_t, zet_metric_streamer_handle_t )
+else:
+    _zetMetricStreamerClose_t = CFUNCTYPE( ze_result_t, zet_metric_streamer_handle_t )
+
+###############################################################################
+## @brief Function-pointer for zetMetricStreamerReadData
+if __use_win_types:
+    _zetMetricStreamerReadData_t = WINFUNCTYPE( ze_result_t, zet_metric_streamer_handle_t, c_ulong, POINTER(c_size_t), POINTER(c_ubyte) )
+else:
+    _zetMetricStreamerReadData_t = CFUNCTYPE( ze_result_t, zet_metric_streamer_handle_t, c_ulong, POINTER(c_size_t), POINTER(c_ubyte) )
+
+
+###############################################################################
+## @brief Table of MetricStreamer functions pointers
+class _zet_metric_streamer_dditable_t(Structure):
+    _fields_ = [
+        ("pfnOpen", c_void_p),                                          ## _zetMetricStreamerOpen_t
+        ("pfnClose", c_void_p),                                         ## _zetMetricStreamerClose_t
+        ("pfnReadData", c_void_p)                                       ## _zetMetricStreamerReadData_t
+    ]
+
+###############################################################################
+## @brief Function-pointer for zetMetricQueryPoolCreate
+if __use_win_types:
+    _zetMetricQueryPoolCreate_t = WINFUNCTYPE( ze_result_t, zet_context_handle_t, zet_device_handle_t, zet_metric_group_handle_t, POINTER(zet_metric_query_pool_desc_t), POINTER(zet_metric_query_pool_handle_t) )
+else:
+    _zetMetricQueryPoolCreate_t = CFUNCTYPE( ze_result_t, zet_context_handle_t, zet_device_handle_t, zet_metric_group_handle_t, POINTER(zet_metric_query_pool_desc_t), POINTER(zet_metric_query_pool_handle_t) )
+
+###############################################################################
+## @brief Function-pointer for zetMetricQueryPoolDestroy
+if __use_win_types:
+    _zetMetricQueryPoolDestroy_t = WINFUNCTYPE( ze_result_t, zet_metric_query_pool_handle_t )
+else:
+    _zetMetricQueryPoolDestroy_t = CFUNCTYPE( ze_result_t, zet_metric_query_pool_handle_t )
+
+
+###############################################################################
+## @brief Table of MetricQueryPool functions pointers
+class _zet_metric_query_pool_dditable_t(Structure):
+    _fields_ = [
+        ("pfnCreate", c_void_p),                                        ## _zetMetricQueryPoolCreate_t
+        ("pfnDestroy", c_void_p)                                        ## _zetMetricQueryPoolDestroy_t
+    ]
+
+###############################################################################
+## @brief Function-pointer for zetMetricQueryCreate
+if __use_win_types:
+    _zetMetricQueryCreate_t = WINFUNCTYPE( ze_result_t, zet_metric_query_pool_handle_t, c_ulong, POINTER(zet_metric_query_handle_t) )
+else:
+    _zetMetricQueryCreate_t = CFUNCTYPE( ze_result_t, zet_metric_query_pool_handle_t, c_ulong, POINTER(zet_metric_query_handle_t) )
+
+###############################################################################
+## @brief Function-pointer for zetMetricQueryDestroy
+if __use_win_types:
+    _zetMetricQueryDestroy_t = WINFUNCTYPE( ze_result_t, zet_metric_query_handle_t )
+else:
+    _zetMetricQueryDestroy_t = CFUNCTYPE( ze_result_t, zet_metric_query_handle_t )
+
+###############################################################################
+## @brief Function-pointer for zetMetricQueryReset
+if __use_win_types:
+    _zetMetricQueryReset_t = WINFUNCTYPE( ze_result_t, zet_metric_query_handle_t )
+else:
+    _zetMetricQueryReset_t = CFUNCTYPE( ze_result_t, zet_metric_query_handle_t )
+
+###############################################################################
+## @brief Function-pointer for zetMetricQueryGetData
+if __use_win_types:
+    _zetMetricQueryGetData_t = WINFUNCTYPE( ze_result_t, zet_metric_query_handle_t, POINTER(c_size_t), POINTER(c_ubyte) )
+else:
+    _zetMetricQueryGetData_t = CFUNCTYPE( ze_result_t, zet_metric_query_handle_t, POINTER(c_size_t), POINTER(c_ubyte) )
+
+
+###############################################################################
+## @brief Table of MetricQuery functions pointers
+class _zet_metric_query_dditable_t(Structure):
+    _fields_ = [
+        ("pfnCreate", c_void_p),                                        ## _zetMetricQueryCreate_t
+        ("pfnDestroy", c_void_p),                                       ## _zetMetricQueryDestroy_t
+        ("pfnReset", c_void_p),                                         ## _zetMetricQueryReset_t
+        ("pfnGetData", c_void_p)                                        ## _zetMetricQueryGetData_t
+    ]
+
+###############################################################################
+## @brief Function-pointer for zetTracerExpCreate
+if __use_win_types:
+    _zetTracerExpCreate_t = WINFUNCTYPE( ze_result_t, zet_context_handle_t, POINTER(zet_tracer_exp_desc_t), POINTER(zet_tracer_exp_handle_t) )
+else:
+    _zetTracerExpCreate_t = CFUNCTYPE( ze_result_t, zet_context_handle_t, POINTER(zet_tracer_exp_desc_t), POINTER(zet_tracer_exp_handle_t) )
+
+###############################################################################
+## @brief Function-pointer for zetTracerExpDestroy
+if __use_win_types:
+    _zetTracerExpDestroy_t = WINFUNCTYPE( ze_result_t, zet_tracer_exp_handle_t )
+else:
+    _zetTracerExpDestroy_t = CFUNCTYPE( ze_result_t, zet_tracer_exp_handle_t )
+
+###############################################################################
+## @brief Function-pointer for zetTracerExpSetPrologues
+if __use_win_types:
+    _zetTracerExpSetPrologues_t = WINFUNCTYPE( ze_result_t, zet_tracer_exp_handle_t, POINTER(zet_core_callbacks_t) )
+else:
+    _zetTracerExpSetPrologues_t = CFUNCTYPE( ze_result_t, zet_tracer_exp_handle_t, POINTER(zet_core_callbacks_t) )
+
+###############################################################################
+## @brief Function-pointer for zetTracerExpSetEpilogues
+if __use_win_types:
+    _zetTracerExpSetEpilogues_t = WINFUNCTYPE( ze_result_t, zet_tracer_exp_handle_t, POINTER(zet_core_callbacks_t) )
+else:
+    _zetTracerExpSetEpilogues_t = CFUNCTYPE( ze_result_t, zet_tracer_exp_handle_t, POINTER(zet_core_callbacks_t) )
+
+###############################################################################
+## @brief Function-pointer for zetTracerExpSetEnabled
+if __use_win_types:
+    _zetTracerExpSetEnabled_t = WINFUNCTYPE( ze_result_t, zet_tracer_exp_handle_t, ze_bool_t )
+else:
+    _zetTracerExpSetEnabled_t = CFUNCTYPE( ze_result_t, zet_tracer_exp_handle_t, ze_bool_t )
+
+
+###############################################################################
+## @brief Table of TracerExp functions pointers
+class _zet_tracer_exp_dditable_t(Structure):
+    _fields_ = [
+        ("pfnCreate", c_void_p),                                        ## _zetTracerExpCreate_t
+        ("pfnDestroy", c_void_p),                                       ## _zetTracerExpDestroy_t
+        ("pfnSetPrologues", c_void_p),                                  ## _zetTracerExpSetPrologues_t
+        ("pfnSetEpilogues", c_void_p),                                  ## _zetTracerExpSetEpilogues_t
+        ("pfnSetEnabled", c_void_p)                                     ## _zetTracerExpSetEnabled_t
     ]
 
 ###############################################################################
@@ -732,214 +927,20 @@ class _zet_debug_dditable_t(Structure):
     ]
 
 ###############################################################################
-## @brief Function-pointer for zetMetricGet
-if __use_win_types:
-    _zetMetricGet_t = WINFUNCTYPE( ze_result_t, zet_metric_group_handle_t, POINTER(c_ulong), POINTER(zet_metric_handle_t) )
-else:
-    _zetMetricGet_t = CFUNCTYPE( ze_result_t, zet_metric_group_handle_t, POINTER(c_ulong), POINTER(zet_metric_handle_t) )
-
-###############################################################################
-## @brief Function-pointer for zetMetricGetProperties
-if __use_win_types:
-    _zetMetricGetProperties_t = WINFUNCTYPE( ze_result_t, zet_metric_handle_t, POINTER(zet_metric_properties_t) )
-else:
-    _zetMetricGetProperties_t = CFUNCTYPE( ze_result_t, zet_metric_handle_t, POINTER(zet_metric_properties_t) )
-
-
-###############################################################################
-## @brief Table of Metric functions pointers
-class _zet_metric_dditable_t(Structure):
-    _fields_ = [
-        ("pfnGet", c_void_p),                                           ## _zetMetricGet_t
-        ("pfnGetProperties", c_void_p)                                  ## _zetMetricGetProperties_t
-    ]
-
-###############################################################################
-## @brief Function-pointer for zetMetricGroupGet
-if __use_win_types:
-    _zetMetricGroupGet_t = WINFUNCTYPE( ze_result_t, zet_device_handle_t, POINTER(c_ulong), POINTER(zet_metric_group_handle_t) )
-else:
-    _zetMetricGroupGet_t = CFUNCTYPE( ze_result_t, zet_device_handle_t, POINTER(c_ulong), POINTER(zet_metric_group_handle_t) )
-
-###############################################################################
-## @brief Function-pointer for zetMetricGroupGetProperties
-if __use_win_types:
-    _zetMetricGroupGetProperties_t = WINFUNCTYPE( ze_result_t, zet_metric_group_handle_t, POINTER(zet_metric_group_properties_t) )
-else:
-    _zetMetricGroupGetProperties_t = CFUNCTYPE( ze_result_t, zet_metric_group_handle_t, POINTER(zet_metric_group_properties_t) )
-
-###############################################################################
-## @brief Function-pointer for zetMetricGroupCalculateMetricValues
-if __use_win_types:
-    _zetMetricGroupCalculateMetricValues_t = WINFUNCTYPE( ze_result_t, zet_metric_group_handle_t, zet_metric_group_calculation_type_t, c_size_t, POINTER(c_ubyte), POINTER(c_ulong), POINTER(zet_typed_value_t) )
-else:
-    _zetMetricGroupCalculateMetricValues_t = CFUNCTYPE( ze_result_t, zet_metric_group_handle_t, zet_metric_group_calculation_type_t, c_size_t, POINTER(c_ubyte), POINTER(c_ulong), POINTER(zet_typed_value_t) )
-
-
-###############################################################################
-## @brief Table of MetricGroup functions pointers
-class _zet_metric_group_dditable_t(Structure):
-    _fields_ = [
-        ("pfnGet", c_void_p),                                           ## _zetMetricGroupGet_t
-        ("pfnGetProperties", c_void_p),                                 ## _zetMetricGroupGetProperties_t
-        ("pfnCalculateMetricValues", c_void_p)                          ## _zetMetricGroupCalculateMetricValues_t
-    ]
-
-###############################################################################
-## @brief Function-pointer for zetMetricQueryCreate
-if __use_win_types:
-    _zetMetricQueryCreate_t = WINFUNCTYPE( ze_result_t, zet_metric_query_pool_handle_t, c_ulong, POINTER(zet_metric_query_handle_t) )
-else:
-    _zetMetricQueryCreate_t = CFUNCTYPE( ze_result_t, zet_metric_query_pool_handle_t, c_ulong, POINTER(zet_metric_query_handle_t) )
-
-###############################################################################
-## @brief Function-pointer for zetMetricQueryDestroy
-if __use_win_types:
-    _zetMetricQueryDestroy_t = WINFUNCTYPE( ze_result_t, zet_metric_query_handle_t )
-else:
-    _zetMetricQueryDestroy_t = CFUNCTYPE( ze_result_t, zet_metric_query_handle_t )
-
-###############################################################################
-## @brief Function-pointer for zetMetricQueryReset
-if __use_win_types:
-    _zetMetricQueryReset_t = WINFUNCTYPE( ze_result_t, zet_metric_query_handle_t )
-else:
-    _zetMetricQueryReset_t = CFUNCTYPE( ze_result_t, zet_metric_query_handle_t )
-
-###############################################################################
-## @brief Function-pointer for zetMetricQueryGetData
-if __use_win_types:
-    _zetMetricQueryGetData_t = WINFUNCTYPE( ze_result_t, zet_metric_query_handle_t, POINTER(c_size_t), POINTER(c_ubyte) )
-else:
-    _zetMetricQueryGetData_t = CFUNCTYPE( ze_result_t, zet_metric_query_handle_t, POINTER(c_size_t), POINTER(c_ubyte) )
-
-
-###############################################################################
-## @brief Table of MetricQuery functions pointers
-class _zet_metric_query_dditable_t(Structure):
-    _fields_ = [
-        ("pfnCreate", c_void_p),                                        ## _zetMetricQueryCreate_t
-        ("pfnDestroy", c_void_p),                                       ## _zetMetricQueryDestroy_t
-        ("pfnReset", c_void_p),                                         ## _zetMetricQueryReset_t
-        ("pfnGetData", c_void_p)                                        ## _zetMetricQueryGetData_t
-    ]
-
-###############################################################################
-## @brief Function-pointer for zetMetricQueryPoolCreate
-if __use_win_types:
-    _zetMetricQueryPoolCreate_t = WINFUNCTYPE( ze_result_t, zet_context_handle_t, zet_device_handle_t, zet_metric_group_handle_t, POINTER(zet_metric_query_pool_desc_t), POINTER(zet_metric_query_pool_handle_t) )
-else:
-    _zetMetricQueryPoolCreate_t = CFUNCTYPE( ze_result_t, zet_context_handle_t, zet_device_handle_t, zet_metric_group_handle_t, POINTER(zet_metric_query_pool_desc_t), POINTER(zet_metric_query_pool_handle_t) )
-
-###############################################################################
-## @brief Function-pointer for zetMetricQueryPoolDestroy
-if __use_win_types:
-    _zetMetricQueryPoolDestroy_t = WINFUNCTYPE( ze_result_t, zet_metric_query_pool_handle_t )
-else:
-    _zetMetricQueryPoolDestroy_t = CFUNCTYPE( ze_result_t, zet_metric_query_pool_handle_t )
-
-
-###############################################################################
-## @brief Table of MetricQueryPool functions pointers
-class _zet_metric_query_pool_dditable_t(Structure):
-    _fields_ = [
-        ("pfnCreate", c_void_p),                                        ## _zetMetricQueryPoolCreate_t
-        ("pfnDestroy", c_void_p)                                        ## _zetMetricQueryPoolDestroy_t
-    ]
-
-###############################################################################
-## @brief Function-pointer for zetMetricStreamerOpen
-if __use_win_types:
-    _zetMetricStreamerOpen_t = WINFUNCTYPE( ze_result_t, zet_context_handle_t, zet_device_handle_t, zet_metric_group_handle_t, POINTER(zet_metric_streamer_desc_t), ze_event_handle_t, POINTER(zet_metric_streamer_handle_t) )
-else:
-    _zetMetricStreamerOpen_t = CFUNCTYPE( ze_result_t, zet_context_handle_t, zet_device_handle_t, zet_metric_group_handle_t, POINTER(zet_metric_streamer_desc_t), ze_event_handle_t, POINTER(zet_metric_streamer_handle_t) )
-
-###############################################################################
-## @brief Function-pointer for zetMetricStreamerClose
-if __use_win_types:
-    _zetMetricStreamerClose_t = WINFUNCTYPE( ze_result_t, zet_metric_streamer_handle_t )
-else:
-    _zetMetricStreamerClose_t = CFUNCTYPE( ze_result_t, zet_metric_streamer_handle_t )
-
-###############################################################################
-## @brief Function-pointer for zetMetricStreamerReadData
-if __use_win_types:
-    _zetMetricStreamerReadData_t = WINFUNCTYPE( ze_result_t, zet_metric_streamer_handle_t, c_ulong, POINTER(c_size_t), POINTER(c_ubyte) )
-else:
-    _zetMetricStreamerReadData_t = CFUNCTYPE( ze_result_t, zet_metric_streamer_handle_t, c_ulong, POINTER(c_size_t), POINTER(c_ubyte) )
-
-
-###############################################################################
-## @brief Table of MetricStreamer functions pointers
-class _zet_metric_streamer_dditable_t(Structure):
-    _fields_ = [
-        ("pfnOpen", c_void_p),                                          ## _zetMetricStreamerOpen_t
-        ("pfnClose", c_void_p),                                         ## _zetMetricStreamerClose_t
-        ("pfnReadData", c_void_p)                                       ## _zetMetricStreamerReadData_t
-    ]
-
-###############################################################################
-## @brief Function-pointer for zetTracerExpCreate
-if __use_win_types:
-    _zetTracerExpCreate_t = WINFUNCTYPE( ze_result_t, zet_context_handle_t, POINTER(zet_tracer_exp_desc_t), POINTER(zet_tracer_exp_handle_t) )
-else:
-    _zetTracerExpCreate_t = CFUNCTYPE( ze_result_t, zet_context_handle_t, POINTER(zet_tracer_exp_desc_t), POINTER(zet_tracer_exp_handle_t) )
-
-###############################################################################
-## @brief Function-pointer for zetTracerExpDestroy
-if __use_win_types:
-    _zetTracerExpDestroy_t = WINFUNCTYPE( ze_result_t, zet_tracer_exp_handle_t )
-else:
-    _zetTracerExpDestroy_t = CFUNCTYPE( ze_result_t, zet_tracer_exp_handle_t )
-
-###############################################################################
-## @brief Function-pointer for zetTracerExpSetPrologues
-if __use_win_types:
-    _zetTracerExpSetPrologues_t = WINFUNCTYPE( ze_result_t, zet_tracer_exp_handle_t, POINTER(zet_core_callbacks_t) )
-else:
-    _zetTracerExpSetPrologues_t = CFUNCTYPE( ze_result_t, zet_tracer_exp_handle_t, POINTER(zet_core_callbacks_t) )
-
-###############################################################################
-## @brief Function-pointer for zetTracerExpSetEpilogues
-if __use_win_types:
-    _zetTracerExpSetEpilogues_t = WINFUNCTYPE( ze_result_t, zet_tracer_exp_handle_t, POINTER(zet_core_callbacks_t) )
-else:
-    _zetTracerExpSetEpilogues_t = CFUNCTYPE( ze_result_t, zet_tracer_exp_handle_t, POINTER(zet_core_callbacks_t) )
-
-###############################################################################
-## @brief Function-pointer for zetTracerExpSetEnabled
-if __use_win_types:
-    _zetTracerExpSetEnabled_t = WINFUNCTYPE( ze_result_t, zet_tracer_exp_handle_t, ze_bool_t )
-else:
-    _zetTracerExpSetEnabled_t = CFUNCTYPE( ze_result_t, zet_tracer_exp_handle_t, ze_bool_t )
-
-
-###############################################################################
-## @brief Table of TracerExp functions pointers
-class _zet_tracer_exp_dditable_t(Structure):
-    _fields_ = [
-        ("pfnCreate", c_void_p),                                        ## _zetTracerExpCreate_t
-        ("pfnDestroy", c_void_p),                                       ## _zetTracerExpDestroy_t
-        ("pfnSetPrologues", c_void_p),                                  ## _zetTracerExpSetPrologues_t
-        ("pfnSetEpilogues", c_void_p),                                  ## _zetTracerExpSetEpilogues_t
-        ("pfnSetEnabled", c_void_p)                                     ## _zetTracerExpSetEnabled_t
-    ]
-
-###############################################################################
 class _zet_dditable_t(Structure):
     _fields_ = [
         ("Device", _zet_device_dditable_t),
         ("Context", _zet_context_dditable_t),
         ("CommandList", _zet_command_list_dditable_t),
-        ("Kernel", _zet_kernel_dditable_t),
         ("Module", _zet_module_dditable_t),
-        ("Debug", _zet_debug_dditable_t),
-        ("Metric", _zet_metric_dditable_t),
+        ("Kernel", _zet_kernel_dditable_t),
         ("MetricGroup", _zet_metric_group_dditable_t),
-        ("MetricQuery", _zet_metric_query_dditable_t),
-        ("MetricQueryPool", _zet_metric_query_pool_dditable_t),
+        ("Metric", _zet_metric_dditable_t),
         ("MetricStreamer", _zet_metric_streamer_dditable_t),
-        ("TracerExp", _zet_tracer_exp_dditable_t)
+        ("MetricQueryPool", _zet_metric_query_pool_dditable_t),
+        ("MetricQuery", _zet_metric_query_dditable_t),
+        ("TracerExp", _zet_tracer_exp_dditable_t),
+        ("Debug", _zet_debug_dditable_t)
     ]
 
 ###############################################################################
@@ -989,6 +990,16 @@ class ZET_DDI:
         self.zetCommandListAppendMetricMemoryBarrier = _zetCommandListAppendMetricMemoryBarrier_t(self.__dditable.CommandList.pfnAppendMetricMemoryBarrier)
 
         # call driver to get function pointers
+        _Module = _zet_module_dditable_t()
+        r = ze_result_v(self.__dll.zetGetModuleProcAddrTable(version, byref(_Module)))
+        if r != ze_result_v.SUCCESS:
+            raise Exception(r)
+        self.__dditable.Module = _Module
+
+        # attach function interface to function address
+        self.zetModuleGetDebugInfo = _zetModuleGetDebugInfo_t(self.__dditable.Module.pfnGetDebugInfo)
+
+        # call driver to get function pointers
         _Kernel = _zet_kernel_dditable_t()
         r = ze_result_v(self.__dll.zetGetKernelProcAddrTable(version, byref(_Kernel)))
         if r != ze_result_v.SUCCESS:
@@ -999,14 +1010,77 @@ class ZET_DDI:
         self.zetKernelGetProfileInfo = _zetKernelGetProfileInfo_t(self.__dditable.Kernel.pfnGetProfileInfo)
 
         # call driver to get function pointers
-        _Module = _zet_module_dditable_t()
-        r = ze_result_v(self.__dll.zetGetModuleProcAddrTable(version, byref(_Module)))
+        _MetricGroup = _zet_metric_group_dditable_t()
+        r = ze_result_v(self.__dll.zetGetMetricGroupProcAddrTable(version, byref(_MetricGroup)))
         if r != ze_result_v.SUCCESS:
             raise Exception(r)
-        self.__dditable.Module = _Module
+        self.__dditable.MetricGroup = _MetricGroup
 
         # attach function interface to function address
-        self.zetModuleGetDebugInfo = _zetModuleGetDebugInfo_t(self.__dditable.Module.pfnGetDebugInfo)
+        self.zetMetricGroupGet = _zetMetricGroupGet_t(self.__dditable.MetricGroup.pfnGet)
+        self.zetMetricGroupGetProperties = _zetMetricGroupGetProperties_t(self.__dditable.MetricGroup.pfnGetProperties)
+        self.zetMetricGroupCalculateMetricValues = _zetMetricGroupCalculateMetricValues_t(self.__dditable.MetricGroup.pfnCalculateMetricValues)
+
+        # call driver to get function pointers
+        _Metric = _zet_metric_dditable_t()
+        r = ze_result_v(self.__dll.zetGetMetricProcAddrTable(version, byref(_Metric)))
+        if r != ze_result_v.SUCCESS:
+            raise Exception(r)
+        self.__dditable.Metric = _Metric
+
+        # attach function interface to function address
+        self.zetMetricGet = _zetMetricGet_t(self.__dditable.Metric.pfnGet)
+        self.zetMetricGetProperties = _zetMetricGetProperties_t(self.__dditable.Metric.pfnGetProperties)
+
+        # call driver to get function pointers
+        _MetricStreamer = _zet_metric_streamer_dditable_t()
+        r = ze_result_v(self.__dll.zetGetMetricStreamerProcAddrTable(version, byref(_MetricStreamer)))
+        if r != ze_result_v.SUCCESS:
+            raise Exception(r)
+        self.__dditable.MetricStreamer = _MetricStreamer
+
+        # attach function interface to function address
+        self.zetMetricStreamerOpen = _zetMetricStreamerOpen_t(self.__dditable.MetricStreamer.pfnOpen)
+        self.zetMetricStreamerClose = _zetMetricStreamerClose_t(self.__dditable.MetricStreamer.pfnClose)
+        self.zetMetricStreamerReadData = _zetMetricStreamerReadData_t(self.__dditable.MetricStreamer.pfnReadData)
+
+        # call driver to get function pointers
+        _MetricQueryPool = _zet_metric_query_pool_dditable_t()
+        r = ze_result_v(self.__dll.zetGetMetricQueryPoolProcAddrTable(version, byref(_MetricQueryPool)))
+        if r != ze_result_v.SUCCESS:
+            raise Exception(r)
+        self.__dditable.MetricQueryPool = _MetricQueryPool
+
+        # attach function interface to function address
+        self.zetMetricQueryPoolCreate = _zetMetricQueryPoolCreate_t(self.__dditable.MetricQueryPool.pfnCreate)
+        self.zetMetricQueryPoolDestroy = _zetMetricQueryPoolDestroy_t(self.__dditable.MetricQueryPool.pfnDestroy)
+
+        # call driver to get function pointers
+        _MetricQuery = _zet_metric_query_dditable_t()
+        r = ze_result_v(self.__dll.zetGetMetricQueryProcAddrTable(version, byref(_MetricQuery)))
+        if r != ze_result_v.SUCCESS:
+            raise Exception(r)
+        self.__dditable.MetricQuery = _MetricQuery
+
+        # attach function interface to function address
+        self.zetMetricQueryCreate = _zetMetricQueryCreate_t(self.__dditable.MetricQuery.pfnCreate)
+        self.zetMetricQueryDestroy = _zetMetricQueryDestroy_t(self.__dditable.MetricQuery.pfnDestroy)
+        self.zetMetricQueryReset = _zetMetricQueryReset_t(self.__dditable.MetricQuery.pfnReset)
+        self.zetMetricQueryGetData = _zetMetricQueryGetData_t(self.__dditable.MetricQuery.pfnGetData)
+
+        # call driver to get function pointers
+        _TracerExp = _zet_tracer_exp_dditable_t()
+        r = ze_result_v(self.__dll.zetGetTracerExpProcAddrTable(version, byref(_TracerExp)))
+        if r != ze_result_v.SUCCESS:
+            raise Exception(r)
+        self.__dditable.TracerExp = _TracerExp
+
+        # attach function interface to function address
+        self.zetTracerExpCreate = _zetTracerExpCreate_t(self.__dditable.TracerExp.pfnCreate)
+        self.zetTracerExpDestroy = _zetTracerExpDestroy_t(self.__dditable.TracerExp.pfnDestroy)
+        self.zetTracerExpSetPrologues = _zetTracerExpSetPrologues_t(self.__dditable.TracerExp.pfnSetPrologues)
+        self.zetTracerExpSetEpilogues = _zetTracerExpSetEpilogues_t(self.__dditable.TracerExp.pfnSetEpilogues)
+        self.zetTracerExpSetEnabled = _zetTracerExpSetEnabled_t(self.__dditable.TracerExp.pfnSetEnabled)
 
         # call driver to get function pointers
         _Debug = _zet_debug_dditable_t()
@@ -1027,78 +1101,5 @@ class ZET_DDI:
         self.zetDebugGetRegisterSetProperties = _zetDebugGetRegisterSetProperties_t(self.__dditable.Debug.pfnGetRegisterSetProperties)
         self.zetDebugReadRegisters = _zetDebugReadRegisters_t(self.__dditable.Debug.pfnReadRegisters)
         self.zetDebugWriteRegisters = _zetDebugWriteRegisters_t(self.__dditable.Debug.pfnWriteRegisters)
-
-        # call driver to get function pointers
-        _Metric = _zet_metric_dditable_t()
-        r = ze_result_v(self.__dll.zetGetMetricProcAddrTable(version, byref(_Metric)))
-        if r != ze_result_v.SUCCESS:
-            raise Exception(r)
-        self.__dditable.Metric = _Metric
-
-        # attach function interface to function address
-        self.zetMetricGet = _zetMetricGet_t(self.__dditable.Metric.pfnGet)
-        self.zetMetricGetProperties = _zetMetricGetProperties_t(self.__dditable.Metric.pfnGetProperties)
-
-        # call driver to get function pointers
-        _MetricGroup = _zet_metric_group_dditable_t()
-        r = ze_result_v(self.__dll.zetGetMetricGroupProcAddrTable(version, byref(_MetricGroup)))
-        if r != ze_result_v.SUCCESS:
-            raise Exception(r)
-        self.__dditable.MetricGroup = _MetricGroup
-
-        # attach function interface to function address
-        self.zetMetricGroupGet = _zetMetricGroupGet_t(self.__dditable.MetricGroup.pfnGet)
-        self.zetMetricGroupGetProperties = _zetMetricGroupGetProperties_t(self.__dditable.MetricGroup.pfnGetProperties)
-        self.zetMetricGroupCalculateMetricValues = _zetMetricGroupCalculateMetricValues_t(self.__dditable.MetricGroup.pfnCalculateMetricValues)
-
-        # call driver to get function pointers
-        _MetricQuery = _zet_metric_query_dditable_t()
-        r = ze_result_v(self.__dll.zetGetMetricQueryProcAddrTable(version, byref(_MetricQuery)))
-        if r != ze_result_v.SUCCESS:
-            raise Exception(r)
-        self.__dditable.MetricQuery = _MetricQuery
-
-        # attach function interface to function address
-        self.zetMetricQueryCreate = _zetMetricQueryCreate_t(self.__dditable.MetricQuery.pfnCreate)
-        self.zetMetricQueryDestroy = _zetMetricQueryDestroy_t(self.__dditable.MetricQuery.pfnDestroy)
-        self.zetMetricQueryReset = _zetMetricQueryReset_t(self.__dditable.MetricQuery.pfnReset)
-        self.zetMetricQueryGetData = _zetMetricQueryGetData_t(self.__dditable.MetricQuery.pfnGetData)
-
-        # call driver to get function pointers
-        _MetricQueryPool = _zet_metric_query_pool_dditable_t()
-        r = ze_result_v(self.__dll.zetGetMetricQueryPoolProcAddrTable(version, byref(_MetricQueryPool)))
-        if r != ze_result_v.SUCCESS:
-            raise Exception(r)
-        self.__dditable.MetricQueryPool = _MetricQueryPool
-
-        # attach function interface to function address
-        self.zetMetricQueryPoolCreate = _zetMetricQueryPoolCreate_t(self.__dditable.MetricQueryPool.pfnCreate)
-        self.zetMetricQueryPoolDestroy = _zetMetricQueryPoolDestroy_t(self.__dditable.MetricQueryPool.pfnDestroy)
-
-        # call driver to get function pointers
-        _MetricStreamer = _zet_metric_streamer_dditable_t()
-        r = ze_result_v(self.__dll.zetGetMetricStreamerProcAddrTable(version, byref(_MetricStreamer)))
-        if r != ze_result_v.SUCCESS:
-            raise Exception(r)
-        self.__dditable.MetricStreamer = _MetricStreamer
-
-        # attach function interface to function address
-        self.zetMetricStreamerOpen = _zetMetricStreamerOpen_t(self.__dditable.MetricStreamer.pfnOpen)
-        self.zetMetricStreamerClose = _zetMetricStreamerClose_t(self.__dditable.MetricStreamer.pfnClose)
-        self.zetMetricStreamerReadData = _zetMetricStreamerReadData_t(self.__dditable.MetricStreamer.pfnReadData)
-
-        # call driver to get function pointers
-        _TracerExp = _zet_tracer_exp_dditable_t()
-        r = ze_result_v(self.__dll.zetGetTracerExpProcAddrTable(version, byref(_TracerExp)))
-        if r != ze_result_v.SUCCESS:
-            raise Exception(r)
-        self.__dditable.TracerExp = _TracerExp
-
-        # attach function interface to function address
-        self.zetTracerExpCreate = _zetTracerExpCreate_t(self.__dditable.TracerExp.pfnCreate)
-        self.zetTracerExpDestroy = _zetTracerExpDestroy_t(self.__dditable.TracerExp.pfnDestroy)
-        self.zetTracerExpSetPrologues = _zetTracerExpSetPrologues_t(self.__dditable.TracerExp.pfnSetPrologues)
-        self.zetTracerExpSetEpilogues = _zetTracerExpSetEpilogues_t(self.__dditable.TracerExp.pfnSetEpilogues)
-        self.zetTracerExpSetEnabled = _zetTracerExpSetEnabled_t(self.__dditable.TracerExp.pfnSetEnabled)
 
         # success!

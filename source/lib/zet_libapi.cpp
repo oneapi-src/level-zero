@@ -621,9 +621,10 @@ zetContextActivateMetricGroups(
 /// @details
 ///     - The notification event must have been created from an event pool that
 ///       was created using ::ZE_EVENT_POOL_FLAG_HOST_VISIBLE flag.
-///     - The notification event must **not** have been created from an event
-///       pool that was created using ::ZE_EVENT_POOL_FLAG_KERNEL_TIMESTAMP
-///       flag.
+///     - The duration of the signal event created from an event pool that was
+///       created using ::ZE_EVENT_POOL_FLAG_KERNEL_TIMESTAMP flag is undefined.
+///       However, for consistency and orthogonality the event will report
+///       correctly as signaled when used by other event API functionality.
 ///     - The application must **not** call this function from simultaneous
 ///       threads with the same device handle.
 /// 
@@ -943,9 +944,10 @@ zetCommandListAppendMetricQueryBegin(
 ///       by the device on which the command list was created.
 ///     - The application must ensure the command list, events and metric query
 ///       were created on the same context.
-///     - The application must ensure the signal event was **not** created from
-///       an event pool that was created using
-///       ::ZE_EVENT_POOL_FLAG_KERNEL_TIMESTAMP flag.
+///     - The duration of the signal event created from an event pool that was
+///       created using ::ZE_EVENT_POOL_FLAG_KERNEL_TIMESTAMP flag is undefined.
+///       However, for consistency and orthogonality the event will report
+///       correctly as signaled when used by other event API functionality.
 ///     - The application must **not** call this function from simultaneous
 ///       threads with the same command list handle.
 /// 

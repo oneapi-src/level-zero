@@ -5,6 +5,7 @@
  * SPDX-License-Identifier: MIT
  *
  * @file ze_ddi.h
+ * @version v1.0-r1.0.4.8
  *
  */
 #ifndef _ZE_DDI_H
@@ -752,6 +753,142 @@ typedef ze_result_t (ZE_APICALL *ze_pfnGetCommandListProcAddrTable_t)(
     );
 
 ///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zeFenceCreate 
+typedef ze_result_t (ZE_APICALL *ze_pfnFenceCreate_t)(
+    ze_command_queue_handle_t,
+    const ze_fence_desc_t*,
+    ze_fence_handle_t*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zeFenceDestroy 
+typedef ze_result_t (ZE_APICALL *ze_pfnFenceDestroy_t)(
+    ze_fence_handle_t
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zeFenceHostSynchronize 
+typedef ze_result_t (ZE_APICALL *ze_pfnFenceHostSynchronize_t)(
+    ze_fence_handle_t,
+    uint64_t
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zeFenceQueryStatus 
+typedef ze_result_t (ZE_APICALL *ze_pfnFenceQueryStatus_t)(
+    ze_fence_handle_t
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zeFenceReset 
+typedef ze_result_t (ZE_APICALL *ze_pfnFenceReset_t)(
+    ze_fence_handle_t
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Table of Fence functions pointers
+typedef struct _ze_fence_dditable_t
+{
+    ze_pfnFenceCreate_t                                         pfnCreate;
+    ze_pfnFenceDestroy_t                                        pfnDestroy;
+    ze_pfnFenceHostSynchronize_t                                pfnHostSynchronize;
+    ze_pfnFenceQueryStatus_t                                    pfnQueryStatus;
+    ze_pfnFenceReset_t                                          pfnReset;
+} ze_fence_dditable_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Exported function for filling application's Fence table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+ZE_DLLEXPORT ze_result_t ZE_APICALL
+zeGetFenceProcAddrTable(
+    ze_api_version_t version,                       ///< [in] API version requested
+    ze_fence_dditable_t* pDdiTable                  ///< [in,out] pointer to table of DDI function pointers
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zeGetFenceProcAddrTable
+typedef ze_result_t (ZE_APICALL *ze_pfnGetFenceProcAddrTable_t)(
+    ze_api_version_t,
+    ze_fence_dditable_t*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zeEventPoolCreate 
+typedef ze_result_t (ZE_APICALL *ze_pfnEventPoolCreate_t)(
+    ze_context_handle_t,
+    const ze_event_pool_desc_t*,
+    uint32_t,
+    ze_device_handle_t*,
+    ze_event_pool_handle_t*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zeEventPoolDestroy 
+typedef ze_result_t (ZE_APICALL *ze_pfnEventPoolDestroy_t)(
+    ze_event_pool_handle_t
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zeEventPoolGetIpcHandle 
+typedef ze_result_t (ZE_APICALL *ze_pfnEventPoolGetIpcHandle_t)(
+    ze_event_pool_handle_t,
+    ze_ipc_event_pool_handle_t*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zeEventPoolOpenIpcHandle 
+typedef ze_result_t (ZE_APICALL *ze_pfnEventPoolOpenIpcHandle_t)(
+    ze_context_handle_t,
+    ze_ipc_event_pool_handle_t,
+    ze_event_pool_handle_t*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zeEventPoolCloseIpcHandle 
+typedef ze_result_t (ZE_APICALL *ze_pfnEventPoolCloseIpcHandle_t)(
+    ze_event_pool_handle_t
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Table of EventPool functions pointers
+typedef struct _ze_event_pool_dditable_t
+{
+    ze_pfnEventPoolCreate_t                                     pfnCreate;
+    ze_pfnEventPoolDestroy_t                                    pfnDestroy;
+    ze_pfnEventPoolGetIpcHandle_t                               pfnGetIpcHandle;
+    ze_pfnEventPoolOpenIpcHandle_t                              pfnOpenIpcHandle;
+    ze_pfnEventPoolCloseIpcHandle_t                             pfnCloseIpcHandle;
+} ze_event_pool_dditable_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Exported function for filling application's EventPool table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+ZE_DLLEXPORT ze_result_t ZE_APICALL
+zeGetEventPoolProcAddrTable(
+    ze_api_version_t version,                       ///< [in] API version requested
+    ze_event_pool_dditable_t* pDdiTable             ///< [in,out] pointer to table of DDI function pointers
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zeGetEventPoolProcAddrTable
+typedef ze_result_t (ZE_APICALL *ze_pfnGetEventPoolProcAddrTable_t)(
+    ze_api_version_t,
+    ze_event_pool_dditable_t*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
 /// @brief Function-pointer for zeEventCreate 
 typedef ze_result_t (ZE_APICALL *ze_pfnEventCreate_t)(
     ze_event_pool_handle_t,
@@ -833,142 +970,6 @@ typedef ze_result_t (ZE_APICALL *ze_pfnGetEventProcAddrTable_t)(
     );
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Function-pointer for zeEventPoolCreate 
-typedef ze_result_t (ZE_APICALL *ze_pfnEventPoolCreate_t)(
-    ze_context_handle_t,
-    const ze_event_pool_desc_t*,
-    uint32_t,
-    ze_device_handle_t*,
-    ze_event_pool_handle_t*
-    );
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Function-pointer for zeEventPoolDestroy 
-typedef ze_result_t (ZE_APICALL *ze_pfnEventPoolDestroy_t)(
-    ze_event_pool_handle_t
-    );
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Function-pointer for zeEventPoolGetIpcHandle 
-typedef ze_result_t (ZE_APICALL *ze_pfnEventPoolGetIpcHandle_t)(
-    ze_event_pool_handle_t,
-    ze_ipc_event_pool_handle_t*
-    );
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Function-pointer for zeEventPoolOpenIpcHandle 
-typedef ze_result_t (ZE_APICALL *ze_pfnEventPoolOpenIpcHandle_t)(
-    ze_context_handle_t,
-    ze_ipc_event_pool_handle_t,
-    ze_event_pool_handle_t*
-    );
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Function-pointer for zeEventPoolCloseIpcHandle 
-typedef ze_result_t (ZE_APICALL *ze_pfnEventPoolCloseIpcHandle_t)(
-    ze_event_pool_handle_t
-    );
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Table of EventPool functions pointers
-typedef struct _ze_event_pool_dditable_t
-{
-    ze_pfnEventPoolCreate_t                                     pfnCreate;
-    ze_pfnEventPoolDestroy_t                                    pfnDestroy;
-    ze_pfnEventPoolGetIpcHandle_t                               pfnGetIpcHandle;
-    ze_pfnEventPoolOpenIpcHandle_t                              pfnOpenIpcHandle;
-    ze_pfnEventPoolCloseIpcHandle_t                             pfnCloseIpcHandle;
-} ze_event_pool_dditable_t;
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Exported function for filling application's EventPool table
-///        with current process' addresses
-///
-/// @returns
-///     - ::ZE_RESULT_SUCCESS
-///     - ::ZE_RESULT_ERROR_UNINITIALIZED
-///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
-///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
-ZE_DLLEXPORT ze_result_t ZE_APICALL
-zeGetEventPoolProcAddrTable(
-    ze_api_version_t version,                       ///< [in] API version requested
-    ze_event_pool_dditable_t* pDdiTable             ///< [in,out] pointer to table of DDI function pointers
-    );
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Function-pointer for zeGetEventPoolProcAddrTable
-typedef ze_result_t (ZE_APICALL *ze_pfnGetEventPoolProcAddrTable_t)(
-    ze_api_version_t,
-    ze_event_pool_dditable_t*
-    );
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Function-pointer for zeFenceCreate 
-typedef ze_result_t (ZE_APICALL *ze_pfnFenceCreate_t)(
-    ze_command_queue_handle_t,
-    const ze_fence_desc_t*,
-    ze_fence_handle_t*
-    );
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Function-pointer for zeFenceDestroy 
-typedef ze_result_t (ZE_APICALL *ze_pfnFenceDestroy_t)(
-    ze_fence_handle_t
-    );
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Function-pointer for zeFenceHostSynchronize 
-typedef ze_result_t (ZE_APICALL *ze_pfnFenceHostSynchronize_t)(
-    ze_fence_handle_t,
-    uint64_t
-    );
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Function-pointer for zeFenceQueryStatus 
-typedef ze_result_t (ZE_APICALL *ze_pfnFenceQueryStatus_t)(
-    ze_fence_handle_t
-    );
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Function-pointer for zeFenceReset 
-typedef ze_result_t (ZE_APICALL *ze_pfnFenceReset_t)(
-    ze_fence_handle_t
-    );
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Table of Fence functions pointers
-typedef struct _ze_fence_dditable_t
-{
-    ze_pfnFenceCreate_t                                         pfnCreate;
-    ze_pfnFenceDestroy_t                                        pfnDestroy;
-    ze_pfnFenceHostSynchronize_t                                pfnHostSynchronize;
-    ze_pfnFenceQueryStatus_t                                    pfnQueryStatus;
-    ze_pfnFenceReset_t                                          pfnReset;
-} ze_fence_dditable_t;
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Exported function for filling application's Fence table
-///        with current process' addresses
-///
-/// @returns
-///     - ::ZE_RESULT_SUCCESS
-///     - ::ZE_RESULT_ERROR_UNINITIALIZED
-///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
-///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
-ZE_DLLEXPORT ze_result_t ZE_APICALL
-zeGetFenceProcAddrTable(
-    ze_api_version_t version,                       ///< [in] API version requested
-    ze_fence_dditable_t* pDdiTable                  ///< [in,out] pointer to table of DDI function pointers
-    );
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Function-pointer for zeGetFenceProcAddrTable
-typedef ze_result_t (ZE_APICALL *ze_pfnGetFenceProcAddrTable_t)(
-    ze_api_version_t,
-    ze_fence_dditable_t*
-    );
-
-///////////////////////////////////////////////////////////////////////////////
 /// @brief Function-pointer for zeImageGetProperties 
 typedef ze_result_t (ZE_APICALL *ze_pfnImageGetProperties_t)(
     ze_device_handle_t,
@@ -1020,261 +1021,6 @@ zeGetImageProcAddrTable(
 typedef ze_result_t (ZE_APICALL *ze_pfnGetImageProcAddrTable_t)(
     ze_api_version_t,
     ze_image_dditable_t*
-    );
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Function-pointer for zeKernelCreate 
-typedef ze_result_t (ZE_APICALL *ze_pfnKernelCreate_t)(
-    ze_module_handle_t,
-    const ze_kernel_desc_t*,
-    ze_kernel_handle_t*
-    );
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Function-pointer for zeKernelDestroy 
-typedef ze_result_t (ZE_APICALL *ze_pfnKernelDestroy_t)(
-    ze_kernel_handle_t
-    );
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Function-pointer for zeKernelSetCacheConfig 
-typedef ze_result_t (ZE_APICALL *ze_pfnKernelSetCacheConfig_t)(
-    ze_kernel_handle_t,
-    ze_cache_config_flags_t
-    );
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Function-pointer for zeKernelSetGroupSize 
-typedef ze_result_t (ZE_APICALL *ze_pfnKernelSetGroupSize_t)(
-    ze_kernel_handle_t,
-    uint32_t,
-    uint32_t,
-    uint32_t
-    );
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Function-pointer for zeKernelSuggestGroupSize 
-typedef ze_result_t (ZE_APICALL *ze_pfnKernelSuggestGroupSize_t)(
-    ze_kernel_handle_t,
-    uint32_t,
-    uint32_t,
-    uint32_t,
-    uint32_t*,
-    uint32_t*,
-    uint32_t*
-    );
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Function-pointer for zeKernelSuggestMaxCooperativeGroupCount 
-typedef ze_result_t (ZE_APICALL *ze_pfnKernelSuggestMaxCooperativeGroupCount_t)(
-    ze_kernel_handle_t,
-    uint32_t*
-    );
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Function-pointer for zeKernelSetArgumentValue 
-typedef ze_result_t (ZE_APICALL *ze_pfnKernelSetArgumentValue_t)(
-    ze_kernel_handle_t,
-    uint32_t,
-    size_t,
-    const void*
-    );
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Function-pointer for zeKernelSetIndirectAccess 
-typedef ze_result_t (ZE_APICALL *ze_pfnKernelSetIndirectAccess_t)(
-    ze_kernel_handle_t,
-    ze_kernel_indirect_access_flags_t
-    );
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Function-pointer for zeKernelGetIndirectAccess 
-typedef ze_result_t (ZE_APICALL *ze_pfnKernelGetIndirectAccess_t)(
-    ze_kernel_handle_t,
-    ze_kernel_indirect_access_flags_t*
-    );
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Function-pointer for zeKernelGetSourceAttributes 
-typedef ze_result_t (ZE_APICALL *ze_pfnKernelGetSourceAttributes_t)(
-    ze_kernel_handle_t,
-    uint32_t*,
-    char**
-    );
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Function-pointer for zeKernelGetProperties 
-typedef ze_result_t (ZE_APICALL *ze_pfnKernelGetProperties_t)(
-    ze_kernel_handle_t,
-    ze_kernel_properties_t*
-    );
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Function-pointer for zeKernelGetName 
-typedef ze_result_t (ZE_APICALL *ze_pfnKernelGetName_t)(
-    ze_kernel_handle_t,
-    size_t*,
-    char*
-    );
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Table of Kernel functions pointers
-typedef struct _ze_kernel_dditable_t
-{
-    ze_pfnKernelCreate_t                                        pfnCreate;
-    ze_pfnKernelDestroy_t                                       pfnDestroy;
-    ze_pfnKernelSetCacheConfig_t                                pfnSetCacheConfig;
-    ze_pfnKernelSetGroupSize_t                                  pfnSetGroupSize;
-    ze_pfnKernelSuggestGroupSize_t                              pfnSuggestGroupSize;
-    ze_pfnKernelSuggestMaxCooperativeGroupCount_t               pfnSuggestMaxCooperativeGroupCount;
-    ze_pfnKernelSetArgumentValue_t                              pfnSetArgumentValue;
-    ze_pfnKernelSetIndirectAccess_t                             pfnSetIndirectAccess;
-    ze_pfnKernelGetIndirectAccess_t                             pfnGetIndirectAccess;
-    ze_pfnKernelGetSourceAttributes_t                           pfnGetSourceAttributes;
-    ze_pfnKernelGetProperties_t                                 pfnGetProperties;
-    ze_pfnKernelGetName_t                                       pfnGetName;
-} ze_kernel_dditable_t;
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Exported function for filling application's Kernel table
-///        with current process' addresses
-///
-/// @returns
-///     - ::ZE_RESULT_SUCCESS
-///     - ::ZE_RESULT_ERROR_UNINITIALIZED
-///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
-///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
-ZE_DLLEXPORT ze_result_t ZE_APICALL
-zeGetKernelProcAddrTable(
-    ze_api_version_t version,                       ///< [in] API version requested
-    ze_kernel_dditable_t* pDdiTable                 ///< [in,out] pointer to table of DDI function pointers
-    );
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Function-pointer for zeGetKernelProcAddrTable
-typedef ze_result_t (ZE_APICALL *ze_pfnGetKernelProcAddrTable_t)(
-    ze_api_version_t,
-    ze_kernel_dditable_t*
-    );
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Function-pointer for zeMemAllocShared 
-typedef ze_result_t (ZE_APICALL *ze_pfnMemAllocShared_t)(
-    ze_context_handle_t,
-    const ze_device_mem_alloc_desc_t*,
-    const ze_host_mem_alloc_desc_t*,
-    size_t,
-    size_t,
-    ze_device_handle_t,
-    void**
-    );
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Function-pointer for zeMemAllocDevice 
-typedef ze_result_t (ZE_APICALL *ze_pfnMemAllocDevice_t)(
-    ze_context_handle_t,
-    const ze_device_mem_alloc_desc_t*,
-    size_t,
-    size_t,
-    ze_device_handle_t,
-    void**
-    );
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Function-pointer for zeMemAllocHost 
-typedef ze_result_t (ZE_APICALL *ze_pfnMemAllocHost_t)(
-    ze_context_handle_t,
-    const ze_host_mem_alloc_desc_t*,
-    size_t,
-    size_t,
-    void**
-    );
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Function-pointer for zeMemFree 
-typedef ze_result_t (ZE_APICALL *ze_pfnMemFree_t)(
-    ze_context_handle_t,
-    void*
-    );
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Function-pointer for zeMemGetAllocProperties 
-typedef ze_result_t (ZE_APICALL *ze_pfnMemGetAllocProperties_t)(
-    ze_context_handle_t,
-    const void*,
-    ze_memory_allocation_properties_t*,
-    ze_device_handle_t*
-    );
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Function-pointer for zeMemGetAddressRange 
-typedef ze_result_t (ZE_APICALL *ze_pfnMemGetAddressRange_t)(
-    ze_context_handle_t,
-    const void*,
-    void**,
-    size_t*
-    );
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Function-pointer for zeMemGetIpcHandle 
-typedef ze_result_t (ZE_APICALL *ze_pfnMemGetIpcHandle_t)(
-    ze_context_handle_t,
-    const void*,
-    ze_ipc_mem_handle_t*
-    );
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Function-pointer for zeMemOpenIpcHandle 
-typedef ze_result_t (ZE_APICALL *ze_pfnMemOpenIpcHandle_t)(
-    ze_context_handle_t,
-    ze_device_handle_t,
-    ze_ipc_mem_handle_t,
-    ze_ipc_memory_flags_t,
-    void**
-    );
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Function-pointer for zeMemCloseIpcHandle 
-typedef ze_result_t (ZE_APICALL *ze_pfnMemCloseIpcHandle_t)(
-    ze_context_handle_t,
-    const void*
-    );
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Table of Mem functions pointers
-typedef struct _ze_mem_dditable_t
-{
-    ze_pfnMemAllocShared_t                                      pfnAllocShared;
-    ze_pfnMemAllocDevice_t                                      pfnAllocDevice;
-    ze_pfnMemAllocHost_t                                        pfnAllocHost;
-    ze_pfnMemFree_t                                             pfnFree;
-    ze_pfnMemGetAllocProperties_t                               pfnGetAllocProperties;
-    ze_pfnMemGetAddressRange_t                                  pfnGetAddressRange;
-    ze_pfnMemGetIpcHandle_t                                     pfnGetIpcHandle;
-    ze_pfnMemOpenIpcHandle_t                                    pfnOpenIpcHandle;
-    ze_pfnMemCloseIpcHandle_t                                   pfnCloseIpcHandle;
-} ze_mem_dditable_t;
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Exported function for filling application's Mem table
-///        with current process' addresses
-///
-/// @returns
-///     - ::ZE_RESULT_SUCCESS
-///     - ::ZE_RESULT_ERROR_UNINITIALIZED
-///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
-///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
-ZE_DLLEXPORT ze_result_t ZE_APICALL
-zeGetMemProcAddrTable(
-    ze_api_version_t version,                       ///< [in] API version requested
-    ze_mem_dditable_t* pDdiTable                    ///< [in,out] pointer to table of DDI function pointers
-    );
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Function-pointer for zeGetMemProcAddrTable
-typedef ze_result_t (ZE_APICALL *ze_pfnGetMemProcAddrTable_t)(
-    ze_api_version_t,
-    ze_mem_dditable_t*
     );
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1422,6 +1168,186 @@ typedef ze_result_t (ZE_APICALL *ze_pfnGetModuleBuildLogProcAddrTable_t)(
     );
 
 ///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zeKernelCreate 
+typedef ze_result_t (ZE_APICALL *ze_pfnKernelCreate_t)(
+    ze_module_handle_t,
+    const ze_kernel_desc_t*,
+    ze_kernel_handle_t*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zeKernelDestroy 
+typedef ze_result_t (ZE_APICALL *ze_pfnKernelDestroy_t)(
+    ze_kernel_handle_t
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zeKernelSetCacheConfig 
+typedef ze_result_t (ZE_APICALL *ze_pfnKernelSetCacheConfig_t)(
+    ze_kernel_handle_t,
+    ze_cache_config_flags_t
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zeKernelSetGroupSize 
+typedef ze_result_t (ZE_APICALL *ze_pfnKernelSetGroupSize_t)(
+    ze_kernel_handle_t,
+    uint32_t,
+    uint32_t,
+    uint32_t
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zeKernelSuggestGroupSize 
+typedef ze_result_t (ZE_APICALL *ze_pfnKernelSuggestGroupSize_t)(
+    ze_kernel_handle_t,
+    uint32_t,
+    uint32_t,
+    uint32_t,
+    uint32_t*,
+    uint32_t*,
+    uint32_t*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zeKernelSuggestMaxCooperativeGroupCount 
+typedef ze_result_t (ZE_APICALL *ze_pfnKernelSuggestMaxCooperativeGroupCount_t)(
+    ze_kernel_handle_t,
+    uint32_t*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zeKernelSetArgumentValue 
+typedef ze_result_t (ZE_APICALL *ze_pfnKernelSetArgumentValue_t)(
+    ze_kernel_handle_t,
+    uint32_t,
+    size_t,
+    const void*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zeKernelSetIndirectAccess 
+typedef ze_result_t (ZE_APICALL *ze_pfnKernelSetIndirectAccess_t)(
+    ze_kernel_handle_t,
+    ze_kernel_indirect_access_flags_t
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zeKernelGetIndirectAccess 
+typedef ze_result_t (ZE_APICALL *ze_pfnKernelGetIndirectAccess_t)(
+    ze_kernel_handle_t,
+    ze_kernel_indirect_access_flags_t*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zeKernelGetSourceAttributes 
+typedef ze_result_t (ZE_APICALL *ze_pfnKernelGetSourceAttributes_t)(
+    ze_kernel_handle_t,
+    uint32_t*,
+    char**
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zeKernelGetProperties 
+typedef ze_result_t (ZE_APICALL *ze_pfnKernelGetProperties_t)(
+    ze_kernel_handle_t,
+    ze_kernel_properties_t*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zeKernelGetName 
+typedef ze_result_t (ZE_APICALL *ze_pfnKernelGetName_t)(
+    ze_kernel_handle_t,
+    size_t*,
+    char*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Table of Kernel functions pointers
+typedef struct _ze_kernel_dditable_t
+{
+    ze_pfnKernelCreate_t                                        pfnCreate;
+    ze_pfnKernelDestroy_t                                       pfnDestroy;
+    ze_pfnKernelSetCacheConfig_t                                pfnSetCacheConfig;
+    ze_pfnKernelSetGroupSize_t                                  pfnSetGroupSize;
+    ze_pfnKernelSuggestGroupSize_t                              pfnSuggestGroupSize;
+    ze_pfnKernelSuggestMaxCooperativeGroupCount_t               pfnSuggestMaxCooperativeGroupCount;
+    ze_pfnKernelSetArgumentValue_t                              pfnSetArgumentValue;
+    ze_pfnKernelSetIndirectAccess_t                             pfnSetIndirectAccess;
+    ze_pfnKernelGetIndirectAccess_t                             pfnGetIndirectAccess;
+    ze_pfnKernelGetSourceAttributes_t                           pfnGetSourceAttributes;
+    ze_pfnKernelGetProperties_t                                 pfnGetProperties;
+    ze_pfnKernelGetName_t                                       pfnGetName;
+} ze_kernel_dditable_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Exported function for filling application's Kernel table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+ZE_DLLEXPORT ze_result_t ZE_APICALL
+zeGetKernelProcAddrTable(
+    ze_api_version_t version,                       ///< [in] API version requested
+    ze_kernel_dditable_t* pDdiTable                 ///< [in,out] pointer to table of DDI function pointers
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zeGetKernelProcAddrTable
+typedef ze_result_t (ZE_APICALL *ze_pfnGetKernelProcAddrTable_t)(
+    ze_api_version_t,
+    ze_kernel_dditable_t*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zeSamplerCreate 
+typedef ze_result_t (ZE_APICALL *ze_pfnSamplerCreate_t)(
+    ze_context_handle_t,
+    ze_device_handle_t,
+    const ze_sampler_desc_t*,
+    ze_sampler_handle_t*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zeSamplerDestroy 
+typedef ze_result_t (ZE_APICALL *ze_pfnSamplerDestroy_t)(
+    ze_sampler_handle_t
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Table of Sampler functions pointers
+typedef struct _ze_sampler_dditable_t
+{
+    ze_pfnSamplerCreate_t                                       pfnCreate;
+    ze_pfnSamplerDestroy_t                                      pfnDestroy;
+} ze_sampler_dditable_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Exported function for filling application's Sampler table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+ZE_DLLEXPORT ze_result_t ZE_APICALL
+zeGetSamplerProcAddrTable(
+    ze_api_version_t version,                       ///< [in] API version requested
+    ze_sampler_dditable_t* pDdiTable                ///< [in,out] pointer to table of DDI function pointers
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zeGetSamplerProcAddrTable
+typedef ze_result_t (ZE_APICALL *ze_pfnGetSamplerProcAddrTable_t)(
+    ze_api_version_t,
+    ze_sampler_dditable_t*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
 /// @brief Function-pointer for zePhysicalMemCreate 
 typedef ze_result_t (ZE_APICALL *ze_pfnPhysicalMemCreate_t)(
     ze_context_handle_t,
@@ -1468,30 +1394,105 @@ typedef ze_result_t (ZE_APICALL *ze_pfnGetPhysicalMemProcAddrTable_t)(
     );
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Function-pointer for zeSamplerCreate 
-typedef ze_result_t (ZE_APICALL *ze_pfnSamplerCreate_t)(
+/// @brief Function-pointer for zeMemAllocShared 
+typedef ze_result_t (ZE_APICALL *ze_pfnMemAllocShared_t)(
+    ze_context_handle_t,
+    const ze_device_mem_alloc_desc_t*,
+    const ze_host_mem_alloc_desc_t*,
+    size_t,
+    size_t,
+    ze_device_handle_t,
+    void**
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zeMemAllocDevice 
+typedef ze_result_t (ZE_APICALL *ze_pfnMemAllocDevice_t)(
+    ze_context_handle_t,
+    const ze_device_mem_alloc_desc_t*,
+    size_t,
+    size_t,
+    ze_device_handle_t,
+    void**
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zeMemAllocHost 
+typedef ze_result_t (ZE_APICALL *ze_pfnMemAllocHost_t)(
+    ze_context_handle_t,
+    const ze_host_mem_alloc_desc_t*,
+    size_t,
+    size_t,
+    void**
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zeMemFree 
+typedef ze_result_t (ZE_APICALL *ze_pfnMemFree_t)(
+    ze_context_handle_t,
+    void*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zeMemGetAllocProperties 
+typedef ze_result_t (ZE_APICALL *ze_pfnMemGetAllocProperties_t)(
+    ze_context_handle_t,
+    const void*,
+    ze_memory_allocation_properties_t*,
+    ze_device_handle_t*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zeMemGetAddressRange 
+typedef ze_result_t (ZE_APICALL *ze_pfnMemGetAddressRange_t)(
+    ze_context_handle_t,
+    const void*,
+    void**,
+    size_t*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zeMemGetIpcHandle 
+typedef ze_result_t (ZE_APICALL *ze_pfnMemGetIpcHandle_t)(
+    ze_context_handle_t,
+    const void*,
+    ze_ipc_mem_handle_t*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zeMemOpenIpcHandle 
+typedef ze_result_t (ZE_APICALL *ze_pfnMemOpenIpcHandle_t)(
     ze_context_handle_t,
     ze_device_handle_t,
-    const ze_sampler_desc_t*,
-    ze_sampler_handle_t*
+    ze_ipc_mem_handle_t,
+    ze_ipc_memory_flags_t,
+    void**
     );
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Function-pointer for zeSamplerDestroy 
-typedef ze_result_t (ZE_APICALL *ze_pfnSamplerDestroy_t)(
-    ze_sampler_handle_t
+/// @brief Function-pointer for zeMemCloseIpcHandle 
+typedef ze_result_t (ZE_APICALL *ze_pfnMemCloseIpcHandle_t)(
+    ze_context_handle_t,
+    const void*
     );
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Table of Sampler functions pointers
-typedef struct _ze_sampler_dditable_t
+/// @brief Table of Mem functions pointers
+typedef struct _ze_mem_dditable_t
 {
-    ze_pfnSamplerCreate_t                                       pfnCreate;
-    ze_pfnSamplerDestroy_t                                      pfnDestroy;
-} ze_sampler_dditable_t;
+    ze_pfnMemAllocShared_t                                      pfnAllocShared;
+    ze_pfnMemAllocDevice_t                                      pfnAllocDevice;
+    ze_pfnMemAllocHost_t                                        pfnAllocHost;
+    ze_pfnMemFree_t                                             pfnFree;
+    ze_pfnMemGetAllocProperties_t                               pfnGetAllocProperties;
+    ze_pfnMemGetAddressRange_t                                  pfnGetAddressRange;
+    ze_pfnMemGetIpcHandle_t                                     pfnGetIpcHandle;
+    ze_pfnMemOpenIpcHandle_t                                    pfnOpenIpcHandle;
+    ze_pfnMemCloseIpcHandle_t                                   pfnCloseIpcHandle;
+} ze_mem_dditable_t;
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Exported function for filling application's Sampler table
+/// @brief Exported function for filling application's Mem table
 ///        with current process' addresses
 ///
 /// @returns
@@ -1500,16 +1501,16 @@ typedef struct _ze_sampler_dditable_t
 ///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
 ///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
 ZE_DLLEXPORT ze_result_t ZE_APICALL
-zeGetSamplerProcAddrTable(
+zeGetMemProcAddrTable(
     ze_api_version_t version,                       ///< [in] API version requested
-    ze_sampler_dditable_t* pDdiTable                ///< [in,out] pointer to table of DDI function pointers
+    ze_mem_dditable_t* pDdiTable                    ///< [in,out] pointer to table of DDI function pointers
     );
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Function-pointer for zeGetSamplerProcAddrTable
-typedef ze_result_t (ZE_APICALL *ze_pfnGetSamplerProcAddrTable_t)(
+/// @brief Function-pointer for zeGetMemProcAddrTable
+typedef ze_result_t (ZE_APICALL *ze_pfnGetMemProcAddrTable_t)(
     ze_api_version_t,
-    ze_sampler_dditable_t*
+    ze_mem_dditable_t*
     );
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1621,16 +1622,16 @@ typedef struct _ze_dditable_t
     ze_context_dditable_t               Context;
     ze_command_queue_dditable_t         CommandQueue;
     ze_command_list_dditable_t          CommandList;
-    ze_event_dditable_t                 Event;
-    ze_event_pool_dditable_t            EventPool;
     ze_fence_dditable_t                 Fence;
+    ze_event_pool_dditable_t            EventPool;
+    ze_event_dditable_t                 Event;
     ze_image_dditable_t                 Image;
-    ze_kernel_dditable_t                Kernel;
-    ze_mem_dditable_t                   Mem;
     ze_module_dditable_t                Module;
     ze_module_build_log_dditable_t      ModuleBuildLog;
-    ze_physical_mem_dditable_t          PhysicalMem;
+    ze_kernel_dditable_t                Kernel;
     ze_sampler_dditable_t               Sampler;
+    ze_physical_mem_dditable_t          PhysicalMem;
+    ze_mem_dditable_t                   Mem;
     ze_virtual_mem_dditable_t           VirtualMem;
 } ze_dditable_t;
 

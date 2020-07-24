@@ -5,6 +5,7 @@
  * SPDX-License-Identifier: MIT
  *
  * @file ze_wprapi.cpp
+ * @version v1.0-r1.0.4.8
  *
  * @brief C++ wrapper of ze
  *
@@ -17,7 +18,9 @@
 
 namespace ze
 {
+#if !defined(__GNUC__)
 #pragma region common
+#endif
     ///////////////////////////////////////////////////////////////////////////////
     std::string exception_t::formatted(
         const result_t result,
@@ -34,8 +37,12 @@ namespace ze
     #endif
     }
 
+#if !defined(__GNUC__)
 #pragma endregion
+#endif
+#if !defined(__GNUC__)
 #pragma region driver
+#endif
     ///////////////////////////////////////////////////////////////////////////////
     Driver::Driver( 
         driver_handle_t handle                          ///< [in] handle of the driver instance
@@ -240,8 +247,12 @@ namespace ze
             throw exception_t( result, __FILE__, ZE_STRING(__LINE__), "ze::Driver::GetExtensionProperties" );
     }
 
+#if !defined(__GNUC__)
 #pragma endregion
+#endif
+#if !defined(__GNUC__)
 #pragma region device
+#endif
     ///////////////////////////////////////////////////////////////////////////////
     Device::Device( 
         device_handle_t handle,                         ///< [in] handle of device object
@@ -702,8 +713,12 @@ namespace ze
             throw exception_t( result, __FILE__, ZE_STRING(__LINE__), "ze::Device::GetStatus" );
     }
 
+#if !defined(__GNUC__)
 #pragma endregion
+#endif
+#if !defined(__GNUC__)
 #pragma region context
+#endif
     ///////////////////////////////////////////////////////////////////////////////
     Context::Context( 
         context_handle_t handle,                        ///< [in] handle of context object
@@ -808,8 +823,12 @@ namespace ze
             throw exception_t( result, __FILE__, ZE_STRING(__LINE__), "ze::Context::GetStatus" );
     }
 
+#if !defined(__GNUC__)
 #pragma endregion
+#endif
+#if !defined(__GNUC__)
 #pragma region cmdqueue
+#endif
     ///////////////////////////////////////////////////////////////////////////////
     CommandQueue::CommandQueue( 
         command_queue_handle_t handle,                  ///< [in] handle of command queue object
@@ -984,8 +1003,12 @@ namespace ze
         return 1; // true
     }
 
+#if !defined(__GNUC__)
 #pragma endregion
+#endif
+#if !defined(__GNUC__)
 #pragma region cmdlist
+#endif
     ///////////////////////////////////////////////////////////////////////////////
     CommandList::CommandList( 
         command_list_handle_t handle,                   ///< [in] handle of command list object
@@ -1222,8 +1245,12 @@ namespace ze
             throw exception_t( result, __FILE__, ZE_STRING(__LINE__), "ze::CommandList::AppendWriteGlobalTimestamp" );
     }
 
+#if !defined(__GNUC__)
 #pragma endregion
+#endif
+#if !defined(__GNUC__)
 #pragma region barrier
+#endif
     ///////////////////////////////////////////////////////////////////////////////
     /// @brief Appends an execution and global memory barrier into a command list.
     /// 
@@ -1236,9 +1263,6 @@ namespace ze
     ///       signaled prior to the execution of the barrier.
     ///     - This command blocks all following commands from beginning until the
     ///       execution of the barrier completes.
-    ///     - The application must ensure the signal event was **not** created from
-    ///       an event pool that was created using
-    ///       ::ZE_EVENT_POOL_FLAG_KERNEL_TIMESTAMP flag.
     ///     - The application must **not** call this function from simultaneous
     ///       threads with the same command list handle.
     ///     - The implementation of this function should be lock-free.
@@ -1286,9 +1310,6 @@ namespace ze
     ///       signaled prior to the execution of the barrier.
     ///     - This command blocks all following commands from beginning until the
     ///       execution of the barrier completes.
-    ///     - The application must ensure the signal event was **not** created from
-    ///       an event pool that was created using
-    ///       ::ZE_EVENT_POOL_FLAG_KERNEL_TIMESTAMP flag.
     ///     - The application must **not** call this function from simultaneous
     ///       threads with the same command list handle.
     ///     - The implementation of this function should be lock-free.
@@ -1352,8 +1373,12 @@ namespace ze
             throw exception_t( result, __FILE__, ZE_STRING(__LINE__), "ze::Context::SystemBarrier" );
     }
 
+#if !defined(__GNUC__)
 #pragma endregion
+#endif
+#if !defined(__GNUC__)
 #pragma region copy
+#endif
     ///////////////////////////////////////////////////////////////////////////////
     /// @brief Copies host, device, or shared memory.
     /// 
@@ -1365,9 +1390,6 @@ namespace ze
     ///       until execution.
     ///     - The application must ensure the events are accessible by the device on
     ///       which the command list was created.
-    ///     - The application must ensure the signal event was **not** created from
-    ///       an event pool that was created using
-    ///       ::ZE_EVENT_POOL_FLAG_KERNEL_TIMESTAMP flag.
     ///     - The application must ensure the command list and events were created,
     ///       and the memory was allocated, on the same context.
     ///     - The application must **not** call this function from simultaneous
@@ -1428,9 +1450,6 @@ namespace ze
     ///       ::ze_command_queue_group_properties_t.maxMemoryFillPatternSize.
     ///     - The application must ensure the events are accessible by the device on
     ///       which the command list was created.
-    ///     - The application must ensure the signal event was **not** created from
-    ///       an event pool that was created using
-    ///       ::ZE_EVENT_POOL_FLAG_KERNEL_TIMESTAMP flag.
     ///     - The application must enusre the command list and events were created,
     ///       and the memory was allocated, on the same context.
     ///     - The application must **not** call this function from simultaneous
@@ -1491,9 +1510,6 @@ namespace ze
     ///     - The src and dst regions cannot be overlapping.
     ///     - The application must ensure the events are accessible by the device on
     ///       which the command list was created.
-    ///     - The application must ensure the signal event was **not** created from
-    ///       an event pool that was created using
-    ///       ::ZE_EVENT_POOL_FLAG_KERNEL_TIMESTAMP flag.
     ///     - The application must ensure the command list and events were created,
     ///       and the memory was allocated, on the same context.
     ///     - The application must **not** call this function from simultaneous
@@ -1558,9 +1574,6 @@ namespace ze
     ///       until execution.
     ///     - The application must ensure the events are accessible by the device on
     ///       which the command list was created.
-    ///     - The application must ensure the signal event was **not** created from
-    ///       an event pool that was created using
-    ///       ::ZE_EVENT_POOL_FLAG_KERNEL_TIMESTAMP flag.
     ///     - The application must ensure the command list and events were created,
     ///       and the memory was allocated, on the same context.
     ///     - The application must **not** call this function from simultaneous
@@ -1609,9 +1622,6 @@ namespace ze
     ///       device on which the command list was created.
     ///     - The application must ensure the image format descriptors for both
     ///       source and destination images are the same.
-    ///     - The application must ensure the signal event was **not** created from
-    ///       an event pool that was created using
-    ///       ::ZE_EVENT_POOL_FLAG_KERNEL_TIMESTAMP flag.
     ///     - The application must ensure the command list, images and events were
     ///       created on the same context.
     ///     - The application must **not** call this function from simultaneous
@@ -1663,9 +1673,6 @@ namespace ze
     ///     - The src and dst regions cannot be overlapping.
     ///     - The application must ensure the image format descriptors for both
     ///       source and destination images are the same.
-    ///     - The application must ensure the signal event was **not** created from
-    ///       an event pool that was created using
-    ///       ::ZE_EVENT_POOL_FLAG_KERNEL_TIMESTAMP flag.
     ///     - The application must ensure the command list, images and events were
     ///       created, and the memory was allocated, on the same context.
     ///     - The application must **not** call this function from simultaneous
@@ -1719,9 +1726,6 @@ namespace ze
     ///       device on which the command list was created.
     ///     - The application must ensure the image format descriptor for the source
     ///       image is not a media format.
-    ///     - The application must ensure the signal event was **not** created from
-    ///       an event pool that was created using
-    ///       ::ZE_EVENT_POOL_FLAG_KERNEL_TIMESTAMP flag.
     ///     - The application must ensure the command list, image and events were
     ///       created, and the memory was allocated, on the same context.
     ///     - The application must **not** call this function from simultaneous
@@ -1777,9 +1781,6 @@ namespace ze
     ///       device on which the command list was created.
     ///     - The application must ensure the image format descriptor for the
     ///       destination image is not a media format.
-    ///     - The application must ensure the signal event was **not** created from
-    ///       an event pool that was created using
-    ///       ::ZE_EVENT_POOL_FLAG_KERNEL_TIMESTAMP flag.
     ///     - The application must ensure the command list, image and events were
     ///       created, and the memory was allocated, on the same context.
     ///     - The application must **not** call this function from simultaneous
@@ -1911,8 +1912,12 @@ namespace ze
             throw exception_t( result, __FILE__, ZE_STRING(__LINE__), "ze::CommandList::AppendMemAdvise" );
     }
 
+#if !defined(__GNUC__)
 #pragma endregion
+#endif
+#if !defined(__GNUC__)
 #pragma region event
+#endif
     ///////////////////////////////////////////////////////////////////////////////
     EventPool::EventPool( 
         event_pool_handle_t handle,                     ///< [in] handle of event pool object
@@ -2032,8 +2037,8 @@ namespace ze
     /// @details
     ///     - An event is used to communicate fine-grain host-to-device,
     ///       device-to-host or device-to-device dependencies have completed.
-    ///     - The application must ensure multiple events do not use the same
-    ///       location within the same pool.
+    ///     - The application must ensure the location in the pool is not being used
+    ///       by another event.
     ///     - The application must **not** call this function from simultaneous
     ///       threads with the same event pool handle.
     ///     - The implementation of this function should be lock-free.
@@ -2218,9 +2223,10 @@ namespace ze
     /// @details
     ///     - The application must ensure the events are accessible by the device on
     ///       which the command list was created.
-    ///     - The application must ensure the signal event was **not** created from
-    ///       an event pool that was created using
-    ///       ::ZE_EVENT_POOL_FLAG_KERNEL_TIMESTAMP flag.
+    ///     - The duration of an event created from an event pool that was created
+    ///       using ::ZE_EVENT_POOL_FLAG_KERNEL_TIMESTAMP flag is undefined.
+    ///       However, for consistency and orthogonality the event will report
+    ///       correctly as signaled when used by other event API functionality.
     ///     - The application must ensure the command list and events were created
     ///       on the same context.
     ///     - The application must **not** call this function from simultaneous
@@ -2285,9 +2291,10 @@ namespace ze
     /// @brief Signals a event from host.
     /// 
     /// @details
-    ///     - The application must ensure the signal event was **not** created from
-    ///       an event pool that was created using
-    ///       ::ZE_EVENT_POOL_FLAG_KERNEL_TIMESTAMP flag.
+    ///     - The duration of an event created from an event pool that was created
+    ///       using ::ZE_EVENT_POOL_FLAG_KERNEL_TIMESTAMP flag is undefined.
+    ///       However, for consistency and orthogonality the event will report
+    ///       correctly as signaled when used by other event API functionality.
     ///     - The application may call this function from simultaneous threads.
     ///     - The implementation of this function should be lock-free.
     /// 
@@ -2523,8 +2530,12 @@ namespace ze
             throw exception_t( result, __FILE__, ZE_STRING(__LINE__), "ze::CommandList::AppendQueryKernelTimestamps" );
     }
 
+#if !defined(__GNUC__)
 #pragma endregion
+#endif
+#if !defined(__GNUC__)
 #pragma region fence
+#endif
     ///////////////////////////////////////////////////////////////////////////////
     Fence::Fence( 
         fence_handle_t handle,                          ///< [in] handle of fence object
@@ -2709,8 +2720,12 @@ namespace ze
             throw exception_t( result, __FILE__, ZE_STRING(__LINE__), "ze::Fence::Reset" );
     }
 
+#if !defined(__GNUC__)
 #pragma endregion
+#endif
+#if !defined(__GNUC__)
 #pragma region image
+#endif
     ///////////////////////////////////////////////////////////////////////////////
     Image::Image( 
         image_handle_t handle,                          ///< [in] handle of image object
@@ -2832,8 +2847,12 @@ namespace ze
         delete pImage;
     }
 
+#if !defined(__GNUC__)
 #pragma endregion
+#endif
+#if !defined(__GNUC__)
 #pragma region memory
+#endif
     ///////////////////////////////////////////////////////////////////////////////
     /// @brief Allocates shared memory on the context.
     /// 
@@ -3177,8 +3196,12 @@ namespace ze
             throw exception_t( result, __FILE__, ZE_STRING(__LINE__), "ze::Mem::CloseIpcHandle" );
     }
 
+#if !defined(__GNUC__)
 #pragma endregion
+#endif
+#if !defined(__GNUC__)
 #pragma region module
+#endif
     ///////////////////////////////////////////////////////////////////////////////
     Module::Module( 
         module_handle_t handle,                         ///< [in] handle of module object
@@ -4168,10 +4191,18 @@ namespace ze
             throw exception_t( result, __FILE__, ZE_STRING(__LINE__), "ze::CommandList::AppendLaunchMultipleKernelsIndirect" );
     }
 
+#if !defined(__GNUC__)
 #pragma endregion
+#endif
+#if !defined(__GNUC__)
 #pragma region raytracing
+#endif
+#if !defined(__GNUC__)
 #pragma endregion
+#endif
+#if !defined(__GNUC__)
 #pragma region residency
+#endif
     ///////////////////////////////////////////////////////////////////////////////
     /// @brief Makes memory resident for the device.
     /// 
@@ -4280,8 +4311,12 @@ namespace ze
             throw exception_t( result, __FILE__, ZE_STRING(__LINE__), "ze::Context::EvictImage" );
     }
 
+#if !defined(__GNUC__)
 #pragma endregion
+#endif
+#if !defined(__GNUC__)
 #pragma region sampler
+#endif
     ///////////////////////////////////////////////////////////////////////////////
     Sampler::Sampler( 
         sampler_handle_t handle,                        ///< [in] handle of the sample object
@@ -4369,8 +4404,12 @@ namespace ze
         delete pSampler;
     }
 
+#if !defined(__GNUC__)
 #pragma endregion
+#endif
+#if !defined(__GNUC__)
 #pragma region virtual
+#endif
     ///////////////////////////////////////////////////////////////////////////////
     PhysicalMem::PhysicalMem( 
         physical_mem_handle_t handle,                   ///< [in] handle of physical memory object
@@ -4697,12 +4736,16 @@ namespace ze
         return std::make_tuple( *reinterpret_cast<memory_access_attribute_t*>( &access ), outSize );
     }
 
+#if !defined(__GNUC__)
 #pragma endregion
+#endif
 } // namespace ze
 
 namespace ze
 {
+#if !defined(__GNUC__)
 #pragma region common
+#endif
     ///////////////////////////////////////////////////////////////////////////////
     /// @brief Converts ipc_mem_handle_t to std::string
     std::string to_string( const ipc_mem_handle_t val )
@@ -5105,8 +5148,12 @@ namespace ze
         return str;
     }
 
+#if !defined(__GNUC__)
 #pragma endregion
+#endif
+#if !defined(__GNUC__)
 #pragma region driver
+#endif
     ///////////////////////////////////////////////////////////////////////////////
     /// @brief Converts init_flags_t to std::string
     std::string to_string( const init_flags_t val )
@@ -5260,8 +5307,12 @@ namespace ze
         return str;
     }
 
+#if !defined(__GNUC__)
 #pragma endregion
+#endif
+#if !defined(__GNUC__)
 #pragma region device
+#endif
     ///////////////////////////////////////////////////////////////////////////////
     /// @brief Converts device_uuid_t to std::string
     std::string to_string( const device_uuid_t val )
@@ -6051,8 +6102,12 @@ namespace ze
         return str;
     }
 
+#if !defined(__GNUC__)
 #pragma endregion
+#endif
+#if !defined(__GNUC__)
 #pragma region context
+#endif
     ///////////////////////////////////////////////////////////////////////////////
     /// @brief Converts Context::flags_t to std::string
     std::string to_string( const Context::flags_t val )
@@ -6141,8 +6196,12 @@ namespace ze
         return str;
     }
 
+#if !defined(__GNUC__)
 #pragma endregion
+#endif
+#if !defined(__GNUC__)
 #pragma region cmdqueue
+#endif
     ///////////////////////////////////////////////////////////////////////////////
     /// @brief Converts CommandQueue::flags_t to std::string
     std::string to_string( const CommandQueue::flags_t val )
@@ -6259,8 +6318,12 @@ namespace ze
         return str;
     }
 
+#if !defined(__GNUC__)
 #pragma endregion
+#endif
+#if !defined(__GNUC__)
 #pragma region cmdlist
+#endif
     ///////////////////////////////////////////////////////////////////////////////
     /// @brief Converts CommandList::flags_t to std::string
     std::string to_string( const CommandList::flags_t val )
@@ -6450,12 +6513,24 @@ namespace ze
         return str;
     }
 
+#if !defined(__GNUC__)
 #pragma endregion
+#endif
+#if !defined(__GNUC__)
 #pragma region barrier
+#endif
+#if !defined(__GNUC__)
 #pragma endregion
+#endif
+#if !defined(__GNUC__)
 #pragma region copy
+#endif
+#if !defined(__GNUC__)
 #pragma endregion
+#endif
+#if !defined(__GNUC__)
 #pragma region event
+#endif
     ///////////////////////////////////////////////////////////////////////////////
     /// @brief Converts EventPool::flags_t to std::string
     std::string to_string( const EventPool::flags_t val )
@@ -6602,8 +6677,12 @@ namespace ze
         return str;
     }
 
+#if !defined(__GNUC__)
 #pragma endregion
+#endif
+#if !defined(__GNUC__)
 #pragma region fence
+#endif
     ///////////////////////////////////////////////////////////////////////////////
     /// @brief Converts Fence::flags_t to std::string
     std::string to_string( const Fence::flags_t val )
@@ -6648,8 +6727,12 @@ namespace ze
         return str;
     }
 
+#if !defined(__GNUC__)
 #pragma endregion
+#endif
+#if !defined(__GNUC__)
 #pragma region image
+#endif
     ///////////////////////////////////////////////////////////////////////////////
     /// @brief Converts Image::flags_t to std::string
     std::string to_string( const Image::flags_t val )
@@ -7053,8 +7136,12 @@ namespace ze
         return str;
     }
 
+#if !defined(__GNUC__)
 #pragma endregion
+#endif
+#if !defined(__GNUC__)
 #pragma region memory
+#endif
     ///////////////////////////////////////////////////////////////////////////////
     /// @brief Converts Mem::device_alloc_flags_t to std::string
     std::string to_string( const Mem::device_alloc_flags_t val )
@@ -7323,8 +7410,12 @@ namespace ze
         return str;
     }
 
+#if !defined(__GNUC__)
 #pragma endregion
+#endif
+#if !defined(__GNUC__)
 #pragma region module
+#endif
     ///////////////////////////////////////////////////////////////////////////////
     /// @brief Converts kernel_uuid_t to std::string
     std::string to_string( const kernel_uuid_t val )
@@ -7671,8 +7762,12 @@ namespace ze
         return str;
     }
 
+#if !defined(__GNUC__)
 #pragma endregion
+#endif
+#if !defined(__GNUC__)
 #pragma region raytracing
+#endif
     ///////////////////////////////////////////////////////////////////////////////
     /// @brief Converts raytracing_ext_version_t to std::string
     std::string to_string( const raytracing_ext_version_t val )
@@ -7693,10 +7788,18 @@ namespace ze
         return str;
     }
 
+#if !defined(__GNUC__)
 #pragma endregion
+#endif
+#if !defined(__GNUC__)
 #pragma region residency
+#endif
+#if !defined(__GNUC__)
 #pragma endregion
+#endif
+#if !defined(__GNUC__)
 #pragma region sampler
+#endif
     ///////////////////////////////////////////////////////////////////////////////
     /// @brief Converts Sampler::address_mode_t to std::string
     std::string to_string( const Sampler::address_mode_t val )
@@ -7790,8 +7893,12 @@ namespace ze
         return str;
     }
 
+#if !defined(__GNUC__)
 #pragma endregion
+#endif
+#if !defined(__GNUC__)
 #pragma region virtual
+#endif
     ///////////////////////////////////////////////////////////////////////////////
     /// @brief Converts VirtualMem::memory_access_attribute_t to std::string
     std::string to_string( const VirtualMem::memory_access_attribute_t val )
@@ -7868,5 +7975,7 @@ namespace ze
         return str;
     }
 
+#if !defined(__GNUC__)
 #pragma endregion
+#endif
 } // namespace ze

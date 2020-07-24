@@ -5,6 +5,7 @@
  * SPDX-License-Identifier: MIT
  *
  * @file ze_api.h
+ * @version v1.0-r1.0.4.8
  *
  */
 #ifndef _ZE_API_H
@@ -22,7 +23,9 @@ extern "C" {
 #endif
 
 // Intel 'oneAPI' Level-Zero API common types
+#if !defined(__GNUC__)
 #pragma region common
+#endif
 ///////////////////////////////////////////////////////////////////////////////
 #ifndef ZE_MAKE_VERSION
 /// @brief Generates generic 'oneAPI' API versions
@@ -501,9 +504,13 @@ typedef struct _ze_sampler_desc_t ze_sampler_desc_t;
 typedef struct _ze_physical_mem_desc_t ze_physical_mem_desc_t;
 
 
+#if !defined(__GNUC__)
 #pragma endregion
+#endif
 // Intel 'oneAPI' Level-Zero APIs
+#if !defined(__GNUC__)
 #pragma region driver
+#endif
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief Supported initialization flags
 typedef uint32_t ze_init_flags_t;
@@ -752,9 +759,13 @@ zeDriverGetExtensionProperties(
                                                     ///< extension properties
     );
 
+#if !defined(__GNUC__)
 #pragma endregion
+#endif
 // Intel 'oneAPI' Level-Zero APIs for Device
+#if !defined(__GNUC__)
 #pragma region device
+#endif
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief Retrieves devices within a driver
 /// 
@@ -1532,9 +1543,13 @@ zeDeviceGetStatus(
     ze_device_handle_t hDevice                      ///< [in] handle of the device
     );
 
+#if !defined(__GNUC__)
 #pragma endregion
+#endif
 // Intel 'oneAPI' Level-Zero APIs for Context
+#if !defined(__GNUC__)
 #pragma region context
+#endif
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief Supported context creation flags
 typedef uint32_t ze_context_flags_t;
@@ -1633,9 +1648,13 @@ zeContextGetStatus(
     ze_context_handle_t hContext                    ///< [in] handle of context object
     );
 
+#if !defined(__GNUC__)
 #pragma endregion
+#endif
 // Intel 'oneAPI' Level-Zero APIs for Command Queue
+#if !defined(__GNUC__)
 #pragma region cmdqueue
+#endif
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief Supported command queue flags
 typedef uint32_t ze_command_queue_flags_t;
@@ -1827,9 +1846,13 @@ zeCommandQueueSynchronize(
                                                     ///< value allowed by the accuracy of those dependencies.
     );
 
+#if !defined(__GNUC__)
 #pragma endregion
+#endif
 // Intel 'oneAPI' Level-Zero APIs for Command List
+#if !defined(__GNUC__)
 #pragma region cmdlist
+#endif
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief Supported command list creation flags
 typedef uint32_t ze_command_list_flags_t;
@@ -2047,9 +2070,13 @@ zeCommandListAppendWriteGlobalTimestamp(
                                                     ///< on before executing query
     );
 
+#if !defined(__GNUC__)
 #pragma endregion
+#endif
 // Intel 'oneAPI' Level-Zero APIs for Barrier
+#if !defined(__GNUC__)
 #pragma region barrier
+#endif
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief Appends an execution and global memory barrier into a command list.
 /// 
@@ -2062,9 +2089,6 @@ zeCommandListAppendWriteGlobalTimestamp(
 ///       signaled prior to the execution of the barrier.
 ///     - This command blocks all following commands from beginning until the
 ///       execution of the barrier completes.
-///     - The application must ensure the signal event was **not** created from
-///       an event pool that was created using
-///       ::ZE_EVENT_POOL_FLAG_KERNEL_TIMESTAMP flag.
 ///     - The application must **not** call this function from simultaneous
 ///       threads with the same command list handle.
 ///     - The implementation of this function should be lock-free.
@@ -2105,9 +2129,6 @@ zeCommandListAppendBarrier(
 ///       signaled prior to the execution of the barrier.
 ///     - This command blocks all following commands from beginning until the
 ///       execution of the barrier completes.
-///     - The application must ensure the signal event was **not** created from
-///       an event pool that was created using
-///       ::ZE_EVENT_POOL_FLAG_KERNEL_TIMESTAMP flag.
 ///     - The application must **not** call this function from simultaneous
 ///       threads with the same command list handle.
 ///     - The implementation of this function should be lock-free.
@@ -2163,9 +2184,13 @@ zeContextSystemBarrier(
     ze_device_handle_t hDevice                      ///< [in] handle of the device
     );
 
+#if !defined(__GNUC__)
 #pragma endregion
+#endif
 // Intel 'oneAPI' Level-Zero APIs for Copies
+#if !defined(__GNUC__)
 #pragma region copy
+#endif
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief Copies host, device, or shared memory.
 /// 
@@ -2177,9 +2202,6 @@ zeContextSystemBarrier(
 ///       until execution.
 ///     - The application must ensure the events are accessible by the device on
 ///       which the command list was created.
-///     - The application must ensure the signal event was **not** created from
-///       an event pool that was created using
-///       ::ZE_EVENT_POOL_FLAG_KERNEL_TIMESTAMP flag.
 ///     - The application must ensure the command list and events were created,
 ///       and the memory was allocated, on the same context.
 ///     - The application must **not** call this function from simultaneous
@@ -2233,9 +2255,6 @@ zeCommandListAppendMemoryCopy(
 ///       ::ze_command_queue_group_properties_t.maxMemoryFillPatternSize.
 ///     - The application must ensure the events are accessible by the device on
 ///       which the command list was created.
-///     - The application must ensure the signal event was **not** created from
-///       an event pool that was created using
-///       ::ZE_EVENT_POOL_FLAG_KERNEL_TIMESTAMP flag.
 ///     - The application must enusre the command list and events were created,
 ///       and the memory was allocated, on the same context.
 ///     - The application must **not** call this function from simultaneous
@@ -2302,9 +2321,6 @@ typedef struct _ze_copy_region_t
 ///     - The src and dst regions cannot be overlapping.
 ///     - The application must ensure the events are accessible by the device on
 ///       which the command list was created.
-///     - The application must ensure the signal event was **not** created from
-///       an event pool that was created using
-///       ::ZE_EVENT_POOL_FLAG_KERNEL_TIMESTAMP flag.
 ///     - The application must ensure the command list and events were created,
 ///       and the memory was allocated, on the same context.
 ///     - The application must **not** call this function from simultaneous
@@ -2360,9 +2376,6 @@ zeCommandListAppendMemoryCopyRegion(
 ///       until execution.
 ///     - The application must ensure the events are accessible by the device on
 ///       which the command list was created.
-///     - The application must ensure the signal event was **not** created from
-///       an event pool that was created using
-///       ::ZE_EVENT_POOL_FLAG_KERNEL_TIMESTAMP flag.
 ///     - The application must ensure the command list and events were created,
 ///       and the memory was allocated, on the same context.
 ///     - The application must **not** call this function from simultaneous
@@ -2404,9 +2417,6 @@ zeCommandListAppendMemoryCopyFromContext(
 ///       device on which the command list was created.
 ///     - The application must ensure the image format descriptors for both
 ///       source and destination images are the same.
-///     - The application must ensure the signal event was **not** created from
-///       an event pool that was created using
-///       ::ZE_EVENT_POOL_FLAG_KERNEL_TIMESTAMP flag.
 ///     - The application must ensure the command list, images and events were
 ///       created on the same context.
 ///     - The application must **not** call this function from simultaneous
@@ -2465,9 +2475,6 @@ typedef struct _ze_image_region_t
 ///     - The src and dst regions cannot be overlapping.
 ///     - The application must ensure the image format descriptors for both
 ///       source and destination images are the same.
-///     - The application must ensure the signal event was **not** created from
-///       an event pool that was created using
-///       ::ZE_EVENT_POOL_FLAG_KERNEL_TIMESTAMP flag.
 ///     - The application must ensure the command list, images and events were
 ///       created, and the memory was allocated, on the same context.
 ///     - The application must **not** call this function from simultaneous
@@ -2513,9 +2520,6 @@ zeCommandListAppendImageCopyRegion(
 ///       device on which the command list was created.
 ///     - The application must ensure the image format descriptor for the source
 ///       image is not a media format.
-///     - The application must ensure the signal event was **not** created from
-///       an event pool that was created using
-///       ::ZE_EVENT_POOL_FLAG_KERNEL_TIMESTAMP flag.
 ///     - The application must ensure the command list, image and events were
 ///       created, and the memory was allocated, on the same context.
 ///     - The application must **not** call this function from simultaneous
@@ -2564,9 +2568,6 @@ zeCommandListAppendImageCopyToMemory(
 ///       device on which the command list was created.
 ///     - The application must ensure the image format descriptor for the
 ///       destination image is not a media format.
-///     - The application must ensure the signal event was **not** created from
-///       an event pool that was created using
-///       ::ZE_EVENT_POOL_FLAG_KERNEL_TIMESTAMP flag.
 ///     - The application must ensure the command list, image and events were
 ///       created, and the memory was allocated, on the same context.
 ///     - The application must **not** call this function from simultaneous
@@ -2706,9 +2707,13 @@ zeCommandListAppendMemAdvise(
     ze_memory_advice_t advice                       ///< [in] Memory advice for the memory range
     );
 
+#if !defined(__GNUC__)
 #pragma endregion
+#endif
 // Intel 'oneAPI' Level-Zero APIs for Event
+#if !defined(__GNUC__)
 #pragma region event
+#endif
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief Supported event pool creation flags
 typedef uint32_t ze_event_pool_flags_t;
@@ -2759,7 +2764,7 @@ typedef struct _ze_event_pool_desc_t
 ///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
 ///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
 ///     - ::ZE_RESULT_ERROR_INVALID_SIZE
-///         + 0 < desc->count
+///         + `0 < desc->count`
 ///         + `(nullptr == phDevices) && (0 < numDevices)`
 ZE_APIEXPORT ze_result_t ZE_APICALL
 zeEventPoolCreate(
@@ -2842,8 +2847,8 @@ typedef struct _ze_event_desc_t
 /// @details
 ///     - An event is used to communicate fine-grain host-to-device,
 ///       device-to-host or device-to-device dependencies have completed.
-///     - The application must ensure multiple events do not use the same
-///       location within the same pool.
+///     - The application must ensure the location in the pool is not being used
+///       by another event.
 ///     - The application must **not** call this function from simultaneous
 ///       threads with the same event pool handle.
 ///     - The implementation of this function should be lock-free.
@@ -2978,9 +2983,10 @@ zeEventPoolCloseIpcHandle(
 /// @details
 ///     - The application must ensure the events are accessible by the device on
 ///       which the command list was created.
-///     - The application must ensure the signal event was **not** created from
-///       an event pool that was created using
-///       ::ZE_EVENT_POOL_FLAG_KERNEL_TIMESTAMP flag.
+///     - The duration of an event created from an event pool that was created
+///       using ::ZE_EVENT_POOL_FLAG_KERNEL_TIMESTAMP flag is undefined.
+///       However, for consistency and orthogonality the event will report
+///       correctly as signaled when used by other event API functionality.
 ///     - The application must ensure the command list and events were created
 ///       on the same context.
 ///     - The application must **not** call this function from simultaneous
@@ -3039,9 +3045,10 @@ zeCommandListAppendWaitOnEvents(
 /// @brief Signals a event from host.
 /// 
 /// @details
-///     - The application must ensure the signal event was **not** created from
-///       an event pool that was created using
-///       ::ZE_EVENT_POOL_FLAG_KERNEL_TIMESTAMP flag.
+///     - The duration of an event created from an event pool that was created
+///       using ::ZE_EVENT_POOL_FLAG_KERNEL_TIMESTAMP flag is undefined.
+///       However, for consistency and orthogonality the event will report
+///       correctly as signaled when used by other event API functionality.
 ///     - The application may call this function from simultaneous threads.
 ///     - The implementation of this function should be lock-free.
 /// 
@@ -3276,9 +3283,13 @@ zeCommandListAppendQueryKernelTimestamps(
                                                     ///< on before executing query
     );
 
+#if !defined(__GNUC__)
 #pragma endregion
+#endif
 // Intel 'oneAPI' Level-Zero APIs for Fence
+#if !defined(__GNUC__)
 #pragma region fence
+#endif
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief Supported fence creation flags
 typedef uint32_t ze_fence_flags_t;
@@ -3442,9 +3453,13 @@ zeFenceReset(
     ze_fence_handle_t hFence                        ///< [in] handle of the fence
     );
 
+#if !defined(__GNUC__)
 #pragma endregion
+#endif
 // Intel 'oneAPI' Level-Zero APIs for Images
+#if !defined(__GNUC__)
 #pragma region image
+#endif
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief Supported image creation flags
 typedef uint32_t ze_image_flags_t;
@@ -3695,9 +3710,13 @@ zeImageDestroy(
     ze_image_handle_t hImage                        ///< [in][release] handle of image object to destroy
     );
 
+#if !defined(__GNUC__)
 #pragma endregion
+#endif
 // Intel 'oneAPI' Level-Zero APIs for Memory
+#if !defined(__GNUC__)
 #pragma region memory
+#endif
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief Supported memory allocation flags
 typedef uint32_t ze_device_mem_alloc_flags_t;
@@ -4145,9 +4164,13 @@ typedef struct _ze_external_memory_export_fd_t
 
 } ze_external_memory_export_fd_t;
 
+#if !defined(__GNUC__)
 #pragma endregion
+#endif
 // Intel 'oneAPI' Level-Zero APIs for Module
+#if !defined(__GNUC__)
 #pragma region module
+#endif
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief Supported module creation input formats
 typedef enum _ze_module_format_t
@@ -5112,9 +5135,13 @@ zeCommandListAppendLaunchMultipleKernelsIndirect(
                                                     ///< on before launching
     );
 
+#if !defined(__GNUC__)
 #pragma endregion
+#endif
 // Intel 'oneAPI' Level-Zero Extension APIs for Raytracing
+#if !defined(__GNUC__)
 #pragma region raytracing
+#endif
 ///////////////////////////////////////////////////////////////////////////////
 #ifndef ZE_RAYTRACING_EXT_NAME
 /// @brief Raytracing Extension Name
@@ -5159,9 +5186,13 @@ typedef struct _ze_raytracing_mem_alloc_ext_desc_t
 
 } ze_raytracing_mem_alloc_ext_desc_t;
 
+#if !defined(__GNUC__)
 #pragma endregion
+#endif
 // Intel 'oneAPI' Level-Zero APIs for Memory Residency
+#if !defined(__GNUC__)
 #pragma region residency
+#endif
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief Makes memory resident for the device.
 /// 
@@ -5274,9 +5305,13 @@ zeContextEvictImage(
     ze_image_handle_t hImage                        ///< [in] handle of image to make evict
     );
 
+#if !defined(__GNUC__)
 #pragma endregion
+#endif
 // Intel 'oneAPI' Level-Zero APIs for Sampler
+#if !defined(__GNUC__)
 #pragma region sampler
+#endif
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief Sampler addressing modes
 typedef enum _ze_sampler_address_mode_t
@@ -5370,9 +5405,13 @@ zeSamplerDestroy(
     ze_sampler_handle_t hSampler                    ///< [in][release] handle of the sampler
     );
 
+#if !defined(__GNUC__)
 #pragma endregion
+#endif
 // Intel 'oneAPI' Level-Zero APIs for Virtual Memory Management
+#if !defined(__GNUC__)
 #pragma region virtual
+#endif
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief Virtual memory page access attributes
 typedef enum _ze_memory_access_attribute_t
@@ -5699,9 +5738,13 @@ zeVirtualMemGetAccessAttribute(
                                                     ///< that shares same access attribute.
     );
 
+#if !defined(__GNUC__)
 #pragma endregion
+#endif
 // Intel 'oneAPI' Level-Zero API Callbacks
+#if !defined(__GNUC__)
 #pragma region callbacks
+#endif
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief Callback function parameters for zeInit 
 /// @details Each entry is a pointer to the parameter passed to the function;
@@ -7232,6 +7275,258 @@ typedef struct _ze_command_list_callbacks_t
 } ze_command_list_callbacks_t;
 
 ///////////////////////////////////////////////////////////////////////////////
+/// @brief Callback function parameters for zeFenceCreate 
+/// @details Each entry is a pointer to the parameter passed to the function;
+///     allowing the callback the ability to modify the parameter's value
+typedef struct _ze_fence_create_params_t
+{
+    ze_command_queue_handle_t* phCommandQueue;
+    const ze_fence_desc_t** pdesc;
+    ze_fence_handle_t** pphFence;
+} ze_fence_create_params_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Callback function-pointer for zeFenceCreate 
+/// @param[in] params Parameters passed to this instance
+/// @param[in] result Return value
+/// @param[in] pTracerUserData Per-Tracer user data
+/// @param[in,out] ppTracerInstanceUserData Per-Tracer, Per-Instance user data
+typedef void (ZE_APICALL *ze_pfnFenceCreateCb_t)(
+    ze_fence_create_params_t* params,
+    ze_result_t result,
+    void* pTracerUserData,
+    void** ppTracerInstanceUserData
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Callback function parameters for zeFenceDestroy 
+/// @details Each entry is a pointer to the parameter passed to the function;
+///     allowing the callback the ability to modify the parameter's value
+typedef struct _ze_fence_destroy_params_t
+{
+    ze_fence_handle_t* phFence;
+} ze_fence_destroy_params_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Callback function-pointer for zeFenceDestroy 
+/// @param[in] params Parameters passed to this instance
+/// @param[in] result Return value
+/// @param[in] pTracerUserData Per-Tracer user data
+/// @param[in,out] ppTracerInstanceUserData Per-Tracer, Per-Instance user data
+typedef void (ZE_APICALL *ze_pfnFenceDestroyCb_t)(
+    ze_fence_destroy_params_t* params,
+    ze_result_t result,
+    void* pTracerUserData,
+    void** ppTracerInstanceUserData
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Callback function parameters for zeFenceHostSynchronize 
+/// @details Each entry is a pointer to the parameter passed to the function;
+///     allowing the callback the ability to modify the parameter's value
+typedef struct _ze_fence_host_synchronize_params_t
+{
+    ze_fence_handle_t* phFence;
+    uint64_t* ptimeout;
+} ze_fence_host_synchronize_params_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Callback function-pointer for zeFenceHostSynchronize 
+/// @param[in] params Parameters passed to this instance
+/// @param[in] result Return value
+/// @param[in] pTracerUserData Per-Tracer user data
+/// @param[in,out] ppTracerInstanceUserData Per-Tracer, Per-Instance user data
+typedef void (ZE_APICALL *ze_pfnFenceHostSynchronizeCb_t)(
+    ze_fence_host_synchronize_params_t* params,
+    ze_result_t result,
+    void* pTracerUserData,
+    void** ppTracerInstanceUserData
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Callback function parameters for zeFenceQueryStatus 
+/// @details Each entry is a pointer to the parameter passed to the function;
+///     allowing the callback the ability to modify the parameter's value
+typedef struct _ze_fence_query_status_params_t
+{
+    ze_fence_handle_t* phFence;
+} ze_fence_query_status_params_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Callback function-pointer for zeFenceQueryStatus 
+/// @param[in] params Parameters passed to this instance
+/// @param[in] result Return value
+/// @param[in] pTracerUserData Per-Tracer user data
+/// @param[in,out] ppTracerInstanceUserData Per-Tracer, Per-Instance user data
+typedef void (ZE_APICALL *ze_pfnFenceQueryStatusCb_t)(
+    ze_fence_query_status_params_t* params,
+    ze_result_t result,
+    void* pTracerUserData,
+    void** ppTracerInstanceUserData
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Callback function parameters for zeFenceReset 
+/// @details Each entry is a pointer to the parameter passed to the function;
+///     allowing the callback the ability to modify the parameter's value
+typedef struct _ze_fence_reset_params_t
+{
+    ze_fence_handle_t* phFence;
+} ze_fence_reset_params_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Callback function-pointer for zeFenceReset 
+/// @param[in] params Parameters passed to this instance
+/// @param[in] result Return value
+/// @param[in] pTracerUserData Per-Tracer user data
+/// @param[in,out] ppTracerInstanceUserData Per-Tracer, Per-Instance user data
+typedef void (ZE_APICALL *ze_pfnFenceResetCb_t)(
+    ze_fence_reset_params_t* params,
+    ze_result_t result,
+    void* pTracerUserData,
+    void** ppTracerInstanceUserData
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Table of Fence callback functions pointers
+typedef struct _ze_fence_callbacks_t
+{
+    ze_pfnFenceCreateCb_t                                           pfnCreateCb;
+    ze_pfnFenceDestroyCb_t                                          pfnDestroyCb;
+    ze_pfnFenceHostSynchronizeCb_t                                  pfnHostSynchronizeCb;
+    ze_pfnFenceQueryStatusCb_t                                      pfnQueryStatusCb;
+    ze_pfnFenceResetCb_t                                            pfnResetCb;
+} ze_fence_callbacks_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Callback function parameters for zeEventPoolCreate 
+/// @details Each entry is a pointer to the parameter passed to the function;
+///     allowing the callback the ability to modify the parameter's value
+typedef struct _ze_event_pool_create_params_t
+{
+    ze_context_handle_t* phContext;
+    const ze_event_pool_desc_t** pdesc;
+    uint32_t* pnumDevices;
+    ze_device_handle_t** pphDevices;
+    ze_event_pool_handle_t** pphEventPool;
+} ze_event_pool_create_params_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Callback function-pointer for zeEventPoolCreate 
+/// @param[in] params Parameters passed to this instance
+/// @param[in] result Return value
+/// @param[in] pTracerUserData Per-Tracer user data
+/// @param[in,out] ppTracerInstanceUserData Per-Tracer, Per-Instance user data
+typedef void (ZE_APICALL *ze_pfnEventPoolCreateCb_t)(
+    ze_event_pool_create_params_t* params,
+    ze_result_t result,
+    void* pTracerUserData,
+    void** ppTracerInstanceUserData
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Callback function parameters for zeEventPoolDestroy 
+/// @details Each entry is a pointer to the parameter passed to the function;
+///     allowing the callback the ability to modify the parameter's value
+typedef struct _ze_event_pool_destroy_params_t
+{
+    ze_event_pool_handle_t* phEventPool;
+} ze_event_pool_destroy_params_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Callback function-pointer for zeEventPoolDestroy 
+/// @param[in] params Parameters passed to this instance
+/// @param[in] result Return value
+/// @param[in] pTracerUserData Per-Tracer user data
+/// @param[in,out] ppTracerInstanceUserData Per-Tracer, Per-Instance user data
+typedef void (ZE_APICALL *ze_pfnEventPoolDestroyCb_t)(
+    ze_event_pool_destroy_params_t* params,
+    ze_result_t result,
+    void* pTracerUserData,
+    void** ppTracerInstanceUserData
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Callback function parameters for zeEventPoolGetIpcHandle 
+/// @details Each entry is a pointer to the parameter passed to the function;
+///     allowing the callback the ability to modify the parameter's value
+typedef struct _ze_event_pool_get_ipc_handle_params_t
+{
+    ze_event_pool_handle_t* phEventPool;
+    ze_ipc_event_pool_handle_t** pphIpc;
+} ze_event_pool_get_ipc_handle_params_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Callback function-pointer for zeEventPoolGetIpcHandle 
+/// @param[in] params Parameters passed to this instance
+/// @param[in] result Return value
+/// @param[in] pTracerUserData Per-Tracer user data
+/// @param[in,out] ppTracerInstanceUserData Per-Tracer, Per-Instance user data
+typedef void (ZE_APICALL *ze_pfnEventPoolGetIpcHandleCb_t)(
+    ze_event_pool_get_ipc_handle_params_t* params,
+    ze_result_t result,
+    void* pTracerUserData,
+    void** ppTracerInstanceUserData
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Callback function parameters for zeEventPoolOpenIpcHandle 
+/// @details Each entry is a pointer to the parameter passed to the function;
+///     allowing the callback the ability to modify the parameter's value
+typedef struct _ze_event_pool_open_ipc_handle_params_t
+{
+    ze_context_handle_t* phContext;
+    ze_ipc_event_pool_handle_t* phIpc;
+    ze_event_pool_handle_t** pphEventPool;
+} ze_event_pool_open_ipc_handle_params_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Callback function-pointer for zeEventPoolOpenIpcHandle 
+/// @param[in] params Parameters passed to this instance
+/// @param[in] result Return value
+/// @param[in] pTracerUserData Per-Tracer user data
+/// @param[in,out] ppTracerInstanceUserData Per-Tracer, Per-Instance user data
+typedef void (ZE_APICALL *ze_pfnEventPoolOpenIpcHandleCb_t)(
+    ze_event_pool_open_ipc_handle_params_t* params,
+    ze_result_t result,
+    void* pTracerUserData,
+    void** ppTracerInstanceUserData
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Callback function parameters for zeEventPoolCloseIpcHandle 
+/// @details Each entry is a pointer to the parameter passed to the function;
+///     allowing the callback the ability to modify the parameter's value
+typedef struct _ze_event_pool_close_ipc_handle_params_t
+{
+    ze_event_pool_handle_t* phEventPool;
+} ze_event_pool_close_ipc_handle_params_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Callback function-pointer for zeEventPoolCloseIpcHandle 
+/// @param[in] params Parameters passed to this instance
+/// @param[in] result Return value
+/// @param[in] pTracerUserData Per-Tracer user data
+/// @param[in,out] ppTracerInstanceUserData Per-Tracer, Per-Instance user data
+typedef void (ZE_APICALL *ze_pfnEventPoolCloseIpcHandleCb_t)(
+    ze_event_pool_close_ipc_handle_params_t* params,
+    ze_result_t result,
+    void* pTracerUserData,
+    void** ppTracerInstanceUserData
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Table of EventPool callback functions pointers
+typedef struct _ze_event_pool_callbacks_t
+{
+    ze_pfnEventPoolCreateCb_t                                       pfnCreateCb;
+    ze_pfnEventPoolDestroyCb_t                                      pfnDestroyCb;
+    ze_pfnEventPoolGetIpcHandleCb_t                                 pfnGetIpcHandleCb;
+    ze_pfnEventPoolOpenIpcHandleCb_t                                pfnOpenIpcHandleCb;
+    ze_pfnEventPoolCloseIpcHandleCb_t                               pfnCloseIpcHandleCb;
+} ze_event_pool_callbacks_t;
+
+///////////////////////////////////////////////////////////////////////////////
 /// @brief Callback function parameters for zeEventCreate 
 /// @details Each entry is a pointer to the parameter passed to the function;
 ///     allowing the callback the ability to modify the parameter's value
@@ -7403,258 +7698,6 @@ typedef struct _ze_event_callbacks_t
 } ze_event_callbacks_t;
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Callback function parameters for zeEventPoolCreate 
-/// @details Each entry is a pointer to the parameter passed to the function;
-///     allowing the callback the ability to modify the parameter's value
-typedef struct _ze_event_pool_create_params_t
-{
-    ze_context_handle_t* phContext;
-    const ze_event_pool_desc_t** pdesc;
-    uint32_t* pnumDevices;
-    ze_device_handle_t** pphDevices;
-    ze_event_pool_handle_t** pphEventPool;
-} ze_event_pool_create_params_t;
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Callback function-pointer for zeEventPoolCreate 
-/// @param[in] params Parameters passed to this instance
-/// @param[in] result Return value
-/// @param[in] pTracerUserData Per-Tracer user data
-/// @param[in,out] ppTracerInstanceUserData Per-Tracer, Per-Instance user data
-typedef void (ZE_APICALL *ze_pfnEventPoolCreateCb_t)(
-    ze_event_pool_create_params_t* params,
-    ze_result_t result,
-    void* pTracerUserData,
-    void** ppTracerInstanceUserData
-    );
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Callback function parameters for zeEventPoolDestroy 
-/// @details Each entry is a pointer to the parameter passed to the function;
-///     allowing the callback the ability to modify the parameter's value
-typedef struct _ze_event_pool_destroy_params_t
-{
-    ze_event_pool_handle_t* phEventPool;
-} ze_event_pool_destroy_params_t;
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Callback function-pointer for zeEventPoolDestroy 
-/// @param[in] params Parameters passed to this instance
-/// @param[in] result Return value
-/// @param[in] pTracerUserData Per-Tracer user data
-/// @param[in,out] ppTracerInstanceUserData Per-Tracer, Per-Instance user data
-typedef void (ZE_APICALL *ze_pfnEventPoolDestroyCb_t)(
-    ze_event_pool_destroy_params_t* params,
-    ze_result_t result,
-    void* pTracerUserData,
-    void** ppTracerInstanceUserData
-    );
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Callback function parameters for zeEventPoolGetIpcHandle 
-/// @details Each entry is a pointer to the parameter passed to the function;
-///     allowing the callback the ability to modify the parameter's value
-typedef struct _ze_event_pool_get_ipc_handle_params_t
-{
-    ze_event_pool_handle_t* phEventPool;
-    ze_ipc_event_pool_handle_t** pphIpc;
-} ze_event_pool_get_ipc_handle_params_t;
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Callback function-pointer for zeEventPoolGetIpcHandle 
-/// @param[in] params Parameters passed to this instance
-/// @param[in] result Return value
-/// @param[in] pTracerUserData Per-Tracer user data
-/// @param[in,out] ppTracerInstanceUserData Per-Tracer, Per-Instance user data
-typedef void (ZE_APICALL *ze_pfnEventPoolGetIpcHandleCb_t)(
-    ze_event_pool_get_ipc_handle_params_t* params,
-    ze_result_t result,
-    void* pTracerUserData,
-    void** ppTracerInstanceUserData
-    );
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Callback function parameters for zeEventPoolOpenIpcHandle 
-/// @details Each entry is a pointer to the parameter passed to the function;
-///     allowing the callback the ability to modify the parameter's value
-typedef struct _ze_event_pool_open_ipc_handle_params_t
-{
-    ze_context_handle_t* phContext;
-    ze_ipc_event_pool_handle_t* phIpc;
-    ze_event_pool_handle_t** pphEventPool;
-} ze_event_pool_open_ipc_handle_params_t;
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Callback function-pointer for zeEventPoolOpenIpcHandle 
-/// @param[in] params Parameters passed to this instance
-/// @param[in] result Return value
-/// @param[in] pTracerUserData Per-Tracer user data
-/// @param[in,out] ppTracerInstanceUserData Per-Tracer, Per-Instance user data
-typedef void (ZE_APICALL *ze_pfnEventPoolOpenIpcHandleCb_t)(
-    ze_event_pool_open_ipc_handle_params_t* params,
-    ze_result_t result,
-    void* pTracerUserData,
-    void** ppTracerInstanceUserData
-    );
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Callback function parameters for zeEventPoolCloseIpcHandle 
-/// @details Each entry is a pointer to the parameter passed to the function;
-///     allowing the callback the ability to modify the parameter's value
-typedef struct _ze_event_pool_close_ipc_handle_params_t
-{
-    ze_event_pool_handle_t* phEventPool;
-} ze_event_pool_close_ipc_handle_params_t;
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Callback function-pointer for zeEventPoolCloseIpcHandle 
-/// @param[in] params Parameters passed to this instance
-/// @param[in] result Return value
-/// @param[in] pTracerUserData Per-Tracer user data
-/// @param[in,out] ppTracerInstanceUserData Per-Tracer, Per-Instance user data
-typedef void (ZE_APICALL *ze_pfnEventPoolCloseIpcHandleCb_t)(
-    ze_event_pool_close_ipc_handle_params_t* params,
-    ze_result_t result,
-    void* pTracerUserData,
-    void** ppTracerInstanceUserData
-    );
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Table of EventPool callback functions pointers
-typedef struct _ze_event_pool_callbacks_t
-{
-    ze_pfnEventPoolCreateCb_t                                       pfnCreateCb;
-    ze_pfnEventPoolDestroyCb_t                                      pfnDestroyCb;
-    ze_pfnEventPoolGetIpcHandleCb_t                                 pfnGetIpcHandleCb;
-    ze_pfnEventPoolOpenIpcHandleCb_t                                pfnOpenIpcHandleCb;
-    ze_pfnEventPoolCloseIpcHandleCb_t                               pfnCloseIpcHandleCb;
-} ze_event_pool_callbacks_t;
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Callback function parameters for zeFenceCreate 
-/// @details Each entry is a pointer to the parameter passed to the function;
-///     allowing the callback the ability to modify the parameter's value
-typedef struct _ze_fence_create_params_t
-{
-    ze_command_queue_handle_t* phCommandQueue;
-    const ze_fence_desc_t** pdesc;
-    ze_fence_handle_t** pphFence;
-} ze_fence_create_params_t;
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Callback function-pointer for zeFenceCreate 
-/// @param[in] params Parameters passed to this instance
-/// @param[in] result Return value
-/// @param[in] pTracerUserData Per-Tracer user data
-/// @param[in,out] ppTracerInstanceUserData Per-Tracer, Per-Instance user data
-typedef void (ZE_APICALL *ze_pfnFenceCreateCb_t)(
-    ze_fence_create_params_t* params,
-    ze_result_t result,
-    void* pTracerUserData,
-    void** ppTracerInstanceUserData
-    );
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Callback function parameters for zeFenceDestroy 
-/// @details Each entry is a pointer to the parameter passed to the function;
-///     allowing the callback the ability to modify the parameter's value
-typedef struct _ze_fence_destroy_params_t
-{
-    ze_fence_handle_t* phFence;
-} ze_fence_destroy_params_t;
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Callback function-pointer for zeFenceDestroy 
-/// @param[in] params Parameters passed to this instance
-/// @param[in] result Return value
-/// @param[in] pTracerUserData Per-Tracer user data
-/// @param[in,out] ppTracerInstanceUserData Per-Tracer, Per-Instance user data
-typedef void (ZE_APICALL *ze_pfnFenceDestroyCb_t)(
-    ze_fence_destroy_params_t* params,
-    ze_result_t result,
-    void* pTracerUserData,
-    void** ppTracerInstanceUserData
-    );
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Callback function parameters for zeFenceHostSynchronize 
-/// @details Each entry is a pointer to the parameter passed to the function;
-///     allowing the callback the ability to modify the parameter's value
-typedef struct _ze_fence_host_synchronize_params_t
-{
-    ze_fence_handle_t* phFence;
-    uint64_t* ptimeout;
-} ze_fence_host_synchronize_params_t;
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Callback function-pointer for zeFenceHostSynchronize 
-/// @param[in] params Parameters passed to this instance
-/// @param[in] result Return value
-/// @param[in] pTracerUserData Per-Tracer user data
-/// @param[in,out] ppTracerInstanceUserData Per-Tracer, Per-Instance user data
-typedef void (ZE_APICALL *ze_pfnFenceHostSynchronizeCb_t)(
-    ze_fence_host_synchronize_params_t* params,
-    ze_result_t result,
-    void* pTracerUserData,
-    void** ppTracerInstanceUserData
-    );
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Callback function parameters for zeFenceQueryStatus 
-/// @details Each entry is a pointer to the parameter passed to the function;
-///     allowing the callback the ability to modify the parameter's value
-typedef struct _ze_fence_query_status_params_t
-{
-    ze_fence_handle_t* phFence;
-} ze_fence_query_status_params_t;
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Callback function-pointer for zeFenceQueryStatus 
-/// @param[in] params Parameters passed to this instance
-/// @param[in] result Return value
-/// @param[in] pTracerUserData Per-Tracer user data
-/// @param[in,out] ppTracerInstanceUserData Per-Tracer, Per-Instance user data
-typedef void (ZE_APICALL *ze_pfnFenceQueryStatusCb_t)(
-    ze_fence_query_status_params_t* params,
-    ze_result_t result,
-    void* pTracerUserData,
-    void** ppTracerInstanceUserData
-    );
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Callback function parameters for zeFenceReset 
-/// @details Each entry is a pointer to the parameter passed to the function;
-///     allowing the callback the ability to modify the parameter's value
-typedef struct _ze_fence_reset_params_t
-{
-    ze_fence_handle_t* phFence;
-} ze_fence_reset_params_t;
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Callback function-pointer for zeFenceReset 
-/// @param[in] params Parameters passed to this instance
-/// @param[in] result Return value
-/// @param[in] pTracerUserData Per-Tracer user data
-/// @param[in,out] ppTracerInstanceUserData Per-Tracer, Per-Instance user data
-typedef void (ZE_APICALL *ze_pfnFenceResetCb_t)(
-    ze_fence_reset_params_t* params,
-    ze_result_t result,
-    void* pTracerUserData,
-    void** ppTracerInstanceUserData
-    );
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Table of Fence callback functions pointers
-typedef struct _ze_fence_callbacks_t
-{
-    ze_pfnFenceCreateCb_t                                           pfnCreateCb;
-    ze_pfnFenceDestroyCb_t                                          pfnDestroyCb;
-    ze_pfnFenceHostSynchronizeCb_t                                  pfnHostSynchronizeCb;
-    ze_pfnFenceQueryStatusCb_t                                      pfnQueryStatusCb;
-    ze_pfnFenceResetCb_t                                            pfnResetCb;
-} ze_fence_callbacks_t;
-
-///////////////////////////////////////////////////////////////////////////////
 /// @brief Callback function parameters for zeImageGetProperties 
 /// @details Each entry is a pointer to the parameter passed to the function;
 ///     allowing the callback the ability to modify the parameter's value
@@ -7733,6 +7776,266 @@ typedef struct _ze_image_callbacks_t
     ze_pfnImageCreateCb_t                                           pfnCreateCb;
     ze_pfnImageDestroyCb_t                                          pfnDestroyCb;
 } ze_image_callbacks_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Callback function parameters for zeModuleCreate 
+/// @details Each entry is a pointer to the parameter passed to the function;
+///     allowing the callback the ability to modify the parameter's value
+typedef struct _ze_module_create_params_t
+{
+    ze_context_handle_t* phContext;
+    ze_device_handle_t* phDevice;
+    const ze_module_desc_t** pdesc;
+    ze_module_handle_t** pphModule;
+    ze_module_build_log_handle_t** pphBuildLog;
+} ze_module_create_params_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Callback function-pointer for zeModuleCreate 
+/// @param[in] params Parameters passed to this instance
+/// @param[in] result Return value
+/// @param[in] pTracerUserData Per-Tracer user data
+/// @param[in,out] ppTracerInstanceUserData Per-Tracer, Per-Instance user data
+typedef void (ZE_APICALL *ze_pfnModuleCreateCb_t)(
+    ze_module_create_params_t* params,
+    ze_result_t result,
+    void* pTracerUserData,
+    void** ppTracerInstanceUserData
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Callback function parameters for zeModuleDestroy 
+/// @details Each entry is a pointer to the parameter passed to the function;
+///     allowing the callback the ability to modify the parameter's value
+typedef struct _ze_module_destroy_params_t
+{
+    ze_module_handle_t* phModule;
+} ze_module_destroy_params_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Callback function-pointer for zeModuleDestroy 
+/// @param[in] params Parameters passed to this instance
+/// @param[in] result Return value
+/// @param[in] pTracerUserData Per-Tracer user data
+/// @param[in,out] ppTracerInstanceUserData Per-Tracer, Per-Instance user data
+typedef void (ZE_APICALL *ze_pfnModuleDestroyCb_t)(
+    ze_module_destroy_params_t* params,
+    ze_result_t result,
+    void* pTracerUserData,
+    void** ppTracerInstanceUserData
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Callback function parameters for zeModuleDynamicLink 
+/// @details Each entry is a pointer to the parameter passed to the function;
+///     allowing the callback the ability to modify the parameter's value
+typedef struct _ze_module_dynamic_link_params_t
+{
+    uint32_t* pnumModules;
+    ze_module_handle_t** pphModules;
+    ze_module_build_log_handle_t** pphLinkLog;
+} ze_module_dynamic_link_params_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Callback function-pointer for zeModuleDynamicLink 
+/// @param[in] params Parameters passed to this instance
+/// @param[in] result Return value
+/// @param[in] pTracerUserData Per-Tracer user data
+/// @param[in,out] ppTracerInstanceUserData Per-Tracer, Per-Instance user data
+typedef void (ZE_APICALL *ze_pfnModuleDynamicLinkCb_t)(
+    ze_module_dynamic_link_params_t* params,
+    ze_result_t result,
+    void* pTracerUserData,
+    void** ppTracerInstanceUserData
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Callback function parameters for zeModuleGetNativeBinary 
+/// @details Each entry is a pointer to the parameter passed to the function;
+///     allowing the callback the ability to modify the parameter's value
+typedef struct _ze_module_get_native_binary_params_t
+{
+    ze_module_handle_t* phModule;
+    size_t** ppSize;
+    uint8_t** ppModuleNativeBinary;
+} ze_module_get_native_binary_params_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Callback function-pointer for zeModuleGetNativeBinary 
+/// @param[in] params Parameters passed to this instance
+/// @param[in] result Return value
+/// @param[in] pTracerUserData Per-Tracer user data
+/// @param[in,out] ppTracerInstanceUserData Per-Tracer, Per-Instance user data
+typedef void (ZE_APICALL *ze_pfnModuleGetNativeBinaryCb_t)(
+    ze_module_get_native_binary_params_t* params,
+    ze_result_t result,
+    void* pTracerUserData,
+    void** ppTracerInstanceUserData
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Callback function parameters for zeModuleGetGlobalPointer 
+/// @details Each entry is a pointer to the parameter passed to the function;
+///     allowing the callback the ability to modify the parameter's value
+typedef struct _ze_module_get_global_pointer_params_t
+{
+    ze_module_handle_t* phModule;
+    const char** ppGlobalName;
+    size_t** ppSize;
+    void*** ppptr;
+} ze_module_get_global_pointer_params_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Callback function-pointer for zeModuleGetGlobalPointer 
+/// @param[in] params Parameters passed to this instance
+/// @param[in] result Return value
+/// @param[in] pTracerUserData Per-Tracer user data
+/// @param[in,out] ppTracerInstanceUserData Per-Tracer, Per-Instance user data
+typedef void (ZE_APICALL *ze_pfnModuleGetGlobalPointerCb_t)(
+    ze_module_get_global_pointer_params_t* params,
+    ze_result_t result,
+    void* pTracerUserData,
+    void** ppTracerInstanceUserData
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Callback function parameters for zeModuleGetKernelNames 
+/// @details Each entry is a pointer to the parameter passed to the function;
+///     allowing the callback the ability to modify the parameter's value
+typedef struct _ze_module_get_kernel_names_params_t
+{
+    ze_module_handle_t* phModule;
+    uint32_t** ppCount;
+    const char*** ppNames;
+} ze_module_get_kernel_names_params_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Callback function-pointer for zeModuleGetKernelNames 
+/// @param[in] params Parameters passed to this instance
+/// @param[in] result Return value
+/// @param[in] pTracerUserData Per-Tracer user data
+/// @param[in,out] ppTracerInstanceUserData Per-Tracer, Per-Instance user data
+typedef void (ZE_APICALL *ze_pfnModuleGetKernelNamesCb_t)(
+    ze_module_get_kernel_names_params_t* params,
+    ze_result_t result,
+    void* pTracerUserData,
+    void** ppTracerInstanceUserData
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Callback function parameters for zeModuleGetProperties 
+/// @details Each entry is a pointer to the parameter passed to the function;
+///     allowing the callback the ability to modify the parameter's value
+typedef struct _ze_module_get_properties_params_t
+{
+    ze_module_handle_t* phModule;
+    ze_module_properties_t** ppModuleProperties;
+} ze_module_get_properties_params_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Callback function-pointer for zeModuleGetProperties 
+/// @param[in] params Parameters passed to this instance
+/// @param[in] result Return value
+/// @param[in] pTracerUserData Per-Tracer user data
+/// @param[in,out] ppTracerInstanceUserData Per-Tracer, Per-Instance user data
+typedef void (ZE_APICALL *ze_pfnModuleGetPropertiesCb_t)(
+    ze_module_get_properties_params_t* params,
+    ze_result_t result,
+    void* pTracerUserData,
+    void** ppTracerInstanceUserData
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Callback function parameters for zeModuleGetFunctionPointer 
+/// @details Each entry is a pointer to the parameter passed to the function;
+///     allowing the callback the ability to modify the parameter's value
+typedef struct _ze_module_get_function_pointer_params_t
+{
+    ze_module_handle_t* phModule;
+    const char** ppFunctionName;
+    void*** ppfnFunction;
+} ze_module_get_function_pointer_params_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Callback function-pointer for zeModuleGetFunctionPointer 
+/// @param[in] params Parameters passed to this instance
+/// @param[in] result Return value
+/// @param[in] pTracerUserData Per-Tracer user data
+/// @param[in,out] ppTracerInstanceUserData Per-Tracer, Per-Instance user data
+typedef void (ZE_APICALL *ze_pfnModuleGetFunctionPointerCb_t)(
+    ze_module_get_function_pointer_params_t* params,
+    ze_result_t result,
+    void* pTracerUserData,
+    void** ppTracerInstanceUserData
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Table of Module callback functions pointers
+typedef struct _ze_module_callbacks_t
+{
+    ze_pfnModuleCreateCb_t                                          pfnCreateCb;
+    ze_pfnModuleDestroyCb_t                                         pfnDestroyCb;
+    ze_pfnModuleDynamicLinkCb_t                                     pfnDynamicLinkCb;
+    ze_pfnModuleGetNativeBinaryCb_t                                 pfnGetNativeBinaryCb;
+    ze_pfnModuleGetGlobalPointerCb_t                                pfnGetGlobalPointerCb;
+    ze_pfnModuleGetKernelNamesCb_t                                  pfnGetKernelNamesCb;
+    ze_pfnModuleGetPropertiesCb_t                                   pfnGetPropertiesCb;
+    ze_pfnModuleGetFunctionPointerCb_t                              pfnGetFunctionPointerCb;
+} ze_module_callbacks_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Callback function parameters for zeModuleBuildLogDestroy 
+/// @details Each entry is a pointer to the parameter passed to the function;
+///     allowing the callback the ability to modify the parameter's value
+typedef struct _ze_module_build_log_destroy_params_t
+{
+    ze_module_build_log_handle_t* phModuleBuildLog;
+} ze_module_build_log_destroy_params_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Callback function-pointer for zeModuleBuildLogDestroy 
+/// @param[in] params Parameters passed to this instance
+/// @param[in] result Return value
+/// @param[in] pTracerUserData Per-Tracer user data
+/// @param[in,out] ppTracerInstanceUserData Per-Tracer, Per-Instance user data
+typedef void (ZE_APICALL *ze_pfnModuleBuildLogDestroyCb_t)(
+    ze_module_build_log_destroy_params_t* params,
+    ze_result_t result,
+    void* pTracerUserData,
+    void** ppTracerInstanceUserData
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Callback function parameters for zeModuleBuildLogGetString 
+/// @details Each entry is a pointer to the parameter passed to the function;
+///     allowing the callback the ability to modify the parameter's value
+typedef struct _ze_module_build_log_get_string_params_t
+{
+    ze_module_build_log_handle_t* phModuleBuildLog;
+    size_t** ppSize;
+    char** ppBuildLog;
+} ze_module_build_log_get_string_params_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Callback function-pointer for zeModuleBuildLogGetString 
+/// @param[in] params Parameters passed to this instance
+/// @param[in] result Return value
+/// @param[in] pTracerUserData Per-Tracer user data
+/// @param[in,out] ppTracerInstanceUserData Per-Tracer, Per-Instance user data
+typedef void (ZE_APICALL *ze_pfnModuleBuildLogGetStringCb_t)(
+    ze_module_build_log_get_string_params_t* params,
+    ze_result_t result,
+    void* pTracerUserData,
+    void** ppTracerInstanceUserData
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Table of ModuleBuildLog callback functions pointers
+typedef struct _ze_module_build_log_callbacks_t
+{
+    ze_pfnModuleBuildLogDestroyCb_t                                 pfnDestroyCb;
+    ze_pfnModuleBuildLogGetStringCb_t                               pfnGetStringCb;
+} ze_module_build_log_callbacks_t;
 
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief Callback function parameters for zeKernelCreate 
@@ -8040,6 +8343,117 @@ typedef struct _ze_kernel_callbacks_t
 } ze_kernel_callbacks_t;
 
 ///////////////////////////////////////////////////////////////////////////////
+/// @brief Callback function parameters for zeSamplerCreate 
+/// @details Each entry is a pointer to the parameter passed to the function;
+///     allowing the callback the ability to modify the parameter's value
+typedef struct _ze_sampler_create_params_t
+{
+    ze_context_handle_t* phContext;
+    ze_device_handle_t* phDevice;
+    const ze_sampler_desc_t** pdesc;
+    ze_sampler_handle_t** pphSampler;
+} ze_sampler_create_params_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Callback function-pointer for zeSamplerCreate 
+/// @param[in] params Parameters passed to this instance
+/// @param[in] result Return value
+/// @param[in] pTracerUserData Per-Tracer user data
+/// @param[in,out] ppTracerInstanceUserData Per-Tracer, Per-Instance user data
+typedef void (ZE_APICALL *ze_pfnSamplerCreateCb_t)(
+    ze_sampler_create_params_t* params,
+    ze_result_t result,
+    void* pTracerUserData,
+    void** ppTracerInstanceUserData
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Callback function parameters for zeSamplerDestroy 
+/// @details Each entry is a pointer to the parameter passed to the function;
+///     allowing the callback the ability to modify the parameter's value
+typedef struct _ze_sampler_destroy_params_t
+{
+    ze_sampler_handle_t* phSampler;
+} ze_sampler_destroy_params_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Callback function-pointer for zeSamplerDestroy 
+/// @param[in] params Parameters passed to this instance
+/// @param[in] result Return value
+/// @param[in] pTracerUserData Per-Tracer user data
+/// @param[in,out] ppTracerInstanceUserData Per-Tracer, Per-Instance user data
+typedef void (ZE_APICALL *ze_pfnSamplerDestroyCb_t)(
+    ze_sampler_destroy_params_t* params,
+    ze_result_t result,
+    void* pTracerUserData,
+    void** ppTracerInstanceUserData
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Table of Sampler callback functions pointers
+typedef struct _ze_sampler_callbacks_t
+{
+    ze_pfnSamplerCreateCb_t                                         pfnCreateCb;
+    ze_pfnSamplerDestroyCb_t                                        pfnDestroyCb;
+} ze_sampler_callbacks_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Callback function parameters for zePhysicalMemCreate 
+/// @details Each entry is a pointer to the parameter passed to the function;
+///     allowing the callback the ability to modify the parameter's value
+typedef struct _ze_physical_mem_create_params_t
+{
+    ze_context_handle_t* phContext;
+    ze_device_handle_t* phDevice;
+    ze_physical_mem_desc_t** pdesc;
+    ze_physical_mem_handle_t** pphPhysicalMemory;
+} ze_physical_mem_create_params_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Callback function-pointer for zePhysicalMemCreate 
+/// @param[in] params Parameters passed to this instance
+/// @param[in] result Return value
+/// @param[in] pTracerUserData Per-Tracer user data
+/// @param[in,out] ppTracerInstanceUserData Per-Tracer, Per-Instance user data
+typedef void (ZE_APICALL *ze_pfnPhysicalMemCreateCb_t)(
+    ze_physical_mem_create_params_t* params,
+    ze_result_t result,
+    void* pTracerUserData,
+    void** ppTracerInstanceUserData
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Callback function parameters for zePhysicalMemDestroy 
+/// @details Each entry is a pointer to the parameter passed to the function;
+///     allowing the callback the ability to modify the parameter's value
+typedef struct _ze_physical_mem_destroy_params_t
+{
+    ze_context_handle_t* phContext;
+    ze_physical_mem_handle_t* phPhysicalMemory;
+} ze_physical_mem_destroy_params_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Callback function-pointer for zePhysicalMemDestroy 
+/// @param[in] params Parameters passed to this instance
+/// @param[in] result Return value
+/// @param[in] pTracerUserData Per-Tracer user data
+/// @param[in,out] ppTracerInstanceUserData Per-Tracer, Per-Instance user data
+typedef void (ZE_APICALL *ze_pfnPhysicalMemDestroyCb_t)(
+    ze_physical_mem_destroy_params_t* params,
+    ze_result_t result,
+    void* pTracerUserData,
+    void** ppTracerInstanceUserData
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Table of PhysicalMem callback functions pointers
+typedef struct _ze_physical_mem_callbacks_t
+{
+    ze_pfnPhysicalMemCreateCb_t                                     pfnCreateCb;
+    ze_pfnPhysicalMemDestroyCb_t                                    pfnDestroyCb;
+} ze_physical_mem_callbacks_t;
+
+///////////////////////////////////////////////////////////////////////////////
 /// @brief Callback function parameters for zeMemAllocShared 
 /// @details Each entry is a pointer to the parameter passed to the function;
 ///     allowing the callback the ability to modify the parameter's value
@@ -8282,377 +8696,6 @@ typedef struct _ze_mem_callbacks_t
 } ze_mem_callbacks_t;
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Callback function parameters for zeModuleCreate 
-/// @details Each entry is a pointer to the parameter passed to the function;
-///     allowing the callback the ability to modify the parameter's value
-typedef struct _ze_module_create_params_t
-{
-    ze_context_handle_t* phContext;
-    ze_device_handle_t* phDevice;
-    const ze_module_desc_t** pdesc;
-    ze_module_handle_t** pphModule;
-    ze_module_build_log_handle_t** pphBuildLog;
-} ze_module_create_params_t;
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Callback function-pointer for zeModuleCreate 
-/// @param[in] params Parameters passed to this instance
-/// @param[in] result Return value
-/// @param[in] pTracerUserData Per-Tracer user data
-/// @param[in,out] ppTracerInstanceUserData Per-Tracer, Per-Instance user data
-typedef void (ZE_APICALL *ze_pfnModuleCreateCb_t)(
-    ze_module_create_params_t* params,
-    ze_result_t result,
-    void* pTracerUserData,
-    void** ppTracerInstanceUserData
-    );
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Callback function parameters for zeModuleDestroy 
-/// @details Each entry is a pointer to the parameter passed to the function;
-///     allowing the callback the ability to modify the parameter's value
-typedef struct _ze_module_destroy_params_t
-{
-    ze_module_handle_t* phModule;
-} ze_module_destroy_params_t;
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Callback function-pointer for zeModuleDestroy 
-/// @param[in] params Parameters passed to this instance
-/// @param[in] result Return value
-/// @param[in] pTracerUserData Per-Tracer user data
-/// @param[in,out] ppTracerInstanceUserData Per-Tracer, Per-Instance user data
-typedef void (ZE_APICALL *ze_pfnModuleDestroyCb_t)(
-    ze_module_destroy_params_t* params,
-    ze_result_t result,
-    void* pTracerUserData,
-    void** ppTracerInstanceUserData
-    );
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Callback function parameters for zeModuleDynamicLink 
-/// @details Each entry is a pointer to the parameter passed to the function;
-///     allowing the callback the ability to modify the parameter's value
-typedef struct _ze_module_dynamic_link_params_t
-{
-    uint32_t* pnumModules;
-    ze_module_handle_t** pphModules;
-    ze_module_build_log_handle_t** pphLinkLog;
-} ze_module_dynamic_link_params_t;
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Callback function-pointer for zeModuleDynamicLink 
-/// @param[in] params Parameters passed to this instance
-/// @param[in] result Return value
-/// @param[in] pTracerUserData Per-Tracer user data
-/// @param[in,out] ppTracerInstanceUserData Per-Tracer, Per-Instance user data
-typedef void (ZE_APICALL *ze_pfnModuleDynamicLinkCb_t)(
-    ze_module_dynamic_link_params_t* params,
-    ze_result_t result,
-    void* pTracerUserData,
-    void** ppTracerInstanceUserData
-    );
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Callback function parameters for zeModuleGetNativeBinary 
-/// @details Each entry is a pointer to the parameter passed to the function;
-///     allowing the callback the ability to modify the parameter's value
-typedef struct _ze_module_get_native_binary_params_t
-{
-    ze_module_handle_t* phModule;
-    size_t** ppSize;
-    uint8_t** ppModuleNativeBinary;
-} ze_module_get_native_binary_params_t;
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Callback function-pointer for zeModuleGetNativeBinary 
-/// @param[in] params Parameters passed to this instance
-/// @param[in] result Return value
-/// @param[in] pTracerUserData Per-Tracer user data
-/// @param[in,out] ppTracerInstanceUserData Per-Tracer, Per-Instance user data
-typedef void (ZE_APICALL *ze_pfnModuleGetNativeBinaryCb_t)(
-    ze_module_get_native_binary_params_t* params,
-    ze_result_t result,
-    void* pTracerUserData,
-    void** ppTracerInstanceUserData
-    );
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Callback function parameters for zeModuleGetGlobalPointer 
-/// @details Each entry is a pointer to the parameter passed to the function;
-///     allowing the callback the ability to modify the parameter's value
-typedef struct _ze_module_get_global_pointer_params_t
-{
-    ze_module_handle_t* phModule;
-    const char** ppGlobalName;
-    size_t** ppSize;
-    void*** ppptr;
-} ze_module_get_global_pointer_params_t;
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Callback function-pointer for zeModuleGetGlobalPointer 
-/// @param[in] params Parameters passed to this instance
-/// @param[in] result Return value
-/// @param[in] pTracerUserData Per-Tracer user data
-/// @param[in,out] ppTracerInstanceUserData Per-Tracer, Per-Instance user data
-typedef void (ZE_APICALL *ze_pfnModuleGetGlobalPointerCb_t)(
-    ze_module_get_global_pointer_params_t* params,
-    ze_result_t result,
-    void* pTracerUserData,
-    void** ppTracerInstanceUserData
-    );
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Callback function parameters for zeModuleGetKernelNames 
-/// @details Each entry is a pointer to the parameter passed to the function;
-///     allowing the callback the ability to modify the parameter's value
-typedef struct _ze_module_get_kernel_names_params_t
-{
-    ze_module_handle_t* phModule;
-    uint32_t** ppCount;
-    const char*** ppNames;
-} ze_module_get_kernel_names_params_t;
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Callback function-pointer for zeModuleGetKernelNames 
-/// @param[in] params Parameters passed to this instance
-/// @param[in] result Return value
-/// @param[in] pTracerUserData Per-Tracer user data
-/// @param[in,out] ppTracerInstanceUserData Per-Tracer, Per-Instance user data
-typedef void (ZE_APICALL *ze_pfnModuleGetKernelNamesCb_t)(
-    ze_module_get_kernel_names_params_t* params,
-    ze_result_t result,
-    void* pTracerUserData,
-    void** ppTracerInstanceUserData
-    );
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Callback function parameters for zeModuleGetProperties 
-/// @details Each entry is a pointer to the parameter passed to the function;
-///     allowing the callback the ability to modify the parameter's value
-typedef struct _ze_module_get_properties_params_t
-{
-    ze_module_handle_t* phModule;
-    ze_module_properties_t** ppModuleProperties;
-} ze_module_get_properties_params_t;
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Callback function-pointer for zeModuleGetProperties 
-/// @param[in] params Parameters passed to this instance
-/// @param[in] result Return value
-/// @param[in] pTracerUserData Per-Tracer user data
-/// @param[in,out] ppTracerInstanceUserData Per-Tracer, Per-Instance user data
-typedef void (ZE_APICALL *ze_pfnModuleGetPropertiesCb_t)(
-    ze_module_get_properties_params_t* params,
-    ze_result_t result,
-    void* pTracerUserData,
-    void** ppTracerInstanceUserData
-    );
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Callback function parameters for zeModuleGetFunctionPointer 
-/// @details Each entry is a pointer to the parameter passed to the function;
-///     allowing the callback the ability to modify the parameter's value
-typedef struct _ze_module_get_function_pointer_params_t
-{
-    ze_module_handle_t* phModule;
-    const char** ppFunctionName;
-    void*** ppfnFunction;
-} ze_module_get_function_pointer_params_t;
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Callback function-pointer for zeModuleGetFunctionPointer 
-/// @param[in] params Parameters passed to this instance
-/// @param[in] result Return value
-/// @param[in] pTracerUserData Per-Tracer user data
-/// @param[in,out] ppTracerInstanceUserData Per-Tracer, Per-Instance user data
-typedef void (ZE_APICALL *ze_pfnModuleGetFunctionPointerCb_t)(
-    ze_module_get_function_pointer_params_t* params,
-    ze_result_t result,
-    void* pTracerUserData,
-    void** ppTracerInstanceUserData
-    );
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Table of Module callback functions pointers
-typedef struct _ze_module_callbacks_t
-{
-    ze_pfnModuleCreateCb_t                                          pfnCreateCb;
-    ze_pfnModuleDestroyCb_t                                         pfnDestroyCb;
-    ze_pfnModuleDynamicLinkCb_t                                     pfnDynamicLinkCb;
-    ze_pfnModuleGetNativeBinaryCb_t                                 pfnGetNativeBinaryCb;
-    ze_pfnModuleGetGlobalPointerCb_t                                pfnGetGlobalPointerCb;
-    ze_pfnModuleGetKernelNamesCb_t                                  pfnGetKernelNamesCb;
-    ze_pfnModuleGetPropertiesCb_t                                   pfnGetPropertiesCb;
-    ze_pfnModuleGetFunctionPointerCb_t                              pfnGetFunctionPointerCb;
-} ze_module_callbacks_t;
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Callback function parameters for zeModuleBuildLogDestroy 
-/// @details Each entry is a pointer to the parameter passed to the function;
-///     allowing the callback the ability to modify the parameter's value
-typedef struct _ze_module_build_log_destroy_params_t
-{
-    ze_module_build_log_handle_t* phModuleBuildLog;
-} ze_module_build_log_destroy_params_t;
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Callback function-pointer for zeModuleBuildLogDestroy 
-/// @param[in] params Parameters passed to this instance
-/// @param[in] result Return value
-/// @param[in] pTracerUserData Per-Tracer user data
-/// @param[in,out] ppTracerInstanceUserData Per-Tracer, Per-Instance user data
-typedef void (ZE_APICALL *ze_pfnModuleBuildLogDestroyCb_t)(
-    ze_module_build_log_destroy_params_t* params,
-    ze_result_t result,
-    void* pTracerUserData,
-    void** ppTracerInstanceUserData
-    );
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Callback function parameters for zeModuleBuildLogGetString 
-/// @details Each entry is a pointer to the parameter passed to the function;
-///     allowing the callback the ability to modify the parameter's value
-typedef struct _ze_module_build_log_get_string_params_t
-{
-    ze_module_build_log_handle_t* phModuleBuildLog;
-    size_t** ppSize;
-    char** ppBuildLog;
-} ze_module_build_log_get_string_params_t;
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Callback function-pointer for zeModuleBuildLogGetString 
-/// @param[in] params Parameters passed to this instance
-/// @param[in] result Return value
-/// @param[in] pTracerUserData Per-Tracer user data
-/// @param[in,out] ppTracerInstanceUserData Per-Tracer, Per-Instance user data
-typedef void (ZE_APICALL *ze_pfnModuleBuildLogGetStringCb_t)(
-    ze_module_build_log_get_string_params_t* params,
-    ze_result_t result,
-    void* pTracerUserData,
-    void** ppTracerInstanceUserData
-    );
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Table of ModuleBuildLog callback functions pointers
-typedef struct _ze_module_build_log_callbacks_t
-{
-    ze_pfnModuleBuildLogDestroyCb_t                                 pfnDestroyCb;
-    ze_pfnModuleBuildLogGetStringCb_t                               pfnGetStringCb;
-} ze_module_build_log_callbacks_t;
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Callback function parameters for zePhysicalMemCreate 
-/// @details Each entry is a pointer to the parameter passed to the function;
-///     allowing the callback the ability to modify the parameter's value
-typedef struct _ze_physical_mem_create_params_t
-{
-    ze_context_handle_t* phContext;
-    ze_device_handle_t* phDevice;
-    ze_physical_mem_desc_t** pdesc;
-    ze_physical_mem_handle_t** pphPhysicalMemory;
-} ze_physical_mem_create_params_t;
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Callback function-pointer for zePhysicalMemCreate 
-/// @param[in] params Parameters passed to this instance
-/// @param[in] result Return value
-/// @param[in] pTracerUserData Per-Tracer user data
-/// @param[in,out] ppTracerInstanceUserData Per-Tracer, Per-Instance user data
-typedef void (ZE_APICALL *ze_pfnPhysicalMemCreateCb_t)(
-    ze_physical_mem_create_params_t* params,
-    ze_result_t result,
-    void* pTracerUserData,
-    void** ppTracerInstanceUserData
-    );
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Callback function parameters for zePhysicalMemDestroy 
-/// @details Each entry is a pointer to the parameter passed to the function;
-///     allowing the callback the ability to modify the parameter's value
-typedef struct _ze_physical_mem_destroy_params_t
-{
-    ze_context_handle_t* phContext;
-    ze_physical_mem_handle_t* phPhysicalMemory;
-} ze_physical_mem_destroy_params_t;
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Callback function-pointer for zePhysicalMemDestroy 
-/// @param[in] params Parameters passed to this instance
-/// @param[in] result Return value
-/// @param[in] pTracerUserData Per-Tracer user data
-/// @param[in,out] ppTracerInstanceUserData Per-Tracer, Per-Instance user data
-typedef void (ZE_APICALL *ze_pfnPhysicalMemDestroyCb_t)(
-    ze_physical_mem_destroy_params_t* params,
-    ze_result_t result,
-    void* pTracerUserData,
-    void** ppTracerInstanceUserData
-    );
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Table of PhysicalMem callback functions pointers
-typedef struct _ze_physical_mem_callbacks_t
-{
-    ze_pfnPhysicalMemCreateCb_t                                     pfnCreateCb;
-    ze_pfnPhysicalMemDestroyCb_t                                    pfnDestroyCb;
-} ze_physical_mem_callbacks_t;
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Callback function parameters for zeSamplerCreate 
-/// @details Each entry is a pointer to the parameter passed to the function;
-///     allowing the callback the ability to modify the parameter's value
-typedef struct _ze_sampler_create_params_t
-{
-    ze_context_handle_t* phContext;
-    ze_device_handle_t* phDevice;
-    const ze_sampler_desc_t** pdesc;
-    ze_sampler_handle_t** pphSampler;
-} ze_sampler_create_params_t;
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Callback function-pointer for zeSamplerCreate 
-/// @param[in] params Parameters passed to this instance
-/// @param[in] result Return value
-/// @param[in] pTracerUserData Per-Tracer user data
-/// @param[in,out] ppTracerInstanceUserData Per-Tracer, Per-Instance user data
-typedef void (ZE_APICALL *ze_pfnSamplerCreateCb_t)(
-    ze_sampler_create_params_t* params,
-    ze_result_t result,
-    void* pTracerUserData,
-    void** ppTracerInstanceUserData
-    );
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Callback function parameters for zeSamplerDestroy 
-/// @details Each entry is a pointer to the parameter passed to the function;
-///     allowing the callback the ability to modify the parameter's value
-typedef struct _ze_sampler_destroy_params_t
-{
-    ze_sampler_handle_t* phSampler;
-} ze_sampler_destroy_params_t;
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Callback function-pointer for zeSamplerDestroy 
-/// @param[in] params Parameters passed to this instance
-/// @param[in] result Return value
-/// @param[in] pTracerUserData Per-Tracer user data
-/// @param[in,out] ppTracerInstanceUserData Per-Tracer, Per-Instance user data
-typedef void (ZE_APICALL *ze_pfnSamplerDestroyCb_t)(
-    ze_sampler_destroy_params_t* params,
-    ze_result_t result,
-    void* pTracerUserData,
-    void** ppTracerInstanceUserData
-    );
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Table of Sampler callback functions pointers
-typedef struct _ze_sampler_callbacks_t
-{
-    ze_pfnSamplerCreateCb_t                                         pfnCreateCb;
-    ze_pfnSamplerDestroyCb_t                                        pfnDestroyCb;
-} ze_sampler_callbacks_t;
-
-///////////////////////////////////////////////////////////////////////////////
 /// @brief Callback function parameters for zeVirtualMemReserve 
 /// @details Each entry is a pointer to the parameter passed to the function;
 ///     allowing the callback the ability to modify the parameter's value
@@ -8851,20 +8894,22 @@ typedef struct _ze_callbacks_t
     ze_context_callbacks_t              Context;
     ze_command_queue_callbacks_t        CommandQueue;
     ze_command_list_callbacks_t         CommandList;
-    ze_event_callbacks_t                Event;
-    ze_event_pool_callbacks_t           EventPool;
     ze_fence_callbacks_t                Fence;
+    ze_event_pool_callbacks_t           EventPool;
+    ze_event_callbacks_t                Event;
     ze_image_callbacks_t                Image;
-    ze_kernel_callbacks_t               Kernel;
-    ze_mem_callbacks_t                  Mem;
     ze_module_callbacks_t               Module;
     ze_module_build_log_callbacks_t     ModuleBuildLog;
-    ze_physical_mem_callbacks_t         PhysicalMem;
+    ze_kernel_callbacks_t               Kernel;
     ze_sampler_callbacks_t              Sampler;
+    ze_physical_mem_callbacks_t         PhysicalMem;
+    ze_mem_callbacks_t                  Mem;
     ze_virtual_mem_callbacks_t          VirtualMem;
 } ze_callbacks_t;
 
+#if !defined(__GNUC__)
 #pragma endregion
+#endif
 
 #if defined(__cplusplus)
 } // extern "C"
