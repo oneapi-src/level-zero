@@ -12,17 +12,14 @@ requests.
 
 oneAPI Specification: https://spec.oneapi.com/versions/latest/introduction.html
 
-oneAPI Level Zero Specification: https://spec.oneapi.com/versions/latest/oneL0/index.html
+oneAPI Level Zero Specification: https://spec.oneapi.com/level-zero/1.0.4/index.html 
 
 The versions of the Level Zero API are listed in the file
-[ze_driver.h](./include/core/ze_driver.h) in the `ze_api_version_t` enum.
+[ze_api.h](./include/ze_api.h) in the `ze_api_version_t` enum.
 
 # Building and Installing
 
 Project is defined using [CMake](https://cmake.org/).
-
-The OpenCL headers are required for interop support. If they are installed in a
-non-standard location, specify their prefix with `-D OPENCL_PATH=<prefix>`.
 
 ## Linux
 
