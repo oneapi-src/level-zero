@@ -31,7 +31,7 @@ int main( int argc, char *argv[] )
     if( argparse( argc, argv, "-null", "--enable_null_driver" ) )
         putenv( const_cast<char *>( "ZE_ENABLE_NULL_DRIVER=1" ) );
 
-    putenv( const_cast<char *>( "ZE_ENABLE_API_TRACING=1" ) );
+    putenv( const_cast<char *>( "ZET_ENABLE_API_TRACING_EXP=1" ) );
 
     const ze::Device::type_t type = ze::Device::type_t::GPU;
 

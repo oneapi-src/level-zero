@@ -348,7 +348,7 @@ namespace instrumented
     context_t::context_t()
     {
         //////////////////////////////////////////////////////////////////////////
-        enableTracing = getenv_tobool( "ZE_ENABLE_API_TRACING" );
+        enableTracing = getenv_tobool( "ZET_ENABLE_API_TRACING_EXP" );
         if( enableTracing )
         {
             tracerData.emplace_back(); // reserve index 0
