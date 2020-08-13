@@ -36,8 +36,7 @@ inline bool init_ze( void )
     }
     catch( const ze::exception_t& e )
     {
-        std::cout << "Driver not initialized!\n";
-        std::cout << e.what() << "\n";
+        std::cout << "Driver not initialized: " << e.what() << std::endl;
         return false;
     }
     return true;
