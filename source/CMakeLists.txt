@@ -21,7 +21,6 @@ add_library(${TARGET_LOADER_NAME}
 add_subdirectory(lib)
 add_subdirectory(loader)
 add_subdirectory(layers)
-add_subdirectory(wrapper)
 add_subdirectory(drivers)
 
 set_target_properties(${TARGET_LOADER_NAME} PROPERTIES

@@ -114,10 +114,7 @@ set(TARGET_LOADER_NAME ze_loader)
 
 
 add_subdirectory(source)
-
-if(NOT MSVC)
-	add_subdirectory(samples)
-endif()
+add_subdirectory(samples)
 
 include("os_release_info.cmake")
 get_os_release_info(os_name os_version os_codename)

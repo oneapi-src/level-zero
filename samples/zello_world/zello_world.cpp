@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (C) 2019 Intel Corporation
+ * Copyright (C) 2020 Intel Corporation
  *
  * SPDX-License-Identifier: MIT
  *
@@ -27,17 +27,26 @@ int main( int argc, char *argv[] )
         putenv( const_cast<char *>( "ZE_ENABLE_PARAMETER_VALIDATION=1" ) );
     }
 
-    const ze::Device::type_t type = ze::Device::type_t::GPU;
+    ze_result_t status;
+    const ze_device_type_t type = ZE_DEVICE_TYPE_GPU;
 
-    ze::Driver* pDriver = nullptr;
-    ze::Device* pDevice = nullptr;
+    ze_driver_handle_t pDriver = nullptr;
+    ze_device_handle_t pDevice = nullptr;
     if( init_ze() )
     {
         uint32_t driverCount = 0;
-        ze::Driver::Get( &driverCount );
+        status = zeDriverGet(&driverCount, nullptr);
+        if(status != ZE_RESULT_SUCCESS) {
+            std::cout << "zeDriverGet Failed with return code: " << to_string(status) << std::endl;
+            exit(1);
+        }
 
-        std::vector<ze::Driver*> drivers( driverCount );
-        ze::Driver::Get( &driverCount, drivers.data() );
+        std::vector<ze_driver_handle_t> drivers( driverCount );
+        status = zeDriverGet( &driverCount, drivers.data() );
+        if(status != ZE_RESULT_SUCCESS) {
+            std::cout << "zeDriverGet Failed with return code: " << to_string(status) << std::endl;
+            exit(1);
+        }
 
         for( uint32_t driver = 0; driver < driverCount; ++driver )
         {
@@ -52,49 +61,64 @@ int main( int argc, char *argv[] )
 
     if( !pDevice )
     {
-        std::cout << "Did NOT find matching " << ze::to_string(type) <<" device!" << "\n";
+        std::cout << "Did NOT find matching " << to_string(type) <<" device!" << "\n";
         return -1;
     }
 
-    try
-    {
-        // Create the context
-        ze::Context::desc_t context_desc;
-        auto pContext = std::shared_ptr<ze::Context>(
-            ze::Context::Create(pDriver, &context_desc),
-            []( ze::Context* p ) { ze::Context::Destroy( p ); } );
 
-        // Create an immediate command list for direct submission
-        ze::CommandQueue::desc_t queue_desc;
-        auto pCommandList = std::shared_ptr<ze::CommandList>(
-            ze::CommandList::CreateImmediate( pContext.get(), pDevice, &queue_desc ),
-            []( ze::CommandList* p ){ ze::CommandList::Destroy( p ); } );
-
-        // Create an event to be signaled by the device
-        ze::EventPool::desc_t pool_desc;
-        pool_desc.flags = ze::EventPool::FLAG_HOST_VISIBLE;
-        pool_desc.count = 1;
-        auto pEventPool = std::shared_ptr<ze::EventPool>(
-            ze::EventPool::Create( pContext.get(), &pool_desc, 0, nullptr ),
-            []( ze::EventPool* p ){ ze::EventPool::Destroy( p ); } );
-
-        ze::Event::desc_t event_desc;
-        event_desc.signal = ze::Event::SCOPE_FLAG_HOST;
-        event_desc.index = 0;
-        auto pEvent = std::shared_ptr<ze::Event>(
-            ze::Event::Create( pEventPool.get(), &event_desc ),
-            []( ze::Event* p ){ ze::Event::Destroy( p ); } );
-
-        // signal the event from the device and wait for completion
-        pCommandList->AppendSignalEvent( pEvent.get() );
-        pEvent->HostSynchronize( UINT32_MAX );
-        std::cout << "Congratulations, the device completed execution!\n";
+    // Create the context
+    ze_context_handle_t context;
+    ze_context_desc_t context_desc = {};
+    context_desc.stype = ZE_STRUCTURE_TYPE_CONTEXT_DESC;
+    status = zeContextCreate(pDriver, &context_desc, &context);
+    if(status != ZE_RESULT_SUCCESS) {
+        std::cout << "zeContextCreate Failed with return code: " << to_string(status) << std::endl;
+        exit(1);
     }
-    catch( const ze::exception_t& e )
-    {
-        std::cout << e.what();
-        return -1;
+
+    // Create an immediate command list for direct submission
+    ze_command_queue_desc_t altdesc = {};
+    altdesc.stype = ZE_STRUCTURE_TYPE_COMMAND_QUEUE_DESC;
+    ze_command_list_handle_t command_list = {};
+    status = zeCommandListCreateImmediate(context, pDevice, &altdesc, &command_list);
+    if(status != ZE_RESULT_SUCCESS) {
+        std::cout << "zeCommandListCreateImmediate Failed with return code: " << to_string(status) << std::endl;
+        exit(1);
     }
+
+    // Create an event to be signaled by the device
+    ze_event_pool_desc_t ep_desc = {};
+    ep_desc.stype = ZE_STRUCTURE_TYPE_EVENT_POOL_DESC;
+    ep_desc.count = 1;
+    ep_desc.flags = ZE_EVENT_POOL_FLAG_HOST_VISIBLE;
+    ze_event_desc_t ev_desc = {};
+    ev_desc.stype = ZE_STRUCTURE_TYPE_EVENT_DESC;
+    ev_desc.signal = ZE_EVENT_SCOPE_FLAG_HOST;
+    ev_desc.wait = ZE_EVENT_SCOPE_FLAG_HOST;
+    ze_event_handle_t event;
+    ze_event_pool_handle_t event_pool;
+
+    status = zeEventPoolCreate(context, &ep_desc, 1, &pDevice, &event_pool);
+    if(status != ZE_RESULT_SUCCESS) {
+        std::cout << "zeEventPoolCreate Failed with return code: " << to_string(status) << std::endl;
+        exit(1);
+    }
+
+    status = zeEventCreate(event_pool, &ev_desc, &event);
+    if(status != ZE_RESULT_SUCCESS) {
+        std::cout << "zeEventCreate Failed with return code: " << to_string(status) << std::endl;
+        exit(1);
+    }
+
+    // signal the event from the device and wait for completion
+    zeCommandListAppendSignalEvent(command_list, event);
+    zeEventHostSynchronize(event, UINT64_MAX );
+    std::cout << "Congratulations, the device completed execution!\n";
+
+    zeContextDestroy(context);
+    zeCommandListDestroy(command_list);
+    zeEventDestroy(event);
+    zeEventPoolDestroy(event_pool);
 
     return 0;
 }
