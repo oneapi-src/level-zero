@@ -68,15 +68,15 @@ namespace loader
 
         for( auto& drv : context.drivers )
         {
+            if( ( 0 < *pCount ) && ( *pCount == total_driver_handle_count))
+                break;
+
             uint32_t library_driver_handle_count = 0;
 
             result = drv.dditable.ze.Driver.pfnGet( &library_driver_handle_count, nullptr );
             if( ZE_RESULT_SUCCESS != result ) break;
 
-            if( ( 0 < *pCount ) && ( *pCount == total_driver_handle_count))
-                break;
-
-            if( nullptr != phDrivers && pCount !=0)
+            if( nullptr != phDrivers && *pCount !=0)
             {
                 if( total_driver_handle_count + library_driver_handle_count > *pCount) {
                     library_driver_handle_count = *pCount - total_driver_handle_count;
