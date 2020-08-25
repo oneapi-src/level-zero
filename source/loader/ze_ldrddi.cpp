@@ -3869,6 +3869,8 @@ zeGetGlobalProcAddrTable(
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
+    loader::context.checkEnableDebugLayers();
+
     // Load the device-driver DDI tables
     for( auto& drv : loader::context.drivers )
     {

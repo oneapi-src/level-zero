@@ -41,14 +41,17 @@ namespace loader
             }
 
         }
+    };
 
+    void
+    context_t::checkEnableDebugLayers() {
         if( getenv_tobool( "ZE_ENABLE_VALIDATION_LAYER" ) )
         {
             validationLayer = LOAD_DRIVER_LIBRARY( MAKE_VALIDATION_LAYER_NAME( "ze_validation_layer" ) );
         }
 
         forceIntercept = getenv_tobool( "ZE_ENABLE_LOADER_INTERCEPT" );
-    };
+    }
 
     ///////////////////////////////////////////////////////////////////////////////
     context_t::~context_t()

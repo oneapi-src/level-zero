@@ -44,7 +44,9 @@ namespace loader
         bool forceIntercept = false;
 
         context_t();
+        void checkEnableDebugLayers();
         ~context_t();
+
     };
 
     extern context_t context;
