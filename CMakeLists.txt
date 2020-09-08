@@ -2,6 +2,9 @@
 # SPDX-License-Identifier: MIT
 
 cmake_minimum_required(VERSION 3.2.0 FATAL_ERROR)
+set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
 
 if(MSVC AND (MSVC_VERSION LESS 1900))
     message(FATAL_ERROR "Visual Studio Compiler Version >= 1900 Required to build.")
