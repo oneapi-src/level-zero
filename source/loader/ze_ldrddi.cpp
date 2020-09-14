@@ -3933,6 +3933,8 @@ zeGetDriverProcAddrTable(
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
+    loader::context.checkEnableDebugLayers();
+
     // Load the device-driver DDI tables
     for( auto& drv : loader::context.drivers )
     {
@@ -3998,6 +4000,8 @@ zeGetDeviceProcAddrTable(
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
+
+    loader::context.checkEnableDebugLayers();
 
     // Load the device-driver DDI tables
     for( auto& drv : loader::context.drivers )
@@ -4074,6 +4078,8 @@ zeGetContextProcAddrTable(
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
+    loader::context.checkEnableDebugLayers();
+
     // Load the device-driver DDI tables
     for( auto& drv : loader::context.drivers )
     {
@@ -4143,6 +4149,8 @@ zeGetCommandQueueProcAddrTable(
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
+    loader::context.checkEnableDebugLayers();
+
     // Load the device-driver DDI tables
     for( auto& drv : loader::context.drivers )
     {
@@ -4207,6 +4215,8 @@ zeGetCommandListProcAddrTable(
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
+
+    loader::context.checkEnableDebugLayers();
 
     // Load the device-driver DDI tables
     for( auto& drv : loader::context.drivers )
@@ -4295,6 +4305,8 @@ zeGetEventProcAddrTable(
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
+    loader::context.checkEnableDebugLayers();
+
     // Load the device-driver DDI tables
     for( auto& drv : loader::context.drivers )
     {
@@ -4363,6 +4375,8 @@ zeGetEventPoolProcAddrTable(
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
+    loader::context.checkEnableDebugLayers();
+
     // Load the device-driver DDI tables
     for( auto& drv : loader::context.drivers )
     {
@@ -4428,6 +4442,8 @@ zeGetFenceProcAddrTable(
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
+
+    loader::context.checkEnableDebugLayers();
 
     // Load the device-driver DDI tables
     for( auto& drv : loader::context.drivers )
@@ -4495,6 +4511,8 @@ zeGetImageProcAddrTable(
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
+    loader::context.checkEnableDebugLayers();
+
     // Load the device-driver DDI tables
     for( auto& drv : loader::context.drivers )
     {
@@ -4558,6 +4576,8 @@ zeGetKernelProcAddrTable(
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
+
+    loader::context.checkEnableDebugLayers();
 
     // Load the device-driver DDI tables
     for( auto& drv : loader::context.drivers )
@@ -4632,6 +4652,8 @@ zeGetMemProcAddrTable(
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
+    loader::context.checkEnableDebugLayers();
+
     // Load the device-driver DDI tables
     for( auto& drv : loader::context.drivers )
     {
@@ -4702,6 +4724,8 @@ zeGetModuleProcAddrTable(
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
+    loader::context.checkEnableDebugLayers();
+
     // Load the device-driver DDI tables
     for( auto& drv : loader::context.drivers )
     {
@@ -4771,6 +4795,8 @@ zeGetModuleBuildLogProcAddrTable(
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
+    loader::context.checkEnableDebugLayers();
+
     // Load the device-driver DDI tables
     for( auto& drv : loader::context.drivers )
     {
@@ -4833,6 +4859,8 @@ zeGetPhysicalMemProcAddrTable(
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
+
+    loader::context.checkEnableDebugLayers();
 
     // Load the device-driver DDI tables
     for( auto& drv : loader::context.drivers )
@@ -4897,6 +4925,8 @@ zeGetSamplerProcAddrTable(
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
+    loader::context.checkEnableDebugLayers();
+
     // Load the device-driver DDI tables
     for( auto& drv : loader::context.drivers )
     {
@@ -4959,6 +4989,8 @@ zeGetVirtualMemProcAddrTable(
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
+
+    loader::context.checkEnableDebugLayers();
 
     // Load the device-driver DDI tables
     for( auto& drv : loader::context.drivers )
