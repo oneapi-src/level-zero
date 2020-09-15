@@ -1896,7 +1896,7 @@ zeCommandListAppendMemAdvise(
 ///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
 ///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
 ///     - ::ZE_RESULT_ERROR_INVALID_SIZE
-///         + `0 < desc->count`
+///         + `0 == desc->count`
 ///         + `(nullptr == phDevices) && (0 < numDevices)`
 ze_result_t ZE_APICALL
 zeEventPoolCreate(
