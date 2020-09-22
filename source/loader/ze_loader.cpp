@@ -16,7 +16,7 @@ namespace loader
 
 
     ///////////////////////////////////////////////////////////////////////////////
-    context_t::context_t()
+    ze_result_t context_t::init()
     {
         auto discoveredDrivers = discoverEnabledDrivers();
 
@@ -41,15 +41,6 @@ namespace loader
             }
 
         }
-    };
-
-    void
-    context_t::checkEnableDebugLayers() {
-        static bool alreadyChecked = false;
-
-        if(alreadyChecked) {
-          return;
-        }
 
         if( getenv_tobool( "ZE_ENABLE_VALIDATION_LAYER" ) )
         {
@@ -57,8 +48,9 @@ namespace loader
         }
 
         forceIntercept = getenv_tobool( "ZE_ENABLE_LOADER_INTERCEPT" );
-        alreadyChecked = true;
-    }
+
+        return ZE_RESULT_SUCCESS;
+    };
 
     ///////////////////////////////////////////////////////////////////////////////
     context_t::~context_t()

@@ -16,6 +16,7 @@
 #include "zes_ddi.h"
 #include "ze_util.h"
 #include <vector>
+#include <mutex>
 
 namespace ze_lib
 {
@@ -27,6 +28,8 @@ namespace ze_lib
 
         context_t();
         ~context_t();
+
+        std::once_flag initOnce;
 
         ze_result_t Init();
 

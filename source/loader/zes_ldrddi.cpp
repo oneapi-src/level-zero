@@ -2921,8 +2921,6 @@ zesGetDeviceProcAddrTable(
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
-    loader::context.checkEnableDebugLayers();
-
     // Load the device-driver DDI tables
     for( auto& drv : loader::context.drivers )
     {
@@ -3008,8 +3006,6 @@ zesGetDriverProcAddrTable(
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
-    loader::context.checkEnableDebugLayers();
-
     // Load the device-driver DDI tables
     for( auto& drv : loader::context.drivers )
     {
@@ -3071,8 +3067,6 @@ zesGetDiagnosticsProcAddrTable(
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
-
-    loader::context.checkEnableDebugLayers();
 
     // Load the device-driver DDI tables
     for( auto& drv : loader::context.drivers )
@@ -3138,8 +3132,6 @@ zesGetEngineProcAddrTable(
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
-    loader::context.checkEnableDebugLayers();
-
     // Load the device-driver DDI tables
     for( auto& drv : loader::context.drivers )
     {
@@ -3202,8 +3194,6 @@ zesGetFabricPortProcAddrTable(
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
-
-    loader::context.checkEnableDebugLayers();
 
     // Load the device-driver DDI tables
     for( auto& drv : loader::context.drivers )
@@ -3272,8 +3262,6 @@ zesGetFanProcAddrTable(
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
-    loader::context.checkEnableDebugLayers();
-
     // Load the device-driver DDI tables
     for( auto& drv : loader::context.drivers )
     {
@@ -3341,8 +3329,6 @@ zesGetFirmwareProcAddrTable(
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
-    loader::context.checkEnableDebugLayers();
-
     // Load the device-driver DDI tables
     for( auto& drv : loader::context.drivers )
     {
@@ -3405,8 +3391,6 @@ zesGetFrequencyProcAddrTable(
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
-
-    loader::context.checkEnableDebugLayers();
 
     // Load the device-driver DDI tables
     for( auto& drv : loader::context.drivers )
@@ -3486,8 +3470,6 @@ zesGetLedProcAddrTable(
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
-    loader::context.checkEnableDebugLayers();
-
     // Load the device-driver DDI tables
     for( auto& drv : loader::context.drivers )
     {
@@ -3553,8 +3535,6 @@ zesGetMemoryProcAddrTable(
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
-    loader::context.checkEnableDebugLayers();
-
     // Load the device-driver DDI tables
     for( auto& drv : loader::context.drivers )
     {
@@ -3619,8 +3599,6 @@ zesGetPerformanceFactorProcAddrTable(
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
-    loader::context.checkEnableDebugLayers();
-
     // Load the device-driver DDI tables
     for( auto& drv : loader::context.drivers )
     {
@@ -3684,8 +3662,6 @@ zesGetPowerProcAddrTable(
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
-
-    loader::context.checkEnableDebugLayers();
 
     // Load the device-driver DDI tables
     for( auto& drv : loader::context.drivers )
@@ -3754,8 +3730,6 @@ zesGetPsuProcAddrTable(
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
-    loader::context.checkEnableDebugLayers();
-
     // Load the device-driver DDI tables
     for( auto& drv : loader::context.drivers )
     {
@@ -3818,8 +3792,6 @@ zesGetRasProcAddrTable(
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
-
-    loader::context.checkEnableDebugLayers();
 
     // Load the device-driver DDI tables
     for( auto& drv : loader::context.drivers )
@@ -3885,8 +3857,6 @@ zesGetSchedulerProcAddrTable(
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
-
-    loader::context.checkEnableDebugLayers();
 
     // Load the device-driver DDI tables
     for( auto& drv : loader::context.drivers )
@@ -3957,8 +3927,6 @@ zesGetStandbyProcAddrTable(
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
-    loader::context.checkEnableDebugLayers();
-
     // Load the device-driver DDI tables
     for( auto& drv : loader::context.drivers )
     {
@@ -4022,8 +3990,6 @@ zesGetTemperatureProcAddrTable(
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
-
-    loader::context.checkEnableDebugLayers();
 
     // Load the device-driver DDI tables
     for( auto& drv : loader::context.drivers )

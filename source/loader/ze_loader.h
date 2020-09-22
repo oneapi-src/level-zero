@@ -43,10 +43,8 @@ namespace loader
 
         bool forceIntercept = false;
 
-        context_t();
-        void checkEnableDebugLayers();
+        ze_result_t init();
         ~context_t();
-
     };
 
     extern context_t context;

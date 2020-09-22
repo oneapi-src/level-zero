@@ -7,6 +7,7 @@ target_sources(${TARGET_LOADER_NAME}
         ${CMAKE_CURRENT_SOURCE_DIR}/ze_object.h
         ${CMAKE_CURRENT_SOURCE_DIR}/ze_loader.h
         ${CMAKE_CURRENT_SOURCE_DIR}/ze_loader.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/ze_loader_api.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/ze_ldrddi.h
         ${CMAKE_CURRENT_SOURCE_DIR}/ze_ldrddi.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/zet_ldrddi.h

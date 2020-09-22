@@ -1235,8 +1235,6 @@ zetGetDeviceProcAddrTable(
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
-    loader::context.checkEnableDebugLayers();
-
     // Load the device-driver DDI tables
     for( auto& drv : loader::context.drivers )
     {
@@ -1299,8 +1297,6 @@ zetGetContextProcAddrTable(
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
-    loader::context.checkEnableDebugLayers();
-
     // Load the device-driver DDI tables
     for( auto& drv : loader::context.drivers )
     {
@@ -1362,8 +1358,6 @@ zetGetCommandListProcAddrTable(
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
-
-    loader::context.checkEnableDebugLayers();
 
     // Load the device-driver DDI tables
     for( auto& drv : loader::context.drivers )
@@ -1430,8 +1424,6 @@ zetGetKernelProcAddrTable(
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
-    loader::context.checkEnableDebugLayers();
-
     // Load the device-driver DDI tables
     for( auto& drv : loader::context.drivers )
     {
@@ -1494,8 +1486,6 @@ zetGetModuleProcAddrTable(
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
-    loader::context.checkEnableDebugLayers();
-
     // Load the device-driver DDI tables
     for( auto& drv : loader::context.drivers )
     {
@@ -1557,8 +1547,6 @@ zetGetDebugProcAddrTable(
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
-
-    loader::context.checkEnableDebugLayers();
 
     // Load the device-driver DDI tables
     for( auto& drv : loader::context.drivers )
@@ -1632,8 +1620,6 @@ zetGetMetricProcAddrTable(
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
-    loader::context.checkEnableDebugLayers();
-
     // Load the device-driver DDI tables
     for( auto& drv : loader::context.drivers )
     {
@@ -1696,8 +1682,6 @@ zetGetMetricGroupProcAddrTable(
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
-
-    loader::context.checkEnableDebugLayers();
 
     // Load the device-driver DDI tables
     for( auto& drv : loader::context.drivers )
@@ -1762,8 +1746,6 @@ zetGetMetricQueryProcAddrTable(
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
-
-    loader::context.checkEnableDebugLayers();
 
     // Load the device-driver DDI tables
     for( auto& drv : loader::context.drivers )
@@ -1830,8 +1812,6 @@ zetGetMetricQueryPoolProcAddrTable(
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
-    loader::context.checkEnableDebugLayers();
-
     // Load the device-driver DDI tables
     for( auto& drv : loader::context.drivers )
     {
@@ -1894,8 +1874,6 @@ zetGetMetricStreamerProcAddrTable(
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
-
-    loader::context.checkEnableDebugLayers();
 
     // Load the device-driver DDI tables
     for( auto& drv : loader::context.drivers )
@@ -1960,8 +1938,6 @@ zetGetTracerExpProcAddrTable(
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
-
-    loader::context.checkEnableDebugLayers();
 
     // Load the device-driver DDI tables
     for( auto& drv : loader::context.drivers )

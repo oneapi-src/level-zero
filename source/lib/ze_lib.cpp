@@ -33,8 +33,11 @@ namespace ze_lib
 
         if( NULL == loader )
             return ZE_RESULT_ERROR_UNINITIALIZED;
-
-        ze_result_t result = ZE_RESULT_SUCCESS;
+            
+        typedef ze_result_t (ZE_APICALL *loaderInit_t)();
+        auto loaderInit = reinterpret_cast<loaderInit_t>(
+                GET_FUNCTION_PTR(loader, "zeLoaderInit") );
+        ze_result_t result = loaderInit();
 
         if( ZE_RESULT_SUCCESS == result )
         {

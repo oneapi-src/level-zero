@@ -37,7 +37,11 @@ zeInit(
                                                     ///< must be 0 (default) or a combination of ::ze_init_flag_t.
     )
 {
-    auto result = ze_lib::context.Init();
+    ze_result_t result = ZE_RESULT_SUCCESS;
+    std::call_once(ze_lib::context.initOnce, [&result]() {
+        result = ze_lib::context.Init();
+    });
+
     if( ZE_RESULT_SUCCESS != result )
         return result;
 
