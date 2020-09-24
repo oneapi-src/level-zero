@@ -5,13 +5,17 @@ pool:
   vmImage: 'ubuntu-latest'
 
 variables:
-  dockerNamespace: oneapilevelzero
-  dockerRepo: github-ci-cache
   dockerRepoFull: $(dockerNamespace)/$(dockerRepo)
   refSlug: $[ lower(replace(variables['Build.SourceBranch'], '/', '-')) ]
+  mainBranch: master
+  isMain: $[eq(variables['Build.SourceBranch'], format('refs/heads/{0}', variables['mainBranch']))]
+  DOCKER_BUILDKIT: 1
 
 jobs:
-- job: eoan
+- job: ubuntu_bionic_install
+  variables:
+    buildPlatform: ubuntu-bionic
+    IMAGE_VERSION: bionic-20200807
   steps:
   - task: Docker@2
     displayName: Login to Docker Hub
@@ -19,28 +23,27 @@ jobs:
       command: login
       containerRegistry: DockerHub
   - task: Docker@2
-    displayName: Try to pull master version of image
-    inputs:
-      command: pull
-      arguments: $(dockerRepoFull):level-zero-toolchain-ubuntu-eoan-refs-heads-master
-    continueOnError: true
-  - task: Docker@2
-    displayName: Try to pull prior version of image for same ref
-    inputs:
-      command: pull
-      arguments: $(dockerRepoFull):level-zero-toolchain-ubuntu-eoan-$(refSlug)
-    continueOnError: true
-  - task: Docker@2
     displayName: Build container
     inputs:
       command: build
       Dockerfile: docker/build-ubuntu.Dockerfile
       repository: $(dockerRepoFull)
-      tags: level-zero-toolchain-ubuntu-eoan-$(refSlug)
+      tags: level-zero-toolchain-$(buildPlatform)-$(refSlug)
       arguments:
-        --cache-from $(dockerRepoFull):level-zero-toolchain-ubuntu-eoan-refs-heads-master
-        --build-arg IMAGE_VERSION=eoan-20200114
-  - script: mkdir $(Build.Repository.LocalPath)/ccache
+        --cache-from $(dockerRepoFull):level-zero-toolchain-$(buildPlatform)-refs-heads-$(mainBranch)
+        --build-arg BUILDKIT_INLINE_CACHE=1
+        --build-arg IMAGE_VERSION
+  - task: Docker@2
+    displayName: Push build image to registry cache if on main branch
+    inputs:
+      command: push
+      repository: $(dockerRepoFull)
+      tags: level-zero-toolchain-$(buildPlatform)-$(refSlug)
+    condition: and(succeeded(), eq(variables.isMain, true))
+  - script: |
+      mkdir $(Build.Repository.LocalPath)/ccache
+      mkdir $(Build.Repository.LocalPath)/build
+      mkdir $(Build.Repository.LocalPath)/install
   - task: Cache@2
     displayName: ccache
     inputs:
@@ -53,40 +56,33 @@ jobs:
       command: run
       arguments:
         --rm
-        -v $(Build.Repository.LocalPath):$(Build.Repository.LocalPath)
-        -v $(Build.BinariesDirectory):$(Build.BinariesDirectory)
-        -w $(Build.BinariesDirectory)
-        -e CCACHE_DIR=$(Build.Repository.LocalPath)/ccache
-        -e CCACHE_BASEDIR=$(Build.Repository.LocalPath)
-        $(dockerRepoFull):level-zero-toolchain-ubuntu-eoan-$(refSlug)
+        -v $(Build.Repository.LocalPath):/project
+        -w /project/build
+        -e CCACHE_DIR=/project/ccache
+        -e CCACHE_BASEDIR=/project
+        $(dockerRepoFull):level-zero-toolchain-$(buildPlatform)-$(refSlug)
         cmake
+          -G Ninja
           -D CMAKE_BUILD_TYPE=Release
           -D CMAKE_C_COMPILER_LAUNCHER=ccache
           -D CMAKE_CXX_COMPILER_LAUNCHER=ccache
-          $(Build.Repository.LocalPath)
+          -D CMAKE_INSTALL_PREFIX=/project/install
+          ..
   - task: Docker@2
     displayName: CMake build in container
     inputs:
       command: run
       arguments:
         --rm
-        -v $(Build.Repository.LocalPath):$(Build.Repository.LocalPath)
-        -v $(Build.BinariesDirectory):$(Build.BinariesDirectory)
-        -w $(Build.BinariesDirectory)
-        -e CCACHE_DIR=$(Build.Repository.LocalPath)/ccache
-        -e CCACHE_BASEDIR=$(Build.Repository.LocalPath)
-        $(dockerRepoFull):level-zero-toolchain-ubuntu-eoan-$(refSlug)
-        cmake --build . --config Release
-  - task: Docker@2
-    displayName: CMake build packages in container
+        -v $(Build.Repository.LocalPath):/project
+        -w /project/build
+        -e CCACHE_DIR=/project/ccache
+        -e CCACHE_BASEDIR=/project
+        $(dockerRepoFull):level-zero-toolchain-$(buildPlatform)-$(refSlug)
+        cmake --build . --target install
+  - task: PublishPipelineArtifact@1
+    displayName: Publish level-zero artifact
     inputs:
-      command: run
-      arguments:
-        --rm
-        -v $(Build.Repository.LocalPath):$(Build.Repository.LocalPath)
-        -v $(Build.BinariesDirectory):$(Build.BinariesDirectory)
-        -w $(Build.BinariesDirectory)
-        -e CCACHE_DIR=$(Build.Repository.LocalPath)/ccache
-        -e CCACHE_BASEDIR=$(Build.Repository.LocalPath)
-        $(dockerRepoFull):level-zero-toolchain-ubuntu-eoan-$(refSlug)
-        cmake --build . --config Release --target package
+      targetPath: $(Build.Repository.LocalPath)/install
+      artifactName: level-zero-$(buildPlatform)-install
+    condition: and(succeeded(), eq(variables.isMain, true))
