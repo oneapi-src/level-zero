@@ -32,6 +32,13 @@ target_link_libraries(${TARGET_LOADER_NAME}
     ${CMAKE_DL_LIBS}
 )
 
+if (UNIX)
+    set(CMAKE_THREAD_PREFER_PTHREAD TRUE)
+    set(THREADS_PREFER_PTHREAD_FLAG TRUE)
+    find_package(Threads REQUIRED)
+    target_link_libraries (${TARGET_LOADER_NAME} Threads::Threads)
+endif()
+
 if(WIN32)
     target_link_libraries (${TARGET_LOADER_NAME} cfgmgr32.lib)
 endif()
