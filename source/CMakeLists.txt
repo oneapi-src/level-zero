@@ -60,3 +60,11 @@ install(TARGETS ze_loader
         COMPONENT level-zero-devel
         NAMELINK_ONLY
 )
+
+if(UNIX)
+    configure_file(
+        ${CMAKE_CURRENT_SOURCE_DIR}/libze_loader.pc.in
+        ${CMAKE_CURRENT_BINARY_DIR}/libze_loader.pc
+        @ONLY)
+    install(FILES "${CMAKE_CURRENT_BINARY_DIR}/libze_loader.pc" DESTINATION "${CMAKE_INSTALL_FULL_LIBDIR}/pkgconfig")
+endif()

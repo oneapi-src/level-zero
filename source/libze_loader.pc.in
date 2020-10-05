@@ -1,0 +1,14 @@
+prefix=@CMAKE_INSTALL_PREFIX@
+includedir=${prefix}/include
+libdir=${prefix}/lib
+
+
+Name: Level Zero Loader
+Description: Runtime Library Loader for Level Zero
+URL: https://github.com/oneapi-src/level-zero
+Version: @PROJECT_VERSION_MAJOR@.@PROJECT_VERSION_MINOR@.@PROJECT_VERSION_PATCH@
+Requires: 
+Libs: -L${libdir} -lze_loader
+CFlags: -I${includedir}
+
+
