@@ -1,20 +1,22 @@
 # Copyright (C) 2020 Intel Corporation
 # SPDX-License-Identifier: MIT
-set(TARGET_NAME ze_validation_layer)
+set(TARGET_NAME ze_tracing_layer)
 
 configure_file(
-    ${CMAKE_CURRENT_SOURCE_DIR}/ZeValidationLayerVersion.rc.in
-    ${CMAKE_CURRENT_BINARY_DIR}/ZeValidationLayerVersion.rc
+    ${CMAKE_CURRENT_SOURCE_DIR}/ZeTracingLayerVersion.rc.in
+    ${CMAKE_CURRENT_BINARY_DIR}/ZeTracingLayerVersion.rc
     @ONLY)
 
 add_library(${TARGET_NAME}
     SHARED
-        ${CMAKE_CURRENT_SOURCE_DIR}/ze_validation_layer.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/ze_validation_layer.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/ze_valddi.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/zet_valddi.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/zes_valddi.cpp
-        ${CMAKE_CURRENT_BINARY_DIR}/ZeValidationLayerVersion.rc
+        ${CMAKE_CURRENT_SOURCE_DIR}/ze_tracing_layer.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/tracing.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/tracing_imp.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/ze_tracing_layer.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/ze_trcddi.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/tracing_imp.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/ze_tracing.cpp
+        ${CMAKE_CURRENT_BINARY_DIR}/ZeTracingLayerVersion.rc
 )
 
 target_include_directories(${TARGET_NAME}
@@ -32,7 +34,7 @@ set_target_properties(${TARGET_NAME} PROPERTIES
     SOVERSION  "${PROJECT_VERSION_MAJOR}"
 )
 
-install(TARGETS ze_validation_layer
+install(TARGETS ze_tracing_layer
     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
     LIBRARY
         DESTINATION ${CMAKE_INSTALL_LIBDIR}
@@ -40,7 +42,7 @@ install(TARGETS ze_validation_layer
         NAMELINK_SKIP
 )
 
-install(TARGETS ze_validation_layer
+install(TARGETS ze_tracing_layer
     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
     LIBRARY
         DESTINATION ${CMAKE_INSTALL_LIBDIR}

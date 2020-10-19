@@ -54,6 +54,11 @@ namespace ze_lib
             result = zesInit();
         } 
 
+        if( ZE_RESULT_SUCCESS == result )
+        {
+            result = zelTracingInit();
+        }
+
         return result;
     }
 

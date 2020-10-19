@@ -7,9 +7,9 @@
  * @file zet_valddi.cpp
  *
  */
-#include "ze_layer.h"
+#include "ze_validation_layer.h"
 
-namespace layer
+namespace validation_layer
 {
     ///////////////////////////////////////////////////////////////////////////////
     /// @brief Intercept function for zetModuleGetDebugInfo
@@ -1121,7 +1121,7 @@ namespace layer
         return pfnSetEnabled( hTracer, enable );
     }
 
-} // namespace layer
+} // namespace validation_layer
 
 #if defined(__cplusplus)
 extern "C" {
@@ -1141,18 +1141,18 @@ zetGetDeviceProcAddrTable(
     zet_device_dditable_t* pDdiTable                ///< [in,out] pointer to table of DDI function pointers
     )
 {
-    auto& dditable = layer::context.zetDdiTable.Device;
+    auto& dditable = validation_layer::context.zetDdiTable.Device;
 
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if( layer::context.version < version )
+    if( validation_layer::context.version < version )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
     dditable.pfnGetDebugProperties                       = pDdiTable->pfnGetDebugProperties;
-    pDdiTable->pfnGetDebugProperties                     = layer::zetDeviceGetDebugProperties;
+    pDdiTable->pfnGetDebugProperties                     = validation_layer::zetDeviceGetDebugProperties;
 
     return result;
 }
@@ -1171,18 +1171,18 @@ zetGetContextProcAddrTable(
     zet_context_dditable_t* pDdiTable               ///< [in,out] pointer to table of DDI function pointers
     )
 {
-    auto& dditable = layer::context.zetDdiTable.Context;
+    auto& dditable = validation_layer::context.zetDdiTable.Context;
 
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if( layer::context.version < version )
+    if( validation_layer::context.version < version )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
     dditable.pfnActivateMetricGroups                     = pDdiTable->pfnActivateMetricGroups;
-    pDdiTable->pfnActivateMetricGroups                   = layer::zetContextActivateMetricGroups;
+    pDdiTable->pfnActivateMetricGroups                   = validation_layer::zetContextActivateMetricGroups;
 
     return result;
 }
@@ -1201,27 +1201,27 @@ zetGetCommandListProcAddrTable(
     zet_command_list_dditable_t* pDdiTable          ///< [in,out] pointer to table of DDI function pointers
     )
 {
-    auto& dditable = layer::context.zetDdiTable.CommandList;
+    auto& dditable = validation_layer::context.zetDdiTable.CommandList;
 
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if( layer::context.version < version )
+    if( validation_layer::context.version < version )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
     dditable.pfnAppendMetricStreamerMarker               = pDdiTable->pfnAppendMetricStreamerMarker;
-    pDdiTable->pfnAppendMetricStreamerMarker             = layer::zetCommandListAppendMetricStreamerMarker;
+    pDdiTable->pfnAppendMetricStreamerMarker             = validation_layer::zetCommandListAppendMetricStreamerMarker;
 
     dditable.pfnAppendMetricQueryBegin                   = pDdiTable->pfnAppendMetricQueryBegin;
-    pDdiTable->pfnAppendMetricQueryBegin                 = layer::zetCommandListAppendMetricQueryBegin;
+    pDdiTable->pfnAppendMetricQueryBegin                 = validation_layer::zetCommandListAppendMetricQueryBegin;
 
     dditable.pfnAppendMetricQueryEnd                     = pDdiTable->pfnAppendMetricQueryEnd;
-    pDdiTable->pfnAppendMetricQueryEnd                   = layer::zetCommandListAppendMetricQueryEnd;
+    pDdiTable->pfnAppendMetricQueryEnd                   = validation_layer::zetCommandListAppendMetricQueryEnd;
 
     dditable.pfnAppendMetricMemoryBarrier                = pDdiTable->pfnAppendMetricMemoryBarrier;
-    pDdiTable->pfnAppendMetricMemoryBarrier              = layer::zetCommandListAppendMetricMemoryBarrier;
+    pDdiTable->pfnAppendMetricMemoryBarrier              = validation_layer::zetCommandListAppendMetricMemoryBarrier;
 
     return result;
 }
@@ -1240,18 +1240,18 @@ zetGetKernelProcAddrTable(
     zet_kernel_dditable_t* pDdiTable                ///< [in,out] pointer to table of DDI function pointers
     )
 {
-    auto& dditable = layer::context.zetDdiTable.Kernel;
+    auto& dditable = validation_layer::context.zetDdiTable.Kernel;
 
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if( layer::context.version < version )
+    if( validation_layer::context.version < version )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
     dditable.pfnGetProfileInfo                           = pDdiTable->pfnGetProfileInfo;
-    pDdiTable->pfnGetProfileInfo                         = layer::zetKernelGetProfileInfo;
+    pDdiTable->pfnGetProfileInfo                         = validation_layer::zetKernelGetProfileInfo;
 
     return result;
 }
@@ -1270,18 +1270,18 @@ zetGetModuleProcAddrTable(
     zet_module_dditable_t* pDdiTable                ///< [in,out] pointer to table of DDI function pointers
     )
 {
-    auto& dditable = layer::context.zetDdiTable.Module;
+    auto& dditable = validation_layer::context.zetDdiTable.Module;
 
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if( layer::context.version < version )
+    if( validation_layer::context.version < version )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
     dditable.pfnGetDebugInfo                             = pDdiTable->pfnGetDebugInfo;
-    pDdiTable->pfnGetDebugInfo                           = layer::zetModuleGetDebugInfo;
+    pDdiTable->pfnGetDebugInfo                           = validation_layer::zetModuleGetDebugInfo;
 
     return result;
 }
@@ -1300,48 +1300,48 @@ zetGetDebugProcAddrTable(
     zet_debug_dditable_t* pDdiTable                 ///< [in,out] pointer to table of DDI function pointers
     )
 {
-    auto& dditable = layer::context.zetDdiTable.Debug;
+    auto& dditable = validation_layer::context.zetDdiTable.Debug;
 
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if( layer::context.version < version )
+    if( validation_layer::context.version < version )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
     dditable.pfnAttach                                   = pDdiTable->pfnAttach;
-    pDdiTable->pfnAttach                                 = layer::zetDebugAttach;
+    pDdiTable->pfnAttach                                 = validation_layer::zetDebugAttach;
 
     dditable.pfnDetach                                   = pDdiTable->pfnDetach;
-    pDdiTable->pfnDetach                                 = layer::zetDebugDetach;
+    pDdiTable->pfnDetach                                 = validation_layer::zetDebugDetach;
 
     dditable.pfnReadEvent                                = pDdiTable->pfnReadEvent;
-    pDdiTable->pfnReadEvent                              = layer::zetDebugReadEvent;
+    pDdiTable->pfnReadEvent                              = validation_layer::zetDebugReadEvent;
 
     dditable.pfnAcknowledgeEvent                         = pDdiTable->pfnAcknowledgeEvent;
-    pDdiTable->pfnAcknowledgeEvent                       = layer::zetDebugAcknowledgeEvent;
+    pDdiTable->pfnAcknowledgeEvent                       = validation_layer::zetDebugAcknowledgeEvent;
 
     dditable.pfnInterrupt                                = pDdiTable->pfnInterrupt;
-    pDdiTable->pfnInterrupt                              = layer::zetDebugInterrupt;
+    pDdiTable->pfnInterrupt                              = validation_layer::zetDebugInterrupt;
 
     dditable.pfnResume                                   = pDdiTable->pfnResume;
-    pDdiTable->pfnResume                                 = layer::zetDebugResume;
+    pDdiTable->pfnResume                                 = validation_layer::zetDebugResume;
 
     dditable.pfnReadMemory                               = pDdiTable->pfnReadMemory;
-    pDdiTable->pfnReadMemory                             = layer::zetDebugReadMemory;
+    pDdiTable->pfnReadMemory                             = validation_layer::zetDebugReadMemory;
 
     dditable.pfnWriteMemory                              = pDdiTable->pfnWriteMemory;
-    pDdiTable->pfnWriteMemory                            = layer::zetDebugWriteMemory;
+    pDdiTable->pfnWriteMemory                            = validation_layer::zetDebugWriteMemory;
 
     dditable.pfnGetRegisterSetProperties                 = pDdiTable->pfnGetRegisterSetProperties;
-    pDdiTable->pfnGetRegisterSetProperties               = layer::zetDebugGetRegisterSetProperties;
+    pDdiTable->pfnGetRegisterSetProperties               = validation_layer::zetDebugGetRegisterSetProperties;
 
     dditable.pfnReadRegisters                            = pDdiTable->pfnReadRegisters;
-    pDdiTable->pfnReadRegisters                          = layer::zetDebugReadRegisters;
+    pDdiTable->pfnReadRegisters                          = validation_layer::zetDebugReadRegisters;
 
     dditable.pfnWriteRegisters                           = pDdiTable->pfnWriteRegisters;
-    pDdiTable->pfnWriteRegisters                         = layer::zetDebugWriteRegisters;
+    pDdiTable->pfnWriteRegisters                         = validation_layer::zetDebugWriteRegisters;
 
     return result;
 }
@@ -1360,21 +1360,21 @@ zetGetMetricProcAddrTable(
     zet_metric_dditable_t* pDdiTable                ///< [in,out] pointer to table of DDI function pointers
     )
 {
-    auto& dditable = layer::context.zetDdiTable.Metric;
+    auto& dditable = validation_layer::context.zetDdiTable.Metric;
 
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if( layer::context.version < version )
+    if( validation_layer::context.version < version )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
     dditable.pfnGet                                      = pDdiTable->pfnGet;
-    pDdiTable->pfnGet                                    = layer::zetMetricGet;
+    pDdiTable->pfnGet                                    = validation_layer::zetMetricGet;
 
     dditable.pfnGetProperties                            = pDdiTable->pfnGetProperties;
-    pDdiTable->pfnGetProperties                          = layer::zetMetricGetProperties;
+    pDdiTable->pfnGetProperties                          = validation_layer::zetMetricGetProperties;
 
     return result;
 }
@@ -1393,24 +1393,24 @@ zetGetMetricGroupProcAddrTable(
     zet_metric_group_dditable_t* pDdiTable          ///< [in,out] pointer to table of DDI function pointers
     )
 {
-    auto& dditable = layer::context.zetDdiTable.MetricGroup;
+    auto& dditable = validation_layer::context.zetDdiTable.MetricGroup;
 
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if( layer::context.version < version )
+    if( validation_layer::context.version < version )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
     dditable.pfnGet                                      = pDdiTable->pfnGet;
-    pDdiTable->pfnGet                                    = layer::zetMetricGroupGet;
+    pDdiTable->pfnGet                                    = validation_layer::zetMetricGroupGet;
 
     dditable.pfnGetProperties                            = pDdiTable->pfnGetProperties;
-    pDdiTable->pfnGetProperties                          = layer::zetMetricGroupGetProperties;
+    pDdiTable->pfnGetProperties                          = validation_layer::zetMetricGroupGetProperties;
 
     dditable.pfnCalculateMetricValues                    = pDdiTable->pfnCalculateMetricValues;
-    pDdiTable->pfnCalculateMetricValues                  = layer::zetMetricGroupCalculateMetricValues;
+    pDdiTable->pfnCalculateMetricValues                  = validation_layer::zetMetricGroupCalculateMetricValues;
 
     return result;
 }
@@ -1429,27 +1429,27 @@ zetGetMetricQueryProcAddrTable(
     zet_metric_query_dditable_t* pDdiTable          ///< [in,out] pointer to table of DDI function pointers
     )
 {
-    auto& dditable = layer::context.zetDdiTable.MetricQuery;
+    auto& dditable = validation_layer::context.zetDdiTable.MetricQuery;
 
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if( layer::context.version < version )
+    if( validation_layer::context.version < version )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
     dditable.pfnCreate                                   = pDdiTable->pfnCreate;
-    pDdiTable->pfnCreate                                 = layer::zetMetricQueryCreate;
+    pDdiTable->pfnCreate                                 = validation_layer::zetMetricQueryCreate;
 
     dditable.pfnDestroy                                  = pDdiTable->pfnDestroy;
-    pDdiTable->pfnDestroy                                = layer::zetMetricQueryDestroy;
+    pDdiTable->pfnDestroy                                = validation_layer::zetMetricQueryDestroy;
 
     dditable.pfnReset                                    = pDdiTable->pfnReset;
-    pDdiTable->pfnReset                                  = layer::zetMetricQueryReset;
+    pDdiTable->pfnReset                                  = validation_layer::zetMetricQueryReset;
 
     dditable.pfnGetData                                  = pDdiTable->pfnGetData;
-    pDdiTable->pfnGetData                                = layer::zetMetricQueryGetData;
+    pDdiTable->pfnGetData                                = validation_layer::zetMetricQueryGetData;
 
     return result;
 }
@@ -1468,21 +1468,21 @@ zetGetMetricQueryPoolProcAddrTable(
     zet_metric_query_pool_dditable_t* pDdiTable     ///< [in,out] pointer to table of DDI function pointers
     )
 {
-    auto& dditable = layer::context.zetDdiTable.MetricQueryPool;
+    auto& dditable = validation_layer::context.zetDdiTable.MetricQueryPool;
 
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if( layer::context.version < version )
+    if( validation_layer::context.version < version )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
     dditable.pfnCreate                                   = pDdiTable->pfnCreate;
-    pDdiTable->pfnCreate                                 = layer::zetMetricQueryPoolCreate;
+    pDdiTable->pfnCreate                                 = validation_layer::zetMetricQueryPoolCreate;
 
     dditable.pfnDestroy                                  = pDdiTable->pfnDestroy;
-    pDdiTable->pfnDestroy                                = layer::zetMetricQueryPoolDestroy;
+    pDdiTable->pfnDestroy                                = validation_layer::zetMetricQueryPoolDestroy;
 
     return result;
 }
@@ -1501,24 +1501,24 @@ zetGetMetricStreamerProcAddrTable(
     zet_metric_streamer_dditable_t* pDdiTable       ///< [in,out] pointer to table of DDI function pointers
     )
 {
-    auto& dditable = layer::context.zetDdiTable.MetricStreamer;
+    auto& dditable = validation_layer::context.zetDdiTable.MetricStreamer;
 
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if( layer::context.version < version )
+    if( validation_layer::context.version < version )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
     dditable.pfnOpen                                     = pDdiTable->pfnOpen;
-    pDdiTable->pfnOpen                                   = layer::zetMetricStreamerOpen;
+    pDdiTable->pfnOpen                                   = validation_layer::zetMetricStreamerOpen;
 
     dditable.pfnClose                                    = pDdiTable->pfnClose;
-    pDdiTable->pfnClose                                  = layer::zetMetricStreamerClose;
+    pDdiTable->pfnClose                                  = validation_layer::zetMetricStreamerClose;
 
     dditable.pfnReadData                                 = pDdiTable->pfnReadData;
-    pDdiTable->pfnReadData                               = layer::zetMetricStreamerReadData;
+    pDdiTable->pfnReadData                               = validation_layer::zetMetricStreamerReadData;
 
     return result;
 }
@@ -1537,30 +1537,30 @@ zetGetTracerExpProcAddrTable(
     zet_tracer_exp_dditable_t* pDdiTable            ///< [in,out] pointer to table of DDI function pointers
     )
 {
-    auto& dditable = layer::context.zetDdiTable.TracerExp;
+    auto& dditable = validation_layer::context.zetDdiTable.TracerExp;
 
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if( layer::context.version < version )
+    if( validation_layer::context.version < version )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
     dditable.pfnCreate                                   = pDdiTable->pfnCreate;
-    pDdiTable->pfnCreate                                 = layer::zetTracerExpCreate;
+    pDdiTable->pfnCreate                                 = validation_layer::zetTracerExpCreate;
 
     dditable.pfnDestroy                                  = pDdiTable->pfnDestroy;
-    pDdiTable->pfnDestroy                                = layer::zetTracerExpDestroy;
+    pDdiTable->pfnDestroy                                = validation_layer::zetTracerExpDestroy;
 
     dditable.pfnSetPrologues                             = pDdiTable->pfnSetPrologues;
-    pDdiTable->pfnSetPrologues                           = layer::zetTracerExpSetPrologues;
+    pDdiTable->pfnSetPrologues                           = validation_layer::zetTracerExpSetPrologues;
 
     dditable.pfnSetEpilogues                             = pDdiTable->pfnSetEpilogues;
-    pDdiTable->pfnSetEpilogues                           = layer::zetTracerExpSetEpilogues;
+    pDdiTable->pfnSetEpilogues                           = validation_layer::zetTracerExpSetEpilogues;
 
     dditable.pfnSetEnabled                               = pDdiTable->pfnSetEnabled;
-    pDdiTable->pfnSetEnabled                             = layer::zetTracerExpSetEnabled;
+    pDdiTable->pfnSetEnabled                             = validation_layer::zetTracerExpSetEnabled;
 
     return result;
 }

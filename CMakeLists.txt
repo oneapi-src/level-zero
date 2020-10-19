@@ -124,10 +124,17 @@ get_os_release_info(os_name os_version os_codename)
 #Pick only first character of os_name
 string(SUBSTRING "${os_name}" 0 1 os_name)
 
-file(GLOB_RECURSE LEVEL_ZERO_API_HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/include/*.h")
+file(GLOB LEVEL_ZERO_API_HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/include/*.h")
 
 install(FILES ${LEVEL_ZERO_API_HEADERS}
     DESTINATION ${CMAKE_INSTALL_PREFIX}/include/level_zero/
+    COMPONENT level-zero-devel
+)
+
+file(GLOB LEVEL_ZERO_LAYERS_API_HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/include/layers/*.h")
+
+install(FILES ${LEVEL_ZERO_LAYERS_API_HEADERS}
+    DESTINATION ${CMAKE_INSTALL_PREFIX}/include/level_zero/layers
     COMPONENT level-zero-devel
 )
 

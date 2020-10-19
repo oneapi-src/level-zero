@@ -44,7 +44,12 @@ namespace loader
 
         if( getenv_tobool( "ZE_ENABLE_VALIDATION_LAYER" ) )
         {
-            validationLayer = LOAD_DRIVER_LIBRARY( MAKE_VALIDATION_LAYER_NAME( "ze_validation_layer" ) );
+            validationLayer = LOAD_DRIVER_LIBRARY( MAKE_LAYER_NAME( "ze_validation_layer" ) );
+        }
+
+        if( getenv_tobool( "ZE_ENABLE_TRACING_LAYER" ) )
+        {
+            tracingLayer = LOAD_DRIVER_LIBRARY( MAKE_LAYER_NAME( "ze_tracing_layer" ) );
         }
 
         forceIntercept = getenv_tobool( "ZE_ENABLE_LOADER_INTERCEPT" );
@@ -56,6 +61,7 @@ namespace loader
     context_t::~context_t()
     {
         FREE_DRIVER_LIBRARY( validationLayer );
+        FREE_DRIVER_LIBRARY( tracingLayer );
 
         for( auto& drv : drivers )
         {

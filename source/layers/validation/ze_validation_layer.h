@@ -13,7 +13,7 @@
 #include "zes_ddi.h"
 #include "ze_util.h"
 
-namespace layer
+namespace validation_layer
 {
     ///////////////////////////////////////////////////////////////////////////////
     class __zedlllocal context_t
@@ -35,4 +35,4 @@ namespace layer
     };
 
     extern context_t context;
-}
+} // namespace validation_layer

@@ -14,6 +14,8 @@
 #include "zet_ddi.h"
 #include "zes_api.h"
 #include "zes_ddi.h"
+#include "layers/zel_tracing_api.h"
+#include "layers/zel_tracing_ddi.h"
 #include "ze_util.h"
 #include <vector>
 #include <mutex>
@@ -41,6 +43,9 @@ namespace ze_lib
 
         ze_result_t zesInit();
         zes_dditable_t  zesDdiTable = {};
+
+        ze_result_t zelTracingInit();
+        zel_tracing_dditable_t  zelTracingDdiTable = {};
     };
 
     extern context_t context;

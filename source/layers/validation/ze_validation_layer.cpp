@@ -4,12 +4,12 @@
  *
  * SPDX-License-Identifier: MIT
  *
- * @file ze_layer.cpp
+ * @file ze_validation_layer.cpp
  *
  */
-#include "ze_layer.h"
+#include "ze_validation_layer.h"
 
-namespace layer
+namespace validation_layer
 {
     context_t context;
 
@@ -26,4 +26,4 @@ namespace layer
     context_t::~context_t()
     {
     }
-}
+} // namespace validation_layer

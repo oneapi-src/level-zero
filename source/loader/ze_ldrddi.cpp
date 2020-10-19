@@ -3902,6 +3902,14 @@ zeGetGlobalProcAddrTable(
         result = getTable( version, pDdiTable );
     }
 
+    // If the API tracing layer is enabled, then intercept the loader's DDIs
+    if(( ZE_RESULT_SUCCESS == result ) && ( nullptr != loader::context.tracingLayer ))
+    {
+        auto getTable = reinterpret_cast<ze_pfnGetGlobalProcAddrTable_t>(
+            GET_FUNCTION_PTR(loader::context.tracingLayer, "zeGetGlobalProcAddrTable") );
+        result = getTable( version, pDdiTable );
+    }
+
     return result;
 }
 
@@ -3965,6 +3973,14 @@ zeGetDriverProcAddrTable(
     {
         auto getTable = reinterpret_cast<ze_pfnGetDriverProcAddrTable_t>(
             GET_FUNCTION_PTR(loader::context.validationLayer, "zeGetDriverProcAddrTable") );
+        result = getTable( version, pDdiTable );
+    }
+
+    // If the API tracing layer is enabled, then intercept the loader's DDIs
+    if(( ZE_RESULT_SUCCESS == result ) && ( nullptr != loader::context.tracingLayer ))
+    {
+        auto getTable = reinterpret_cast<ze_pfnGetDriverProcAddrTable_t>(
+            GET_FUNCTION_PTR(loader::context.tracingLayer, "zeGetDriverProcAddrTable") );
         result = getTable( version, pDdiTable );
     }
 
@@ -4043,6 +4059,14 @@ zeGetDeviceProcAddrTable(
         result = getTable( version, pDdiTable );
     }
 
+    // If the API tracing layer is enabled, then intercept the loader's DDIs
+    if(( ZE_RESULT_SUCCESS == result ) && ( nullptr != loader::context.tracingLayer ))
+    {
+        auto getTable = reinterpret_cast<ze_pfnGetDeviceProcAddrTable_t>(
+            GET_FUNCTION_PTR(loader::context.tracingLayer, "zeGetDeviceProcAddrTable") );
+        result = getTable( version, pDdiTable );
+    }
+
     return result;
 }
 
@@ -4112,6 +4136,14 @@ zeGetContextProcAddrTable(
         result = getTable( version, pDdiTable );
     }
 
+    // If the API tracing layer is enabled, then intercept the loader's DDIs
+    if(( ZE_RESULT_SUCCESS == result ) && ( nullptr != loader::context.tracingLayer ))
+    {
+        auto getTable = reinterpret_cast<ze_pfnGetContextProcAddrTable_t>(
+            GET_FUNCTION_PTR(loader::context.tracingLayer, "zeGetContextProcAddrTable") );
+        result = getTable( version, pDdiTable );
+    }
+
     return result;
 }
 
@@ -4174,6 +4206,14 @@ zeGetCommandQueueProcAddrTable(
     {
         auto getTable = reinterpret_cast<ze_pfnGetCommandQueueProcAddrTable_t>(
             GET_FUNCTION_PTR(loader::context.validationLayer, "zeGetCommandQueueProcAddrTable") );
+        result = getTable( version, pDdiTable );
+    }
+
+    // If the API tracing layer is enabled, then intercept the loader's DDIs
+    if(( ZE_RESULT_SUCCESS == result ) && ( nullptr != loader::context.tracingLayer ))
+    {
+        auto getTable = reinterpret_cast<ze_pfnGetCommandQueueProcAddrTable_t>(
+            GET_FUNCTION_PTR(loader::context.tracingLayer, "zeGetCommandQueueProcAddrTable") );
         result = getTable( version, pDdiTable );
     }
 
@@ -4264,6 +4304,14 @@ zeGetCommandListProcAddrTable(
         result = getTable( version, pDdiTable );
     }
 
+    // If the API tracing layer is enabled, then intercept the loader's DDIs
+    if(( ZE_RESULT_SUCCESS == result ) && ( nullptr != loader::context.tracingLayer ))
+    {
+        auto getTable = reinterpret_cast<ze_pfnGetCommandListProcAddrTable_t>(
+            GET_FUNCTION_PTR(loader::context.tracingLayer, "zeGetCommandListProcAddrTable") );
+        result = getTable( version, pDdiTable );
+    }
+
     return result;
 }
 
@@ -4329,6 +4377,14 @@ zeGetEventProcAddrTable(
     {
         auto getTable = reinterpret_cast<ze_pfnGetEventProcAddrTable_t>(
             GET_FUNCTION_PTR(loader::context.validationLayer, "zeGetEventProcAddrTable") );
+        result = getTable( version, pDdiTable );
+    }
+
+    // If the API tracing layer is enabled, then intercept the loader's DDIs
+    if(( ZE_RESULT_SUCCESS == result ) && ( nullptr != loader::context.tracingLayer ))
+    {
+        auto getTable = reinterpret_cast<ze_pfnGetEventProcAddrTable_t>(
+            GET_FUNCTION_PTR(loader::context.tracingLayer, "zeGetEventProcAddrTable") );
         result = getTable( version, pDdiTable );
     }
 
@@ -4398,6 +4454,14 @@ zeGetEventPoolProcAddrTable(
         result = getTable( version, pDdiTable );
     }
 
+    // If the API tracing layer is enabled, then intercept the loader's DDIs
+    if(( ZE_RESULT_SUCCESS == result ) && ( nullptr != loader::context.tracingLayer ))
+    {
+        auto getTable = reinterpret_cast<ze_pfnGetEventPoolProcAddrTable_t>(
+            GET_FUNCTION_PTR(loader::context.tracingLayer, "zeGetEventPoolProcAddrTable") );
+        result = getTable( version, pDdiTable );
+    }
+
     return result;
 }
 
@@ -4464,6 +4528,14 @@ zeGetFenceProcAddrTable(
         result = getTable( version, pDdiTable );
     }
 
+    // If the API tracing layer is enabled, then intercept the loader's DDIs
+    if(( ZE_RESULT_SUCCESS == result ) && ( nullptr != loader::context.tracingLayer ))
+    {
+        auto getTable = reinterpret_cast<ze_pfnGetFenceProcAddrTable_t>(
+            GET_FUNCTION_PTR(loader::context.tracingLayer, "zeGetFenceProcAddrTable") );
+        result = getTable( version, pDdiTable );
+    }
+
     return result;
 }
 
@@ -4525,6 +4597,14 @@ zeGetImageProcAddrTable(
     {
         auto getTable = reinterpret_cast<ze_pfnGetImageProcAddrTable_t>(
             GET_FUNCTION_PTR(loader::context.validationLayer, "zeGetImageProcAddrTable") );
+        result = getTable( version, pDdiTable );
+    }
+
+    // If the API tracing layer is enabled, then intercept the loader's DDIs
+    if(( ZE_RESULT_SUCCESS == result ) && ( nullptr != loader::context.tracingLayer ))
+    {
+        auto getTable = reinterpret_cast<ze_pfnGetImageProcAddrTable_t>(
+            GET_FUNCTION_PTR(loader::context.tracingLayer, "zeGetImageProcAddrTable") );
         result = getTable( version, pDdiTable );
     }
 
@@ -4601,6 +4681,14 @@ zeGetKernelProcAddrTable(
         result = getTable( version, pDdiTable );
     }
 
+    // If the API tracing layer is enabled, then intercept the loader's DDIs
+    if(( ZE_RESULT_SUCCESS == result ) && ( nullptr != loader::context.tracingLayer ))
+    {
+        auto getTable = reinterpret_cast<ze_pfnGetKernelProcAddrTable_t>(
+            GET_FUNCTION_PTR(loader::context.tracingLayer, "zeGetKernelProcAddrTable") );
+        result = getTable( version, pDdiTable );
+    }
+
     return result;
 }
 
@@ -4668,6 +4756,14 @@ zeGetMemProcAddrTable(
     {
         auto getTable = reinterpret_cast<ze_pfnGetMemProcAddrTable_t>(
             GET_FUNCTION_PTR(loader::context.validationLayer, "zeGetMemProcAddrTable") );
+        result = getTable( version, pDdiTable );
+    }
+
+    // If the API tracing layer is enabled, then intercept the loader's DDIs
+    if(( ZE_RESULT_SUCCESS == result ) && ( nullptr != loader::context.tracingLayer ))
+    {
+        auto getTable = reinterpret_cast<ze_pfnGetMemProcAddrTable_t>(
+            GET_FUNCTION_PTR(loader::context.tracingLayer, "zeGetMemProcAddrTable") );
         result = getTable( version, pDdiTable );
     }
 
@@ -4740,6 +4836,14 @@ zeGetModuleProcAddrTable(
         result = getTable( version, pDdiTable );
     }
 
+    // If the API tracing layer is enabled, then intercept the loader's DDIs
+    if(( ZE_RESULT_SUCCESS == result ) && ( nullptr != loader::context.tracingLayer ))
+    {
+        auto getTable = reinterpret_cast<ze_pfnGetModuleProcAddrTable_t>(
+            GET_FUNCTION_PTR(loader::context.tracingLayer, "zeGetModuleProcAddrTable") );
+        result = getTable( version, pDdiTable );
+    }
+
     return result;
 }
 
@@ -4800,6 +4904,14 @@ zeGetModuleBuildLogProcAddrTable(
     {
         auto getTable = reinterpret_cast<ze_pfnGetModuleBuildLogProcAddrTable_t>(
             GET_FUNCTION_PTR(loader::context.validationLayer, "zeGetModuleBuildLogProcAddrTable") );
+        result = getTable( version, pDdiTable );
+    }
+
+    // If the API tracing layer is enabled, then intercept the loader's DDIs
+    if(( ZE_RESULT_SUCCESS == result ) && ( nullptr != loader::context.tracingLayer ))
+    {
+        auto getTable = reinterpret_cast<ze_pfnGetModuleBuildLogProcAddrTable_t>(
+            GET_FUNCTION_PTR(loader::context.tracingLayer, "zeGetModuleBuildLogProcAddrTable") );
         result = getTable( version, pDdiTable );
     }
 
@@ -4866,6 +4978,14 @@ zeGetPhysicalMemProcAddrTable(
         result = getTable( version, pDdiTable );
     }
 
+    // If the API tracing layer is enabled, then intercept the loader's DDIs
+    if(( ZE_RESULT_SUCCESS == result ) && ( nullptr != loader::context.tracingLayer ))
+    {
+        auto getTable = reinterpret_cast<ze_pfnGetPhysicalMemProcAddrTable_t>(
+            GET_FUNCTION_PTR(loader::context.tracingLayer, "zeGetPhysicalMemProcAddrTable") );
+        result = getTable( version, pDdiTable );
+    }
+
     return result;
 }
 
@@ -4926,6 +5046,14 @@ zeGetSamplerProcAddrTable(
     {
         auto getTable = reinterpret_cast<ze_pfnGetSamplerProcAddrTable_t>(
             GET_FUNCTION_PTR(loader::context.validationLayer, "zeGetSamplerProcAddrTable") );
+        result = getTable( version, pDdiTable );
+    }
+
+    // If the API tracing layer is enabled, then intercept the loader's DDIs
+    if(( ZE_RESULT_SUCCESS == result ) && ( nullptr != loader::context.tracingLayer ))
+    {
+        auto getTable = reinterpret_cast<ze_pfnGetSamplerProcAddrTable_t>(
+            GET_FUNCTION_PTR(loader::context.tracingLayer, "zeGetSamplerProcAddrTable") );
         result = getTable( version, pDdiTable );
     }
 
@@ -4994,6 +5122,14 @@ zeGetVirtualMemProcAddrTable(
     {
         auto getTable = reinterpret_cast<ze_pfnGetVirtualMemProcAddrTable_t>(
             GET_FUNCTION_PTR(loader::context.validationLayer, "zeGetVirtualMemProcAddrTable") );
+        result = getTable( version, pDdiTable );
+    }
+
+    // If the API tracing layer is enabled, then intercept the loader's DDIs
+    if(( ZE_RESULT_SUCCESS == result ) && ( nullptr != loader::context.tracingLayer ))
+    {
+        auto getTable = reinterpret_cast<ze_pfnGetVirtualMemProcAddrTable_t>(
+            GET_FUNCTION_PTR(loader::context.tracingLayer, "zeGetVirtualMemProcAddrTable") );
         result = getTable( version, pDdiTable );
     }
 

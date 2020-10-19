@@ -7,9 +7,9 @@
  * @file zes_valddi.cpp
  *
  */
-#include "ze_layer.h"
+#include "ze_validation_layer.h"
 
-namespace layer
+namespace validation_layer
 {
     ///////////////////////////////////////////////////////////////////////////////
     /// @brief Intercept function for zesDeviceGetProperties
@@ -2769,7 +2769,7 @@ namespace layer
         return pfnGetState( hTemperature, pTemperature );
     }
 
-} // namespace layer
+} // namespace validation_layer
 
 #if defined(__cplusplus)
 extern "C" {
@@ -2789,87 +2789,87 @@ zesGetDeviceProcAddrTable(
     zes_device_dditable_t* pDdiTable                ///< [in,out] pointer to table of DDI function pointers
     )
 {
-    auto& dditable = layer::context.zesDdiTable.Device;
+    auto& dditable = validation_layer::context.zesDdiTable.Device;
 
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if( layer::context.version < version )
+    if( validation_layer::context.version < version )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
     dditable.pfnGetProperties                            = pDdiTable->pfnGetProperties;
-    pDdiTable->pfnGetProperties                          = layer::zesDeviceGetProperties;
+    pDdiTable->pfnGetProperties                          = validation_layer::zesDeviceGetProperties;
 
     dditable.pfnGetState                                 = pDdiTable->pfnGetState;
-    pDdiTable->pfnGetState                               = layer::zesDeviceGetState;
+    pDdiTable->pfnGetState                               = validation_layer::zesDeviceGetState;
 
     dditable.pfnReset                                    = pDdiTable->pfnReset;
-    pDdiTable->pfnReset                                  = layer::zesDeviceReset;
+    pDdiTable->pfnReset                                  = validation_layer::zesDeviceReset;
 
     dditable.pfnProcessesGetState                        = pDdiTable->pfnProcessesGetState;
-    pDdiTable->pfnProcessesGetState                      = layer::zesDeviceProcessesGetState;
+    pDdiTable->pfnProcessesGetState                      = validation_layer::zesDeviceProcessesGetState;
 
     dditable.pfnPciGetProperties                         = pDdiTable->pfnPciGetProperties;
-    pDdiTable->pfnPciGetProperties                       = layer::zesDevicePciGetProperties;
+    pDdiTable->pfnPciGetProperties                       = validation_layer::zesDevicePciGetProperties;
 
     dditable.pfnPciGetState                              = pDdiTable->pfnPciGetState;
-    pDdiTable->pfnPciGetState                            = layer::zesDevicePciGetState;
+    pDdiTable->pfnPciGetState                            = validation_layer::zesDevicePciGetState;
 
     dditable.pfnPciGetBars                               = pDdiTable->pfnPciGetBars;
-    pDdiTable->pfnPciGetBars                             = layer::zesDevicePciGetBars;
+    pDdiTable->pfnPciGetBars                             = validation_layer::zesDevicePciGetBars;
 
     dditable.pfnPciGetStats                              = pDdiTable->pfnPciGetStats;
-    pDdiTable->pfnPciGetStats                            = layer::zesDevicePciGetStats;
+    pDdiTable->pfnPciGetStats                            = validation_layer::zesDevicePciGetStats;
 
     dditable.pfnEnumDiagnosticTestSuites                 = pDdiTable->pfnEnumDiagnosticTestSuites;
-    pDdiTable->pfnEnumDiagnosticTestSuites               = layer::zesDeviceEnumDiagnosticTestSuites;
+    pDdiTable->pfnEnumDiagnosticTestSuites               = validation_layer::zesDeviceEnumDiagnosticTestSuites;
 
     dditable.pfnEnumEngineGroups                         = pDdiTable->pfnEnumEngineGroups;
-    pDdiTable->pfnEnumEngineGroups                       = layer::zesDeviceEnumEngineGroups;
+    pDdiTable->pfnEnumEngineGroups                       = validation_layer::zesDeviceEnumEngineGroups;
 
     dditable.pfnEventRegister                            = pDdiTable->pfnEventRegister;
-    pDdiTable->pfnEventRegister                          = layer::zesDeviceEventRegister;
+    pDdiTable->pfnEventRegister                          = validation_layer::zesDeviceEventRegister;
 
     dditable.pfnEnumFabricPorts                          = pDdiTable->pfnEnumFabricPorts;
-    pDdiTable->pfnEnumFabricPorts                        = layer::zesDeviceEnumFabricPorts;
+    pDdiTable->pfnEnumFabricPorts                        = validation_layer::zesDeviceEnumFabricPorts;
 
     dditable.pfnEnumFans                                 = pDdiTable->pfnEnumFans;
-    pDdiTable->pfnEnumFans                               = layer::zesDeviceEnumFans;
+    pDdiTable->pfnEnumFans                               = validation_layer::zesDeviceEnumFans;
 
     dditable.pfnEnumFirmwares                            = pDdiTable->pfnEnumFirmwares;
-    pDdiTable->pfnEnumFirmwares                          = layer::zesDeviceEnumFirmwares;
+    pDdiTable->pfnEnumFirmwares                          = validation_layer::zesDeviceEnumFirmwares;
 
     dditable.pfnEnumFrequencyDomains                     = pDdiTable->pfnEnumFrequencyDomains;
-    pDdiTable->pfnEnumFrequencyDomains                   = layer::zesDeviceEnumFrequencyDomains;
+    pDdiTable->pfnEnumFrequencyDomains                   = validation_layer::zesDeviceEnumFrequencyDomains;
 
     dditable.pfnEnumLeds                                 = pDdiTable->pfnEnumLeds;
-    pDdiTable->pfnEnumLeds                               = layer::zesDeviceEnumLeds;
+    pDdiTable->pfnEnumLeds                               = validation_layer::zesDeviceEnumLeds;
 
     dditable.pfnEnumMemoryModules                        = pDdiTable->pfnEnumMemoryModules;
-    pDdiTable->pfnEnumMemoryModules                      = layer::zesDeviceEnumMemoryModules;
+    pDdiTable->pfnEnumMemoryModules                      = validation_layer::zesDeviceEnumMemoryModules;
 
     dditable.pfnEnumPerformanceFactorDomains             = pDdiTable->pfnEnumPerformanceFactorDomains;
-    pDdiTable->pfnEnumPerformanceFactorDomains           = layer::zesDeviceEnumPerformanceFactorDomains;
+    pDdiTable->pfnEnumPerformanceFactorDomains           = validation_layer::zesDeviceEnumPerformanceFactorDomains;
 
     dditable.pfnEnumPowerDomains                         = pDdiTable->pfnEnumPowerDomains;
-    pDdiTable->pfnEnumPowerDomains                       = layer::zesDeviceEnumPowerDomains;
+    pDdiTable->pfnEnumPowerDomains                       = validation_layer::zesDeviceEnumPowerDomains;
 
     dditable.pfnEnumPsus                                 = pDdiTable->pfnEnumPsus;
-    pDdiTable->pfnEnumPsus                               = layer::zesDeviceEnumPsus;
+    pDdiTable->pfnEnumPsus                               = validation_layer::zesDeviceEnumPsus;
 
     dditable.pfnEnumRasErrorSets                         = pDdiTable->pfnEnumRasErrorSets;
-    pDdiTable->pfnEnumRasErrorSets                       = layer::zesDeviceEnumRasErrorSets;
+    pDdiTable->pfnEnumRasErrorSets                       = validation_layer::zesDeviceEnumRasErrorSets;
 
     dditable.pfnEnumSchedulers                           = pDdiTable->pfnEnumSchedulers;
-    pDdiTable->pfnEnumSchedulers                         = layer::zesDeviceEnumSchedulers;
+    pDdiTable->pfnEnumSchedulers                         = validation_layer::zesDeviceEnumSchedulers;
 
     dditable.pfnEnumStandbyDomains                       = pDdiTable->pfnEnumStandbyDomains;
-    pDdiTable->pfnEnumStandbyDomains                     = layer::zesDeviceEnumStandbyDomains;
+    pDdiTable->pfnEnumStandbyDomains                     = validation_layer::zesDeviceEnumStandbyDomains;
 
     dditable.pfnEnumTemperatureSensors                   = pDdiTable->pfnEnumTemperatureSensors;
-    pDdiTable->pfnEnumTemperatureSensors                 = layer::zesDeviceEnumTemperatureSensors;
+    pDdiTable->pfnEnumTemperatureSensors                 = validation_layer::zesDeviceEnumTemperatureSensors;
 
     return result;
 }
@@ -2888,18 +2888,18 @@ zesGetDriverProcAddrTable(
     zes_driver_dditable_t* pDdiTable                ///< [in,out] pointer to table of DDI function pointers
     )
 {
-    auto& dditable = layer::context.zesDdiTable.Driver;
+    auto& dditable = validation_layer::context.zesDdiTable.Driver;
 
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if( layer::context.version < version )
+    if( validation_layer::context.version < version )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
     dditable.pfnEventListen                              = pDdiTable->pfnEventListen;
-    pDdiTable->pfnEventListen                            = layer::zesDriverEventListen;
+    pDdiTable->pfnEventListen                            = validation_layer::zesDriverEventListen;
 
     return result;
 }
@@ -2918,24 +2918,24 @@ zesGetDiagnosticsProcAddrTable(
     zes_diagnostics_dditable_t* pDdiTable           ///< [in,out] pointer to table of DDI function pointers
     )
 {
-    auto& dditable = layer::context.zesDdiTable.Diagnostics;
+    auto& dditable = validation_layer::context.zesDdiTable.Diagnostics;
 
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if( layer::context.version < version )
+    if( validation_layer::context.version < version )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
     dditable.pfnGetProperties                            = pDdiTable->pfnGetProperties;
-    pDdiTable->pfnGetProperties                          = layer::zesDiagnosticsGetProperties;
+    pDdiTable->pfnGetProperties                          = validation_layer::zesDiagnosticsGetProperties;
 
     dditable.pfnGetTests                                 = pDdiTable->pfnGetTests;
-    pDdiTable->pfnGetTests                               = layer::zesDiagnosticsGetTests;
+    pDdiTable->pfnGetTests                               = validation_layer::zesDiagnosticsGetTests;
 
     dditable.pfnRunTests                                 = pDdiTable->pfnRunTests;
-    pDdiTable->pfnRunTests                               = layer::zesDiagnosticsRunTests;
+    pDdiTable->pfnRunTests                               = validation_layer::zesDiagnosticsRunTests;
 
     return result;
 }
@@ -2954,21 +2954,21 @@ zesGetEngineProcAddrTable(
     zes_engine_dditable_t* pDdiTable                ///< [in,out] pointer to table of DDI function pointers
     )
 {
-    auto& dditable = layer::context.zesDdiTable.Engine;
+    auto& dditable = validation_layer::context.zesDdiTable.Engine;
 
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if( layer::context.version < version )
+    if( validation_layer::context.version < version )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
     dditable.pfnGetProperties                            = pDdiTable->pfnGetProperties;
-    pDdiTable->pfnGetProperties                          = layer::zesEngineGetProperties;
+    pDdiTable->pfnGetProperties                          = validation_layer::zesEngineGetProperties;
 
     dditable.pfnGetActivity                              = pDdiTable->pfnGetActivity;
-    pDdiTable->pfnGetActivity                            = layer::zesEngineGetActivity;
+    pDdiTable->pfnGetActivity                            = validation_layer::zesEngineGetActivity;
 
     return result;
 }
@@ -2987,33 +2987,33 @@ zesGetFabricPortProcAddrTable(
     zes_fabric_port_dditable_t* pDdiTable           ///< [in,out] pointer to table of DDI function pointers
     )
 {
-    auto& dditable = layer::context.zesDdiTable.FabricPort;
+    auto& dditable = validation_layer::context.zesDdiTable.FabricPort;
 
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if( layer::context.version < version )
+    if( validation_layer::context.version < version )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
     dditable.pfnGetProperties                            = pDdiTable->pfnGetProperties;
-    pDdiTable->pfnGetProperties                          = layer::zesFabricPortGetProperties;
+    pDdiTable->pfnGetProperties                          = validation_layer::zesFabricPortGetProperties;
 
     dditable.pfnGetLinkType                              = pDdiTable->pfnGetLinkType;
-    pDdiTable->pfnGetLinkType                            = layer::zesFabricPortGetLinkType;
+    pDdiTable->pfnGetLinkType                            = validation_layer::zesFabricPortGetLinkType;
 
     dditable.pfnGetConfig                                = pDdiTable->pfnGetConfig;
-    pDdiTable->pfnGetConfig                              = layer::zesFabricPortGetConfig;
+    pDdiTable->pfnGetConfig                              = validation_layer::zesFabricPortGetConfig;
 
     dditable.pfnSetConfig                                = pDdiTable->pfnSetConfig;
-    pDdiTable->pfnSetConfig                              = layer::zesFabricPortSetConfig;
+    pDdiTable->pfnSetConfig                              = validation_layer::zesFabricPortSetConfig;
 
     dditable.pfnGetState                                 = pDdiTable->pfnGetState;
-    pDdiTable->pfnGetState                               = layer::zesFabricPortGetState;
+    pDdiTable->pfnGetState                               = validation_layer::zesFabricPortGetState;
 
     dditable.pfnGetThroughput                            = pDdiTable->pfnGetThroughput;
-    pDdiTable->pfnGetThroughput                          = layer::zesFabricPortGetThroughput;
+    pDdiTable->pfnGetThroughput                          = validation_layer::zesFabricPortGetThroughput;
 
     return result;
 }
@@ -3032,33 +3032,33 @@ zesGetFanProcAddrTable(
     zes_fan_dditable_t* pDdiTable                   ///< [in,out] pointer to table of DDI function pointers
     )
 {
-    auto& dditable = layer::context.zesDdiTable.Fan;
+    auto& dditable = validation_layer::context.zesDdiTable.Fan;
 
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if( layer::context.version < version )
+    if( validation_layer::context.version < version )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
     dditable.pfnGetProperties                            = pDdiTable->pfnGetProperties;
-    pDdiTable->pfnGetProperties                          = layer::zesFanGetProperties;
+    pDdiTable->pfnGetProperties                          = validation_layer::zesFanGetProperties;
 
     dditable.pfnGetConfig                                = pDdiTable->pfnGetConfig;
-    pDdiTable->pfnGetConfig                              = layer::zesFanGetConfig;
+    pDdiTable->pfnGetConfig                              = validation_layer::zesFanGetConfig;
 
     dditable.pfnSetDefaultMode                           = pDdiTable->pfnSetDefaultMode;
-    pDdiTable->pfnSetDefaultMode                         = layer::zesFanSetDefaultMode;
+    pDdiTable->pfnSetDefaultMode                         = validation_layer::zesFanSetDefaultMode;
 
     dditable.pfnSetFixedSpeedMode                        = pDdiTable->pfnSetFixedSpeedMode;
-    pDdiTable->pfnSetFixedSpeedMode                      = layer::zesFanSetFixedSpeedMode;
+    pDdiTable->pfnSetFixedSpeedMode                      = validation_layer::zesFanSetFixedSpeedMode;
 
     dditable.pfnSetSpeedTableMode                        = pDdiTable->pfnSetSpeedTableMode;
-    pDdiTable->pfnSetSpeedTableMode                      = layer::zesFanSetSpeedTableMode;
+    pDdiTable->pfnSetSpeedTableMode                      = validation_layer::zesFanSetSpeedTableMode;
 
     dditable.pfnGetState                                 = pDdiTable->pfnGetState;
-    pDdiTable->pfnGetState                               = layer::zesFanGetState;
+    pDdiTable->pfnGetState                               = validation_layer::zesFanGetState;
 
     return result;
 }
@@ -3077,21 +3077,21 @@ zesGetFirmwareProcAddrTable(
     zes_firmware_dditable_t* pDdiTable              ///< [in,out] pointer to table of DDI function pointers
     )
 {
-    auto& dditable = layer::context.zesDdiTable.Firmware;
+    auto& dditable = validation_layer::context.zesDdiTable.Firmware;
 
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if( layer::context.version < version )
+    if( validation_layer::context.version < version )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
     dditable.pfnGetProperties                            = pDdiTable->pfnGetProperties;
-    pDdiTable->pfnGetProperties                          = layer::zesFirmwareGetProperties;
+    pDdiTable->pfnGetProperties                          = validation_layer::zesFirmwareGetProperties;
 
     dditable.pfnFlash                                    = pDdiTable->pfnFlash;
-    pDdiTable->pfnFlash                                  = layer::zesFirmwareFlash;
+    pDdiTable->pfnFlash                                  = validation_layer::zesFirmwareFlash;
 
     return result;
 }
@@ -3110,66 +3110,66 @@ zesGetFrequencyProcAddrTable(
     zes_frequency_dditable_t* pDdiTable             ///< [in,out] pointer to table of DDI function pointers
     )
 {
-    auto& dditable = layer::context.zesDdiTable.Frequency;
+    auto& dditable = validation_layer::context.zesDdiTable.Frequency;
 
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if( layer::context.version < version )
+    if( validation_layer::context.version < version )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
     dditable.pfnGetProperties                            = pDdiTable->pfnGetProperties;
-    pDdiTable->pfnGetProperties                          = layer::zesFrequencyGetProperties;
+    pDdiTable->pfnGetProperties                          = validation_layer::zesFrequencyGetProperties;
 
     dditable.pfnGetAvailableClocks                       = pDdiTable->pfnGetAvailableClocks;
-    pDdiTable->pfnGetAvailableClocks                     = layer::zesFrequencyGetAvailableClocks;
+    pDdiTable->pfnGetAvailableClocks                     = validation_layer::zesFrequencyGetAvailableClocks;
 
     dditable.pfnGetRange                                 = pDdiTable->pfnGetRange;
-    pDdiTable->pfnGetRange                               = layer::zesFrequencyGetRange;
+    pDdiTable->pfnGetRange                               = validation_layer::zesFrequencyGetRange;
 
     dditable.pfnSetRange                                 = pDdiTable->pfnSetRange;
-    pDdiTable->pfnSetRange                               = layer::zesFrequencySetRange;
+    pDdiTable->pfnSetRange                               = validation_layer::zesFrequencySetRange;
 
     dditable.pfnGetState                                 = pDdiTable->pfnGetState;
-    pDdiTable->pfnGetState                               = layer::zesFrequencyGetState;
+    pDdiTable->pfnGetState                               = validation_layer::zesFrequencyGetState;
 
     dditable.pfnGetThrottleTime                          = pDdiTable->pfnGetThrottleTime;
-    pDdiTable->pfnGetThrottleTime                        = layer::zesFrequencyGetThrottleTime;
+    pDdiTable->pfnGetThrottleTime                        = validation_layer::zesFrequencyGetThrottleTime;
 
     dditable.pfnOcGetCapabilities                        = pDdiTable->pfnOcGetCapabilities;
-    pDdiTable->pfnOcGetCapabilities                      = layer::zesFrequencyOcGetCapabilities;
+    pDdiTable->pfnOcGetCapabilities                      = validation_layer::zesFrequencyOcGetCapabilities;
 
     dditable.pfnOcGetFrequencyTarget                     = pDdiTable->pfnOcGetFrequencyTarget;
-    pDdiTable->pfnOcGetFrequencyTarget                   = layer::zesFrequencyOcGetFrequencyTarget;
+    pDdiTable->pfnOcGetFrequencyTarget                   = validation_layer::zesFrequencyOcGetFrequencyTarget;
 
     dditable.pfnOcSetFrequencyTarget                     = pDdiTable->pfnOcSetFrequencyTarget;
-    pDdiTable->pfnOcSetFrequencyTarget                   = layer::zesFrequencyOcSetFrequencyTarget;
+    pDdiTable->pfnOcSetFrequencyTarget                   = validation_layer::zesFrequencyOcSetFrequencyTarget;
 
     dditable.pfnOcGetVoltageTarget                       = pDdiTable->pfnOcGetVoltageTarget;
-    pDdiTable->pfnOcGetVoltageTarget                     = layer::zesFrequencyOcGetVoltageTarget;
+    pDdiTable->pfnOcGetVoltageTarget                     = validation_layer::zesFrequencyOcGetVoltageTarget;
 
     dditable.pfnOcSetVoltageTarget                       = pDdiTable->pfnOcSetVoltageTarget;
-    pDdiTable->pfnOcSetVoltageTarget                     = layer::zesFrequencyOcSetVoltageTarget;
+    pDdiTable->pfnOcSetVoltageTarget                     = validation_layer::zesFrequencyOcSetVoltageTarget;
 
     dditable.pfnOcSetMode                                = pDdiTable->pfnOcSetMode;
-    pDdiTable->pfnOcSetMode                              = layer::zesFrequencyOcSetMode;
+    pDdiTable->pfnOcSetMode                              = validation_layer::zesFrequencyOcSetMode;
 
     dditable.pfnOcGetMode                                = pDdiTable->pfnOcGetMode;
-    pDdiTable->pfnOcGetMode                              = layer::zesFrequencyOcGetMode;
+    pDdiTable->pfnOcGetMode                              = validation_layer::zesFrequencyOcGetMode;
 
     dditable.pfnOcGetIccMax                              = pDdiTable->pfnOcGetIccMax;
-    pDdiTable->pfnOcGetIccMax                            = layer::zesFrequencyOcGetIccMax;
+    pDdiTable->pfnOcGetIccMax                            = validation_layer::zesFrequencyOcGetIccMax;
 
     dditable.pfnOcSetIccMax                              = pDdiTable->pfnOcSetIccMax;
-    pDdiTable->pfnOcSetIccMax                            = layer::zesFrequencyOcSetIccMax;
+    pDdiTable->pfnOcSetIccMax                            = validation_layer::zesFrequencyOcSetIccMax;
 
     dditable.pfnOcGetTjMax                               = pDdiTable->pfnOcGetTjMax;
-    pDdiTable->pfnOcGetTjMax                             = layer::zesFrequencyOcGetTjMax;
+    pDdiTable->pfnOcGetTjMax                             = validation_layer::zesFrequencyOcGetTjMax;
 
     dditable.pfnOcSetTjMax                               = pDdiTable->pfnOcSetTjMax;
-    pDdiTable->pfnOcSetTjMax                             = layer::zesFrequencyOcSetTjMax;
+    pDdiTable->pfnOcSetTjMax                             = validation_layer::zesFrequencyOcSetTjMax;
 
     return result;
 }
@@ -3188,27 +3188,27 @@ zesGetLedProcAddrTable(
     zes_led_dditable_t* pDdiTable                   ///< [in,out] pointer to table of DDI function pointers
     )
 {
-    auto& dditable = layer::context.zesDdiTable.Led;
+    auto& dditable = validation_layer::context.zesDdiTable.Led;
 
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if( layer::context.version < version )
+    if( validation_layer::context.version < version )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
     dditable.pfnGetProperties                            = pDdiTable->pfnGetProperties;
-    pDdiTable->pfnGetProperties                          = layer::zesLedGetProperties;
+    pDdiTable->pfnGetProperties                          = validation_layer::zesLedGetProperties;
 
     dditable.pfnGetState                                 = pDdiTable->pfnGetState;
-    pDdiTable->pfnGetState                               = layer::zesLedGetState;
+    pDdiTable->pfnGetState                               = validation_layer::zesLedGetState;
 
     dditable.pfnSetState                                 = pDdiTable->pfnSetState;
-    pDdiTable->pfnSetState                               = layer::zesLedSetState;
+    pDdiTable->pfnSetState                               = validation_layer::zesLedSetState;
 
     dditable.pfnSetColor                                 = pDdiTable->pfnSetColor;
-    pDdiTable->pfnSetColor                               = layer::zesLedSetColor;
+    pDdiTable->pfnSetColor                               = validation_layer::zesLedSetColor;
 
     return result;
 }
@@ -3227,24 +3227,24 @@ zesGetMemoryProcAddrTable(
     zes_memory_dditable_t* pDdiTable                ///< [in,out] pointer to table of DDI function pointers
     )
 {
-    auto& dditable = layer::context.zesDdiTable.Memory;
+    auto& dditable = validation_layer::context.zesDdiTable.Memory;
 
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if( layer::context.version < version )
+    if( validation_layer::context.version < version )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
     dditable.pfnGetProperties                            = pDdiTable->pfnGetProperties;
-    pDdiTable->pfnGetProperties                          = layer::zesMemoryGetProperties;
+    pDdiTable->pfnGetProperties                          = validation_layer::zesMemoryGetProperties;
 
     dditable.pfnGetState                                 = pDdiTable->pfnGetState;
-    pDdiTable->pfnGetState                               = layer::zesMemoryGetState;
+    pDdiTable->pfnGetState                               = validation_layer::zesMemoryGetState;
 
     dditable.pfnGetBandwidth                             = pDdiTable->pfnGetBandwidth;
-    pDdiTable->pfnGetBandwidth                           = layer::zesMemoryGetBandwidth;
+    pDdiTable->pfnGetBandwidth                           = validation_layer::zesMemoryGetBandwidth;
 
     return result;
 }
@@ -3263,24 +3263,24 @@ zesGetPerformanceFactorProcAddrTable(
     zes_performance_factor_dditable_t* pDdiTable    ///< [in,out] pointer to table of DDI function pointers
     )
 {
-    auto& dditable = layer::context.zesDdiTable.PerformanceFactor;
+    auto& dditable = validation_layer::context.zesDdiTable.PerformanceFactor;
 
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if( layer::context.version < version )
+    if( validation_layer::context.version < version )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
     dditable.pfnGetProperties                            = pDdiTable->pfnGetProperties;
-    pDdiTable->pfnGetProperties                          = layer::zesPerformanceFactorGetProperties;
+    pDdiTable->pfnGetProperties                          = validation_layer::zesPerformanceFactorGetProperties;
 
     dditable.pfnGetConfig                                = pDdiTable->pfnGetConfig;
-    pDdiTable->pfnGetConfig                              = layer::zesPerformanceFactorGetConfig;
+    pDdiTable->pfnGetConfig                              = validation_layer::zesPerformanceFactorGetConfig;
 
     dditable.pfnSetConfig                                = pDdiTable->pfnSetConfig;
-    pDdiTable->pfnSetConfig                              = layer::zesPerformanceFactorSetConfig;
+    pDdiTable->pfnSetConfig                              = validation_layer::zesPerformanceFactorSetConfig;
 
     return result;
 }
@@ -3299,33 +3299,33 @@ zesGetPowerProcAddrTable(
     zes_power_dditable_t* pDdiTable                 ///< [in,out] pointer to table of DDI function pointers
     )
 {
-    auto& dditable = layer::context.zesDdiTable.Power;
+    auto& dditable = validation_layer::context.zesDdiTable.Power;
 
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if( layer::context.version < version )
+    if( validation_layer::context.version < version )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
     dditable.pfnGetProperties                            = pDdiTable->pfnGetProperties;
-    pDdiTable->pfnGetProperties                          = layer::zesPowerGetProperties;
+    pDdiTable->pfnGetProperties                          = validation_layer::zesPowerGetProperties;
 
     dditable.pfnGetEnergyCounter                         = pDdiTable->pfnGetEnergyCounter;
-    pDdiTable->pfnGetEnergyCounter                       = layer::zesPowerGetEnergyCounter;
+    pDdiTable->pfnGetEnergyCounter                       = validation_layer::zesPowerGetEnergyCounter;
 
     dditable.pfnGetLimits                                = pDdiTable->pfnGetLimits;
-    pDdiTable->pfnGetLimits                              = layer::zesPowerGetLimits;
+    pDdiTable->pfnGetLimits                              = validation_layer::zesPowerGetLimits;
 
     dditable.pfnSetLimits                                = pDdiTable->pfnSetLimits;
-    pDdiTable->pfnSetLimits                              = layer::zesPowerSetLimits;
+    pDdiTable->pfnSetLimits                              = validation_layer::zesPowerSetLimits;
 
     dditable.pfnGetEnergyThreshold                       = pDdiTable->pfnGetEnergyThreshold;
-    pDdiTable->pfnGetEnergyThreshold                     = layer::zesPowerGetEnergyThreshold;
+    pDdiTable->pfnGetEnergyThreshold                     = validation_layer::zesPowerGetEnergyThreshold;
 
     dditable.pfnSetEnergyThreshold                       = pDdiTable->pfnSetEnergyThreshold;
-    pDdiTable->pfnSetEnergyThreshold                     = layer::zesPowerSetEnergyThreshold;
+    pDdiTable->pfnSetEnergyThreshold                     = validation_layer::zesPowerSetEnergyThreshold;
 
     return result;
 }
@@ -3344,21 +3344,21 @@ zesGetPsuProcAddrTable(
     zes_psu_dditable_t* pDdiTable                   ///< [in,out] pointer to table of DDI function pointers
     )
 {
-    auto& dditable = layer::context.zesDdiTable.Psu;
+    auto& dditable = validation_layer::context.zesDdiTable.Psu;
 
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if( layer::context.version < version )
+    if( validation_layer::context.version < version )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
     dditable.pfnGetProperties                            = pDdiTable->pfnGetProperties;
-    pDdiTable->pfnGetProperties                          = layer::zesPsuGetProperties;
+    pDdiTable->pfnGetProperties                          = validation_layer::zesPsuGetProperties;
 
     dditable.pfnGetState                                 = pDdiTable->pfnGetState;
-    pDdiTable->pfnGetState                               = layer::zesPsuGetState;
+    pDdiTable->pfnGetState                               = validation_layer::zesPsuGetState;
 
     return result;
 }
@@ -3377,27 +3377,27 @@ zesGetRasProcAddrTable(
     zes_ras_dditable_t* pDdiTable                   ///< [in,out] pointer to table of DDI function pointers
     )
 {
-    auto& dditable = layer::context.zesDdiTable.Ras;
+    auto& dditable = validation_layer::context.zesDdiTable.Ras;
 
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if( layer::context.version < version )
+    if( validation_layer::context.version < version )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
     dditable.pfnGetProperties                            = pDdiTable->pfnGetProperties;
-    pDdiTable->pfnGetProperties                          = layer::zesRasGetProperties;
+    pDdiTable->pfnGetProperties                          = validation_layer::zesRasGetProperties;
 
     dditable.pfnGetConfig                                = pDdiTable->pfnGetConfig;
-    pDdiTable->pfnGetConfig                              = layer::zesRasGetConfig;
+    pDdiTable->pfnGetConfig                              = validation_layer::zesRasGetConfig;
 
     dditable.pfnSetConfig                                = pDdiTable->pfnSetConfig;
-    pDdiTable->pfnSetConfig                              = layer::zesRasSetConfig;
+    pDdiTable->pfnSetConfig                              = validation_layer::zesRasSetConfig;
 
     dditable.pfnGetState                                 = pDdiTable->pfnGetState;
-    pDdiTable->pfnGetState                               = layer::zesRasGetState;
+    pDdiTable->pfnGetState                               = validation_layer::zesRasGetState;
 
     return result;
 }
@@ -3416,39 +3416,39 @@ zesGetSchedulerProcAddrTable(
     zes_scheduler_dditable_t* pDdiTable             ///< [in,out] pointer to table of DDI function pointers
     )
 {
-    auto& dditable = layer::context.zesDdiTable.Scheduler;
+    auto& dditable = validation_layer::context.zesDdiTable.Scheduler;
 
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if( layer::context.version < version )
+    if( validation_layer::context.version < version )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
     dditable.pfnGetProperties                            = pDdiTable->pfnGetProperties;
-    pDdiTable->pfnGetProperties                          = layer::zesSchedulerGetProperties;
+    pDdiTable->pfnGetProperties                          = validation_layer::zesSchedulerGetProperties;
 
     dditable.pfnGetCurrentMode                           = pDdiTable->pfnGetCurrentMode;
-    pDdiTable->pfnGetCurrentMode                         = layer::zesSchedulerGetCurrentMode;
+    pDdiTable->pfnGetCurrentMode                         = validation_layer::zesSchedulerGetCurrentMode;
 
     dditable.pfnGetTimeoutModeProperties                 = pDdiTable->pfnGetTimeoutModeProperties;
-    pDdiTable->pfnGetTimeoutModeProperties               = layer::zesSchedulerGetTimeoutModeProperties;
+    pDdiTable->pfnGetTimeoutModeProperties               = validation_layer::zesSchedulerGetTimeoutModeProperties;
 
     dditable.pfnGetTimesliceModeProperties               = pDdiTable->pfnGetTimesliceModeProperties;
-    pDdiTable->pfnGetTimesliceModeProperties             = layer::zesSchedulerGetTimesliceModeProperties;
+    pDdiTable->pfnGetTimesliceModeProperties             = validation_layer::zesSchedulerGetTimesliceModeProperties;
 
     dditable.pfnSetTimeoutMode                           = pDdiTable->pfnSetTimeoutMode;
-    pDdiTable->pfnSetTimeoutMode                         = layer::zesSchedulerSetTimeoutMode;
+    pDdiTable->pfnSetTimeoutMode                         = validation_layer::zesSchedulerSetTimeoutMode;
 
     dditable.pfnSetTimesliceMode                         = pDdiTable->pfnSetTimesliceMode;
-    pDdiTable->pfnSetTimesliceMode                       = layer::zesSchedulerSetTimesliceMode;
+    pDdiTable->pfnSetTimesliceMode                       = validation_layer::zesSchedulerSetTimesliceMode;
 
     dditable.pfnSetExclusiveMode                         = pDdiTable->pfnSetExclusiveMode;
-    pDdiTable->pfnSetExclusiveMode                       = layer::zesSchedulerSetExclusiveMode;
+    pDdiTable->pfnSetExclusiveMode                       = validation_layer::zesSchedulerSetExclusiveMode;
 
     dditable.pfnSetComputeUnitDebugMode                  = pDdiTable->pfnSetComputeUnitDebugMode;
-    pDdiTable->pfnSetComputeUnitDebugMode                = layer::zesSchedulerSetComputeUnitDebugMode;
+    pDdiTable->pfnSetComputeUnitDebugMode                = validation_layer::zesSchedulerSetComputeUnitDebugMode;
 
     return result;
 }
@@ -3467,24 +3467,24 @@ zesGetStandbyProcAddrTable(
     zes_standby_dditable_t* pDdiTable               ///< [in,out] pointer to table of DDI function pointers
     )
 {
-    auto& dditable = layer::context.zesDdiTable.Standby;
+    auto& dditable = validation_layer::context.zesDdiTable.Standby;
 
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if( layer::context.version < version )
+    if( validation_layer::context.version < version )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
     dditable.pfnGetProperties                            = pDdiTable->pfnGetProperties;
-    pDdiTable->pfnGetProperties                          = layer::zesStandbyGetProperties;
+    pDdiTable->pfnGetProperties                          = validation_layer::zesStandbyGetProperties;
 
     dditable.pfnGetMode                                  = pDdiTable->pfnGetMode;
-    pDdiTable->pfnGetMode                                = layer::zesStandbyGetMode;
+    pDdiTable->pfnGetMode                                = validation_layer::zesStandbyGetMode;
 
     dditable.pfnSetMode                                  = pDdiTable->pfnSetMode;
-    pDdiTable->pfnSetMode                                = layer::zesStandbySetMode;
+    pDdiTable->pfnSetMode                                = validation_layer::zesStandbySetMode;
 
     return result;
 }
@@ -3503,27 +3503,27 @@ zesGetTemperatureProcAddrTable(
     zes_temperature_dditable_t* pDdiTable           ///< [in,out] pointer to table of DDI function pointers
     )
 {
-    auto& dditable = layer::context.zesDdiTable.Temperature;
+    auto& dditable = validation_layer::context.zesDdiTable.Temperature;
 
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if( layer::context.version < version )
+    if( validation_layer::context.version < version )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
     dditable.pfnGetProperties                            = pDdiTable->pfnGetProperties;
-    pDdiTable->pfnGetProperties                          = layer::zesTemperatureGetProperties;
+    pDdiTable->pfnGetProperties                          = validation_layer::zesTemperatureGetProperties;
 
     dditable.pfnGetConfig                                = pDdiTable->pfnGetConfig;
-    pDdiTable->pfnGetConfig                              = layer::zesTemperatureGetConfig;
+    pDdiTable->pfnGetConfig                              = validation_layer::zesTemperatureGetConfig;
 
     dditable.pfnSetConfig                                = pDdiTable->pfnSetConfig;
-    pDdiTable->pfnSetConfig                              = layer::zesTemperatureSetConfig;
+    pDdiTable->pfnSetConfig                              = validation_layer::zesTemperatureSetConfig;
 
     dditable.pfnGetState                                 = pDdiTable->pfnGetState;
-    pDdiTable->pfnGetState                               = layer::zesTemperatureGetState;
+    pDdiTable->pfnGetState                               = validation_layer::zesTemperatureGetState;
 
     return result;
 }

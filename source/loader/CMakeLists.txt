@@ -14,6 +14,8 @@ target_sources(${TARGET_LOADER_NAME}
         ${CMAKE_CURRENT_SOURCE_DIR}/zet_ldrddi.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/zes_ldrddi.h
         ${CMAKE_CURRENT_SOURCE_DIR}/zes_ldrddi.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/zel_tracing_ldrddi.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/driver_discovery.h
 )
 
 if(WIN32)

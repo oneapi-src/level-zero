@@ -40,6 +40,7 @@ namespace loader
         driver_vector_t drivers;
 
         HMODULE validationLayer = nullptr;
+        HMODULE tracingLayer = nullptr;
 
         bool forceIntercept = false;
 

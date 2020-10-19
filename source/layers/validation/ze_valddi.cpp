@@ -7,9 +7,9 @@
  * @file ze_valddi.cpp
  *
  */
-#include "ze_layer.h"
+#include "ze_validation_layer.h"
 
-namespace layer
+namespace validation_layer
 {
     ///////////////////////////////////////////////////////////////////////////////
     /// @brief Intercept function for zeInit
@@ -3722,7 +3722,7 @@ namespace layer
         return pfnGetAccessAttribute( hContext, ptr, size, access, outSize );
     }
 
-} // namespace layer
+} // namespace validation_layer
 
 #if defined(__cplusplus)
 extern "C" {
@@ -3742,18 +3742,18 @@ zeGetGlobalProcAddrTable(
     ze_global_dditable_t* pDdiTable                 ///< [in,out] pointer to table of DDI function pointers
     )
 {
-    auto& dditable = layer::context.zeDdiTable.Global;
+    auto& dditable = validation_layer::context.zeDdiTable.Global;
 
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if( layer::context.version < version )
+    if( validation_layer::context.version < version )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
     dditable.pfnInit                                     = pDdiTable->pfnInit;
-    pDdiTable->pfnInit                                   = layer::zeInit;
+    pDdiTable->pfnInit                                   = validation_layer::zeInit;
 
     return result;
 }
@@ -3772,30 +3772,30 @@ zeGetDriverProcAddrTable(
     ze_driver_dditable_t* pDdiTable                 ///< [in,out] pointer to table of DDI function pointers
     )
 {
-    auto& dditable = layer::context.zeDdiTable.Driver;
+    auto& dditable = validation_layer::context.zeDdiTable.Driver;
 
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if( layer::context.version < version )
+    if( validation_layer::context.version < version )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
     dditable.pfnGet                                      = pDdiTable->pfnGet;
-    pDdiTable->pfnGet                                    = layer::zeDriverGet;
+    pDdiTable->pfnGet                                    = validation_layer::zeDriverGet;
 
     dditable.pfnGetApiVersion                            = pDdiTable->pfnGetApiVersion;
-    pDdiTable->pfnGetApiVersion                          = layer::zeDriverGetApiVersion;
+    pDdiTable->pfnGetApiVersion                          = validation_layer::zeDriverGetApiVersion;
 
     dditable.pfnGetProperties                            = pDdiTable->pfnGetProperties;
-    pDdiTable->pfnGetProperties                          = layer::zeDriverGetProperties;
+    pDdiTable->pfnGetProperties                          = validation_layer::zeDriverGetProperties;
 
     dditable.pfnGetIpcProperties                         = pDdiTable->pfnGetIpcProperties;
-    pDdiTable->pfnGetIpcProperties                       = layer::zeDriverGetIpcProperties;
+    pDdiTable->pfnGetIpcProperties                       = validation_layer::zeDriverGetIpcProperties;
 
     dditable.pfnGetExtensionProperties                   = pDdiTable->pfnGetExtensionProperties;
-    pDdiTable->pfnGetExtensionProperties                 = layer::zeDriverGetExtensionProperties;
+    pDdiTable->pfnGetExtensionProperties                 = validation_layer::zeDriverGetExtensionProperties;
 
     return result;
 }
@@ -3814,57 +3814,57 @@ zeGetDeviceProcAddrTable(
     ze_device_dditable_t* pDdiTable                 ///< [in,out] pointer to table of DDI function pointers
     )
 {
-    auto& dditable = layer::context.zeDdiTable.Device;
+    auto& dditable = validation_layer::context.zeDdiTable.Device;
 
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if( layer::context.version < version )
+    if( validation_layer::context.version < version )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
     dditable.pfnGet                                      = pDdiTable->pfnGet;
-    pDdiTable->pfnGet                                    = layer::zeDeviceGet;
+    pDdiTable->pfnGet                                    = validation_layer::zeDeviceGet;
 
     dditable.pfnGetSubDevices                            = pDdiTable->pfnGetSubDevices;
-    pDdiTable->pfnGetSubDevices                          = layer::zeDeviceGetSubDevices;
+    pDdiTable->pfnGetSubDevices                          = validation_layer::zeDeviceGetSubDevices;
 
     dditable.pfnGetProperties                            = pDdiTable->pfnGetProperties;
-    pDdiTable->pfnGetProperties                          = layer::zeDeviceGetProperties;
+    pDdiTable->pfnGetProperties                          = validation_layer::zeDeviceGetProperties;
 
     dditable.pfnGetComputeProperties                     = pDdiTable->pfnGetComputeProperties;
-    pDdiTable->pfnGetComputeProperties                   = layer::zeDeviceGetComputeProperties;
+    pDdiTable->pfnGetComputeProperties                   = validation_layer::zeDeviceGetComputeProperties;
 
     dditable.pfnGetModuleProperties                      = pDdiTable->pfnGetModuleProperties;
-    pDdiTable->pfnGetModuleProperties                    = layer::zeDeviceGetModuleProperties;
+    pDdiTable->pfnGetModuleProperties                    = validation_layer::zeDeviceGetModuleProperties;
 
     dditable.pfnGetCommandQueueGroupProperties           = pDdiTable->pfnGetCommandQueueGroupProperties;
-    pDdiTable->pfnGetCommandQueueGroupProperties         = layer::zeDeviceGetCommandQueueGroupProperties;
+    pDdiTable->pfnGetCommandQueueGroupProperties         = validation_layer::zeDeviceGetCommandQueueGroupProperties;
 
     dditable.pfnGetMemoryProperties                      = pDdiTable->pfnGetMemoryProperties;
-    pDdiTable->pfnGetMemoryProperties                    = layer::zeDeviceGetMemoryProperties;
+    pDdiTable->pfnGetMemoryProperties                    = validation_layer::zeDeviceGetMemoryProperties;
 
     dditable.pfnGetMemoryAccessProperties                = pDdiTable->pfnGetMemoryAccessProperties;
-    pDdiTable->pfnGetMemoryAccessProperties              = layer::zeDeviceGetMemoryAccessProperties;
+    pDdiTable->pfnGetMemoryAccessProperties              = validation_layer::zeDeviceGetMemoryAccessProperties;
 
     dditable.pfnGetCacheProperties                       = pDdiTable->pfnGetCacheProperties;
-    pDdiTable->pfnGetCacheProperties                     = layer::zeDeviceGetCacheProperties;
+    pDdiTable->pfnGetCacheProperties                     = validation_layer::zeDeviceGetCacheProperties;
 
     dditable.pfnGetImageProperties                       = pDdiTable->pfnGetImageProperties;
-    pDdiTable->pfnGetImageProperties                     = layer::zeDeviceGetImageProperties;
+    pDdiTable->pfnGetImageProperties                     = validation_layer::zeDeviceGetImageProperties;
 
     dditable.pfnGetExternalMemoryProperties              = pDdiTable->pfnGetExternalMemoryProperties;
-    pDdiTable->pfnGetExternalMemoryProperties            = layer::zeDeviceGetExternalMemoryProperties;
+    pDdiTable->pfnGetExternalMemoryProperties            = validation_layer::zeDeviceGetExternalMemoryProperties;
 
     dditable.pfnGetP2PProperties                         = pDdiTable->pfnGetP2PProperties;
-    pDdiTable->pfnGetP2PProperties                       = layer::zeDeviceGetP2PProperties;
+    pDdiTable->pfnGetP2PProperties                       = validation_layer::zeDeviceGetP2PProperties;
 
     dditable.pfnCanAccessPeer                            = pDdiTable->pfnCanAccessPeer;
-    pDdiTable->pfnCanAccessPeer                          = layer::zeDeviceCanAccessPeer;
+    pDdiTable->pfnCanAccessPeer                          = validation_layer::zeDeviceCanAccessPeer;
 
     dditable.pfnGetStatus                                = pDdiTable->pfnGetStatus;
-    pDdiTable->pfnGetStatus                              = layer::zeDeviceGetStatus;
+    pDdiTable->pfnGetStatus                              = validation_layer::zeDeviceGetStatus;
 
     return result;
 }
@@ -3883,39 +3883,39 @@ zeGetContextProcAddrTable(
     ze_context_dditable_t* pDdiTable                ///< [in,out] pointer to table of DDI function pointers
     )
 {
-    auto& dditable = layer::context.zeDdiTable.Context;
+    auto& dditable = validation_layer::context.zeDdiTable.Context;
 
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if( layer::context.version < version )
+    if( validation_layer::context.version < version )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
     dditable.pfnCreate                                   = pDdiTable->pfnCreate;
-    pDdiTable->pfnCreate                                 = layer::zeContextCreate;
+    pDdiTable->pfnCreate                                 = validation_layer::zeContextCreate;
 
     dditable.pfnDestroy                                  = pDdiTable->pfnDestroy;
-    pDdiTable->pfnDestroy                                = layer::zeContextDestroy;
+    pDdiTable->pfnDestroy                                = validation_layer::zeContextDestroy;
 
     dditable.pfnGetStatus                                = pDdiTable->pfnGetStatus;
-    pDdiTable->pfnGetStatus                              = layer::zeContextGetStatus;
+    pDdiTable->pfnGetStatus                              = validation_layer::zeContextGetStatus;
 
     dditable.pfnSystemBarrier                            = pDdiTable->pfnSystemBarrier;
-    pDdiTable->pfnSystemBarrier                          = layer::zeContextSystemBarrier;
+    pDdiTable->pfnSystemBarrier                          = validation_layer::zeContextSystemBarrier;
 
     dditable.pfnMakeMemoryResident                       = pDdiTable->pfnMakeMemoryResident;
-    pDdiTable->pfnMakeMemoryResident                     = layer::zeContextMakeMemoryResident;
+    pDdiTable->pfnMakeMemoryResident                     = validation_layer::zeContextMakeMemoryResident;
 
     dditable.pfnEvictMemory                              = pDdiTable->pfnEvictMemory;
-    pDdiTable->pfnEvictMemory                            = layer::zeContextEvictMemory;
+    pDdiTable->pfnEvictMemory                            = validation_layer::zeContextEvictMemory;
 
     dditable.pfnMakeImageResident                        = pDdiTable->pfnMakeImageResident;
-    pDdiTable->pfnMakeImageResident                      = layer::zeContextMakeImageResident;
+    pDdiTable->pfnMakeImageResident                      = validation_layer::zeContextMakeImageResident;
 
     dditable.pfnEvictImage                               = pDdiTable->pfnEvictImage;
-    pDdiTable->pfnEvictImage                             = layer::zeContextEvictImage;
+    pDdiTable->pfnEvictImage                             = validation_layer::zeContextEvictImage;
 
     return result;
 }
@@ -3934,27 +3934,27 @@ zeGetCommandQueueProcAddrTable(
     ze_command_queue_dditable_t* pDdiTable          ///< [in,out] pointer to table of DDI function pointers
     )
 {
-    auto& dditable = layer::context.zeDdiTable.CommandQueue;
+    auto& dditable = validation_layer::context.zeDdiTable.CommandQueue;
 
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if( layer::context.version < version )
+    if( validation_layer::context.version < version )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
     dditable.pfnCreate                                   = pDdiTable->pfnCreate;
-    pDdiTable->pfnCreate                                 = layer::zeCommandQueueCreate;
+    pDdiTable->pfnCreate                                 = validation_layer::zeCommandQueueCreate;
 
     dditable.pfnDestroy                                  = pDdiTable->pfnDestroy;
-    pDdiTable->pfnDestroy                                = layer::zeCommandQueueDestroy;
+    pDdiTable->pfnDestroy                                = validation_layer::zeCommandQueueDestroy;
 
     dditable.pfnExecuteCommandLists                      = pDdiTable->pfnExecuteCommandLists;
-    pDdiTable->pfnExecuteCommandLists                    = layer::zeCommandQueueExecuteCommandLists;
+    pDdiTable->pfnExecuteCommandLists                    = validation_layer::zeCommandQueueExecuteCommandLists;
 
     dditable.pfnSynchronize                              = pDdiTable->pfnSynchronize;
-    pDdiTable->pfnSynchronize                            = layer::zeCommandQueueSynchronize;
+    pDdiTable->pfnSynchronize                            = validation_layer::zeCommandQueueSynchronize;
 
     return result;
 }
@@ -3973,93 +3973,93 @@ zeGetCommandListProcAddrTable(
     ze_command_list_dditable_t* pDdiTable           ///< [in,out] pointer to table of DDI function pointers
     )
 {
-    auto& dditable = layer::context.zeDdiTable.CommandList;
+    auto& dditable = validation_layer::context.zeDdiTable.CommandList;
 
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if( layer::context.version < version )
+    if( validation_layer::context.version < version )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
     dditable.pfnCreate                                   = pDdiTable->pfnCreate;
-    pDdiTable->pfnCreate                                 = layer::zeCommandListCreate;
+    pDdiTable->pfnCreate                                 = validation_layer::zeCommandListCreate;
 
     dditable.pfnCreateImmediate                          = pDdiTable->pfnCreateImmediate;
-    pDdiTable->pfnCreateImmediate                        = layer::zeCommandListCreateImmediate;
+    pDdiTable->pfnCreateImmediate                        = validation_layer::zeCommandListCreateImmediate;
 
     dditable.pfnDestroy                                  = pDdiTable->pfnDestroy;
-    pDdiTable->pfnDestroy                                = layer::zeCommandListDestroy;
+    pDdiTable->pfnDestroy                                = validation_layer::zeCommandListDestroy;
 
     dditable.pfnClose                                    = pDdiTable->pfnClose;
-    pDdiTable->pfnClose                                  = layer::zeCommandListClose;
+    pDdiTable->pfnClose                                  = validation_layer::zeCommandListClose;
 
     dditable.pfnReset                                    = pDdiTable->pfnReset;
-    pDdiTable->pfnReset                                  = layer::zeCommandListReset;
+    pDdiTable->pfnReset                                  = validation_layer::zeCommandListReset;
 
     dditable.pfnAppendWriteGlobalTimestamp               = pDdiTable->pfnAppendWriteGlobalTimestamp;
-    pDdiTable->pfnAppendWriteGlobalTimestamp             = layer::zeCommandListAppendWriteGlobalTimestamp;
+    pDdiTable->pfnAppendWriteGlobalTimestamp             = validation_layer::zeCommandListAppendWriteGlobalTimestamp;
 
     dditable.pfnAppendBarrier                            = pDdiTable->pfnAppendBarrier;
-    pDdiTable->pfnAppendBarrier                          = layer::zeCommandListAppendBarrier;
+    pDdiTable->pfnAppendBarrier                          = validation_layer::zeCommandListAppendBarrier;
 
     dditable.pfnAppendMemoryRangesBarrier                = pDdiTable->pfnAppendMemoryRangesBarrier;
-    pDdiTable->pfnAppendMemoryRangesBarrier              = layer::zeCommandListAppendMemoryRangesBarrier;
+    pDdiTable->pfnAppendMemoryRangesBarrier              = validation_layer::zeCommandListAppendMemoryRangesBarrier;
 
     dditable.pfnAppendMemoryCopy                         = pDdiTable->pfnAppendMemoryCopy;
-    pDdiTable->pfnAppendMemoryCopy                       = layer::zeCommandListAppendMemoryCopy;
+    pDdiTable->pfnAppendMemoryCopy                       = validation_layer::zeCommandListAppendMemoryCopy;
 
     dditable.pfnAppendMemoryFill                         = pDdiTable->pfnAppendMemoryFill;
-    pDdiTable->pfnAppendMemoryFill                       = layer::zeCommandListAppendMemoryFill;
+    pDdiTable->pfnAppendMemoryFill                       = validation_layer::zeCommandListAppendMemoryFill;
 
     dditable.pfnAppendMemoryCopyRegion                   = pDdiTable->pfnAppendMemoryCopyRegion;
-    pDdiTable->pfnAppendMemoryCopyRegion                 = layer::zeCommandListAppendMemoryCopyRegion;
+    pDdiTable->pfnAppendMemoryCopyRegion                 = validation_layer::zeCommandListAppendMemoryCopyRegion;
 
     dditable.pfnAppendMemoryCopyFromContext              = pDdiTable->pfnAppendMemoryCopyFromContext;
-    pDdiTable->pfnAppendMemoryCopyFromContext            = layer::zeCommandListAppendMemoryCopyFromContext;
+    pDdiTable->pfnAppendMemoryCopyFromContext            = validation_layer::zeCommandListAppendMemoryCopyFromContext;
 
     dditable.pfnAppendImageCopy                          = pDdiTable->pfnAppendImageCopy;
-    pDdiTable->pfnAppendImageCopy                        = layer::zeCommandListAppendImageCopy;
+    pDdiTable->pfnAppendImageCopy                        = validation_layer::zeCommandListAppendImageCopy;
 
     dditable.pfnAppendImageCopyRegion                    = pDdiTable->pfnAppendImageCopyRegion;
-    pDdiTable->pfnAppendImageCopyRegion                  = layer::zeCommandListAppendImageCopyRegion;
+    pDdiTable->pfnAppendImageCopyRegion                  = validation_layer::zeCommandListAppendImageCopyRegion;
 
     dditable.pfnAppendImageCopyToMemory                  = pDdiTable->pfnAppendImageCopyToMemory;
-    pDdiTable->pfnAppendImageCopyToMemory                = layer::zeCommandListAppendImageCopyToMemory;
+    pDdiTable->pfnAppendImageCopyToMemory                = validation_layer::zeCommandListAppendImageCopyToMemory;
 
     dditable.pfnAppendImageCopyFromMemory                = pDdiTable->pfnAppendImageCopyFromMemory;
-    pDdiTable->pfnAppendImageCopyFromMemory              = layer::zeCommandListAppendImageCopyFromMemory;
+    pDdiTable->pfnAppendImageCopyFromMemory              = validation_layer::zeCommandListAppendImageCopyFromMemory;
 
     dditable.pfnAppendMemoryPrefetch                     = pDdiTable->pfnAppendMemoryPrefetch;
-    pDdiTable->pfnAppendMemoryPrefetch                   = layer::zeCommandListAppendMemoryPrefetch;
+    pDdiTable->pfnAppendMemoryPrefetch                   = validation_layer::zeCommandListAppendMemoryPrefetch;
 
     dditable.pfnAppendMemAdvise                          = pDdiTable->pfnAppendMemAdvise;
-    pDdiTable->pfnAppendMemAdvise                        = layer::zeCommandListAppendMemAdvise;
+    pDdiTable->pfnAppendMemAdvise                        = validation_layer::zeCommandListAppendMemAdvise;
 
     dditable.pfnAppendSignalEvent                        = pDdiTable->pfnAppendSignalEvent;
-    pDdiTable->pfnAppendSignalEvent                      = layer::zeCommandListAppendSignalEvent;
+    pDdiTable->pfnAppendSignalEvent                      = validation_layer::zeCommandListAppendSignalEvent;
 
     dditable.pfnAppendWaitOnEvents                       = pDdiTable->pfnAppendWaitOnEvents;
-    pDdiTable->pfnAppendWaitOnEvents                     = layer::zeCommandListAppendWaitOnEvents;
+    pDdiTable->pfnAppendWaitOnEvents                     = validation_layer::zeCommandListAppendWaitOnEvents;
 
     dditable.pfnAppendEventReset                         = pDdiTable->pfnAppendEventReset;
-    pDdiTable->pfnAppendEventReset                       = layer::zeCommandListAppendEventReset;
+    pDdiTable->pfnAppendEventReset                       = validation_layer::zeCommandListAppendEventReset;
 
     dditable.pfnAppendQueryKernelTimestamps              = pDdiTable->pfnAppendQueryKernelTimestamps;
-    pDdiTable->pfnAppendQueryKernelTimestamps            = layer::zeCommandListAppendQueryKernelTimestamps;
+    pDdiTable->pfnAppendQueryKernelTimestamps            = validation_layer::zeCommandListAppendQueryKernelTimestamps;
 
     dditable.pfnAppendLaunchKernel                       = pDdiTable->pfnAppendLaunchKernel;
-    pDdiTable->pfnAppendLaunchKernel                     = layer::zeCommandListAppendLaunchKernel;
+    pDdiTable->pfnAppendLaunchKernel                     = validation_layer::zeCommandListAppendLaunchKernel;
 
     dditable.pfnAppendLaunchCooperativeKernel            = pDdiTable->pfnAppendLaunchCooperativeKernel;
-    pDdiTable->pfnAppendLaunchCooperativeKernel          = layer::zeCommandListAppendLaunchCooperativeKernel;
+    pDdiTable->pfnAppendLaunchCooperativeKernel          = validation_layer::zeCommandListAppendLaunchCooperativeKernel;
 
     dditable.pfnAppendLaunchKernelIndirect               = pDdiTable->pfnAppendLaunchKernelIndirect;
-    pDdiTable->pfnAppendLaunchKernelIndirect             = layer::zeCommandListAppendLaunchKernelIndirect;
+    pDdiTable->pfnAppendLaunchKernelIndirect             = validation_layer::zeCommandListAppendLaunchKernelIndirect;
 
     dditable.pfnAppendLaunchMultipleKernelsIndirect      = pDdiTable->pfnAppendLaunchMultipleKernelsIndirect;
-    pDdiTable->pfnAppendLaunchMultipleKernelsIndirect    = layer::zeCommandListAppendLaunchMultipleKernelsIndirect;
+    pDdiTable->pfnAppendLaunchMultipleKernelsIndirect    = validation_layer::zeCommandListAppendLaunchMultipleKernelsIndirect;
 
     return result;
 }
@@ -4078,36 +4078,36 @@ zeGetEventProcAddrTable(
     ze_event_dditable_t* pDdiTable                  ///< [in,out] pointer to table of DDI function pointers
     )
 {
-    auto& dditable = layer::context.zeDdiTable.Event;
+    auto& dditable = validation_layer::context.zeDdiTable.Event;
 
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if( layer::context.version < version )
+    if( validation_layer::context.version < version )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
     dditable.pfnCreate                                   = pDdiTable->pfnCreate;
-    pDdiTable->pfnCreate                                 = layer::zeEventCreate;
+    pDdiTable->pfnCreate                                 = validation_layer::zeEventCreate;
 
     dditable.pfnDestroy                                  = pDdiTable->pfnDestroy;
-    pDdiTable->pfnDestroy                                = layer::zeEventDestroy;
+    pDdiTable->pfnDestroy                                = validation_layer::zeEventDestroy;
 
     dditable.pfnHostSignal                               = pDdiTable->pfnHostSignal;
-    pDdiTable->pfnHostSignal                             = layer::zeEventHostSignal;
+    pDdiTable->pfnHostSignal                             = validation_layer::zeEventHostSignal;
 
     dditable.pfnHostSynchronize                          = pDdiTable->pfnHostSynchronize;
-    pDdiTable->pfnHostSynchronize                        = layer::zeEventHostSynchronize;
+    pDdiTable->pfnHostSynchronize                        = validation_layer::zeEventHostSynchronize;
 
     dditable.pfnQueryStatus                              = pDdiTable->pfnQueryStatus;
-    pDdiTable->pfnQueryStatus                            = layer::zeEventQueryStatus;
+    pDdiTable->pfnQueryStatus                            = validation_layer::zeEventQueryStatus;
 
     dditable.pfnHostReset                                = pDdiTable->pfnHostReset;
-    pDdiTable->pfnHostReset                              = layer::zeEventHostReset;
+    pDdiTable->pfnHostReset                              = validation_layer::zeEventHostReset;
 
     dditable.pfnQueryKernelTimestamp                     = pDdiTable->pfnQueryKernelTimestamp;
-    pDdiTable->pfnQueryKernelTimestamp                   = layer::zeEventQueryKernelTimestamp;
+    pDdiTable->pfnQueryKernelTimestamp                   = validation_layer::zeEventQueryKernelTimestamp;
 
     return result;
 }
@@ -4126,30 +4126,30 @@ zeGetEventPoolProcAddrTable(
     ze_event_pool_dditable_t* pDdiTable             ///< [in,out] pointer to table of DDI function pointers
     )
 {
-    auto& dditable = layer::context.zeDdiTable.EventPool;
+    auto& dditable = validation_layer::context.zeDdiTable.EventPool;
 
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if( layer::context.version < version )
+    if( validation_layer::context.version < version )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
     dditable.pfnCreate                                   = pDdiTable->pfnCreate;
-    pDdiTable->pfnCreate                                 = layer::zeEventPoolCreate;
+    pDdiTable->pfnCreate                                 = validation_layer::zeEventPoolCreate;
 
     dditable.pfnDestroy                                  = pDdiTable->pfnDestroy;
-    pDdiTable->pfnDestroy                                = layer::zeEventPoolDestroy;
+    pDdiTable->pfnDestroy                                = validation_layer::zeEventPoolDestroy;
 
     dditable.pfnGetIpcHandle                             = pDdiTable->pfnGetIpcHandle;
-    pDdiTable->pfnGetIpcHandle                           = layer::zeEventPoolGetIpcHandle;
+    pDdiTable->pfnGetIpcHandle                           = validation_layer::zeEventPoolGetIpcHandle;
 
     dditable.pfnOpenIpcHandle                            = pDdiTable->pfnOpenIpcHandle;
-    pDdiTable->pfnOpenIpcHandle                          = layer::zeEventPoolOpenIpcHandle;
+    pDdiTable->pfnOpenIpcHandle                          = validation_layer::zeEventPoolOpenIpcHandle;
 
     dditable.pfnCloseIpcHandle                           = pDdiTable->pfnCloseIpcHandle;
-    pDdiTable->pfnCloseIpcHandle                         = layer::zeEventPoolCloseIpcHandle;
+    pDdiTable->pfnCloseIpcHandle                         = validation_layer::zeEventPoolCloseIpcHandle;
 
     return result;
 }
@@ -4168,30 +4168,30 @@ zeGetFenceProcAddrTable(
     ze_fence_dditable_t* pDdiTable                  ///< [in,out] pointer to table of DDI function pointers
     )
 {
-    auto& dditable = layer::context.zeDdiTable.Fence;
+    auto& dditable = validation_layer::context.zeDdiTable.Fence;
 
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if( layer::context.version < version )
+    if( validation_layer::context.version < version )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
     dditable.pfnCreate                                   = pDdiTable->pfnCreate;
-    pDdiTable->pfnCreate                                 = layer::zeFenceCreate;
+    pDdiTable->pfnCreate                                 = validation_layer::zeFenceCreate;
 
     dditable.pfnDestroy                                  = pDdiTable->pfnDestroy;
-    pDdiTable->pfnDestroy                                = layer::zeFenceDestroy;
+    pDdiTable->pfnDestroy                                = validation_layer::zeFenceDestroy;
 
     dditable.pfnHostSynchronize                          = pDdiTable->pfnHostSynchronize;
-    pDdiTable->pfnHostSynchronize                        = layer::zeFenceHostSynchronize;
+    pDdiTable->pfnHostSynchronize                        = validation_layer::zeFenceHostSynchronize;
 
     dditable.pfnQueryStatus                              = pDdiTable->pfnQueryStatus;
-    pDdiTable->pfnQueryStatus                            = layer::zeFenceQueryStatus;
+    pDdiTable->pfnQueryStatus                            = validation_layer::zeFenceQueryStatus;
 
     dditable.pfnReset                                    = pDdiTable->pfnReset;
-    pDdiTable->pfnReset                                  = layer::zeFenceReset;
+    pDdiTable->pfnReset                                  = validation_layer::zeFenceReset;
 
     return result;
 }
@@ -4210,24 +4210,24 @@ zeGetImageProcAddrTable(
     ze_image_dditable_t* pDdiTable                  ///< [in,out] pointer to table of DDI function pointers
     )
 {
-    auto& dditable = layer::context.zeDdiTable.Image;
+    auto& dditable = validation_layer::context.zeDdiTable.Image;
 
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if( layer::context.version < version )
+    if( validation_layer::context.version < version )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
     dditable.pfnGetProperties                            = pDdiTable->pfnGetProperties;
-    pDdiTable->pfnGetProperties                          = layer::zeImageGetProperties;
+    pDdiTable->pfnGetProperties                          = validation_layer::zeImageGetProperties;
 
     dditable.pfnCreate                                   = pDdiTable->pfnCreate;
-    pDdiTable->pfnCreate                                 = layer::zeImageCreate;
+    pDdiTable->pfnCreate                                 = validation_layer::zeImageCreate;
 
     dditable.pfnDestroy                                  = pDdiTable->pfnDestroy;
-    pDdiTable->pfnDestroy                                = layer::zeImageDestroy;
+    pDdiTable->pfnDestroy                                = validation_layer::zeImageDestroy;
 
     return result;
 }
@@ -4246,51 +4246,51 @@ zeGetKernelProcAddrTable(
     ze_kernel_dditable_t* pDdiTable                 ///< [in,out] pointer to table of DDI function pointers
     )
 {
-    auto& dditable = layer::context.zeDdiTable.Kernel;
+    auto& dditable = validation_layer::context.zeDdiTable.Kernel;
 
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if( layer::context.version < version )
+    if( validation_layer::context.version < version )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
     dditable.pfnCreate                                   = pDdiTable->pfnCreate;
-    pDdiTable->pfnCreate                                 = layer::zeKernelCreate;
+    pDdiTable->pfnCreate                                 = validation_layer::zeKernelCreate;
 
     dditable.pfnDestroy                                  = pDdiTable->pfnDestroy;
-    pDdiTable->pfnDestroy                                = layer::zeKernelDestroy;
+    pDdiTable->pfnDestroy                                = validation_layer::zeKernelDestroy;
 
     dditable.pfnSetCacheConfig                           = pDdiTable->pfnSetCacheConfig;
-    pDdiTable->pfnSetCacheConfig                         = layer::zeKernelSetCacheConfig;
+    pDdiTable->pfnSetCacheConfig                         = validation_layer::zeKernelSetCacheConfig;
 
     dditable.pfnSetGroupSize                             = pDdiTable->pfnSetGroupSize;
-    pDdiTable->pfnSetGroupSize                           = layer::zeKernelSetGroupSize;
+    pDdiTable->pfnSetGroupSize                           = validation_layer::zeKernelSetGroupSize;
 
     dditable.pfnSuggestGroupSize                         = pDdiTable->pfnSuggestGroupSize;
-    pDdiTable->pfnSuggestGroupSize                       = layer::zeKernelSuggestGroupSize;
+    pDdiTable->pfnSuggestGroupSize                       = validation_layer::zeKernelSuggestGroupSize;
 
     dditable.pfnSuggestMaxCooperativeGroupCount          = pDdiTable->pfnSuggestMaxCooperativeGroupCount;
-    pDdiTable->pfnSuggestMaxCooperativeGroupCount        = layer::zeKernelSuggestMaxCooperativeGroupCount;
+    pDdiTable->pfnSuggestMaxCooperativeGroupCount        = validation_layer::zeKernelSuggestMaxCooperativeGroupCount;
 
     dditable.pfnSetArgumentValue                         = pDdiTable->pfnSetArgumentValue;
-    pDdiTable->pfnSetArgumentValue                       = layer::zeKernelSetArgumentValue;
+    pDdiTable->pfnSetArgumentValue                       = validation_layer::zeKernelSetArgumentValue;
 
     dditable.pfnSetIndirectAccess                        = pDdiTable->pfnSetIndirectAccess;
-    pDdiTable->pfnSetIndirectAccess                      = layer::zeKernelSetIndirectAccess;
+    pDdiTable->pfnSetIndirectAccess                      = validation_layer::zeKernelSetIndirectAccess;
 
     dditable.pfnGetIndirectAccess                        = pDdiTable->pfnGetIndirectAccess;
-    pDdiTable->pfnGetIndirectAccess                      = layer::zeKernelGetIndirectAccess;
+    pDdiTable->pfnGetIndirectAccess                      = validation_layer::zeKernelGetIndirectAccess;
 
     dditable.pfnGetSourceAttributes                      = pDdiTable->pfnGetSourceAttributes;
-    pDdiTable->pfnGetSourceAttributes                    = layer::zeKernelGetSourceAttributes;
+    pDdiTable->pfnGetSourceAttributes                    = validation_layer::zeKernelGetSourceAttributes;
 
     dditable.pfnGetProperties                            = pDdiTable->pfnGetProperties;
-    pDdiTable->pfnGetProperties                          = layer::zeKernelGetProperties;
+    pDdiTable->pfnGetProperties                          = validation_layer::zeKernelGetProperties;
 
     dditable.pfnGetName                                  = pDdiTable->pfnGetName;
-    pDdiTable->pfnGetName                                = layer::zeKernelGetName;
+    pDdiTable->pfnGetName                                = validation_layer::zeKernelGetName;
 
     return result;
 }
@@ -4309,42 +4309,42 @@ zeGetMemProcAddrTable(
     ze_mem_dditable_t* pDdiTable                    ///< [in,out] pointer to table of DDI function pointers
     )
 {
-    auto& dditable = layer::context.zeDdiTable.Mem;
+    auto& dditable = validation_layer::context.zeDdiTable.Mem;
 
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if( layer::context.version < version )
+    if( validation_layer::context.version < version )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
     dditable.pfnAllocShared                              = pDdiTable->pfnAllocShared;
-    pDdiTable->pfnAllocShared                            = layer::zeMemAllocShared;
+    pDdiTable->pfnAllocShared                            = validation_layer::zeMemAllocShared;
 
     dditable.pfnAllocDevice                              = pDdiTable->pfnAllocDevice;
-    pDdiTable->pfnAllocDevice                            = layer::zeMemAllocDevice;
+    pDdiTable->pfnAllocDevice                            = validation_layer::zeMemAllocDevice;
 
     dditable.pfnAllocHost                                = pDdiTable->pfnAllocHost;
-    pDdiTable->pfnAllocHost                              = layer::zeMemAllocHost;
+    pDdiTable->pfnAllocHost                              = validation_layer::zeMemAllocHost;
 
     dditable.pfnFree                                     = pDdiTable->pfnFree;
-    pDdiTable->pfnFree                                   = layer::zeMemFree;
+    pDdiTable->pfnFree                                   = validation_layer::zeMemFree;
 
     dditable.pfnGetAllocProperties                       = pDdiTable->pfnGetAllocProperties;
-    pDdiTable->pfnGetAllocProperties                     = layer::zeMemGetAllocProperties;
+    pDdiTable->pfnGetAllocProperties                     = validation_layer::zeMemGetAllocProperties;
 
     dditable.pfnGetAddressRange                          = pDdiTable->pfnGetAddressRange;
-    pDdiTable->pfnGetAddressRange                        = layer::zeMemGetAddressRange;
+    pDdiTable->pfnGetAddressRange                        = validation_layer::zeMemGetAddressRange;
 
     dditable.pfnGetIpcHandle                             = pDdiTable->pfnGetIpcHandle;
-    pDdiTable->pfnGetIpcHandle                           = layer::zeMemGetIpcHandle;
+    pDdiTable->pfnGetIpcHandle                           = validation_layer::zeMemGetIpcHandle;
 
     dditable.pfnOpenIpcHandle                            = pDdiTable->pfnOpenIpcHandle;
-    pDdiTable->pfnOpenIpcHandle                          = layer::zeMemOpenIpcHandle;
+    pDdiTable->pfnOpenIpcHandle                          = validation_layer::zeMemOpenIpcHandle;
 
     dditable.pfnCloseIpcHandle                           = pDdiTable->pfnCloseIpcHandle;
-    pDdiTable->pfnCloseIpcHandle                         = layer::zeMemCloseIpcHandle;
+    pDdiTable->pfnCloseIpcHandle                         = validation_layer::zeMemCloseIpcHandle;
 
     return result;
 }
@@ -4363,39 +4363,39 @@ zeGetModuleProcAddrTable(
     ze_module_dditable_t* pDdiTable                 ///< [in,out] pointer to table of DDI function pointers
     )
 {
-    auto& dditable = layer::context.zeDdiTable.Module;
+    auto& dditable = validation_layer::context.zeDdiTable.Module;
 
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if( layer::context.version < version )
+    if( validation_layer::context.version < version )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
     dditable.pfnCreate                                   = pDdiTable->pfnCreate;
-    pDdiTable->pfnCreate                                 = layer::zeModuleCreate;
+    pDdiTable->pfnCreate                                 = validation_layer::zeModuleCreate;
 
     dditable.pfnDestroy                                  = pDdiTable->pfnDestroy;
-    pDdiTable->pfnDestroy                                = layer::zeModuleDestroy;
+    pDdiTable->pfnDestroy                                = validation_layer::zeModuleDestroy;
 
     dditable.pfnDynamicLink                              = pDdiTable->pfnDynamicLink;
-    pDdiTable->pfnDynamicLink                            = layer::zeModuleDynamicLink;
+    pDdiTable->pfnDynamicLink                            = validation_layer::zeModuleDynamicLink;
 
     dditable.pfnGetNativeBinary                          = pDdiTable->pfnGetNativeBinary;
-    pDdiTable->pfnGetNativeBinary                        = layer::zeModuleGetNativeBinary;
+    pDdiTable->pfnGetNativeBinary                        = validation_layer::zeModuleGetNativeBinary;
 
     dditable.pfnGetGlobalPointer                         = pDdiTable->pfnGetGlobalPointer;
-    pDdiTable->pfnGetGlobalPointer                       = layer::zeModuleGetGlobalPointer;
+    pDdiTable->pfnGetGlobalPointer                       = validation_layer::zeModuleGetGlobalPointer;
 
     dditable.pfnGetKernelNames                           = pDdiTable->pfnGetKernelNames;
-    pDdiTable->pfnGetKernelNames                         = layer::zeModuleGetKernelNames;
+    pDdiTable->pfnGetKernelNames                         = validation_layer::zeModuleGetKernelNames;
 
     dditable.pfnGetProperties                            = pDdiTable->pfnGetProperties;
-    pDdiTable->pfnGetProperties                          = layer::zeModuleGetProperties;
+    pDdiTable->pfnGetProperties                          = validation_layer::zeModuleGetProperties;
 
     dditable.pfnGetFunctionPointer                       = pDdiTable->pfnGetFunctionPointer;
-    pDdiTable->pfnGetFunctionPointer                     = layer::zeModuleGetFunctionPointer;
+    pDdiTable->pfnGetFunctionPointer                     = validation_layer::zeModuleGetFunctionPointer;
 
     return result;
 }
@@ -4414,21 +4414,21 @@ zeGetModuleBuildLogProcAddrTable(
     ze_module_build_log_dditable_t* pDdiTable       ///< [in,out] pointer to table of DDI function pointers
     )
 {
-    auto& dditable = layer::context.zeDdiTable.ModuleBuildLog;
+    auto& dditable = validation_layer::context.zeDdiTable.ModuleBuildLog;
 
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if( layer::context.version < version )
+    if( validation_layer::context.version < version )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
     dditable.pfnDestroy                                  = pDdiTable->pfnDestroy;
-    pDdiTable->pfnDestroy                                = layer::zeModuleBuildLogDestroy;
+    pDdiTable->pfnDestroy                                = validation_layer::zeModuleBuildLogDestroy;
 
     dditable.pfnGetString                                = pDdiTable->pfnGetString;
-    pDdiTable->pfnGetString                              = layer::zeModuleBuildLogGetString;
+    pDdiTable->pfnGetString                              = validation_layer::zeModuleBuildLogGetString;
 
     return result;
 }
@@ -4447,21 +4447,21 @@ zeGetPhysicalMemProcAddrTable(
     ze_physical_mem_dditable_t* pDdiTable           ///< [in,out] pointer to table of DDI function pointers
     )
 {
-    auto& dditable = layer::context.zeDdiTable.PhysicalMem;
+    auto& dditable = validation_layer::context.zeDdiTable.PhysicalMem;
 
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if( layer::context.version < version )
+    if( validation_layer::context.version < version )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
     dditable.pfnCreate                                   = pDdiTable->pfnCreate;
-    pDdiTable->pfnCreate                                 = layer::zePhysicalMemCreate;
+    pDdiTable->pfnCreate                                 = validation_layer::zePhysicalMemCreate;
 
     dditable.pfnDestroy                                  = pDdiTable->pfnDestroy;
-    pDdiTable->pfnDestroy                                = layer::zePhysicalMemDestroy;
+    pDdiTable->pfnDestroy                                = validation_layer::zePhysicalMemDestroy;
 
     return result;
 }
@@ -4480,21 +4480,21 @@ zeGetSamplerProcAddrTable(
     ze_sampler_dditable_t* pDdiTable                ///< [in,out] pointer to table of DDI function pointers
     )
 {
-    auto& dditable = layer::context.zeDdiTable.Sampler;
+    auto& dditable = validation_layer::context.zeDdiTable.Sampler;
 
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if( layer::context.version < version )
+    if( validation_layer::context.version < version )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
     dditable.pfnCreate                                   = pDdiTable->pfnCreate;
-    pDdiTable->pfnCreate                                 = layer::zeSamplerCreate;
+    pDdiTable->pfnCreate                                 = validation_layer::zeSamplerCreate;
 
     dditable.pfnDestroy                                  = pDdiTable->pfnDestroy;
-    pDdiTable->pfnDestroy                                = layer::zeSamplerDestroy;
+    pDdiTable->pfnDestroy                                = validation_layer::zeSamplerDestroy;
 
     return result;
 }
@@ -4513,36 +4513,36 @@ zeGetVirtualMemProcAddrTable(
     ze_virtual_mem_dditable_t* pDdiTable            ///< [in,out] pointer to table of DDI function pointers
     )
 {
-    auto& dditable = layer::context.zeDdiTable.VirtualMem;
+    auto& dditable = validation_layer::context.zeDdiTable.VirtualMem;
 
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if( layer::context.version < version )
+    if( validation_layer::context.version < version )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
     dditable.pfnReserve                                  = pDdiTable->pfnReserve;
-    pDdiTable->pfnReserve                                = layer::zeVirtualMemReserve;
+    pDdiTable->pfnReserve                                = validation_layer::zeVirtualMemReserve;
 
     dditable.pfnFree                                     = pDdiTable->pfnFree;
-    pDdiTable->pfnFree                                   = layer::zeVirtualMemFree;
+    pDdiTable->pfnFree                                   = validation_layer::zeVirtualMemFree;
 
     dditable.pfnQueryPageSize                            = pDdiTable->pfnQueryPageSize;
-    pDdiTable->pfnQueryPageSize                          = layer::zeVirtualMemQueryPageSize;
+    pDdiTable->pfnQueryPageSize                          = validation_layer::zeVirtualMemQueryPageSize;
 
     dditable.pfnMap                                      = pDdiTable->pfnMap;
-    pDdiTable->pfnMap                                    = layer::zeVirtualMemMap;
+    pDdiTable->pfnMap                                    = validation_layer::zeVirtualMemMap;
 
     dditable.pfnUnmap                                    = pDdiTable->pfnUnmap;
-    pDdiTable->pfnUnmap                                  = layer::zeVirtualMemUnmap;
+    pDdiTable->pfnUnmap                                  = validation_layer::zeVirtualMemUnmap;
 
     dditable.pfnSetAccessAttribute                       = pDdiTable->pfnSetAccessAttribute;
-    pDdiTable->pfnSetAccessAttribute                     = layer::zeVirtualMemSetAccessAttribute;
+    pDdiTable->pfnSetAccessAttribute                     = validation_layer::zeVirtualMemSetAccessAttribute;
 
     dditable.pfnGetAccessAttribute                       = pDdiTable->pfnGetAccessAttribute;
-    pDdiTable->pfnGetAccessAttribute                     = layer::zeVirtualMemGetAccessAttribute;
+    pDdiTable->pfnGetAccessAttribute                     = validation_layer::zeVirtualMemGetAccessAttribute;
 
     return result;
 }
