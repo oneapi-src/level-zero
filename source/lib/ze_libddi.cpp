@@ -8,10 +8,15 @@
  *
  */
 #include "ze_lib.h"
+#ifndef DYNAMIC_LOAD_LOADER
+#include "ze_ddi.h"
+#endif
 
 namespace ze_lib
 {
     ///////////////////////////////////////////////////////////////////////////////
+
+#ifdef DYNAMIC_LOAD_LOADER
     __zedlllocal ze_result_t context_t::zeInit()
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
@@ -137,4 +142,98 @@ namespace ze_lib
 
         return result;
     }
+#else
+    __zedlllocal ze_result_t context_t::zeInit()
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        if( ZE_RESULT_SUCCESS == result )
+        {
+            result = zeGetGlobalProcAddrTable( ZE_API_VERSION_1_0, &zeDdiTable.Global );
+        }
+
+        if( ZE_RESULT_SUCCESS == result )
+        {
+            result = zeGetDriverProcAddrTable( ZE_API_VERSION_1_0, &zeDdiTable.Driver );
+        }
+
+        if( ZE_RESULT_SUCCESS == result )
+        {
+            result = zeGetDeviceProcAddrTable( ZE_API_VERSION_1_0, &zeDdiTable.Device );
+        }
+
+        if( ZE_RESULT_SUCCESS == result )
+        {
+            result = zeGetContextProcAddrTable( ZE_API_VERSION_1_0, &zeDdiTable.Context );
+        }
+
+        if( ZE_RESULT_SUCCESS == result )
+        {
+            result = zeGetCommandQueueProcAddrTable( ZE_API_VERSION_1_0, &zeDdiTable.CommandQueue );
+        }
+
+        if( ZE_RESULT_SUCCESS == result )
+        {
+            result = zeGetCommandListProcAddrTable( ZE_API_VERSION_1_0, &zeDdiTable.CommandList );
+        }
+
+        if( ZE_RESULT_SUCCESS == result )
+        {
+            result = zeGetEventProcAddrTable( ZE_API_VERSION_1_0, &zeDdiTable.Event );
+        }
+
+        if( ZE_RESULT_SUCCESS == result )
+        {
+            result = zeGetEventPoolProcAddrTable( ZE_API_VERSION_1_0, &zeDdiTable.EventPool );
+        }
+
+        if( ZE_RESULT_SUCCESS == result )
+        {
+            result = zeGetFenceProcAddrTable( ZE_API_VERSION_1_0, &zeDdiTable.Fence );
+        }
+
+        if( ZE_RESULT_SUCCESS == result )
+        {
+            result = zeGetImageProcAddrTable( ZE_API_VERSION_1_0, &zeDdiTable.Image );
+        }
+
+        if( ZE_RESULT_SUCCESS == result )
+        {
+            result = zeGetKernelProcAddrTable( ZE_API_VERSION_1_0, &zeDdiTable.Kernel );
+        }
+
+        if( ZE_RESULT_SUCCESS == result )
+        {
+            result = zeGetMemProcAddrTable( ZE_API_VERSION_1_0, &zeDdiTable.Mem );
+        }
+
+        if( ZE_RESULT_SUCCESS == result )
+        {
+            result = zeGetModuleProcAddrTable( ZE_API_VERSION_1_0, &zeDdiTable.Module );
+        }
+
+        if( ZE_RESULT_SUCCESS == result )
+        {
+            result = zeGetModuleBuildLogProcAddrTable( ZE_API_VERSION_1_0, &zeDdiTable.ModuleBuildLog );
+        }
+
+        if( ZE_RESULT_SUCCESS == result )
+        {
+            result = zeGetPhysicalMemProcAddrTable( ZE_API_VERSION_1_0, &zeDdiTable.PhysicalMem );
+        }
+
+        if( ZE_RESULT_SUCCESS == result )
+        {
+            result = zeGetSamplerProcAddrTable( ZE_API_VERSION_1_0, &zeDdiTable.Sampler );
+        }
+
+        if( ZE_RESULT_SUCCESS == result )
+        {
+            result = zeGetVirtualMemProcAddrTable( ZE_API_VERSION_1_0, &zeDdiTable.VirtualMem );
+        }
+
+        return result;
+    }
+#endif
+
 } // namespace ze_lib

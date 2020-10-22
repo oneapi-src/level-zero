@@ -8,10 +8,15 @@
  *
  */
 #include "ze_lib.h"
+#ifndef DYNAMIC_LOAD_LOADER
+#include "zes_ddi.h"
+#endif
 
 namespace ze_lib
 {
     ///////////////////////////////////////////////////////////////////////////////
+
+#ifdef DYNAMIC_LOAD_LOADER
     __zedlllocal ze_result_t context_t::zesInit()
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
@@ -137,4 +142,98 @@ namespace ze_lib
 
         return result;
     }
+#else
+    __zedlllocal ze_result_t context_t::zesInit()
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        if( ZE_RESULT_SUCCESS == result )
+        {
+            result = zesGetDeviceProcAddrTable( ZE_API_VERSION_1_0, &zesDdiTable.Device );
+        }
+
+        if( ZE_RESULT_SUCCESS == result )
+        {
+            result = zesGetDriverProcAddrTable( ZE_API_VERSION_1_0, &zesDdiTable.Driver );
+        }
+
+        if( ZE_RESULT_SUCCESS == result )
+        {
+            result = zesGetDiagnosticsProcAddrTable( ZE_API_VERSION_1_0, &zesDdiTable.Diagnostics );
+        }
+
+        if( ZE_RESULT_SUCCESS == result )
+        {
+            result = zesGetEngineProcAddrTable( ZE_API_VERSION_1_0, &zesDdiTable.Engine );
+        }
+
+        if( ZE_RESULT_SUCCESS == result )
+        {
+            result = zesGetFabricPortProcAddrTable( ZE_API_VERSION_1_0, &zesDdiTable.FabricPort );
+        }
+
+        if( ZE_RESULT_SUCCESS == result )
+        {
+            result = zesGetFanProcAddrTable( ZE_API_VERSION_1_0, &zesDdiTable.Fan );
+        }
+
+        if( ZE_RESULT_SUCCESS == result )
+        {
+            result = zesGetFirmwareProcAddrTable( ZE_API_VERSION_1_0, &zesDdiTable.Firmware );
+        }
+
+        if( ZE_RESULT_SUCCESS == result )
+        {
+            result = zesGetFrequencyProcAddrTable( ZE_API_VERSION_1_0, &zesDdiTable.Frequency );
+        }
+
+        if( ZE_RESULT_SUCCESS == result )
+        {
+            result = zesGetLedProcAddrTable( ZE_API_VERSION_1_0, &zesDdiTable.Led );
+        }
+
+        if( ZE_RESULT_SUCCESS == result )
+        {
+            result = zesGetMemoryProcAddrTable( ZE_API_VERSION_1_0, &zesDdiTable.Memory );
+        }
+
+        if( ZE_RESULT_SUCCESS == result )
+        {
+            result = zesGetPerformanceFactorProcAddrTable( ZE_API_VERSION_1_0, &zesDdiTable.PerformanceFactor );
+        }
+
+        if( ZE_RESULT_SUCCESS == result )
+        {
+            result = zesGetPowerProcAddrTable( ZE_API_VERSION_1_0, &zesDdiTable.Power );
+        }
+
+        if( ZE_RESULT_SUCCESS == result )
+        {
+            result = zesGetPsuProcAddrTable( ZE_API_VERSION_1_0, &zesDdiTable.Psu );
+        }
+
+        if( ZE_RESULT_SUCCESS == result )
+        {
+            result = zesGetRasProcAddrTable( ZE_API_VERSION_1_0, &zesDdiTable.Ras );
+        }
+
+        if( ZE_RESULT_SUCCESS == result )
+        {
+            result = zesGetSchedulerProcAddrTable( ZE_API_VERSION_1_0, &zesDdiTable.Scheduler );
+        }
+
+        if( ZE_RESULT_SUCCESS == result )
+        {
+            result = zesGetStandbyProcAddrTable( ZE_API_VERSION_1_0, &zesDdiTable.Standby );
+        }
+
+        if( ZE_RESULT_SUCCESS == result )
+        {
+            result = zesGetTemperatureProcAddrTable( ZE_API_VERSION_1_0, &zesDdiTable.Temperature );
+        }
+
+        return result;
+    }
+#endif
+
 } // namespace ze_lib

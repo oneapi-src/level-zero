@@ -8,6 +8,9 @@
  *
  */
 #include "ze_lib.h"
+#ifndef DYNAMIC_LOAD_LOADER
+#include "../loader/ze_loader_api.h"
+#endif
 
 namespace ze_lib
 {
@@ -23,21 +26,29 @@ namespace ze_lib
     ///////////////////////////////////////////////////////////////////////////////
     context_t::~context_t()
     {
+#ifdef DYNAMIC_LOAD_LOADER
         FREE_DRIVER_LIBRARY( loader );
+#endif
     };
 
     //////////////////////////////////////////////////////////////////////////
     __zedlllocal ze_result_t context_t::Init()
     {
+        ze_result_t result;
+#ifdef DYNAMIC_LOAD_LOADER
         loader = LOAD_DRIVER_LIBRARY( MAKE_LIBRARY_NAME( "ze_loader", L0_LOADER_VERSION) );
 
         if( NULL == loader )
             return ZE_RESULT_ERROR_UNINITIALIZED;
-            
+          
         typedef ze_result_t (ZE_APICALL *loaderInit_t)();
         auto loaderInit = reinterpret_cast<loaderInit_t>(
                 GET_FUNCTION_PTR(loader, "zeLoaderInit") );
-        ze_result_t result = loaderInit();
+        result = loaderInit();
+#else
+        result = zeLoaderInit();
+#endif
+
 
         if( ZE_RESULT_SUCCESS == result )
         {

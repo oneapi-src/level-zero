@@ -8,10 +8,15 @@
  *
  */
 #include "ze_lib.h"
+#ifndef DYNAMIC_LOAD_LOADER
+#include "zet_ddi.h"
+#endif
 
 namespace ze_lib
 {
     ///////////////////////////////////////////////////////////////////////////////
+
+#ifdef DYNAMIC_LOAD_LOADER
     __zedlllocal ze_result_t context_t::zetInit()
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
@@ -102,4 +107,73 @@ namespace ze_lib
 
         return result;
     }
+#else
+    __zedlllocal ze_result_t context_t::zetInit()
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        if( ZE_RESULT_SUCCESS == result )
+        {
+            result = zetGetDeviceProcAddrTable( ZE_API_VERSION_1_0, &zetDdiTable.Device );
+        }
+
+        if( ZE_RESULT_SUCCESS == result )
+        {
+            result = zetGetContextProcAddrTable( ZE_API_VERSION_1_0, &zetDdiTable.Context );
+        }
+
+        if( ZE_RESULT_SUCCESS == result )
+        {
+            result = zetGetCommandListProcAddrTable( ZE_API_VERSION_1_0, &zetDdiTable.CommandList );
+        }
+
+        if( ZE_RESULT_SUCCESS == result )
+        {
+            result = zetGetKernelProcAddrTable( ZE_API_VERSION_1_0, &zetDdiTable.Kernel );
+        }
+
+        if( ZE_RESULT_SUCCESS == result )
+        {
+            result = zetGetModuleProcAddrTable( ZE_API_VERSION_1_0, &zetDdiTable.Module );
+        }
+
+        if( ZE_RESULT_SUCCESS == result )
+        {
+            result = zetGetDebugProcAddrTable( ZE_API_VERSION_1_0, &zetDdiTable.Debug );
+        }
+
+        if( ZE_RESULT_SUCCESS == result )
+        {
+            result = zetGetMetricProcAddrTable( ZE_API_VERSION_1_0, &zetDdiTable.Metric );
+        }
+
+        if( ZE_RESULT_SUCCESS == result )
+        {
+            result = zetGetMetricGroupProcAddrTable( ZE_API_VERSION_1_0, &zetDdiTable.MetricGroup );
+        }
+
+        if( ZE_RESULT_SUCCESS == result )
+        {
+            result = zetGetMetricQueryProcAddrTable( ZE_API_VERSION_1_0, &zetDdiTable.MetricQuery );
+        }
+
+        if( ZE_RESULT_SUCCESS == result )
+        {
+            result = zetGetMetricQueryPoolProcAddrTable( ZE_API_VERSION_1_0, &zetDdiTable.MetricQueryPool );
+        }
+
+        if( ZE_RESULT_SUCCESS == result )
+        {
+            result = zetGetMetricStreamerProcAddrTable( ZE_API_VERSION_1_0, &zetDdiTable.MetricStreamer );
+        }
+
+        if( ZE_RESULT_SUCCESS == result )
+        {
+            result = zetGetTracerExpProcAddrTable( ZE_API_VERSION_1_0, &zetDdiTable.TracerExp );
+        }
+
+        return result;
+    }
+#endif
+
 } // namespace ze_lib

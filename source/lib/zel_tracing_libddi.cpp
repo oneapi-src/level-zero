@@ -13,6 +13,8 @@
 namespace ze_lib
 {
     ///////////////////////////////////////////////////////////////////////////////
+
+#ifdef DYNAMIC_LOAD_LOADER
     __zedlllocal ze_result_t context_t::zelTracingInit()
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
@@ -26,4 +28,12 @@ namespace ze_lib
 
         return result;
     }
+#else
+    __zedlllocal ze_result_t context_t::zelTracingInit()
+    {
+        ze_result_t result;
+        result = zelGetTracerApiProcAddrTable( ZE_API_VERSION_1_0, &zelTracingDdiTable.Tracer);
+        return result;
+    }
+#endif
 } // namespace ze_lib
