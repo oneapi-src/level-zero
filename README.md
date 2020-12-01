@@ -7,15 +7,13 @@ This repository contains the following components of oneAPI:
 - Level Zero Validation Layer
 
 This project is part of the larger [oneAPI](https://www.oneapi.com/) project.
-See **Contributing** below for details about submitting issues and pull
-requests.
 
-oneAPI Specification: https://spec.oneapi.com/versions/latest/introduction.html
+See the [oneAPI specification](https://spec.oneapi.com/versions/latest/introduction.html) for more information about the oneAPI project.
 
-oneAPI Level Zero Specification: https://spec.oneapi.com/level-zero/1.0.4/index.html 
+See the [Level Zero specification](https://spec.oneapi.com/level-zero/latest/index.html) for more information about Level Zero.
 
-The versions of the Level Zero API are listed in the file
-[ze_api.h](./include/ze_api.h) in the `ze_api_version_t` enum.
+Level Zero API versions are listed in the `ze_api_version_t` enumeration, located in the
+[ze_api.h](./include/ze_api.h) file.
 
 # Building and Installing
 
@@ -74,11 +72,14 @@ docker run \
 
 # Contributing
 
-We encourage anyone who wants to contribute to submit
-[Issues](https://github.com/oneapi-src/level-zero/issues) and
-[Pull Requests](https://github.com/oneapi-src/level-zero/pulls). We will help
-review these for proper alignment with the
-[Level Zero Specification](https://spec.oneapi.com/versions/latest/oneL0/index.html).
+See [CONTRIBUTING](CONTRIBUTING.md) for more information.
 
-Specific coding conventions and standards guidelines are a work-in-progress, and
-we will post them here soon.
+# License
+
+Distributed under the MIT license. See [LICENSE](LICENSE.md) for more information.
+
+# Security
+
+See Intel's [Security Center](https://www.intel.com/content/www/us/en/security-center/default.html) for information on how to report a potential security issue or vulnerability.
+
+See also [SECURITY](SECURITY.md).
