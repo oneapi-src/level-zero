@@ -36,6 +36,9 @@ bool isDeviceAvailable(DEVINST devnode) {
     bool isInInvalidState = (devStatus & DN_HAS_PROBLEM)
                             && (devProblem == CM_PROB_NEED_RESTART);
     isInInvalidState |= (DN_NEED_RESTART == (devStatus & DN_NEED_RESTART));
+    isInInvalidState |= (devStatus & DN_HAS_PROBLEM)
+                             && (devProblem == CM_PROB_DISABLED);
+
 
     return false == isInInvalidState;
 }
