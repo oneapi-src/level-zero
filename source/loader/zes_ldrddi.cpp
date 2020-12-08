@@ -541,6 +541,10 @@ namespace loader
         // forward to device-driver
         result = pfnEventListen( hDriver, timeout, count, phDevices, pNumDeviceEvents, pEvents );
 
+        // convert driver handles back to loader handles
+        for ( size_t i = 0; ( nullptr != phDevices ) && ( i < count ); ++i )
+            phDevices[ i ] = reinterpret_cast<zes_device_handle_t>( zes_device_factory.getInstance( phDevices[ i ], dditable ) );
+
         return result;
     }
 

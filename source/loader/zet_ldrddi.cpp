@@ -611,6 +611,10 @@ namespace loader
         // forward to device-driver
         result = pfnActivateMetricGroups( hContext, hDevice, count, phMetricGroups );
 
+        // convert driver handles back to loader handles
+        for ( size_t i = 0; ( nullptr != phMetricGroups ) && ( i < count ); ++i )
+            phMetricGroups[ i ] = reinterpret_cast<zet_metric_group_handle_t>( zet_metric_group_factory.getInstance( phMetricGroups[ i ], dditable ) );
+
         return result;
     }
 
@@ -978,6 +982,10 @@ namespace loader
 
         // forward to device-driver
         result = pfnAppendMetricQueryEnd( hCommandList, hMetricQuery, hSignalEvent, numWaitEvents, phWaitEvents );
+
+        // convert driver handles back to loader handles
+        for ( size_t i = 0; ( nullptr != phWaitEvents ) && ( i < numWaitEvents ); ++i )
+            phWaitEvents[ i ] = reinterpret_cast<ze_event_handle_t>( ze_event_factory.getInstance( phWaitEvents[ i ], dditable ) );
 
         return result;
     }

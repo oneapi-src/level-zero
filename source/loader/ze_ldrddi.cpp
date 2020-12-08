@@ -824,6 +824,10 @@ namespace loader
         // forward to device-driver
         result = pfnExecuteCommandLists( hCommandQueue, numCommandLists, phCommandLists, hFence );
 
+        // convert driver handles back to loader handles
+        for ( size_t i = 0; ( nullptr != phCommandLists ) && ( i < numCommandLists ); ++i )
+            phCommandLists[ i ] = reinterpret_cast<ze_command_list_handle_t>( ze_command_list_factory.getInstance( phCommandLists[ i ], dditable ) );
+
         return result;
     }
 
@@ -1050,6 +1054,10 @@ namespace loader
         // forward to device-driver
         result = pfnAppendWriteGlobalTimestamp( hCommandList, dstptr, hSignalEvent, numWaitEvents, phWaitEvents );
 
+        // convert driver handles back to loader handles
+        for ( size_t i = 0; ( nullptr != phWaitEvents ) && ( i < numWaitEvents ); ++i )
+            phWaitEvents[ i ] = reinterpret_cast<ze_event_handle_t>( ze_event_factory.getInstance( phWaitEvents[ i ], dditable ) );
+
         return result;
     }
 
@@ -1085,6 +1093,10 @@ namespace loader
 
         // forward to device-driver
         result = pfnAppendBarrier( hCommandList, hSignalEvent, numWaitEvents, phWaitEvents );
+
+        // convert driver handles back to loader handles
+        for ( size_t i = 0; ( nullptr != phWaitEvents ) && ( i < numWaitEvents ); ++i )
+            phWaitEvents[ i ] = reinterpret_cast<ze_event_handle_t>( ze_event_factory.getInstance( phWaitEvents[ i ], dditable ) );
 
         return result;
     }
@@ -1124,6 +1136,10 @@ namespace loader
 
         // forward to device-driver
         result = pfnAppendMemoryRangesBarrier( hCommandList, numRanges, pRangeSizes, pRanges, hSignalEvent, numWaitEvents, phWaitEvents );
+
+        // convert driver handles back to loader handles
+        for ( size_t i = 0; ( nullptr != phWaitEvents ) && ( i < numWaitEvents ); ++i )
+            phWaitEvents[ i ] = reinterpret_cast<ze_event_handle_t>( ze_event_factory.getInstance( phWaitEvents[ i ], dditable ) );
 
         return result;
     }
@@ -1192,6 +1208,10 @@ namespace loader
         // forward to device-driver
         result = pfnAppendMemoryCopy( hCommandList, dstptr, srcptr, size, hSignalEvent, numWaitEvents, phWaitEvents );
 
+        // convert driver handles back to loader handles
+        for ( size_t i = 0; ( nullptr != phWaitEvents ) && ( i < numWaitEvents ); ++i )
+            phWaitEvents[ i ] = reinterpret_cast<ze_event_handle_t>( ze_event_factory.getInstance( phWaitEvents[ i ], dditable ) );
+
         return result;
     }
 
@@ -1231,6 +1251,10 @@ namespace loader
 
         // forward to device-driver
         result = pfnAppendMemoryFill( hCommandList, ptr, pattern, pattern_size, size, hSignalEvent, numWaitEvents, phWaitEvents );
+
+        // convert driver handles back to loader handles
+        for ( size_t i = 0; ( nullptr != phWaitEvents ) && ( i < numWaitEvents ); ++i )
+            phWaitEvents[ i ] = reinterpret_cast<ze_event_handle_t>( ze_event_factory.getInstance( phWaitEvents[ i ], dditable ) );
 
         return result;
     }
@@ -1280,6 +1304,10 @@ namespace loader
         // forward to device-driver
         result = pfnAppendMemoryCopyRegion( hCommandList, dstptr, dstRegion, dstPitch, dstSlicePitch, srcptr, srcRegion, srcPitch, srcSlicePitch, hSignalEvent, numWaitEvents, phWaitEvents );
 
+        // convert driver handles back to loader handles
+        for ( size_t i = 0; ( nullptr != phWaitEvents ) && ( i < numWaitEvents ); ++i )
+            phWaitEvents[ i ] = reinterpret_cast<ze_event_handle_t>( ze_event_factory.getInstance( phWaitEvents[ i ], dditable ) );
+
         return result;
     }
 
@@ -1322,6 +1350,10 @@ namespace loader
 
         // forward to device-driver
         result = pfnAppendMemoryCopyFromContext( hCommandList, dstptr, hContextSrc, srcptr, size, hSignalEvent, numWaitEvents, phWaitEvents );
+
+        // convert driver handles back to loader handles
+        for ( size_t i = 0; ( nullptr != phWaitEvents ) && ( i < numWaitEvents ); ++i )
+            phWaitEvents[ i ] = reinterpret_cast<ze_event_handle_t>( ze_event_factory.getInstance( phWaitEvents[ i ], dditable ) );
 
         return result;
     }
@@ -1366,6 +1398,10 @@ namespace loader
 
         // forward to device-driver
         result = pfnAppendImageCopy( hCommandList, hDstImage, hSrcImage, hSignalEvent, numWaitEvents, phWaitEvents );
+
+        // convert driver handles back to loader handles
+        for ( size_t i = 0; ( nullptr != phWaitEvents ) && ( i < numWaitEvents ); ++i )
+            phWaitEvents[ i ] = reinterpret_cast<ze_event_handle_t>( ze_event_factory.getInstance( phWaitEvents[ i ], dditable ) );
 
         return result;
     }
@@ -1413,6 +1449,10 @@ namespace loader
         // forward to device-driver
         result = pfnAppendImageCopyRegion( hCommandList, hDstImage, hSrcImage, pDstRegion, pSrcRegion, hSignalEvent, numWaitEvents, phWaitEvents );
 
+        // convert driver handles back to loader handles
+        for ( size_t i = 0; ( nullptr != phWaitEvents ) && ( i < numWaitEvents ); ++i )
+            phWaitEvents[ i ] = reinterpret_cast<ze_event_handle_t>( ze_event_factory.getInstance( phWaitEvents[ i ], dditable ) );
+
         return result;
     }
 
@@ -1455,6 +1495,10 @@ namespace loader
         // forward to device-driver
         result = pfnAppendImageCopyToMemory( hCommandList, dstptr, hSrcImage, pSrcRegion, hSignalEvent, numWaitEvents, phWaitEvents );
 
+        // convert driver handles back to loader handles
+        for ( size_t i = 0; ( nullptr != phWaitEvents ) && ( i < numWaitEvents ); ++i )
+            phWaitEvents[ i ] = reinterpret_cast<ze_event_handle_t>( ze_event_factory.getInstance( phWaitEvents[ i ], dditable ) );
+
         return result;
     }
 
@@ -1496,6 +1540,10 @@ namespace loader
 
         // forward to device-driver
         result = pfnAppendImageCopyFromMemory( hCommandList, hDstImage, srcptr, pDstRegion, hSignalEvent, numWaitEvents, phWaitEvents );
+
+        // convert driver handles back to loader handles
+        for ( size_t i = 0; ( nullptr != phWaitEvents ) && ( i < numWaitEvents ); ++i )
+            phWaitEvents[ i ] = reinterpret_cast<ze_event_handle_t>( ze_event_factory.getInstance( phWaitEvents[ i ], dditable ) );
 
         return result;
     }
@@ -1589,6 +1637,10 @@ namespace loader
 
         // forward to device-driver
         result = pfnCreate( hContext, desc, numDevices, phDevices, phEventPool );
+
+        // convert driver handles back to loader handles
+        for ( size_t i = 0; ( nullptr != phDevices ) && ( i < numDevices ); ++i )
+            phDevices[ i ] = reinterpret_cast<ze_device_handle_t>( ze_device_factory.getInstance( phDevices[ i ], dditable ) );
 
         try
         {
@@ -1841,6 +1893,10 @@ namespace loader
         // forward to device-driver
         result = pfnAppendWaitOnEvents( hCommandList, numEvents, phEvents );
 
+        // convert driver handles back to loader handles
+        for ( size_t i = 0; ( nullptr != phEvents ) && ( i < numEvents ); ++i )
+            phEvents[ i ] = reinterpret_cast<ze_event_handle_t>( ze_event_factory.getInstance( phEvents[ i ], dditable ) );
+
         return result;
     }
 
@@ -2043,6 +2099,12 @@ namespace loader
 
         // forward to device-driver
         result = pfnAppendQueryKernelTimestamps( hCommandList, numEvents, phEvents, dstptr, pOffsets, hSignalEvent, numWaitEvents, phWaitEvents );
+
+        // convert driver handles back to loader handles
+        for ( size_t i = 0; ( nullptr != phEvents ) && ( i < numEvents ); ++i )
+            phEvents[ i ] = reinterpret_cast<ze_event_handle_t>( ze_event_factory.getInstance( phEvents[ i ], dditable ) );
+        for ( size_t i = 0; ( nullptr != phWaitEvents ) && ( i < numWaitEvents ); ++i )
+            phWaitEvents[ i ] = reinterpret_cast<ze_event_handle_t>( ze_event_factory.getInstance( phWaitEvents[ i ], dditable ) );
 
         return result;
     }
@@ -2663,6 +2725,10 @@ namespace loader
         // forward to device-driver
         result = pfnDynamicLink( numModules, phModules, phLinkLog );
 
+        // convert driver handles back to loader handles
+        for ( size_t i = 0; ( nullptr != phModules ) && ( i < numModules ); ++i )
+            phModules[ i ] = reinterpret_cast<ze_module_handle_t>( ze_module_factory.getInstance( phModules[ i ], dditable ) );
+
         try
         {
             // convert driver handle to loader handle
@@ -3237,6 +3303,10 @@ namespace loader
         // forward to device-driver
         result = pfnAppendLaunchKernel( hCommandList, hKernel, pLaunchFuncArgs, hSignalEvent, numWaitEvents, phWaitEvents );
 
+        // convert driver handles back to loader handles
+        for ( size_t i = 0; ( nullptr != phWaitEvents ) && ( i < numWaitEvents ); ++i )
+            phWaitEvents[ i ] = reinterpret_cast<ze_event_handle_t>( ze_event_factory.getInstance( phWaitEvents[ i ], dditable ) );
+
         return result;
     }
 
@@ -3277,6 +3347,10 @@ namespace loader
 
         // forward to device-driver
         result = pfnAppendLaunchCooperativeKernel( hCommandList, hKernel, pLaunchFuncArgs, hSignalEvent, numWaitEvents, phWaitEvents );
+
+        // convert driver handles back to loader handles
+        for ( size_t i = 0; ( nullptr != phWaitEvents ) && ( i < numWaitEvents ); ++i )
+            phWaitEvents[ i ] = reinterpret_cast<ze_event_handle_t>( ze_event_factory.getInstance( phWaitEvents[ i ], dditable ) );
 
         return result;
     }
@@ -3319,6 +3393,10 @@ namespace loader
 
         // forward to device-driver
         result = pfnAppendLaunchKernelIndirect( hCommandList, hKernel, pLaunchArgumentsBuffer, hSignalEvent, numWaitEvents, phWaitEvents );
+
+        // convert driver handles back to loader handles
+        for ( size_t i = 0; ( nullptr != phWaitEvents ) && ( i < numWaitEvents ); ++i )
+            phWaitEvents[ i ] = reinterpret_cast<ze_event_handle_t>( ze_event_factory.getInstance( phWaitEvents[ i ], dditable ) );
 
         return result;
     }
@@ -3366,6 +3444,12 @@ namespace loader
 
         // forward to device-driver
         result = pfnAppendLaunchMultipleKernelsIndirect( hCommandList, numKernels, phKernels, pCountBuffer, pLaunchArgumentsBuffer, hSignalEvent, numWaitEvents, phWaitEvents );
+
+        // convert driver handles back to loader handles
+        for ( size_t i = 0; ( nullptr != phKernels ) && ( i < numKernels ); ++i )
+            phKernels[ i ] = reinterpret_cast<ze_kernel_handle_t>( ze_kernel_factory.getInstance( phKernels[ i ], dditable ) );
+        for ( size_t i = 0; ( nullptr != phWaitEvents ) && ( i < numWaitEvents ); ++i )
+            phWaitEvents[ i ] = reinterpret_cast<ze_event_handle_t>( ze_event_factory.getInstance( phWaitEvents[ i ], dditable ) );
 
         return result;
     }

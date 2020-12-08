@@ -49,5 +49,6 @@ namespace loader
     };
 
     extern context_t context;
+    extern ze_event_factory_t ze_event_factory;
 
 }
