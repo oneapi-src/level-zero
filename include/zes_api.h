@@ -1773,7 +1773,7 @@ typedef struct _zes_fan_config_t
     const void* pNext;                              ///< [in][optional] pointer to extension-specific structure
     zes_fan_speed_mode_t mode;                      ///< [in,out] The fan speed mode (fixed, temp-speed table)
     zes_fan_speed_t speedFixed;                     ///< [in,out] The current fixed fan speed setting
-    zes_fan_temp_speed_t speedTable;                ///< [out] Array of temperature/fan speed pairs currently configured
+    zes_fan_speed_table_t speedTable;               ///< [out] The currently configured fan speed table
 
 } zes_fan_config_t;
 

@@ -841,7 +841,7 @@ class zes_fan_config_t(Structure):
         ("pNext", c_void_p),                                            ## [in][optional] pointer to extension-specific structure
         ("mode", zes_fan_speed_mode_t),                                 ## [in,out] The fan speed mode (fixed, temp-speed table)
         ("speedFixed", zes_fan_speed_t),                                ## [in,out] The current fixed fan speed setting
-        ("speedTable", zes_fan_temp_speed_t)                            ## [out] Array of temperature/fan speed pairs currently configured
+        ("speedTable", zes_fan_speed_table_t)                           ## [out] The currently configured fan speed table
     ]
 
 ###############################################################################
