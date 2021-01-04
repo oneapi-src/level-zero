@@ -31,14 +31,16 @@ elseif(Git_FOUND)
 	else()
 		set(GIT_TAG "v${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}")
 		if(MSVC)
+			set(grep_string \\[CI\\] )
 			execute_process(
-				COMMAND CMD /c ${GIT_EXECUTABLE} rev-list ${GIT_TAG}..HEAD --count
+				COMMAND CMD /c ${GIT_EXECUTABLE} rev-list ${GIT_TAG}..HEAD --grep=${grep_string} --invert-grep --count
 				OUTPUT_VARIABLE VERSION_PATCH
 				WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
 			)
 		else()
+			set(grep_string "\\[CI\\] ")
 			execute_process(
-				COMMAND ${GIT_EXECUTABLE} rev-list ${GIT_TAG}..HEAD --count
+				COMMAND ${GIT_EXECUTABLE} rev-list ${GIT_TAG}..HEAD --grep=${grep_string} --invert-grep --count
 				OUTPUT_VARIABLE VERSION_PATCH
 				WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
 			)
