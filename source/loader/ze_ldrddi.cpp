@@ -244,6 +244,9 @@ namespace loader
         // forward to device-driver
         result = pfnGet( hDriver, pCount, phDevices );
 
+        if( ZE_RESULT_SUCCESS != result )
+            return result;
+
         try
         {
             // convert driver handles to loader handles
@@ -286,6 +289,9 @@ namespace loader
 
         // forward to device-driver
         result = pfnGetSubDevices( hDevice, pCount, phSubdevices );
+
+        if( ZE_RESULT_SUCCESS != result )
+            return result;
 
         try
         {
@@ -659,6 +665,9 @@ namespace loader
         // forward to device-driver
         result = pfnCreate( hDriver, desc, phContext );
 
+        if( ZE_RESULT_SUCCESS != result )
+            return result;
+
         try
         {
             // convert driver handle to loader handle
@@ -693,6 +702,9 @@ namespace loader
 
         // forward to device-driver
         result = pfnDestroy( hContext );
+
+        if( ZE_RESULT_SUCCESS != result )
+            return result;
 
         // release loader handle
         ze_context_factory.release( hContext );
@@ -751,6 +763,9 @@ namespace loader
         // forward to device-driver
         result = pfnCreate( hContext, hDevice, desc, phCommandQueue );
 
+        if( ZE_RESULT_SUCCESS != result )
+            return result;
+
         try
         {
             // convert driver handle to loader handle
@@ -785,6 +800,9 @@ namespace loader
 
         // forward to device-driver
         result = pfnDestroy( hCommandQueue );
+
+        if( ZE_RESULT_SUCCESS != result )
+            return result;
 
         // release loader handle
         ze_command_queue_factory.release( hCommandQueue );
@@ -889,6 +907,9 @@ namespace loader
         // forward to device-driver
         result = pfnCreate( hContext, hDevice, desc, phCommandList );
 
+        if( ZE_RESULT_SUCCESS != result )
+            return result;
+
         try
         {
             // convert driver handle to loader handle
@@ -930,6 +951,9 @@ namespace loader
         // forward to device-driver
         result = pfnCreateImmediate( hContext, hDevice, altdesc, phCommandList );
 
+        if( ZE_RESULT_SUCCESS != result )
+            return result;
+
         try
         {
             // convert driver handle to loader handle
@@ -964,6 +988,9 @@ namespace loader
 
         // forward to device-driver
         result = pfnDestroy( hCommandList );
+
+        if( ZE_RESULT_SUCCESS != result )
+            return result;
 
         // release loader handle
         ze_command_list_factory.release( hCommandList );
@@ -1642,6 +1669,9 @@ namespace loader
         for ( size_t i = 0; ( nullptr != phDevices ) && ( i < numDevices ); ++i )
             phDevices[ i ] = reinterpret_cast<ze_device_handle_t>( ze_device_factory.getInstance( phDevices[ i ], dditable ) );
 
+        if( ZE_RESULT_SUCCESS != result )
+            return result;
+
         try
         {
             // convert driver handle to loader handle
@@ -1677,6 +1707,9 @@ namespace loader
         // forward to device-driver
         result = pfnDestroy( hEventPool );
 
+        if( ZE_RESULT_SUCCESS != result )
+            return result;
+
         // release loader handle
         ze_event_pool_factory.release( hEventPool );
 
@@ -1705,6 +1738,9 @@ namespace loader
 
         // forward to device-driver
         result = pfnCreate( hEventPool, desc, phEvent );
+
+        if( ZE_RESULT_SUCCESS != result )
+            return result;
 
         try
         {
@@ -1740,6 +1776,9 @@ namespace loader
 
         // forward to device-driver
         result = pfnDestroy( hEvent );
+
+        if( ZE_RESULT_SUCCESS != result )
+            return result;
 
         // release loader handle
         ze_event_factory.release( hEvent );
@@ -1796,6 +1835,9 @@ namespace loader
         // forward to device-driver
         result = pfnOpenIpcHandle( hContext, hIpc, phEventPool );
 
+        if( ZE_RESULT_SUCCESS != result )
+            return result;
+
         try
         {
             // convert driver handle to loader handle
@@ -1830,6 +1872,9 @@ namespace loader
 
         // forward to device-driver
         result = pfnCloseIpcHandle( hEventPool );
+
+        if( ZE_RESULT_SUCCESS != result )
+            return result;
 
         // release loader handle
         ze_event_pool_factory.release( hEventPool );
@@ -2132,6 +2177,9 @@ namespace loader
         // forward to device-driver
         result = pfnCreate( hCommandQueue, desc, phFence );
 
+        if( ZE_RESULT_SUCCESS != result )
+            return result;
+
         try
         {
             // convert driver handle to loader handle
@@ -2166,6 +2214,9 @@ namespace loader
 
         // forward to device-driver
         result = pfnDestroy( hFence );
+
+        if( ZE_RESULT_SUCCESS != result )
+            return result;
 
         // release loader handle
         ze_fence_factory.release( hFence );
@@ -2305,6 +2356,9 @@ namespace loader
         // forward to device-driver
         result = pfnCreate( hContext, hDevice, desc, phImage );
 
+        if( ZE_RESULT_SUCCESS != result )
+            return result;
+
         try
         {
             // convert driver handle to loader handle
@@ -2339,6 +2393,9 @@ namespace loader
 
         // forward to device-driver
         result = pfnDestroy( hImage );
+
+        if( ZE_RESULT_SUCCESS != result )
+            return result;
 
         // release loader handle
         ze_image_factory.release( hImage );
@@ -2494,6 +2551,9 @@ namespace loader
         // forward to device-driver
         result = pfnGetAllocProperties( hContext, ptr, pMemAllocProperties, phDevice );
 
+        if( ZE_RESULT_SUCCESS != result )
+            return result;
+
         try
         {
             // convert driver handle to loader handle
@@ -2647,6 +2707,9 @@ namespace loader
         // forward to device-driver
         result = pfnCreate( hContext, hDevice, desc, phModule, phBuildLog );
 
+        if( ZE_RESULT_SUCCESS != result )
+            return result;
+
         try
         {
             // convert driver handle to loader handle
@@ -2694,6 +2757,9 @@ namespace loader
         // forward to device-driver
         result = pfnDestroy( hModule );
 
+        if( ZE_RESULT_SUCCESS != result )
+            return result;
+
         // release loader handle
         ze_module_factory.release( hModule );
 
@@ -2728,6 +2794,9 @@ namespace loader
         // convert driver handles back to loader handles
         for ( size_t i = 0; ( nullptr != phModules ) && ( i < numModules ); ++i )
             phModules[ i ] = reinterpret_cast<ze_module_handle_t>( ze_module_factory.getInstance( phModules[ i ], dditable ) );
+
+        if( ZE_RESULT_SUCCESS != result )
+            return result;
 
         try
         {
@@ -2764,6 +2833,9 @@ namespace loader
 
         // forward to device-driver
         result = pfnDestroy( hModuleBuildLog );
+
+        if( ZE_RESULT_SUCCESS != result )
+            return result;
 
         // release loader handle
         ze_module_build_log_factory.release( hModuleBuildLog );
@@ -2929,6 +3001,9 @@ namespace loader
         // forward to device-driver
         result = pfnCreate( hModule, desc, phKernel );
 
+        if( ZE_RESULT_SUCCESS != result )
+            return result;
+
         try
         {
             // convert driver handle to loader handle
@@ -2963,6 +3038,9 @@ namespace loader
 
         // forward to device-driver
         result = pfnDestroy( hKernel );
+
+        if( ZE_RESULT_SUCCESS != result )
+            return result;
 
         // release loader handle
         ze_kernel_factory.release( hKernel );
@@ -3605,6 +3683,9 @@ namespace loader
         // forward to device-driver
         result = pfnCreate( hContext, hDevice, desc, phSampler );
 
+        if( ZE_RESULT_SUCCESS != result )
+            return result;
+
         try
         {
             // convert driver handle to loader handle
@@ -3639,6 +3720,9 @@ namespace loader
 
         // forward to device-driver
         result = pfnDestroy( hSampler );
+
+        if( ZE_RESULT_SUCCESS != result )
+            return result;
 
         // release loader handle
         ze_sampler_factory.release( hSampler );
@@ -3758,6 +3842,9 @@ namespace loader
         // forward to device-driver
         result = pfnCreate( hContext, hDevice, desc, phPhysicalMemory );
 
+        if( ZE_RESULT_SUCCESS != result )
+            return result;
+
         try
         {
             // convert driver handle to loader handle
@@ -3796,6 +3883,9 @@ namespace loader
 
         // forward to device-driver
         result = pfnDestroy( hContext, hPhysicalMemory );
+
+        if( ZE_RESULT_SUCCESS != result )
+            return result;
 
         // release loader handle
         ze_physical_mem_factory.release( hPhysicalMemory );

@@ -276,6 +276,9 @@ namespace loader
         // forward to device-driver
         result = pfnEnumDiagnosticTestSuites( hDevice, pCount, phDiagnostics );
 
+        if( ZE_RESULT_SUCCESS != result )
+            return result;
+
         try
         {
             // convert driver handles to loader handles
@@ -407,6 +410,9 @@ namespace loader
 
         // forward to device-driver
         result = pfnEnumEngineGroups( hDevice, pCount, phEngine );
+
+        if( ZE_RESULT_SUCCESS != result )
+            return result;
 
         try
         {
@@ -577,6 +583,9 @@ namespace loader
 
         // forward to device-driver
         result = pfnEnumFabricPorts( hDevice, pCount, phPort );
+
+        if( ZE_RESULT_SUCCESS != result )
+            return result;
 
         try
         {
@@ -773,6 +782,9 @@ namespace loader
 
         // forward to device-driver
         result = pfnEnumFans( hDevice, pCount, phFan );
+
+        if( ZE_RESULT_SUCCESS != result )
+            return result;
 
         try
         {
@@ -971,6 +983,9 @@ namespace loader
         // forward to device-driver
         result = pfnEnumFirmwares( hDevice, pCount, phFirmware );
 
+        if( ZE_RESULT_SUCCESS != result )
+            return result;
+
         try
         {
             // convert driver handles to loader handles
@@ -1067,6 +1082,9 @@ namespace loader
 
         // forward to device-driver
         result = pfnEnumFrequencyDomains( hDevice, pCount, phFrequency );
+
+        if( ZE_RESULT_SUCCESS != result )
+            return result;
 
         try
         {
@@ -1565,6 +1583,9 @@ namespace loader
         // forward to device-driver
         result = pfnEnumLeds( hDevice, pCount, phLed );
 
+        if( ZE_RESULT_SUCCESS != result )
+            return result;
+
         try
         {
             // convert driver handles to loader handles
@@ -1710,6 +1731,9 @@ namespace loader
         // forward to device-driver
         result = pfnEnumMemoryModules( hDevice, pCount, phMemory );
 
+        if( ZE_RESULT_SUCCESS != result )
+            return result;
+
         try
         {
             // convert driver handles to loader handles
@@ -1830,6 +1854,9 @@ namespace loader
 
         // forward to device-driver
         result = pfnEnumPerformanceFactorDomains( hDevice, pCount, phPerf );
+
+        if( ZE_RESULT_SUCCESS != result )
+            return result;
 
         try
         {
@@ -1952,6 +1979,9 @@ namespace loader
 
         // forward to device-driver
         result = pfnEnumPowerDomains( hDevice, pCount, phPower );
+
+        if( ZE_RESULT_SUCCESS != result )
+            return result;
 
         try
         {
@@ -2160,6 +2190,9 @@ namespace loader
         // forward to device-driver
         result = pfnEnumPsus( hDevice, pCount, phPsu );
 
+        if( ZE_RESULT_SUCCESS != result )
+            return result;
+
         try
         {
             // convert driver handles to loader handles
@@ -2254,6 +2287,9 @@ namespace loader
 
         // forward to device-driver
         result = pfnEnumRasErrorSets( hDevice, pCount, phRas );
+
+        if( ZE_RESULT_SUCCESS != result )
+            return result;
 
         try
         {
@@ -2401,6 +2437,9 @@ namespace loader
 
         // forward to device-driver
         result = pfnEnumSchedulers( hDevice, pCount, phScheduler );
+
+        if( ZE_RESULT_SUCCESS != result )
+            return result;
 
         try
         {
@@ -2657,6 +2696,9 @@ namespace loader
         // forward to device-driver
         result = pfnEnumStandbyDomains( hDevice, pCount, phStandby );
 
+        if( ZE_RESULT_SUCCESS != result )
+            return result;
+
         try
         {
             // convert driver handles to loader handles
@@ -2776,6 +2818,9 @@ namespace loader
 
         // forward to device-driver
         result = pfnEnumTemperatureSensors( hDevice, pCount, phTemperature );
+
+        if( ZE_RESULT_SUCCESS != result )
+            return result;
 
         try
         {

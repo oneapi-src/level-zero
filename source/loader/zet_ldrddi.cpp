@@ -101,6 +101,9 @@ namespace loader
         // forward to device-driver
         result = pfnAttach( hDevice, config, phDebug );
 
+        if( ZE_RESULT_SUCCESS != result )
+            return result;
+
         try
         {
             // convert driver handle to loader handle
@@ -135,6 +138,9 @@ namespace loader
 
         // forward to device-driver
         result = pfnDetach( hDebug );
+
+        if( ZE_RESULT_SUCCESS != result )
+            return result;
 
         // release loader handle
         zet_debug_session_factory.release( hDebug );
@@ -431,6 +437,9 @@ namespace loader
         // forward to device-driver
         result = pfnGet( hDevice, pCount, phMetricGroups );
 
+        if( ZE_RESULT_SUCCESS != result )
+            return result;
+
         try
         {
             // convert driver handles to loader handles
@@ -535,6 +544,9 @@ namespace loader
 
         // forward to device-driver
         result = pfnGet( hMetricGroup, pCount, phMetrics );
+
+        if( ZE_RESULT_SUCCESS != result )
+            return result;
 
         try
         {
@@ -653,6 +665,9 @@ namespace loader
         // forward to device-driver
         result = pfnOpen( hContext, hDevice, hMetricGroup, desc, hNotificationEvent, phMetricStreamer );
 
+        if( ZE_RESULT_SUCCESS != result )
+            return result;
+
         try
         {
             // convert driver handle to loader handle
@@ -716,6 +731,9 @@ namespace loader
 
         // forward to device-driver
         result = pfnClose( hMetricStreamer );
+
+        if( ZE_RESULT_SUCCESS != result )
+            return result;
 
         // release loader handle
         zet_metric_streamer_factory.release( hMetricStreamer );
@@ -789,6 +807,9 @@ namespace loader
         // forward to device-driver
         result = pfnCreate( hContext, hDevice, hMetricGroup, desc, phMetricQueryPool );
 
+        if( ZE_RESULT_SUCCESS != result )
+            return result;
+
         try
         {
             // convert driver handle to loader handle
@@ -824,6 +845,9 @@ namespace loader
         // forward to device-driver
         result = pfnDestroy( hMetricQueryPool );
 
+        if( ZE_RESULT_SUCCESS != result )
+            return result;
+
         // release loader handle
         zet_metric_query_pool_factory.release( hMetricQueryPool );
 
@@ -852,6 +876,9 @@ namespace loader
 
         // forward to device-driver
         result = pfnCreate( hMetricQueryPool, index, phMetricQuery );
+
+        if( ZE_RESULT_SUCCESS != result )
+            return result;
 
         try
         {
@@ -887,6 +914,9 @@ namespace loader
 
         // forward to device-driver
         result = pfnDestroy( hMetricQuery );
+
+        if( ZE_RESULT_SUCCESS != result )
+            return result;
 
         // release loader handle
         zet_metric_query_factory.release( hMetricQuery );
@@ -1095,6 +1125,9 @@ namespace loader
         // forward to device-driver
         result = pfnCreate( hContext, desc, phTracer );
 
+        if( ZE_RESULT_SUCCESS != result )
+            return result;
+
         try
         {
             // convert driver handle to loader handle
@@ -1129,6 +1162,9 @@ namespace loader
 
         // forward to device-driver
         result = pfnDestroy( hTracer );
+
+        if( ZE_RESULT_SUCCESS != result )
+            return result;
 
         // release loader handle
         zet_tracer_exp_factory.release( hTracer );
