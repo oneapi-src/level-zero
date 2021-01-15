@@ -48,9 +48,19 @@ typedef struct _cl_program* cl_program;
 ///////////////////////////////////////////////////////////////////////////////
 inline bool getenv_tobool( const char* name )
 {
-    const char* env = getenv( name );
+    const char* env = nullptr;
+
+#if defined(_WIN32)
+    char buffer[8];
+    auto rc = GetEnvironmentVariable(name, buffer, 8);
+    if (0 != rc && rc <= 8) {
+        env = buffer;
+    }
+#else
+    env = getenv(name);
+#endif
+
     if( ( nullptr == env ) || ( 0 == strcmp( "0", env ) ) )
         return false;
     return ( 0 == strcmp( "1", env ) );
 }
-
