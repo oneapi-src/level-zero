@@ -31,21 +31,21 @@ zelGetTracerApiProcAddrTable(
     zel_tracer_dditable_t* pDdiTable                ///< [in,out] pointer to table of DDI function pointers
     )
 {
-    if( loader::context.drivers.size() < 1 )
+    if( loader::context->drivers.size() < 1 )
         return ZE_RESULT_ERROR_UNINITIALIZED;
 
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if( loader::context.version < version )
+    if( loader::context->version < version )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
-    if(( nullptr != loader::context.tracingLayer ))
+    if(( nullptr != loader::context->tracingLayer ))
     {
         auto getTable = reinterpret_cast<zel_pfnGetTracerApiProcAddrTable_t>(
-            GET_FUNCTION_PTR(loader::context.tracingLayer, "zelGetTracerApiProcAddrTable") );
+            GET_FUNCTION_PTR(loader::context->tracingLayer, "zelGetTracerApiProcAddrTable") );
         result = getTable( version, pDdiTable );
     }
 

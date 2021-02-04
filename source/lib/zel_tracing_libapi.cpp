@@ -36,7 +36,7 @@ zelTracerCreate(
     zel_tracer_handle_t* phTracer               ///< [out] pointer to handle of tracer object created
     )
 {
-    auto pfnCreate = ze_lib::context.zelTracingDdiTable.Tracer.pfnCreate;
+    auto pfnCreate = ze_lib::context->zelTracingDdiTable.Tracer.pfnCreate;
     if( nullptr == pfnCreate )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -66,7 +66,7 @@ zelTracerDestroy(
     zel_tracer_handle_t hTracer                 ///< [in][release] handle of tracer object to destroy
     )
 {
-    auto pfnDestroy = ze_lib::context.zelTracingDdiTable.Tracer.pfnDestroy;
+    auto pfnDestroy = ze_lib::context->zelTracingDdiTable.Tracer.pfnDestroy;
     if( nullptr == pfnDestroy )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -99,7 +99,7 @@ zelTracerSetPrologues(
     zel_core_callbacks_t* pCoreCbs              ///< [in] pointer to table of 'core' callback function pointers
     )
 {
-    auto pfnSetPrologues = ze_lib::context.zelTracingDdiTable.Tracer.pfnSetPrologues;
+    auto pfnSetPrologues = ze_lib::context->zelTracingDdiTable.Tracer.pfnSetPrologues;
     if( nullptr == pfnSetPrologues )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -132,7 +132,7 @@ zelTracerSetEpilogues(
     zel_core_callbacks_t* pCoreCbs              ///< [in] pointer to table of 'core' callback function pointers
     )
 {
-    auto pfnSetEpilogues = ze_lib::context.zelTracingDdiTable.Tracer.pfnSetEpilogues;
+    auto pfnSetEpilogues = ze_lib::context->zelTracingDdiTable.Tracer.pfnSetEpilogues;
     if( nullptr == pfnSetEpilogues )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -158,7 +158,7 @@ zelTracerSetEnabled(
     ze_bool_t enable                            ///< [in] enable the tracer if true; disable if false
     )
 {
-    auto pfnSetEnabled = ze_lib::context.zelTracingDdiTable.Tracer.pfnSetEnabled;
+    auto pfnSetEnabled = ze_lib::context->zelTracingDdiTable.Tracer.pfnSetEnabled;
     if( nullptr == pfnSetEnabled )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 

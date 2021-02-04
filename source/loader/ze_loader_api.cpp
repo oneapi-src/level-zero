@@ -23,7 +23,7 @@ extern "C" {
 ZE_DLLEXPORT ze_result_t ZE_APICALL
 zeLoaderInit()
 {
-    return loader::context.init();
+    return loader::context->init();
 }
 
 

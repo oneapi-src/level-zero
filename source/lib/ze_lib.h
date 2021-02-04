@@ -50,6 +50,6 @@ namespace ze_lib
         zel_tracing_dditable_t  zelTracingDdiTable = {};
     };
 
-    extern context_t context;
+    extern context_t *context;
 
 } // namespace ze_lib

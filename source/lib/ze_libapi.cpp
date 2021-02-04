@@ -38,14 +38,14 @@ zeInit(
     )
 {
     ze_result_t result = ZE_RESULT_SUCCESS;
-    std::call_once(ze_lib::context.initOnce, [&result]() {
-        result = ze_lib::context.Init();
+    std::call_once(ze_lib::context->initOnce, [&result]() {
+        result = ze_lib::context->Init();
     });
 
     if( ZE_RESULT_SUCCESS != result )
         return result;
 
-    auto pfnInit = ze_lib::context.zeDdiTable.Global.pfnInit;
+    auto pfnInit = ze_lib::context->zeDdiTable.Global.pfnInit;
     if( nullptr == pfnInit )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -86,7 +86,7 @@ zeDriverGet(
     ze_driver_handle_t* phDrivers                   ///< [in,out][optional][range(0, *pCount)] array of driver instance handles
     )
 {
-    auto pfnGet = ze_lib::context.zeDdiTable.Driver.pfnGet;
+    auto pfnGet = ze_lib::context->zeDdiTable.Driver.pfnGet;
     if( nullptr == pfnGet )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -114,7 +114,7 @@ zeDriverGetApiVersion(
     ze_api_version_t* version                       ///< [out] api version
     )
 {
-    auto pfnGetApiVersion = ze_lib::context.zeDdiTable.Driver.pfnGetApiVersion;
+    auto pfnGetApiVersion = ze_lib::context->zeDdiTable.Driver.pfnGetApiVersion;
     if( nullptr == pfnGetApiVersion )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -146,7 +146,7 @@ zeDriverGetProperties(
     ze_driver_properties_t* pDriverProperties       ///< [in,out] query result for driver properties
     )
 {
-    auto pfnGetProperties = ze_lib::context.zeDdiTable.Driver.pfnGetProperties;
+    auto pfnGetProperties = ze_lib::context->zeDdiTable.Driver.pfnGetProperties;
     if( nullptr == pfnGetProperties )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -174,7 +174,7 @@ zeDriverGetIpcProperties(
     ze_driver_ipc_properties_t* pIpcProperties      ///< [out] query result for IPC properties
     )
 {
-    auto pfnGetIpcProperties = ze_lib::context.zeDdiTable.Driver.pfnGetIpcProperties;
+    auto pfnGetIpcProperties = ze_lib::context->zeDdiTable.Driver.pfnGetIpcProperties;
     if( nullptr == pfnGetIpcProperties )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -215,7 +215,7 @@ zeDriverGetExtensionProperties(
                                                     ///< extension properties
     )
 {
-    auto pfnGetExtensionProperties = ze_lib::context.zeDdiTable.Driver.pfnGetExtensionProperties;
+    auto pfnGetExtensionProperties = ze_lib::context->zeDdiTable.Driver.pfnGetExtensionProperties;
     if( nullptr == pfnGetExtensionProperties )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -254,7 +254,7 @@ zeDeviceGet(
     ze_device_handle_t* phDevices                   ///< [in,out][optional][range(0, *pCount)] array of handle of devices
     )
 {
-    auto pfnGet = ze_lib::context.zeDdiTable.Device.pfnGet;
+    auto pfnGet = ze_lib::context->zeDdiTable.Device.pfnGet;
     if( nullptr == pfnGet )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -296,7 +296,7 @@ zeDeviceGetSubDevices(
     ze_device_handle_t* phSubdevices                ///< [in,out][optional][range(0, *pCount)] array of handle of sub-devices
     )
 {
-    auto pfnGetSubDevices = ze_lib::context.zeDdiTable.Device.pfnGetSubDevices;
+    auto pfnGetSubDevices = ze_lib::context->zeDdiTable.Device.pfnGetSubDevices;
     if( nullptr == pfnGetSubDevices )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -328,7 +328,7 @@ zeDeviceGetProperties(
     ze_device_properties_t* pDeviceProperties       ///< [in,out] query result for device properties
     )
 {
-    auto pfnGetProperties = ze_lib::context.zeDdiTable.Device.pfnGetProperties;
+    auto pfnGetProperties = ze_lib::context->zeDdiTable.Device.pfnGetProperties;
     if( nullptr == pfnGetProperties )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -360,7 +360,7 @@ zeDeviceGetComputeProperties(
     ze_device_compute_properties_t* pComputeProperties  ///< [in,out] query result for compute properties
     )
 {
-    auto pfnGetComputeProperties = ze_lib::context.zeDdiTable.Device.pfnGetComputeProperties;
+    auto pfnGetComputeProperties = ze_lib::context->zeDdiTable.Device.pfnGetComputeProperties;
     if( nullptr == pfnGetComputeProperties )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -388,7 +388,7 @@ zeDeviceGetModuleProperties(
     ze_device_module_properties_t* pModuleProperties///< [in,out] query result for module properties
     )
 {
-    auto pfnGetModuleProperties = ze_lib::context.zeDdiTable.Device.pfnGetModuleProperties;
+    auto pfnGetModuleProperties = ze_lib::context->zeDdiTable.Device.pfnGetModuleProperties;
     if( nullptr == pfnGetModuleProperties )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -435,7 +435,7 @@ zeDeviceGetCommandQueueGroupProperties(
                                                     ///< command queue group properties
     )
 {
-    auto pfnGetCommandQueueGroupProperties = ze_lib::context.zeDdiTable.Device.pfnGetCommandQueueGroupProperties;
+    auto pfnGetCommandQueueGroupProperties = ze_lib::context->zeDdiTable.Device.pfnGetCommandQueueGroupProperties;
     if( nullptr == pfnGetCommandQueueGroupProperties )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -482,7 +482,7 @@ zeDeviceGetMemoryProperties(
                                                     ///< memory properties
     )
 {
-    auto pfnGetMemoryProperties = ze_lib::context.zeDdiTable.Device.pfnGetMemoryProperties;
+    auto pfnGetMemoryProperties = ze_lib::context->zeDdiTable.Device.pfnGetMemoryProperties;
     if( nullptr == pfnGetMemoryProperties )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -514,7 +514,7 @@ zeDeviceGetMemoryAccessProperties(
     ze_device_memory_access_properties_t* pMemAccessProperties  ///< [in,out] query result for memory access properties
     )
 {
-    auto pfnGetMemoryAccessProperties = ze_lib::context.zeDdiTable.Device.pfnGetMemoryAccessProperties;
+    auto pfnGetMemoryAccessProperties = ze_lib::context->zeDdiTable.Device.pfnGetMemoryAccessProperties;
     if( nullptr == pfnGetMemoryAccessProperties )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -555,7 +555,7 @@ zeDeviceGetCacheProperties(
                                                     ///< properties
     )
 {
-    auto pfnGetCacheProperties = ze_lib::context.zeDdiTable.Device.pfnGetCacheProperties;
+    auto pfnGetCacheProperties = ze_lib::context->zeDdiTable.Device.pfnGetCacheProperties;
     if( nullptr == pfnGetCacheProperties )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -584,7 +584,7 @@ zeDeviceGetImageProperties(
     ze_device_image_properties_t* pImageProperties  ///< [in,out] query result for image properties
     )
 {
-    auto pfnGetImageProperties = ze_lib::context.zeDdiTable.Device.pfnGetImageProperties;
+    auto pfnGetImageProperties = ze_lib::context->zeDdiTable.Device.pfnGetImageProperties;
     if( nullptr == pfnGetImageProperties )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -612,7 +612,7 @@ zeDeviceGetExternalMemoryProperties(
     ze_device_external_memory_properties_t* pExternalMemoryProperties   ///< [in,out] query result for external memory properties
     )
 {
-    auto pfnGetExternalMemoryProperties = ze_lib::context.zeDdiTable.Device.pfnGetExternalMemoryProperties;
+    auto pfnGetExternalMemoryProperties = ze_lib::context->zeDdiTable.Device.pfnGetExternalMemoryProperties;
     if( nullptr == pfnGetExternalMemoryProperties )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -643,7 +643,7 @@ zeDeviceGetP2PProperties(
     ze_device_p2p_properties_t* pP2PProperties      ///< [in,out] Peer-to-Peer properties between source and peer device
     )
 {
-    auto pfnGetP2PProperties = ze_lib::context.zeDdiTable.Device.pfnGetP2PProperties;
+    auto pfnGetP2PProperties = ze_lib::context->zeDdiTable.Device.pfnGetP2PProperties;
     if( nullptr == pfnGetP2PProperties )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -687,7 +687,7 @@ zeDeviceCanAccessPeer(
     ze_bool_t* value                                ///< [out] returned access capability
     )
 {
-    auto pfnCanAccessPeer = ze_lib::context.zeDdiTable.Device.pfnCanAccessPeer;
+    auto pfnCanAccessPeer = ze_lib::context->zeDdiTable.Device.pfnCanAccessPeer;
     if( nullptr == pfnCanAccessPeer )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -719,7 +719,7 @@ zeDeviceGetStatus(
     ze_device_handle_t hDevice                      ///< [in] handle of the device
     )
 {
-    auto pfnGetStatus = ze_lib::context.zeDdiTable.Device.pfnGetStatus;
+    auto pfnGetStatus = ze_lib::context->zeDdiTable.Device.pfnGetStatus;
     if( nullptr == pfnGetStatus )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -755,7 +755,7 @@ zeContextCreate(
     ze_context_handle_t* phContext                  ///< [out] pointer to handle of context object created
     )
 {
-    auto pfnCreate = ze_lib::context.zeDdiTable.Context.pfnCreate;
+    auto pfnCreate = ze_lib::context->zeDdiTable.Context.pfnCreate;
     if( nullptr == pfnCreate )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -786,7 +786,7 @@ zeContextDestroy(
     ze_context_handle_t hContext                    ///< [in][release] handle of context object to destroy
     )
 {
-    auto pfnDestroy = ze_lib::context.zeDdiTable.Context.pfnDestroy;
+    auto pfnDestroy = ze_lib::context->zeDdiTable.Context.pfnDestroy;
     if( nullptr == pfnDestroy )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -816,7 +816,7 @@ zeContextGetStatus(
     ze_context_handle_t hContext                    ///< [in] handle of context object
     )
 {
-    auto pfnGetStatus = ze_lib::context.zeDdiTable.Context.pfnGetStatus;
+    auto pfnGetStatus = ze_lib::context->zeDdiTable.Context.pfnGetStatus;
     if( nullptr == pfnGetStatus )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -862,7 +862,7 @@ zeCommandQueueCreate(
     ze_command_queue_handle_t* phCommandQueue       ///< [out] pointer to handle of command queue object created
     )
 {
-    auto pfnCreate = ze_lib::context.zeDdiTable.CommandQueue.pfnCreate;
+    auto pfnCreate = ze_lib::context->zeDdiTable.CommandQueue.pfnCreate;
     if( nullptr == pfnCreate )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -899,7 +899,7 @@ zeCommandQueueDestroy(
     ze_command_queue_handle_t hCommandQueue         ///< [in][release] handle of command queue object to destroy
     )
 {
-    auto pfnDestroy = ze_lib::context.zeDdiTable.CommandQueue.pfnDestroy;
+    auto pfnDestroy = ze_lib::context->zeDdiTable.CommandQueue.pfnDestroy;
     if( nullptr == pfnDestroy )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -945,7 +945,7 @@ zeCommandQueueExecuteCommandLists(
     ze_fence_handle_t hFence                        ///< [in][optional] handle of the fence to signal on completion
     )
 {
-    auto pfnExecuteCommandLists = ze_lib::context.zeDdiTable.CommandQueue.pfnExecuteCommandLists;
+    auto pfnExecuteCommandLists = ze_lib::context->zeDdiTable.CommandQueue.pfnExecuteCommandLists;
     if( nullptr == pfnExecuteCommandLists )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -979,7 +979,7 @@ zeCommandQueueSynchronize(
                                                     ///< value allowed by the accuracy of those dependencies.
     )
 {
-    auto pfnSynchronize = ze_lib::context.zeDdiTable.CommandQueue.pfnSynchronize;
+    auto pfnSynchronize = ze_lib::context->zeDdiTable.CommandQueue.pfnSynchronize;
     if( nullptr == pfnSynchronize )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -1020,7 +1020,7 @@ zeCommandListCreate(
     ze_command_list_handle_t* phCommandList         ///< [out] pointer to handle of command list object created
     )
 {
-    auto pfnCreate = ze_lib::context.zeDdiTable.CommandList.pfnCreate;
+    auto pfnCreate = ze_lib::context->zeDdiTable.CommandList.pfnCreate;
     if( nullptr == pfnCreate )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -1065,7 +1065,7 @@ zeCommandListCreateImmediate(
     ze_command_list_handle_t* phCommandList         ///< [out] pointer to handle of command list object created
     )
 {
-    auto pfnCreateImmediate = ze_lib::context.zeDdiTable.CommandList.pfnCreateImmediate;
+    auto pfnCreateImmediate = ze_lib::context->zeDdiTable.CommandList.pfnCreateImmediate;
     if( nullptr == pfnCreateImmediate )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -1096,7 +1096,7 @@ zeCommandListDestroy(
     ze_command_list_handle_t hCommandList           ///< [in][release] handle of command list object to destroy
     )
 {
-    auto pfnDestroy = ze_lib::context.zeDdiTable.CommandList.pfnDestroy;
+    auto pfnDestroy = ze_lib::context->zeDdiTable.CommandList.pfnDestroy;
     if( nullptr == pfnDestroy )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -1122,7 +1122,7 @@ zeCommandListClose(
     ze_command_list_handle_t hCommandList           ///< [in] handle of command list object to close
     )
 {
-    auto pfnClose = ze_lib::context.zeDdiTable.CommandList.pfnClose;
+    auto pfnClose = ze_lib::context->zeDdiTable.CommandList.pfnClose;
     if( nullptr == pfnClose )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -1151,7 +1151,7 @@ zeCommandListReset(
     ze_command_list_handle_t hCommandList           ///< [in] handle of command list object to reset
     )
 {
-    auto pfnReset = ze_lib::context.zeDdiTable.CommandList.pfnReset;
+    auto pfnReset = ze_lib::context->zeDdiTable.CommandList.pfnReset;
     if( nullptr == pfnReset )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -1200,7 +1200,7 @@ zeCommandListAppendWriteGlobalTimestamp(
                                                     ///< on before executing query
     )
 {
-    auto pfnAppendWriteGlobalTimestamp = ze_lib::context.zeDdiTable.CommandList.pfnAppendWriteGlobalTimestamp;
+    auto pfnAppendWriteGlobalTimestamp = ze_lib::context->zeDdiTable.CommandList.pfnAppendWriteGlobalTimestamp;
     if( nullptr == pfnAppendWriteGlobalTimestamp )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -1247,7 +1247,7 @@ zeCommandListAppendBarrier(
                                                     ///< on before executing barrier
     )
 {
-    auto pfnAppendBarrier = ze_lib::context.zeDdiTable.CommandList.pfnAppendBarrier;
+    auto pfnAppendBarrier = ze_lib::context->zeDdiTable.CommandList.pfnAppendBarrier;
     if( nullptr == pfnAppendBarrier )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -1295,7 +1295,7 @@ zeCommandListAppendMemoryRangesBarrier(
                                                     ///< on before executing barrier
     )
 {
-    auto pfnAppendMemoryRangesBarrier = ze_lib::context.zeDdiTable.CommandList.pfnAppendMemoryRangesBarrier;
+    auto pfnAppendMemoryRangesBarrier = ze_lib::context->zeDdiTable.CommandList.pfnAppendMemoryRangesBarrier;
     if( nullptr == pfnAppendMemoryRangesBarrier )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -1328,7 +1328,7 @@ zeContextSystemBarrier(
     ze_device_handle_t hDevice                      ///< [in] handle of the device
     )
 {
-    auto pfnSystemBarrier = ze_lib::context.zeDdiTable.Context.pfnSystemBarrier;
+    auto pfnSystemBarrier = ze_lib::context->zeDdiTable.Context.pfnSystemBarrier;
     if( nullptr == pfnSystemBarrier )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -1384,7 +1384,7 @@ zeCommandListAppendMemoryCopy(
                                                     ///< on before launching
     )
 {
-    auto pfnAppendMemoryCopy = ze_lib::context.zeDdiTable.CommandList.pfnAppendMemoryCopy;
+    auto pfnAppendMemoryCopy = ze_lib::context->zeDdiTable.CommandList.pfnAppendMemoryCopy;
     if( nullptr == pfnAppendMemoryCopy )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -1443,7 +1443,7 @@ zeCommandListAppendMemoryFill(
                                                     ///< on before launching
     )
 {
-    auto pfnAppendMemoryFill = ze_lib::context.zeDdiTable.CommandList.pfnAppendMemoryFill;
+    auto pfnAppendMemoryFill = ze_lib::context->zeDdiTable.CommandList.pfnAppendMemoryFill;
     if( nullptr == pfnAppendMemoryFill )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -1508,7 +1508,7 @@ zeCommandListAppendMemoryCopyRegion(
                                                     ///< on before launching
     )
 {
-    auto pfnAppendMemoryCopyRegion = ze_lib::context.zeDdiTable.CommandList.pfnAppendMemoryCopyRegion;
+    auto pfnAppendMemoryCopyRegion = ze_lib::context->zeDdiTable.CommandList.pfnAppendMemoryCopyRegion;
     if( nullptr == pfnAppendMemoryCopyRegion )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -1560,7 +1560,7 @@ zeCommandListAppendMemoryCopyFromContext(
                                                     ///< on before launching
     )
 {
-    auto pfnAppendMemoryCopyFromContext = ze_lib::context.zeDdiTable.CommandList.pfnAppendMemoryCopyFromContext;
+    auto pfnAppendMemoryCopyFromContext = ze_lib::context->zeDdiTable.CommandList.pfnAppendMemoryCopyFromContext;
     if( nullptr == pfnAppendMemoryCopyFromContext )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -1608,7 +1608,7 @@ zeCommandListAppendImageCopy(
                                                     ///< on before launching
     )
 {
-    auto pfnAppendImageCopy = ze_lib::context.zeDdiTable.CommandList.pfnAppendImageCopy;
+    auto pfnAppendImageCopy = ze_lib::context->zeDdiTable.CommandList.pfnAppendImageCopy;
     if( nullptr == pfnAppendImageCopy )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -1658,7 +1658,7 @@ zeCommandListAppendImageCopyRegion(
                                                     ///< on before launching
     )
 {
-    auto pfnAppendImageCopyRegion = ze_lib::context.zeDdiTable.CommandList.pfnAppendImageCopyRegion;
+    auto pfnAppendImageCopyRegion = ze_lib::context->zeDdiTable.CommandList.pfnAppendImageCopyRegion;
     if( nullptr == pfnAppendImageCopyRegion )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -1713,7 +1713,7 @@ zeCommandListAppendImageCopyToMemory(
                                                     ///< on before launching
     )
 {
-    auto pfnAppendImageCopyToMemory = ze_lib::context.zeDdiTable.CommandList.pfnAppendImageCopyToMemory;
+    auto pfnAppendImageCopyToMemory = ze_lib::context->zeDdiTable.CommandList.pfnAppendImageCopyToMemory;
     if( nullptr == pfnAppendImageCopyToMemory )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -1768,7 +1768,7 @@ zeCommandListAppendImageCopyFromMemory(
                                                     ///< on before launching
     )
 {
-    auto pfnAppendImageCopyFromMemory = ze_lib::context.zeDdiTable.CommandList.pfnAppendImageCopyFromMemory;
+    auto pfnAppendImageCopyFromMemory = ze_lib::context->zeDdiTable.CommandList.pfnAppendImageCopyFromMemory;
     if( nullptr == pfnAppendImageCopyFromMemory )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -1819,7 +1819,7 @@ zeCommandListAppendMemoryPrefetch(
     size_t size                                     ///< [in] size in bytes of the memory range to prefetch
     )
 {
-    auto pfnAppendMemoryPrefetch = ze_lib::context.zeDdiTable.CommandList.pfnAppendMemoryPrefetch;
+    auto pfnAppendMemoryPrefetch = ze_lib::context->zeDdiTable.CommandList.pfnAppendMemoryPrefetch;
     if( nullptr == pfnAppendMemoryPrefetch )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -1870,7 +1870,7 @@ zeCommandListAppendMemAdvise(
     ze_memory_advice_t advice                       ///< [in] Memory advice for the memory range
     )
 {
-    auto pfnAppendMemAdvise = ze_lib::context.zeDdiTable.CommandList.pfnAppendMemAdvise;
+    auto pfnAppendMemAdvise = ze_lib::context->zeDdiTable.CommandList.pfnAppendMemAdvise;
     if( nullptr == pfnAppendMemAdvise )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -1915,7 +1915,7 @@ zeEventPoolCreate(
     ze_event_pool_handle_t* phEventPool             ///< [out] pointer handle of event pool object created
     )
 {
-    auto pfnCreate = ze_lib::context.zeDdiTable.EventPool.pfnCreate;
+    auto pfnCreate = ze_lib::context->zeDdiTable.EventPool.pfnCreate;
     if( nullptr == pfnCreate )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -1948,7 +1948,7 @@ zeEventPoolDestroy(
     ze_event_pool_handle_t hEventPool               ///< [in][release] handle of event pool object to destroy
     )
 {
-    auto pfnDestroy = ze_lib::context.zeDdiTable.EventPool.pfnDestroy;
+    auto pfnDestroy = ze_lib::context->zeDdiTable.EventPool.pfnDestroy;
     if( nullptr == pfnDestroy )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -1992,7 +1992,7 @@ zeEventCreate(
     ze_event_handle_t* phEvent                      ///< [out] pointer to handle of event object created
     )
 {
-    auto pfnCreate = ze_lib::context.zeDdiTable.Event.pfnCreate;
+    auto pfnCreate = ze_lib::context->zeDdiTable.Event.pfnCreate;
     if( nullptr == pfnCreate )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -2028,7 +2028,7 @@ zeEventDestroy(
     ze_event_handle_t hEvent                        ///< [in][release] handle of event object to destroy
     )
 {
-    auto pfnDestroy = ze_lib::context.zeDdiTable.Event.pfnDestroy;
+    auto pfnDestroy = ze_lib::context->zeDdiTable.Event.pfnDestroy;
     if( nullptr == pfnDestroy )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -2058,7 +2058,7 @@ zeEventPoolGetIpcHandle(
     ze_ipc_event_pool_handle_t* phIpc               ///< [out] Returned IPC event handle
     )
 {
-    auto pfnGetIpcHandle = ze_lib::context.zeDdiTable.EventPool.pfnGetIpcHandle;
+    auto pfnGetIpcHandle = ze_lib::context->zeDdiTable.EventPool.pfnGetIpcHandle;
     if( nullptr == pfnGetIpcHandle )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -2092,7 +2092,7 @@ zeEventPoolOpenIpcHandle(
     ze_event_pool_handle_t* phEventPool             ///< [out] pointer handle of event pool object created
     )
 {
-    auto pfnOpenIpcHandle = ze_lib::context.zeDdiTable.EventPool.pfnOpenIpcHandle;
+    auto pfnOpenIpcHandle = ze_lib::context->zeDdiTable.EventPool.pfnOpenIpcHandle;
     if( nullptr == pfnOpenIpcHandle )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -2119,7 +2119,7 @@ zeEventPoolCloseIpcHandle(
     ze_event_pool_handle_t hEventPool               ///< [in][release] handle of event pool object
     )
 {
-    auto pfnCloseIpcHandle = ze_lib::context.zeDdiTable.EventPool.pfnCloseIpcHandle;
+    auto pfnCloseIpcHandle = ze_lib::context->zeDdiTable.EventPool.pfnCloseIpcHandle;
     if( nullptr == pfnCloseIpcHandle )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -2161,7 +2161,7 @@ zeCommandListAppendSignalEvent(
     ze_event_handle_t hEvent                        ///< [in] handle of the event
     )
 {
-    auto pfnAppendSignalEvent = ze_lib::context.zeDdiTable.CommandList.pfnAppendSignalEvent;
+    auto pfnAppendSignalEvent = ze_lib::context->zeDdiTable.CommandList.pfnAppendSignalEvent;
     if( nullptr == pfnAppendSignalEvent )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -2197,7 +2197,7 @@ zeCommandListAppendWaitOnEvents(
                                                     ///< continuing
     )
 {
-    auto pfnAppendWaitOnEvents = ze_lib::context.zeDdiTable.CommandList.pfnAppendWaitOnEvents;
+    auto pfnAppendWaitOnEvents = ze_lib::context->zeDdiTable.CommandList.pfnAppendWaitOnEvents;
     if( nullptr == pfnAppendWaitOnEvents )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -2231,7 +2231,7 @@ zeEventHostSignal(
     ze_event_handle_t hEvent                        ///< [in] handle of the event
     )
 {
-    auto pfnHostSignal = ze_lib::context.zeDdiTable.Event.pfnHostSignal;
+    auto pfnHostSignal = ze_lib::context->zeDdiTable.Event.pfnHostSignal;
     if( nullptr == pfnHostSignal )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -2270,7 +2270,7 @@ zeEventHostSynchronize(
                                                     ///< value allowed by the accuracy of those dependencies.
     )
 {
-    auto pfnHostSynchronize = ze_lib::context.zeDdiTable.Event.pfnHostSynchronize;
+    auto pfnHostSynchronize = ze_lib::context->zeDdiTable.Event.pfnHostSynchronize;
     if( nullptr == pfnHostSynchronize )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -2303,7 +2303,7 @@ zeEventQueryStatus(
     ze_event_handle_t hEvent                        ///< [in] handle of the event
     )
 {
-    auto pfnQueryStatus = ze_lib::context.zeDdiTable.Event.pfnQueryStatus;
+    auto pfnQueryStatus = ze_lib::context->zeDdiTable.Event.pfnQueryStatus;
     if( nullptr == pfnQueryStatus )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -2341,7 +2341,7 @@ zeCommandListAppendEventReset(
     ze_event_handle_t hEvent                        ///< [in] handle of the event
     )
 {
-    auto pfnAppendEventReset = ze_lib::context.zeDdiTable.CommandList.pfnAppendEventReset;
+    auto pfnAppendEventReset = ze_lib::context->zeDdiTable.CommandList.pfnAppendEventReset;
     if( nullptr == pfnAppendEventReset )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -2371,7 +2371,7 @@ zeEventHostReset(
     ze_event_handle_t hEvent                        ///< [in] handle of the event
     )
 {
-    auto pfnHostReset = ze_lib::context.zeDdiTable.Event.pfnHostReset;
+    auto pfnHostReset = ze_lib::context->zeDdiTable.Event.pfnHostReset;
     if( nullptr == pfnHostReset )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -2406,7 +2406,7 @@ zeEventQueryKernelTimestamp(
     ze_kernel_timestamp_result_t* dstptr            ///< [in,out] pointer to memory for where timestamp result will be written.
     )
 {
-    auto pfnQueryKernelTimestamp = ze_lib::context.zeDdiTable.Event.pfnQueryKernelTimestamp;
+    auto pfnQueryKernelTimestamp = ze_lib::context->zeDdiTable.Event.pfnQueryKernelTimestamp;
     if( nullptr == pfnQueryKernelTimestamp )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -2463,7 +2463,7 @@ zeCommandListAppendQueryKernelTimestamps(
                                                     ///< on before executing query
     )
 {
-    auto pfnAppendQueryKernelTimestamps = ze_lib::context.zeDdiTable.CommandList.pfnAppendQueryKernelTimestamps;
+    auto pfnAppendQueryKernelTimestamps = ze_lib::context->zeDdiTable.CommandList.pfnAppendQueryKernelTimestamps;
     if( nullptr == pfnAppendQueryKernelTimestamps )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -2505,7 +2505,7 @@ zeFenceCreate(
     ze_fence_handle_t* phFence                      ///< [out] pointer to handle of fence object created
     )
 {
-    auto pfnCreate = ze_lib::context.zeDdiTable.Fence.pfnCreate;
+    auto pfnCreate = ze_lib::context->zeDdiTable.Fence.pfnCreate;
     if( nullptr == pfnCreate )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -2540,7 +2540,7 @@ zeFenceDestroy(
     ze_fence_handle_t hFence                        ///< [in][release] handle of fence object to destroy
     )
 {
-    auto pfnDestroy = ze_lib::context.zeDdiTable.Fence.pfnDestroy;
+    auto pfnDestroy = ze_lib::context->zeDdiTable.Fence.pfnDestroy;
     if( nullptr == pfnDestroy )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -2579,7 +2579,7 @@ zeFenceHostSynchronize(
                                                     ///< value allowed by the accuracy of those dependencies.
     )
 {
-    auto pfnHostSynchronize = ze_lib::context.zeDdiTable.Fence.pfnHostSynchronize;
+    auto pfnHostSynchronize = ze_lib::context->zeDdiTable.Fence.pfnHostSynchronize;
     if( nullptr == pfnHostSynchronize )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -2611,7 +2611,7 @@ zeFenceQueryStatus(
     ze_fence_handle_t hFence                        ///< [in] handle of the fence
     )
 {
-    auto pfnQueryStatus = ze_lib::context.zeDdiTable.Fence.pfnQueryStatus;
+    auto pfnQueryStatus = ze_lib::context->zeDdiTable.Fence.pfnQueryStatus;
     if( nullptr == pfnQueryStatus )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -2640,7 +2640,7 @@ zeFenceReset(
     ze_fence_handle_t hFence                        ///< [in] handle of the fence
     )
 {
-    auto pfnReset = ze_lib::context.zeDdiTable.Fence.pfnReset;
+    auto pfnReset = ze_lib::context->zeDdiTable.Fence.pfnReset;
     if( nullptr == pfnReset )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -2673,7 +2673,7 @@ zeImageGetProperties(
     ze_image_properties_t* pImageProperties         ///< [out] pointer to image properties
     )
 {
-    auto pfnGetProperties = ze_lib::context.zeDdiTable.Image.pfnGetProperties;
+    auto pfnGetProperties = ze_lib::context->zeDdiTable.Image.pfnGetProperties;
     if( nullptr == pfnGetProperties )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -2717,7 +2717,7 @@ zeImageCreate(
     ze_image_handle_t* phImage                      ///< [out] pointer to handle of image object created
     )
 {
-    auto pfnCreate = ze_lib::context.zeDdiTable.Image.pfnCreate;
+    auto pfnCreate = ze_lib::context->zeDdiTable.Image.pfnCreate;
     if( nullptr == pfnCreate )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -2748,7 +2748,7 @@ zeImageDestroy(
     ze_image_handle_t hImage                        ///< [in][release] handle of image object to destroy
     )
 {
-    auto pfnDestroy = ze_lib::context.zeDdiTable.Image.pfnDestroy;
+    auto pfnDestroy = ze_lib::context->zeDdiTable.Image.pfnDestroy;
     if( nullptr == pfnDestroy )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -2810,7 +2810,7 @@ zeMemAllocShared(
     void** pptr                                     ///< [out] pointer to shared allocation
     )
 {
-    auto pfnAllocShared = ze_lib::context.zeDdiTable.Mem.pfnAllocShared;
+    auto pfnAllocShared = ze_lib::context->zeDdiTable.Mem.pfnAllocShared;
     if( nullptr == pfnAllocShared )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -2860,7 +2860,7 @@ zeMemAllocDevice(
     void** pptr                                     ///< [out] pointer to device allocation
     )
 {
-    auto pfnAllocDevice = ze_lib::context.zeDdiTable.Mem.pfnAllocDevice;
+    auto pfnAllocDevice = ze_lib::context->zeDdiTable.Mem.pfnAllocDevice;
     if( nullptr == pfnAllocDevice )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -2910,7 +2910,7 @@ zeMemAllocHost(
     void** pptr                                     ///< [out] pointer to host allocation
     )
 {
-    auto pfnAllocHost = ze_lib::context.zeDdiTable.Mem.pfnAllocHost;
+    auto pfnAllocHost = ze_lib::context->zeDdiTable.Mem.pfnAllocHost;
     if( nullptr == pfnAllocHost )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -2944,7 +2944,7 @@ zeMemFree(
     void* ptr                                       ///< [in][release] pointer to memory to free
     )
 {
-    auto pfnFree = ze_lib::context.zeDdiTable.Mem.pfnFree;
+    auto pfnFree = ze_lib::context->zeDdiTable.Mem.pfnFree;
     if( nullptr == pfnFree )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -2979,7 +2979,7 @@ zeMemGetAllocProperties(
     ze_device_handle_t* phDevice                    ///< [out][optional] device associated with this allocation
     )
 {
-    auto pfnGetAllocProperties = ze_lib::context.zeDdiTable.Mem.pfnGetAllocProperties;
+    auto pfnGetAllocProperties = ze_lib::context->zeDdiTable.Mem.pfnGetAllocProperties;
     if( nullptr == pfnGetAllocProperties )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -3008,7 +3008,7 @@ zeMemGetAddressRange(
     size_t* pSize                                   ///< [in,out][optional] size of the allocation
     )
 {
-    auto pfnGetAddressRange = ze_lib::context.zeDdiTable.Mem.pfnGetAddressRange;
+    auto pfnGetAddressRange = ze_lib::context->zeDdiTable.Mem.pfnGetAddressRange;
     if( nullptr == pfnGetAddressRange )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -3042,7 +3042,7 @@ zeMemGetIpcHandle(
     ze_ipc_mem_handle_t* pIpcHandle                 ///< [out] Returned IPC memory handle
     )
 {
-    auto pfnGetIpcHandle = ze_lib::context.zeDdiTable.Mem.pfnGetIpcHandle;
+    auto pfnGetIpcHandle = ze_lib::context->zeDdiTable.Mem.pfnGetIpcHandle;
     if( nullptr == pfnGetIpcHandle )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -3084,7 +3084,7 @@ zeMemOpenIpcHandle(
     void** pptr                                     ///< [out] pointer to device allocation in this process
     )
 {
-    auto pfnOpenIpcHandle = ze_lib::context.zeDdiTable.Mem.pfnOpenIpcHandle;
+    auto pfnOpenIpcHandle = ze_lib::context->zeDdiTable.Mem.pfnOpenIpcHandle;
     if( nullptr == pfnOpenIpcHandle )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -3115,7 +3115,7 @@ zeMemCloseIpcHandle(
     const void* ptr                                 ///< [in][release] pointer to device allocation in this process
     )
 {
-    auto pfnCloseIpcHandle = ze_lib::context.zeDdiTable.Mem.pfnCloseIpcHandle;
+    auto pfnCloseIpcHandle = ze_lib::context->zeDdiTable.Mem.pfnCloseIpcHandle;
     if( nullptr == pfnCloseIpcHandle )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -3166,7 +3166,7 @@ zeModuleCreate(
     ze_module_build_log_handle_t* phBuildLog        ///< [out][optional] pointer to handle of module's build log.
     )
 {
-    auto pfnCreate = ze_lib::context.zeDdiTable.Module.pfnCreate;
+    auto pfnCreate = ze_lib::context->zeDdiTable.Module.pfnCreate;
     if( nullptr == pfnCreate )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -3199,7 +3199,7 @@ zeModuleDestroy(
     ze_module_handle_t hModule                      ///< [in][release] handle of the module
     )
 {
-    auto pfnDestroy = ze_lib::context.zeDdiTable.Module.pfnDestroy;
+    auto pfnDestroy = ze_lib::context->zeDdiTable.Module.pfnDestroy;
     if( nullptr == pfnDestroy )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -3251,7 +3251,7 @@ zeModuleDynamicLink(
     ze_module_build_log_handle_t* phLinkLog         ///< [out][optional] pointer to handle of dynamic link log.
     )
 {
-    auto pfnDynamicLink = ze_lib::context.zeDdiTable.Module.pfnDynamicLink;
+    auto pfnDynamicLink = ze_lib::context->zeDdiTable.Module.pfnDynamicLink;
     if( nullptr == pfnDynamicLink )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -3282,7 +3282,7 @@ zeModuleBuildLogDestroy(
     ze_module_build_log_handle_t hModuleBuildLog    ///< [in][release] handle of the module build log object.
     )
 {
-    auto pfnDestroy = ze_lib::context.zeDdiTable.ModuleBuildLog.pfnDestroy;
+    auto pfnDestroy = ze_lib::context->zeDdiTable.ModuleBuildLog.pfnDestroy;
     if( nullptr == pfnDestroy )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -3313,7 +3313,7 @@ zeModuleBuildLogGetString(
     char* pBuildLog                                 ///< [in,out][optional] pointer to null-terminated string of the log.
     )
 {
-    auto pfnGetString = ze_lib::context.zeDdiTable.ModuleBuildLog.pfnGetString;
+    auto pfnGetString = ze_lib::context->zeDdiTable.ModuleBuildLog.pfnGetString;
     if( nullptr == pfnGetString )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -3350,7 +3350,7 @@ zeModuleGetNativeBinary(
     uint8_t* pModuleNativeBinary                    ///< [in,out][optional] byte pointer to native binary
     )
 {
-    auto pfnGetNativeBinary = ze_lib::context.zeDdiTable.Module.pfnGetNativeBinary;
+    auto pfnGetNativeBinary = ze_lib::context->zeDdiTable.Module.pfnGetNativeBinary;
     if( nullptr == pfnGetNativeBinary )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -3385,7 +3385,7 @@ zeModuleGetGlobalPointer(
     void** pptr                                     ///< [in,out][optional] device visible pointer
     )
 {
-    auto pfnGetGlobalPointer = ze_lib::context.zeDdiTable.Module.pfnGetGlobalPointer;
+    auto pfnGetGlobalPointer = ze_lib::context->zeDdiTable.Module.pfnGetGlobalPointer;
     if( nullptr == pfnGetGlobalPointer )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -3419,7 +3419,7 @@ zeModuleGetKernelNames(
     const char** pNames                             ///< [in,out][optional][range(0, *pCount)] array of names of functions
     )
 {
-    auto pfnGetKernelNames = ze_lib::context.zeDdiTable.Module.pfnGetKernelNames;
+    auto pfnGetKernelNames = ze_lib::context->zeDdiTable.Module.pfnGetKernelNames;
     if( nullptr == pfnGetKernelNames )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -3447,7 +3447,7 @@ zeModuleGetProperties(
     ze_module_properties_t* pModuleProperties       ///< [in,out] query result for module properties.
     )
 {
-    auto pfnGetProperties = ze_lib::context.zeDdiTable.Module.pfnGetProperties;
+    auto pfnGetProperties = ze_lib::context->zeDdiTable.Module.pfnGetProperties;
     if( nullptr == pfnGetProperties )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -3484,7 +3484,7 @@ zeKernelCreate(
     ze_kernel_handle_t* phKernel                    ///< [out] handle of the Function object
     )
 {
-    auto pfnCreate = ze_lib::context.zeDdiTable.Kernel.pfnCreate;
+    auto pfnCreate = ze_lib::context->zeDdiTable.Kernel.pfnCreate;
     if( nullptr == pfnCreate )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -3515,7 +3515,7 @@ zeKernelDestroy(
     ze_kernel_handle_t hKernel                      ///< [in][release] handle of the kernel object
     )
 {
-    auto pfnDestroy = ze_lib::context.zeDdiTable.Kernel.pfnDestroy;
+    auto pfnDestroy = ze_lib::context->zeDdiTable.Kernel.pfnDestroy;
     if( nullptr == pfnDestroy )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -3549,7 +3549,7 @@ zeModuleGetFunctionPointer(
     void** pfnFunction                              ///< [out] pointer to function.
     )
 {
-    auto pfnGetFunctionPointer = ze_lib::context.zeDdiTable.Module.pfnGetFunctionPointer;
+    auto pfnGetFunctionPointer = ze_lib::context->zeDdiTable.Module.pfnGetFunctionPointer;
     if( nullptr == pfnGetFunctionPointer )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -3583,7 +3583,7 @@ zeKernelSetGroupSize(
     uint32_t groupSizeZ                             ///< [in] group size for Z dimension to use for this kernel
     )
 {
-    auto pfnSetGroupSize = ze_lib::context.zeDdiTable.Kernel.pfnSetGroupSize;
+    auto pfnSetGroupSize = ze_lib::context->zeDdiTable.Kernel.pfnSetGroupSize;
     if( nullptr == pfnSetGroupSize )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -3622,7 +3622,7 @@ zeKernelSuggestGroupSize(
     uint32_t* groupSizeZ                            ///< [out] recommended size of group for Z dimension
     )
 {
-    auto pfnSuggestGroupSize = ze_lib::context.zeDdiTable.Kernel.pfnSuggestGroupSize;
+    auto pfnSuggestGroupSize = ze_lib::context->zeDdiTable.Kernel.pfnSuggestGroupSize;
     if( nullptr == pfnSuggestGroupSize )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -3650,7 +3650,7 @@ zeKernelSuggestMaxCooperativeGroupCount(
     uint32_t* totalGroupCount                       ///< [out] recommended total group count.
     )
 {
-    auto pfnSuggestMaxCooperativeGroupCount = ze_lib::context.zeDdiTable.Kernel.pfnSuggestMaxCooperativeGroupCount;
+    auto pfnSuggestMaxCooperativeGroupCount = ze_lib::context->zeDdiTable.Kernel.pfnSuggestMaxCooperativeGroupCount;
     if( nullptr == pfnSuggestMaxCooperativeGroupCount )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -3687,7 +3687,7 @@ zeKernelSetArgumentValue(
                                                     ///< null then argument value is considered null.
     )
 {
-    auto pfnSetArgumentValue = ze_lib::context.zeDdiTable.Kernel.pfnSetArgumentValue;
+    auto pfnSetArgumentValue = ze_lib::context->zeDdiTable.Kernel.pfnSetArgumentValue;
     if( nullptr == pfnSetArgumentValue )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -3719,7 +3719,7 @@ zeKernelSetIndirectAccess(
     ze_kernel_indirect_access_flags_t flags         ///< [in] kernel indirect access flags
     )
 {
-    auto pfnSetIndirectAccess = ze_lib::context.zeDdiTable.Kernel.pfnSetIndirectAccess;
+    auto pfnSetIndirectAccess = ze_lib::context->zeDdiTable.Kernel.pfnSetIndirectAccess;
     if( nullptr == pfnSetIndirectAccess )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -3748,7 +3748,7 @@ zeKernelGetIndirectAccess(
     ze_kernel_indirect_access_flags_t* pFlags       ///< [out] query result for kernel indirect access flags.
     )
 {
-    auto pfnGetIndirectAccess = ze_lib::context.zeDdiTable.Kernel.pfnGetIndirectAccess;
+    auto pfnGetIndirectAccess = ze_lib::context->zeDdiTable.Kernel.pfnGetIndirectAccess;
     if( nullptr == pfnGetIndirectAccess )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -3784,7 +3784,7 @@ zeKernelGetSourceAttributes(
                                                     ///< source attributes are separated by space.
     )
 {
-    auto pfnGetSourceAttributes = ze_lib::context.zeDdiTable.Kernel.pfnGetSourceAttributes;
+    auto pfnGetSourceAttributes = ze_lib::context->zeDdiTable.Kernel.pfnGetSourceAttributes;
     if( nullptr == pfnGetSourceAttributes )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -3821,7 +3821,7 @@ zeKernelSetCacheConfig(
                                                     ///< must be 0 (default configuration) or a valid combination of ::ze_cache_config_flag_t.
     )
 {
-    auto pfnSetCacheConfig = ze_lib::context.zeDdiTable.Kernel.pfnSetCacheConfig;
+    auto pfnSetCacheConfig = ze_lib::context->zeDdiTable.Kernel.pfnSetCacheConfig;
     if( nullptr == pfnSetCacheConfig )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -3849,7 +3849,7 @@ zeKernelGetProperties(
     ze_kernel_properties_t* pKernelProperties       ///< [in,out] query result for kernel properties.
     )
 {
-    auto pfnGetProperties = ze_lib::context.zeDdiTable.Kernel.pfnGetProperties;
+    auto pfnGetProperties = ze_lib::context->zeDdiTable.Kernel.pfnGetProperties;
     if( nullptr == pfnGetProperties )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -3882,7 +3882,7 @@ zeKernelGetName(
     char* pName                                     ///< [in,out][optional] char pointer to kernel name.
     )
 {
-    auto pfnGetName = ze_lib::context.zeDdiTable.Kernel.pfnGetName;
+    auto pfnGetName = ze_lib::context->zeDdiTable.Kernel.pfnGetName;
     if( nullptr == pfnGetName )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -3927,7 +3927,7 @@ zeCommandListAppendLaunchKernel(
                                                     ///< on before launching
     )
 {
-    auto pfnAppendLaunchKernel = ze_lib::context.zeDdiTable.CommandList.pfnAppendLaunchKernel;
+    auto pfnAppendLaunchKernel = ze_lib::context->zeDdiTable.CommandList.pfnAppendLaunchKernel;
     if( nullptr == pfnAppendLaunchKernel )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -3976,7 +3976,7 @@ zeCommandListAppendLaunchCooperativeKernel(
                                                     ///< on before launching
     )
 {
-    auto pfnAppendLaunchCooperativeKernel = ze_lib::context.zeDdiTable.CommandList.pfnAppendLaunchCooperativeKernel;
+    auto pfnAppendLaunchCooperativeKernel = ze_lib::context->zeDdiTable.CommandList.pfnAppendLaunchCooperativeKernel;
     if( nullptr == pfnAppendLaunchCooperativeKernel )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -4027,7 +4027,7 @@ zeCommandListAppendLaunchKernelIndirect(
                                                     ///< on before launching
     )
 {
-    auto pfnAppendLaunchKernelIndirect = ze_lib::context.zeDdiTable.CommandList.pfnAppendLaunchKernelIndirect;
+    auto pfnAppendLaunchKernelIndirect = ze_lib::context->zeDdiTable.CommandList.pfnAppendLaunchKernelIndirect;
     if( nullptr == pfnAppendLaunchKernelIndirect )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -4085,7 +4085,7 @@ zeCommandListAppendLaunchMultipleKernelsIndirect(
                                                     ///< on before launching
     )
 {
-    auto pfnAppendLaunchMultipleKernelsIndirect = ze_lib::context.zeDdiTable.CommandList.pfnAppendLaunchMultipleKernelsIndirect;
+    auto pfnAppendLaunchMultipleKernelsIndirect = ze_lib::context->zeDdiTable.CommandList.pfnAppendLaunchMultipleKernelsIndirect;
     if( nullptr == pfnAppendLaunchMultipleKernelsIndirect )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -4120,7 +4120,7 @@ zeContextMakeMemoryResident(
     size_t size                                     ///< [in] size in bytes to make resident
     )
 {
-    auto pfnMakeMemoryResident = ze_lib::context.zeDdiTable.Context.pfnMakeMemoryResident;
+    auto pfnMakeMemoryResident = ze_lib::context->zeDdiTable.Context.pfnMakeMemoryResident;
     if( nullptr == pfnMakeMemoryResident )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -4157,7 +4157,7 @@ zeContextEvictMemory(
     size_t size                                     ///< [in] size in bytes to evict
     )
 {
-    auto pfnEvictMemory = ze_lib::context.zeDdiTable.Context.pfnEvictMemory;
+    auto pfnEvictMemory = ze_lib::context->zeDdiTable.Context.pfnEvictMemory;
     if( nullptr == pfnEvictMemory )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -4190,7 +4190,7 @@ zeContextMakeImageResident(
     ze_image_handle_t hImage                        ///< [in] handle of image to make resident
     )
 {
-    auto pfnMakeImageResident = ze_lib::context.zeDdiTable.Context.pfnMakeImageResident;
+    auto pfnMakeImageResident = ze_lib::context->zeDdiTable.Context.pfnMakeImageResident;
     if( nullptr == pfnMakeImageResident )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -4225,7 +4225,7 @@ zeContextEvictImage(
     ze_image_handle_t hImage                        ///< [in] handle of image to make evict
     )
 {
-    auto pfnEvictImage = ze_lib::context.zeDdiTable.Context.pfnEvictImage;
+    auto pfnEvictImage = ze_lib::context->zeDdiTable.Context.pfnEvictImage;
     if( nullptr == pfnEvictImage )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -4263,7 +4263,7 @@ zeSamplerCreate(
     ze_sampler_handle_t* phSampler                  ///< [out] handle of the sampler
     )
 {
-    auto pfnCreate = ze_lib::context.zeDdiTable.Sampler.pfnCreate;
+    auto pfnCreate = ze_lib::context->zeDdiTable.Sampler.pfnCreate;
     if( nullptr == pfnCreate )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -4294,7 +4294,7 @@ zeSamplerDestroy(
     ze_sampler_handle_t hSampler                    ///< [in][release] handle of the sampler
     )
 {
-    auto pfnDestroy = ze_lib::context.zeDdiTable.Sampler.pfnDestroy;
+    auto pfnDestroy = ze_lib::context->zeDdiTable.Sampler.pfnDestroy;
     if( nullptr == pfnDestroy )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -4339,7 +4339,7 @@ zeVirtualMemReserve(
     void** pptr                                     ///< [out] pointer to virtual reservation.
     )
 {
-    auto pfnReserve = ze_lib::context.zeDdiTable.VirtualMem.pfnReserve;
+    auto pfnReserve = ze_lib::context->zeDdiTable.VirtualMem.pfnReserve;
     if( nullptr == pfnReserve )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -4374,7 +4374,7 @@ zeVirtualMemFree(
     size_t size                                     ///< [in] size in bytes to free; must be page aligned.
     )
 {
-    auto pfnFree = ze_lib::context.zeDdiTable.VirtualMem.pfnFree;
+    auto pfnFree = ze_lib::context->zeDdiTable.VirtualMem.pfnFree;
     if( nullptr == pfnFree )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -4409,7 +4409,7 @@ zeVirtualMemQueryPageSize(
                                                     ///< alignments.
     )
 {
-    auto pfnQueryPageSize = ze_lib::context.zeDdiTable.VirtualMem.pfnQueryPageSize;
+    auto pfnQueryPageSize = ze_lib::context->zeDdiTable.VirtualMem.pfnQueryPageSize;
     if( nullptr == pfnQueryPageSize )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -4450,7 +4450,7 @@ zePhysicalMemCreate(
     ze_physical_mem_handle_t* phPhysicalMemory      ///< [out] pointer to handle of physical memory object created
     )
 {
-    auto pfnCreate = ze_lib::context.zeDdiTable.PhysicalMem.pfnCreate;
+    auto pfnCreate = ze_lib::context->zeDdiTable.PhysicalMem.pfnCreate;
     if( nullptr == pfnCreate )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -4481,7 +4481,7 @@ zePhysicalMemDestroy(
     ze_physical_mem_handle_t hPhysicalMemory        ///< [in][release] handle of physical memory object to destroy
     )
 {
-    auto pfnDestroy = ze_lib::context.zeDdiTable.PhysicalMem.pfnDestroy;
+    auto pfnDestroy = ze_lib::context->zeDdiTable.PhysicalMem.pfnDestroy;
     if( nullptr == pfnDestroy )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -4533,7 +4533,7 @@ zeVirtualMemMap(
                                                     ///< range.
     )
 {
-    auto pfnMap = ze_lib::context.zeDdiTable.VirtualMem.pfnMap;
+    auto pfnMap = ze_lib::context->zeDdiTable.VirtualMem.pfnMap;
     if( nullptr == pfnMap )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -4571,7 +4571,7 @@ zeVirtualMemUnmap(
     size_t size                                     ///< [in] size in bytes to unmap; must be page aligned.
     )
 {
-    auto pfnUnmap = ze_lib::context.zeDdiTable.VirtualMem.pfnUnmap;
+    auto pfnUnmap = ze_lib::context->zeDdiTable.VirtualMem.pfnUnmap;
     if( nullptr == pfnUnmap )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -4609,7 +4609,7 @@ zeVirtualMemSetAccessAttribute(
                                                     ///< range.
     )
 {
-    auto pfnSetAccessAttribute = ze_lib::context.zeDdiTable.VirtualMem.pfnSetAccessAttribute;
+    auto pfnSetAccessAttribute = ze_lib::context->zeDdiTable.VirtualMem.pfnSetAccessAttribute;
     if( nullptr == pfnSetAccessAttribute )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -4650,7 +4650,7 @@ zeVirtualMemGetAccessAttribute(
                                                     ///< that shares same access attribute.
     )
 {
-    auto pfnGetAccessAttribute = ze_lib::context.zeDdiTable.VirtualMem.pfnGetAccessAttribute;
+    auto pfnGetAccessAttribute = ze_lib::context->zeDdiTable.VirtualMem.pfnGetAccessAttribute;
     if( nullptr == pfnGetAccessAttribute )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 

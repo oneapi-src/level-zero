@@ -22,11 +22,13 @@ if(WIN32)
     target_sources(${TARGET_LOADER_NAME}
         PRIVATE
             ${CMAKE_CURRENT_SOURCE_DIR}/windows/driver_discovery_win.cpp
+            ${CMAKE_CURRENT_SOURCE_DIR}/windows/loader_init.cpp
     )
 else()
     target_sources(${TARGET_LOADER_NAME}
         PRIVATE
             ${CMAKE_CURRENT_SOURCE_DIR}/linux/driver_discovery_lin.cpp
+            ${CMAKE_CURRENT_SOURCE_DIR}/linux/loader_init.cpp
     )
 endif()
 

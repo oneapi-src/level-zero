@@ -1268,19 +1268,19 @@ zetGetDeviceProcAddrTable(
     zet_device_dditable_t* pDdiTable                ///< [in,out] pointer to table of DDI function pointers
     )
 {
-    if( loader::context.drivers.size() < 1 )
+    if( loader::context->drivers.size() < 1 )
         return ZE_RESULT_ERROR_UNINITIALIZED;
 
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if( loader::context.version < version )
+    if( loader::context->version < version )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
     // Load the device-driver DDI tables
-    for( auto& drv : loader::context.drivers )
+    for( auto& drv : loader::context->drivers )
     {
         if( ZE_RESULT_SUCCESS == result )
         {
@@ -1292,7 +1292,7 @@ zetGetDeviceProcAddrTable(
 
     if( ZE_RESULT_SUCCESS == result )
     {
-        if( ( loader::context.drivers.size() > 1 ) || loader::context.forceIntercept )
+        if( ( loader::context->drivers.size() > 1 ) || loader::context->forceIntercept )
         {
             // return pointers to loader's DDIs
             pDdiTable->pfnGetDebugProperties                       = loader::zetDeviceGetDebugProperties;
@@ -1300,15 +1300,15 @@ zetGetDeviceProcAddrTable(
         else
         {
             // return pointers directly to driver's DDIs
-            *pDdiTable = loader::context.drivers.front().dditable.zet.Device;
+            *pDdiTable = loader::context->drivers.front().dditable.zet.Device;
         }
     }
 
     // If the validation layer is enabled, then intercept the loader's DDIs
-    if(( ZE_RESULT_SUCCESS == result ) && ( nullptr != loader::context.validationLayer ))
+    if(( ZE_RESULT_SUCCESS == result ) && ( nullptr != loader::context->validationLayer ))
     {
         auto getTable = reinterpret_cast<zet_pfnGetDeviceProcAddrTable_t>(
-            GET_FUNCTION_PTR(loader::context.validationLayer, "zetGetDeviceProcAddrTable") );
+            GET_FUNCTION_PTR(loader::context->validationLayer, "zetGetDeviceProcAddrTable") );
         result = getTable( version, pDdiTable );
     }
 
@@ -1330,19 +1330,19 @@ zetGetContextProcAddrTable(
     zet_context_dditable_t* pDdiTable               ///< [in,out] pointer to table of DDI function pointers
     )
 {
-    if( loader::context.drivers.size() < 1 )
+    if( loader::context->drivers.size() < 1 )
         return ZE_RESULT_ERROR_UNINITIALIZED;
 
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if( loader::context.version < version )
+    if( loader::context->version < version )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
     // Load the device-driver DDI tables
-    for( auto& drv : loader::context.drivers )
+    for( auto& drv : loader::context->drivers )
     {
         if( ZE_RESULT_SUCCESS == result )
         {
@@ -1354,7 +1354,7 @@ zetGetContextProcAddrTable(
 
     if( ZE_RESULT_SUCCESS == result )
     {
-        if( ( loader::context.drivers.size() > 1 ) || loader::context.forceIntercept )
+        if( ( loader::context->drivers.size() > 1 ) || loader::context->forceIntercept )
         {
             // return pointers to loader's DDIs
             pDdiTable->pfnActivateMetricGroups                     = loader::zetContextActivateMetricGroups;
@@ -1362,15 +1362,15 @@ zetGetContextProcAddrTable(
         else
         {
             // return pointers directly to driver's DDIs
-            *pDdiTable = loader::context.drivers.front().dditable.zet.Context;
+            *pDdiTable = loader::context->drivers.front().dditable.zet.Context;
         }
     }
 
     // If the validation layer is enabled, then intercept the loader's DDIs
-    if(( ZE_RESULT_SUCCESS == result ) && ( nullptr != loader::context.validationLayer ))
+    if(( ZE_RESULT_SUCCESS == result ) && ( nullptr != loader::context->validationLayer ))
     {
         auto getTable = reinterpret_cast<zet_pfnGetContextProcAddrTable_t>(
-            GET_FUNCTION_PTR(loader::context.validationLayer, "zetGetContextProcAddrTable") );
+            GET_FUNCTION_PTR(loader::context->validationLayer, "zetGetContextProcAddrTable") );
         result = getTable( version, pDdiTable );
     }
 
@@ -1392,19 +1392,19 @@ zetGetCommandListProcAddrTable(
     zet_command_list_dditable_t* pDdiTable          ///< [in,out] pointer to table of DDI function pointers
     )
 {
-    if( loader::context.drivers.size() < 1 )
+    if( loader::context->drivers.size() < 1 )
         return ZE_RESULT_ERROR_UNINITIALIZED;
 
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if( loader::context.version < version )
+    if( loader::context->version < version )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
     // Load the device-driver DDI tables
-    for( auto& drv : loader::context.drivers )
+    for( auto& drv : loader::context->drivers )
     {
         if( ZE_RESULT_SUCCESS == result )
         {
@@ -1416,7 +1416,7 @@ zetGetCommandListProcAddrTable(
 
     if( ZE_RESULT_SUCCESS == result )
     {
-        if( ( loader::context.drivers.size() > 1 ) || loader::context.forceIntercept )
+        if( ( loader::context->drivers.size() > 1 ) || loader::context->forceIntercept )
         {
             // return pointers to loader's DDIs
             pDdiTable->pfnAppendMetricStreamerMarker               = loader::zetCommandListAppendMetricStreamerMarker;
@@ -1427,15 +1427,15 @@ zetGetCommandListProcAddrTable(
         else
         {
             // return pointers directly to driver's DDIs
-            *pDdiTable = loader::context.drivers.front().dditable.zet.CommandList;
+            *pDdiTable = loader::context->drivers.front().dditable.zet.CommandList;
         }
     }
 
     // If the validation layer is enabled, then intercept the loader's DDIs
-    if(( ZE_RESULT_SUCCESS == result ) && ( nullptr != loader::context.validationLayer ))
+    if(( ZE_RESULT_SUCCESS == result ) && ( nullptr != loader::context->validationLayer ))
     {
         auto getTable = reinterpret_cast<zet_pfnGetCommandListProcAddrTable_t>(
-            GET_FUNCTION_PTR(loader::context.validationLayer, "zetGetCommandListProcAddrTable") );
+            GET_FUNCTION_PTR(loader::context->validationLayer, "zetGetCommandListProcAddrTable") );
         result = getTable( version, pDdiTable );
     }
 
@@ -1457,19 +1457,19 @@ zetGetKernelProcAddrTable(
     zet_kernel_dditable_t* pDdiTable                ///< [in,out] pointer to table of DDI function pointers
     )
 {
-    if( loader::context.drivers.size() < 1 )
+    if( loader::context->drivers.size() < 1 )
         return ZE_RESULT_ERROR_UNINITIALIZED;
 
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if( loader::context.version < version )
+    if( loader::context->version < version )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
     // Load the device-driver DDI tables
-    for( auto& drv : loader::context.drivers )
+    for( auto& drv : loader::context->drivers )
     {
         if( ZE_RESULT_SUCCESS == result )
         {
@@ -1481,7 +1481,7 @@ zetGetKernelProcAddrTable(
 
     if( ZE_RESULT_SUCCESS == result )
     {
-        if( ( loader::context.drivers.size() > 1 ) || loader::context.forceIntercept )
+        if( ( loader::context->drivers.size() > 1 ) || loader::context->forceIntercept )
         {
             // return pointers to loader's DDIs
             pDdiTable->pfnGetProfileInfo                           = loader::zetKernelGetProfileInfo;
@@ -1489,15 +1489,15 @@ zetGetKernelProcAddrTable(
         else
         {
             // return pointers directly to driver's DDIs
-            *pDdiTable = loader::context.drivers.front().dditable.zet.Kernel;
+            *pDdiTable = loader::context->drivers.front().dditable.zet.Kernel;
         }
     }
 
     // If the validation layer is enabled, then intercept the loader's DDIs
-    if(( ZE_RESULT_SUCCESS == result ) && ( nullptr != loader::context.validationLayer ))
+    if(( ZE_RESULT_SUCCESS == result ) && ( nullptr != loader::context->validationLayer ))
     {
         auto getTable = reinterpret_cast<zet_pfnGetKernelProcAddrTable_t>(
-            GET_FUNCTION_PTR(loader::context.validationLayer, "zetGetKernelProcAddrTable") );
+            GET_FUNCTION_PTR(loader::context->validationLayer, "zetGetKernelProcAddrTable") );
         result = getTable( version, pDdiTable );
     }
 
@@ -1519,19 +1519,19 @@ zetGetModuleProcAddrTable(
     zet_module_dditable_t* pDdiTable                ///< [in,out] pointer to table of DDI function pointers
     )
 {
-    if( loader::context.drivers.size() < 1 )
+    if( loader::context->drivers.size() < 1 )
         return ZE_RESULT_ERROR_UNINITIALIZED;
 
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if( loader::context.version < version )
+    if( loader::context->version < version )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
     // Load the device-driver DDI tables
-    for( auto& drv : loader::context.drivers )
+    for( auto& drv : loader::context->drivers )
     {
         if( ZE_RESULT_SUCCESS == result )
         {
@@ -1543,7 +1543,7 @@ zetGetModuleProcAddrTable(
 
     if( ZE_RESULT_SUCCESS == result )
     {
-        if( ( loader::context.drivers.size() > 1 ) || loader::context.forceIntercept )
+        if( ( loader::context->drivers.size() > 1 ) || loader::context->forceIntercept )
         {
             // return pointers to loader's DDIs
             pDdiTable->pfnGetDebugInfo                             = loader::zetModuleGetDebugInfo;
@@ -1551,15 +1551,15 @@ zetGetModuleProcAddrTable(
         else
         {
             // return pointers directly to driver's DDIs
-            *pDdiTable = loader::context.drivers.front().dditable.zet.Module;
+            *pDdiTable = loader::context->drivers.front().dditable.zet.Module;
         }
     }
 
     // If the validation layer is enabled, then intercept the loader's DDIs
-    if(( ZE_RESULT_SUCCESS == result ) && ( nullptr != loader::context.validationLayer ))
+    if(( ZE_RESULT_SUCCESS == result ) && ( nullptr != loader::context->validationLayer ))
     {
         auto getTable = reinterpret_cast<zet_pfnGetModuleProcAddrTable_t>(
-            GET_FUNCTION_PTR(loader::context.validationLayer, "zetGetModuleProcAddrTable") );
+            GET_FUNCTION_PTR(loader::context->validationLayer, "zetGetModuleProcAddrTable") );
         result = getTable( version, pDdiTable );
     }
 
@@ -1581,19 +1581,19 @@ zetGetDebugProcAddrTable(
     zet_debug_dditable_t* pDdiTable                 ///< [in,out] pointer to table of DDI function pointers
     )
 {
-    if( loader::context.drivers.size() < 1 )
+    if( loader::context->drivers.size() < 1 )
         return ZE_RESULT_ERROR_UNINITIALIZED;
 
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if( loader::context.version < version )
+    if( loader::context->version < version )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
     // Load the device-driver DDI tables
-    for( auto& drv : loader::context.drivers )
+    for( auto& drv : loader::context->drivers )
     {
         if( ZE_RESULT_SUCCESS == result )
         {
@@ -1605,7 +1605,7 @@ zetGetDebugProcAddrTable(
 
     if( ZE_RESULT_SUCCESS == result )
     {
-        if( ( loader::context.drivers.size() > 1 ) || loader::context.forceIntercept )
+        if( ( loader::context->drivers.size() > 1 ) || loader::context->forceIntercept )
         {
             // return pointers to loader's DDIs
             pDdiTable->pfnAttach                                   = loader::zetDebugAttach;
@@ -1623,15 +1623,15 @@ zetGetDebugProcAddrTable(
         else
         {
             // return pointers directly to driver's DDIs
-            *pDdiTable = loader::context.drivers.front().dditable.zet.Debug;
+            *pDdiTable = loader::context->drivers.front().dditable.zet.Debug;
         }
     }
 
     // If the validation layer is enabled, then intercept the loader's DDIs
-    if(( ZE_RESULT_SUCCESS == result ) && ( nullptr != loader::context.validationLayer ))
+    if(( ZE_RESULT_SUCCESS == result ) && ( nullptr != loader::context->validationLayer ))
     {
         auto getTable = reinterpret_cast<zet_pfnGetDebugProcAddrTable_t>(
-            GET_FUNCTION_PTR(loader::context.validationLayer, "zetGetDebugProcAddrTable") );
+            GET_FUNCTION_PTR(loader::context->validationLayer, "zetGetDebugProcAddrTable") );
         result = getTable( version, pDdiTable );
     }
 
@@ -1653,19 +1653,19 @@ zetGetMetricProcAddrTable(
     zet_metric_dditable_t* pDdiTable                ///< [in,out] pointer to table of DDI function pointers
     )
 {
-    if( loader::context.drivers.size() < 1 )
+    if( loader::context->drivers.size() < 1 )
         return ZE_RESULT_ERROR_UNINITIALIZED;
 
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if( loader::context.version < version )
+    if( loader::context->version < version )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
     // Load the device-driver DDI tables
-    for( auto& drv : loader::context.drivers )
+    for( auto& drv : loader::context->drivers )
     {
         if( ZE_RESULT_SUCCESS == result )
         {
@@ -1677,7 +1677,7 @@ zetGetMetricProcAddrTable(
 
     if( ZE_RESULT_SUCCESS == result )
     {
-        if( ( loader::context.drivers.size() > 1 ) || loader::context.forceIntercept )
+        if( ( loader::context->drivers.size() > 1 ) || loader::context->forceIntercept )
         {
             // return pointers to loader's DDIs
             pDdiTable->pfnGet                                      = loader::zetMetricGet;
@@ -1686,15 +1686,15 @@ zetGetMetricProcAddrTable(
         else
         {
             // return pointers directly to driver's DDIs
-            *pDdiTable = loader::context.drivers.front().dditable.zet.Metric;
+            *pDdiTable = loader::context->drivers.front().dditable.zet.Metric;
         }
     }
 
     // If the validation layer is enabled, then intercept the loader's DDIs
-    if(( ZE_RESULT_SUCCESS == result ) && ( nullptr != loader::context.validationLayer ))
+    if(( ZE_RESULT_SUCCESS == result ) && ( nullptr != loader::context->validationLayer ))
     {
         auto getTable = reinterpret_cast<zet_pfnGetMetricProcAddrTable_t>(
-            GET_FUNCTION_PTR(loader::context.validationLayer, "zetGetMetricProcAddrTable") );
+            GET_FUNCTION_PTR(loader::context->validationLayer, "zetGetMetricProcAddrTable") );
         result = getTable( version, pDdiTable );
     }
 
@@ -1716,19 +1716,19 @@ zetGetMetricGroupProcAddrTable(
     zet_metric_group_dditable_t* pDdiTable          ///< [in,out] pointer to table of DDI function pointers
     )
 {
-    if( loader::context.drivers.size() < 1 )
+    if( loader::context->drivers.size() < 1 )
         return ZE_RESULT_ERROR_UNINITIALIZED;
 
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if( loader::context.version < version )
+    if( loader::context->version < version )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
     // Load the device-driver DDI tables
-    for( auto& drv : loader::context.drivers )
+    for( auto& drv : loader::context->drivers )
     {
         if( ZE_RESULT_SUCCESS == result )
         {
@@ -1740,7 +1740,7 @@ zetGetMetricGroupProcAddrTable(
 
     if( ZE_RESULT_SUCCESS == result )
     {
-        if( ( loader::context.drivers.size() > 1 ) || loader::context.forceIntercept )
+        if( ( loader::context->drivers.size() > 1 ) || loader::context->forceIntercept )
         {
             // return pointers to loader's DDIs
             pDdiTable->pfnGet                                      = loader::zetMetricGroupGet;
@@ -1750,15 +1750,15 @@ zetGetMetricGroupProcAddrTable(
         else
         {
             // return pointers directly to driver's DDIs
-            *pDdiTable = loader::context.drivers.front().dditable.zet.MetricGroup;
+            *pDdiTable = loader::context->drivers.front().dditable.zet.MetricGroup;
         }
     }
 
     // If the validation layer is enabled, then intercept the loader's DDIs
-    if(( ZE_RESULT_SUCCESS == result ) && ( nullptr != loader::context.validationLayer ))
+    if(( ZE_RESULT_SUCCESS == result ) && ( nullptr != loader::context->validationLayer ))
     {
         auto getTable = reinterpret_cast<zet_pfnGetMetricGroupProcAddrTable_t>(
-            GET_FUNCTION_PTR(loader::context.validationLayer, "zetGetMetricGroupProcAddrTable") );
+            GET_FUNCTION_PTR(loader::context->validationLayer, "zetGetMetricGroupProcAddrTable") );
         result = getTable( version, pDdiTable );
     }
 
@@ -1780,19 +1780,19 @@ zetGetMetricQueryProcAddrTable(
     zet_metric_query_dditable_t* pDdiTable          ///< [in,out] pointer to table of DDI function pointers
     )
 {
-    if( loader::context.drivers.size() < 1 )
+    if( loader::context->drivers.size() < 1 )
         return ZE_RESULT_ERROR_UNINITIALIZED;
 
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if( loader::context.version < version )
+    if( loader::context->version < version )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
     // Load the device-driver DDI tables
-    for( auto& drv : loader::context.drivers )
+    for( auto& drv : loader::context->drivers )
     {
         if( ZE_RESULT_SUCCESS == result )
         {
@@ -1804,7 +1804,7 @@ zetGetMetricQueryProcAddrTable(
 
     if( ZE_RESULT_SUCCESS == result )
     {
-        if( ( loader::context.drivers.size() > 1 ) || loader::context.forceIntercept )
+        if( ( loader::context->drivers.size() > 1 ) || loader::context->forceIntercept )
         {
             // return pointers to loader's DDIs
             pDdiTable->pfnCreate                                   = loader::zetMetricQueryCreate;
@@ -1815,15 +1815,15 @@ zetGetMetricQueryProcAddrTable(
         else
         {
             // return pointers directly to driver's DDIs
-            *pDdiTable = loader::context.drivers.front().dditable.zet.MetricQuery;
+            *pDdiTable = loader::context->drivers.front().dditable.zet.MetricQuery;
         }
     }
 
     // If the validation layer is enabled, then intercept the loader's DDIs
-    if(( ZE_RESULT_SUCCESS == result ) && ( nullptr != loader::context.validationLayer ))
+    if(( ZE_RESULT_SUCCESS == result ) && ( nullptr != loader::context->validationLayer ))
     {
         auto getTable = reinterpret_cast<zet_pfnGetMetricQueryProcAddrTable_t>(
-            GET_FUNCTION_PTR(loader::context.validationLayer, "zetGetMetricQueryProcAddrTable") );
+            GET_FUNCTION_PTR(loader::context->validationLayer, "zetGetMetricQueryProcAddrTable") );
         result = getTable( version, pDdiTable );
     }
 
@@ -1845,19 +1845,19 @@ zetGetMetricQueryPoolProcAddrTable(
     zet_metric_query_pool_dditable_t* pDdiTable     ///< [in,out] pointer to table of DDI function pointers
     )
 {
-    if( loader::context.drivers.size() < 1 )
+    if( loader::context->drivers.size() < 1 )
         return ZE_RESULT_ERROR_UNINITIALIZED;
 
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if( loader::context.version < version )
+    if( loader::context->version < version )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
     // Load the device-driver DDI tables
-    for( auto& drv : loader::context.drivers )
+    for( auto& drv : loader::context->drivers )
     {
         if( ZE_RESULT_SUCCESS == result )
         {
@@ -1869,7 +1869,7 @@ zetGetMetricQueryPoolProcAddrTable(
 
     if( ZE_RESULT_SUCCESS == result )
     {
-        if( ( loader::context.drivers.size() > 1 ) || loader::context.forceIntercept )
+        if( ( loader::context->drivers.size() > 1 ) || loader::context->forceIntercept )
         {
             // return pointers to loader's DDIs
             pDdiTable->pfnCreate                                   = loader::zetMetricQueryPoolCreate;
@@ -1878,15 +1878,15 @@ zetGetMetricQueryPoolProcAddrTable(
         else
         {
             // return pointers directly to driver's DDIs
-            *pDdiTable = loader::context.drivers.front().dditable.zet.MetricQueryPool;
+            *pDdiTable = loader::context->drivers.front().dditable.zet.MetricQueryPool;
         }
     }
 
     // If the validation layer is enabled, then intercept the loader's DDIs
-    if(( ZE_RESULT_SUCCESS == result ) && ( nullptr != loader::context.validationLayer ))
+    if(( ZE_RESULT_SUCCESS == result ) && ( nullptr != loader::context->validationLayer ))
     {
         auto getTable = reinterpret_cast<zet_pfnGetMetricQueryPoolProcAddrTable_t>(
-            GET_FUNCTION_PTR(loader::context.validationLayer, "zetGetMetricQueryPoolProcAddrTable") );
+            GET_FUNCTION_PTR(loader::context->validationLayer, "zetGetMetricQueryPoolProcAddrTable") );
         result = getTable( version, pDdiTable );
     }
 
@@ -1908,19 +1908,19 @@ zetGetMetricStreamerProcAddrTable(
     zet_metric_streamer_dditable_t* pDdiTable       ///< [in,out] pointer to table of DDI function pointers
     )
 {
-    if( loader::context.drivers.size() < 1 )
+    if( loader::context->drivers.size() < 1 )
         return ZE_RESULT_ERROR_UNINITIALIZED;
 
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if( loader::context.version < version )
+    if( loader::context->version < version )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
     // Load the device-driver DDI tables
-    for( auto& drv : loader::context.drivers )
+    for( auto& drv : loader::context->drivers )
     {
         if( ZE_RESULT_SUCCESS == result )
         {
@@ -1932,7 +1932,7 @@ zetGetMetricStreamerProcAddrTable(
 
     if( ZE_RESULT_SUCCESS == result )
     {
-        if( ( loader::context.drivers.size() > 1 ) || loader::context.forceIntercept )
+        if( ( loader::context->drivers.size() > 1 ) || loader::context->forceIntercept )
         {
             // return pointers to loader's DDIs
             pDdiTable->pfnOpen                                     = loader::zetMetricStreamerOpen;
@@ -1942,15 +1942,15 @@ zetGetMetricStreamerProcAddrTable(
         else
         {
             // return pointers directly to driver's DDIs
-            *pDdiTable = loader::context.drivers.front().dditable.zet.MetricStreamer;
+            *pDdiTable = loader::context->drivers.front().dditable.zet.MetricStreamer;
         }
     }
 
     // If the validation layer is enabled, then intercept the loader's DDIs
-    if(( ZE_RESULT_SUCCESS == result ) && ( nullptr != loader::context.validationLayer ))
+    if(( ZE_RESULT_SUCCESS == result ) && ( nullptr != loader::context->validationLayer ))
     {
         auto getTable = reinterpret_cast<zet_pfnGetMetricStreamerProcAddrTable_t>(
-            GET_FUNCTION_PTR(loader::context.validationLayer, "zetGetMetricStreamerProcAddrTable") );
+            GET_FUNCTION_PTR(loader::context->validationLayer, "zetGetMetricStreamerProcAddrTable") );
         result = getTable( version, pDdiTable );
     }
 
@@ -1972,19 +1972,19 @@ zetGetTracerExpProcAddrTable(
     zet_tracer_exp_dditable_t* pDdiTable            ///< [in,out] pointer to table of DDI function pointers
     )
 {
-    if( loader::context.drivers.size() < 1 )
+    if( loader::context->drivers.size() < 1 )
         return ZE_RESULT_ERROR_UNINITIALIZED;
 
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if( loader::context.version < version )
+    if( loader::context->version < version )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
     // Load the device-driver DDI tables
-    for( auto& drv : loader::context.drivers )
+    for( auto& drv : loader::context->drivers )
     {
         if( ZE_RESULT_SUCCESS == result )
         {
@@ -1996,7 +1996,7 @@ zetGetTracerExpProcAddrTable(
 
     if( ZE_RESULT_SUCCESS == result )
     {
-        if( ( loader::context.drivers.size() > 1 ) || loader::context.forceIntercept )
+        if( ( loader::context->drivers.size() > 1 ) || loader::context->forceIntercept )
         {
             // return pointers to loader's DDIs
             pDdiTable->pfnCreate                                   = loader::zetTracerExpCreate;
@@ -2008,15 +2008,15 @@ zetGetTracerExpProcAddrTable(
         else
         {
             // return pointers directly to driver's DDIs
-            *pDdiTable = loader::context.drivers.front().dditable.zet.TracerExp;
+            *pDdiTable = loader::context->drivers.front().dditable.zet.TracerExp;
         }
     }
 
     // If the validation layer is enabled, then intercept the loader's DDIs
-    if(( ZE_RESULT_SUCCESS == result ) && ( nullptr != loader::context.validationLayer ))
+    if(( ZE_RESULT_SUCCESS == result ) && ( nullptr != loader::context->validationLayer ))
     {
         auto getTable = reinterpret_cast<zet_pfnGetTracerExpProcAddrTable_t>(
-            GET_FUNCTION_PTR(loader::context.validationLayer, "zetGetTracerExpProcAddrTable") );
+            GET_FUNCTION_PTR(loader::context->validationLayer, "zetGetTracerExpProcAddrTable") );
         result = getTable( version, pDdiTable );
     }
 

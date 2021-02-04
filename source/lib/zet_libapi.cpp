@@ -42,7 +42,7 @@ zetModuleGetDebugInfo(
     uint8_t* pDebugInfo                             ///< [in,out][optional] byte pointer to debug info
     )
 {
-    auto pfnGetDebugInfo = ze_lib::context.zetDdiTable.Module.pfnGetDebugInfo;
+    auto pfnGetDebugInfo = ze_lib::context->zetDdiTable.Module.pfnGetDebugInfo;
     if( nullptr == pfnGetDebugInfo )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -66,7 +66,7 @@ zetDeviceGetDebugProperties(
     zet_device_debug_properties_t* pDebugProperties ///< [in,out] query result for debug properties
     )
 {
-    auto pfnGetDebugProperties = ze_lib::context.zetDdiTable.Device.pfnGetDebugProperties;
+    auto pfnGetDebugProperties = ze_lib::context->zetDdiTable.Device.pfnGetDebugProperties;
     if( nullptr == pfnGetDebugProperties )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -102,7 +102,7 @@ zetDebugAttach(
     zet_debug_session_handle_t* phDebug             ///< [out] debug session handle
     )
 {
-    auto pfnAttach = ze_lib::context.zetDdiTable.Debug.pfnAttach;
+    auto pfnAttach = ze_lib::context->zetDdiTable.Debug.pfnAttach;
     if( nullptr == pfnAttach )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -123,7 +123,7 @@ zetDebugDetach(
     zet_debug_session_handle_t hDebug               ///< [in][release] debug session handle
     )
 {
-    auto pfnDetach = ze_lib::context.zetDdiTable.Debug.pfnDetach;
+    auto pfnDetach = ze_lib::context->zetDdiTable.Debug.pfnDetach;
     if( nullptr == pfnDetach )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -156,7 +156,7 @@ zetDebugReadEvent(
     zet_debug_event_t* event                        ///< [in,out] a pointer to a ::zet_debug_event_t.
     )
 {
-    auto pfnReadEvent = ze_lib::context.zetDdiTable.Debug.pfnReadEvent;
+    auto pfnReadEvent = ze_lib::context->zetDdiTable.Debug.pfnReadEvent;
     if( nullptr == pfnReadEvent )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -180,7 +180,7 @@ zetDebugAcknowledgeEvent(
     const zet_debug_event_t* event                  ///< [in] a pointer to a ::zet_debug_event_t.
     )
 {
-    auto pfnAcknowledgeEvent = ze_lib::context.zetDdiTable.Debug.pfnAcknowledgeEvent;
+    auto pfnAcknowledgeEvent = ze_lib::context->zetDdiTable.Debug.pfnAcknowledgeEvent;
     if( nullptr == pfnAcknowledgeEvent )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -204,7 +204,7 @@ zetDebugInterrupt(
     ze_device_thread_t thread                       ///< [in] the thread to interrupt
     )
 {
-    auto pfnInterrupt = ze_lib::context.zetDdiTable.Debug.pfnInterrupt;
+    auto pfnInterrupt = ze_lib::context->zetDdiTable.Debug.pfnInterrupt;
     if( nullptr == pfnInterrupt )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -228,7 +228,7 @@ zetDebugResume(
     ze_device_thread_t thread                       ///< [in] the thread to resume
     )
 {
-    auto pfnResume = ze_lib::context.zetDdiTable.Debug.pfnResume;
+    auto pfnResume = ze_lib::context->zetDdiTable.Debug.pfnResume;
     if( nullptr == pfnResume )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -265,7 +265,7 @@ zetDebugReadMemory(
     void* buffer                                    ///< [in,out] a buffer to hold a copy of the memory
     )
 {
-    auto pfnReadMemory = ze_lib::context.zetDdiTable.Debug.pfnReadMemory;
+    auto pfnReadMemory = ze_lib::context->zetDdiTable.Debug.pfnReadMemory;
     if( nullptr == pfnReadMemory )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -302,7 +302,7 @@ zetDebugWriteMemory(
     const void* buffer                              ///< [in] a buffer holding the pattern to write
     )
 {
-    auto pfnWriteMemory = ze_lib::context.zetDdiTable.Debug.pfnWriteMemory;
+    auto pfnWriteMemory = ze_lib::context->zetDdiTable.Debug.pfnWriteMemory;
     if( nullptr == pfnWriteMemory )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -335,7 +335,7 @@ zetDebugGetRegisterSetProperties(
                                                     ///< register set properties
     )
 {
-    auto pfnGetRegisterSetProperties = ze_lib::context.zetDdiTable.Debug.pfnGetRegisterSetProperties;
+    auto pfnGetRegisterSetProperties = ze_lib::context->zetDdiTable.Debug.pfnGetRegisterSetProperties;
     if( nullptr == pfnGetRegisterSetProperties )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -367,7 +367,7 @@ zetDebugReadRegisters(
     void* pRegisterValues                           ///< [in,out][optional][range(0, count)] buffer of register values
     )
 {
-    auto pfnReadRegisters = ze_lib::context.zetDdiTable.Debug.pfnReadRegisters;
+    auto pfnReadRegisters = ze_lib::context->zetDdiTable.Debug.pfnReadRegisters;
     if( nullptr == pfnReadRegisters )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -399,7 +399,7 @@ zetDebugWriteRegisters(
     void* pRegisterValues                           ///< [in,out][optional][range(0, count)] buffer of register values
     )
 {
-    auto pfnWriteRegisters = ze_lib::context.zetDdiTable.Debug.pfnWriteRegisters;
+    auto pfnWriteRegisters = ze_lib::context->zetDdiTable.Debug.pfnWriteRegisters;
     if( nullptr == pfnWriteRegisters )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -434,7 +434,7 @@ zetMetricGroupGet(
     zet_metric_group_handle_t* phMetricGroups       ///< [in,out][optional][range(0, *pCount)] array of handle of metric groups
     )
 {
-    auto pfnGet = ze_lib::context.zetDdiTable.MetricGroup.pfnGet;
+    auto pfnGet = ze_lib::context->zetDdiTable.MetricGroup.pfnGet;
     if( nullptr == pfnGet )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -461,7 +461,7 @@ zetMetricGroupGetProperties(
     zet_metric_group_properties_t* pProperties      ///< [in,out] metric group properties
     )
 {
-    auto pfnGetProperties = ze_lib::context.zetDdiTable.MetricGroup.pfnGetProperties;
+    auto pfnGetProperties = ze_lib::context->zetDdiTable.MetricGroup.pfnGetProperties;
     if( nullptr == pfnGetProperties )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -503,7 +503,7 @@ zetMetricGroupCalculateMetricValues(
                                                     ///< metrics
     )
 {
-    auto pfnCalculateMetricValues = ze_lib::context.zetDdiTable.MetricGroup.pfnCalculateMetricValues;
+    auto pfnCalculateMetricValues = ze_lib::context->zetDdiTable.MetricGroup.pfnCalculateMetricValues;
     if( nullptr == pfnCalculateMetricValues )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -536,7 +536,7 @@ zetMetricGet(
     zet_metric_handle_t* phMetrics                  ///< [in,out][optional][range(0, *pCount)] array of handle of metrics
     )
 {
-    auto pfnGet = ze_lib::context.zetDdiTable.Metric.pfnGet;
+    auto pfnGet = ze_lib::context->zetDdiTable.Metric.pfnGet;
     if( nullptr == pfnGet )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -563,7 +563,7 @@ zetMetricGetProperties(
     zet_metric_properties_t* pProperties            ///< [in,out] metric properties
     )
 {
-    auto pfnGetProperties = ze_lib::context.zetDdiTable.Metric.pfnGetProperties;
+    auto pfnGetProperties = ze_lib::context->zetDdiTable.Metric.pfnGetProperties;
     if( nullptr == pfnGetProperties )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -608,7 +608,7 @@ zetContextActivateMetricGroups(
                                                     ///< metric query and metric stream must use activated metric groups.
     )
 {
-    auto pfnActivateMetricGroups = ze_lib::context.zetDdiTable.Context.pfnActivateMetricGroups;
+    auto pfnActivateMetricGroups = ze_lib::context->zetDdiTable.Context.pfnActivateMetricGroups;
     if( nullptr == pfnActivateMetricGroups )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -650,7 +650,7 @@ zetMetricStreamerOpen(
     zet_metric_streamer_handle_t* phMetricStreamer  ///< [out] handle of metric streamer
     )
 {
-    auto pfnOpen = ze_lib::context.zetDdiTable.MetricStreamer.pfnOpen;
+    auto pfnOpen = ze_lib::context->zetDdiTable.MetricStreamer.pfnOpen;
     if( nullptr == pfnOpen )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -684,7 +684,7 @@ zetCommandListAppendMetricStreamerMarker(
     uint32_t value                                  ///< [in] streamer marker value
     )
 {
-    auto pfnAppendMetricStreamerMarker = ze_lib::context.zetDdiTable.CommandList.pfnAppendMetricStreamerMarker;
+    auto pfnAppendMetricStreamerMarker = ze_lib::context->zetDdiTable.CommandList.pfnAppendMetricStreamerMarker;
     if( nullptr == pfnAppendMetricStreamerMarker )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -709,7 +709,7 @@ zetMetricStreamerClose(
     zet_metric_streamer_handle_t hMetricStreamer    ///< [in][release] handle of the metric streamer
     )
 {
-    auto pfnClose = ze_lib::context.zetDdiTable.MetricStreamer.pfnClose;
+    auto pfnClose = ze_lib::context->zetDdiTable.MetricStreamer.pfnClose;
     if( nullptr == pfnClose )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -746,7 +746,7 @@ zetMetricStreamerReadData(
                                                     ///< reports in raw format
     )
 {
-    auto pfnReadData = ze_lib::context.zetDdiTable.MetricStreamer.pfnReadData;
+    auto pfnReadData = ze_lib::context->zetDdiTable.MetricStreamer.pfnReadData;
     if( nullptr == pfnReadData )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -782,7 +782,7 @@ zetMetricQueryPoolCreate(
     zet_metric_query_pool_handle_t* phMetricQueryPool   ///< [out] handle of metric query pool
     )
 {
-    auto pfnCreate = ze_lib::context.zetDdiTable.MetricQueryPool.pfnCreate;
+    auto pfnCreate = ze_lib::context->zetDdiTable.MetricQueryPool.pfnCreate;
     if( nullptr == pfnCreate )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -813,7 +813,7 @@ zetMetricQueryPoolDestroy(
     zet_metric_query_pool_handle_t hMetricQueryPool ///< [in][release] handle of the metric query pool
     )
 {
-    auto pfnDestroy = ze_lib::context.zetDdiTable.MetricQueryPool.pfnDestroy;
+    auto pfnDestroy = ze_lib::context->zetDdiTable.MetricQueryPool.pfnDestroy;
     if( nullptr == pfnDestroy )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -842,7 +842,7 @@ zetMetricQueryCreate(
     zet_metric_query_handle_t* phMetricQuery        ///< [out] handle of metric query
     )
 {
-    auto pfnCreate = ze_lib::context.zetDdiTable.MetricQuery.pfnCreate;
+    auto pfnCreate = ze_lib::context->zetDdiTable.MetricQuery.pfnCreate;
     if( nullptr == pfnCreate )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -871,7 +871,7 @@ zetMetricQueryDestroy(
     zet_metric_query_handle_t hMetricQuery          ///< [in][release] handle of metric query
     )
 {
-    auto pfnDestroy = ze_lib::context.zetDdiTable.MetricQuery.pfnDestroy;
+    auto pfnDestroy = ze_lib::context->zetDdiTable.MetricQuery.pfnDestroy;
     if( nullptr == pfnDestroy )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -898,7 +898,7 @@ zetMetricQueryReset(
     zet_metric_query_handle_t hMetricQuery          ///< [in] handle of metric query
     )
 {
-    auto pfnReset = ze_lib::context.zetDdiTable.MetricQuery.pfnReset;
+    auto pfnReset = ze_lib::context->zetDdiTable.MetricQuery.pfnReset;
     if( nullptr == pfnReset )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -929,7 +929,7 @@ zetCommandListAppendMetricQueryBegin(
     zet_metric_query_handle_t hMetricQuery          ///< [in] handle of the metric query
     )
 {
-    auto pfnAppendMetricQueryBegin = ze_lib::context.zetDdiTable.CommandList.pfnAppendMetricQueryBegin;
+    auto pfnAppendMetricQueryBegin = ze_lib::context->zetDdiTable.CommandList.pfnAppendMetricQueryBegin;
     if( nullptr == pfnAppendMetricQueryBegin )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -972,7 +972,7 @@ zetCommandListAppendMetricQueryEnd(
                                                     ///< on before launching
     )
 {
-    auto pfnAppendMetricQueryEnd = ze_lib::context.zetDdiTable.CommandList.pfnAppendMetricQueryEnd;
+    auto pfnAppendMetricQueryEnd = ze_lib::context->zetDdiTable.CommandList.pfnAppendMetricQueryEnd;
     if( nullptr == pfnAppendMetricQueryEnd )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -997,7 +997,7 @@ zetCommandListAppendMetricMemoryBarrier(
     zet_command_list_handle_t hCommandList          ///< [in] handle of the command list
     )
 {
-    auto pfnAppendMetricMemoryBarrier = ze_lib::context.zetDdiTable.CommandList.pfnAppendMetricMemoryBarrier;
+    auto pfnAppendMetricMemoryBarrier = ze_lib::context->zetDdiTable.CommandList.pfnAppendMetricMemoryBarrier;
     if( nullptr == pfnAppendMetricMemoryBarrier )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -1032,7 +1032,7 @@ zetMetricQueryGetData(
                                                     ///< reports in raw format
     )
 {
-    auto pfnGetData = ze_lib::context.zetDdiTable.MetricQuery.pfnGetData;
+    auto pfnGetData = ze_lib::context->zetDdiTable.MetricQuery.pfnGetData;
     if( nullptr == pfnGetData )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -1064,7 +1064,7 @@ zetKernelGetProfileInfo(
     zet_profile_properties_t* pProfileProperties    ///< [out] pointer to profile properties
     )
 {
-    auto pfnGetProfileInfo = ze_lib::context.zetDdiTable.Kernel.pfnGetProfileInfo;
+    auto pfnGetProfileInfo = ze_lib::context->zetDdiTable.Kernel.pfnGetProfileInfo;
     if( nullptr == pfnGetProfileInfo )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -1099,7 +1099,7 @@ zetTracerExpCreate(
     zet_tracer_exp_handle_t* phTracer               ///< [out] pointer to handle of tracer object created
     )
 {
-    auto pfnCreate = ze_lib::context.zetDdiTable.TracerExp.pfnCreate;
+    auto pfnCreate = ze_lib::context->zetDdiTable.TracerExp.pfnCreate;
     if( nullptr == pfnCreate )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -1129,7 +1129,7 @@ zetTracerExpDestroy(
     zet_tracer_exp_handle_t hTracer                 ///< [in][release] handle of tracer object to destroy
     )
 {
-    auto pfnDestroy = ze_lib::context.zetDdiTable.TracerExp.pfnDestroy;
+    auto pfnDestroy = ze_lib::context->zetDdiTable.TracerExp.pfnDestroy;
     if( nullptr == pfnDestroy )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -1162,7 +1162,7 @@ zetTracerExpSetPrologues(
     zet_core_callbacks_t* pCoreCbs                  ///< [in] pointer to table of 'core' callback function pointers
     )
 {
-    auto pfnSetPrologues = ze_lib::context.zetDdiTable.TracerExp.pfnSetPrologues;
+    auto pfnSetPrologues = ze_lib::context->zetDdiTable.TracerExp.pfnSetPrologues;
     if( nullptr == pfnSetPrologues )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -1195,7 +1195,7 @@ zetTracerExpSetEpilogues(
     zet_core_callbacks_t* pCoreCbs                  ///< [in] pointer to table of 'core' callback function pointers
     )
 {
-    auto pfnSetEpilogues = ze_lib::context.zetDdiTable.TracerExp.pfnSetEpilogues;
+    auto pfnSetEpilogues = ze_lib::context->zetDdiTable.TracerExp.pfnSetEpilogues;
     if( nullptr == pfnSetEpilogues )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -1221,7 +1221,7 @@ zetTracerExpSetEnabled(
     ze_bool_t enable                                ///< [in] enable the tracer if true; disable if false
     )
 {
-    auto pfnSetEnabled = ze_lib::context.zetDdiTable.TracerExp.pfnSetEnabled;
+    auto pfnSetEnabled = ze_lib::context->zetDdiTable.TracerExp.pfnSetEnabled;
     if( nullptr == pfnSetEnabled )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 

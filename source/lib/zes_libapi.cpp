@@ -34,7 +34,7 @@ zesDeviceGetProperties(
     zes_device_properties_t* pProperties            ///< [in,out] Structure that will contain information about the device.
     )
 {
-    auto pfnGetProperties = ze_lib::context.zesDdiTable.Device.pfnGetProperties;
+    auto pfnGetProperties = ze_lib::context->zesDdiTable.Device.pfnGetProperties;
     if( nullptr == pfnGetProperties )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -63,7 +63,7 @@ zesDeviceGetState(
     zes_device_state_t* pState                      ///< [in,out] Structure that will contain information about the device.
     )
 {
-    auto pfnGetState = ze_lib::context.zesDdiTable.Device.pfnGetState;
+    auto pfnGetState = ze_lib::context->zesDdiTable.Device.pfnGetState;
     if( nullptr == pfnGetState )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -100,7 +100,7 @@ zesDeviceReset(
                                                     ///< device will be forcibly killed.
     )
 {
-    auto pfnReset = ze_lib::context.zesDdiTable.Device.pfnReset;
+    auto pfnReset = ze_lib::context->zesDdiTable.Device.pfnReset;
     if( nullptr == pfnReset )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -146,7 +146,7 @@ zesDeviceProcessesGetState(
                                                     ///< one for each process currently using the device
     )
 {
-    auto pfnProcessesGetState = ze_lib::context.zesDdiTable.Device.pfnProcessesGetState;
+    auto pfnProcessesGetState = ze_lib::context->zesDdiTable.Device.pfnProcessesGetState;
     if( nullptr == pfnProcessesGetState )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -174,7 +174,7 @@ zesDevicePciGetProperties(
     zes_pci_properties_t* pProperties               ///< [in,out] Will contain the PCI properties.
     )
 {
-    auto pfnPciGetProperties = ze_lib::context.zesDdiTable.Device.pfnPciGetProperties;
+    auto pfnPciGetProperties = ze_lib::context->zesDdiTable.Device.pfnPciGetProperties;
     if( nullptr == pfnPciGetProperties )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -202,7 +202,7 @@ zesDevicePciGetState(
     zes_pci_state_t* pState                         ///< [in,out] Will contain the PCI properties.
     )
 {
-    auto pfnPciGetState = ze_lib::context.zesDdiTable.Device.pfnPciGetState;
+    auto pfnPciGetState = ze_lib::context->zesDdiTable.Device.pfnPciGetState;
     if( nullptr == pfnPciGetState )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -236,7 +236,7 @@ zesDevicePciGetBars(
     zes_pci_bar_properties_t* pProperties           ///< [in,out][optional][range(0, *pCount)] array of bar properties
     )
 {
-    auto pfnPciGetBars = ze_lib::context.zesDdiTable.Device.pfnPciGetBars;
+    auto pfnPciGetBars = ze_lib::context->zesDdiTable.Device.pfnPciGetBars;
     if( nullptr == pfnPciGetBars )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -266,7 +266,7 @@ zesDevicePciGetStats(
     zes_pci_stats_t* pStats                         ///< [in,out] Will contain a snapshot of the latest stats.
     )
 {
-    auto pfnPciGetStats = ze_lib::context.zesDdiTable.Device.pfnPciGetStats;
+    auto pfnPciGetStats = ze_lib::context->zesDdiTable.Device.pfnPciGetStats;
     if( nullptr == pfnPciGetStats )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -302,7 +302,7 @@ zesDeviceEnumDiagnosticTestSuites(
                                                     ///< this type
     )
 {
-    auto pfnEnumDiagnosticTestSuites = ze_lib::context.zesDdiTable.Device.pfnEnumDiagnosticTestSuites;
+    auto pfnEnumDiagnosticTestSuites = ze_lib::context->zesDdiTable.Device.pfnEnumDiagnosticTestSuites;
     if( nullptr == pfnEnumDiagnosticTestSuites )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -331,7 +331,7 @@ zesDiagnosticsGetProperties(
                                                     ///< suite
     )
 {
-    auto pfnGetProperties = ze_lib::context.zesDdiTable.Diagnostics.pfnGetProperties;
+    auto pfnGetProperties = ze_lib::context->zesDdiTable.Diagnostics.pfnGetProperties;
     if( nullptr == pfnGetProperties )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -370,7 +370,7 @@ zesDiagnosticsGetTests(
                                                     ///< increasing value of ::zes_diag_test_t.index
     )
 {
-    auto pfnGetTests = ze_lib::context.zesDdiTable.Diagnostics.pfnGetTests;
+    auto pfnGetTests = ze_lib::context->zesDdiTable.Diagnostics.pfnGetTests;
     if( nullptr == pfnGetTests )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -412,7 +412,7 @@ zesDiagnosticsRunTests(
     zes_diag_result_t* pResult                      ///< [in,out] The result of the diagnostics
     )
 {
-    auto pfnRunTests = ze_lib::context.zesDdiTable.Diagnostics.pfnRunTests;
+    auto pfnRunTests = ze_lib::context->zesDdiTable.Diagnostics.pfnRunTests;
     if( nullptr == pfnRunTests )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -448,7 +448,7 @@ zesDeviceEnumEngineGroups(
                                                     ///< this type
     )
 {
-    auto pfnEnumEngineGroups = ze_lib::context.zesDdiTable.Device.pfnEnumEngineGroups;
+    auto pfnEnumEngineGroups = ze_lib::context->zesDdiTable.Device.pfnEnumEngineGroups;
     if( nullptr == pfnEnumEngineGroups )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -476,7 +476,7 @@ zesEngineGetProperties(
     zes_engine_properties_t* pProperties            ///< [in,out] The properties for the specified engine group.
     )
 {
-    auto pfnGetProperties = ze_lib::context.zesDdiTable.Engine.pfnGetProperties;
+    auto pfnGetProperties = ze_lib::context->zesDdiTable.Engine.pfnGetProperties;
     if( nullptr == pfnGetProperties )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -505,7 +505,7 @@ zesEngineGetActivity(
                                                     ///< counters.
     )
 {
-    auto pfnGetActivity = ze_lib::context.zesDdiTable.Engine.pfnGetActivity;
+    auto pfnGetActivity = ze_lib::context->zesDdiTable.Engine.pfnGetActivity;
     if( nullptr == pfnGetActivity )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -533,7 +533,7 @@ zesDeviceEventRegister(
     zes_event_type_flags_t events                   ///< [in] List of events to listen to.
     )
 {
-    auto pfnEventRegister = ze_lib::context.zesDdiTable.Device.pfnEventRegister;
+    auto pfnEventRegister = ze_lib::context->zesDdiTable.Device.pfnEventRegister;
     if( nullptr == pfnEventRegister )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -583,7 +583,7 @@ zesDriverEventListen(
                                                     ///< entry will be zero.
     )
 {
-    auto pfnEventListen = ze_lib::context.zesDdiTable.Driver.pfnEventListen;
+    auto pfnEventListen = ze_lib::context->zesDdiTable.Driver.pfnEventListen;
     if( nullptr == pfnEventListen )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -619,7 +619,7 @@ zesDeviceEnumFabricPorts(
                                                     ///< this type
     )
 {
-    auto pfnEnumFabricPorts = ze_lib::context.zesDdiTable.Device.pfnEnumFabricPorts;
+    auto pfnEnumFabricPorts = ze_lib::context->zesDdiTable.Device.pfnEnumFabricPorts;
     if( nullptr == pfnEnumFabricPorts )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -647,7 +647,7 @@ zesFabricPortGetProperties(
     zes_fabric_port_properties_t* pProperties       ///< [in,out] Will contain properties of the Fabric Port.
     )
 {
-    auto pfnGetProperties = ze_lib::context.zesDdiTable.FabricPort.pfnGetProperties;
+    auto pfnGetProperties = ze_lib::context->zesDdiTable.FabricPort.pfnGetProperties;
     if( nullptr == pfnGetProperties )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -676,7 +676,7 @@ zesFabricPortGetLinkType(
                                                     ///< port.
     )
 {
-    auto pfnGetLinkType = ze_lib::context.zesDdiTable.FabricPort.pfnGetLinkType;
+    auto pfnGetLinkType = ze_lib::context->zesDdiTable.FabricPort.pfnGetLinkType;
     if( nullptr == pfnGetLinkType )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -704,7 +704,7 @@ zesFabricPortGetConfig(
     zes_fabric_port_config_t* pConfig               ///< [in,out] Will contain configuration of the Fabric Port.
     )
 {
-    auto pfnGetConfig = ze_lib::context.zesDdiTable.FabricPort.pfnGetConfig;
+    auto pfnGetConfig = ze_lib::context->zesDdiTable.FabricPort.pfnGetConfig;
     if( nullptr == pfnGetConfig )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -734,7 +734,7 @@ zesFabricPortSetConfig(
     const zes_fabric_port_config_t* pConfig         ///< [in] Contains new configuration of the Fabric Port.
     )
 {
-    auto pfnSetConfig = ze_lib::context.zesDdiTable.FabricPort.pfnSetConfig;
+    auto pfnSetConfig = ze_lib::context->zesDdiTable.FabricPort.pfnSetConfig;
     if( nullptr == pfnSetConfig )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -763,7 +763,7 @@ zesFabricPortGetState(
     zes_fabric_port_state_t* pState                 ///< [in,out] Will contain the current state of the Fabric Port
     )
 {
-    auto pfnGetState = ze_lib::context.zesDdiTable.FabricPort.pfnGetState;
+    auto pfnGetState = ze_lib::context->zesDdiTable.FabricPort.pfnGetState;
     if( nullptr == pfnGetState )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -793,7 +793,7 @@ zesFabricPortGetThroughput(
     zes_fabric_port_throughput_t* pThroughput       ///< [in,out] Will contain the Fabric port throughput counters.
     )
 {
-    auto pfnGetThroughput = ze_lib::context.zesDdiTable.FabricPort.pfnGetThroughput;
+    auto pfnGetThroughput = ze_lib::context->zesDdiTable.FabricPort.pfnGetThroughput;
     if( nullptr == pfnGetThroughput )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -829,7 +829,7 @@ zesDeviceEnumFans(
                                                     ///< this type
     )
 {
-    auto pfnEnumFans = ze_lib::context.zesDdiTable.Device.pfnEnumFans;
+    auto pfnEnumFans = ze_lib::context->zesDdiTable.Device.pfnEnumFans;
     if( nullptr == pfnEnumFans )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -857,7 +857,7 @@ zesFanGetProperties(
     zes_fan_properties_t* pProperties               ///< [in,out] Will contain the properties of the fan.
     )
 {
-    auto pfnGetProperties = ze_lib::context.zesDdiTable.Fan.pfnGetProperties;
+    auto pfnGetProperties = ze_lib::context->zesDdiTable.Fan.pfnGetProperties;
     if( nullptr == pfnGetProperties )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -886,7 +886,7 @@ zesFanGetConfig(
     zes_fan_config_t* pConfig                       ///< [in,out] Will contain the current configuration of the fan.
     )
 {
-    auto pfnGetConfig = ze_lib::context.zesDdiTable.Fan.pfnGetConfig;
+    auto pfnGetConfig = ze_lib::context->zesDdiTable.Fan.pfnGetConfig;
     if( nullptr == pfnGetConfig )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -914,7 +914,7 @@ zesFanSetDefaultMode(
     zes_fan_handle_t hFan                           ///< [in] Handle for the component.
     )
 {
-    auto pfnSetDefaultMode = ze_lib::context.zesDdiTable.Fan.pfnSetDefaultMode;
+    auto pfnSetDefaultMode = ze_lib::context->zesDdiTable.Fan.pfnSetDefaultMode;
     if( nullptr == pfnSetDefaultMode )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -947,7 +947,7 @@ zesFanSetFixedSpeedMode(
     const zes_fan_speed_t* speed                    ///< [in] The fixed fan speed setting
     )
 {
-    auto pfnSetFixedSpeedMode = ze_lib::context.zesDdiTable.Fan.pfnSetFixedSpeedMode;
+    auto pfnSetFixedSpeedMode = ze_lib::context->zesDdiTable.Fan.pfnSetFixedSpeedMode;
     if( nullptr == pfnSetFixedSpeedMode )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -982,7 +982,7 @@ zesFanSetSpeedTableMode(
     const zes_fan_speed_table_t* speedTable         ///< [in] A table containing temperature/speed pairs.
     )
 {
-    auto pfnSetSpeedTableMode = ze_lib::context.zesDdiTable.Fan.pfnSetSpeedTableMode;
+    auto pfnSetSpeedTableMode = ze_lib::context->zesDdiTable.Fan.pfnSetSpeedTableMode;
     if( nullptr == pfnSetSpeedTableMode )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -1017,7 +1017,7 @@ zesFanGetState(
                                                     ///< measured.
     )
 {
-    auto pfnGetState = ze_lib::context.zesDdiTable.Fan.pfnGetState;
+    auto pfnGetState = ze_lib::context->zesDdiTable.Fan.pfnGetState;
     if( nullptr == pfnGetState )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -1053,7 +1053,7 @@ zesDeviceEnumFirmwares(
                                                     ///< this type
     )
 {
-    auto pfnEnumFirmwares = ze_lib::context.zesDdiTable.Device.pfnEnumFirmwares;
+    auto pfnEnumFirmwares = ze_lib::context->zesDdiTable.Device.pfnEnumFirmwares;
     if( nullptr == pfnEnumFirmwares )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -1082,7 +1082,7 @@ zesFirmwareGetProperties(
                                                     ///< firmware
     )
 {
-    auto pfnGetProperties = ze_lib::context.zesDdiTable.Firmware.pfnGetProperties;
+    auto pfnGetProperties = ze_lib::context->zesDdiTable.Firmware.pfnGetProperties;
     if( nullptr == pfnGetProperties )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -1113,7 +1113,7 @@ zesFirmwareFlash(
     uint32_t size                                   ///< [in] Size of the flash image.
     )
 {
-    auto pfnFlash = ze_lib::context.zesDdiTable.Firmware.pfnFlash;
+    auto pfnFlash = ze_lib::context->zesDdiTable.Firmware.pfnFlash;
     if( nullptr == pfnFlash )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -1149,7 +1149,7 @@ zesDeviceEnumFrequencyDomains(
                                                     ///< this type
     )
 {
-    auto pfnEnumFrequencyDomains = ze_lib::context.zesDdiTable.Device.pfnEnumFrequencyDomains;
+    auto pfnEnumFrequencyDomains = ze_lib::context->zesDdiTable.Device.pfnEnumFrequencyDomains;
     if( nullptr == pfnEnumFrequencyDomains )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -1177,7 +1177,7 @@ zesFrequencyGetProperties(
     zes_freq_properties_t* pProperties              ///< [in,out] The frequency properties for the specified domain.
     )
 {
-    auto pfnGetProperties = ze_lib::context.zesDdiTable.Frequency.pfnGetProperties;
+    auto pfnGetProperties = ze_lib::context->zesDdiTable.Frequency.pfnGetProperties;
     if( nullptr == pfnGetProperties )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -1215,7 +1215,7 @@ zesFrequencyGetAvailableClocks(
                                                     ///< MHz and sorted from slowest to fastest
     )
 {
-    auto pfnGetAvailableClocks = ze_lib::context.zesDdiTable.Frequency.pfnGetAvailableClocks;
+    auto pfnGetAvailableClocks = ze_lib::context->zesDdiTable.Frequency.pfnGetAvailableClocks;
     if( nullptr == pfnGetAvailableClocks )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -1244,7 +1244,7 @@ zesFrequencyGetRange(
                                                     ///< specified domain.
     )
 {
-    auto pfnGetRange = ze_lib::context.zesDdiTable.Frequency.pfnGetRange;
+    auto pfnGetRange = ze_lib::context->zesDdiTable.Frequency.pfnGetRange;
     if( nullptr == pfnGetRange )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -1275,7 +1275,7 @@ zesFrequencySetRange(
                                                     ///< specified domain.
     )
 {
-    auto pfnSetRange = ze_lib::context.zesDdiTable.Frequency.pfnSetRange;
+    auto pfnSetRange = ze_lib::context->zesDdiTable.Frequency.pfnSetRange;
     if( nullptr == pfnSetRange )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -1304,7 +1304,7 @@ zesFrequencyGetState(
     zes_freq_state_t* pState                        ///< [in,out] Frequency state for the specified domain.
     )
 {
-    auto pfnGetState = ze_lib::context.zesDdiTable.Frequency.pfnGetState;
+    auto pfnGetState = ze_lib::context->zesDdiTable.Frequency.pfnGetState;
     if( nullptr == pfnGetState )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -1333,7 +1333,7 @@ zesFrequencyGetThrottleTime(
                                                     ///< specified domain.
     )
 {
-    auto pfnGetThrottleTime = ze_lib::context.zesDdiTable.Frequency.pfnGetThrottleTime;
+    auto pfnGetThrottleTime = ze_lib::context->zesDdiTable.Frequency.pfnGetThrottleTime;
     if( nullptr == pfnGetThrottleTime )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -1362,7 +1362,7 @@ zesFrequencyOcGetCapabilities(
                                                     ///< ::zes_oc_capabilities_t.
     )
 {
-    auto pfnOcGetCapabilities = ze_lib::context.zesDdiTable.Frequency.pfnOcGetCapabilities;
+    auto pfnOcGetCapabilities = ze_lib::context->zesDdiTable.Frequency.pfnOcGetCapabilities;
     if( nullptr == pfnOcGetCapabilities )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -1401,7 +1401,7 @@ zesFrequencyOcGetFrequencyTarget(
                                                     ///< cannot be greater than ::zes_oc_capabilities_t.maxOcFrequency.
     )
 {
-    auto pfnOcGetFrequencyTarget = ze_lib::context.zesDdiTable.Frequency.pfnOcGetFrequencyTarget;
+    auto pfnOcGetFrequencyTarget = ze_lib::context->zesDdiTable.Frequency.pfnOcGetFrequencyTarget;
     if( nullptr == pfnOcGetFrequencyTarget )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -1438,7 +1438,7 @@ zesFrequencyOcSetFrequencyTarget(
                                                     ///< cannot be greater than ::zes_oc_capabilities_t.maxOcFrequency.
     )
 {
-    auto pfnOcSetFrequencyTarget = ze_lib::context.zesDdiTable.Frequency.pfnOcSetFrequencyTarget;
+    auto pfnOcSetFrequencyTarget = ze_lib::context->zesDdiTable.Frequency.pfnOcSetFrequencyTarget;
     if( nullptr == pfnOcSetFrequencyTarget )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -1480,7 +1480,7 @@ zesFrequencyOcGetVoltageTarget(
                                                     ///< ::zes_oc_capabilities_t.maxOcVoltageOffset).
     )
 {
-    auto pfnOcGetVoltageTarget = ze_lib::context.zesDdiTable.Frequency.pfnOcGetVoltageTarget;
+    auto pfnOcGetVoltageTarget = ze_lib::context->zesDdiTable.Frequency.pfnOcGetVoltageTarget;
     if( nullptr == pfnOcGetVoltageTarget )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -1519,7 +1519,7 @@ zesFrequencyOcSetVoltageTarget(
                                                     ///< ::zes_oc_capabilities_t.maxOcVoltageOffset).
     )
 {
-    auto pfnOcSetVoltageTarget = ze_lib::context.zesDdiTable.Frequency.pfnOcSetVoltageTarget;
+    auto pfnOcSetVoltageTarget = ze_lib::context->zesDdiTable.Frequency.pfnOcSetVoltageTarget;
     if( nullptr == pfnOcSetVoltageTarget )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -1555,7 +1555,7 @@ zesFrequencyOcSetMode(
     zes_oc_mode_t CurrentOcMode                     ///< [in] Current Overclocking Mode ::zes_oc_mode_t.
     )
 {
-    auto pfnOcSetMode = ze_lib::context.zesDdiTable.Frequency.pfnOcSetMode;
+    auto pfnOcSetMode = ze_lib::context->zesDdiTable.Frequency.pfnOcSetMode;
     if( nullptr == pfnOcSetMode )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -1591,7 +1591,7 @@ zesFrequencyOcGetMode(
     zes_oc_mode_t* pCurrentOcMode                   ///< [out] Current Overclocking Mode ::zes_oc_mode_t.
     )
 {
-    auto pfnOcGetMode = ze_lib::context.zesDdiTable.Frequency.pfnOcGetMode;
+    auto pfnOcGetMode = ze_lib::context->zesDdiTable.Frequency.pfnOcGetMode;
     if( nullptr == pfnOcGetMode )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -1623,7 +1623,7 @@ zesFrequencyOcGetIccMax(
                                                     ///< successful return.
     )
 {
-    auto pfnOcGetIccMax = ze_lib::context.zesDdiTable.Frequency.pfnOcGetIccMax;
+    auto pfnOcGetIccMax = ze_lib::context->zesDdiTable.Frequency.pfnOcGetIccMax;
     if( nullptr == pfnOcGetIccMax )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -1659,7 +1659,7 @@ zesFrequencyOcSetIccMax(
     double ocIccMax                                 ///< [in] The new maximum current limit in Amperes.
     )
 {
-    auto pfnOcSetIccMax = ze_lib::context.zesDdiTable.Frequency.pfnOcSetIccMax;
+    auto pfnOcSetIccMax = ze_lib::context->zesDdiTable.Frequency.pfnOcSetIccMax;
     if( nullptr == pfnOcSetIccMax )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -1690,7 +1690,7 @@ zesFrequencyOcGetTjMax(
                                                     ///< on successful return.
     )
 {
-    auto pfnOcGetTjMax = ze_lib::context.zesDdiTable.Frequency.pfnOcGetTjMax;
+    auto pfnOcGetTjMax = ze_lib::context->zesDdiTable.Frequency.pfnOcGetTjMax;
     if( nullptr == pfnOcGetTjMax )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -1726,7 +1726,7 @@ zesFrequencyOcSetTjMax(
     double ocTjMax                                  ///< [in] The new maximum temperature limit in degrees Celsius.
     )
 {
-    auto pfnOcSetTjMax = ze_lib::context.zesDdiTable.Frequency.pfnOcSetTjMax;
+    auto pfnOcSetTjMax = ze_lib::context->zesDdiTable.Frequency.pfnOcSetTjMax;
     if( nullptr == pfnOcSetTjMax )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -1762,7 +1762,7 @@ zesDeviceEnumLeds(
                                                     ///< this type
     )
 {
-    auto pfnEnumLeds = ze_lib::context.zesDdiTable.Device.pfnEnumLeds;
+    auto pfnEnumLeds = ze_lib::context->zesDdiTable.Device.pfnEnumLeds;
     if( nullptr == pfnEnumLeds )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -1790,7 +1790,7 @@ zesLedGetProperties(
     zes_led_properties_t* pProperties               ///< [in,out] Will contain the properties of the LED.
     )
 {
-    auto pfnGetProperties = ze_lib::context.zesDdiTable.Led.pfnGetProperties;
+    auto pfnGetProperties = ze_lib::context->zesDdiTable.Led.pfnGetProperties;
     if( nullptr == pfnGetProperties )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -1818,7 +1818,7 @@ zesLedGetState(
     zes_led_state_t* pState                         ///< [in,out] Will contain the current state of the LED.
     )
 {
-    auto pfnGetState = ze_lib::context.zesDdiTable.Led.pfnGetState;
+    auto pfnGetState = ze_lib::context->zesDdiTable.Led.pfnGetState;
     if( nullptr == pfnGetState )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -1846,7 +1846,7 @@ zesLedSetState(
     ze_bool_t enable                                ///< [in] Set to TRUE to turn the LED on, FALSE to turn off.
     )
 {
-    auto pfnSetState = ze_lib::context.zesDdiTable.Led.pfnSetState;
+    auto pfnSetState = ze_lib::context->zesDdiTable.Led.pfnSetState;
     if( nullptr == pfnSetState )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -1878,7 +1878,7 @@ zesLedSetColor(
     const zes_led_color_t* pColor                   ///< [in] New color of the LED.
     )
 {
-    auto pfnSetColor = ze_lib::context.zesDdiTable.Led.pfnSetColor;
+    auto pfnSetColor = ze_lib::context->zesDdiTable.Led.pfnSetColor;
     if( nullptr == pfnSetColor )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -1914,7 +1914,7 @@ zesDeviceEnumMemoryModules(
                                                     ///< this type
     )
 {
-    auto pfnEnumMemoryModules = ze_lib::context.zesDdiTable.Device.pfnEnumMemoryModules;
+    auto pfnEnumMemoryModules = ze_lib::context->zesDdiTable.Device.pfnEnumMemoryModules;
     if( nullptr == pfnEnumMemoryModules )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -1942,7 +1942,7 @@ zesMemoryGetProperties(
     zes_mem_properties_t* pProperties               ///< [in,out] Will contain memory properties.
     )
 {
-    auto pfnGetProperties = ze_lib::context.zesDdiTable.Memory.pfnGetProperties;
+    auto pfnGetProperties = ze_lib::context->zesDdiTable.Memory.pfnGetProperties;
     if( nullptr == pfnGetProperties )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -1970,7 +1970,7 @@ zesMemoryGetState(
     zes_mem_state_t* pState                         ///< [in,out] Will contain the current health and allocated memory.
     )
 {
-    auto pfnGetState = ze_lib::context.zesDdiTable.Memory.pfnGetState;
+    auto pfnGetState = ze_lib::context->zesDdiTable.Memory.pfnGetState;
     if( nullptr == pfnGetState )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -2001,7 +2001,7 @@ zesMemoryGetBandwidth(
                                                     ///< size.
     )
 {
-    auto pfnGetBandwidth = ze_lib::context.zesDdiTable.Memory.pfnGetBandwidth;
+    auto pfnGetBandwidth = ze_lib::context->zesDdiTable.Memory.pfnGetBandwidth;
     if( nullptr == pfnGetBandwidth )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -2039,7 +2039,7 @@ zesDeviceEnumPerformanceFactorDomains(
                                                     ///< this type
     )
 {
-    auto pfnEnumPerformanceFactorDomains = ze_lib::context.zesDdiTable.Device.pfnEnumPerformanceFactorDomains;
+    auto pfnEnumPerformanceFactorDomains = ze_lib::context->zesDdiTable.Device.pfnEnumPerformanceFactorDomains;
     if( nullptr == pfnEnumPerformanceFactorDomains )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -2068,7 +2068,7 @@ zesPerformanceFactorGetProperties(
                                                     ///< Factor domain.
     )
 {
-    auto pfnGetProperties = ze_lib::context.zesDdiTable.PerformanceFactor.pfnGetProperties;
+    auto pfnGetProperties = ze_lib::context->zesDdiTable.PerformanceFactor.pfnGetProperties;
     if( nullptr == pfnGetProperties )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -2097,7 +2097,7 @@ zesPerformanceFactorGetConfig(
                                                     ///< hardware (may not be the same as the requested Performance Factor).
     )
 {
-    auto pfnGetConfig = ze_lib::context.zesDdiTable.PerformanceFactor.pfnGetConfig;
+    auto pfnGetConfig = ze_lib::context->zesDdiTable.PerformanceFactor.pfnGetConfig;
     if( nullptr == pfnGetConfig )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -2128,7 +2128,7 @@ zesPerformanceFactorSetConfig(
     double factor                                   ///< [in] The new Performance Factor.
     )
 {
-    auto pfnSetConfig = ze_lib::context.zesDdiTable.PerformanceFactor.pfnSetConfig;
+    auto pfnSetConfig = ze_lib::context->zesDdiTable.PerformanceFactor.pfnSetConfig;
     if( nullptr == pfnSetConfig )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -2164,7 +2164,7 @@ zesDeviceEnumPowerDomains(
                                                     ///< this type
     )
 {
-    auto pfnEnumPowerDomains = ze_lib::context.zesDdiTable.Device.pfnEnumPowerDomains;
+    auto pfnEnumPowerDomains = ze_lib::context->zesDdiTable.Device.pfnEnumPowerDomains;
     if( nullptr == pfnEnumPowerDomains )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -2192,7 +2192,7 @@ zesPowerGetProperties(
     zes_power_properties_t* pProperties             ///< [in,out] Structure that will contain property data.
     )
 {
-    auto pfnGetProperties = ze_lib::context.zesDdiTable.Power.pfnGetProperties;
+    auto pfnGetProperties = ze_lib::context->zesDdiTable.Power.pfnGetProperties;
     if( nullptr == pfnGetProperties )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -2221,7 +2221,7 @@ zesPowerGetEnergyCounter(
                                                     ///< timestamp when the last counter value was measured.
     )
 {
-    auto pfnGetEnergyCounter = ze_lib::context.zesDdiTable.Power.pfnGetEnergyCounter;
+    auto pfnGetEnergyCounter = ze_lib::context->zesDdiTable.Power.pfnGetEnergyCounter;
     if( nullptr == pfnGetEnergyCounter )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -2252,7 +2252,7 @@ zesPowerGetLimits(
                                                     ///< power limits will not be returned.
     )
 {
-    auto pfnGetLimits = ze_lib::context.zesDdiTable.Power.pfnGetLimits;
+    auto pfnGetLimits = ze_lib::context->zesDdiTable.Power.pfnGetLimits;
     if( nullptr == pfnGetLimits )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -2287,7 +2287,7 @@ zesPowerSetLimits(
                                                     ///< be made to the peak power limits.
     )
 {
-    auto pfnSetLimits = ze_lib::context.zesDdiTable.Power.pfnSetLimits;
+    auto pfnSetLimits = ze_lib::context->zesDdiTable.Power.pfnSetLimits;
     if( nullptr == pfnSetLimits )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -2320,7 +2320,7 @@ zesPowerGetEnergyThreshold(
                                                     ///< enabled/energy threshold/process ID.
     )
 {
-    auto pfnGetEnergyThreshold = ze_lib::context.zesDdiTable.Power.pfnGetEnergyThreshold;
+    auto pfnGetEnergyThreshold = ze_lib::context->zesDdiTable.Power.pfnGetEnergyThreshold;
     if( nullptr == pfnGetEnergyThreshold )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -2366,7 +2366,7 @@ zesPowerSetEnergyThreshold(
     double threshold                                ///< [in] The energy threshold to be set in joules.
     )
 {
-    auto pfnSetEnergyThreshold = ze_lib::context.zesDdiTable.Power.pfnSetEnergyThreshold;
+    auto pfnSetEnergyThreshold = ze_lib::context->zesDdiTable.Power.pfnSetEnergyThreshold;
     if( nullptr == pfnSetEnergyThreshold )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -2402,7 +2402,7 @@ zesDeviceEnumPsus(
                                                     ///< this type
     )
 {
-    auto pfnEnumPsus = ze_lib::context.zesDdiTable.Device.pfnEnumPsus;
+    auto pfnEnumPsus = ze_lib::context->zesDdiTable.Device.pfnEnumPsus;
     if( nullptr == pfnEnumPsus )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -2430,7 +2430,7 @@ zesPsuGetProperties(
     zes_psu_properties_t* pProperties               ///< [in,out] Will contain the properties of the power supply.
     )
 {
-    auto pfnGetProperties = ze_lib::context.zesDdiTable.Psu.pfnGetProperties;
+    auto pfnGetProperties = ze_lib::context->zesDdiTable.Psu.pfnGetProperties;
     if( nullptr == pfnGetProperties )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -2458,7 +2458,7 @@ zesPsuGetState(
     zes_psu_state_t* pState                         ///< [in,out] Will contain the current state of the power supply.
     )
 {
-    auto pfnGetState = ze_lib::context.zesDdiTable.Psu.pfnGetState;
+    auto pfnGetState = ze_lib::context->zesDdiTable.Psu.pfnGetState;
     if( nullptr == pfnGetState )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -2504,7 +2504,7 @@ zesDeviceEnumRasErrorSets(
                                                     ///< this type
     )
 {
-    auto pfnEnumRasErrorSets = ze_lib::context.zesDdiTable.Device.pfnEnumRasErrorSets;
+    auto pfnEnumRasErrorSets = ze_lib::context->zesDdiTable.Device.pfnEnumRasErrorSets;
     if( nullptr == pfnEnumRasErrorSets )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -2534,7 +2534,7 @@ zesRasGetProperties(
     zes_ras_properties_t* pProperties               ///< [in,out] Structure describing RAS properties
     )
 {
-    auto pfnGetProperties = ze_lib::context.zesDdiTable.Ras.pfnGetProperties;
+    auto pfnGetProperties = ze_lib::context->zesDdiTable.Ras.pfnGetProperties;
     if( nullptr == pfnGetProperties )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -2572,7 +2572,7 @@ zesRasGetConfig(
                                                     ///< thresholds used to trigger events
     )
 {
-    auto pfnGetConfig = ze_lib::context.zesDdiTable.Ras.pfnGetConfig;
+    auto pfnGetConfig = ze_lib::context->zesDdiTable.Ras.pfnGetConfig;
     if( nullptr == pfnGetConfig )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -2615,7 +2615,7 @@ zesRasSetConfig(
     const zes_ras_config_t* pConfig                 ///< [in] Change the RAS configuration - thresholds used to trigger events
     )
 {
-    auto pfnSetConfig = ze_lib::context.zesDdiTable.Ras.pfnSetConfig;
+    auto pfnSetConfig = ze_lib::context->zesDdiTable.Ras.pfnSetConfig;
     if( nullptr == pfnSetConfig )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -2649,7 +2649,7 @@ zesRasGetState(
     zes_ras_state_t* pState                         ///< [in,out] Breakdown of where errors have occurred
     )
 {
-    auto pfnGetState = ze_lib::context.zesDdiTable.Ras.pfnGetState;
+    auto pfnGetState = ze_lib::context->zesDdiTable.Ras.pfnGetState;
     if( nullptr == pfnGetState )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -2685,7 +2685,7 @@ zesDeviceEnumSchedulers(
                                                     ///< this type
     )
 {
-    auto pfnEnumSchedulers = ze_lib::context.zesDdiTable.Device.pfnEnumSchedulers;
+    auto pfnEnumSchedulers = ze_lib::context->zesDdiTable.Device.pfnEnumSchedulers;
     if( nullptr == pfnEnumSchedulers )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -2713,7 +2713,7 @@ zesSchedulerGetProperties(
     zes_sched_properties_t* pProperties             ///< [in,out] Structure that will contain property data.
     )
 {
-    auto pfnGetProperties = ze_lib::context.zesDdiTable.Scheduler.pfnGetProperties;
+    auto pfnGetProperties = ze_lib::context->zesDdiTable.Scheduler.pfnGetProperties;
     if( nullptr == pfnGetProperties )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -2743,7 +2743,7 @@ zesSchedulerGetCurrentMode(
     zes_sched_mode_t* pMode                         ///< [in,out] Will contain the current scheduler mode.
     )
 {
-    auto pfnGetCurrentMode = ze_lib::context.zesDdiTable.Scheduler.pfnGetCurrentMode;
+    auto pfnGetCurrentMode = ze_lib::context->zesDdiTable.Scheduler.pfnGetCurrentMode;
     if( nullptr == pfnGetCurrentMode )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -2775,7 +2775,7 @@ zesSchedulerGetTimeoutModeProperties(
     zes_sched_timeout_properties_t* pConfig         ///< [in,out] Will contain the current parameters for this mode.
     )
 {
-    auto pfnGetTimeoutModeProperties = ze_lib::context.zesDdiTable.Scheduler.pfnGetTimeoutModeProperties;
+    auto pfnGetTimeoutModeProperties = ze_lib::context->zesDdiTable.Scheduler.pfnGetTimeoutModeProperties;
     if( nullptr == pfnGetTimeoutModeProperties )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -2807,7 +2807,7 @@ zesSchedulerGetTimesliceModeProperties(
     zes_sched_timeslice_properties_t* pConfig       ///< [in,out] Will contain the current parameters for this mode.
     )
 {
-    auto pfnGetTimesliceModeProperties = ze_lib::context.zesDdiTable.Scheduler.pfnGetTimesliceModeProperties;
+    auto pfnGetTimesliceModeProperties = ze_lib::context->zesDdiTable.Scheduler.pfnGetTimesliceModeProperties;
     if( nullptr == pfnGetTimesliceModeProperties )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -2847,7 +2847,7 @@ zesSchedulerSetTimeoutMode(
                                                     ///< apply the new scheduler mode.
     )
 {
-    auto pfnSetTimeoutMode = ze_lib::context.zesDdiTable.Scheduler.pfnSetTimeoutMode;
+    auto pfnSetTimeoutMode = ze_lib::context->zesDdiTable.Scheduler.pfnSetTimeoutMode;
     if( nullptr == pfnSetTimeoutMode )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -2886,7 +2886,7 @@ zesSchedulerSetTimesliceMode(
                                                     ///< apply the new scheduler mode.
     )
 {
-    auto pfnSetTimesliceMode = ze_lib::context.zesDdiTable.Scheduler.pfnSetTimesliceMode;
+    auto pfnSetTimesliceMode = ze_lib::context->zesDdiTable.Scheduler.pfnSetTimesliceMode;
     if( nullptr == pfnSetTimesliceMode )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -2923,7 +2923,7 @@ zesSchedulerSetExclusiveMode(
                                                     ///< apply the new scheduler mode.
     )
 {
-    auto pfnSetExclusiveMode = ze_lib::context.zesDdiTable.Scheduler.pfnSetExclusiveMode;
+    auto pfnSetExclusiveMode = ze_lib::context->zesDdiTable.Scheduler.pfnSetExclusiveMode;
     if( nullptr == pfnSetExclusiveMode )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -2961,7 +2961,7 @@ zesSchedulerSetComputeUnitDebugMode(
                                                     ///< apply the new scheduler mode.
     )
 {
-    auto pfnSetComputeUnitDebugMode = ze_lib::context.zesDdiTable.Scheduler.pfnSetComputeUnitDebugMode;
+    auto pfnSetComputeUnitDebugMode = ze_lib::context->zesDdiTable.Scheduler.pfnSetComputeUnitDebugMode;
     if( nullptr == pfnSetComputeUnitDebugMode )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -2997,7 +2997,7 @@ zesDeviceEnumStandbyDomains(
                                                     ///< this type
     )
 {
-    auto pfnEnumStandbyDomains = ze_lib::context.zesDdiTable.Device.pfnEnumStandbyDomains;
+    auto pfnEnumStandbyDomains = ze_lib::context->zesDdiTable.Device.pfnEnumStandbyDomains;
     if( nullptr == pfnEnumStandbyDomains )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -3025,7 +3025,7 @@ zesStandbyGetProperties(
     zes_standby_properties_t* pProperties           ///< [in,out] Will contain the standby hardware properties.
     )
 {
-    auto pfnGetProperties = ze_lib::context.zesDdiTable.Standby.pfnGetProperties;
+    auto pfnGetProperties = ze_lib::context->zesDdiTable.Standby.pfnGetProperties;
     if( nullptr == pfnGetProperties )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -3053,7 +3053,7 @@ zesStandbyGetMode(
     zes_standby_promo_mode_t* pMode                 ///< [in,out] Will contain the current standby mode.
     )
 {
-    auto pfnGetMode = ze_lib::context.zesDdiTable.Standby.pfnGetMode;
+    auto pfnGetMode = ze_lib::context->zesDdiTable.Standby.pfnGetMode;
     if( nullptr == pfnGetMode )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -3083,7 +3083,7 @@ zesStandbySetMode(
     zes_standby_promo_mode_t mode                   ///< [in] New standby mode.
     )
 {
-    auto pfnSetMode = ze_lib::context.zesDdiTable.Standby.pfnSetMode;
+    auto pfnSetMode = ze_lib::context->zesDdiTable.Standby.pfnSetMode;
     if( nullptr == pfnSetMode )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -3119,7 +3119,7 @@ zesDeviceEnumTemperatureSensors(
                                                     ///< this type
     )
 {
-    auto pfnEnumTemperatureSensors = ze_lib::context.zesDdiTable.Device.pfnEnumTemperatureSensors;
+    auto pfnEnumTemperatureSensors = ze_lib::context->zesDdiTable.Device.pfnEnumTemperatureSensors;
     if( nullptr == pfnEnumTemperatureSensors )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -3147,7 +3147,7 @@ zesTemperatureGetProperties(
     zes_temp_properties_t* pProperties              ///< [in,out] Will contain the temperature sensor properties.
     )
 {
-    auto pfnGetProperties = ze_lib::context.zesDdiTable.Temperature.pfnGetProperties;
+    auto pfnGetProperties = ze_lib::context->zesDdiTable.Temperature.pfnGetProperties;
     if( nullptr == pfnGetProperties )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -3181,7 +3181,7 @@ zesTemperatureGetConfig(
     zes_temp_config_t* pConfig                      ///< [in,out] Returns current configuration.
     )
 {
-    auto pfnGetConfig = ze_lib::context.zesDdiTable.Temperature.pfnGetConfig;
+    auto pfnGetConfig = ze_lib::context->zesDdiTable.Temperature.pfnGetConfig;
     if( nullptr == pfnGetConfig )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -3232,7 +3232,7 @@ zesTemperatureSetConfig(
     const zes_temp_config_t* pConfig                ///< [in] New configuration.
     )
 {
-    auto pfnSetConfig = ze_lib::context.zesDdiTable.Temperature.pfnSetConfig;
+    auto pfnSetConfig = ze_lib::context->zesDdiTable.Temperature.pfnSetConfig;
     if( nullptr == pfnSetConfig )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
@@ -3261,7 +3261,7 @@ zesTemperatureGetState(
                                                     ///< in degrees Celsius.
     )
 {
-    auto pfnGetState = ze_lib::context.zesDdiTable.Temperature.pfnGetState;
+    auto pfnGetState = ze_lib::context->zesDdiTable.Temperature.pfnGetState;
     if( nullptr == pfnGetState )
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 

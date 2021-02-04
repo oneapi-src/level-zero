@@ -13,3 +13,18 @@ target_sources(${TARGET_LOADER_NAME}
         ${CMAKE_CURRENT_SOURCE_DIR}/ze_lib.h
         ${CMAKE_CURRENT_SOURCE_DIR}/ze_lib.cpp
 )
+
+
+
+if(WIN32)
+    target_sources(${TARGET_LOADER_NAME}
+        PRIVATE
+            ${CMAKE_CURRENT_SOURCE_DIR}/windows/lib_init.cpp
+    )
+else()
+    target_sources(${TARGET_LOADER_NAME}
+        PRIVATE
+            ${CMAKE_CURRENT_SOURCE_DIR}/linux/lib_init.cpp
+    )
+endif()
+
