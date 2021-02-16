@@ -9,6 +9,9 @@
 #include "source/loader/driver_discovery.h"
 
 #include "source/inc/ze_util.h"
+#include <iostream>
+#include <sstream>
+#include <string>
 
 namespace loader {
 
@@ -17,11 +20,24 @@ static const char *knownDriverNames[] = {
 };
 
 std::vector<DriverLibraryPath> discoverEnabledDrivers() {
-    std::vector<DriverLibraryPath> enabledDrivers;
+  std::vector<DriverLibraryPath> enabledDrivers;
+  const char *altDrivers = nullptr;
+
+  // ZE_ENABLE_ALT_DRIVERS is for development/debug only
+  altDrivers = getenv("ZE_ENABLE_ALT_DRIVERS");
+  if (altDrivers == nullptr) {
     for (auto path : knownDriverNames) {
-        enabledDrivers.emplace_back(path);
+      enabledDrivers.emplace_back(path);
     }
-    return enabledDrivers;
+  } else {
+    std::stringstream ss(altDrivers);
+    while (ss.good()) {
+      std::string substr;
+      getline(ss, substr, ',');
+      enabledDrivers.emplace_back(substr);
+    }
+  }
+  return enabledDrivers;
 }
 
 } // namespace loader
