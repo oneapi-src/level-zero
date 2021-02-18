@@ -4,7 +4,7 @@
  SPDX-License-Identifier: MIT
 
  @file zet.py
- @version v1.0-r1.0.4.8
+ @version v1.1-r1.1.8
 
  """
 import platform
@@ -205,6 +205,7 @@ class zet_debug_event_type_v(IntEnum):
     MODULE_UNLOAD = 5                               ## An in-memory module is about to get unloaded from the device
     THREAD_STOPPED = 6                              ## The thread stopped due to a device exception
     THREAD_UNAVAILABLE = 7                          ## The thread is not available to be stopped
+    PAGE_FAULT = 8                                  ## A page request could not be completed on the device
 
 class zet_debug_event_type_t(c_int):
     def __str__(self):
@@ -249,14 +250,36 @@ class zet_debug_event_info_thread_stopped_t(Structure):
     ]
 
 ###############################################################################
+## @brief Page fault reasons.
+class zet_debug_page_fault_reason_v(IntEnum):
+    INVALID = 0                                     ## The page fault reason is not valid
+    MAPPING_ERROR = 1                               ## The address is not mapped
+    PERMISSION_ERROR = 2                            ## Invalid access permissions
+
+class zet_debug_page_fault_reason_t(c_int):
+    def __str__(self):
+        return str(zet_debug_page_fault_reason_v(self.value))
+
+
+###############################################################################
+## @brief Event information for ::ZET_DEBUG_EVENT_TYPE_PAGE_FAULT
+class zet_debug_event_info_page_fault_t(Structure):
+    _fields_ = [
+        ("address", c_ulonglong),                                       ## [out] the faulting address
+        ("mask", c_ulonglong),                                          ## [out] the alignment mask
+        ("reason", zet_debug_page_fault_reason_t)                       ## [out] the page fault reason
+    ]
+
+###############################################################################
 ## @brief Event type-specific information
 class zet_debug_event_info_t(Structure):
     _fields_ = [
         ("detached", zet_debug_event_info_detached_t),                  ## [out] type == ::ZET_DEBUG_EVENT_TYPE_DETACHED
         ("module", zet_debug_event_info_module_t),                      ## [out] type == ::ZET_DEBUG_EVENT_TYPE_MODULE_LOAD or
                                                                         ## ::ZET_DEBUG_EVENT_TYPE_MODULE_UNLOAD
-        ("thread", zet_debug_event_info_thread_stopped_t)               ## [out] type == ::ZET_DEBUG_EVENT_TYPE_THREAD_STOPPED or
+        ("thread", zet_debug_event_info_thread_stopped_t),              ## [out] type == ::ZET_DEBUG_EVENT_TYPE_THREAD_STOPPED or
                                                                         ## ::ZET_DEBUG_EVENT_TYPE_THREAD_UNAVAILABLE
+        ("page_fault", zet_debug_event_info_page_fault_t)               ## [out] type == ::ZET_DEBUG_EVENT_TYPE_PAGE_FAULT
     ]
 
 ###############################################################################
@@ -356,8 +379,8 @@ class zet_metric_group_properties_t(Structure):
         ("description", c_char * ZET_MAX_METRIC_GROUP_DESCRIPTION),     ## [out] metric group description
         ("samplingType", zet_metric_group_sampling_type_flags_t),       ## [out] metric group sampling type.
                                                                         ## returns a combination of ::zet_metric_group_sampling_type_flag_t.
-        ("domain", c_ulong),                                            ## [out] metric group domain number. Cannot use simultaneous metric
-                                                                        ## groups from different domains.
+        ("domain", c_ulong),                                            ## [out] metric group domain number. Cannot use multiple, simultaneous
+                                                                        ## metric groups from the same domain.
         ("metricCount", c_ulong)                                        ## [out] metric count belonging to this group
     ]
 

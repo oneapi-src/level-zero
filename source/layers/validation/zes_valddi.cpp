@@ -93,15 +93,15 @@ namespace validation_layer
     zesDeviceProcessesGetState(
         zes_device_handle_t hDevice,                    ///< [in] Sysman handle for the device
         uint32_t* pCount,                               ///< [in,out] pointer to the number of processes.
-                                                        ///< if count is zero, then the driver will update the value with the total
-                                                        ///< number of processes currently using the device.
-                                                        ///< if count is non-zero but less than the number of processes, the driver
-                                                        ///< will set to the number of processes currently using the device and
-                                                        ///< return the error ::ZE_RESULT_ERROR_INVALID_SIZE.
-                                                        ///< if count is larger than the number of processes, then the driver will
-                                                        ///< update the value with the correct number of processes that are returned.
-        zes_process_state_t* pProcesses                 ///< [in,out][optional][range(0, *pCount)] array of process information,
-                                                        ///< one for each process currently using the device
+                                                        ///< if count is zero, then the driver shall update the value with the
+                                                        ///< total number of processes currently attached to the device.
+                                                        ///< if count is greater than the number of processes currently attached to
+                                                        ///< the device, then the driver shall update the value with the correct
+                                                        ///< number of processes.
+        zes_process_state_t* pProcesses                 ///< [in,out][optional][range(0, *pCount)] array of process information.
+                                                        ///< if count is less than the number of processes currently attached to
+                                                        ///< the device, then the driver shall only retrieve information about that
+                                                        ///< number of processes. In this case, the return code will ::ZE_RESULT_ERROR_INVALID_SIZE.
         )
     {
         auto pfnProcessesGetState = context.zesDdiTable.Device.pfnProcessesGetState;
@@ -180,12 +180,14 @@ namespace validation_layer
     zesDevicePciGetBars(
         zes_device_handle_t hDevice,                    ///< [in] Sysman handle of the device.
         uint32_t* pCount,                               ///< [in,out] pointer to the number of PCI bars.
-                                                        ///< if count is zero, then the driver will update the value with the total
-                                                        ///< number of bars.
-                                                        ///< if count is non-zero, then driver will only retrieve that number of bars.
-                                                        ///< if count is larger than the number of bar, then the driver will update
-                                                        ///< the value with the correct number of bars that are returned.
-        zes_pci_bar_properties_t* pProperties           ///< [in,out][optional][range(0, *pCount)] array of bar properties
+                                                        ///< if count is zero, then the driver shall update the value with the
+                                                        ///< total number of PCI bars that are setup.
+                                                        ///< if count is greater than the number of PCI bars that are setup, then
+                                                        ///< the driver shall update the value with the correct number of PCI bars.
+        zes_pci_bar_properties_t* pProperties           ///< [in,out][optional][range(0, *pCount)] array of information about setup
+                                                        ///< PCI bars.
+                                                        ///< if count is less than the number of PCI bars that are setup, then the
+                                                        ///< driver shall only retrieve information about that number of PCI bars.
         )
     {
         auto pfnPciGetBars = context.zesDdiTable.Device.pfnPciGetBars;
@@ -238,14 +240,16 @@ namespace validation_layer
     zesDeviceEnumDiagnosticTestSuites(
         zes_device_handle_t hDevice,                    ///< [in] Sysman handle of the device.
         uint32_t* pCount,                               ///< [in,out] pointer to the number of components of this type.
-                                                        ///< if count is zero, then the driver will update the value with the total
-                                                        ///< number of components of this type.
-                                                        ///< if count is non-zero, then driver will only retrieve that number of components.
-                                                        ///< if count is larger than the number of components available, then the
-                                                        ///< driver will update the value with the correct number of components
-                                                        ///< that are returned.
+                                                        ///< if count is zero, then the driver shall update the value with the
+                                                        ///< total number of components of this type that are available.
+                                                        ///< if count is greater than the number of components of this type that
+                                                        ///< are available, then the driver shall update the value with the correct
+                                                        ///< number of components.
         zes_diag_handle_t* phDiagnostics                ///< [in,out][optional][range(0, *pCount)] array of handle of components of
-                                                        ///< this type
+                                                        ///< this type.
+                                                        ///< if count is less than the number of components of this type that are
+                                                        ///< available, then the driver shall only retrieve that number of
+                                                        ///< component handles.
         )
     {
         auto pfnEnumDiagnosticTestSuites = context.zesDdiTable.Device.pfnEnumDiagnosticTestSuites;
@@ -299,13 +303,14 @@ namespace validation_layer
     zesDiagnosticsGetTests(
         zes_diag_handle_t hDiagnostics,                 ///< [in] Handle for the component.
         uint32_t* pCount,                               ///< [in,out] pointer to the number of tests.
-                                                        ///< If count is zero, then the driver will update the value with the total
-                                                        ///< number of tests available.
-                                                        ///< If count is non-zero, then driver will only retrieve that number of tests.
-                                                        ///< If count is larger than the number of tests available, then the driver
-                                                        ///< will update the value with the correct number of tests available.
-        zes_diag_test_t* pTests                         ///< [in,out][optional][range(0, *pCount)] Array of tests sorted by
-                                                        ///< increasing value of ::zes_diag_test_t.index
+                                                        ///< if count is zero, then the driver shall update the value with the
+                                                        ///< total number of tests that are available.
+                                                        ///< if count is greater than the number of tests that are available, then
+                                                        ///< the driver shall update the value with the correct number of tests.
+        zes_diag_test_t* pTests                         ///< [in,out][optional][range(0, *pCount)] array of information about
+                                                        ///< individual tests sorted by increasing value of ::zes_diag_test_t.index.
+                                                        ///< if count is less than the number of tests that are available, then the
+                                                        ///< driver shall only retrieve that number of tests.
         )
     {
         auto pfnGetTests = context.zesDdiTable.Diagnostics.pfnGetTests;
@@ -362,14 +367,16 @@ namespace validation_layer
     zesDeviceEnumEngineGroups(
         zes_device_handle_t hDevice,                    ///< [in] Sysman handle of the device.
         uint32_t* pCount,                               ///< [in,out] pointer to the number of components of this type.
-                                                        ///< if count is zero, then the driver will update the value with the total
-                                                        ///< number of components of this type.
-                                                        ///< if count is non-zero, then driver will only retrieve that number of components.
-                                                        ///< if count is larger than the number of components available, then the
-                                                        ///< driver will update the value with the correct number of components
-                                                        ///< that are returned.
+                                                        ///< if count is zero, then the driver shall update the value with the
+                                                        ///< total number of components of this type that are available.
+                                                        ///< if count is greater than the number of components of this type that
+                                                        ///< are available, then the driver shall update the value with the correct
+                                                        ///< number of components.
         zes_engine_handle_t* phEngine                   ///< [in,out][optional][range(0, *pCount)] array of handle of components of
-                                                        ///< this type
+                                                        ///< this type.
+                                                        ///< if count is less than the number of components of this type that are
+                                                        ///< available, then the driver shall only retrieve that number of
+                                                        ///< component handles.
         )
     {
         auto pfnEnumEngineGroups = context.zesDdiTable.Device.pfnEnumEngineGroups;
@@ -518,19 +525,69 @@ namespace validation_layer
     }
 
     ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesDriverEventListenEx
+    __zedlllocal ze_result_t ZE_APICALL
+    zesDriverEventListenEx(
+        ze_driver_handle_t hDriver,                     ///< [in] handle of the driver instance
+        uint64_t timeout,                               ///< [in] if non-zero, then indicates the maximum time (in milliseconds) to
+                                                        ///< yield before returning ::ZE_RESULT_SUCCESS or ::ZE_RESULT_NOT_READY;
+                                                        ///< if zero, then will check status and return immediately;
+                                                        ///< if UINT64_MAX, then function will not return until events arrive.
+        uint32_t count,                                 ///< [in] Number of device handles in phDevices.
+        zes_device_handle_t* phDevices,                 ///< [in][range(0, count)] Device handles to listen to for events. Only
+                                                        ///< devices from the provided driver handle can be specified in this list.
+        uint32_t* pNumDeviceEvents,                     ///< [in,out] Will contain the actual number of devices in phDevices that
+                                                        ///< generated events. If non-zero, check pEvents to determine the devices
+                                                        ///< and events that were received.
+        zes_event_type_flags_t* pEvents                 ///< [in,out] An array that will continue the list of events for each
+                                                        ///< device listened in phDevices.
+                                                        ///< This array must be at least as big as count.
+                                                        ///< For every device handle in phDevices, this will provide the events
+                                                        ///< that occurred for that device at the same position in this array. If
+                                                        ///< no event was received for a given device, the corresponding array
+                                                        ///< entry will be zero.
+        )
+    {
+        auto pfnEventListenEx = context.zesDdiTable.Driver.pfnEventListenEx;
+
+        if( nullptr == pfnEventListenEx )
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+
+        if( context.enableParameterValidation )
+        {
+            if( nullptr == hDriver )
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+            if( nullptr == phDevices )
+                return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+            if( nullptr == pNumDeviceEvents )
+                return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+            if( nullptr == pEvents )
+                return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+        }
+
+        return pfnEventListenEx( hDriver, timeout, count, phDevices, pNumDeviceEvents, pEvents );
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
     /// @brief Intercept function for zesDeviceEnumFabricPorts
     __zedlllocal ze_result_t ZE_APICALL
     zesDeviceEnumFabricPorts(
         zes_device_handle_t hDevice,                    ///< [in] Sysman handle of the device.
         uint32_t* pCount,                               ///< [in,out] pointer to the number of components of this type.
-                                                        ///< if count is zero, then the driver will update the value with the total
-                                                        ///< number of components of this type.
-                                                        ///< if count is non-zero, then driver will only retrieve that number of components.
-                                                        ///< if count is larger than the number of components available, then the
-                                                        ///< driver will update the value with the correct number of components
-                                                        ///< that are returned.
+                                                        ///< if count is zero, then the driver shall update the value with the
+                                                        ///< total number of components of this type that are available.
+                                                        ///< if count is greater than the number of components of this type that
+                                                        ///< are available, then the driver shall update the value with the correct
+                                                        ///< number of components.
         zes_fabric_port_handle_t* phPort                ///< [in,out][optional][range(0, *pCount)] array of handle of components of
-                                                        ///< this type
+                                                        ///< this type.
+                                                        ///< if count is less than the number of components of this type that are
+                                                        ///< available, then the driver shall only retrieve that number of
+                                                        ///< component handles.
         )
     {
         auto pfnEnumFabricPorts = context.zesDdiTable.Device.pfnEnumFabricPorts;
@@ -714,14 +771,16 @@ namespace validation_layer
     zesDeviceEnumFans(
         zes_device_handle_t hDevice,                    ///< [in] Sysman handle of the device.
         uint32_t* pCount,                               ///< [in,out] pointer to the number of components of this type.
-                                                        ///< if count is zero, then the driver will update the value with the total
-                                                        ///< number of components of this type.
-                                                        ///< if count is non-zero, then driver will only retrieve that number of components.
-                                                        ///< if count is larger than the number of components available, then the
-                                                        ///< driver will update the value with the correct number of components
-                                                        ///< that are returned.
+                                                        ///< if count is zero, then the driver shall update the value with the
+                                                        ///< total number of components of this type that are available.
+                                                        ///< if count is greater than the number of components of this type that
+                                                        ///< are available, then the driver shall update the value with the correct
+                                                        ///< number of components.
         zes_fan_handle_t* phFan                         ///< [in,out][optional][range(0, *pCount)] array of handle of components of
-                                                        ///< this type
+                                                        ///< this type.
+                                                        ///< if count is less than the number of components of this type that are
+                                                        ///< available, then the driver shall only retrieve that number of
+                                                        ///< component handles.
         )
     {
         auto pfnEnumFans = context.zesDdiTable.Device.pfnEnumFans;
@@ -906,14 +965,16 @@ namespace validation_layer
     zesDeviceEnumFirmwares(
         zes_device_handle_t hDevice,                    ///< [in] Sysman handle of the device.
         uint32_t* pCount,                               ///< [in,out] pointer to the number of components of this type.
-                                                        ///< if count is zero, then the driver will update the value with the total
-                                                        ///< number of components of this type.
-                                                        ///< if count is non-zero, then driver will only retrieve that number of components.
-                                                        ///< if count is larger than the number of components available, then the
-                                                        ///< driver will update the value with the correct number of components
-                                                        ///< that are returned.
+                                                        ///< if count is zero, then the driver shall update the value with the
+                                                        ///< total number of components of this type that are available.
+                                                        ///< if count is greater than the number of components of this type that
+                                                        ///< are available, then the driver shall update the value with the correct
+                                                        ///< number of components.
         zes_firmware_handle_t* phFirmware               ///< [in,out][optional][range(0, *pCount)] array of handle of components of
-                                                        ///< this type
+                                                        ///< this type.
+                                                        ///< if count is less than the number of components of this type that are
+                                                        ///< available, then the driver shall only retrieve that number of
+                                                        ///< component handles.
         )
     {
         auto pfnEnumFirmwares = context.zesDdiTable.Device.pfnEnumFirmwares;
@@ -994,14 +1055,16 @@ namespace validation_layer
     zesDeviceEnumFrequencyDomains(
         zes_device_handle_t hDevice,                    ///< [in] Sysman handle of the device.
         uint32_t* pCount,                               ///< [in,out] pointer to the number of components of this type.
-                                                        ///< if count is zero, then the driver will update the value with the total
-                                                        ///< number of components of this type.
-                                                        ///< if count is non-zero, then driver will only retrieve that number of components.
-                                                        ///< if count is larger than the number of components available, then the
-                                                        ///< driver will update the value with the correct number of components
-                                                        ///< that are returned.
+                                                        ///< if count is zero, then the driver shall update the value with the
+                                                        ///< total number of components of this type that are available.
+                                                        ///< if count is greater than the number of components of this type that
+                                                        ///< are available, then the driver shall update the value with the correct
+                                                        ///< number of components.
         zes_freq_handle_t* phFrequency                  ///< [in,out][optional][range(0, *pCount)] array of handle of components of
-                                                        ///< this type
+                                                        ///< this type.
+                                                        ///< if count is less than the number of components of this type that are
+                                                        ///< available, then the driver shall only retrieve that number of
+                                                        ///< component handles.
         )
     {
         auto pfnEnumFrequencyDomains = context.zesDdiTable.Device.pfnEnumFrequencyDomains;
@@ -1054,13 +1117,14 @@ namespace validation_layer
     zesFrequencyGetAvailableClocks(
         zes_freq_handle_t hFrequency,                   ///< [in] Sysman handle of the device.
         uint32_t* pCount,                               ///< [in,out] pointer to the number of frequencies.
-                                                        ///< If count is zero, then the driver will update the value with the total
-                                                        ///< number of frequencies available.
-                                                        ///< If count is non-zero, then driver will only retrieve that number of frequencies.
-                                                        ///< If count is larger than the number of frequencies available, then the
-                                                        ///< driver will update the value with the correct number of frequencies available.
+                                                        ///< if count is zero, then the driver shall update the value with the
+                                                        ///< total number of frequencies that are available.
+                                                        ///< if count is greater than the number of frequencies that are available,
+                                                        ///< then the driver shall update the value with the correct number of frequencies.
         double* phFrequency                             ///< [in,out][optional][range(0, *pCount)] array of frequencies in units of
-                                                        ///< MHz and sorted from slowest to fastest
+                                                        ///< MHz and sorted from slowest to fastest.
+                                                        ///< if count is less than the number of frequencies that are available,
+                                                        ///< then the driver shall only retrieve that number of frequencies.
         )
     {
         auto pfnGetAvailableClocks = context.zesDdiTable.Frequency.pfnGetAvailableClocks;
@@ -1488,14 +1552,16 @@ namespace validation_layer
     zesDeviceEnumLeds(
         zes_device_handle_t hDevice,                    ///< [in] Sysman handle of the device.
         uint32_t* pCount,                               ///< [in,out] pointer to the number of components of this type.
-                                                        ///< if count is zero, then the driver will update the value with the total
-                                                        ///< number of components of this type.
-                                                        ///< if count is non-zero, then driver will only retrieve that number of components.
-                                                        ///< if count is larger than the number of components available, then the
-                                                        ///< driver will update the value with the correct number of components
-                                                        ///< that are returned.
+                                                        ///< if count is zero, then the driver shall update the value with the
+                                                        ///< total number of components of this type that are available.
+                                                        ///< if count is greater than the number of components of this type that
+                                                        ///< are available, then the driver shall update the value with the correct
+                                                        ///< number of components.
         zes_led_handle_t* phLed                         ///< [in,out][optional][range(0, *pCount)] array of handle of components of
-                                                        ///< this type
+                                                        ///< this type.
+                                                        ///< if count is less than the number of components of this type that are
+                                                        ///< available, then the driver shall only retrieve that number of
+                                                        ///< component handles.
         )
     {
         auto pfnEnumLeds = context.zesDdiTable.Device.pfnEnumLeds;
@@ -1623,14 +1689,16 @@ namespace validation_layer
     zesDeviceEnumMemoryModules(
         zes_device_handle_t hDevice,                    ///< [in] Sysman handle of the device.
         uint32_t* pCount,                               ///< [in,out] pointer to the number of components of this type.
-                                                        ///< if count is zero, then the driver will update the value with the total
-                                                        ///< number of components of this type.
-                                                        ///< if count is non-zero, then driver will only retrieve that number of components.
-                                                        ///< if count is larger than the number of components available, then the
-                                                        ///< driver will update the value with the correct number of components
-                                                        ///< that are returned.
+                                                        ///< if count is zero, then the driver shall update the value with the
+                                                        ///< total number of components of this type that are available.
+                                                        ///< if count is greater than the number of components of this type that
+                                                        ///< are available, then the driver shall update the value with the correct
+                                                        ///< number of components.
         zes_mem_handle_t* phMemory                      ///< [in,out][optional][range(0, *pCount)] array of handle of components of
-                                                        ///< this type
+                                                        ///< this type.
+                                                        ///< if count is less than the number of components of this type that are
+                                                        ///< available, then the driver shall only retrieve that number of
+                                                        ///< component handles.
         )
     {
         auto pfnEnumMemoryModules = context.zesDdiTable.Device.pfnEnumMemoryModules;
@@ -1736,14 +1804,16 @@ namespace validation_layer
     zesDeviceEnumPerformanceFactorDomains(
         zes_device_handle_t hDevice,                    ///< [in] Sysman handle of the device.
         uint32_t* pCount,                               ///< [in,out] pointer to the number of components of this type.
-                                                        ///< if count is zero, then the driver will update the value with the total
-                                                        ///< number of components of this type.
-                                                        ///< if count is non-zero, then driver will only retrieve that number of components.
-                                                        ///< if count is larger than the number of components available, then the
-                                                        ///< driver will update the value with the correct number of components
-                                                        ///< that are returned.
+                                                        ///< if count is zero, then the driver shall update the value with the
+                                                        ///< total number of components of this type that are available.
+                                                        ///< if count is greater than the number of components of this type that
+                                                        ///< are available, then the driver shall update the value with the correct
+                                                        ///< number of components.
         zes_perf_handle_t* phPerf                       ///< [in,out][optional][range(0, *pCount)] array of handle of components of
-                                                        ///< this type
+                                                        ///< this type.
+                                                        ///< if count is less than the number of components of this type that are
+                                                        ///< available, then the driver shall only retrieve that number of
+                                                        ///< component handles.
         )
     {
         auto pfnEnumPerformanceFactorDomains = context.zesDdiTable.Device.pfnEnumPerformanceFactorDomains;
@@ -1847,14 +1917,16 @@ namespace validation_layer
     zesDeviceEnumPowerDomains(
         zes_device_handle_t hDevice,                    ///< [in] Sysman handle of the device.
         uint32_t* pCount,                               ///< [in,out] pointer to the number of components of this type.
-                                                        ///< if count is zero, then the driver will update the value with the total
-                                                        ///< number of components of this type.
-                                                        ///< if count is non-zero, then driver will only retrieve that number of components.
-                                                        ///< if count is larger than the number of components available, then the
-                                                        ///< driver will update the value with the correct number of components
-                                                        ///< that are returned.
+                                                        ///< if count is zero, then the driver shall update the value with the
+                                                        ///< total number of components of this type that are available.
+                                                        ///< if count is greater than the number of components of this type that
+                                                        ///< are available, then the driver shall update the value with the correct
+                                                        ///< number of components.
         zes_pwr_handle_t* phPower                       ///< [in,out][optional][range(0, *pCount)] array of handle of components of
-                                                        ///< this type
+                                                        ///< this type.
+                                                        ///< if count is less than the number of components of this type that are
+                                                        ///< available, then the driver shall only retrieve that number of
+                                                        ///< component handles.
         )
     {
         auto pfnEnumPowerDomains = context.zesDdiTable.Device.pfnEnumPowerDomains;
@@ -2040,14 +2112,16 @@ namespace validation_layer
     zesDeviceEnumPsus(
         zes_device_handle_t hDevice,                    ///< [in] Sysman handle of the device.
         uint32_t* pCount,                               ///< [in,out] pointer to the number of components of this type.
-                                                        ///< if count is zero, then the driver will update the value with the total
-                                                        ///< number of components of this type.
-                                                        ///< if count is non-zero, then driver will only retrieve that number of components.
-                                                        ///< if count is larger than the number of components available, then the
-                                                        ///< driver will update the value with the correct number of components
-                                                        ///< that are returned.
+                                                        ///< if count is zero, then the driver shall update the value with the
+                                                        ///< total number of components of this type that are available.
+                                                        ///< if count is greater than the number of components of this type that
+                                                        ///< are available, then the driver shall update the value with the correct
+                                                        ///< number of components.
         zes_psu_handle_t* phPsu                         ///< [in,out][optional][range(0, *pCount)] array of handle of components of
-                                                        ///< this type
+                                                        ///< this type.
+                                                        ///< if count is less than the number of components of this type that are
+                                                        ///< available, then the driver shall only retrieve that number of
+                                                        ///< component handles.
         )
     {
         auto pfnEnumPsus = context.zesDdiTable.Device.pfnEnumPsus;
@@ -2126,14 +2200,16 @@ namespace validation_layer
     zesDeviceEnumRasErrorSets(
         zes_device_handle_t hDevice,                    ///< [in] Sysman handle of the device.
         uint32_t* pCount,                               ///< [in,out] pointer to the number of components of this type.
-                                                        ///< if count is zero, then the driver will update the value with the total
-                                                        ///< number of components of this type.
-                                                        ///< if count is non-zero, then driver will only retrieve that number of components.
-                                                        ///< if count is larger than the number of components available, then the
-                                                        ///< driver will update the value with the correct number of components
-                                                        ///< that are returned.
+                                                        ///< if count is zero, then the driver shall update the value with the
+                                                        ///< total number of components of this type that are available.
+                                                        ///< if count is greater than the number of components of this type that
+                                                        ///< are available, then the driver shall update the value with the correct
+                                                        ///< number of components.
         zes_ras_handle_t* phRas                         ///< [in,out][optional][range(0, *pCount)] array of handle of components of
-                                                        ///< this type
+                                                        ///< this type.
+                                                        ///< if count is less than the number of components of this type that are
+                                                        ///< available, then the driver shall only retrieve that number of
+                                                        ///< component handles.
         )
     {
         auto pfnEnumRasErrorSets = context.zesDdiTable.Device.pfnEnumRasErrorSets;
@@ -2266,14 +2342,16 @@ namespace validation_layer
     zesDeviceEnumSchedulers(
         zes_device_handle_t hDevice,                    ///< [in] Sysman handle of the device.
         uint32_t* pCount,                               ///< [in,out] pointer to the number of components of this type.
-                                                        ///< if count is zero, then the driver will update the value with the total
-                                                        ///< number of components of this type.
-                                                        ///< if count is non-zero, then driver will only retrieve that number of components.
-                                                        ///< if count is larger than the number of components available, then the
-                                                        ///< driver will update the value with the correct number of components
-                                                        ///< that are returned.
+                                                        ///< if count is zero, then the driver shall update the value with the
+                                                        ///< total number of components of this type that are available.
+                                                        ///< if count is greater than the number of components of this type that
+                                                        ///< are available, then the driver shall update the value with the correct
+                                                        ///< number of components.
         zes_sched_handle_t* phScheduler                 ///< [in,out][optional][range(0, *pCount)] array of handle of components of
-                                                        ///< this type
+                                                        ///< this type.
+                                                        ///< if count is less than the number of components of this type that are
+                                                        ///< available, then the driver shall only retrieve that number of
+                                                        ///< component handles.
         )
     {
         auto pfnEnumSchedulers = context.zesDdiTable.Device.pfnEnumSchedulers;
@@ -2524,14 +2602,16 @@ namespace validation_layer
     zesDeviceEnumStandbyDomains(
         zes_device_handle_t hDevice,                    ///< [in] Sysman handle of the device.
         uint32_t* pCount,                               ///< [in,out] pointer to the number of components of this type.
-                                                        ///< if count is zero, then the driver will update the value with the total
-                                                        ///< number of components of this type.
-                                                        ///< if count is non-zero, then driver will only retrieve that number of components.
-                                                        ///< if count is larger than the number of components available, then the
-                                                        ///< driver will update the value with the correct number of components
-                                                        ///< that are returned.
+                                                        ///< if count is zero, then the driver shall update the value with the
+                                                        ///< total number of components of this type that are available.
+                                                        ///< if count is greater than the number of components of this type that
+                                                        ///< are available, then the driver shall update the value with the correct
+                                                        ///< number of components.
         zes_standby_handle_t* phStandby                 ///< [in,out][optional][range(0, *pCount)] array of handle of components of
-                                                        ///< this type
+                                                        ///< this type.
+                                                        ///< if count is less than the number of components of this type that are
+                                                        ///< available, then the driver shall only retrieve that number of
+                                                        ///< component handles.
         )
     {
         auto pfnEnumStandbyDomains = context.zesDdiTable.Device.pfnEnumStandbyDomains;
@@ -2636,14 +2716,16 @@ namespace validation_layer
     zesDeviceEnumTemperatureSensors(
         zes_device_handle_t hDevice,                    ///< [in] Sysman handle of the device.
         uint32_t* pCount,                               ///< [in,out] pointer to the number of components of this type.
-                                                        ///< if count is zero, then the driver will update the value with the total
-                                                        ///< number of components of this type.
-                                                        ///< if count is non-zero, then driver will only retrieve that number of components.
-                                                        ///< if count is larger than the number of components available, then the
-                                                        ///< driver will update the value with the correct number of components
-                                                        ///< that are returned.
+                                                        ///< if count is zero, then the driver shall update the value with the
+                                                        ///< total number of components of this type that are available.
+                                                        ///< if count is greater than the number of components of this type that
+                                                        ///< are available, then the driver shall update the value with the correct
+                                                        ///< number of components.
         zes_temp_handle_t* phTemperature                ///< [in,out][optional][range(0, *pCount)] array of handle of components of
-                                                        ///< this type
+                                                        ///< this type.
+                                                        ///< if count is less than the number of components of this type that are
+                                                        ///< available, then the driver shall only retrieve that number of
+                                                        ///< component handles.
         )
     {
         auto pfnEnumTemperatureSensors = context.zesDdiTable.Device.pfnEnumTemperatureSensors;
@@ -2900,6 +2982,9 @@ zesGetDriverProcAddrTable(
 
     dditable.pfnEventListen                              = pDdiTable->pfnEventListen;
     pDdiTable->pfnEventListen                            = validation_layer::zesDriverEventListen;
+
+    dditable.pfnEventListenEx                            = pDdiTable->pfnEventListenEx;
+    pDdiTable->pfnEventListenEx                          = validation_layer::zesDriverEventListenEx;
 
     return result;
 }

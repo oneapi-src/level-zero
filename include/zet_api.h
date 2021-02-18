@@ -5,7 +5,7 @@
  * SPDX-License-Identifier: MIT
  *
  * @file zet_api.h
- * @version v1.0-r1.0.4.8
+ * @version v1.1-r1.1.8
  *
  */
 #ifndef _ZET_API_H
@@ -177,6 +177,10 @@ typedef struct _zet_debug_event_info_module_t zet_debug_event_info_module_t;
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief Forward-declare zet_debug_event_info_thread_stopped_t
 typedef struct _zet_debug_event_info_thread_stopped_t zet_debug_event_info_thread_stopped_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Forward-declare zet_debug_event_info_page_fault_t
+typedef struct _zet_debug_event_info_page_fault_t zet_debug_event_info_page_fault_t;
 
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief Forward-declare zet_debug_event_t
@@ -408,6 +412,7 @@ typedef enum _zet_debug_event_type_t
     ZET_DEBUG_EVENT_TYPE_MODULE_UNLOAD = 5,         ///< An in-memory module is about to get unloaded from the device
     ZET_DEBUG_EVENT_TYPE_THREAD_STOPPED = 6,        ///< The thread stopped due to a device exception
     ZET_DEBUG_EVENT_TYPE_THREAD_UNAVAILABLE = 7,    ///< The thread is not available to be stopped
+    ZET_DEBUG_EVENT_TYPE_PAGE_FAULT = 8,            ///< A page request could not be completed on the device
     ZET_DEBUG_EVENT_TYPE_FORCE_UINT32 = 0x7fffffff
 
 } zet_debug_event_type_t;
@@ -452,6 +457,27 @@ typedef struct _zet_debug_event_info_thread_stopped_t
 } zet_debug_event_info_thread_stopped_t;
 
 ///////////////////////////////////////////////////////////////////////////////
+/// @brief Page fault reasons.
+typedef enum _zet_debug_page_fault_reason_t
+{
+    ZET_DEBUG_PAGE_FAULT_REASON_INVALID = 0,        ///< The page fault reason is not valid
+    ZET_DEBUG_PAGE_FAULT_REASON_MAPPING_ERROR = 1,  ///< The address is not mapped
+    ZET_DEBUG_PAGE_FAULT_REASON_PERMISSION_ERROR = 2,   ///< Invalid access permissions
+    ZET_DEBUG_PAGE_FAULT_REASON_FORCE_UINT32 = 0x7fffffff
+
+} zet_debug_page_fault_reason_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Event information for ::ZET_DEBUG_EVENT_TYPE_PAGE_FAULT
+typedef struct _zet_debug_event_info_page_fault_t
+{
+    uint64_t address;                               ///< [out] the faulting address
+    uint64_t mask;                                  ///< [out] the alignment mask
+    zet_debug_page_fault_reason_t reason;           ///< [out] the page fault reason
+
+} zet_debug_event_info_page_fault_t;
+
+///////////////////////////////////////////////////////////////////////////////
 /// @brief Event type-specific information
 typedef union _zet_debug_event_info_t
 {
@@ -460,6 +486,7 @@ typedef union _zet_debug_event_info_t
                                                     ///< ::ZET_DEBUG_EVENT_TYPE_MODULE_UNLOAD
     zet_debug_event_info_thread_stopped_t thread;   ///< [out] type == ::ZET_DEBUG_EVENT_TYPE_THREAD_STOPPED or
                                                     ///< ::ZET_DEBUG_EVENT_TYPE_THREAD_UNAVAILABLE
+    zet_debug_event_info_page_fault_t page_fault;   ///< [out] type == ::ZET_DEBUG_EVENT_TYPE_PAGE_FAULT
 
 } zet_debug_event_info_t;
 
@@ -684,15 +711,15 @@ ZE_APIEXPORT ze_result_t ZE_APICALL
 zetDebugGetRegisterSetProperties(
     zet_device_handle_t hDevice,                    ///< [in] device handle
     uint32_t* pCount,                               ///< [in,out] pointer to the number of register set properties.
-                                                    ///< if count is zero, then the driver will update the value with the total
-                                                    ///< number of register set properties available.
-                                                    ///< if count is non-zero, then driver will only retrieve that number of
-                                                    ///< register set properties.
-                                                    ///< if count is larger than the number of register set properties
-                                                    ///< available, then the driver will update the value with the correct
+                                                    ///< if count is zero, then the driver shall update the value with the
+                                                    ///< total number of register set properties available.
+                                                    ///< if count is greater than the number of register set properties
+                                                    ///< available, then the driver shall update the value with the correct
                                                     ///< number of registry set properties available.
     zet_debug_regset_properties_t* pRegisterSetProperties   ///< [in,out][optional][range(0, *pCount)] array of query results for
-                                                    ///< register set properties
+                                                    ///< register set properties.
+                                                    ///< if count is less than the number of register set properties available,
+                                                    ///< then driver shall only retrieve that number of register set properties.
     );
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -770,14 +797,14 @@ ZE_APIEXPORT ze_result_t ZE_APICALL
 zetMetricGroupGet(
     zet_device_handle_t hDevice,                    ///< [in] handle of the device
     uint32_t* pCount,                               ///< [in,out] pointer to the number of metric groups.
-                                                    ///< if count is zero, then the driver will update the value with the total
-                                                    ///< number of metric groups available.
-                                                    ///< if count is non-zero, then driver will only retrieve that number of
-                                                    ///< metric groups.
-                                                    ///< if count is larger than the number of metric groups available, then
-                                                    ///< the driver will update the value with the correct number of metric
+                                                    ///< if count is zero, then the driver shall update the value with the
+                                                    ///< total number of metric groups available.
+                                                    ///< if count is greater than the number of metric groups available, then
+                                                    ///< the driver shall update the value with the correct number of metric
                                                     ///< groups available.
-    zet_metric_group_handle_t* phMetricGroups       ///< [in,out][optional][range(0, *pCount)] array of handle of metric groups
+    zet_metric_group_handle_t* phMetricGroups       ///< [in,out][optional][range(0, *pCount)] array of handle of metric groups.
+                                                    ///< if count is less than the number of metric groups available, then
+                                                    ///< driver shall only retrieve that number of metric groups.
     );
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -813,8 +840,8 @@ typedef struct _zet_metric_group_properties_t
     char description[ZET_MAX_METRIC_GROUP_DESCRIPTION]; ///< [out] metric group description
     zet_metric_group_sampling_type_flags_t samplingType;///< [out] metric group sampling type.
                                                     ///< returns a combination of ::zet_metric_group_sampling_type_flag_t.
-    uint32_t domain;                                ///< [out] metric group domain number. Cannot use simultaneous metric
-                                                    ///< groups from different domains.
+    uint32_t domain;                                ///< [out] metric group domain number. Cannot use multiple, simultaneous
+                                                    ///< metric groups from the same domain.
     uint32_t metricCount;                           ///< [out] metric count belonging to this group
 
 } zet_metric_group_properties_t;
@@ -889,15 +916,14 @@ zetMetricGroupCalculateMetricValues(
     size_t rawDataSize,                             ///< [in] size in bytes of raw data buffer
     const uint8_t* pRawData,                        ///< [in][range(0, rawDataSize)] buffer of raw data to calculate
     uint32_t* pMetricValueCount,                    ///< [in,out] pointer to number of metric values calculated.
-                                                    ///< if count is zero, then the driver will update the value with the total
-                                                    ///< number of metric values to be calculated.
-                                                    ///< if count is non-zero, then driver will only calculate that number of
-                                                    ///< metric values.
-                                                    ///< if count is larger than the number available in the raw data buffer,
-                                                    ///< then the driver will update the value with the actual number of metric
-                                                    ///< values to be calculated.
-    zet_typed_value_t* pMetricValues                ///< [in,out][optional][range(0, *pMetricValueCount)] buffer of calculated
-                                                    ///< metrics
+                                                    ///< if count is zero, then the driver shall update the value with the
+                                                    ///< total number of metric values to be calculated.
+                                                    ///< if count is greater than the number available in the raw data buffer,
+                                                    ///< then the driver shall update the value with the actual number of
+                                                    ///< metric values to be calculated.
+    zet_typed_value_t* pMetricValues                ///< [in,out][optional][range(0, *pMetricValueCount)] buffer of calculated metrics.
+                                                    ///< if count is less than the number available in the raw data buffer,
+                                                    ///< then driver shall only calculate that number of metric values.
     );
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -918,12 +944,13 @@ ZE_APIEXPORT ze_result_t ZE_APICALL
 zetMetricGet(
     zet_metric_group_handle_t hMetricGroup,         ///< [in] handle of the metric group
     uint32_t* pCount,                               ///< [in,out] pointer to the number of metrics.
-                                                    ///< if count is zero, then the driver will update the value with the total
-                                                    ///< number of metrics available.
-                                                    ///< if count is non-zero, then driver will only retrieve that number of metrics.
-                                                    ///< if count is larger than the number of metrics available, then the
-                                                    ///< driver will update the value with the correct number of metrics available.
-    zet_metric_handle_t* phMetrics                  ///< [in,out][optional][range(0, *pCount)] array of handle of metrics
+                                                    ///< if count is zero, then the driver shall update the value with the
+                                                    ///< total number of metrics available.
+                                                    ///< if count is greater than the number of metrics available, then the
+                                                    ///< driver shall update the value with the correct number of metrics available.
+    zet_metric_handle_t* phMetrics                  ///< [in,out][optional][range(0, *pCount)] array of handle of metrics.
+                                                    ///< if count is less than the number of metrics available, then driver
+                                                    ///< shall only retrieve that number of metrics.
     );
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1292,6 +1319,8 @@ zetMetricQueryReset(
 ///       device on which the command list was created.
 ///     - The application must ensure the command list and metric query were
 ///       created on the same context.
+///     - This command blocks all following commands from beginning until the
+///       execution of the query completes.
 ///     - The application must **not** call this function from simultaneous
 ///       threads with the same command list handle.
 /// 
@@ -1320,6 +1349,12 @@ zetCommandListAppendMetricQueryBegin(
 ///       created using ::ZE_EVENT_POOL_FLAG_KERNEL_TIMESTAMP flag is undefined.
 ///       However, for consistency and orthogonality the event will report
 ///       correctly as signaled when used by other event API functionality.
+///     - If numWaitEvents is zero, then all previous commands are completed
+///       prior to the execution of the query.
+///     - If numWaitEvents is non-zero, then all phWaitEvents must be signaled
+///       prior to the execution of the query.
+///     - This command blocks all following commands from beginning until the
+///       execution of the query completes.
 ///     - The application must **not** call this function from simultaneous
 ///       threads with the same command list handle.
 /// 
@@ -1330,6 +1365,8 @@ zetCommandListAppendMetricQueryBegin(
 ///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
 ///         + `nullptr == hCommandList`
 ///         + `nullptr == hMetricQuery`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == phWaitEvents`
 ///     - ::ZE_RESULT_ERROR_INVALID_SYNCHRONIZATION_OBJECT
 ///     - ::ZE_RESULT_ERROR_INVALID_SIZE
 ///         + `(nullptr == phWaitEvents) && (0 < numWaitEvents)`
@@ -1338,10 +1375,8 @@ zetCommandListAppendMetricQueryEnd(
     zet_command_list_handle_t hCommandList,         ///< [in] handle of the command list
     zet_metric_query_handle_t hMetricQuery,         ///< [in] handle of the metric query
     ze_event_handle_t hSignalEvent,                 ///< [in][optional] handle of the event to signal on completion
-    uint32_t numWaitEvents,                         ///< [in][optional] number of events to wait on before launching; must be 0
-                                                    ///< if `nullptr == phWaitEvents`
-    ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
-                                                    ///< on before launching
+    uint32_t numWaitEvents,                         ///< [in] must be zero
+    ze_event_handle_t* phWaitEvents                 ///< [in] must be nullptr
     );
 
 ///////////////////////////////////////////////////////////////////////////////

@@ -49,13 +49,13 @@ namespace tracing_layer
     __zedlllocal ze_result_t ZE_APICALL
     zeDriverGet(
         uint32_t* pCount,                               ///< [in,out] pointer to the number of driver instances.
-                                                        ///< if count is zero, then the loader will update the value with the total
-                                                        ///< number of drivers available.
-                                                        ///< if count is non-zero, then the loader will only retrieve that number
-                                                        ///< of drivers.
-                                                        ///< if count is larger than the number of drivers available, then the
-                                                        ///< loader will update the value with the correct number of drivers available.
-        ze_driver_handle_t* phDrivers                   ///< [in,out][optional][range(0, *pCount)] array of driver instance handles
+                                                        ///< if count is zero, then the loader shall update the value with the
+                                                        ///< total number of drivers available.
+                                                        ///< if count is greater than the number of drivers available, then the
+                                                        ///< loader shall update the value with the correct number of drivers available.
+        ze_driver_handle_t* phDrivers                   ///< [in,out][optional][range(0, *pCount)] array of driver instance handles.
+                                                        ///< if count is less than the number of drivers available, then the loader
+                                                        ///< shall only retrieve that number of drivers.
         )
     {
         if( nullptr == context.zeDdiTable.Driver.pfnGet)
@@ -154,7 +154,7 @@ namespace tracing_layer
     __zedlllocal ze_result_t ZE_APICALL
     zeDriverGetIpcProperties(
         ze_driver_handle_t hDriver,                     ///< [in] handle of the driver instance
-        ze_driver_ipc_properties_t* pIpcProperties      ///< [out] query result for IPC properties
+        ze_driver_ipc_properties_t* pIpcProperties      ///< [in,out] query result for IPC properties
         )
     {
         if( nullptr == context.zeDdiTable.Driver.pfnGetIpcProperties)
@@ -188,15 +188,15 @@ namespace tracing_layer
     zeDriverGetExtensionProperties(
         ze_driver_handle_t hDriver,                     ///< [in] handle of the driver instance
         uint32_t* pCount,                               ///< [in,out] pointer to the number of extension properties.
-                                                        ///< if count is zero, then the driver will update the value with the total
-                                                        ///< number of extension properties available.
-                                                        ///< if count is non-zero, then driver will only retrieve that number of
-                                                        ///< extension properties.
-                                                        ///< if count is larger than the number of extension properties available,
-                                                        ///< then the driver will update the value with the correct number of
+                                                        ///< if count is zero, then the driver shall update the value with the
+                                                        ///< total number of extension properties available.
+                                                        ///< if count is greater than the number of extension properties available,
+                                                        ///< then the driver shall update the value with the correct number of
                                                         ///< extension properties available.
         ze_driver_extension_properties_t* pExtensionProperties  ///< [in,out][optional][range(0, *pCount)] array of query results for
-                                                        ///< extension properties
+                                                        ///< extension properties.
+                                                        ///< if count is less than the number of extension properties available,
+                                                        ///< then driver shall only retrieve that number of extension properties.
         )
     {
         if( nullptr == context.zeDdiTable.Driver.pfnGetExtensionProperties)
@@ -227,17 +227,54 @@ namespace tracing_layer
     }
 
     ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeDriverGetExtensionFunctionAddress
+    __zedlllocal ze_result_t ZE_APICALL
+    zeDriverGetExtensionFunctionAddress(
+        ze_driver_handle_t hDriver,                     ///< [in] handle of the driver instance
+        const char* name,                               ///< [in] extension name
+        void** ppFunctionAddress                        ///< [out] pointer to function pointer
+        )
+    {
+        if( nullptr == context.zeDdiTable.Driver.pfnGetExtensionFunctionAddress)
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+
+        ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.Driver.pfnGetExtensionFunctionAddress, hDriver, name, ppFunctionAddress);
+
+        // capture parameters
+        ze_driver_get_extension_function_address_params_t tracerParams = {
+            &hDriver,
+            &name,
+            &ppFunctionAddress
+        };
+
+        tracing_layer::APITracerCallbackDataImp<ze_pfnDriverGetExtensionFunctionAddressCb_t> apiCallbackData;
+
+        ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnDriverGetExtensionFunctionAddressCb_t, Driver, pfnGetExtensionFunctionAddressCb);
+
+
+        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.Driver.pfnGetExtensionFunctionAddress,
+                                                  &tracerParams,
+                                                  apiCallbackData.apiOrdinal,
+                                                  apiCallbackData.prologCallbacks,
+                                                  apiCallbackData.epilogCallbacks,
+                                                  *tracerParams.phDriver,
+                                                  *tracerParams.pname,
+                                                  *tracerParams.pppFunctionAddress);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
     /// @brief Intercept function for zeDeviceGet
     __zedlllocal ze_result_t ZE_APICALL
     zeDeviceGet(
         ze_driver_handle_t hDriver,                     ///< [in] handle of the driver instance
         uint32_t* pCount,                               ///< [in,out] pointer to the number of devices.
-                                                        ///< if count is zero, then the driver will update the value with the total
-                                                        ///< number of devices available.
-                                                        ///< if count is non-zero, then driver will only retrieve that number of devices.
-                                                        ///< if count is larger than the number of devices available, then the
-                                                        ///< driver will update the value with the correct number of devices available.
-        ze_device_handle_t* phDevices                   ///< [in,out][optional][range(0, *pCount)] array of handle of devices
+                                                        ///< if count is zero, then the driver shall update the value with the
+                                                        ///< total number of devices available.
+                                                        ///< if count is greater than the number of devices available, then the
+                                                        ///< driver shall update the value with the correct number of devices available.
+        ze_device_handle_t* phDevices                   ///< [in,out][optional][range(0, *pCount)] array of handle of devices.
+                                                        ///< if count is less than the number of devices available, then driver
+                                                        ///< shall only retrieve that number of devices.
         )
     {
         if( nullptr == context.zeDdiTable.Device.pfnGet)
@@ -273,12 +310,13 @@ namespace tracing_layer
     zeDeviceGetSubDevices(
         ze_device_handle_t hDevice,                     ///< [in] handle of the device object
         uint32_t* pCount,                               ///< [in,out] pointer to the number of sub-devices.
-                                                        ///< if count is zero, then the driver will update the value with the total
-                                                        ///< number of sub-devices available.
-                                                        ///< if count is non-zero, then driver will only retrieve that number of sub-devices.
-                                                        ///< if count is larger than the number of sub-devices available, then the
-                                                        ///< driver will update the value with the correct number of sub-devices available.
-        ze_device_handle_t* phSubdevices                ///< [in,out][optional][range(0, *pCount)] array of handle of sub-devices
+                                                        ///< if count is zero, then the driver shall update the value with the
+                                                        ///< total number of sub-devices available.
+                                                        ///< if count is greater than the number of sub-devices available, then the
+                                                        ///< driver shall update the value with the correct number of sub-devices available.
+        ze_device_handle_t* phSubdevices                ///< [in,out][optional][range(0, *pCount)] array of handle of sub-devices.
+                                                        ///< if count is less than the number of sub-devices available, then driver
+                                                        ///< shall only retrieve that number of sub-devices.
         )
     {
         if( nullptr == context.zeDdiTable.Device.pfnGetSubDevices)
@@ -413,15 +451,16 @@ namespace tracing_layer
     zeDeviceGetCommandQueueGroupProperties(
         ze_device_handle_t hDevice,                     ///< [in] handle of the device
         uint32_t* pCount,                               ///< [in,out] pointer to the number of command queue group properties.
-                                                        ///< if count is zero, then the driver will update the value with the total
-                                                        ///< number of command queue group properties available.
-                                                        ///< if count is non-zero, then driver will only retrieve that number of
-                                                        ///< command queue group properties.
-                                                        ///< if count is larger than the number of command queue group properties
-                                                        ///< available, then the driver will update the value with the correct
+                                                        ///< if count is zero, then the driver shall update the value with the
+                                                        ///< total number of command queue group properties available.
+                                                        ///< if count is greater than the number of command queue group properties
+                                                        ///< available, then the driver shall update the value with the correct
                                                         ///< number of command queue group properties available.
         ze_command_queue_group_properties_t* pCommandQueueGroupProperties   ///< [in,out][optional][range(0, *pCount)] array of query results for
-                                                        ///< command queue group properties
+                                                        ///< command queue group properties.
+                                                        ///< if count is less than the number of command queue group properties
+                                                        ///< available, then driver shall only retrieve that number of command
+                                                        ///< queue group properties.
         )
     {
         if( nullptr == context.zeDdiTable.Device.pfnGetCommandQueueGroupProperties)
@@ -457,15 +496,15 @@ namespace tracing_layer
     zeDeviceGetMemoryProperties(
         ze_device_handle_t hDevice,                     ///< [in] handle of the device
         uint32_t* pCount,                               ///< [in,out] pointer to the number of memory properties.
-                                                        ///< if count is zero, then the driver will update the value with the total
-                                                        ///< number of memory properties available.
-                                                        ///< if count is non-zero, then driver will only retrieve that number of
-                                                        ///< memory properties.
-                                                        ///< if count is larger than the number of memory properties available,
-                                                        ///< then the driver will update the value with the correct number of
+                                                        ///< if count is zero, then the driver shall update the value with the
+                                                        ///< total number of memory properties available.
+                                                        ///< if count is greater than the number of memory properties available,
+                                                        ///< then the driver shall update the value with the correct number of
                                                         ///< memory properties available.
         ze_device_memory_properties_t* pMemProperties   ///< [in,out][optional][range(0, *pCount)] array of query results for
-                                                        ///< memory properties
+                                                        ///< memory properties.
+                                                        ///< if count is less than the number of memory properties available, then
+                                                        ///< driver shall only retrieve that number of memory properties.
         )
     {
         if( nullptr == context.zeDdiTable.Device.pfnGetMemoryProperties)
@@ -534,15 +573,14 @@ namespace tracing_layer
     zeDeviceGetCacheProperties(
         ze_device_handle_t hDevice,                     ///< [in] handle of the device
         uint32_t* pCount,                               ///< [in,out] pointer to the number of cache properties.
-                                                        ///< if count is zero, then the driver will update the value with the total
-                                                        ///< number of cache properties available.
-                                                        ///< if count is non-zero, then driver will only retrieve that number of
-                                                        ///< cache properties.
-                                                        ///< if count is larger than the number of cache properties available, then
-                                                        ///< the driver will update the value with the correct number of cache
-                                                        ///< properties available.
-        ze_device_cache_properties_t* pCacheProperties  ///< [in,out][optional][range(0, *pCount)] array of query results for cache
-                                                        ///< properties
+                                                        ///< if count is zero, then the driver shall update the value with the
+                                                        ///< total number of cache properties available.
+                                                        ///< if count is greater than the number of cache properties available,
+                                                        ///< then the driver shall update the value with the correct number of
+                                                        ///< cache properties available.
+        ze_device_cache_properties_t* pCacheProperties  ///< [in,out][optional][range(0, *pCount)] array of query results for cache properties.
+                                                        ///< if count is less than the number of cache properties available, then
+                                                        ///< driver shall only retrieve that number of cache properties.
         )
     {
         if( nullptr == context.zeDdiTable.Device.pfnGetCacheProperties)
@@ -741,6 +779,44 @@ namespace tracing_layer
     }
 
     ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeDeviceGetGlobalTimestamps
+    __zedlllocal ze_result_t ZE_APICALL
+    zeDeviceGetGlobalTimestamps(
+        ze_device_handle_t hDevice,                     ///< [in] handle of the device
+        uint64_t* hostTimestamp,                        ///< [out] value of the Host's global timestamp that correlates with the
+                                                        ///< Device's global timestamp value
+        uint64_t* deviceTimestamp                       ///< [out] value of the Device's global timestamp that correlates with the
+                                                        ///< Host's global timestamp value
+        )
+    {
+        if( nullptr == context.zeDdiTable.Device.pfnGetGlobalTimestamps)
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+
+        ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.Device.pfnGetGlobalTimestamps, hDevice, hostTimestamp, deviceTimestamp);
+
+        // capture parameters
+        ze_device_get_global_timestamps_params_t tracerParams = {
+            &hDevice,
+            &hostTimestamp,
+            &deviceTimestamp
+        };
+
+        tracing_layer::APITracerCallbackDataImp<ze_pfnDeviceGetGlobalTimestampsCb_t> apiCallbackData;
+
+        ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnDeviceGetGlobalTimestampsCb_t, Device, pfnGetGlobalTimestampsCb);
+
+
+        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.Device.pfnGetGlobalTimestamps,
+                                                  &tracerParams,
+                                                  apiCallbackData.apiOrdinal,
+                                                  apiCallbackData.prologCallbacks,
+                                                  apiCallbackData.epilogCallbacks,
+                                                  *tracerParams.phDevice,
+                                                  *tracerParams.phostTimestamp,
+                                                  *tracerParams.pdeviceTimestamp);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
     /// @brief Intercept function for zeContextCreate
     __zedlllocal ze_result_t ZE_APICALL
     zeContextCreate(
@@ -773,6 +849,53 @@ namespace tracing_layer
                                                   apiCallbackData.epilogCallbacks,
                                                   *tracerParams.phDriver,
                                                   *tracerParams.pdesc,
+                                                  *tracerParams.pphContext);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeContextCreateEx
+    __zedlllocal ze_result_t ZE_APICALL
+    zeContextCreateEx(
+        ze_driver_handle_t hDriver,                     ///< [in] handle of the driver object
+        const ze_context_desc_t* desc,                  ///< [in] pointer to context descriptor
+        uint32_t numDevices,                            ///< [in][optional] number of device handles; must be 0 if `nullptr ==
+                                                        ///< phDevices`
+        ze_device_handle_t* phDevices,                  ///< [in][optional][range(0, numDevices)] array of device handles which
+                                                        ///< context has visibility.
+                                                        ///< if nullptr, then all devices supported by the driver instance are
+                                                        ///< visible to the context.
+                                                        ///< otherwise, context only has visibility to devices in this array.
+        ze_context_handle_t* phContext                  ///< [out] pointer to handle of context object created
+        )
+    {
+        if( nullptr == context.zeDdiTable.Context.pfnCreateEx)
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+
+        ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.Context.pfnCreateEx, hDriver, desc, numDevices, phDevices, phContext);
+
+        // capture parameters
+        ze_context_create_ex_params_t tracerParams = {
+            &hDriver,
+            &desc,
+            &numDevices,
+            &phDevices,
+            &phContext
+        };
+
+        tracing_layer::APITracerCallbackDataImp<ze_pfnContextCreateExCb_t> apiCallbackData;
+
+        ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnContextCreateExCb_t, Context, pfnCreateExCb);
+
+
+        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.Context.pfnCreateEx,
+                                                  &tracerParams,
+                                                  apiCallbackData.apiOrdinal,
+                                                  apiCallbackData.prologCallbacks,
+                                                  apiCallbackData.epilogCallbacks,
+                                                  *tracerParams.phDriver,
+                                                  *tracerParams.pdesc,
+                                                  *tracerParams.pnumDevices,
+                                                  *tracerParams.pphDevices,
                                                   *tracerParams.pphContext);
     }
 
@@ -3277,12 +3400,13 @@ namespace tracing_layer
     zeModuleGetKernelNames(
         ze_module_handle_t hModule,                     ///< [in] handle of the module
         uint32_t* pCount,                               ///< [in,out] pointer to the number of names.
-                                                        ///< if count is zero, then the driver will update the value with the total
-                                                        ///< number of names available.
-                                                        ///< if count is non-zero, then driver will only retrieve that number of names.
-                                                        ///< if count is larger than the number of names available, then the driver
-                                                        ///< will update the value with the correct number of names available.
-        const char** pNames                             ///< [in,out][optional][range(0, *pCount)] array of names of functions
+                                                        ///< if count is zero, then the driver shall update the value with the
+                                                        ///< total number of names available.
+                                                        ///< if count is greater than the number of names available, then the
+                                                        ///< driver shall update the value with the correct number of names available.
+        const char** pNames                             ///< [in,out][optional][range(0, *pCount)] array of names of functions.
+                                                        ///< if count is less than the number of names available, then driver shall
+                                                        ///< only retrieve that number of names.
         )
     {
         if( nullptr == context.zeDdiTable.Module.pfnGetKernelNames)
@@ -3679,12 +3803,9 @@ namespace tracing_layer
     zeKernelGetSourceAttributes(
         ze_kernel_handle_t hKernel,                     ///< [in] handle of the kernel object
         uint32_t* pSize,                                ///< [in,out] pointer to size of string in bytes.
-                                                        ///< if size is zero, then the driver will update string argument.
-                                                        ///< if size is non-zero, then driver will only retrieve string size in bytes.
-                                                        ///< if size is larger than source attributes string, then the driver will
-                                                        ///< update the string.
-        char** pString                                  ///< [in,out][optional] pointer to null-terminated string where kernel
-                                                        ///< source attributes are separated by space.
+        char** pString                                  ///< [in,out] pointer to null-terminated string, whose lifetime is tied to
+                                                        ///< the kernel object, where kernel source attributes are separated by
+                                                        ///< space.
         )
     {
         if( nullptr == context.zeDdiTable.Kernel.pfnGetSourceAttributes)
@@ -4590,6 +4711,45 @@ namespace tracing_layer
                                                   *tracerParams.poutSize);
     }
 
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeKernelSetGlobalOffsetExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zeKernelSetGlobalOffsetExp(
+        ze_kernel_handle_t hKernel,                     ///< [in] handle of the kernel object
+        uint32_t offsetX,                               ///< [in] global offset for X dimension to use for this kernel
+        uint32_t offsetY,                               ///< [in] global offset for Y dimension to use for this kernel
+        uint32_t offsetZ                                ///< [in] global offset for Z dimension to use for this kernel
+        )
+    {
+        if( nullptr == context.zeDdiTable.KernelExp.pfnSetGlobalOffsetExp)
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+
+        ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.KernelExp.pfnSetGlobalOffsetExp, hKernel, offsetX, offsetY, offsetZ);
+
+        // capture parameters
+        ze_kernel_set_global_offset_exp_params_t tracerParams = {
+            &hKernel,
+            &offsetX,
+            &offsetY,
+            &offsetZ
+        };
+
+        tracing_layer::APITracerCallbackDataImp<ze_pfnKernelSetGlobalOffsetExpCb_t> apiCallbackData;
+
+        ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnKernelSetGlobalOffsetExpCb_t, Kernel, pfnSetGlobalOffsetExpCb);
+
+
+        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.KernelExp.pfnSetGlobalOffsetExp,
+                                                  &tracerParams,
+                                                  apiCallbackData.apiOrdinal,
+                                                  apiCallbackData.prologCallbacks,
+                                                  apiCallbackData.epilogCallbacks,
+                                                  *tracerParams.phKernel,
+                                                  *tracerParams.poffsetX,
+                                                  *tracerParams.poffsetY,
+                                                  *tracerParams.poffsetZ);
+    }
+
 } // namespace tracing_layer
 
 #if defined(__cplusplus)
@@ -4665,6 +4825,9 @@ zeGetDriverProcAddrTable(
     dditable.pfnGetExtensionProperties                   = pDdiTable->pfnGetExtensionProperties;
     pDdiTable->pfnGetExtensionProperties                 = tracing_layer::zeDriverGetExtensionProperties;
 
+    dditable.pfnGetExtensionFunctionAddress              = pDdiTable->pfnGetExtensionFunctionAddress;
+    pDdiTable->pfnGetExtensionFunctionAddress            = tracing_layer::zeDriverGetExtensionFunctionAddress;
+
     return result;
 }
 
@@ -4734,6 +4897,9 @@ zeGetDeviceProcAddrTable(
     dditable.pfnGetStatus                                = pDdiTable->pfnGetStatus;
     pDdiTable->pfnGetStatus                              = tracing_layer::zeDeviceGetStatus;
 
+    dditable.pfnGetGlobalTimestamps                      = pDdiTable->pfnGetGlobalTimestamps;
+    pDdiTable->pfnGetGlobalTimestamps                    = tracing_layer::zeDeviceGetGlobalTimestamps;
+
     return result;
 }
 
@@ -4784,6 +4950,9 @@ zeGetContextProcAddrTable(
 
     dditable.pfnEvictImage                               = pDdiTable->pfnEvictImage;
     pDdiTable->pfnEvictImage                             = tracing_layer::zeContextEvictImage;
+
+    dditable.pfnCreateEx                                 = pDdiTable->pfnCreateEx;
+    pDdiTable->pfnCreateEx                               = tracing_layer::zeContextCreateEx;
 
     return result;
 }
@@ -5159,6 +5328,36 @@ zeGetKernelProcAddrTable(
 
     dditable.pfnGetName                                  = pDdiTable->pfnGetName;
     pDdiTable->pfnGetName                                = tracing_layer::zeKernelGetName;
+
+    return result;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Exported function for filling application's KernelExp table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+ZE_DLLEXPORT ze_result_t ZE_APICALL
+zeGetKernelExpProcAddrTable(
+    ze_api_version_t version,                       ///< [in] API version requested
+    ze_kernel_exp_dditable_t* pDdiTable             ///< [in,out] pointer to table of DDI function pointers
+    )
+{
+    auto& dditable = tracing_layer::context.zeDdiTable.KernelExp;
+
+    if( nullptr == pDdiTable )
+        return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+    if( tracing_layer::context.version < version )
+        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+
+    ze_result_t result = ZE_RESULT_SUCCESS;
+
+    dditable.pfnSetGlobalOffsetExp                       = pDdiTable->pfnSetGlobalOffsetExp;
+    pDdiTable->pfnSetGlobalOffsetExp                     = tracing_layer::zeKernelSetGlobalOffsetExp;
 
     return result;
 }

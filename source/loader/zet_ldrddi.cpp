@@ -317,15 +317,15 @@ namespace loader
     zetDebugGetRegisterSetProperties(
         zet_device_handle_t hDevice,                    ///< [in] device handle
         uint32_t* pCount,                               ///< [in,out] pointer to the number of register set properties.
-                                                        ///< if count is zero, then the driver will update the value with the total
-                                                        ///< number of register set properties available.
-                                                        ///< if count is non-zero, then driver will only retrieve that number of
-                                                        ///< register set properties.
-                                                        ///< if count is larger than the number of register set properties
-                                                        ///< available, then the driver will update the value with the correct
+                                                        ///< if count is zero, then the driver shall update the value with the
+                                                        ///< total number of register set properties available.
+                                                        ///< if count is greater than the number of register set properties
+                                                        ///< available, then the driver shall update the value with the correct
                                                         ///< number of registry set properties available.
         zet_debug_regset_properties_t* pRegisterSetProperties   ///< [in,out][optional][range(0, *pCount)] array of query results for
-                                                        ///< register set properties
+                                                        ///< register set properties.
+                                                        ///< if count is less than the number of register set properties available,
+                                                        ///< then driver shall only retrieve that number of register set properties.
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
@@ -413,14 +413,14 @@ namespace loader
     zetMetricGroupGet(
         zet_device_handle_t hDevice,                    ///< [in] handle of the device
         uint32_t* pCount,                               ///< [in,out] pointer to the number of metric groups.
-                                                        ///< if count is zero, then the driver will update the value with the total
-                                                        ///< number of metric groups available.
-                                                        ///< if count is non-zero, then driver will only retrieve that number of
-                                                        ///< metric groups.
-                                                        ///< if count is larger than the number of metric groups available, then
-                                                        ///< the driver will update the value with the correct number of metric
+                                                        ///< if count is zero, then the driver shall update the value with the
+                                                        ///< total number of metric groups available.
+                                                        ///< if count is greater than the number of metric groups available, then
+                                                        ///< the driver shall update the value with the correct number of metric
                                                         ///< groups available.
-        zet_metric_group_handle_t* phMetricGroups       ///< [in,out][optional][range(0, *pCount)] array of handle of metric groups
+        zet_metric_group_handle_t* phMetricGroups       ///< [in,out][optional][range(0, *pCount)] array of handle of metric groups.
+                                                        ///< if count is less than the number of metric groups available, then
+                                                        ///< driver shall only retrieve that number of metric groups.
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
@@ -489,15 +489,14 @@ namespace loader
         size_t rawDataSize,                             ///< [in] size in bytes of raw data buffer
         const uint8_t* pRawData,                        ///< [in][range(0, rawDataSize)] buffer of raw data to calculate
         uint32_t* pMetricValueCount,                    ///< [in,out] pointer to number of metric values calculated.
-                                                        ///< if count is zero, then the driver will update the value with the total
-                                                        ///< number of metric values to be calculated.
-                                                        ///< if count is non-zero, then driver will only calculate that number of
-                                                        ///< metric values.
-                                                        ///< if count is larger than the number available in the raw data buffer,
-                                                        ///< then the driver will update the value with the actual number of metric
-                                                        ///< values to be calculated.
-        zet_typed_value_t* pMetricValues                ///< [in,out][optional][range(0, *pMetricValueCount)] buffer of calculated
-                                                        ///< metrics
+                                                        ///< if count is zero, then the driver shall update the value with the
+                                                        ///< total number of metric values to be calculated.
+                                                        ///< if count is greater than the number available in the raw data buffer,
+                                                        ///< then the driver shall update the value with the actual number of
+                                                        ///< metric values to be calculated.
+        zet_typed_value_t* pMetricValues                ///< [in,out][optional][range(0, *pMetricValueCount)] buffer of calculated metrics.
+                                                        ///< if count is less than the number available in the raw data buffer,
+                                                        ///< then driver shall only calculate that number of metric values.
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
@@ -523,12 +522,13 @@ namespace loader
     zetMetricGet(
         zet_metric_group_handle_t hMetricGroup,         ///< [in] handle of the metric group
         uint32_t* pCount,                               ///< [in,out] pointer to the number of metrics.
-                                                        ///< if count is zero, then the driver will update the value with the total
-                                                        ///< number of metrics available.
-                                                        ///< if count is non-zero, then driver will only retrieve that number of metrics.
-                                                        ///< if count is larger than the number of metrics available, then the
-                                                        ///< driver will update the value with the correct number of metrics available.
-        zet_metric_handle_t* phMetrics                  ///< [in,out][optional][range(0, *pCount)] array of handle of metrics
+                                                        ///< if count is zero, then the driver shall update the value with the
+                                                        ///< total number of metrics available.
+                                                        ///< if count is greater than the number of metrics available, then the
+                                                        ///< driver shall update the value with the correct number of metrics available.
+        zet_metric_handle_t* phMetrics                  ///< [in,out][optional][range(0, *pCount)] array of handle of metrics.
+                                                        ///< if count is less than the number of metrics available, then driver
+                                                        ///< shall only retrieve that number of metrics.
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
@@ -983,10 +983,8 @@ namespace loader
         zet_command_list_handle_t hCommandList,         ///< [in] handle of the command list
         zet_metric_query_handle_t hMetricQuery,         ///< [in] handle of the metric query
         ze_event_handle_t hSignalEvent,                 ///< [in][optional] handle of the event to signal on completion
-        uint32_t numWaitEvents,                         ///< [in][optional] number of events to wait on before launching; must be 0
-                                                        ///< if `nullptr == phWaitEvents`
-        ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
-                                                        ///< on before launching
+        uint32_t numWaitEvents,                         ///< [in] must be zero
+        ze_event_handle_t* phWaitEvents                 ///< [in] must be nullptr
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
@@ -1006,16 +1004,8 @@ namespace loader
         // convert loader handle to driver handle
         hSignalEvent = ( hSignalEvent ) ? reinterpret_cast<ze_event_object_t*>( hSignalEvent )->handle : nullptr;
 
-        // convert loader handles to driver handles
-        for( size_t i = 0; ( nullptr != phWaitEvents ) && ( i < numWaitEvents ); ++i )
-            phWaitEvents[ i ] = reinterpret_cast<ze_event_object_t*>( phWaitEvents[ i ] )->handle;
-
         // forward to device-driver
         result = pfnAppendMetricQueryEnd( hCommandList, hMetricQuery, hSignalEvent, numWaitEvents, phWaitEvents );
-
-        // convert driver handles back to loader handles
-        for ( size_t i = 0; ( nullptr != phWaitEvents ) && ( i < numWaitEvents ); ++i )
-            phWaitEvents[ i ] = reinterpret_cast<ze_event_handle_t>( ze_event_factory.getInstance( phWaitEvents[ i ], dditable ) );
 
         return result;
     }

@@ -5,7 +5,7 @@
  * SPDX-License-Identifier: MIT
  *
  * @file zes_api.h
- * @version v1.0-r1.0.4.8
+ * @version v1.1-r1.1.8
  *
  */
 #ifndef _ZES_API_H
@@ -445,10 +445,11 @@ typedef uint32_t zes_engine_type_flags_t;
 typedef enum _zes_engine_type_flag_t
 {
     ZES_ENGINE_TYPE_FLAG_OTHER = ZE_BIT(0),         ///< Undefined types of accelerators.
-    ZES_ENGINE_TYPE_FLAG_COMPUTE = ZE_BIT(1),       ///< Engines that process compute kernels.
-    ZES_ENGINE_TYPE_FLAG_3D = ZE_BIT(2),            ///< Engines that process 3D content
-    ZES_ENGINE_TYPE_FLAG_MEDIA = ZE_BIT(3),         ///< Engines that process media workloads
-    ZES_ENGINE_TYPE_FLAG_DMA = ZE_BIT(4),           ///< Engines that copy blocks of data
+    ZES_ENGINE_TYPE_FLAG_COMPUTE = ZE_BIT(1),       ///< Engines that process compute kernels only (no 3D content).
+    ZES_ENGINE_TYPE_FLAG_3D = ZE_BIT(2),            ///< Engines that process 3D content only (no compute kernels).
+    ZES_ENGINE_TYPE_FLAG_MEDIA = ZE_BIT(3),         ///< Engines that process media workloads.
+    ZES_ENGINE_TYPE_FLAG_DMA = ZE_BIT(4),           ///< Engines that copy blocks of data.
+    ZES_ENGINE_TYPE_FLAG_RENDER = ZE_BIT(5),        ///< Engines that can process both 3D content and compute kernels.
     ZES_ENGINE_TYPE_FLAG_FORCE_UINT32 = 0x7fffffff
 
 } zes_engine_type_flag_t;
@@ -639,15 +640,15 @@ ZE_APIEXPORT ze_result_t ZE_APICALL
 zesDeviceProcessesGetState(
     zes_device_handle_t hDevice,                    ///< [in] Sysman handle for the device
     uint32_t* pCount,                               ///< [in,out] pointer to the number of processes.
-                                                    ///< if count is zero, then the driver will update the value with the total
-                                                    ///< number of processes currently using the device.
-                                                    ///< if count is non-zero but less than the number of processes, the driver
-                                                    ///< will set to the number of processes currently using the device and
-                                                    ///< return the error ::ZE_RESULT_ERROR_INVALID_SIZE.
-                                                    ///< if count is larger than the number of processes, then the driver will
-                                                    ///< update the value with the correct number of processes that are returned.
-    zes_process_state_t* pProcesses                 ///< [in,out][optional][range(0, *pCount)] array of process information,
-                                                    ///< one for each process currently using the device
+                                                    ///< if count is zero, then the driver shall update the value with the
+                                                    ///< total number of processes currently attached to the device.
+                                                    ///< if count is greater than the number of processes currently attached to
+                                                    ///< the device, then the driver shall update the value with the correct
+                                                    ///< number of processes.
+    zes_process_state_t* pProcesses                 ///< [in,out][optional][range(0, *pCount)] array of process information.
+                                                    ///< if count is less than the number of processes currently attached to
+                                                    ///< the device, then the driver shall only retrieve information about that
+                                                    ///< number of processes. In this case, the return code will ::ZE_RESULT_ERROR_INVALID_SIZE.
     );
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -869,12 +870,14 @@ ZE_APIEXPORT ze_result_t ZE_APICALL
 zesDevicePciGetBars(
     zes_device_handle_t hDevice,                    ///< [in] Sysman handle of the device.
     uint32_t* pCount,                               ///< [in,out] pointer to the number of PCI bars.
-                                                    ///< if count is zero, then the driver will update the value with the total
-                                                    ///< number of bars.
-                                                    ///< if count is non-zero, then driver will only retrieve that number of bars.
-                                                    ///< if count is larger than the number of bar, then the driver will update
-                                                    ///< the value with the correct number of bars that are returned.
-    zes_pci_bar_properties_t* pProperties           ///< [in,out][optional][range(0, *pCount)] array of bar properties
+                                                    ///< if count is zero, then the driver shall update the value with the
+                                                    ///< total number of PCI bars that are setup.
+                                                    ///< if count is greater than the number of PCI bars that are setup, then
+                                                    ///< the driver shall update the value with the correct number of PCI bars.
+    zes_pci_bar_properties_t* pProperties           ///< [in,out][optional][range(0, *pCount)] array of information about setup
+                                                    ///< PCI bars.
+                                                    ///< if count is less than the number of PCI bars that are setup, then the
+                                                    ///< driver shall only retrieve information about that number of PCI bars.
     );
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -976,14 +979,16 @@ ZE_APIEXPORT ze_result_t ZE_APICALL
 zesDeviceEnumDiagnosticTestSuites(
     zes_device_handle_t hDevice,                    ///< [in] Sysman handle of the device.
     uint32_t* pCount,                               ///< [in,out] pointer to the number of components of this type.
-                                                    ///< if count is zero, then the driver will update the value with the total
-                                                    ///< number of components of this type.
-                                                    ///< if count is non-zero, then driver will only retrieve that number of components.
-                                                    ///< if count is larger than the number of components available, then the
-                                                    ///< driver will update the value with the correct number of components
-                                                    ///< that are returned.
+                                                    ///< if count is zero, then the driver shall update the value with the
+                                                    ///< total number of components of this type that are available.
+                                                    ///< if count is greater than the number of components of this type that
+                                                    ///< are available, then the driver shall update the value with the correct
+                                                    ///< number of components.
     zes_diag_handle_t* phDiagnostics                ///< [in,out][optional][range(0, *pCount)] array of handle of components of
-                                                    ///< this type
+                                                    ///< this type.
+                                                    ///< if count is less than the number of components of this type that are
+                                                    ///< available, then the driver shall only retrieve that number of
+                                                    ///< component handles.
     );
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1031,13 +1036,14 @@ ZE_APIEXPORT ze_result_t ZE_APICALL
 zesDiagnosticsGetTests(
     zes_diag_handle_t hDiagnostics,                 ///< [in] Handle for the component.
     uint32_t* pCount,                               ///< [in,out] pointer to the number of tests.
-                                                    ///< If count is zero, then the driver will update the value with the total
-                                                    ///< number of tests available.
-                                                    ///< If count is non-zero, then driver will only retrieve that number of tests.
-                                                    ///< If count is larger than the number of tests available, then the driver
-                                                    ///< will update the value with the correct number of tests available.
-    zes_diag_test_t* pTests                         ///< [in,out][optional][range(0, *pCount)] Array of tests sorted by
-                                                    ///< increasing value of ::zes_diag_test_t.index
+                                                    ///< if count is zero, then the driver shall update the value with the
+                                                    ///< total number of tests that are available.
+                                                    ///< if count is greater than the number of tests that are available, then
+                                                    ///< the driver shall update the value with the correct number of tests.
+    zes_diag_test_t* pTests                         ///< [in,out][optional][range(0, *pCount)] array of information about
+                                                    ///< individual tests sorted by increasing value of ::zes_diag_test_t.index.
+                                                    ///< if count is less than the number of tests that are available, then the
+                                                    ///< driver shall only retrieve that number of tests.
     );
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1087,19 +1093,21 @@ zesDiagnosticsRunTests(
 typedef enum _zes_engine_group_t
 {
     ZES_ENGINE_GROUP_ALL = 0,                       ///< Access information about all engines combined.
-    ZES_ENGINE_GROUP_COMPUTE_ALL = 1,               ///< Access information about all compute/render engines combined.
+    ZES_ENGINE_GROUP_COMPUTE_ALL = 1,               ///< Access information about all compute engines combined. Compute engines
+                                                    ///< can only process compute kernels (no 3D content).
     ZES_ENGINE_GROUP_MEDIA_ALL = 2,                 ///< Access information about all media engines combined.
     ZES_ENGINE_GROUP_COPY_ALL = 3,                  ///< Access information about all copy (blitter) engines combined.
-    ZES_ENGINE_GROUP_COMPUTE_SINGLE = 4,            ///< Access information about a single compute engine. Note that single
+    ZES_ENGINE_GROUP_COMPUTE_SINGLE = 4,            ///< Access information about a single compute engine - this is an engine
+                                                    ///< that can process compute kernels. Note that single engines may share
+                                                    ///< the same underlying accelerator resources as other engines so activity
+                                                    ///< of such an engine may not be indicative of the underlying resource
+                                                    ///< utilization - use ::ZES_ENGINE_GROUP_3D_RENDER_COMPUTE_ALL for that.
+    ZES_ENGINE_GROUP_RENDER_SINGLE = 5,             ///< Access information about a single render engine - this is an engine
+                                                    ///< that can process both 3D content and compute kernels. Note that single
                                                     ///< engines may share the same underlying accelerator resources as other
                                                     ///< engines so activity of such an engine may not be indicative of the
-                                                    ///< underlying resource utilization - use ::ZES_ENGINE_GROUP_COMPUTE_ALL
-                                                    ///< for that.
-    ZES_ENGINE_GROUP_RENDER_SINGLE = 5,             ///< Access information about a single render engine. Note that single
-                                                    ///< engines may share the same underlying accelerator resources as other
-                                                    ///< engines so activity of such an engine may not be indicative of the
-                                                    ///< underlying resource utilization - use ::ZES_ENGINE_GROUP_COMPUTE_ALL
-                                                    ///< for that.
+                                                    ///< underlying resource utilization - use
+                                                    ///< ::ZES_ENGINE_GROUP_3D_RENDER_COMPUTE_ALL for that.
     ZES_ENGINE_GROUP_MEDIA_DECODE_SINGLE = 6,       ///< Access information about a single media decode engine. Note that
                                                     ///< single engines may share the same underlying accelerator resources as
                                                     ///< other engines so activity of such an engine may not be indicative of
@@ -1115,6 +1123,21 @@ typedef enum _zes_engine_group_t
                                                     ///< other engines so activity of such an engine may not be indicative of
                                                     ///< the underlying resource utilization - use ::ZES_ENGINE_GROUP_COPY_ALL
                                                     ///< for that.
+    ZES_ENGINE_GROUP_MEDIA_ENHANCEMENT_SINGLE = 9,  ///< Access information about a single media enhancement engine. Note that
+                                                    ///< single engines may share the same underlying accelerator resources as
+                                                    ///< other engines so activity of such an engine may not be indicative of
+                                                    ///< the underlying resource utilization - use ::ZES_ENGINE_GROUP_MEDIA_ALL
+                                                    ///< for that.
+    ZES_ENGINE_GROUP_3D_SINGLE = 10,                ///< Access information about a single 3D engine - this is an engine that
+                                                    ///< can process 3D content only. Note that single engines may share the
+                                                    ///< same underlying accelerator resources as other engines so activity of
+                                                    ///< such an engine may not be indicative of the underlying resource
+                                                    ///< utilization - use ::ZES_ENGINE_GROUP_3D_RENDER_COMPUTE_ALL for that.
+    ZES_ENGINE_GROUP_3D_RENDER_COMPUTE_ALL = 11,    ///< Access information about all 3D/render/compute engines combined.
+    ZES_ENGINE_GROUP_RENDER_ALL = 12,               ///< Access information about all render engines combined. Render engines
+                                                    ///< are those than process both 3D content and compute kernels.
+    ZES_ENGINE_GROUP_3D_ALL = 13,                   ///< Access information about all 3D engines combined. 3D engines can
+                                                    ///< process 3D content only (no compute kernels).
     ZES_ENGINE_GROUP_FORCE_UINT32 = 0x7fffffff
 
 } zes_engine_group_t;
@@ -1173,14 +1196,16 @@ ZE_APIEXPORT ze_result_t ZE_APICALL
 zesDeviceEnumEngineGroups(
     zes_device_handle_t hDevice,                    ///< [in] Sysman handle of the device.
     uint32_t* pCount,                               ///< [in,out] pointer to the number of components of this type.
-                                                    ///< if count is zero, then the driver will update the value with the total
-                                                    ///< number of components of this type.
-                                                    ///< if count is non-zero, then driver will only retrieve that number of components.
-                                                    ///< if count is larger than the number of components available, then the
-                                                    ///< driver will update the value with the correct number of components
-                                                    ///< that are returned.
+                                                    ///< if count is zero, then the driver shall update the value with the
+                                                    ///< total number of components of this type that are available.
+                                                    ///< if count is greater than the number of components of this type that
+                                                    ///< are available, then the driver shall update the value with the correct
+                                                    ///< number of components.
     zes_engine_handle_t* phEngine                   ///< [in,out][optional][range(0, *pCount)] array of handle of components of
-                                                    ///< this type
+                                                    ///< this type.
+                                                    ///< if count is less than the number of components of this type that are
+                                                    ///< available, then the driver shall only retrieve that number of
+                                                    ///< component handles.
     );
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1318,6 +1343,49 @@ zesDriverEventListen(
                                                     ///< yield before returning ::ZE_RESULT_SUCCESS or ::ZE_RESULT_NOT_READY;
                                                     ///< if zero, then will check status and return immediately;
                                                     ///< if UINT32_MAX, then function will not return until events arrive.
+    uint32_t count,                                 ///< [in] Number of device handles in phDevices.
+    zes_device_handle_t* phDevices,                 ///< [in][range(0, count)] Device handles to listen to for events. Only
+                                                    ///< devices from the provided driver handle can be specified in this list.
+    uint32_t* pNumDeviceEvents,                     ///< [in,out] Will contain the actual number of devices in phDevices that
+                                                    ///< generated events. If non-zero, check pEvents to determine the devices
+                                                    ///< and events that were received.
+    zes_event_type_flags_t* pEvents                 ///< [in,out] An array that will continue the list of events for each
+                                                    ///< device listened in phDevices.
+                                                    ///< This array must be at least as big as count.
+                                                    ///< For every device handle in phDevices, this will provide the events
+                                                    ///< that occurred for that device at the same position in this array. If
+                                                    ///< no event was received for a given device, the corresponding array
+                                                    ///< entry will be zero.
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Wait for events to be received from a one or more devices.
+/// 
+/// @details
+///     - The application may call this function from simultaneous threads.
+///     - The implementation of this function should be lock-free.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hDriver`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == phDevices`
+///         + `nullptr == pNumDeviceEvents`
+///         + `nullptr == pEvents`
+///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
+///         + User does not have permissions to listen to events.
+///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
+///         + One or more of the supplied device handles belongs to a different driver.
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zesDriverEventListenEx(
+    ze_driver_handle_t hDriver,                     ///< [in] handle of the driver instance
+    uint64_t timeout,                               ///< [in] if non-zero, then indicates the maximum time (in milliseconds) to
+                                                    ///< yield before returning ::ZE_RESULT_SUCCESS or ::ZE_RESULT_NOT_READY;
+                                                    ///< if zero, then will check status and return immediately;
+                                                    ///< if UINT64_MAX, then function will not return until events arrive.
     uint32_t count,                                 ///< [in] Number of device handles in phDevices.
     zes_device_handle_t* phDevices,                 ///< [in][range(0, count)] Device handles to listen to for events. Only
                                                     ///< devices from the provided driver handle can be specified in this list.
@@ -1533,14 +1601,16 @@ ZE_APIEXPORT ze_result_t ZE_APICALL
 zesDeviceEnumFabricPorts(
     zes_device_handle_t hDevice,                    ///< [in] Sysman handle of the device.
     uint32_t* pCount,                               ///< [in,out] pointer to the number of components of this type.
-                                                    ///< if count is zero, then the driver will update the value with the total
-                                                    ///< number of components of this type.
-                                                    ///< if count is non-zero, then driver will only retrieve that number of components.
-                                                    ///< if count is larger than the number of components available, then the
-                                                    ///< driver will update the value with the correct number of components
-                                                    ///< that are returned.
+                                                    ///< if count is zero, then the driver shall update the value with the
+                                                    ///< total number of components of this type that are available.
+                                                    ///< if count is greater than the number of components of this type that
+                                                    ///< are available, then the driver shall update the value with the correct
+                                                    ///< number of components.
     zes_fabric_port_handle_t* phPort                ///< [in,out][optional][range(0, *pCount)] array of handle of components of
-                                                    ///< this type
+                                                    ///< this type.
+                                                    ///< if count is less than the number of components of this type that are
+                                                    ///< available, then the driver shall only retrieve that number of
+                                                    ///< component handles.
     );
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1773,7 +1843,7 @@ typedef struct _zes_fan_config_t
     const void* pNext;                              ///< [in][optional] pointer to extension-specific structure
     zes_fan_speed_mode_t mode;                      ///< [in,out] The fan speed mode (fixed, temp-speed table)
     zes_fan_speed_t speedFixed;                     ///< [in,out] The current fixed fan speed setting
-    zes_fan_temp_speed_t speedTable;                ///< [out] Array of temperature/fan speed pairs currently configured
+    zes_fan_speed_table_t speedTable;               ///< [out] A table containing temperature/speed pairs
 
 } zes_fan_config_t;
 
@@ -1796,14 +1866,16 @@ ZE_APIEXPORT ze_result_t ZE_APICALL
 zesDeviceEnumFans(
     zes_device_handle_t hDevice,                    ///< [in] Sysman handle of the device.
     uint32_t* pCount,                               ///< [in,out] pointer to the number of components of this type.
-                                                    ///< if count is zero, then the driver will update the value with the total
-                                                    ///< number of components of this type.
-                                                    ///< if count is non-zero, then driver will only retrieve that number of components.
-                                                    ///< if count is larger than the number of components available, then the
-                                                    ///< driver will update the value with the correct number of components
-                                                    ///< that are returned.
+                                                    ///< if count is zero, then the driver shall update the value with the
+                                                    ///< total number of components of this type that are available.
+                                                    ///< if count is greater than the number of components of this type that
+                                                    ///< are available, then the driver shall update the value with the correct
+                                                    ///< number of components.
     zes_fan_handle_t* phFan                         ///< [in,out][optional][range(0, *pCount)] array of handle of components of
-                                                    ///< this type
+                                                    ///< this type.
+                                                    ///< if count is less than the number of components of this type that are
+                                                    ///< available, then the driver shall only retrieve that number of
+                                                    ///< component handles.
     );
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1996,14 +2068,16 @@ ZE_APIEXPORT ze_result_t ZE_APICALL
 zesDeviceEnumFirmwares(
     zes_device_handle_t hDevice,                    ///< [in] Sysman handle of the device.
     uint32_t* pCount,                               ///< [in,out] pointer to the number of components of this type.
-                                                    ///< if count is zero, then the driver will update the value with the total
-                                                    ///< number of components of this type.
-                                                    ///< if count is non-zero, then driver will only retrieve that number of components.
-                                                    ///< if count is larger than the number of components available, then the
-                                                    ///< driver will update the value with the correct number of components
-                                                    ///< that are returned.
+                                                    ///< if count is zero, then the driver shall update the value with the
+                                                    ///< total number of components of this type that are available.
+                                                    ///< if count is greater than the number of components of this type that
+                                                    ///< are available, then the driver shall update the value with the correct
+                                                    ///< number of components.
     zes_firmware_handle_t* phFirmware               ///< [in,out][optional][range(0, *pCount)] array of handle of components of
-                                                    ///< this type
+                                                    ///< this type.
+                                                    ///< if count is less than the number of components of this type that are
+                                                    ///< available, then the driver shall only retrieve that number of
+                                                    ///< component handles.
     );
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -2258,14 +2332,16 @@ ZE_APIEXPORT ze_result_t ZE_APICALL
 zesDeviceEnumFrequencyDomains(
     zes_device_handle_t hDevice,                    ///< [in] Sysman handle of the device.
     uint32_t* pCount,                               ///< [in,out] pointer to the number of components of this type.
-                                                    ///< if count is zero, then the driver will update the value with the total
-                                                    ///< number of components of this type.
-                                                    ///< if count is non-zero, then driver will only retrieve that number of components.
-                                                    ///< if count is larger than the number of components available, then the
-                                                    ///< driver will update the value with the correct number of components
-                                                    ///< that are returned.
+                                                    ///< if count is zero, then the driver shall update the value with the
+                                                    ///< total number of components of this type that are available.
+                                                    ///< if count is greater than the number of components of this type that
+                                                    ///< are available, then the driver shall update the value with the correct
+                                                    ///< number of components.
     zes_freq_handle_t* phFrequency                  ///< [in,out][optional][range(0, *pCount)] array of handle of components of
-                                                    ///< this type
+                                                    ///< this type.
+                                                    ///< if count is less than the number of components of this type that are
+                                                    ///< available, then the driver shall only retrieve that number of
+                                                    ///< component handles.
     );
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -2311,13 +2387,14 @@ ZE_APIEXPORT ze_result_t ZE_APICALL
 zesFrequencyGetAvailableClocks(
     zes_freq_handle_t hFrequency,                   ///< [in] Sysman handle of the device.
     uint32_t* pCount,                               ///< [in,out] pointer to the number of frequencies.
-                                                    ///< If count is zero, then the driver will update the value with the total
-                                                    ///< number of frequencies available.
-                                                    ///< If count is non-zero, then driver will only retrieve that number of frequencies.
-                                                    ///< If count is larger than the number of frequencies available, then the
-                                                    ///< driver will update the value with the correct number of frequencies available.
+                                                    ///< if count is zero, then the driver shall update the value with the
+                                                    ///< total number of frequencies that are available.
+                                                    ///< if count is greater than the number of frequencies that are available,
+                                                    ///< then the driver shall update the value with the correct number of frequencies.
     double* phFrequency                             ///< [in,out][optional][range(0, *pCount)] array of frequencies in units of
-                                                    ///< MHz and sorted from slowest to fastest
+                                                    ///< MHz and sorted from slowest to fastest.
+                                                    ///< if count is less than the number of frequencies that are available,
+                                                    ///< then the driver shall only retrieve that number of frequencies.
     );
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -2791,14 +2868,16 @@ ZE_APIEXPORT ze_result_t ZE_APICALL
 zesDeviceEnumLeds(
     zes_device_handle_t hDevice,                    ///< [in] Sysman handle of the device.
     uint32_t* pCount,                               ///< [in,out] pointer to the number of components of this type.
-                                                    ///< if count is zero, then the driver will update the value with the total
-                                                    ///< number of components of this type.
-                                                    ///< if count is non-zero, then driver will only retrieve that number of components.
-                                                    ///< if count is larger than the number of components available, then the
-                                                    ///< driver will update the value with the correct number of components
-                                                    ///< that are returned.
+                                                    ///< if count is zero, then the driver shall update the value with the
+                                                    ///< total number of components of this type that are available.
+                                                    ///< if count is greater than the number of components of this type that
+                                                    ///< are available, then the driver shall update the value with the correct
+                                                    ///< number of components.
     zes_led_handle_t* phLed                         ///< [in,out][optional][range(0, *pCount)] array of handle of components of
-                                                    ///< this type
+                                                    ///< this type.
+                                                    ///< if count is less than the number of components of this type that are
+                                                    ///< available, then the driver shall only retrieve that number of
+                                                    ///< component handles.
     );
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -2954,7 +3033,9 @@ typedef struct _zes_mem_properties_t
                                                     ///< that the resource is on the device of the calling Sysman handle
     uint32_t subdeviceId;                           ///< [out] If onSubdevice is true, this gives the ID of the sub-device
     zes_mem_loc_t location;                         ///< [out] Location of this memory (system, device)
-    uint64_t physicalSize;                          ///< [out] Physical memory size in bytes
+    uint64_t physicalSize;                          ///< [out] Physical memory size in bytes. A value of 0 indicates that this
+                                                    ///< property is not known. However, a call to ::zesMemoryGetState() will
+                                                    ///< correctly return the total size of usable memory.
     int32_t busWidth;                               ///< [out] Width of the memory bus. A value of -1 means that this property
                                                     ///< is unknown.
     int32_t numChannels;                            ///< [out] The number of memory channels. A value of -1 means that this
@@ -2966,8 +3047,8 @@ typedef struct _zes_mem_properties_t
 /// @brief Memory state - health, allocated
 /// 
 /// @details
-///     - Percent allocation is given by 100 * allocatedSize / maxSize.
-///     - Percent free is given by 100 * (maxSize - allocatedSize) / maxSize.
+///     - Percent allocation is given by 100 * (size - free / size.
+///     - Percent free is given by 100 * free / size.
 typedef struct _zes_mem_state_t
 {
     zes_structure_type_t stype;                     ///< [in] type of this structure
@@ -3021,14 +3102,16 @@ ZE_APIEXPORT ze_result_t ZE_APICALL
 zesDeviceEnumMemoryModules(
     zes_device_handle_t hDevice,                    ///< [in] Sysman handle of the device.
     uint32_t* pCount,                               ///< [in,out] pointer to the number of components of this type.
-                                                    ///< if count is zero, then the driver will update the value with the total
-                                                    ///< number of components of this type.
-                                                    ///< if count is non-zero, then driver will only retrieve that number of components.
-                                                    ///< if count is larger than the number of components available, then the
-                                                    ///< driver will update the value with the correct number of components
-                                                    ///< that are returned.
+                                                    ///< if count is zero, then the driver shall update the value with the
+                                                    ///< total number of components of this type that are available.
+                                                    ///< if count is greater than the number of components of this type that
+                                                    ///< are available, then the driver shall update the value with the correct
+                                                    ///< number of components.
     zes_mem_handle_t* phMemory                      ///< [in,out][optional][range(0, *pCount)] array of handle of components of
-                                                    ///< this type
+                                                    ///< this type.
+                                                    ///< if count is less than the number of components of this type that are
+                                                    ///< available, then the driver shall only retrieve that number of
+                                                    ///< component handles.
     );
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -3139,14 +3222,16 @@ ZE_APIEXPORT ze_result_t ZE_APICALL
 zesDeviceEnumPerformanceFactorDomains(
     zes_device_handle_t hDevice,                    ///< [in] Sysman handle of the device.
     uint32_t* pCount,                               ///< [in,out] pointer to the number of components of this type.
-                                                    ///< if count is zero, then the driver will update the value with the total
-                                                    ///< number of components of this type.
-                                                    ///< if count is non-zero, then driver will only retrieve that number of components.
-                                                    ///< if count is larger than the number of components available, then the
-                                                    ///< driver will update the value with the correct number of components
-                                                    ///< that are returned.
+                                                    ///< if count is zero, then the driver shall update the value with the
+                                                    ///< total number of components of this type that are available.
+                                                    ///< if count is greater than the number of components of this type that
+                                                    ///< are available, then the driver shall update the value with the correct
+                                                    ///< number of components.
     zes_perf_handle_t* phPerf                       ///< [in,out][optional][range(0, *pCount)] array of handle of components of
-                                                    ///< this type
+                                                    ///< this type.
+                                                    ///< if count is less than the number of components of this type that are
+                                                    ///< available, then the driver shall only retrieve that number of
+                                                    ///< component handles.
     );
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -3351,14 +3436,16 @@ ZE_APIEXPORT ze_result_t ZE_APICALL
 zesDeviceEnumPowerDomains(
     zes_device_handle_t hDevice,                    ///< [in] Sysman handle of the device.
     uint32_t* pCount,                               ///< [in,out] pointer to the number of components of this type.
-                                                    ///< if count is zero, then the driver will update the value with the total
-                                                    ///< number of components of this type.
-                                                    ///< if count is non-zero, then driver will only retrieve that number of components.
-                                                    ///< if count is larger than the number of components available, then the
-                                                    ///< driver will update the value with the correct number of components
-                                                    ///< that are returned.
+                                                    ///< if count is zero, then the driver shall update the value with the
+                                                    ///< total number of components of this type that are available.
+                                                    ///< if count is greater than the number of components of this type that
+                                                    ///< are available, then the driver shall update the value with the correct
+                                                    ///< number of components.
     zes_pwr_handle_t* phPower                       ///< [in,out][optional][range(0, *pCount)] array of handle of components of
-                                                    ///< this type
+                                                    ///< this type.
+                                                    ///< if count is less than the number of components of this type that are
+                                                    ///< available, then the driver shall only retrieve that number of
+                                                    ///< component handles.
     );
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -3591,14 +3678,16 @@ ZE_APIEXPORT ze_result_t ZE_APICALL
 zesDeviceEnumPsus(
     zes_device_handle_t hDevice,                    ///< [in] Sysman handle of the device.
     uint32_t* pCount,                               ///< [in,out] pointer to the number of components of this type.
-                                                    ///< if count is zero, then the driver will update the value with the total
-                                                    ///< number of components of this type.
-                                                    ///< if count is non-zero, then driver will only retrieve that number of components.
-                                                    ///< if count is larger than the number of components available, then the
-                                                    ///< driver will update the value with the correct number of components
-                                                    ///< that are returned.
+                                                    ///< if count is zero, then the driver shall update the value with the
+                                                    ///< total number of components of this type that are available.
+                                                    ///< if count is greater than the number of components of this type that
+                                                    ///< are available, then the driver shall update the value with the correct
+                                                    ///< number of components.
     zes_psu_handle_t* phPsu                         ///< [in,out][optional][range(0, *pCount)] array of handle of components of
-                                                    ///< this type
+                                                    ///< this type.
+                                                    ///< if count is less than the number of components of this type that are
+                                                    ///< available, then the driver shall only retrieve that number of
+                                                    ///< component handles.
     );
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -3765,14 +3854,16 @@ ZE_APIEXPORT ze_result_t ZE_APICALL
 zesDeviceEnumRasErrorSets(
     zes_device_handle_t hDevice,                    ///< [in] Sysman handle of the device.
     uint32_t* pCount,                               ///< [in,out] pointer to the number of components of this type.
-                                                    ///< if count is zero, then the driver will update the value with the total
-                                                    ///< number of components of this type.
-                                                    ///< if count is non-zero, then driver will only retrieve that number of components.
-                                                    ///< if count is larger than the number of components available, then the
-                                                    ///< driver will update the value with the correct number of components
-                                                    ///< that are returned.
+                                                    ///< if count is zero, then the driver shall update the value with the
+                                                    ///< total number of components of this type that are available.
+                                                    ///< if count is greater than the number of components of this type that
+                                                    ///< are available, then the driver shall update the value with the correct
+                                                    ///< number of components.
     zes_ras_handle_t* phRas                         ///< [in,out][optional][range(0, *pCount)] array of handle of components of
-                                                    ///< this type
+                                                    ///< this type.
+                                                    ///< if count is less than the number of components of this type that are
+                                                    ///< available, then the driver shall only retrieve that number of
+                                                    ///< component handles.
     );
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -3933,8 +4024,9 @@ typedef struct _zes_sched_properties_t
     uint32_t subdeviceId;                           ///< [out] If onSubdevice is true, this gives the ID of the sub-device
     ze_bool_t canControl;                           ///< [out] Software can change the scheduler component configuration
                                                     ///< assuming the user has permissions.
-    zes_engine_type_flags_t engines;                ///< [out] Bitfield of accelerator engine types that are controlled by this
-                                                    ///< scheduler component.
+    zes_engine_type_flags_t engines;                ///< [out] Bitfield of accelerator engine types that are managed by this
+                                                    ///< scheduler component. Note that there can be more than one scheduler
+                                                    ///< component for the same type of accelerator engine.
     uint32_t supportedModes;                        ///< [out] Bitfield of scheduler modes that can be configured for this
                                                     ///< scheduler component (bitfield of 1<<::zes_sched_mode_t).
 
@@ -3979,9 +4071,15 @@ typedef struct _zes_sched_timeslice_properties_t
 } zes_sched_timeslice_properties_t;
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Get handle to a scheduler component
+/// @brief Returns handles to scheduler components.
 /// 
 /// @details
+///     - Each scheduler component manages the distribution of work across one
+///       or more accelerator engines.
+///     - If an application wishes to change the scheduler behavior for all
+///       accelerator engines of a specific type (e.g. compute), it should
+///       select all the handles where the structure member
+///       ::zes_sched_properties_t.engines contains that type.
 ///     - The application may call this function from simultaneous threads.
 ///     - The implementation of this function should be lock-free.
 /// 
@@ -3997,14 +4095,16 @@ ZE_APIEXPORT ze_result_t ZE_APICALL
 zesDeviceEnumSchedulers(
     zes_device_handle_t hDevice,                    ///< [in] Sysman handle of the device.
     uint32_t* pCount,                               ///< [in,out] pointer to the number of components of this type.
-                                                    ///< if count is zero, then the driver will update the value with the total
-                                                    ///< number of components of this type.
-                                                    ///< if count is non-zero, then driver will only retrieve that number of components.
-                                                    ///< if count is larger than the number of components available, then the
-                                                    ///< driver will update the value with the correct number of components
-                                                    ///< that are returned.
+                                                    ///< if count is zero, then the driver shall update the value with the
+                                                    ///< total number of components of this type that are available.
+                                                    ///< if count is greater than the number of components of this type that
+                                                    ///< are available, then the driver shall update the value with the correct
+                                                    ///< number of components.
     zes_sched_handle_t* phScheduler                 ///< [in,out][optional][range(0, *pCount)] array of handle of components of
-                                                    ///< this type
+                                                    ///< this type.
+                                                    ///< if count is less than the number of components of this type that are
+                                                    ///< available, then the driver shall only retrieve that number of
+                                                    ///< component handles.
     );
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -4286,14 +4386,16 @@ ZE_APIEXPORT ze_result_t ZE_APICALL
 zesDeviceEnumStandbyDomains(
     zes_device_handle_t hDevice,                    ///< [in] Sysman handle of the device.
     uint32_t* pCount,                               ///< [in,out] pointer to the number of components of this type.
-                                                    ///< if count is zero, then the driver will update the value with the total
-                                                    ///< number of components of this type.
-                                                    ///< if count is non-zero, then driver will only retrieve that number of components.
-                                                    ///< if count is larger than the number of components available, then the
-                                                    ///< driver will update the value with the correct number of components
-                                                    ///< that are returned.
+                                                    ///< if count is zero, then the driver shall update the value with the
+                                                    ///< total number of components of this type that are available.
+                                                    ///< if count is greater than the number of components of this type that
+                                                    ///< are available, then the driver shall update the value with the correct
+                                                    ///< number of components.
     zes_standby_handle_t* phStandby                 ///< [in,out][optional][range(0, *pCount)] array of handle of components of
-                                                    ///< this type
+                                                    ///< this type.
+                                                    ///< if count is less than the number of components of this type that are
+                                                    ///< available, then the driver shall only retrieve that number of
+                                                    ///< component handles.
     );
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -4452,14 +4554,16 @@ ZE_APIEXPORT ze_result_t ZE_APICALL
 zesDeviceEnumTemperatureSensors(
     zes_device_handle_t hDevice,                    ///< [in] Sysman handle of the device.
     uint32_t* pCount,                               ///< [in,out] pointer to the number of components of this type.
-                                                    ///< if count is zero, then the driver will update the value with the total
-                                                    ///< number of components of this type.
-                                                    ///< if count is non-zero, then driver will only retrieve that number of components.
-                                                    ///< if count is larger than the number of components available, then the
-                                                    ///< driver will update the value with the correct number of components
-                                                    ///< that are returned.
+                                                    ///< if count is zero, then the driver shall update the value with the
+                                                    ///< total number of components of this type that are available.
+                                                    ///< if count is greater than the number of components of this type that
+                                                    ///< are available, then the driver shall update the value with the correct
+                                                    ///< number of components.
     zes_temp_handle_t* phTemperature                ///< [in,out][optional][range(0, *pCount)] array of handle of components of
-                                                    ///< this type
+                                                    ///< this type.
+                                                    ///< if count is less than the number of components of this type that are
+                                                    ///< available, then the driver shall only retrieve that number of
+                                                    ///< component handles.
     );
 
 ///////////////////////////////////////////////////////////////////////////////

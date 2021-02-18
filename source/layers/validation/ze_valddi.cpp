@@ -39,13 +39,13 @@ namespace validation_layer
     __zedlllocal ze_result_t ZE_APICALL
     zeDriverGet(
         uint32_t* pCount,                               ///< [in,out] pointer to the number of driver instances.
-                                                        ///< if count is zero, then the loader will update the value with the total
-                                                        ///< number of drivers available.
-                                                        ///< if count is non-zero, then the loader will only retrieve that number
-                                                        ///< of drivers.
-                                                        ///< if count is larger than the number of drivers available, then the
-                                                        ///< loader will update the value with the correct number of drivers available.
-        ze_driver_handle_t* phDrivers                   ///< [in,out][optional][range(0, *pCount)] array of driver instance handles
+                                                        ///< if count is zero, then the loader shall update the value with the
+                                                        ///< total number of drivers available.
+                                                        ///< if count is greater than the number of drivers available, then the
+                                                        ///< loader shall update the value with the correct number of drivers available.
+        ze_driver_handle_t* phDrivers                   ///< [in,out][optional][range(0, *pCount)] array of driver instance handles.
+                                                        ///< if count is less than the number of drivers available, then the loader
+                                                        ///< shall only retrieve that number of drivers.
         )
     {
         auto pfnGet = context.zeDdiTable.Driver.pfnGet;
@@ -120,7 +120,7 @@ namespace validation_layer
     __zedlllocal ze_result_t ZE_APICALL
     zeDriverGetIpcProperties(
         ze_driver_handle_t hDriver,                     ///< [in] handle of the driver instance
-        ze_driver_ipc_properties_t* pIpcProperties      ///< [out] query result for IPC properties
+        ze_driver_ipc_properties_t* pIpcProperties      ///< [in,out] query result for IPC properties
         )
     {
         auto pfnGetIpcProperties = context.zeDdiTable.Driver.pfnGetIpcProperties;
@@ -147,15 +147,15 @@ namespace validation_layer
     zeDriverGetExtensionProperties(
         ze_driver_handle_t hDriver,                     ///< [in] handle of the driver instance
         uint32_t* pCount,                               ///< [in,out] pointer to the number of extension properties.
-                                                        ///< if count is zero, then the driver will update the value with the total
-                                                        ///< number of extension properties available.
-                                                        ///< if count is non-zero, then driver will only retrieve that number of
-                                                        ///< extension properties.
-                                                        ///< if count is larger than the number of extension properties available,
-                                                        ///< then the driver will update the value with the correct number of
+                                                        ///< if count is zero, then the driver shall update the value with the
+                                                        ///< total number of extension properties available.
+                                                        ///< if count is greater than the number of extension properties available,
+                                                        ///< then the driver shall update the value with the correct number of
                                                         ///< extension properties available.
         ze_driver_extension_properties_t* pExtensionProperties  ///< [in,out][optional][range(0, *pCount)] array of query results for
-                                                        ///< extension properties
+                                                        ///< extension properties.
+                                                        ///< if count is less than the number of extension properties available,
+                                                        ///< then driver shall only retrieve that number of extension properties.
         )
     {
         auto pfnGetExtensionProperties = context.zeDdiTable.Driver.pfnGetExtensionProperties;
@@ -177,17 +177,48 @@ namespace validation_layer
     }
 
     ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeDriverGetExtensionFunctionAddress
+    __zedlllocal ze_result_t ZE_APICALL
+    zeDriverGetExtensionFunctionAddress(
+        ze_driver_handle_t hDriver,                     ///< [in] handle of the driver instance
+        const char* name,                               ///< [in] extension name
+        void** ppFunctionAddress                        ///< [out] pointer to function pointer
+        )
+    {
+        auto pfnGetExtensionFunctionAddress = context.zeDdiTable.Driver.pfnGetExtensionFunctionAddress;
+
+        if( nullptr == pfnGetExtensionFunctionAddress )
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+
+        if( context.enableParameterValidation )
+        {
+            if( nullptr == hDriver )
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+            if( nullptr == name )
+                return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+            if( nullptr == ppFunctionAddress )
+                return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+        }
+
+        return pfnGetExtensionFunctionAddress( hDriver, name, ppFunctionAddress );
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
     /// @brief Intercept function for zeDeviceGet
     __zedlllocal ze_result_t ZE_APICALL
     zeDeviceGet(
         ze_driver_handle_t hDriver,                     ///< [in] handle of the driver instance
         uint32_t* pCount,                               ///< [in,out] pointer to the number of devices.
-                                                        ///< if count is zero, then the driver will update the value with the total
-                                                        ///< number of devices available.
-                                                        ///< if count is non-zero, then driver will only retrieve that number of devices.
-                                                        ///< if count is larger than the number of devices available, then the
-                                                        ///< driver will update the value with the correct number of devices available.
-        ze_device_handle_t* phDevices                   ///< [in,out][optional][range(0, *pCount)] array of handle of devices
+                                                        ///< if count is zero, then the driver shall update the value with the
+                                                        ///< total number of devices available.
+                                                        ///< if count is greater than the number of devices available, then the
+                                                        ///< driver shall update the value with the correct number of devices available.
+        ze_device_handle_t* phDevices                   ///< [in,out][optional][range(0, *pCount)] array of handle of devices.
+                                                        ///< if count is less than the number of devices available, then driver
+                                                        ///< shall only retrieve that number of devices.
         )
     {
         auto pfnGet = context.zeDdiTable.Device.pfnGet;
@@ -214,12 +245,13 @@ namespace validation_layer
     zeDeviceGetSubDevices(
         ze_device_handle_t hDevice,                     ///< [in] handle of the device object
         uint32_t* pCount,                               ///< [in,out] pointer to the number of sub-devices.
-                                                        ///< if count is zero, then the driver will update the value with the total
-                                                        ///< number of sub-devices available.
-                                                        ///< if count is non-zero, then driver will only retrieve that number of sub-devices.
-                                                        ///< if count is larger than the number of sub-devices available, then the
-                                                        ///< driver will update the value with the correct number of sub-devices available.
-        ze_device_handle_t* phSubdevices                ///< [in,out][optional][range(0, *pCount)] array of handle of sub-devices
+                                                        ///< if count is zero, then the driver shall update the value with the
+                                                        ///< total number of sub-devices available.
+                                                        ///< if count is greater than the number of sub-devices available, then the
+                                                        ///< driver shall update the value with the correct number of sub-devices available.
+        ze_device_handle_t* phSubdevices                ///< [in,out][optional][range(0, *pCount)] array of handle of sub-devices.
+                                                        ///< if count is less than the number of sub-devices available, then driver
+                                                        ///< shall only retrieve that number of sub-devices.
         )
     {
         auto pfnGetSubDevices = context.zeDdiTable.Device.pfnGetSubDevices;
@@ -324,15 +356,16 @@ namespace validation_layer
     zeDeviceGetCommandQueueGroupProperties(
         ze_device_handle_t hDevice,                     ///< [in] handle of the device
         uint32_t* pCount,                               ///< [in,out] pointer to the number of command queue group properties.
-                                                        ///< if count is zero, then the driver will update the value with the total
-                                                        ///< number of command queue group properties available.
-                                                        ///< if count is non-zero, then driver will only retrieve that number of
-                                                        ///< command queue group properties.
-                                                        ///< if count is larger than the number of command queue group properties
-                                                        ///< available, then the driver will update the value with the correct
+                                                        ///< if count is zero, then the driver shall update the value with the
+                                                        ///< total number of command queue group properties available.
+                                                        ///< if count is greater than the number of command queue group properties
+                                                        ///< available, then the driver shall update the value with the correct
                                                         ///< number of command queue group properties available.
         ze_command_queue_group_properties_t* pCommandQueueGroupProperties   ///< [in,out][optional][range(0, *pCount)] array of query results for
-                                                        ///< command queue group properties
+                                                        ///< command queue group properties.
+                                                        ///< if count is less than the number of command queue group properties
+                                                        ///< available, then driver shall only retrieve that number of command
+                                                        ///< queue group properties.
         )
     {
         auto pfnGetCommandQueueGroupProperties = context.zeDdiTable.Device.pfnGetCommandQueueGroupProperties;
@@ -359,15 +392,15 @@ namespace validation_layer
     zeDeviceGetMemoryProperties(
         ze_device_handle_t hDevice,                     ///< [in] handle of the device
         uint32_t* pCount,                               ///< [in,out] pointer to the number of memory properties.
-                                                        ///< if count is zero, then the driver will update the value with the total
-                                                        ///< number of memory properties available.
-                                                        ///< if count is non-zero, then driver will only retrieve that number of
-                                                        ///< memory properties.
-                                                        ///< if count is larger than the number of memory properties available,
-                                                        ///< then the driver will update the value with the correct number of
+                                                        ///< if count is zero, then the driver shall update the value with the
+                                                        ///< total number of memory properties available.
+                                                        ///< if count is greater than the number of memory properties available,
+                                                        ///< then the driver shall update the value with the correct number of
                                                         ///< memory properties available.
         ze_device_memory_properties_t* pMemProperties   ///< [in,out][optional][range(0, *pCount)] array of query results for
-                                                        ///< memory properties
+                                                        ///< memory properties.
+                                                        ///< if count is less than the number of memory properties available, then
+                                                        ///< driver shall only retrieve that number of memory properties.
         )
     {
         auto pfnGetMemoryProperties = context.zeDdiTable.Device.pfnGetMemoryProperties;
@@ -420,15 +453,14 @@ namespace validation_layer
     zeDeviceGetCacheProperties(
         ze_device_handle_t hDevice,                     ///< [in] handle of the device
         uint32_t* pCount,                               ///< [in,out] pointer to the number of cache properties.
-                                                        ///< if count is zero, then the driver will update the value with the total
-                                                        ///< number of cache properties available.
-                                                        ///< if count is non-zero, then driver will only retrieve that number of
-                                                        ///< cache properties.
-                                                        ///< if count is larger than the number of cache properties available, then
-                                                        ///< the driver will update the value with the correct number of cache
-                                                        ///< properties available.
-        ze_device_cache_properties_t* pCacheProperties  ///< [in,out][optional][range(0, *pCount)] array of query results for cache
-                                                        ///< properties
+                                                        ///< if count is zero, then the driver shall update the value with the
+                                                        ///< total number of cache properties available.
+                                                        ///< if count is greater than the number of cache properties available,
+                                                        ///< then the driver shall update the value with the correct number of
+                                                        ///< cache properties available.
+        ze_device_cache_properties_t* pCacheProperties  ///< [in,out][optional][range(0, *pCount)] array of query results for cache properties.
+                                                        ///< if count is less than the number of cache properties available, then
+                                                        ///< driver shall only retrieve that number of cache properties.
         )
     {
         auto pfnGetCacheProperties = context.zeDdiTable.Device.pfnGetCacheProperties;
@@ -584,6 +616,38 @@ namespace validation_layer
     }
 
     ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeDeviceGetGlobalTimestamps
+    __zedlllocal ze_result_t ZE_APICALL
+    zeDeviceGetGlobalTimestamps(
+        ze_device_handle_t hDevice,                     ///< [in] handle of the device
+        uint64_t* hostTimestamp,                        ///< [out] value of the Host's global timestamp that correlates with the
+                                                        ///< Device's global timestamp value
+        uint64_t* deviceTimestamp                       ///< [out] value of the Device's global timestamp that correlates with the
+                                                        ///< Host's global timestamp value
+        )
+    {
+        auto pfnGetGlobalTimestamps = context.zeDdiTable.Device.pfnGetGlobalTimestamps;
+
+        if( nullptr == pfnGetGlobalTimestamps )
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+
+        if( context.enableParameterValidation )
+        {
+            if( nullptr == hDevice )
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+            if( nullptr == hostTimestamp )
+                return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+            if( nullptr == deviceTimestamp )
+                return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+        }
+
+        return pfnGetGlobalTimestamps( hDevice, hostTimestamp, deviceTimestamp );
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
     /// @brief Intercept function for zeContextCreate
     __zedlllocal ze_result_t ZE_APICALL
     zeContextCreate(
@@ -614,6 +678,49 @@ namespace validation_layer
         }
 
         return pfnCreate( hDriver, desc, phContext );
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeContextCreateEx
+    __zedlllocal ze_result_t ZE_APICALL
+    zeContextCreateEx(
+        ze_driver_handle_t hDriver,                     ///< [in] handle of the driver object
+        const ze_context_desc_t* desc,                  ///< [in] pointer to context descriptor
+        uint32_t numDevices,                            ///< [in][optional] number of device handles; must be 0 if `nullptr ==
+                                                        ///< phDevices`
+        ze_device_handle_t* phDevices,                  ///< [in][optional][range(0, numDevices)] array of device handles which
+                                                        ///< context has visibility.
+                                                        ///< if nullptr, then all devices supported by the driver instance are
+                                                        ///< visible to the context.
+                                                        ///< otherwise, context only has visibility to devices in this array.
+        ze_context_handle_t* phContext                  ///< [out] pointer to handle of context object created
+        )
+    {
+        auto pfnCreateEx = context.zeDdiTable.Context.pfnCreateEx;
+
+        if( nullptr == pfnCreateEx )
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+
+        if( context.enableParameterValidation )
+        {
+            if( nullptr == hDriver )
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+            if( nullptr == desc )
+                return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+            if( nullptr == phContext )
+                return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+            if( 0x1 < desc->flags )
+                return ZE_RESULT_ERROR_INVALID_ENUMERATION;
+
+            if( (nullptr == phDevices) && (0 < numDevices) )
+                return ZE_RESULT_ERROR_INVALID_SIZE;
+
+        }
+
+        return pfnCreateEx( hDriver, desc, numDevices, phDevices, phContext );
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -2646,12 +2753,13 @@ namespace validation_layer
     zeModuleGetKernelNames(
         ze_module_handle_t hModule,                     ///< [in] handle of the module
         uint32_t* pCount,                               ///< [in,out] pointer to the number of names.
-                                                        ///< if count is zero, then the driver will update the value with the total
-                                                        ///< number of names available.
-                                                        ///< if count is non-zero, then driver will only retrieve that number of names.
-                                                        ///< if count is larger than the number of names available, then the driver
-                                                        ///< will update the value with the correct number of names available.
-        const char** pNames                             ///< [in,out][optional][range(0, *pCount)] array of names of functions
+                                                        ///< if count is zero, then the driver shall update the value with the
+                                                        ///< total number of names available.
+                                                        ///< if count is greater than the number of names available, then the
+                                                        ///< driver shall update the value with the correct number of names available.
+        const char** pNames                             ///< [in,out][optional][range(0, *pCount)] array of names of functions.
+                                                        ///< if count is less than the number of names available, then driver shall
+                                                        ///< only retrieve that number of names.
         )
     {
         auto pfnGetKernelNames = context.zeDdiTable.Module.pfnGetKernelNames;
@@ -2958,12 +3066,9 @@ namespace validation_layer
     zeKernelGetSourceAttributes(
         ze_kernel_handle_t hKernel,                     ///< [in] handle of the kernel object
         uint32_t* pSize,                                ///< [in,out] pointer to size of string in bytes.
-                                                        ///< if size is zero, then the driver will update string argument.
-                                                        ///< if size is non-zero, then driver will only retrieve string size in bytes.
-                                                        ///< if size is larger than source attributes string, then the driver will
-                                                        ///< update the string.
-        char** pString                                  ///< [in,out][optional] pointer to null-terminated string where kernel
-                                                        ///< source attributes are separated by space.
+        char** pString                                  ///< [in,out] pointer to null-terminated string, whose lifetime is tied to
+                                                        ///< the kernel object, where kernel source attributes are separated by
+                                                        ///< space.
         )
     {
         auto pfnGetSourceAttributes = context.zeDdiTable.Kernel.pfnGetSourceAttributes;
@@ -2977,6 +3082,9 @@ namespace validation_layer
                 return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
 
             if( nullptr == pSize )
+                return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+            if( nullptr == pString )
                 return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
         }
@@ -3722,6 +3830,31 @@ namespace validation_layer
         return pfnGetAccessAttribute( hContext, ptr, size, access, outSize );
     }
 
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeKernelSetGlobalOffsetExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zeKernelSetGlobalOffsetExp(
+        ze_kernel_handle_t hKernel,                     ///< [in] handle of the kernel object
+        uint32_t offsetX,                               ///< [in] global offset for X dimension to use for this kernel
+        uint32_t offsetY,                               ///< [in] global offset for Y dimension to use for this kernel
+        uint32_t offsetZ                                ///< [in] global offset for Z dimension to use for this kernel
+        )
+    {
+        auto pfnSetGlobalOffsetExp = context.zeDdiTable.KernelExp.pfnSetGlobalOffsetExp;
+
+        if( nullptr == pfnSetGlobalOffsetExp )
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+
+        if( context.enableParameterValidation )
+        {
+            if( nullptr == hKernel )
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+        }
+
+        return pfnSetGlobalOffsetExp( hKernel, offsetX, offsetY, offsetZ );
+    }
+
 } // namespace validation_layer
 
 #if defined(__cplusplus)
@@ -3797,6 +3930,9 @@ zeGetDriverProcAddrTable(
     dditable.pfnGetExtensionProperties                   = pDdiTable->pfnGetExtensionProperties;
     pDdiTable->pfnGetExtensionProperties                 = validation_layer::zeDriverGetExtensionProperties;
 
+    dditable.pfnGetExtensionFunctionAddress              = pDdiTable->pfnGetExtensionFunctionAddress;
+    pDdiTable->pfnGetExtensionFunctionAddress            = validation_layer::zeDriverGetExtensionFunctionAddress;
+
     return result;
 }
 
@@ -3866,6 +4002,9 @@ zeGetDeviceProcAddrTable(
     dditable.pfnGetStatus                                = pDdiTable->pfnGetStatus;
     pDdiTable->pfnGetStatus                              = validation_layer::zeDeviceGetStatus;
 
+    dditable.pfnGetGlobalTimestamps                      = pDdiTable->pfnGetGlobalTimestamps;
+    pDdiTable->pfnGetGlobalTimestamps                    = validation_layer::zeDeviceGetGlobalTimestamps;
+
     return result;
 }
 
@@ -3916,6 +4055,9 @@ zeGetContextProcAddrTable(
 
     dditable.pfnEvictImage                               = pDdiTable->pfnEvictImage;
     pDdiTable->pfnEvictImage                             = validation_layer::zeContextEvictImage;
+
+    dditable.pfnCreateEx                                 = pDdiTable->pfnCreateEx;
+    pDdiTable->pfnCreateEx                               = validation_layer::zeContextCreateEx;
 
     return result;
 }
@@ -4291,6 +4433,36 @@ zeGetKernelProcAddrTable(
 
     dditable.pfnGetName                                  = pDdiTable->pfnGetName;
     pDdiTable->pfnGetName                                = validation_layer::zeKernelGetName;
+
+    return result;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Exported function for filling application's KernelExp table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+ZE_DLLEXPORT ze_result_t ZE_APICALL
+zeGetKernelExpProcAddrTable(
+    ze_api_version_t version,                       ///< [in] API version requested
+    ze_kernel_exp_dditable_t* pDdiTable             ///< [in,out] pointer to table of DDI function pointers
+    )
+{
+    auto& dditable = validation_layer::context.zeDdiTable.KernelExp;
+
+    if( nullptr == pDdiTable )
+        return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+    if( validation_layer::context.version < version )
+        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+
+    ze_result_t result = ZE_RESULT_SUCCESS;
+
+    dditable.pfnSetGlobalOffsetExp                       = pDdiTable->pfnSetGlobalOffsetExp;
+    pDdiTable->pfnSetGlobalOffsetExp                     = validation_layer::zeKernelSetGlobalOffsetExp;
 
     return result;
 }

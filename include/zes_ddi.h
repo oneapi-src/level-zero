@@ -5,7 +5,7 @@
  * SPDX-License-Identifier: MIT
  *
  * @file zes_ddi.h
- * @version v1.0-r1.0.4.8
+ * @version v1.1-r1.1.8
  *
  */
 #ifndef _ZES_DDI_H
@@ -31,10 +31,22 @@ typedef ze_result_t (ZE_APICALL *zes_pfnDriverEventListen_t)(
     );
 
 ///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zesDriverEventListenEx 
+typedef ze_result_t (ZE_APICALL *zes_pfnDriverEventListenEx_t)(
+    ze_driver_handle_t,
+    uint64_t,
+    uint32_t,
+    zes_device_handle_t*,
+    uint32_t*,
+    zes_event_type_flags_t*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
 /// @brief Table of Driver functions pointers
 typedef struct _zes_driver_dditable_t
 {
     zes_pfnDriverEventListen_t                                  pfnEventListen;
+    zes_pfnDriverEventListenEx_t                                pfnEventListenEx;
 } zes_driver_dditable_t;
 
 ///////////////////////////////////////////////////////////////////////////////

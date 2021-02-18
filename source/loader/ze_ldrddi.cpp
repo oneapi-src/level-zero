@@ -53,13 +53,13 @@ namespace loader
     __zedlllocal ze_result_t ZE_APICALL
     zeDriverGet(
         uint32_t* pCount,                               ///< [in,out] pointer to the number of driver instances.
-                                                        ///< if count is zero, then the loader will update the value with the total
-                                                        ///< number of drivers available.
-                                                        ///< if count is non-zero, then the loader will only retrieve that number
-                                                        ///< of drivers.
-                                                        ///< if count is larger than the number of drivers available, then the
-                                                        ///< loader will update the value with the correct number of drivers available.
-        ze_driver_handle_t* phDrivers                   ///< [in,out][optional][range(0, *pCount)] array of driver instance handles
+                                                        ///< if count is zero, then the loader shall update the value with the
+                                                        ///< total number of drivers available.
+                                                        ///< if count is greater than the number of drivers available, then the
+                                                        ///< loader shall update the value with the correct number of drivers available.
+        ze_driver_handle_t* phDrivers                   ///< [in,out][optional][range(0, *pCount)] array of driver instance handles.
+                                                        ///< if count is less than the number of drivers available, then the loader
+                                                        ///< shall only retrieve that number of drivers.
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
@@ -162,7 +162,7 @@ namespace loader
     __zedlllocal ze_result_t ZE_APICALL
     zeDriverGetIpcProperties(
         ze_driver_handle_t hDriver,                     ///< [in] handle of the driver instance
-        ze_driver_ipc_properties_t* pIpcProperties      ///< [out] query result for IPC properties
+        ze_driver_ipc_properties_t* pIpcProperties      ///< [in,out] query result for IPC properties
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
@@ -188,15 +188,15 @@ namespace loader
     zeDriverGetExtensionProperties(
         ze_driver_handle_t hDriver,                     ///< [in] handle of the driver instance
         uint32_t* pCount,                               ///< [in,out] pointer to the number of extension properties.
-                                                        ///< if count is zero, then the driver will update the value with the total
-                                                        ///< number of extension properties available.
-                                                        ///< if count is non-zero, then driver will only retrieve that number of
-                                                        ///< extension properties.
-                                                        ///< if count is larger than the number of extension properties available,
-                                                        ///< then the driver will update the value with the correct number of
+                                                        ///< if count is zero, then the driver shall update the value with the
+                                                        ///< total number of extension properties available.
+                                                        ///< if count is greater than the number of extension properties available,
+                                                        ///< then the driver shall update the value with the correct number of
                                                         ///< extension properties available.
         ze_driver_extension_properties_t* pExtensionProperties  ///< [in,out][optional][range(0, *pCount)] array of query results for
-                                                        ///< extension properties
+                                                        ///< extension properties.
+                                                        ///< if count is less than the number of extension properties available,
+                                                        ///< then driver shall only retrieve that number of extension properties.
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
@@ -217,17 +217,44 @@ namespace loader
     }
 
     ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeDriverGetExtensionFunctionAddress
+    __zedlllocal ze_result_t ZE_APICALL
+    zeDriverGetExtensionFunctionAddress(
+        ze_driver_handle_t hDriver,                     ///< [in] handle of the driver instance
+        const char* name,                               ///< [in] extension name
+        void** ppFunctionAddress                        ///< [out] pointer to function pointer
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<ze_driver_object_t*>( hDriver )->dditable;
+        auto pfnGetExtensionFunctionAddress = dditable->ze.Driver.pfnGetExtensionFunctionAddress;
+        if( nullptr == pfnGetExtensionFunctionAddress )
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+
+        // convert loader handle to driver handle
+        hDriver = reinterpret_cast<ze_driver_object_t*>( hDriver )->handle;
+
+        // forward to device-driver
+        result = pfnGetExtensionFunctionAddress( hDriver, name, ppFunctionAddress );
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
     /// @brief Intercept function for zeDeviceGet
     __zedlllocal ze_result_t ZE_APICALL
     zeDeviceGet(
         ze_driver_handle_t hDriver,                     ///< [in] handle of the driver instance
         uint32_t* pCount,                               ///< [in,out] pointer to the number of devices.
-                                                        ///< if count is zero, then the driver will update the value with the total
-                                                        ///< number of devices available.
-                                                        ///< if count is non-zero, then driver will only retrieve that number of devices.
-                                                        ///< if count is larger than the number of devices available, then the
-                                                        ///< driver will update the value with the correct number of devices available.
-        ze_device_handle_t* phDevices                   ///< [in,out][optional][range(0, *pCount)] array of handle of devices
+                                                        ///< if count is zero, then the driver shall update the value with the
+                                                        ///< total number of devices available.
+                                                        ///< if count is greater than the number of devices available, then the
+                                                        ///< driver shall update the value with the correct number of devices available.
+        ze_device_handle_t* phDevices                   ///< [in,out][optional][range(0, *pCount)] array of handle of devices.
+                                                        ///< if count is less than the number of devices available, then driver
+                                                        ///< shall only retrieve that number of devices.
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
@@ -268,12 +295,13 @@ namespace loader
     zeDeviceGetSubDevices(
         ze_device_handle_t hDevice,                     ///< [in] handle of the device object
         uint32_t* pCount,                               ///< [in,out] pointer to the number of sub-devices.
-                                                        ///< if count is zero, then the driver will update the value with the total
-                                                        ///< number of sub-devices available.
-                                                        ///< if count is non-zero, then driver will only retrieve that number of sub-devices.
-                                                        ///< if count is larger than the number of sub-devices available, then the
-                                                        ///< driver will update the value with the correct number of sub-devices available.
-        ze_device_handle_t* phSubdevices                ///< [in,out][optional][range(0, *pCount)] array of handle of sub-devices
+                                                        ///< if count is zero, then the driver shall update the value with the
+                                                        ///< total number of sub-devices available.
+                                                        ///< if count is greater than the number of sub-devices available, then the
+                                                        ///< driver shall update the value with the correct number of sub-devices available.
+        ze_device_handle_t* phSubdevices                ///< [in,out][optional][range(0, *pCount)] array of handle of sub-devices.
+                                                        ///< if count is less than the number of sub-devices available, then driver
+                                                        ///< shall only retrieve that number of sub-devices.
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
@@ -389,15 +417,16 @@ namespace loader
     zeDeviceGetCommandQueueGroupProperties(
         ze_device_handle_t hDevice,                     ///< [in] handle of the device
         uint32_t* pCount,                               ///< [in,out] pointer to the number of command queue group properties.
-                                                        ///< if count is zero, then the driver will update the value with the total
-                                                        ///< number of command queue group properties available.
-                                                        ///< if count is non-zero, then driver will only retrieve that number of
-                                                        ///< command queue group properties.
-                                                        ///< if count is larger than the number of command queue group properties
-                                                        ///< available, then the driver will update the value with the correct
+                                                        ///< if count is zero, then the driver shall update the value with the
+                                                        ///< total number of command queue group properties available.
+                                                        ///< if count is greater than the number of command queue group properties
+                                                        ///< available, then the driver shall update the value with the correct
                                                         ///< number of command queue group properties available.
         ze_command_queue_group_properties_t* pCommandQueueGroupProperties   ///< [in,out][optional][range(0, *pCount)] array of query results for
-                                                        ///< command queue group properties
+                                                        ///< command queue group properties.
+                                                        ///< if count is less than the number of command queue group properties
+                                                        ///< available, then driver shall only retrieve that number of command
+                                                        ///< queue group properties.
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
@@ -423,15 +452,15 @@ namespace loader
     zeDeviceGetMemoryProperties(
         ze_device_handle_t hDevice,                     ///< [in] handle of the device
         uint32_t* pCount,                               ///< [in,out] pointer to the number of memory properties.
-                                                        ///< if count is zero, then the driver will update the value with the total
-                                                        ///< number of memory properties available.
-                                                        ///< if count is non-zero, then driver will only retrieve that number of
-                                                        ///< memory properties.
-                                                        ///< if count is larger than the number of memory properties available,
-                                                        ///< then the driver will update the value with the correct number of
+                                                        ///< if count is zero, then the driver shall update the value with the
+                                                        ///< total number of memory properties available.
+                                                        ///< if count is greater than the number of memory properties available,
+                                                        ///< then the driver shall update the value with the correct number of
                                                         ///< memory properties available.
         ze_device_memory_properties_t* pMemProperties   ///< [in,out][optional][range(0, *pCount)] array of query results for
-                                                        ///< memory properties
+                                                        ///< memory properties.
+                                                        ///< if count is less than the number of memory properties available, then
+                                                        ///< driver shall only retrieve that number of memory properties.
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
@@ -482,15 +511,14 @@ namespace loader
     zeDeviceGetCacheProperties(
         ze_device_handle_t hDevice,                     ///< [in] handle of the device
         uint32_t* pCount,                               ///< [in,out] pointer to the number of cache properties.
-                                                        ///< if count is zero, then the driver will update the value with the total
-                                                        ///< number of cache properties available.
-                                                        ///< if count is non-zero, then driver will only retrieve that number of
-                                                        ///< cache properties.
-                                                        ///< if count is larger than the number of cache properties available, then
-                                                        ///< the driver will update the value with the correct number of cache
-                                                        ///< properties available.
-        ze_device_cache_properties_t* pCacheProperties  ///< [in,out][optional][range(0, *pCount)] array of query results for cache
-                                                        ///< properties
+                                                        ///< if count is zero, then the driver shall update the value with the
+                                                        ///< total number of cache properties available.
+                                                        ///< if count is greater than the number of cache properties available,
+                                                        ///< then the driver shall update the value with the correct number of
+                                                        ///< cache properties available.
+        ze_device_cache_properties_t* pCacheProperties  ///< [in,out][optional][range(0, *pCount)] array of query results for cache properties.
+                                                        ///< if count is less than the number of cache properties available, then
+                                                        ///< driver shall only retrieve that number of cache properties.
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
@@ -643,6 +671,34 @@ namespace loader
     }
 
     ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeDeviceGetGlobalTimestamps
+    __zedlllocal ze_result_t ZE_APICALL
+    zeDeviceGetGlobalTimestamps(
+        ze_device_handle_t hDevice,                     ///< [in] handle of the device
+        uint64_t* hostTimestamp,                        ///< [out] value of the Host's global timestamp that correlates with the
+                                                        ///< Device's global timestamp value
+        uint64_t* deviceTimestamp                       ///< [out] value of the Device's global timestamp that correlates with the
+                                                        ///< Host's global timestamp value
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<ze_device_object_t*>( hDevice )->dditable;
+        auto pfnGetGlobalTimestamps = dditable->ze.Device.pfnGetGlobalTimestamps;
+        if( nullptr == pfnGetGlobalTimestamps )
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+
+        // convert loader handle to driver handle
+        hDevice = reinterpret_cast<ze_device_object_t*>( hDevice )->handle;
+
+        // forward to device-driver
+        result = pfnGetGlobalTimestamps( hDevice, hostTimestamp, deviceTimestamp );
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
     /// @brief Intercept function for zeContextCreate
     __zedlllocal ze_result_t ZE_APICALL
     zeContextCreate(
@@ -664,6 +720,61 @@ namespace loader
 
         // forward to device-driver
         result = pfnCreate( hDriver, desc, phContext );
+
+        if( ZE_RESULT_SUCCESS != result )
+            return result;
+
+        try
+        {
+            // convert driver handle to loader handle
+            *phContext = reinterpret_cast<ze_context_handle_t>(
+                ze_context_factory.getInstance( *phContext, dditable ) );
+        }
+        catch( std::bad_alloc& )
+        {
+            result = ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY;
+        }
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeContextCreateEx
+    __zedlllocal ze_result_t ZE_APICALL
+    zeContextCreateEx(
+        ze_driver_handle_t hDriver,                     ///< [in] handle of the driver object
+        const ze_context_desc_t* desc,                  ///< [in] pointer to context descriptor
+        uint32_t numDevices,                            ///< [in][optional] number of device handles; must be 0 if `nullptr ==
+                                                        ///< phDevices`
+        ze_device_handle_t* phDevices,                  ///< [in][optional][range(0, numDevices)] array of device handles which
+                                                        ///< context has visibility.
+                                                        ///< if nullptr, then all devices supported by the driver instance are
+                                                        ///< visible to the context.
+                                                        ///< otherwise, context only has visibility to devices in this array.
+        ze_context_handle_t* phContext                  ///< [out] pointer to handle of context object created
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<ze_driver_object_t*>( hDriver )->dditable;
+        auto pfnCreateEx = dditable->ze.Context.pfnCreateEx;
+        if( nullptr == pfnCreateEx )
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+
+        // convert loader handle to driver handle
+        hDriver = reinterpret_cast<ze_driver_object_t*>( hDriver )->handle;
+
+        // convert loader handles to driver handles
+        for( size_t i = 0; ( nullptr != phDevices ) && ( i < numDevices ); ++i )
+            phDevices[ i ] = reinterpret_cast<ze_device_object_t*>( phDevices[ i ] )->handle;
+
+        // forward to device-driver
+        result = pfnCreateEx( hDriver, desc, numDevices, phDevices, phContext );
+
+        // convert driver handles back to loader handles
+        for ( size_t i = 0; ( nullptr != phDevices ) && ( i < numDevices ); ++i )
+            phDevices[ i ] = reinterpret_cast<ze_device_handle_t>( ze_device_factory.getInstance( phDevices[ i ], dditable ) );
 
         if( ZE_RESULT_SUCCESS != result )
             return result;
@@ -2928,12 +3039,13 @@ namespace loader
     zeModuleGetKernelNames(
         ze_module_handle_t hModule,                     ///< [in] handle of the module
         uint32_t* pCount,                               ///< [in,out] pointer to the number of names.
-                                                        ///< if count is zero, then the driver will update the value with the total
-                                                        ///< number of names available.
-                                                        ///< if count is non-zero, then driver will only retrieve that number of names.
-                                                        ///< if count is larger than the number of names available, then the driver
-                                                        ///< will update the value with the correct number of names available.
-        const char** pNames                             ///< [in,out][optional][range(0, *pCount)] array of names of functions
+                                                        ///< if count is zero, then the driver shall update the value with the
+                                                        ///< total number of names available.
+                                                        ///< if count is greater than the number of names available, then the
+                                                        ///< driver shall update the value with the correct number of names available.
+        const char** pNames                             ///< [in,out][optional][range(0, *pCount)] array of names of functions.
+                                                        ///< if count is less than the number of names available, then driver shall
+                                                        ///< only retrieve that number of names.
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
@@ -3240,12 +3352,9 @@ namespace loader
     zeKernelGetSourceAttributes(
         ze_kernel_handle_t hKernel,                     ///< [in] handle of the kernel object
         uint32_t* pSize,                                ///< [in,out] pointer to size of string in bytes.
-                                                        ///< if size is zero, then the driver will update string argument.
-                                                        ///< if size is non-zero, then driver will only retrieve string size in bytes.
-                                                        ///< if size is larger than source attributes string, then the driver will
-                                                        ///< update the string.
-        char** pString                                  ///< [in,out][optional] pointer to null-terminated string where kernel
-                                                        ///< source attributes are separated by space.
+        char** pString                                  ///< [in,out] pointer to null-terminated string, whose lifetime is tied to
+                                                        ///< the kernel object, where kernel source attributes are separated by
+                                                        ///< space.
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
@@ -4011,6 +4120,33 @@ namespace loader
         return result;
     }
 
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeKernelSetGlobalOffsetExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zeKernelSetGlobalOffsetExp(
+        ze_kernel_handle_t hKernel,                     ///< [in] handle of the kernel object
+        uint32_t offsetX,                               ///< [in] global offset for X dimension to use for this kernel
+        uint32_t offsetY,                               ///< [in] global offset for Y dimension to use for this kernel
+        uint32_t offsetZ                                ///< [in] global offset for Z dimension to use for this kernel
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<ze_kernel_object_t*>( hKernel )->dditable;
+        auto pfnSetGlobalOffsetExp = dditable->ze.KernelExp.pfnSetGlobalOffsetExp;
+        if( nullptr == pfnSetGlobalOffsetExp )
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+
+        // convert loader handle to driver handle
+        hKernel = reinterpret_cast<ze_kernel_object_t*>( hKernel )->handle;
+
+        // forward to device-driver
+        result = pfnSetGlobalOffsetExp( hKernel, offsetX, offsetY, offsetZ );
+
+        return result;
+    }
+
 } // namespace loader
 
 #if defined(__cplusplus)
@@ -4134,6 +4270,7 @@ zeGetDriverProcAddrTable(
             pDdiTable->pfnGetProperties                            = loader::zeDriverGetProperties;
             pDdiTable->pfnGetIpcProperties                         = loader::zeDriverGetIpcProperties;
             pDdiTable->pfnGetExtensionProperties                   = loader::zeDriverGetExtensionProperties;
+            pDdiTable->pfnGetExtensionFunctionAddress              = loader::zeDriverGetExtensionFunctionAddress;
         }
         else
         {
@@ -4217,6 +4354,7 @@ zeGetDeviceProcAddrTable(
             pDdiTable->pfnGetP2PProperties                         = loader::zeDeviceGetP2PProperties;
             pDdiTable->pfnCanAccessPeer                            = loader::zeDeviceCanAccessPeer;
             pDdiTable->pfnGetStatus                                = loader::zeDeviceGetStatus;
+            pDdiTable->pfnGetGlobalTimestamps                      = loader::zeDeviceGetGlobalTimestamps;
         }
         else
         {
@@ -4294,6 +4432,7 @@ zeGetContextProcAddrTable(
             pDdiTable->pfnEvictMemory                              = loader::zeContextEvictMemory;
             pDdiTable->pfnMakeImageResident                        = loader::zeContextMakeImageResident;
             pDdiTable->pfnEvictImage                               = loader::zeContextEvictImage;
+            pDdiTable->pfnCreateEx                                 = loader::zeContextCreateEx;
         }
         else
         {
@@ -4860,6 +4999,77 @@ zeGetKernelProcAddrTable(
     {
         auto getTable = reinterpret_cast<ze_pfnGetKernelProcAddrTable_t>(
             GET_FUNCTION_PTR(loader::context->tracingLayer, "zeGetKernelProcAddrTable") );
+        result = getTable( version, pDdiTable );
+    }
+
+    return result;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Exported function for filling application's KernelExp table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+ZE_DLLEXPORT ze_result_t ZE_APICALL
+zeGetKernelExpProcAddrTable(
+    ze_api_version_t version,                       ///< [in] API version requested
+    ze_kernel_exp_dditable_t* pDdiTable             ///< [in,out] pointer to table of DDI function pointers
+    )
+{
+    if( loader::context->drivers.size() < 1 )
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+
+    if( nullptr == pDdiTable )
+        return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+    if( loader::context->version < version )
+        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+
+    ze_result_t result = ZE_RESULT_SUCCESS;
+
+    // Load the device-driver DDI tables
+    for( auto& drv : loader::context->drivers )
+    {
+        if( ZE_RESULT_SUCCESS == result )
+        {
+            auto getTable = reinterpret_cast<ze_pfnGetKernelExpProcAddrTable_t>(
+                GET_FUNCTION_PTR( drv.handle, "zeGetKernelExpProcAddrTable") );
+            if(!getTable) continue;
+            result = getTable( version, &drv.dditable.ze.KernelExp );
+        }
+    }
+
+    if( ZE_RESULT_SUCCESS == result )
+    {
+        if( ( loader::context->drivers.size() > 1 ) || loader::context->forceIntercept )
+        {
+            // return pointers to loader's DDIs
+            pDdiTable->pfnSetGlobalOffsetExp                       = loader::zeKernelSetGlobalOffsetExp;
+        }
+        else
+        {
+            // return pointers directly to driver's DDIs
+            *pDdiTable = loader::context->drivers.front().dditable.ze.KernelExp;
+        }
+    }
+
+    // If the validation layer is enabled, then intercept the loader's DDIs
+    if(( ZE_RESULT_SUCCESS == result ) && ( nullptr != loader::context->validationLayer ))
+    {
+        auto getTable = reinterpret_cast<ze_pfnGetKernelExpProcAddrTable_t>(
+            GET_FUNCTION_PTR(loader::context->validationLayer, "zeGetKernelExpProcAddrTable") );
+        result = getTable( version, pDdiTable );
+    }
+
+    // If the API tracing layer is enabled, then intercept the loader's DDIs
+    if(( ZE_RESULT_SUCCESS == result ) && ( nullptr != loader::context->tracingLayer ))
+    {
+        auto getTable = reinterpret_cast<ze_pfnGetKernelExpProcAddrTable_t>(
+            GET_FUNCTION_PTR(loader::context->tracingLayer, "zeGetKernelExpProcAddrTable") );
         result = getTable( version, pDdiTable );
     }
 

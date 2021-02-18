@@ -4,7 +4,7 @@
  SPDX-License-Identifier: MIT
 
  @file zes.py
- @version v1.0-r1.0.4.8
+ @version v1.1-r1.1.8
 
  """
 import platform
@@ -191,10 +191,11 @@ ZES_STRING_PROPERTY_SIZE = 64
 ## @brief Types of accelerator engines
 class zes_engine_type_flags_v(IntEnum):
     OTHER = ZE_BIT(0)                               ## Undefined types of accelerators.
-    COMPUTE = ZE_BIT(1)                             ## Engines that process compute kernels.
-    _3D = ZE_BIT(2)                                 ## Engines that process 3D content
-    MEDIA = ZE_BIT(3)                               ## Engines that process media workloads
-    DMA = ZE_BIT(4)                                 ## Engines that copy blocks of data
+    COMPUTE = ZE_BIT(1)                             ## Engines that process compute kernels only (no 3D content).
+    _3D = ZE_BIT(2)                                 ## Engines that process 3D content only (no compute kernels).
+    MEDIA = ZE_BIT(3)                               ## Engines that process media workloads.
+    DMA = ZE_BIT(4)                                 ## Engines that copy blocks of data.
+    RENDER = ZE_BIT(5)                              ## Engines that can process both 3D content and compute kernels.
 
 class zes_engine_type_flags_t(c_int):
     def __str__(self):
@@ -487,19 +488,21 @@ class zes_diag_properties_t(Structure):
 ## @brief Accelerator engine groups
 class zes_engine_group_v(IntEnum):
     ALL = 0                                         ## Access information about all engines combined.
-    COMPUTE_ALL = 1                                 ## Access information about all compute/render engines combined.
+    COMPUTE_ALL = 1                                 ## Access information about all compute engines combined. Compute engines
+                                                    ## can only process compute kernels (no 3D content).
     MEDIA_ALL = 2                                   ## Access information about all media engines combined.
     COPY_ALL = 3                                    ## Access information about all copy (blitter) engines combined.
-    COMPUTE_SINGLE = 4                              ## Access information about a single compute engine. Note that single
+    COMPUTE_SINGLE = 4                              ## Access information about a single compute engine - this is an engine
+                                                    ## that can process compute kernels. Note that single engines may share
+                                                    ## the same underlying accelerator resources as other engines so activity
+                                                    ## of such an engine may not be indicative of the underlying resource
+                                                    ## utilization - use ::ZES_ENGINE_GROUP_3D_RENDER_COMPUTE_ALL for that.
+    RENDER_SINGLE = 5                               ## Access information about a single render engine - this is an engine
+                                                    ## that can process both 3D content and compute kernels. Note that single
                                                     ## engines may share the same underlying accelerator resources as other
                                                     ## engines so activity of such an engine may not be indicative of the
-                                                    ## underlying resource utilization - use ::ZES_ENGINE_GROUP_COMPUTE_ALL
-                                                    ## for that.
-    RENDER_SINGLE = 5                               ## Access information about a single render engine. Note that single
-                                                    ## engines may share the same underlying accelerator resources as other
-                                                    ## engines so activity of such an engine may not be indicative of the
-                                                    ## underlying resource utilization - use ::ZES_ENGINE_GROUP_COMPUTE_ALL
-                                                    ## for that.
+                                                    ## underlying resource utilization - use
+                                                    ## ::ZES_ENGINE_GROUP_3D_RENDER_COMPUTE_ALL for that.
     MEDIA_DECODE_SINGLE = 6                         ## Access information about a single media decode engine. Note that
                                                     ## single engines may share the same underlying accelerator resources as
                                                     ## other engines so activity of such an engine may not be indicative of
@@ -515,6 +518,21 @@ class zes_engine_group_v(IntEnum):
                                                     ## other engines so activity of such an engine may not be indicative of
                                                     ## the underlying resource utilization - use ::ZES_ENGINE_GROUP_COPY_ALL
                                                     ## for that.
+    MEDIA_ENHANCEMENT_SINGLE = 9                    ## Access information about a single media enhancement engine. Note that
+                                                    ## single engines may share the same underlying accelerator resources as
+                                                    ## other engines so activity of such an engine may not be indicative of
+                                                    ## the underlying resource utilization - use ::ZES_ENGINE_GROUP_MEDIA_ALL
+                                                    ## for that.
+    _3D_SINGLE = 10                                 ## Access information about a single 3D engine - this is an engine that
+                                                    ## can process 3D content only. Note that single engines may share the
+                                                    ## same underlying accelerator resources as other engines so activity of
+                                                    ## such an engine may not be indicative of the underlying resource
+                                                    ## utilization - use ::ZES_ENGINE_GROUP_3D_RENDER_COMPUTE_ALL for that.
+    _3D_RENDER_COMPUTE_ALL = 11                     ## Access information about all 3D/render/compute engines combined.
+    RENDER_ALL = 12                                 ## Access information about all render engines combined. Render engines
+                                                    ## are those than process both 3D content and compute kernels.
+    _3D_ALL = 13                                    ## Access information about all 3D engines combined. 3D engines can
+                                                    ## process 3D content only (no compute kernels).
 
 class zes_engine_group_t(c_int):
     def __str__(self):
@@ -841,7 +859,7 @@ class zes_fan_config_t(Structure):
         ("pNext", c_void_p),                                            ## [in][optional] pointer to extension-specific structure
         ("mode", zes_fan_speed_mode_t),                                 ## [in,out] The fan speed mode (fixed, temp-speed table)
         ("speedFixed", zes_fan_speed_t),                                ## [in,out] The current fixed fan speed setting
-        ("speedTable", zes_fan_temp_speed_t)                            ## [out] Array of temperature/fan speed pairs currently configured
+        ("speedTable", zes_fan_speed_table_t)                           ## [out] A table containing temperature/speed pairs
     ]
 
 ###############################################################################
@@ -1135,7 +1153,9 @@ class zes_mem_properties_t(Structure):
                                                                         ## that the resource is on the device of the calling Sysman handle
         ("subdeviceId", c_ulong),                                       ## [out] If onSubdevice is true, this gives the ID of the sub-device
         ("location", zes_mem_loc_t),                                    ## [out] Location of this memory (system, device)
-        ("physicalSize", c_ulonglong),                                  ## [out] Physical memory size in bytes
+        ("physicalSize", c_ulonglong),                                  ## [out] Physical memory size in bytes. A value of 0 indicates that this
+                                                                        ## property is not known. However, a call to ::zesMemoryGetState() will
+                                                                        ## correctly return the total size of usable memory.
         ("busWidth", c_int32_t),                                        ## [out] Width of the memory bus. A value of -1 means that this property
                                                                         ## is unknown.
         ("numChannels", c_int32_t)                                      ## [out] The number of memory channels. A value of -1 means that this
@@ -1146,8 +1166,8 @@ class zes_mem_properties_t(Structure):
 ## @brief Memory state - health, allocated
 ## 
 ## @details
-##     - Percent allocation is given by 100 * allocatedSize / maxSize.
-##     - Percent free is given by 100 * (maxSize - allocatedSize) / maxSize.
+##     - Percent allocation is given by 100 * (size - free / size.
+##     - Percent free is given by 100 * free / size.
 class zes_mem_state_t(Structure):
     _fields_ = [
         ("stype", zes_structure_type_t),                                ## [in] type of this structure
@@ -1456,8 +1476,9 @@ class zes_sched_properties_t(Structure):
         ("subdeviceId", c_ulong),                                       ## [out] If onSubdevice is true, this gives the ID of the sub-device
         ("canControl", ze_bool_t),                                      ## [out] Software can change the scheduler component configuration
                                                                         ## assuming the user has permissions.
-        ("engines", zes_engine_type_flags_t),                           ## [out] Bitfield of accelerator engine types that are controlled by this
-                                                                        ## scheduler component.
+        ("engines", zes_engine_type_flags_t),                           ## [out] Bitfield of accelerator engine types that are managed by this
+                                                                        ## scheduler component. Note that there can be more than one scheduler
+                                                                        ## component for the same type of accelerator engine.
         ("supportedModes", c_ulong)                                     ## [out] Bitfield of scheduler modes that can be configured for this
                                                                         ## scheduler component (bitfield of 1<<::zes_sched_mode_t).
     ]
@@ -1603,12 +1624,20 @@ if __use_win_types:
 else:
     _zesDriverEventListen_t = CFUNCTYPE( ze_result_t, ze_driver_handle_t, c_ulong, c_ulong, POINTER(zes_device_handle_t), POINTER(c_ulong), POINTER(zes_event_type_flags_t) )
 
+###############################################################################
+## @brief Function-pointer for zesDriverEventListenEx
+if __use_win_types:
+    _zesDriverEventListenEx_t = WINFUNCTYPE( ze_result_t, ze_driver_handle_t, c_ulonglong, c_ulong, POINTER(zes_device_handle_t), POINTER(c_ulong), POINTER(zes_event_type_flags_t) )
+else:
+    _zesDriverEventListenEx_t = CFUNCTYPE( ze_result_t, ze_driver_handle_t, c_ulonglong, c_ulong, POINTER(zes_device_handle_t), POINTER(c_ulong), POINTER(zes_event_type_flags_t) )
+
 
 ###############################################################################
 ## @brief Table of Driver functions pointers
 class _zes_driver_dditable_t(Structure):
     _fields_ = [
-        ("pfnEventListen", c_void_p)                                    ## _zesDriverEventListen_t
+        ("pfnEventListen", c_void_p),                                   ## _zesDriverEventListen_t
+        ("pfnEventListenEx", c_void_p)                                  ## _zesDriverEventListenEx_t
     ]
 
 ###############################################################################
@@ -2543,6 +2572,7 @@ class ZES_DDI:
 
         # attach function interface to function address
         self.zesDriverEventListen = _zesDriverEventListen_t(self.__dditable.Driver.pfnEventListen)
+        self.zesDriverEventListenEx = _zesDriverEventListenEx_t(self.__dditable.Driver.pfnEventListenEx)
 
         # call driver to get function pointers
         _Device = _zes_device_dditable_t()
