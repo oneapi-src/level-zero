@@ -19,7 +19,7 @@ namespace validation_layer
     class __zedlllocal context_t
     {
     public:
-        ze_api_version_t version = ZE_API_VERSION_1_0;
+        ze_api_version_t version = ZE_API_VERSION_1_1;
 
         bool enableParameterValidation = false;
         bool enableHandleLifetime = false;
