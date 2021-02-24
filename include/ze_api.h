@@ -5,7 +5,7 @@
  * SPDX-License-Identifier: MIT
  *
  * @file ze_api.h
- * @version v1.1-r1.1.8
+ * @version v1.1-r1.1.10
  *
  */
 #ifndef _ZE_API_H
@@ -6246,30 +6246,6 @@ typedef void (ZE_APICALL *ze_pfnDriverGetExtensionPropertiesCb_t)(
     );
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Callback function parameters for zeDriverGetExtensionFunctionAddress 
-/// @details Each entry is a pointer to the parameter passed to the function;
-///     allowing the callback the ability to modify the parameter's value
-typedef struct _ze_driver_get_extension_function_address_params_t
-{
-    ze_driver_handle_t* phDriver;
-    const char** pname;
-    void*** pppFunctionAddress;
-} ze_driver_get_extension_function_address_params_t;
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Callback function-pointer for zeDriverGetExtensionFunctionAddress 
-/// @param[in] params Parameters passed to this instance
-/// @param[in] result Return value
-/// @param[in] pTracerUserData Per-Tracer user data
-/// @param[in,out] ppTracerInstanceUserData Per-Tracer, Per-Instance user data
-typedef void (ZE_APICALL *ze_pfnDriverGetExtensionFunctionAddressCb_t)(
-    ze_driver_get_extension_function_address_params_t* params,
-    ze_result_t result,
-    void* pTracerUserData,
-    void** ppTracerInstanceUserData
-    );
-
-///////////////////////////////////////////////////////////////////////////////
 /// @brief Table of Driver callback functions pointers
 typedef struct _ze_driver_callbacks_t
 {
@@ -6278,7 +6254,6 @@ typedef struct _ze_driver_callbacks_t
     ze_pfnDriverGetPropertiesCb_t                                   pfnGetPropertiesCb;
     ze_pfnDriverGetIpcPropertiesCb_t                                pfnGetIpcPropertiesCb;
     ze_pfnDriverGetExtensionPropertiesCb_t                          pfnGetExtensionPropertiesCb;
-    ze_pfnDriverGetExtensionFunctionAddressCb_t                     pfnGetExtensionFunctionAddressCb;
 } ze_driver_callbacks_t;
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -6610,30 +6585,6 @@ typedef void (ZE_APICALL *ze_pfnDeviceGetStatusCb_t)(
     );
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Callback function parameters for zeDeviceGetGlobalTimestamps 
-/// @details Each entry is a pointer to the parameter passed to the function;
-///     allowing the callback the ability to modify the parameter's value
-typedef struct _ze_device_get_global_timestamps_params_t
-{
-    ze_device_handle_t* phDevice;
-    uint64_t** phostTimestamp;
-    uint64_t** pdeviceTimestamp;
-} ze_device_get_global_timestamps_params_t;
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Callback function-pointer for zeDeviceGetGlobalTimestamps 
-/// @param[in] params Parameters passed to this instance
-/// @param[in] result Return value
-/// @param[in] pTracerUserData Per-Tracer user data
-/// @param[in,out] ppTracerInstanceUserData Per-Tracer, Per-Instance user data
-typedef void (ZE_APICALL *ze_pfnDeviceGetGlobalTimestampsCb_t)(
-    ze_device_get_global_timestamps_params_t* params,
-    ze_result_t result,
-    void* pTracerUserData,
-    void** ppTracerInstanceUserData
-    );
-
-///////////////////////////////////////////////////////////////////////////////
 /// @brief Table of Device callback functions pointers
 typedef struct _ze_device_callbacks_t
 {
@@ -6651,7 +6602,6 @@ typedef struct _ze_device_callbacks_t
     ze_pfnDeviceGetP2PPropertiesCb_t                                pfnGetP2PPropertiesCb;
     ze_pfnDeviceCanAccessPeerCb_t                                   pfnCanAccessPeerCb;
     ze_pfnDeviceGetStatusCb_t                                       pfnGetStatusCb;
-    ze_pfnDeviceGetGlobalTimestampsCb_t                             pfnGetGlobalTimestampsCb;
 } ze_device_callbacks_t;
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -6844,32 +6794,6 @@ typedef void (ZE_APICALL *ze_pfnContextEvictImageCb_t)(
     );
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Callback function parameters for zeContextCreateEx 
-/// @details Each entry is a pointer to the parameter passed to the function;
-///     allowing the callback the ability to modify the parameter's value
-typedef struct _ze_context_create_ex_params_t
-{
-    ze_driver_handle_t* phDriver;
-    const ze_context_desc_t** pdesc;
-    uint32_t* pnumDevices;
-    ze_device_handle_t** pphDevices;
-    ze_context_handle_t** pphContext;
-} ze_context_create_ex_params_t;
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Callback function-pointer for zeContextCreateEx 
-/// @param[in] params Parameters passed to this instance
-/// @param[in] result Return value
-/// @param[in] pTracerUserData Per-Tracer user data
-/// @param[in,out] ppTracerInstanceUserData Per-Tracer, Per-Instance user data
-typedef void (ZE_APICALL *ze_pfnContextCreateExCb_t)(
-    ze_context_create_ex_params_t* params,
-    ze_result_t result,
-    void* pTracerUserData,
-    void** ppTracerInstanceUserData
-    );
-
-///////////////////////////////////////////////////////////////////////////////
 /// @brief Table of Context callback functions pointers
 typedef struct _ze_context_callbacks_t
 {
@@ -6881,7 +6805,6 @@ typedef struct _ze_context_callbacks_t
     ze_pfnContextEvictMemoryCb_t                                    pfnEvictMemoryCb;
     ze_pfnContextMakeImageResidentCb_t                              pfnMakeImageResidentCb;
     ze_pfnContextEvictImageCb_t                                     pfnEvictImageCb;
-    ze_pfnContextCreateExCb_t                                       pfnCreateExCb;
 } ze_context_callbacks_t;
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -8757,31 +8680,6 @@ typedef void (ZE_APICALL *ze_pfnKernelGetNameCb_t)(
     );
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Callback function parameters for zeKernelSetGlobalOffsetExp 
-/// @details Each entry is a pointer to the parameter passed to the function;
-///     allowing the callback the ability to modify the parameter's value
-typedef struct _ze_kernel_set_global_offset_exp_params_t
-{
-    ze_kernel_handle_t* phKernel;
-    uint32_t* poffsetX;
-    uint32_t* poffsetY;
-    uint32_t* poffsetZ;
-} ze_kernel_set_global_offset_exp_params_t;
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Callback function-pointer for zeKernelSetGlobalOffsetExp 
-/// @param[in] params Parameters passed to this instance
-/// @param[in] result Return value
-/// @param[in] pTracerUserData Per-Tracer user data
-/// @param[in,out] ppTracerInstanceUserData Per-Tracer, Per-Instance user data
-typedef void (ZE_APICALL *ze_pfnKernelSetGlobalOffsetExpCb_t)(
-    ze_kernel_set_global_offset_exp_params_t* params,
-    ze_result_t result,
-    void* pTracerUserData,
-    void** ppTracerInstanceUserData
-    );
-
-///////////////////////////////////////////////////////////////////////////////
 /// @brief Table of Kernel callback functions pointers
 typedef struct _ze_kernel_callbacks_t
 {
@@ -8797,7 +8695,6 @@ typedef struct _ze_kernel_callbacks_t
     ze_pfnKernelGetSourceAttributesCb_t                             pfnGetSourceAttributesCb;
     ze_pfnKernelGetPropertiesCb_t                                   pfnGetPropertiesCb;
     ze_pfnKernelGetNameCb_t                                         pfnGetNameCb;
-    ze_pfnKernelSetGlobalOffsetExpCb_t                              pfnSetGlobalOffsetExpCb;
 } ze_kernel_callbacks_t;
 
 ///////////////////////////////////////////////////////////////////////////////

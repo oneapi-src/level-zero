@@ -3708,48 +3708,8 @@ namespace instrumented
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
 
-        // capture parameters
-        ze_driver_get_extension_function_address_params_t in_params = {
-            &hDriver,
-            &name,
-            &ppFunctionAddress
-        };
-
-        // create storage locations for callbacks
-        std::vector<void*> instanceUserData;
-        instanceUserData.resize( context.tracerData.size() );
-
-        // call each callback registered
-        for( uint32_t i = 0; i < context.tracerData.size(); ++i )
-            if( context.tracerData[ i ].enabled )
-            {
-                auto& table = context.tracerData[ i ].zePrologueCbs.Driver;
-                if( nullptr != table.pfnGetExtensionFunctionAddressCb )
-                    table.pfnGetExtensionFunctionAddressCb( &in_params, result,
-                        context.tracerData[ i ].userData,
-                        &instanceUserData[ i ] );
-            }
 
         result = driver::zeDriverGetExtensionFunctionAddress( hDriver, name, ppFunctionAddress );
-
-        // capture parameters
-        ze_driver_get_extension_function_address_params_t out_params = {
-            &hDriver,
-            &name,
-            &ppFunctionAddress
-        };
-
-        // call each callback registered
-        for( uint32_t i = 0; i < context.tracerData.size(); ++i )
-            if( context.tracerData[ i ].enabled )
-            {
-                auto& table = context.tracerData[ i ].zeEpilogueCbs.Driver;
-                if( nullptr != table.pfnGetExtensionFunctionAddressCb )
-                    table.pfnGetExtensionFunctionAddressCb( &out_params, result,
-                        context.tracerData[ i ].userData,
-                        &instanceUserData[ i ] );
-            }
-
         return result;
     }
 
@@ -4562,48 +4522,8 @@ namespace instrumented
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
 
-        // capture parameters
-        ze_device_get_global_timestamps_params_t in_params = {
-            &hDevice,
-            &hostTimestamp,
-            &deviceTimestamp
-        };
-
-        // create storage locations for callbacks
-        std::vector<void*> instanceUserData;
-        instanceUserData.resize( context.tracerData.size() );
-
-        // call each callback registered
-        for( uint32_t i = 0; i < context.tracerData.size(); ++i )
-            if( context.tracerData[ i ].enabled )
-            {
-                auto& table = context.tracerData[ i ].zePrologueCbs.Device;
-                if( nullptr != table.pfnGetGlobalTimestampsCb )
-                    table.pfnGetGlobalTimestampsCb( &in_params, result,
-                        context.tracerData[ i ].userData,
-                        &instanceUserData[ i ] );
-            }
 
         result = driver::zeDeviceGetGlobalTimestamps( hDevice, hostTimestamp, deviceTimestamp );
-
-        // capture parameters
-        ze_device_get_global_timestamps_params_t out_params = {
-            &hDevice,
-            &hostTimestamp,
-            &deviceTimestamp
-        };
-
-        // call each callback registered
-        for( uint32_t i = 0; i < context.tracerData.size(); ++i )
-            if( context.tracerData[ i ].enabled )
-            {
-                auto& table = context.tracerData[ i ].zeEpilogueCbs.Device;
-                if( nullptr != table.pfnGetGlobalTimestampsCb )
-                    table.pfnGetGlobalTimestampsCb( &out_params, result,
-                        context.tracerData[ i ].userData,
-                        &instanceUserData[ i ] );
-            }
-
         return result;
     }
 
@@ -4681,52 +4601,8 @@ namespace instrumented
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
 
-        // capture parameters
-        ze_context_create_ex_params_t in_params = {
-            &hDriver,
-            &desc,
-            &numDevices,
-            &phDevices,
-            &phContext
-        };
-
-        // create storage locations for callbacks
-        std::vector<void*> instanceUserData;
-        instanceUserData.resize( context.tracerData.size() );
-
-        // call each callback registered
-        for( uint32_t i = 0; i < context.tracerData.size(); ++i )
-            if( context.tracerData[ i ].enabled )
-            {
-                auto& table = context.tracerData[ i ].zePrologueCbs.Context;
-                if( nullptr != table.pfnCreateExCb )
-                    table.pfnCreateExCb( &in_params, result,
-                        context.tracerData[ i ].userData,
-                        &instanceUserData[ i ] );
-            }
 
         result = driver::zeContextCreateEx( hDriver, desc, numDevices, phDevices, phContext );
-
-        // capture parameters
-        ze_context_create_ex_params_t out_params = {
-            &hDriver,
-            &desc,
-            &numDevices,
-            &phDevices,
-            &phContext
-        };
-
-        // call each callback registered
-        for( uint32_t i = 0; i < context.tracerData.size(); ++i )
-            if( context.tracerData[ i ].enabled )
-            {
-                auto& table = context.tracerData[ i ].zeEpilogueCbs.Context;
-                if( nullptr != table.pfnCreateExCb )
-                    table.pfnCreateExCb( &out_params, result,
-                        context.tracerData[ i ].userData,
-                        &instanceUserData[ i ] );
-            }
-
         return result;
     }
 
@@ -10534,50 +10410,8 @@ namespace instrumented
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
 
-        // capture parameters
-        ze_kernel_set_global_offset_exp_params_t in_params = {
-            &hKernel,
-            &offsetX,
-            &offsetY,
-            &offsetZ
-        };
-
-        // create storage locations for callbacks
-        std::vector<void*> instanceUserData;
-        instanceUserData.resize( context.tracerData.size() );
-
-        // call each callback registered
-        for( uint32_t i = 0; i < context.tracerData.size(); ++i )
-            if( context.tracerData[ i ].enabled )
-            {
-                auto& table = context.tracerData[ i ].zePrologueCbs.Kernel;
-                if( nullptr != table.pfnSetGlobalOffsetExpCb )
-                    table.pfnSetGlobalOffsetExpCb( &in_params, result,
-                        context.tracerData[ i ].userData,
-                        &instanceUserData[ i ] );
-            }
 
         result = driver::zeKernelSetGlobalOffsetExp( hKernel, offsetX, offsetY, offsetZ );
-
-        // capture parameters
-        ze_kernel_set_global_offset_exp_params_t out_params = {
-            &hKernel,
-            &offsetX,
-            &offsetY,
-            &offsetZ
-        };
-
-        // call each callback registered
-        for( uint32_t i = 0; i < context.tracerData.size(); ++i )
-            if( context.tracerData[ i ].enabled )
-            {
-                auto& table = context.tracerData[ i ].zeEpilogueCbs.Kernel;
-                if( nullptr != table.pfnSetGlobalOffsetExpCb )
-                    table.pfnSetGlobalOffsetExpCb( &out_params, result,
-                        context.tracerData[ i ].userData,
-                        &instanceUserData[ i ] );
-            }
-
         return result;
     }
 

@@ -21,7 +21,9 @@ namespace tracing_layer
                                                         ///< must be 0 (default) or a combination of ::ze_init_flag_t.
         )
     {
-        if( nullptr == context.zeDdiTable.Global.pfnInit)
+        auto pfnInit = context.zeDdiTable.Global.pfnInit;
+
+        if( nullptr == pfnInit)
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
         ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.Global.pfnInit, flags);
@@ -58,7 +60,9 @@ namespace tracing_layer
                                                         ///< shall only retrieve that number of drivers.
         )
     {
-        if( nullptr == context.zeDdiTable.Driver.pfnGet)
+        auto pfnGet = context.zeDdiTable.Driver.pfnGet;
+
+        if( nullptr == pfnGet)
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
         ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.Driver.pfnGet, pCount, phDrivers);
@@ -91,7 +95,9 @@ namespace tracing_layer
         ze_api_version_t* version                       ///< [out] api version
         )
     {
-        if( nullptr == context.zeDdiTable.Driver.pfnGetApiVersion)
+        auto pfnGetApiVersion = context.zeDdiTable.Driver.pfnGetApiVersion;
+
+        if( nullptr == pfnGetApiVersion)
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
         ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.Driver.pfnGetApiVersion, hDriver, version);
@@ -124,7 +130,9 @@ namespace tracing_layer
         ze_driver_properties_t* pDriverProperties       ///< [in,out] query result for driver properties
         )
     {
-        if( nullptr == context.zeDdiTable.Driver.pfnGetProperties)
+        auto pfnGetProperties = context.zeDdiTable.Driver.pfnGetProperties;
+
+        if( nullptr == pfnGetProperties)
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
         ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.Driver.pfnGetProperties, hDriver, pDriverProperties);
@@ -157,7 +165,9 @@ namespace tracing_layer
         ze_driver_ipc_properties_t* pIpcProperties      ///< [in,out] query result for IPC properties
         )
     {
-        if( nullptr == context.zeDdiTable.Driver.pfnGetIpcProperties)
+        auto pfnGetIpcProperties = context.zeDdiTable.Driver.pfnGetIpcProperties;
+
+        if( nullptr == pfnGetIpcProperties)
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
         ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.Driver.pfnGetIpcProperties, hDriver, pIpcProperties);
@@ -199,7 +209,9 @@ namespace tracing_layer
                                                         ///< then driver shall only retrieve that number of extension properties.
         )
     {
-        if( nullptr == context.zeDdiTable.Driver.pfnGetExtensionProperties)
+        auto pfnGetExtensionProperties = context.zeDdiTable.Driver.pfnGetExtensionProperties;
+
+        if( nullptr == pfnGetExtensionProperties)
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
         ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.Driver.pfnGetExtensionProperties, hDriver, pCount, pExtensionProperties);
@@ -235,31 +247,12 @@ namespace tracing_layer
         void** ppFunctionAddress                        ///< [out] pointer to function pointer
         )
     {
-        if( nullptr == context.zeDdiTable.Driver.pfnGetExtensionFunctionAddress)
+        auto pfnGetExtensionFunctionAddress = context.zeDdiTable.Driver.pfnGetExtensionFunctionAddress;
+
+        if( nullptr == pfnGetExtensionFunctionAddress)
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
-        ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.Driver.pfnGetExtensionFunctionAddress, hDriver, name, ppFunctionAddress);
-
-        // capture parameters
-        ze_driver_get_extension_function_address_params_t tracerParams = {
-            &hDriver,
-            &name,
-            &ppFunctionAddress
-        };
-
-        tracing_layer::APITracerCallbackDataImp<ze_pfnDriverGetExtensionFunctionAddressCb_t> apiCallbackData;
-
-        ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnDriverGetExtensionFunctionAddressCb_t, Driver, pfnGetExtensionFunctionAddressCb);
-
-
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.Driver.pfnGetExtensionFunctionAddress,
-                                                  &tracerParams,
-                                                  apiCallbackData.apiOrdinal,
-                                                  apiCallbackData.prologCallbacks,
-                                                  apiCallbackData.epilogCallbacks,
-                                                  *tracerParams.phDriver,
-                                                  *tracerParams.pname,
-                                                  *tracerParams.pppFunctionAddress);
+        return pfnGetExtensionFunctionAddress( hDriver, name, ppFunctionAddress );
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -277,7 +270,9 @@ namespace tracing_layer
                                                         ///< shall only retrieve that number of devices.
         )
     {
-        if( nullptr == context.zeDdiTable.Device.pfnGet)
+        auto pfnGet = context.zeDdiTable.Device.pfnGet;
+
+        if( nullptr == pfnGet)
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
         ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.Device.pfnGet, hDriver, pCount, phDevices);
@@ -319,7 +314,9 @@ namespace tracing_layer
                                                         ///< shall only retrieve that number of sub-devices.
         )
     {
-        if( nullptr == context.zeDdiTable.Device.pfnGetSubDevices)
+        auto pfnGetSubDevices = context.zeDdiTable.Device.pfnGetSubDevices;
+
+        if( nullptr == pfnGetSubDevices)
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
         ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.Device.pfnGetSubDevices, hDevice, pCount, phSubdevices);
@@ -354,7 +351,9 @@ namespace tracing_layer
         ze_device_properties_t* pDeviceProperties       ///< [in,out] query result for device properties
         )
     {
-        if( nullptr == context.zeDdiTable.Device.pfnGetProperties)
+        auto pfnGetProperties = context.zeDdiTable.Device.pfnGetProperties;
+
+        if( nullptr == pfnGetProperties)
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
         ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.Device.pfnGetProperties, hDevice, pDeviceProperties);
@@ -387,7 +386,9 @@ namespace tracing_layer
         ze_device_compute_properties_t* pComputeProperties  ///< [in,out] query result for compute properties
         )
     {
-        if( nullptr == context.zeDdiTable.Device.pfnGetComputeProperties)
+        auto pfnGetComputeProperties = context.zeDdiTable.Device.pfnGetComputeProperties;
+
+        if( nullptr == pfnGetComputeProperties)
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
         ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.Device.pfnGetComputeProperties, hDevice, pComputeProperties);
@@ -420,7 +421,9 @@ namespace tracing_layer
         ze_device_module_properties_t* pModuleProperties///< [in,out] query result for module properties
         )
     {
-        if( nullptr == context.zeDdiTable.Device.pfnGetModuleProperties)
+        auto pfnGetModuleProperties = context.zeDdiTable.Device.pfnGetModuleProperties;
+
+        if( nullptr == pfnGetModuleProperties)
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
         ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.Device.pfnGetModuleProperties, hDevice, pModuleProperties);
@@ -463,7 +466,9 @@ namespace tracing_layer
                                                         ///< queue group properties.
         )
     {
-        if( nullptr == context.zeDdiTable.Device.pfnGetCommandQueueGroupProperties)
+        auto pfnGetCommandQueueGroupProperties = context.zeDdiTable.Device.pfnGetCommandQueueGroupProperties;
+
+        if( nullptr == pfnGetCommandQueueGroupProperties)
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
         ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.Device.pfnGetCommandQueueGroupProperties, hDevice, pCount, pCommandQueueGroupProperties);
@@ -507,7 +512,9 @@ namespace tracing_layer
                                                         ///< driver shall only retrieve that number of memory properties.
         )
     {
-        if( nullptr == context.zeDdiTable.Device.pfnGetMemoryProperties)
+        auto pfnGetMemoryProperties = context.zeDdiTable.Device.pfnGetMemoryProperties;
+
+        if( nullptr == pfnGetMemoryProperties)
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
         ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.Device.pfnGetMemoryProperties, hDevice, pCount, pMemProperties);
@@ -542,7 +549,9 @@ namespace tracing_layer
         ze_device_memory_access_properties_t* pMemAccessProperties  ///< [in,out] query result for memory access properties
         )
     {
-        if( nullptr == context.zeDdiTable.Device.pfnGetMemoryAccessProperties)
+        auto pfnGetMemoryAccessProperties = context.zeDdiTable.Device.pfnGetMemoryAccessProperties;
+
+        if( nullptr == pfnGetMemoryAccessProperties)
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
         ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.Device.pfnGetMemoryAccessProperties, hDevice, pMemAccessProperties);
@@ -583,7 +592,9 @@ namespace tracing_layer
                                                         ///< driver shall only retrieve that number of cache properties.
         )
     {
-        if( nullptr == context.zeDdiTable.Device.pfnGetCacheProperties)
+        auto pfnGetCacheProperties = context.zeDdiTable.Device.pfnGetCacheProperties;
+
+        if( nullptr == pfnGetCacheProperties)
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
         ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.Device.pfnGetCacheProperties, hDevice, pCount, pCacheProperties);
@@ -618,7 +629,9 @@ namespace tracing_layer
         ze_device_image_properties_t* pImageProperties  ///< [in,out] query result for image properties
         )
     {
-        if( nullptr == context.zeDdiTable.Device.pfnGetImageProperties)
+        auto pfnGetImageProperties = context.zeDdiTable.Device.pfnGetImageProperties;
+
+        if( nullptr == pfnGetImageProperties)
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
         ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.Device.pfnGetImageProperties, hDevice, pImageProperties);
@@ -651,7 +664,9 @@ namespace tracing_layer
         ze_device_external_memory_properties_t* pExternalMemoryProperties   ///< [in,out] query result for external memory properties
         )
     {
-        if( nullptr == context.zeDdiTable.Device.pfnGetExternalMemoryProperties)
+        auto pfnGetExternalMemoryProperties = context.zeDdiTable.Device.pfnGetExternalMemoryProperties;
+
+        if( nullptr == pfnGetExternalMemoryProperties)
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
         ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.Device.pfnGetExternalMemoryProperties, hDevice, pExternalMemoryProperties);
@@ -685,7 +700,9 @@ namespace tracing_layer
         ze_device_p2p_properties_t* pP2PProperties      ///< [in,out] Peer-to-Peer properties between source and peer device
         )
     {
-        if( nullptr == context.zeDdiTable.Device.pfnGetP2PProperties)
+        auto pfnGetP2PProperties = context.zeDdiTable.Device.pfnGetP2PProperties;
+
+        if( nullptr == pfnGetP2PProperties)
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
         ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.Device.pfnGetP2PProperties, hDevice, hPeerDevice, pP2PProperties);
@@ -721,7 +738,9 @@ namespace tracing_layer
         ze_bool_t* value                                ///< [out] returned access capability
         )
     {
-        if( nullptr == context.zeDdiTable.Device.pfnCanAccessPeer)
+        auto pfnCanAccessPeer = context.zeDdiTable.Device.pfnCanAccessPeer;
+
+        if( nullptr == pfnCanAccessPeer)
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
         ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.Device.pfnCanAccessPeer, hDevice, hPeerDevice, value);
@@ -755,7 +774,9 @@ namespace tracing_layer
         ze_device_handle_t hDevice                      ///< [in] handle of the device
         )
     {
-        if( nullptr == context.zeDdiTable.Device.pfnGetStatus)
+        auto pfnGetStatus = context.zeDdiTable.Device.pfnGetStatus;
+
+        if( nullptr == pfnGetStatus)
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
         ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.Device.pfnGetStatus, hDevice);
@@ -789,31 +810,12 @@ namespace tracing_layer
                                                         ///< Host's global timestamp value
         )
     {
-        if( nullptr == context.zeDdiTable.Device.pfnGetGlobalTimestamps)
+        auto pfnGetGlobalTimestamps = context.zeDdiTable.Device.pfnGetGlobalTimestamps;
+
+        if( nullptr == pfnGetGlobalTimestamps)
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
-        ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.Device.pfnGetGlobalTimestamps, hDevice, hostTimestamp, deviceTimestamp);
-
-        // capture parameters
-        ze_device_get_global_timestamps_params_t tracerParams = {
-            &hDevice,
-            &hostTimestamp,
-            &deviceTimestamp
-        };
-
-        tracing_layer::APITracerCallbackDataImp<ze_pfnDeviceGetGlobalTimestampsCb_t> apiCallbackData;
-
-        ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnDeviceGetGlobalTimestampsCb_t, Device, pfnGetGlobalTimestampsCb);
-
-
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.Device.pfnGetGlobalTimestamps,
-                                                  &tracerParams,
-                                                  apiCallbackData.apiOrdinal,
-                                                  apiCallbackData.prologCallbacks,
-                                                  apiCallbackData.epilogCallbacks,
-                                                  *tracerParams.phDevice,
-                                                  *tracerParams.phostTimestamp,
-                                                  *tracerParams.pdeviceTimestamp);
+        return pfnGetGlobalTimestamps( hDevice, hostTimestamp, deviceTimestamp );
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -825,7 +827,9 @@ namespace tracing_layer
         ze_context_handle_t* phContext                  ///< [out] pointer to handle of context object created
         )
     {
-        if( nullptr == context.zeDdiTable.Context.pfnCreate)
+        auto pfnCreate = context.zeDdiTable.Context.pfnCreate;
+
+        if( nullptr == pfnCreate)
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
         ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.Context.pfnCreate, hDriver, desc, phContext);
@@ -868,35 +872,12 @@ namespace tracing_layer
         ze_context_handle_t* phContext                  ///< [out] pointer to handle of context object created
         )
     {
-        if( nullptr == context.zeDdiTable.Context.pfnCreateEx)
+        auto pfnCreateEx = context.zeDdiTable.Context.pfnCreateEx;
+
+        if( nullptr == pfnCreateEx)
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
-        ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.Context.pfnCreateEx, hDriver, desc, numDevices, phDevices, phContext);
-
-        // capture parameters
-        ze_context_create_ex_params_t tracerParams = {
-            &hDriver,
-            &desc,
-            &numDevices,
-            &phDevices,
-            &phContext
-        };
-
-        tracing_layer::APITracerCallbackDataImp<ze_pfnContextCreateExCb_t> apiCallbackData;
-
-        ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnContextCreateExCb_t, Context, pfnCreateExCb);
-
-
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.Context.pfnCreateEx,
-                                                  &tracerParams,
-                                                  apiCallbackData.apiOrdinal,
-                                                  apiCallbackData.prologCallbacks,
-                                                  apiCallbackData.epilogCallbacks,
-                                                  *tracerParams.phDriver,
-                                                  *tracerParams.pdesc,
-                                                  *tracerParams.pnumDevices,
-                                                  *tracerParams.pphDevices,
-                                                  *tracerParams.pphContext);
+        return pfnCreateEx( hDriver, desc, numDevices, phDevices, phContext );
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -906,7 +887,9 @@ namespace tracing_layer
         ze_context_handle_t hContext                    ///< [in][release] handle of context object to destroy
         )
     {
-        if( nullptr == context.zeDdiTable.Context.pfnDestroy)
+        auto pfnDestroy = context.zeDdiTable.Context.pfnDestroy;
+
+        if( nullptr == pfnDestroy)
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
         ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.Context.pfnDestroy, hContext);
@@ -936,7 +919,9 @@ namespace tracing_layer
         ze_context_handle_t hContext                    ///< [in] handle of context object
         )
     {
-        if( nullptr == context.zeDdiTable.Context.pfnGetStatus)
+        auto pfnGetStatus = context.zeDdiTable.Context.pfnGetStatus;
+
+        if( nullptr == pfnGetStatus)
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
         ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.Context.pfnGetStatus, hContext);
@@ -969,7 +954,9 @@ namespace tracing_layer
         ze_command_queue_handle_t* phCommandQueue       ///< [out] pointer to handle of command queue object created
         )
     {
-        if( nullptr == context.zeDdiTable.CommandQueue.pfnCreate)
+        auto pfnCreate = context.zeDdiTable.CommandQueue.pfnCreate;
+
+        if( nullptr == pfnCreate)
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
         ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.CommandQueue.pfnCreate, hContext, hDevice, desc, phCommandQueue);
@@ -1005,7 +992,9 @@ namespace tracing_layer
         ze_command_queue_handle_t hCommandQueue         ///< [in][release] handle of command queue object to destroy
         )
     {
-        if( nullptr == context.zeDdiTable.CommandQueue.pfnDestroy)
+        auto pfnDestroy = context.zeDdiTable.CommandQueue.pfnDestroy;
+
+        if( nullptr == pfnDestroy)
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
         ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.CommandQueue.pfnDestroy, hCommandQueue);
@@ -1039,7 +1028,9 @@ namespace tracing_layer
         ze_fence_handle_t hFence                        ///< [in][optional] handle of the fence to signal on completion
         )
     {
-        if( nullptr == context.zeDdiTable.CommandQueue.pfnExecuteCommandLists)
+        auto pfnExecuteCommandLists = context.zeDdiTable.CommandQueue.pfnExecuteCommandLists;
+
+        if( nullptr == pfnExecuteCommandLists)
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
         ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.CommandQueue.pfnExecuteCommandLists, hCommandQueue, numCommandLists, phCommandLists, hFence);
@@ -1082,7 +1073,9 @@ namespace tracing_layer
                                                         ///< value allowed by the accuracy of those dependencies.
         )
     {
-        if( nullptr == context.zeDdiTable.CommandQueue.pfnSynchronize)
+        auto pfnSynchronize = context.zeDdiTable.CommandQueue.pfnSynchronize;
+
+        if( nullptr == pfnSynchronize)
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
         ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.CommandQueue.pfnSynchronize, hCommandQueue, timeout);
@@ -1117,7 +1110,9 @@ namespace tracing_layer
         ze_command_list_handle_t* phCommandList         ///< [out] pointer to handle of command list object created
         )
     {
-        if( nullptr == context.zeDdiTable.CommandList.pfnCreate)
+        auto pfnCreate = context.zeDdiTable.CommandList.pfnCreate;
+
+        if( nullptr == pfnCreate)
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
         ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.CommandList.pfnCreate, hContext, hDevice, desc, phCommandList);
@@ -1156,7 +1151,9 @@ namespace tracing_layer
         ze_command_list_handle_t* phCommandList         ///< [out] pointer to handle of command list object created
         )
     {
-        if( nullptr == context.zeDdiTable.CommandList.pfnCreateImmediate)
+        auto pfnCreateImmediate = context.zeDdiTable.CommandList.pfnCreateImmediate;
+
+        if( nullptr == pfnCreateImmediate)
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
         ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.CommandList.pfnCreateImmediate, hContext, hDevice, altdesc, phCommandList);
@@ -1192,7 +1189,9 @@ namespace tracing_layer
         ze_command_list_handle_t hCommandList           ///< [in][release] handle of command list object to destroy
         )
     {
-        if( nullptr == context.zeDdiTable.CommandList.pfnDestroy)
+        auto pfnDestroy = context.zeDdiTable.CommandList.pfnDestroy;
+
+        if( nullptr == pfnDestroy)
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
         ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.CommandList.pfnDestroy, hCommandList);
@@ -1222,7 +1221,9 @@ namespace tracing_layer
         ze_command_list_handle_t hCommandList           ///< [in] handle of command list object to close
         )
     {
-        if( nullptr == context.zeDdiTable.CommandList.pfnClose)
+        auto pfnClose = context.zeDdiTable.CommandList.pfnClose;
+
+        if( nullptr == pfnClose)
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
         ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.CommandList.pfnClose, hCommandList);
@@ -1252,7 +1253,9 @@ namespace tracing_layer
         ze_command_list_handle_t hCommandList           ///< [in] handle of command list object to reset
         )
     {
-        if( nullptr == context.zeDdiTable.CommandList.pfnReset)
+        auto pfnReset = context.zeDdiTable.CommandList.pfnReset;
+
+        if( nullptr == pfnReset)
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
         ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.CommandList.pfnReset, hCommandList);
@@ -1289,7 +1292,9 @@ namespace tracing_layer
                                                         ///< on before executing query
         )
     {
-        if( nullptr == context.zeDdiTable.CommandList.pfnAppendWriteGlobalTimestamp)
+        auto pfnAppendWriteGlobalTimestamp = context.zeDdiTable.CommandList.pfnAppendWriteGlobalTimestamp;
+
+        if( nullptr == pfnAppendWriteGlobalTimestamp)
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
         ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.CommandList.pfnAppendWriteGlobalTimestamp, hCommandList, dstptr, hSignalEvent, numWaitEvents, phWaitEvents);
@@ -1332,7 +1337,9 @@ namespace tracing_layer
                                                         ///< on before executing barrier
         )
     {
-        if( nullptr == context.zeDdiTable.CommandList.pfnAppendBarrier)
+        auto pfnAppendBarrier = context.zeDdiTable.CommandList.pfnAppendBarrier;
+
+        if( nullptr == pfnAppendBarrier)
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
         ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.CommandList.pfnAppendBarrier, hCommandList, hSignalEvent, numWaitEvents, phWaitEvents);
@@ -1376,7 +1383,9 @@ namespace tracing_layer
                                                         ///< on before executing barrier
         )
     {
-        if( nullptr == context.zeDdiTable.CommandList.pfnAppendMemoryRangesBarrier)
+        auto pfnAppendMemoryRangesBarrier = context.zeDdiTable.CommandList.pfnAppendMemoryRangesBarrier;
+
+        if( nullptr == pfnAppendMemoryRangesBarrier)
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
         ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.CommandList.pfnAppendMemoryRangesBarrier, hCommandList, numRanges, pRangeSizes, pRanges, hSignalEvent, numWaitEvents, phWaitEvents);
@@ -1419,7 +1428,9 @@ namespace tracing_layer
         ze_device_handle_t hDevice                      ///< [in] handle of the device
         )
     {
-        if( nullptr == context.zeDdiTable.Context.pfnSystemBarrier)
+        auto pfnSystemBarrier = context.zeDdiTable.Context.pfnSystemBarrier;
+
+        if( nullptr == pfnSystemBarrier)
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
         ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.Context.pfnSystemBarrier, hContext, hDevice);
@@ -1459,7 +1470,9 @@ namespace tracing_layer
                                                         ///< on before launching
         )
     {
-        if( nullptr == context.zeDdiTable.CommandList.pfnAppendMemoryCopy)
+        auto pfnAppendMemoryCopy = context.zeDdiTable.CommandList.pfnAppendMemoryCopy;
+
+        if( nullptr == pfnAppendMemoryCopy)
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
         ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.CommandList.pfnAppendMemoryCopy, hCommandList, dstptr, srcptr, size, hSignalEvent, numWaitEvents, phWaitEvents);
@@ -1510,7 +1523,9 @@ namespace tracing_layer
                                                         ///< on before launching
         )
     {
-        if( nullptr == context.zeDdiTable.CommandList.pfnAppendMemoryFill)
+        auto pfnAppendMemoryFill = context.zeDdiTable.CommandList.pfnAppendMemoryFill;
+
+        if( nullptr == pfnAppendMemoryFill)
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
         ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.CommandList.pfnAppendMemoryFill, hCommandList, ptr, pattern, pattern_size, size, hSignalEvent, numWaitEvents, phWaitEvents);
@@ -1571,7 +1586,9 @@ namespace tracing_layer
                                                         ///< on before launching
         )
     {
-        if( nullptr == context.zeDdiTable.CommandList.pfnAppendMemoryCopyRegion)
+        auto pfnAppendMemoryCopyRegion = context.zeDdiTable.CommandList.pfnAppendMemoryCopyRegion;
+
+        if( nullptr == pfnAppendMemoryCopyRegion)
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
         ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.CommandList.pfnAppendMemoryCopyRegion, hCommandList, dstptr, dstRegion, dstPitch, dstSlicePitch, srcptr, srcRegion, srcPitch, srcSlicePitch, hSignalEvent, numWaitEvents, phWaitEvents);
@@ -1632,7 +1649,9 @@ namespace tracing_layer
                                                         ///< on before launching
         )
     {
-        if( nullptr == context.zeDdiTable.CommandList.pfnAppendMemoryCopyFromContext)
+        auto pfnAppendMemoryCopyFromContext = context.zeDdiTable.CommandList.pfnAppendMemoryCopyFromContext;
+
+        if( nullptr == pfnAppendMemoryCopyFromContext)
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
         ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.CommandList.pfnAppendMemoryCopyFromContext, hCommandList, dstptr, hContextSrc, srcptr, size, hSignalEvent, numWaitEvents, phWaitEvents);
@@ -1683,7 +1702,9 @@ namespace tracing_layer
                                                         ///< on before launching
         )
     {
-        if( nullptr == context.zeDdiTable.CommandList.pfnAppendImageCopy)
+        auto pfnAppendImageCopy = context.zeDdiTable.CommandList.pfnAppendImageCopy;
+
+        if( nullptr == pfnAppendImageCopy)
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
         ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.CommandList.pfnAppendImageCopy, hCommandList, hDstImage, hSrcImage, hSignalEvent, numWaitEvents, phWaitEvents);
@@ -1732,7 +1753,9 @@ namespace tracing_layer
                                                         ///< on before launching
         )
     {
-        if( nullptr == context.zeDdiTable.CommandList.pfnAppendImageCopyRegion)
+        auto pfnAppendImageCopyRegion = context.zeDdiTable.CommandList.pfnAppendImageCopyRegion;
+
+        if( nullptr == pfnAppendImageCopyRegion)
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
         ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.CommandList.pfnAppendImageCopyRegion, hCommandList, hDstImage, hSrcImage, pDstRegion, pSrcRegion, hSignalEvent, numWaitEvents, phWaitEvents);
@@ -1784,7 +1807,9 @@ namespace tracing_layer
                                                         ///< on before launching
         )
     {
-        if( nullptr == context.zeDdiTable.CommandList.pfnAppendImageCopyToMemory)
+        auto pfnAppendImageCopyToMemory = context.zeDdiTable.CommandList.pfnAppendImageCopyToMemory;
+
+        if( nullptr == pfnAppendImageCopyToMemory)
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
         ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.CommandList.pfnAppendImageCopyToMemory, hCommandList, dstptr, hSrcImage, pSrcRegion, hSignalEvent, numWaitEvents, phWaitEvents);
@@ -1834,7 +1859,9 @@ namespace tracing_layer
                                                         ///< on before launching
         )
     {
-        if( nullptr == context.zeDdiTable.CommandList.pfnAppendImageCopyFromMemory)
+        auto pfnAppendImageCopyFromMemory = context.zeDdiTable.CommandList.pfnAppendImageCopyFromMemory;
+
+        if( nullptr == pfnAppendImageCopyFromMemory)
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
         ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.CommandList.pfnAppendImageCopyFromMemory, hCommandList, hDstImage, srcptr, pDstRegion, hSignalEvent, numWaitEvents, phWaitEvents);
@@ -1878,7 +1905,9 @@ namespace tracing_layer
         size_t size                                     ///< [in] size in bytes of the memory range to prefetch
         )
     {
-        if( nullptr == context.zeDdiTable.CommandList.pfnAppendMemoryPrefetch)
+        auto pfnAppendMemoryPrefetch = context.zeDdiTable.CommandList.pfnAppendMemoryPrefetch;
+
+        if( nullptr == pfnAppendMemoryPrefetch)
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
         ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.CommandList.pfnAppendMemoryPrefetch, hCommandList, ptr, size);
@@ -1916,7 +1945,9 @@ namespace tracing_layer
         ze_memory_advice_t advice                       ///< [in] Memory advice for the memory range
         )
     {
-        if( nullptr == context.zeDdiTable.CommandList.pfnAppendMemAdvise)
+        auto pfnAppendMemAdvise = context.zeDdiTable.CommandList.pfnAppendMemAdvise;
+
+        if( nullptr == pfnAppendMemAdvise)
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
         ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.CommandList.pfnAppendMemAdvise, hCommandList, hDevice, ptr, size, advice);
@@ -1962,7 +1993,9 @@ namespace tracing_layer
         ze_event_pool_handle_t* phEventPool             ///< [out] pointer handle of event pool object created
         )
     {
-        if( nullptr == context.zeDdiTable.EventPool.pfnCreate)
+        auto pfnCreate = context.zeDdiTable.EventPool.pfnCreate;
+
+        if( nullptr == pfnCreate)
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
         ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.EventPool.pfnCreate, hContext, desc, numDevices, phDevices, phEventPool);
@@ -2000,7 +2033,9 @@ namespace tracing_layer
         ze_event_pool_handle_t hEventPool               ///< [in][release] handle of event pool object to destroy
         )
     {
-        if( nullptr == context.zeDdiTable.EventPool.pfnDestroy)
+        auto pfnDestroy = context.zeDdiTable.EventPool.pfnDestroy;
+
+        if( nullptr == pfnDestroy)
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
         ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.EventPool.pfnDestroy, hEventPool);
@@ -2032,7 +2067,9 @@ namespace tracing_layer
         ze_event_handle_t* phEvent                      ///< [out] pointer to handle of event object created
         )
     {
-        if( nullptr == context.zeDdiTable.Event.pfnCreate)
+        auto pfnCreate = context.zeDdiTable.Event.pfnCreate;
+
+        if( nullptr == pfnCreate)
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
         ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.Event.pfnCreate, hEventPool, desc, phEvent);
@@ -2066,7 +2103,9 @@ namespace tracing_layer
         ze_event_handle_t hEvent                        ///< [in][release] handle of event object to destroy
         )
     {
-        if( nullptr == context.zeDdiTable.Event.pfnDestroy)
+        auto pfnDestroy = context.zeDdiTable.Event.pfnDestroy;
+
+        if( nullptr == pfnDestroy)
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
         ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.Event.pfnDestroy, hEvent);
@@ -2097,7 +2136,9 @@ namespace tracing_layer
         ze_ipc_event_pool_handle_t* phIpc               ///< [out] Returned IPC event handle
         )
     {
-        if( nullptr == context.zeDdiTable.EventPool.pfnGetIpcHandle)
+        auto pfnGetIpcHandle = context.zeDdiTable.EventPool.pfnGetIpcHandle;
+
+        if( nullptr == pfnGetIpcHandle)
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
         ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.EventPool.pfnGetIpcHandle, hEventPool, phIpc);
@@ -2132,7 +2173,9 @@ namespace tracing_layer
         ze_event_pool_handle_t* phEventPool             ///< [out] pointer handle of event pool object created
         )
     {
-        if( nullptr == context.zeDdiTable.EventPool.pfnOpenIpcHandle)
+        auto pfnOpenIpcHandle = context.zeDdiTable.EventPool.pfnOpenIpcHandle;
+
+        if( nullptr == pfnOpenIpcHandle)
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
         ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.EventPool.pfnOpenIpcHandle, hContext, hIpc, phEventPool);
@@ -2166,7 +2209,9 @@ namespace tracing_layer
         ze_event_pool_handle_t hEventPool               ///< [in][release] handle of event pool object
         )
     {
-        if( nullptr == context.zeDdiTable.EventPool.pfnCloseIpcHandle)
+        auto pfnCloseIpcHandle = context.zeDdiTable.EventPool.pfnCloseIpcHandle;
+
+        if( nullptr == pfnCloseIpcHandle)
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
         ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.EventPool.pfnCloseIpcHandle, hEventPool);
@@ -2197,7 +2242,9 @@ namespace tracing_layer
         ze_event_handle_t hEvent                        ///< [in] handle of the event
         )
     {
-        if( nullptr == context.zeDdiTable.CommandList.pfnAppendSignalEvent)
+        auto pfnAppendSignalEvent = context.zeDdiTable.CommandList.pfnAppendSignalEvent;
+
+        if( nullptr == pfnAppendSignalEvent)
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
         ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.CommandList.pfnAppendSignalEvent, hCommandList, hEvent);
@@ -2232,7 +2279,9 @@ namespace tracing_layer
                                                         ///< continuing
         )
     {
-        if( nullptr == context.zeDdiTable.CommandList.pfnAppendWaitOnEvents)
+        auto pfnAppendWaitOnEvents = context.zeDdiTable.CommandList.pfnAppendWaitOnEvents;
+
+        if( nullptr == pfnAppendWaitOnEvents)
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
         ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.CommandList.pfnAppendWaitOnEvents, hCommandList, numEvents, phEvents);
@@ -2266,7 +2315,9 @@ namespace tracing_layer
         ze_event_handle_t hEvent                        ///< [in] handle of the event
         )
     {
-        if( nullptr == context.zeDdiTable.Event.pfnHostSignal)
+        auto pfnHostSignal = context.zeDdiTable.Event.pfnHostSignal;
+
+        if( nullptr == pfnHostSignal)
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
         ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.Event.pfnHostSignal, hEvent);
@@ -2303,7 +2354,9 @@ namespace tracing_layer
                                                         ///< value allowed by the accuracy of those dependencies.
         )
     {
-        if( nullptr == context.zeDdiTable.Event.pfnHostSynchronize)
+        auto pfnHostSynchronize = context.zeDdiTable.Event.pfnHostSynchronize;
+
+        if( nullptr == pfnHostSynchronize)
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
         ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.Event.pfnHostSynchronize, hEvent, timeout);
@@ -2335,7 +2388,9 @@ namespace tracing_layer
         ze_event_handle_t hEvent                        ///< [in] handle of the event
         )
     {
-        if( nullptr == context.zeDdiTable.Event.pfnQueryStatus)
+        auto pfnQueryStatus = context.zeDdiTable.Event.pfnQueryStatus;
+
+        if( nullptr == pfnQueryStatus)
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
         ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.Event.pfnQueryStatus, hEvent);
@@ -2366,7 +2421,9 @@ namespace tracing_layer
         ze_event_handle_t hEvent                        ///< [in] handle of the event
         )
     {
-        if( nullptr == context.zeDdiTable.CommandList.pfnAppendEventReset)
+        auto pfnAppendEventReset = context.zeDdiTable.CommandList.pfnAppendEventReset;
+
+        if( nullptr == pfnAppendEventReset)
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
         ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.CommandList.pfnAppendEventReset, hCommandList, hEvent);
@@ -2398,7 +2455,9 @@ namespace tracing_layer
         ze_event_handle_t hEvent                        ///< [in] handle of the event
         )
     {
-        if( nullptr == context.zeDdiTable.Event.pfnHostReset)
+        auto pfnHostReset = context.zeDdiTable.Event.pfnHostReset;
+
+        if( nullptr == pfnHostReset)
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
         ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.Event.pfnHostReset, hEvent);
@@ -2429,7 +2488,9 @@ namespace tracing_layer
         ze_kernel_timestamp_result_t* dstptr            ///< [in,out] pointer to memory for where timestamp result will be written.
         )
     {
-        if( nullptr == context.zeDdiTable.Event.pfnQueryKernelTimestamp)
+        auto pfnQueryKernelTimestamp = context.zeDdiTable.Event.pfnQueryKernelTimestamp;
+
+        if( nullptr == pfnQueryKernelTimestamp)
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
         ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.Event.pfnQueryKernelTimestamp, hEvent, dstptr);
@@ -2473,7 +2534,9 @@ namespace tracing_layer
                                                         ///< on before executing query
         )
     {
-        if( nullptr == context.zeDdiTable.CommandList.pfnAppendQueryKernelTimestamps)
+        auto pfnAppendQueryKernelTimestamps = context.zeDdiTable.CommandList.pfnAppendQueryKernelTimestamps;
+
+        if( nullptr == pfnAppendQueryKernelTimestamps)
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
         ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.CommandList.pfnAppendQueryKernelTimestamps, hCommandList, numEvents, phEvents, dstptr, pOffsets, hSignalEvent, numWaitEvents, phWaitEvents);
@@ -2519,7 +2582,9 @@ namespace tracing_layer
         ze_fence_handle_t* phFence                      ///< [out] pointer to handle of fence object created
         )
     {
-        if( nullptr == context.zeDdiTable.Fence.pfnCreate)
+        auto pfnCreate = context.zeDdiTable.Fence.pfnCreate;
+
+        if( nullptr == pfnCreate)
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
         ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.Fence.pfnCreate, hCommandQueue, desc, phFence);
@@ -2553,7 +2618,9 @@ namespace tracing_layer
         ze_fence_handle_t hFence                        ///< [in][release] handle of fence object to destroy
         )
     {
-        if( nullptr == context.zeDdiTable.Fence.pfnDestroy)
+        auto pfnDestroy = context.zeDdiTable.Fence.pfnDestroy;
+
+        if( nullptr == pfnDestroy)
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
         ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.Fence.pfnDestroy, hFence);
@@ -2590,7 +2657,9 @@ namespace tracing_layer
                                                         ///< value allowed by the accuracy of those dependencies.
         )
     {
-        if( nullptr == context.zeDdiTable.Fence.pfnHostSynchronize)
+        auto pfnHostSynchronize = context.zeDdiTable.Fence.pfnHostSynchronize;
+
+        if( nullptr == pfnHostSynchronize)
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
         ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.Fence.pfnHostSynchronize, hFence, timeout);
@@ -2622,7 +2691,9 @@ namespace tracing_layer
         ze_fence_handle_t hFence                        ///< [in] handle of the fence
         )
     {
-        if( nullptr == context.zeDdiTable.Fence.pfnQueryStatus)
+        auto pfnQueryStatus = context.zeDdiTable.Fence.pfnQueryStatus;
+
+        if( nullptr == pfnQueryStatus)
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
         ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.Fence.pfnQueryStatus, hFence);
@@ -2652,7 +2723,9 @@ namespace tracing_layer
         ze_fence_handle_t hFence                        ///< [in] handle of the fence
         )
     {
-        if( nullptr == context.zeDdiTable.Fence.pfnReset)
+        auto pfnReset = context.zeDdiTable.Fence.pfnReset;
+
+        if( nullptr == pfnReset)
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
         ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.Fence.pfnReset, hFence);
@@ -2684,7 +2757,9 @@ namespace tracing_layer
         ze_image_properties_t* pImageProperties         ///< [out] pointer to image properties
         )
     {
-        if( nullptr == context.zeDdiTable.Image.pfnGetProperties)
+        auto pfnGetProperties = context.zeDdiTable.Image.pfnGetProperties;
+
+        if( nullptr == pfnGetProperties)
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
         ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.Image.pfnGetProperties, hDevice, desc, pImageProperties);
@@ -2721,7 +2796,9 @@ namespace tracing_layer
         ze_image_handle_t* phImage                      ///< [out] pointer to handle of image object created
         )
     {
-        if( nullptr == context.zeDdiTable.Image.pfnCreate)
+        auto pfnCreate = context.zeDdiTable.Image.pfnCreate;
+
+        if( nullptr == pfnCreate)
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
         ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.Image.pfnCreate, hContext, hDevice, desc, phImage);
@@ -2757,7 +2834,9 @@ namespace tracing_layer
         ze_image_handle_t hImage                        ///< [in][release] handle of image object to destroy
         )
     {
-        if( nullptr == context.zeDdiTable.Image.pfnDestroy)
+        auto pfnDestroy = context.zeDdiTable.Image.pfnDestroy;
+
+        if( nullptr == pfnDestroy)
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
         ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.Image.pfnDestroy, hImage);
@@ -2795,7 +2874,9 @@ namespace tracing_layer
         void** pptr                                     ///< [out] pointer to shared allocation
         )
     {
-        if( nullptr == context.zeDdiTable.Mem.pfnAllocShared)
+        auto pfnAllocShared = context.zeDdiTable.Mem.pfnAllocShared;
+
+        if( nullptr == pfnAllocShared)
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
         ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.Mem.pfnAllocShared, hContext, device_desc, host_desc, size, alignment, hDevice, pptr);
@@ -2844,7 +2925,9 @@ namespace tracing_layer
         void** pptr                                     ///< [out] pointer to device allocation
         )
     {
-        if( nullptr == context.zeDdiTable.Mem.pfnAllocDevice)
+        auto pfnAllocDevice = context.zeDdiTable.Mem.pfnAllocDevice;
+
+        if( nullptr == pfnAllocDevice)
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
         ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.Mem.pfnAllocDevice, hContext, device_desc, size, alignment, hDevice, pptr);
@@ -2890,7 +2973,9 @@ namespace tracing_layer
         void** pptr                                     ///< [out] pointer to host allocation
         )
     {
-        if( nullptr == context.zeDdiTable.Mem.pfnAllocHost)
+        auto pfnAllocHost = context.zeDdiTable.Mem.pfnAllocHost;
+
+        if( nullptr == pfnAllocHost)
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
         ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.Mem.pfnAllocHost, hContext, host_desc, size, alignment, pptr);
@@ -2929,7 +3014,9 @@ namespace tracing_layer
         void* ptr                                       ///< [in][release] pointer to memory to free
         )
     {
-        if( nullptr == context.zeDdiTable.Mem.pfnFree)
+        auto pfnFree = context.zeDdiTable.Mem.pfnFree;
+
+        if( nullptr == pfnFree)
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
         ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.Mem.pfnFree, hContext, ptr);
@@ -2964,7 +3051,9 @@ namespace tracing_layer
         ze_device_handle_t* phDevice                    ///< [out][optional] device associated with this allocation
         )
     {
-        if( nullptr == context.zeDdiTable.Mem.pfnGetAllocProperties)
+        auto pfnGetAllocProperties = context.zeDdiTable.Mem.pfnGetAllocProperties;
+
+        if( nullptr == pfnGetAllocProperties)
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
         ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.Mem.pfnGetAllocProperties, hContext, ptr, pMemAllocProperties, phDevice);
@@ -3003,7 +3092,9 @@ namespace tracing_layer
         size_t* pSize                                   ///< [in,out][optional] size of the allocation
         )
     {
-        if( nullptr == context.zeDdiTable.Mem.pfnGetAddressRange)
+        auto pfnGetAddressRange = context.zeDdiTable.Mem.pfnGetAddressRange;
+
+        if( nullptr == pfnGetAddressRange)
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
         ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.Mem.pfnGetAddressRange, hContext, ptr, pBase, pSize);
@@ -3041,7 +3132,9 @@ namespace tracing_layer
         ze_ipc_mem_handle_t* pIpcHandle                 ///< [out] Returned IPC memory handle
         )
     {
-        if( nullptr == context.zeDdiTable.Mem.pfnGetIpcHandle)
+        auto pfnGetIpcHandle = context.zeDdiTable.Mem.pfnGetIpcHandle;
+
+        if( nullptr == pfnGetIpcHandle)
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
         ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.Mem.pfnGetIpcHandle, hContext, ptr, pIpcHandle);
@@ -3080,7 +3173,9 @@ namespace tracing_layer
         void** pptr                                     ///< [out] pointer to device allocation in this process
         )
     {
-        if( nullptr == context.zeDdiTable.Mem.pfnOpenIpcHandle)
+        auto pfnOpenIpcHandle = context.zeDdiTable.Mem.pfnOpenIpcHandle;
+
+        if( nullptr == pfnOpenIpcHandle)
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
         ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.Mem.pfnOpenIpcHandle, hContext, hDevice, handle, flags, pptr);
@@ -3119,7 +3214,9 @@ namespace tracing_layer
         const void* ptr                                 ///< [in][release] pointer to device allocation in this process
         )
     {
-        if( nullptr == context.zeDdiTable.Mem.pfnCloseIpcHandle)
+        auto pfnCloseIpcHandle = context.zeDdiTable.Mem.pfnCloseIpcHandle;
+
+        if( nullptr == pfnCloseIpcHandle)
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
         ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.Mem.pfnCloseIpcHandle, hContext, ptr);
@@ -3155,7 +3252,9 @@ namespace tracing_layer
         ze_module_build_log_handle_t* phBuildLog        ///< [out][optional] pointer to handle of module's build log.
         )
     {
-        if( nullptr == context.zeDdiTable.Module.pfnCreate)
+        auto pfnCreate = context.zeDdiTable.Module.pfnCreate;
+
+        if( nullptr == pfnCreate)
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
         ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.Module.pfnCreate, hContext, hDevice, desc, phModule, phBuildLog);
@@ -3193,7 +3292,9 @@ namespace tracing_layer
         ze_module_handle_t hModule                      ///< [in][release] handle of the module
         )
     {
-        if( nullptr == context.zeDdiTable.Module.pfnDestroy)
+        auto pfnDestroy = context.zeDdiTable.Module.pfnDestroy;
+
+        if( nullptr == pfnDestroy)
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
         ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.Module.pfnDestroy, hModule);
@@ -3226,7 +3327,9 @@ namespace tracing_layer
         ze_module_build_log_handle_t* phLinkLog         ///< [out][optional] pointer to handle of dynamic link log.
         )
     {
-        if( nullptr == context.zeDdiTable.Module.pfnDynamicLink)
+        auto pfnDynamicLink = context.zeDdiTable.Module.pfnDynamicLink;
+
+        if( nullptr == pfnDynamicLink)
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
         ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.Module.pfnDynamicLink, numModules, phModules, phLinkLog);
@@ -3260,7 +3363,9 @@ namespace tracing_layer
         ze_module_build_log_handle_t hModuleBuildLog    ///< [in][release] handle of the module build log object.
         )
     {
-        if( nullptr == context.zeDdiTable.ModuleBuildLog.pfnDestroy)
+        auto pfnDestroy = context.zeDdiTable.ModuleBuildLog.pfnDestroy;
+
+        if( nullptr == pfnDestroy)
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
         ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.ModuleBuildLog.pfnDestroy, hModuleBuildLog);
@@ -3292,7 +3397,9 @@ namespace tracing_layer
         char* pBuildLog                                 ///< [in,out][optional] pointer to null-terminated string of the log.
         )
     {
-        if( nullptr == context.zeDdiTable.ModuleBuildLog.pfnGetString)
+        auto pfnGetString = context.zeDdiTable.ModuleBuildLog.pfnGetString;
+
+        if( nullptr == pfnGetString)
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
         ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.ModuleBuildLog.pfnGetString, hModuleBuildLog, pSize, pBuildLog);
@@ -3328,7 +3435,9 @@ namespace tracing_layer
         uint8_t* pModuleNativeBinary                    ///< [in,out][optional] byte pointer to native binary
         )
     {
-        if( nullptr == context.zeDdiTable.Module.pfnGetNativeBinary)
+        auto pfnGetNativeBinary = context.zeDdiTable.Module.pfnGetNativeBinary;
+
+        if( nullptr == pfnGetNativeBinary)
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
         ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.Module.pfnGetNativeBinary, hModule, pSize, pModuleNativeBinary);
@@ -3365,7 +3474,9 @@ namespace tracing_layer
         void** pptr                                     ///< [in,out][optional] device visible pointer
         )
     {
-        if( nullptr == context.zeDdiTable.Module.pfnGetGlobalPointer)
+        auto pfnGetGlobalPointer = context.zeDdiTable.Module.pfnGetGlobalPointer;
+
+        if( nullptr == pfnGetGlobalPointer)
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
         ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.Module.pfnGetGlobalPointer, hModule, pGlobalName, pSize, pptr);
@@ -3409,7 +3520,9 @@ namespace tracing_layer
                                                         ///< only retrieve that number of names.
         )
     {
-        if( nullptr == context.zeDdiTable.Module.pfnGetKernelNames)
+        auto pfnGetKernelNames = context.zeDdiTable.Module.pfnGetKernelNames;
+
+        if( nullptr == pfnGetKernelNames)
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
         ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.Module.pfnGetKernelNames, hModule, pCount, pNames);
@@ -3444,7 +3557,9 @@ namespace tracing_layer
         ze_module_properties_t* pModuleProperties       ///< [in,out] query result for module properties.
         )
     {
-        if( nullptr == context.zeDdiTable.Module.pfnGetProperties)
+        auto pfnGetProperties = context.zeDdiTable.Module.pfnGetProperties;
+
+        if( nullptr == pfnGetProperties)
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
         ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.Module.pfnGetProperties, hModule, pModuleProperties);
@@ -3478,7 +3593,9 @@ namespace tracing_layer
         ze_kernel_handle_t* phKernel                    ///< [out] handle of the Function object
         )
     {
-        if( nullptr == context.zeDdiTable.Kernel.pfnCreate)
+        auto pfnCreate = context.zeDdiTable.Kernel.pfnCreate;
+
+        if( nullptr == pfnCreate)
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
         ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.Kernel.pfnCreate, hModule, desc, phKernel);
@@ -3512,7 +3629,9 @@ namespace tracing_layer
         ze_kernel_handle_t hKernel                      ///< [in][release] handle of the kernel object
         )
     {
-        if( nullptr == context.zeDdiTable.Kernel.pfnDestroy)
+        auto pfnDestroy = context.zeDdiTable.Kernel.pfnDestroy;
+
+        if( nullptr == pfnDestroy)
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
         ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.Kernel.pfnDestroy, hKernel);
@@ -3544,7 +3663,9 @@ namespace tracing_layer
         void** pfnFunction                              ///< [out] pointer to function.
         )
     {
-        if( nullptr == context.zeDdiTable.Module.pfnGetFunctionPointer)
+        auto pfnGetFunctionPointer = context.zeDdiTable.Module.pfnGetFunctionPointer;
+
+        if( nullptr == pfnGetFunctionPointer)
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
         ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.Module.pfnGetFunctionPointer, hModule, pFunctionName, pfnFunction);
@@ -3581,7 +3702,9 @@ namespace tracing_layer
         uint32_t groupSizeZ                             ///< [in] group size for Z dimension to use for this kernel
         )
     {
-        if( nullptr == context.zeDdiTable.Kernel.pfnSetGroupSize)
+        auto pfnSetGroupSize = context.zeDdiTable.Kernel.pfnSetGroupSize;
+
+        if( nullptr == pfnSetGroupSize)
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
         ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.Kernel.pfnSetGroupSize, hKernel, groupSizeX, groupSizeY, groupSizeZ);
@@ -3623,7 +3746,9 @@ namespace tracing_layer
         uint32_t* groupSizeZ                            ///< [out] recommended size of group for Z dimension
         )
     {
-        if( nullptr == context.zeDdiTable.Kernel.pfnSuggestGroupSize)
+        auto pfnSuggestGroupSize = context.zeDdiTable.Kernel.pfnSuggestGroupSize;
+
+        if( nullptr == pfnSuggestGroupSize)
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
         ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.Kernel.pfnSuggestGroupSize, hKernel, globalSizeX, globalSizeY, globalSizeZ, groupSizeX, groupSizeY, groupSizeZ);
@@ -3666,7 +3791,9 @@ namespace tracing_layer
         uint32_t* totalGroupCount                       ///< [out] recommended total group count.
         )
     {
-        if( nullptr == context.zeDdiTable.Kernel.pfnSuggestMaxCooperativeGroupCount)
+        auto pfnSuggestMaxCooperativeGroupCount = context.zeDdiTable.Kernel.pfnSuggestMaxCooperativeGroupCount;
+
+        if( nullptr == pfnSuggestMaxCooperativeGroupCount)
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
         ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.Kernel.pfnSuggestMaxCooperativeGroupCount, hKernel, totalGroupCount);
@@ -3702,7 +3829,9 @@ namespace tracing_layer
                                                         ///< null then argument value is considered null.
         )
     {
-        if( nullptr == context.zeDdiTable.Kernel.pfnSetArgumentValue)
+        auto pfnSetArgumentValue = context.zeDdiTable.Kernel.pfnSetArgumentValue;
+
+        if( nullptr == pfnSetArgumentValue)
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
         ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.Kernel.pfnSetArgumentValue, hKernel, argIndex, argSize, pArgValue);
@@ -3739,7 +3868,9 @@ namespace tracing_layer
         ze_kernel_indirect_access_flags_t flags         ///< [in] kernel indirect access flags
         )
     {
-        if( nullptr == context.zeDdiTable.Kernel.pfnSetIndirectAccess)
+        auto pfnSetIndirectAccess = context.zeDdiTable.Kernel.pfnSetIndirectAccess;
+
+        if( nullptr == pfnSetIndirectAccess)
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
         ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.Kernel.pfnSetIndirectAccess, hKernel, flags);
@@ -3772,7 +3903,9 @@ namespace tracing_layer
         ze_kernel_indirect_access_flags_t* pFlags       ///< [out] query result for kernel indirect access flags.
         )
     {
-        if( nullptr == context.zeDdiTable.Kernel.pfnGetIndirectAccess)
+        auto pfnGetIndirectAccess = context.zeDdiTable.Kernel.pfnGetIndirectAccess;
+
+        if( nullptr == pfnGetIndirectAccess)
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
         ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.Kernel.pfnGetIndirectAccess, hKernel, pFlags);
@@ -3808,7 +3941,9 @@ namespace tracing_layer
                                                         ///< space.
         )
     {
-        if( nullptr == context.zeDdiTable.Kernel.pfnGetSourceAttributes)
+        auto pfnGetSourceAttributes = context.zeDdiTable.Kernel.pfnGetSourceAttributes;
+
+        if( nullptr == pfnGetSourceAttributes)
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
         ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.Kernel.pfnGetSourceAttributes, hKernel, pSize, pString);
@@ -3844,7 +3979,9 @@ namespace tracing_layer
                                                         ///< must be 0 (default configuration) or a valid combination of ::ze_cache_config_flag_t.
         )
     {
-        if( nullptr == context.zeDdiTable.Kernel.pfnSetCacheConfig)
+        auto pfnSetCacheConfig = context.zeDdiTable.Kernel.pfnSetCacheConfig;
+
+        if( nullptr == pfnSetCacheConfig)
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
         ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.Kernel.pfnSetCacheConfig, hKernel, flags);
@@ -3877,7 +4014,9 @@ namespace tracing_layer
         ze_kernel_properties_t* pKernelProperties       ///< [in,out] query result for kernel properties.
         )
     {
-        if( nullptr == context.zeDdiTable.Kernel.pfnGetProperties)
+        auto pfnGetProperties = context.zeDdiTable.Kernel.pfnGetProperties;
+
+        if( nullptr == pfnGetProperties)
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
         ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.Kernel.pfnGetProperties, hKernel, pKernelProperties);
@@ -3912,7 +4051,9 @@ namespace tracing_layer
         char* pName                                     ///< [in,out][optional] char pointer to kernel name.
         )
     {
-        if( nullptr == context.zeDdiTable.Kernel.pfnGetName)
+        auto pfnGetName = context.zeDdiTable.Kernel.pfnGetName;
+
+        if( nullptr == pfnGetName)
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
         ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.Kernel.pfnGetName, hKernel, pSize, pName);
@@ -3953,7 +4094,9 @@ namespace tracing_layer
                                                         ///< on before launching
         )
     {
-        if( nullptr == context.zeDdiTable.CommandList.pfnAppendLaunchKernel)
+        auto pfnAppendLaunchKernel = context.zeDdiTable.CommandList.pfnAppendLaunchKernel;
+
+        if( nullptr == pfnAppendLaunchKernel)
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
         ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.CommandList.pfnAppendLaunchKernel, hCommandList, hKernel, pLaunchFuncArgs, hSignalEvent, numWaitEvents, phWaitEvents);
@@ -4000,7 +4143,9 @@ namespace tracing_layer
                                                         ///< on before launching
         )
     {
-        if( nullptr == context.zeDdiTable.CommandList.pfnAppendLaunchCooperativeKernel)
+        auto pfnAppendLaunchCooperativeKernel = context.zeDdiTable.CommandList.pfnAppendLaunchCooperativeKernel;
+
+        if( nullptr == pfnAppendLaunchCooperativeKernel)
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
         ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.CommandList.pfnAppendLaunchCooperativeKernel, hCommandList, hKernel, pLaunchFuncArgs, hSignalEvent, numWaitEvents, phWaitEvents);
@@ -4048,7 +4193,9 @@ namespace tracing_layer
                                                         ///< on before launching
         )
     {
-        if( nullptr == context.zeDdiTable.CommandList.pfnAppendLaunchKernelIndirect)
+        auto pfnAppendLaunchKernelIndirect = context.zeDdiTable.CommandList.pfnAppendLaunchKernelIndirect;
+
+        if( nullptr == pfnAppendLaunchKernelIndirect)
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
         ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.CommandList.pfnAppendLaunchKernelIndirect, hCommandList, hKernel, pLaunchArgumentsBuffer, hSignalEvent, numWaitEvents, phWaitEvents);
@@ -4100,7 +4247,9 @@ namespace tracing_layer
                                                         ///< on before launching
         )
     {
-        if( nullptr == context.zeDdiTable.CommandList.pfnAppendLaunchMultipleKernelsIndirect)
+        auto pfnAppendLaunchMultipleKernelsIndirect = context.zeDdiTable.CommandList.pfnAppendLaunchMultipleKernelsIndirect;
+
+        if( nullptr == pfnAppendLaunchMultipleKernelsIndirect)
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
         ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.CommandList.pfnAppendLaunchMultipleKernelsIndirect, hCommandList, numKernels, phKernels, pCountBuffer, pLaunchArgumentsBuffer, hSignalEvent, numWaitEvents, phWaitEvents);
@@ -4147,7 +4296,9 @@ namespace tracing_layer
         size_t size                                     ///< [in] size in bytes to make resident
         )
     {
-        if( nullptr == context.zeDdiTable.Context.pfnMakeMemoryResident)
+        auto pfnMakeMemoryResident = context.zeDdiTable.Context.pfnMakeMemoryResident;
+
+        if( nullptr == pfnMakeMemoryResident)
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
         ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.Context.pfnMakeMemoryResident, hContext, hDevice, ptr, size);
@@ -4186,7 +4337,9 @@ namespace tracing_layer
         size_t size                                     ///< [in] size in bytes to evict
         )
     {
-        if( nullptr == context.zeDdiTable.Context.pfnEvictMemory)
+        auto pfnEvictMemory = context.zeDdiTable.Context.pfnEvictMemory;
+
+        if( nullptr == pfnEvictMemory)
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
         ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.Context.pfnEvictMemory, hContext, hDevice, ptr, size);
@@ -4224,7 +4377,9 @@ namespace tracing_layer
         ze_image_handle_t hImage                        ///< [in] handle of image to make resident
         )
     {
-        if( nullptr == context.zeDdiTable.Context.pfnMakeImageResident)
+        auto pfnMakeImageResident = context.zeDdiTable.Context.pfnMakeImageResident;
+
+        if( nullptr == pfnMakeImageResident)
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
         ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.Context.pfnMakeImageResident, hContext, hDevice, hImage);
@@ -4260,7 +4415,9 @@ namespace tracing_layer
         ze_image_handle_t hImage                        ///< [in] handle of image to make evict
         )
     {
-        if( nullptr == context.zeDdiTable.Context.pfnEvictImage)
+        auto pfnEvictImage = context.zeDdiTable.Context.pfnEvictImage;
+
+        if( nullptr == pfnEvictImage)
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
         ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.Context.pfnEvictImage, hContext, hDevice, hImage);
@@ -4297,7 +4454,9 @@ namespace tracing_layer
         ze_sampler_handle_t* phSampler                  ///< [out] handle of the sampler
         )
     {
-        if( nullptr == context.zeDdiTable.Sampler.pfnCreate)
+        auto pfnCreate = context.zeDdiTable.Sampler.pfnCreate;
+
+        if( nullptr == pfnCreate)
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
         ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.Sampler.pfnCreate, hContext, hDevice, desc, phSampler);
@@ -4333,7 +4492,9 @@ namespace tracing_layer
         ze_sampler_handle_t hSampler                    ///< [in][release] handle of the sampler
         )
     {
-        if( nullptr == context.zeDdiTable.Sampler.pfnDestroy)
+        auto pfnDestroy = context.zeDdiTable.Sampler.pfnDestroy;
+
+        if( nullptr == pfnDestroy)
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
         ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.Sampler.pfnDestroy, hSampler);
@@ -4367,7 +4528,9 @@ namespace tracing_layer
         void** pptr                                     ///< [out] pointer to virtual reservation.
         )
     {
-        if( nullptr == context.zeDdiTable.VirtualMem.pfnReserve)
+        auto pfnReserve = context.zeDdiTable.VirtualMem.pfnReserve;
+
+        if( nullptr == pfnReserve)
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
         ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.VirtualMem.pfnReserve, hContext, pStart, size, pptr);
@@ -4405,7 +4568,9 @@ namespace tracing_layer
         size_t size                                     ///< [in] size in bytes to free; must be page aligned.
         )
     {
-        if( nullptr == context.zeDdiTable.VirtualMem.pfnFree)
+        auto pfnFree = context.zeDdiTable.VirtualMem.pfnFree;
+
+        if( nullptr == pfnFree)
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
         ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.VirtualMem.pfnFree, hContext, ptr, size);
@@ -4443,7 +4608,9 @@ namespace tracing_layer
                                                         ///< alignments.
         )
     {
-        if( nullptr == context.zeDdiTable.VirtualMem.pfnQueryPageSize)
+        auto pfnQueryPageSize = context.zeDdiTable.VirtualMem.pfnQueryPageSize;
+
+        if( nullptr == pfnQueryPageSize)
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
         ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.VirtualMem.pfnQueryPageSize, hContext, hDevice, size, pagesize);
@@ -4482,7 +4649,9 @@ namespace tracing_layer
         ze_physical_mem_handle_t* phPhysicalMemory      ///< [out] pointer to handle of physical memory object created
         )
     {
-        if( nullptr == context.zeDdiTable.PhysicalMem.pfnCreate)
+        auto pfnCreate = context.zeDdiTable.PhysicalMem.pfnCreate;
+
+        if( nullptr == pfnCreate)
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
         ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.PhysicalMem.pfnCreate, hContext, hDevice, desc, phPhysicalMemory);
@@ -4519,7 +4688,9 @@ namespace tracing_layer
         ze_physical_mem_handle_t hPhysicalMemory        ///< [in][release] handle of physical memory object to destroy
         )
     {
-        if( nullptr == context.zeDdiTable.PhysicalMem.pfnDestroy)
+        auto pfnDestroy = context.zeDdiTable.PhysicalMem.pfnDestroy;
+
+        if( nullptr == pfnDestroy)
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
         ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.PhysicalMem.pfnDestroy, hContext, hPhysicalMemory);
@@ -4559,7 +4730,9 @@ namespace tracing_layer
                                                         ///< range.
         )
     {
-        if( nullptr == context.zeDdiTable.VirtualMem.pfnMap)
+        auto pfnMap = context.zeDdiTable.VirtualMem.pfnMap;
+
+        if( nullptr == pfnMap)
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
         ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.VirtualMem.pfnMap, hContext, ptr, size, hPhysicalMemory, offset, access);
@@ -4601,7 +4774,9 @@ namespace tracing_layer
         size_t size                                     ///< [in] size in bytes to unmap; must be page aligned.
         )
     {
-        if( nullptr == context.zeDdiTable.VirtualMem.pfnUnmap)
+        auto pfnUnmap = context.zeDdiTable.VirtualMem.pfnUnmap;
+
+        if( nullptr == pfnUnmap)
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
         ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.VirtualMem.pfnUnmap, hContext, ptr, size);
@@ -4639,7 +4814,9 @@ namespace tracing_layer
                                                         ///< range.
         )
     {
-        if( nullptr == context.zeDdiTable.VirtualMem.pfnSetAccessAttribute)
+        auto pfnSetAccessAttribute = context.zeDdiTable.VirtualMem.pfnSetAccessAttribute;
+
+        if( nullptr == pfnSetAccessAttribute)
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
         ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.VirtualMem.pfnSetAccessAttribute, hContext, ptr, size, access);
@@ -4680,7 +4857,9 @@ namespace tracing_layer
                                                         ///< that shares same access attribute.
         )
     {
-        if( nullptr == context.zeDdiTable.VirtualMem.pfnGetAccessAttribute)
+        auto pfnGetAccessAttribute = context.zeDdiTable.VirtualMem.pfnGetAccessAttribute;
+
+        if( nullptr == pfnGetAccessAttribute)
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
         ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.VirtualMem.pfnGetAccessAttribute, hContext, ptr, size, access, outSize);
@@ -4721,33 +4900,12 @@ namespace tracing_layer
         uint32_t offsetZ                                ///< [in] global offset for Z dimension to use for this kernel
         )
     {
-        if( nullptr == context.zeDdiTable.KernelExp.pfnSetGlobalOffsetExp)
+        auto pfnSetGlobalOffsetExp = context.zeDdiTable.KernelExp.pfnSetGlobalOffsetExp;
+
+        if( nullptr == pfnSetGlobalOffsetExp)
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
-        ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.KernelExp.pfnSetGlobalOffsetExp, hKernel, offsetX, offsetY, offsetZ);
-
-        // capture parameters
-        ze_kernel_set_global_offset_exp_params_t tracerParams = {
-            &hKernel,
-            &offsetX,
-            &offsetY,
-            &offsetZ
-        };
-
-        tracing_layer::APITracerCallbackDataImp<ze_pfnKernelSetGlobalOffsetExpCb_t> apiCallbackData;
-
-        ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnKernelSetGlobalOffsetExpCb_t, Kernel, pfnSetGlobalOffsetExpCb);
-
-
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.KernelExp.pfnSetGlobalOffsetExp,
-                                                  &tracerParams,
-                                                  apiCallbackData.apiOrdinal,
-                                                  apiCallbackData.prologCallbacks,
-                                                  apiCallbackData.epilogCallbacks,
-                                                  *tracerParams.phKernel,
-                                                  *tracerParams.poffsetX,
-                                                  *tracerParams.poffsetY,
-                                                  *tracerParams.poffsetZ);
+        return pfnSetGlobalOffsetExp( hKernel, offsetX, offsetY, offsetZ );
     }
 
 } // namespace tracing_layer
