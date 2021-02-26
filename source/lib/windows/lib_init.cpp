@@ -7,10 +7,14 @@
  */
 
 #include "../ze_lib.h"
+#ifndef DYNAMIC_LOAD_LOADER
+#include "../loader/ze_loader.h"
+#endif
 
 namespace ze_lib
 {
-    BOOL APIENTRY DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved) {
+#ifdef DYNAMIC_LOAD_LOADER
+    export "C" BOOL APIENTRY DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved) {
         if (fdwReason == DLL_PROCESS_DETACH) {
             delete context;
         } else if (fdwReason == DLL_PROCESS_ATTACH) {
@@ -18,4 +22,17 @@ namespace ze_lib
         }
         return TRUE;
     }       
+#else
+    extern "C" BOOL APIENTRY DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved) {
+        if (fdwReason == DLL_PROCESS_DETACH) {
+            delete context;
+            delete loader::context;
+        } else if (fdwReason == DLL_PROCESS_ATTACH) {
+            context = new context_t;
+            loader::context = new loader::context_t;
+        }
+        return TRUE;
+    }      
+
+#endif
 }
