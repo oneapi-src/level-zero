@@ -82,7 +82,7 @@ DriverLibraryPath readDriverPathForDisplayAdapter(DEVINST dnDevNode) {
 std::wstring readDisplayAdaptersDeviceIdsList() {
     OLECHAR displayGuidStr[MAX_GUID_STRING_LEN];
 
-    int strFromGuidErr = StringFromGUID2(GUID_DEVCLASS_DISPLAY, displayGuidStr,
+    int strFromGuidErr = StringFromGUID2(GUID_DEVCLASS_COMPUTEACCELERATOR, displayGuidStr,
                                         MAX_GUID_STRING_LEN);
     if (MAX_GUID_STRING_LEN != strFromGuidErr) {
         assert(false && "StringFromGUID2 failed");
