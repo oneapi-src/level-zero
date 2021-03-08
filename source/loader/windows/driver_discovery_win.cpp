@@ -14,13 +14,34 @@
 #include <cfgmgr32.h>
 #include <devpkey.h>
 #include <devguid.h>
+#include <iostream>
+#include <sstream>
+#include <string>
 
 namespace loader {
 
 std::vector<DriverLibraryPath> discoverDriversBasedOnDisplayAdapters();
 
 std::vector<DriverLibraryPath> discoverEnabledDrivers() {
-    return discoverDriversBasedOnDisplayAdapters();
+    DWORD envBufferSize = 65535;
+    std::string altDrivers;
+    altDrivers.resize(envBufferSize);
+
+    // ZE_ENABLE_ALT_DRIVERS is for development/debug only
+    envBufferSize = GetEnvironmentVariable("ZE_ENABLE_ALT_DRIVERS", &altDrivers[0], envBufferSize);
+    if (!envBufferSize) {
+        return discoverDriversBasedOnDisplayAdapters();
+    } else {
+        std::vector<DriverLibraryPath> enabledDrivers;
+        std::stringstream ss(altDrivers.c_str());
+        while (ss.good()) {
+            std::string substr;
+            getline(ss, substr, ',');
+            enabledDrivers.emplace_back(substr);
+        }
+        return enabledDrivers;
+    }
+
 }
 
 bool isDeviceAvailable(DEVINST devnode) {
