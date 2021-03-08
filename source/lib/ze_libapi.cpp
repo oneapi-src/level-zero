@@ -4802,4 +4802,104 @@ zeKernelSetGlobalOffsetExp(
     return pfnSetGlobalOffsetExp( hKernel, offsetX, offsetY, offsetZ );
 }
 
+///////////////////////////////////////////////////////////////////////////////
+ze_result_t ZE_APICALL
+zeGraphCreate(
+    ze_device_handle_t hDevice,                     ///< [in] handle of the device
+    const ze_graph_desc_t* desc,                    ///< [in] pointer to graph descriptor
+    ze_graph_handle_t* phGraph                      ///< [out] pointer to handle of graph object created
+)
+{
+    auto pfnCreate = ze_lib::context->zeDdiTable.Graph.pfnCreate;
+    if( nullptr == pfnCreate )
+        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+
+    return pfnCreate( hDevice, desc, phGraph );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+ze_result_t ZE_APICALL
+zeGraphDestroy(
+    ze_graph_handle_t hGraph                        ///< [in][release] handle of graph object to destroy
+)
+{
+    auto pfnDestroy = ze_lib::context->zeDdiTable.Graph.pfnDestroy;
+    if( nullptr == pfnDestroy )
+        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+
+    return pfnDestroy( hGraph );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+ze_result_t ZE_APICALL
+zeGraphGetProperties(
+    ze_graph_handle_t hGraph,                       ///< [in] handle of the graph object
+    ze_graph_properties_t* pGraphProperties         ///< [in,out] query result for graph properties.
+)
+{
+    auto pfnGetProperties = ze_lib::context->zeDdiTable.Graph.pfnGetProperties;
+    if( nullptr == pfnGetProperties )
+        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+
+    return pfnGetProperties( hGraph, pGraphProperties );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+ze_result_t ZE_APICALL
+zeGraphGetArgumentProperties(
+    ze_graph_handle_t hGraph,                                   ///< [in] handle of the graph object
+    uint32_t argIndex,                                          ///< [in] index of the argument to get properties
+    ze_graph_argument_properties_t* pGraphArgumentProperties    ///< [in,out] query result for graph argument properties.
+)
+{
+    auto pfnGetArgumentProperties = ze_lib::context->zeDdiTable.Graph.pfnGetArgumentProperties;
+    if( nullptr == pfnGetArgumentProperties )
+        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+
+    return pfnGetArgumentProperties( hGraph, argIndex, pGraphArgumentProperties );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+ze_result_t ZE_APICALL
+zeGraphSetArgumentValue(
+    ze_graph_handle_t hGraph,
+    uint32_t argIndex,
+    const void* pArgValue
+)
+{
+    auto pfnSetArgumentValue = ze_lib::context->zeDdiTable.Graph.pfnSetArgumentValue;
+    if( nullptr == pfnSetArgumentValue )
+        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+
+    return pfnSetArgumentValue( hGraph, argIndex, pArgValue );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+ze_result_t ZE_APICALL
+zeAppendGraphInitialize(
+    ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
+    ze_graph_handle_t hGraph                        ///< [in] handle of the graph
+)
+{
+    auto pfnAppendGraphInitialize = ze_lib::context->zeDdiTable.Graph.pfnAppendGraphInitialize;
+    if( nullptr == pfnAppendGraphInitialize )
+        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+
+    return pfnAppendGraphInitialize( hCommandList, hGraph );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+ze_result_t ZE_APICALL
+zeAppendGraphExecute(
+    ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
+    ze_graph_handle_t hGraph                        ///< [in] handle of the graph
+)
+{
+    auto pfnAppendGraphExecute = ze_lib::context->zeDdiTable.Graph.pfnAppendGraphExecute;
+    if( nullptr == pfnAppendGraphExecute )
+        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+
+    return pfnAppendGraphExecute( hCommandList, hGraph );
+}
+
 } // extern "C"

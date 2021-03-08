@@ -1680,6 +1680,78 @@ typedef ze_result_t (ZE_APICALL *ze_pfnGetVirtualMemProcAddrTable_t)(
     );
 
 ///////////////////////////////////////////////////////////////////////////////
+typedef ze_result_t (ZE_APICALL *ze_pfnGraphCreate_t)(
+    ze_device_handle_t hDevice,                     ///< [in] handle of the device
+    const ze_graph_desc_t* desc,                    ///< [in] pointer to graph descriptor
+    ze_graph_handle_t* phGraph                      ///< [out] pointer to handle of graph object created
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+typedef ze_result_t (ZE_APICALL *ze_pfnGraphDestroy_t)(
+    ze_graph_handle_t hGraph                        ///< [in][release] handle of graph object to destroy
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+typedef ze_result_t (ZE_APICALL *ze_pfnGraphGetProperties_t)(
+    ze_graph_handle_t hGraph,                       ///< [in] handle of the graph object
+    ze_graph_properties_t* pGraphProperties         ///< [in,out] query result for graph properties.
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+typedef ze_result_t (ZE_APICALL *ze_pfnGraphGetArgumentProperties_t)(
+    ze_graph_handle_t hGraph,                                   ///< [in] handle of the graph object
+    uint32_t argIndex,                                          ///< [in] index of the argument to get properties
+    ze_graph_argument_properties_t* pGraphArgumentProperties    ///< [in,out] query result for graph argument properties.
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+typedef ze_result_t (ZE_APICALL *ze_pfnGraphSetArgumentValue_t)(
+    ze_graph_handle_t hGraph,
+    uint32_t argIndex,
+    const void* pArgValue
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+typedef ze_result_t (ZE_APICALL *ze_pfnAppendGraphInitialize_t)(
+    ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
+    ze_graph_handle_t hGraph                        ///< [in] handle of the graph
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+typedef ze_result_t (ZE_APICALL *ze_pfnAppendGraphExecute_t)(
+    ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
+    ze_graph_handle_t hGraph                        ///< [in] handle of the graph
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Table of Graph functions pointers
+typedef struct _ze_graph_dditable_t
+{
+    ze_pfnGraphCreate_t                                         pfnCreate;
+    ze_pfnGraphDestroy_t                                        pfnDestroy;
+    ze_pfnGraphGetProperties_t                                  pfnGetProperties;
+    ze_pfnGraphGetArgumentProperties_t                          pfnGetArgumentProperties; 
+    ze_pfnGraphSetArgumentValue_t                               pfnSetArgumentValue;
+    ze_pfnAppendGraphInitialize_t                               pfnAppendGraphInitialize;
+    ze_pfnAppendGraphExecute_t                                  pfnAppendGraphExecute;
+} ze_graph_dditable_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Exported function for filling application's Graph table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+ZE_DLLEXPORT ze_result_t ZE_APICALL
+zeGetGraphProcAddrTable(
+    ze_api_version_t version,                       ///< [in] API version requested
+    ze_graph_dditable_t* pDdiTable                  ///< [in,out] pointer to table of DDI function pointers
+    );
+
+///////////////////////////////////////////////////////////////////////////////
 /// @brief Container for all DDI tables
 typedef struct _ze_dditable_t
 {
@@ -1701,6 +1773,7 @@ typedef struct _ze_dditable_t
     ze_physical_mem_dditable_t          PhysicalMem;
     ze_mem_dditable_t                   Mem;
     ze_virtual_mem_dditable_t           VirtualMem;
+    ze_graph_dditable_t                 Graph;
 } ze_dditable_t;
 
 #if defined(__cplusplus)
