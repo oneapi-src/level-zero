@@ -617,15 +617,13 @@ namespace loader
         hDevice = reinterpret_cast<zet_device_object_t*>( hDevice )->handle;
 
         // convert loader handles to driver handles
+        auto phMetricGroupsLocal = new zet_metric_group_handle_t [count];
         for( size_t i = 0; ( nullptr != phMetricGroups ) && ( i < count ); ++i )
-            phMetricGroups[ i ] = reinterpret_cast<zet_metric_group_object_t*>( phMetricGroups[ i ] )->handle;
+            phMetricGroupsLocal[ i ] = reinterpret_cast<zet_metric_group_object_t*>( phMetricGroups[ i ] )->handle;
 
         // forward to device-driver
-        result = pfnActivateMetricGroups( hContext, hDevice, count, phMetricGroups );
-
-        // convert driver handles back to loader handles
-        for ( size_t i = 0; ( nullptr != phMetricGroups ) && ( i < count ); ++i )
-            phMetricGroups[ i ] = reinterpret_cast<zet_metric_group_handle_t>( zet_metric_group_factory.getInstance( phMetricGroups[ i ], dditable ) );
+        result = pfnActivateMetricGroups( hContext, hDevice, count, phMetricGroupsLocal );
+        delete []phMetricGroupsLocal;
 
         return result;
     }
@@ -1005,7 +1003,7 @@ namespace loader
         hSignalEvent = ( hSignalEvent ) ? reinterpret_cast<ze_event_object_t*>( hSignalEvent )->handle : nullptr;
 
         // forward to device-driver
-        result = pfnAppendMetricQueryEnd( hCommandList, hMetricQuery, hSignalEvent, numWaitEvents, phWaitEvents );
+        result = pfnAppendMetricQueryEnd(hCommandList, hMetricQuery, hSignalEvent, numWaitEvents, phWaitEvents );
 
         return result;
     }

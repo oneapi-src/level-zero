@@ -548,15 +548,13 @@ namespace loader
         hDriver = reinterpret_cast<ze_driver_object_t*>( hDriver )->handle;
 
         // convert loader handles to driver handles
+        auto phDevicesLocal = new zes_device_handle_t [count];
         for( size_t i = 0; ( nullptr != phDevices ) && ( i < count ); ++i )
-            phDevices[ i ] = reinterpret_cast<zes_device_object_t*>( phDevices[ i ] )->handle;
+            phDevicesLocal[ i ] = reinterpret_cast<zes_device_object_t*>( phDevices[ i ] )->handle;
 
         // forward to device-driver
-        result = pfnEventListen( hDriver, timeout, count, phDevices, pNumDeviceEvents, pEvents );
-
-        // convert driver handles back to loader handles
-        for ( size_t i = 0; ( nullptr != phDevices ) && ( i < count ); ++i )
-            phDevices[ i ] = reinterpret_cast<zes_device_handle_t>( zes_device_factory.getInstance( phDevices[ i ], dditable ) );
+        result = pfnEventListen( hDriver, timeout, count, phDevicesLocal, pNumDeviceEvents, pEvents );
+        delete []phDevicesLocal;
 
         return result;
     }
@@ -597,15 +595,13 @@ namespace loader
         hDriver = reinterpret_cast<ze_driver_object_t*>( hDriver )->handle;
 
         // convert loader handles to driver handles
+        auto phDevicesLocal = new zes_device_handle_t [count];
         for( size_t i = 0; ( nullptr != phDevices ) && ( i < count ); ++i )
-            phDevices[ i ] = reinterpret_cast<zes_device_object_t*>( phDevices[ i ] )->handle;
+            phDevicesLocal[ i ] = reinterpret_cast<zes_device_object_t*>( phDevices[ i ] )->handle;
 
         // forward to device-driver
-        result = pfnEventListenEx( hDriver, timeout, count, phDevices, pNumDeviceEvents, pEvents );
-
-        // convert driver handles back to loader handles
-        for ( size_t i = 0; ( nullptr != phDevices ) && ( i < count ); ++i )
-            phDevices[ i ] = reinterpret_cast<zes_device_handle_t>( zes_device_factory.getInstance( phDevices[ i ], dditable ) );
+        result = pfnEventListenEx( hDriver, timeout, count, phDevicesLocal, pNumDeviceEvents, pEvents );
+        delete []phDevicesLocal;
 
         return result;
     }
