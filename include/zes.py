@@ -247,22 +247,22 @@ class zes_device_properties_t(Structure):
         ("numSubdevices", c_ulong),                                     ## [out] Number of sub-devices. A value of 0 indicates that this device
                                                                         ## doesn't have sub-devices.
         ("serialNumber", c_char * ZES_STRING_PROPERTY_SIZE),            ## [out] Manufacturing serial number (NULL terminated string value). Will
-                                                                        ## be set to the string "unkown" if this cannot be determined for the
+                                                                        ## be set to the string "Unknown" if this cannot be determined for the
                                                                         ## device.
         ("boardNumber", c_char * ZES_STRING_PROPERTY_SIZE),             ## [out] Manufacturing board number (NULL terminated string value). Will
-                                                                        ## be set to the string "unkown" if this cannot be determined for the
+                                                                        ## be set to the string "Unknown" if this cannot be determined for the
                                                                         ## device.
         ("brandName", c_char * ZES_STRING_PROPERTY_SIZE),               ## [out] Brand name of the device (NULL terminated string value). Will be
-                                                                        ## set to the string "unkown" if this cannot be determined for the
+                                                                        ## set to the string "Unknown" if this cannot be determined for the
                                                                         ## device.
         ("modelName", c_char * ZES_STRING_PROPERTY_SIZE),               ## [out] Model name of the device (NULL terminated string value). Will be
-                                                                        ## set to the string "unkown" if this cannot be determined for the
+                                                                        ## set to the string "Unknown" if this cannot be determined for the
                                                                         ## device.
         ("vendorName", c_char * ZES_STRING_PROPERTY_SIZE),              ## [out] Vendor name of the device (NULL terminated string value). Will
-                                                                        ## be set to the string "unkown" if this cannot be determined for the
+                                                                        ## be set to the string "Unknown" if this cannot be determined for the
                                                                         ## device.
         ("driverVersion", c_char * ZES_STRING_PROPERTY_SIZE)            ## [out] Installed driver version (NULL terminated string value). Will be
-                                                                        ## set to the string "unkown" if this cannot be determined for the
+                                                                        ## set to the string "Unknown" if this cannot be determined for the
                                                                         ## device.
     ]
 
@@ -699,7 +699,7 @@ class zes_fabric_port_properties_t(Structure):
         ("stype", zes_structure_type_t),                                ## [in] type of this structure
         ("pNext", c_void_p),                                            ## [in,out][optional] pointer to extension-specific structure
         ("model", c_char * ZES_MAX_FABRIC_PORT_MODEL_SIZE),             ## [out] Description of port technology. Will be set to the string
-                                                                        ## "unkown" if this cannot be determined for this port.
+                                                                        ## "Unknown" if this cannot be determined for this port.
         ("onSubdevice", ze_bool_t),                                     ## [out] True if the port is located on a sub-device; false means that
                                                                         ## the port is on the device of the calling Sysman handle
         ("subdeviceId", c_ulong),                                       ## [out] If onSubdevice is true, this gives the ID of the sub-device
@@ -715,7 +715,7 @@ class zes_fabric_port_properties_t(Structure):
 class zes_fabric_link_type_t(Structure):
     _fields_ = [
         ("desc", c_char * ZES_MAX_FABRIC_LINK_TYPE_SIZE)                ## [out] This provides a static textural description of the physic
-                                                                        ## attachment type. Will be set to the string "unkown" if this cannot be
+                                                                        ## attachment type. Will be set to the string "Unknown" if this cannot be
                                                                         ## determined for this port.
     ]
 

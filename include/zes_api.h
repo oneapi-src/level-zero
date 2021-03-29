@@ -499,22 +499,22 @@ typedef struct _zes_device_properties_t
     uint32_t numSubdevices;                         ///< [out] Number of sub-devices. A value of 0 indicates that this device
                                                     ///< doesn't have sub-devices.
     char serialNumber[ZES_STRING_PROPERTY_SIZE];    ///< [out] Manufacturing serial number (NULL terminated string value). Will
-                                                    ///< be set to the string "unkown" if this cannot be determined for the
+                                                    ///< be set to the string "Unknown" if this cannot be determined for the
                                                     ///< device.
     char boardNumber[ZES_STRING_PROPERTY_SIZE];     ///< [out] Manufacturing board number (NULL terminated string value). Will
-                                                    ///< be set to the string "unkown" if this cannot be determined for the
+                                                    ///< be set to the string "Unknown" if this cannot be determined for the
                                                     ///< device.
     char brandName[ZES_STRING_PROPERTY_SIZE];       ///< [out] Brand name of the device (NULL terminated string value). Will be
-                                                    ///< set to the string "unkown" if this cannot be determined for the
+                                                    ///< set to the string "Unknown" if this cannot be determined for the
                                                     ///< device.
     char modelName[ZES_STRING_PROPERTY_SIZE];       ///< [out] Model name of the device (NULL terminated string value). Will be
-                                                    ///< set to the string "unkown" if this cannot be determined for the
+                                                    ///< set to the string "Unknown" if this cannot be determined for the
                                                     ///< device.
     char vendorName[ZES_STRING_PROPERTY_SIZE];      ///< [out] Vendor name of the device (NULL terminated string value). Will
-                                                    ///< be set to the string "unkown" if this cannot be determined for the
+                                                    ///< be set to the string "Unknown" if this cannot be determined for the
                                                     ///< device.
     char driverVersion[ZES_STRING_PROPERTY_SIZE];   ///< [out] Installed driver version (NULL terminated string value). Will be
-                                                    ///< set to the string "unkown" if this cannot be determined for the
+                                                    ///< set to the string "Unknown" if this cannot be determined for the
                                                     ///< device.
 
 } zes_device_properties_t;
@@ -1504,7 +1504,7 @@ typedef struct _zes_fabric_port_properties_t
     zes_structure_type_t stype;                     ///< [in] type of this structure
     void* pNext;                                    ///< [in,out][optional] pointer to extension-specific structure
     char model[ZES_MAX_FABRIC_PORT_MODEL_SIZE];     ///< [out] Description of port technology. Will be set to the string
-                                                    ///< "unkown" if this cannot be determined for this port.
+                                                    ///< "Unknown" if this cannot be determined for this port.
     ze_bool_t onSubdevice;                          ///< [out] True if the port is located on a sub-device; false means that
                                                     ///< the port is on the device of the calling Sysman handle
     uint32_t subdeviceId;                           ///< [out] If onSubdevice is true, this gives the ID of the sub-device
@@ -1521,7 +1521,7 @@ typedef struct _zes_fabric_port_properties_t
 typedef struct _zes_fabric_link_type_t
 {
     char desc[ZES_MAX_FABRIC_LINK_TYPE_SIZE];       ///< [out] This provides a static textural description of the physic
-                                                    ///< attachment type. Will be set to the string "unkown" if this cannot be
+                                                    ///< attachment type. Will be set to the string "Unknown" if this cannot be
                                                     ///< determined for this port.
 
 } zes_fabric_link_type_t;
