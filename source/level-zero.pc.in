@@ -1,0 +1,12 @@
+prefix=@CMAKE_INSTALL_PREFIX@
+includedir=${prefix}/include
+libdir=${prefix}/lib
+
+
+Name: Level Zero
+Description: Level Zero
+URL: https://github.com/oneapi-src/level-zero
+Version: @PROJECT_VERSION_MAJOR@.@PROJECT_VERSION_MINOR@.@PROJECT_VERSION_PATCH@
+Requires: libze_loader
+Libs: -L${libdir}
+CFlags: -I${includedir}/level_zero
