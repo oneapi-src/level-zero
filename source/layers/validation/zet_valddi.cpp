@@ -883,7 +883,7 @@ namespace validation_layer
         zet_metric_query_handle_t hMetricQuery,         ///< [in] handle of the metric query
         ze_event_handle_t hSignalEvent,                 ///< [in][optional] handle of the event to signal on completion
         uint32_t numWaitEvents,                         ///< [in] must be zero
-        ze_event_handle_t* phWaitEvents                 ///< [in] must be nullptr
+        ze_event_handle_t* phWaitEvents                 ///< [in][mbz] must be nullptr
         )
     {
         auto pfnAppendMetricQueryEnd = context.zetDdiTable.CommandList.pfnAppendMetricQueryEnd;
@@ -1147,7 +1147,8 @@ zetGetDeviceProcAddrTable(
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if( validation_layer::context.version < version )
+    if (ZE_MAJOR_VERSION(validation_layer::context.version) != ZE_MAJOR_VERSION(version) ||
+        ZE_MINOR_VERSION(validation_layer::context.version) > ZE_MINOR_VERSION(version))
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
@@ -1177,7 +1178,8 @@ zetGetContextProcAddrTable(
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if( validation_layer::context.version < version )
+    if (ZE_MAJOR_VERSION(validation_layer::context.version) != ZE_MAJOR_VERSION(version) ||
+        ZE_MINOR_VERSION(validation_layer::context.version) > ZE_MINOR_VERSION(version))
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
@@ -1207,7 +1209,8 @@ zetGetCommandListProcAddrTable(
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if( validation_layer::context.version < version )
+    if (ZE_MAJOR_VERSION(validation_layer::context.version) != ZE_MAJOR_VERSION(version) ||
+        ZE_MINOR_VERSION(validation_layer::context.version) > ZE_MINOR_VERSION(version))
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
@@ -1246,7 +1249,8 @@ zetGetKernelProcAddrTable(
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if( validation_layer::context.version < version )
+    if (ZE_MAJOR_VERSION(validation_layer::context.version) != ZE_MAJOR_VERSION(version) ||
+        ZE_MINOR_VERSION(validation_layer::context.version) > ZE_MINOR_VERSION(version))
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
@@ -1276,7 +1280,8 @@ zetGetModuleProcAddrTable(
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if( validation_layer::context.version < version )
+    if (ZE_MAJOR_VERSION(validation_layer::context.version) != ZE_MAJOR_VERSION(version) ||
+        ZE_MINOR_VERSION(validation_layer::context.version) > ZE_MINOR_VERSION(version))
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
@@ -1306,7 +1311,8 @@ zetGetDebugProcAddrTable(
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if( validation_layer::context.version < version )
+    if (ZE_MAJOR_VERSION(validation_layer::context.version) != ZE_MAJOR_VERSION(version) ||
+        ZE_MINOR_VERSION(validation_layer::context.version) > ZE_MINOR_VERSION(version))
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
@@ -1366,7 +1372,8 @@ zetGetMetricProcAddrTable(
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if( validation_layer::context.version < version )
+    if (ZE_MAJOR_VERSION(validation_layer::context.version) != ZE_MAJOR_VERSION(version) ||
+        ZE_MINOR_VERSION(validation_layer::context.version) > ZE_MINOR_VERSION(version))
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
@@ -1399,7 +1406,8 @@ zetGetMetricGroupProcAddrTable(
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if( validation_layer::context.version < version )
+    if (ZE_MAJOR_VERSION(validation_layer::context.version) != ZE_MAJOR_VERSION(version) ||
+        ZE_MINOR_VERSION(validation_layer::context.version) > ZE_MINOR_VERSION(version))
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
@@ -1435,7 +1443,8 @@ zetGetMetricQueryProcAddrTable(
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if( validation_layer::context.version < version )
+    if (ZE_MAJOR_VERSION(validation_layer::context.version) != ZE_MAJOR_VERSION(version) ||
+        ZE_MINOR_VERSION(validation_layer::context.version) > ZE_MINOR_VERSION(version))
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
@@ -1474,7 +1483,8 @@ zetGetMetricQueryPoolProcAddrTable(
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if( validation_layer::context.version < version )
+    if (ZE_MAJOR_VERSION(validation_layer::context.version) != ZE_MAJOR_VERSION(version) ||
+        ZE_MINOR_VERSION(validation_layer::context.version) > ZE_MINOR_VERSION(version))
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
@@ -1507,7 +1517,8 @@ zetGetMetricStreamerProcAddrTable(
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if( validation_layer::context.version < version )
+    if (ZE_MAJOR_VERSION(validation_layer::context.version) != ZE_MAJOR_VERSION(version) ||
+        ZE_MINOR_VERSION(validation_layer::context.version) > ZE_MINOR_VERSION(version))
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
@@ -1543,7 +1554,8 @@ zetGetTracerExpProcAddrTable(
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if( validation_layer::context.version < version )
+    if (ZE_MAJOR_VERSION(validation_layer::context.version) != ZE_MAJOR_VERSION(version) ||
+        ZE_MINOR_VERSION(validation_layer::context.version) > ZE_MINOR_VERSION(version))
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;

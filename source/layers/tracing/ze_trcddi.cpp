@@ -4933,7 +4933,8 @@ zeGetGlobalProcAddrTable(
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if( tracing_layer::context.version < version )
+    if (ZE_MAJOR_VERSION(tracing_layer::context.version) != ZE_MAJOR_VERSION(version) ||
+        ZE_MINOR_VERSION(tracing_layer::context.version) > ZE_MINOR_VERSION(version))
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
@@ -4963,7 +4964,8 @@ zeGetDriverProcAddrTable(
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if( tracing_layer::context.version < version )
+    if (ZE_MAJOR_VERSION(tracing_layer::context.version) != ZE_MAJOR_VERSION(version) ||
+        ZE_MINOR_VERSION(tracing_layer::context.version) > ZE_MINOR_VERSION(version))
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
@@ -5008,7 +5010,8 @@ zeGetDeviceProcAddrTable(
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if( tracing_layer::context.version < version )
+    if (ZE_MAJOR_VERSION(tracing_layer::context.version) != ZE_MAJOR_VERSION(version) ||
+        ZE_MINOR_VERSION(tracing_layer::context.version) > ZE_MINOR_VERSION(version))
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
@@ -5080,7 +5083,8 @@ zeGetContextProcAddrTable(
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if( tracing_layer::context.version < version )
+    if (ZE_MAJOR_VERSION(tracing_layer::context.version) != ZE_MAJOR_VERSION(version) ||
+        ZE_MINOR_VERSION(tracing_layer::context.version) > ZE_MINOR_VERSION(version))
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
@@ -5134,7 +5138,8 @@ zeGetCommandQueueProcAddrTable(
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if( tracing_layer::context.version < version )
+    if (ZE_MAJOR_VERSION(tracing_layer::context.version) != ZE_MAJOR_VERSION(version) ||
+        ZE_MINOR_VERSION(tracing_layer::context.version) > ZE_MINOR_VERSION(version))
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
@@ -5173,7 +5178,8 @@ zeGetCommandListProcAddrTable(
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if( tracing_layer::context.version < version )
+    if (ZE_MAJOR_VERSION(tracing_layer::context.version) != ZE_MAJOR_VERSION(version) ||
+        ZE_MINOR_VERSION(tracing_layer::context.version) > ZE_MINOR_VERSION(version))
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
@@ -5278,7 +5284,8 @@ zeGetEventProcAddrTable(
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if( tracing_layer::context.version < version )
+    if (ZE_MAJOR_VERSION(tracing_layer::context.version) != ZE_MAJOR_VERSION(version) ||
+        ZE_MINOR_VERSION(tracing_layer::context.version) > ZE_MINOR_VERSION(version))
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
@@ -5326,7 +5333,8 @@ zeGetEventPoolProcAddrTable(
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if( tracing_layer::context.version < version )
+    if (ZE_MAJOR_VERSION(tracing_layer::context.version) != ZE_MAJOR_VERSION(version) ||
+        ZE_MINOR_VERSION(tracing_layer::context.version) > ZE_MINOR_VERSION(version))
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
@@ -5368,7 +5376,8 @@ zeGetFenceProcAddrTable(
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if( tracing_layer::context.version < version )
+    if (ZE_MAJOR_VERSION(tracing_layer::context.version) != ZE_MAJOR_VERSION(version) ||
+        ZE_MINOR_VERSION(tracing_layer::context.version) > ZE_MINOR_VERSION(version))
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
@@ -5410,7 +5419,8 @@ zeGetImageProcAddrTable(
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if( tracing_layer::context.version < version )
+    if (ZE_MAJOR_VERSION(tracing_layer::context.version) != ZE_MAJOR_VERSION(version) ||
+        ZE_MINOR_VERSION(tracing_layer::context.version) > ZE_MINOR_VERSION(version))
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
@@ -5446,7 +5456,8 @@ zeGetKernelProcAddrTable(
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if( tracing_layer::context.version < version )
+    if (ZE_MAJOR_VERSION(tracing_layer::context.version) != ZE_MAJOR_VERSION(version) ||
+        ZE_MINOR_VERSION(tracing_layer::context.version) > ZE_MINOR_VERSION(version))
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
@@ -5509,7 +5520,8 @@ zeGetKernelExpProcAddrTable(
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if( tracing_layer::context.version < version )
+    if (ZE_MAJOR_VERSION(tracing_layer::context.version) != ZE_MAJOR_VERSION(version) ||
+        ZE_MINOR_VERSION(tracing_layer::context.version) > ZE_MINOR_VERSION(version))
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
@@ -5539,7 +5551,8 @@ zeGetMemProcAddrTable(
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if( tracing_layer::context.version < version )
+    if (ZE_MAJOR_VERSION(tracing_layer::context.version) != ZE_MAJOR_VERSION(version) ||
+        ZE_MINOR_VERSION(tracing_layer::context.version) > ZE_MINOR_VERSION(version))
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
@@ -5593,7 +5606,8 @@ zeGetModuleProcAddrTable(
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if( tracing_layer::context.version < version )
+    if (ZE_MAJOR_VERSION(tracing_layer::context.version) != ZE_MAJOR_VERSION(version) ||
+        ZE_MINOR_VERSION(tracing_layer::context.version) > ZE_MINOR_VERSION(version))
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
@@ -5644,7 +5658,8 @@ zeGetModuleBuildLogProcAddrTable(
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if( tracing_layer::context.version < version )
+    if (ZE_MAJOR_VERSION(tracing_layer::context.version) != ZE_MAJOR_VERSION(version) ||
+        ZE_MINOR_VERSION(tracing_layer::context.version) > ZE_MINOR_VERSION(version))
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
@@ -5677,7 +5692,8 @@ zeGetPhysicalMemProcAddrTable(
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if( tracing_layer::context.version < version )
+    if (ZE_MAJOR_VERSION(tracing_layer::context.version) != ZE_MAJOR_VERSION(version) ||
+        ZE_MINOR_VERSION(tracing_layer::context.version) > ZE_MINOR_VERSION(version))
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
@@ -5710,7 +5726,8 @@ zeGetSamplerProcAddrTable(
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if( tracing_layer::context.version < version )
+    if (ZE_MAJOR_VERSION(tracing_layer::context.version) != ZE_MAJOR_VERSION(version) ||
+        ZE_MINOR_VERSION(tracing_layer::context.version) > ZE_MINOR_VERSION(version))
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
@@ -5743,7 +5760,8 @@ zeGetVirtualMemProcAddrTable(
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if( tracing_layer::context.version < version )
+    if (ZE_MAJOR_VERSION(tracing_layer::context.version) != ZE_MAJOR_VERSION(version) ||
+        ZE_MINOR_VERSION(tracing_layer::context.version) > ZE_MINOR_VERSION(version))
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;

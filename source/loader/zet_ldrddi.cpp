@@ -982,7 +982,7 @@ namespace loader
         zet_metric_query_handle_t hMetricQuery,         ///< [in] handle of the metric query
         ze_event_handle_t hSignalEvent,                 ///< [in][optional] handle of the event to signal on completion
         uint32_t numWaitEvents,                         ///< [in] must be zero
-        ze_event_handle_t* phWaitEvents                 ///< [in] must be nullptr
+        ze_event_handle_t* phWaitEvents                 ///< [in][mbz] must be nullptr
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
@@ -1003,7 +1003,7 @@ namespace loader
         hSignalEvent = ( hSignalEvent ) ? reinterpret_cast<ze_event_object_t*>( hSignalEvent )->handle : nullptr;
 
         // forward to device-driver
-        result = pfnAppendMetricQueryEnd(hCommandList, hMetricQuery, hSignalEvent, numWaitEvents, phWaitEvents );
+        result = pfnAppendMetricQueryEnd( hCommandList, hMetricQuery, hSignalEvent, numWaitEvents, phWaitEvents );
 
         return result;
     }

@@ -977,7 +977,7 @@ zetCommandListAppendMetricQueryEnd(
     zet_metric_query_handle_t hMetricQuery,         ///< [in] handle of the metric query
     ze_event_handle_t hSignalEvent,                 ///< [in][optional] handle of the event to signal on completion
     uint32_t numWaitEvents,                         ///< [in] must be zero
-    ze_event_handle_t* phWaitEvents                 ///< [in] must be nullptr
+    ze_event_handle_t* phWaitEvents                 ///< [in][mbz] must be nullptr
     )
 {
     auto pfnAppendMetricQueryEnd = ze_lib::context->zetDdiTable.CommandList.pfnAppendMetricQueryEnd;

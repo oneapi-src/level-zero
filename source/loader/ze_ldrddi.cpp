@@ -4996,7 +4996,7 @@ zeGetKernelExpProcAddrTable(
         {
             auto getTable = reinterpret_cast<ze_pfnGetKernelExpProcAddrTable_t>(
                 GET_FUNCTION_PTR( drv.handle, "zeGetKernelExpProcAddrTable") );
-            if(!getTable) continue;
+            if(!getTable) continue; //Experimental Tables may not be implemented in driver
             result = getTable( version, &drv.dditable.ze.KernelExp );
         }
     }
