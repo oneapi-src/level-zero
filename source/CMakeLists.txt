@@ -67,4 +67,9 @@ if(UNIX)
         ${CMAKE_CURRENT_BINARY_DIR}/libze_loader.pc
         @ONLY)
     install(FILES "${CMAKE_CURRENT_BINARY_DIR}/libze_loader.pc" DESTINATION "${CMAKE_INSTALL_FULL_LIBDIR}/pkgconfig" COMPONENT level-zero-devel)
+    configure_file(
+        ${CMAKE_CURRENT_SOURCE_DIR}/level-zero.pc.in
+        ${CMAKE_CURRENT_BINARY_DIR}/level-zero.pc
+        @ONLY)
+    install(FILES "${CMAKE_CURRENT_BINARY_DIR}/level-zero.pc" DESTINATION "${CMAKE_INSTALL_FULL_LIBDIR}/pkgconfig" COMPONENT level-zero-devel)
 endif()
