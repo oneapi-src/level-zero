@@ -20,9 +20,12 @@
 
 namespace loader {
 
-std::vector<DriverLibraryPath> discoverDriversBasedOnDisplayAdapters();
+std::vector<DriverLibraryPath> discoverDriversBasedOnDisplayAdapters(const GUID rguid);
 
 std::vector<DriverLibraryPath> discoverEnabledDrivers() {
+
+    std::vector<DriverLibraryPath> enabledDrivers;
+
     DWORD envBufferSize = 65535;
     std::string altDrivers;
     altDrivers.resize(envBufferSize);
@@ -30,18 +33,20 @@ std::vector<DriverLibraryPath> discoverEnabledDrivers() {
     // ZE_ENABLE_ALT_DRIVERS is for development/debug only
     envBufferSize = GetEnvironmentVariable("ZE_ENABLE_ALT_DRIVERS", &altDrivers[0], envBufferSize);
     if (!envBufferSize) {
-        return discoverDriversBasedOnDisplayAdapters();
+        auto displayDrivers = discoverDriversBasedOnDisplayAdapters(GUID_DEVCLASS_DISPLAY);
+        auto computeDrivers = discoverDriversBasedOnDisplayAdapters(GUID_DEVCLASS_COMPUTEACCELERATOR);
+        enabledDrivers.insert(enabledDrivers.end(), displayDrivers.begin(), displayDrivers.end());
+        enabledDrivers.insert(enabledDrivers.end(), computeDrivers.begin(), computeDrivers.end());
     } else {
-        std::vector<DriverLibraryPath> enabledDrivers;
         std::stringstream ss(altDrivers.c_str());
         while (ss.good()) {
             std::string substr;
             getline(ss, substr, ',');
             enabledDrivers.emplace_back(substr);
         }
-        return enabledDrivers;
     }
 
+    return enabledDrivers;
 }
 
 bool isDeviceAvailable(DEVINST devnode) {
@@ -100,10 +105,10 @@ DriverLibraryPath readDriverPathForDisplayAdapter(DEVINST dnDevNode) {
     return driverPath;
 }
 
-std::wstring readDisplayAdaptersDeviceIdsList() {
+std::wstring readDisplayAdaptersDeviceIdsList(const GUID rguid) {
     OLECHAR displayGuidStr[MAX_GUID_STRING_LEN];
 
-    int strFromGuidErr = StringFromGUID2(GUID_DEVCLASS_DISPLAY, displayGuidStr,
+    int strFromGuidErr = StringFromGUID2(rguid, displayGuidStr,
                                         MAX_GUID_STRING_LEN);
     if (MAX_GUID_STRING_LEN != strFromGuidErr) {
         assert(false && "StringFromGUID2 failed");
@@ -133,9 +138,9 @@ std::wstring readDisplayAdaptersDeviceIdsList() {
     return deviceIdList;
 }
 
-std::vector<DriverLibraryPath> discoverDriversBasedOnDisplayAdapters() {
+std::vector<DriverLibraryPath> discoverDriversBasedOnDisplayAdapters(const GUID rguid) {
     std::vector<DriverLibraryPath> enabledDrivers;
-    auto deviceIdList = readDisplayAdaptersDeviceIdsList();
+    auto deviceIdList = readDisplayAdaptersDeviceIdsList(rguid);
     if (deviceIdList.empty()) {
         return enabledDrivers;
     }
