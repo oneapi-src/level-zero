@@ -16,6 +16,8 @@ add_library(${TARGET_NAME}
         ${CMAKE_CURRENT_SOURCE_DIR}/ze_trcddi.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/tracing_imp.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/ze_tracing.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/ze_tracing_cb_structs.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/ze_tracing_register_cb.cpp
         ${CMAKE_CURRENT_BINARY_DIR}/ZeTracingLayerVersion.rc
 )
 

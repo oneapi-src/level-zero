@@ -48,6 +48,8 @@ namespace ze_lib
 
         ze_result_t zelTracingInit();
         zel_tracing_dditable_t  zelTracingDdiTable = {};
+
+        HMODULE tracing_lib = nullptr;
     };
 
     extern context_t *context;

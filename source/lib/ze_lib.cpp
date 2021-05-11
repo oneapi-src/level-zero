@@ -44,8 +44,18 @@ namespace ze_lib
         auto loaderInit = reinterpret_cast<loaderInit_t>(
                 GET_FUNCTION_PTR(loader, "zeLoaderInit") );
         result = loaderInit();
+        if( ZE_RESULT_SUCCESS == result ) {
+            typedef HMODULE (ZE_APICALL *getTracing_t)();
+            auto getTracing = reinterpret_cast<getTracing_t>(
+                GET_FUNCTION_PTR(loader, "zeLoaderGetTracingHandle") );
+            tracing_lib = getTracing();
+        }
 #else
         result = zeLoaderInit();
+        if( ZE_RESULT_SUCCESS == result ) {
+            tracing_lib = zeLoaderGetTracingHandle();
+        }
+        
 #endif
 
 

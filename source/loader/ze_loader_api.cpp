@@ -26,6 +26,19 @@ zeLoaderInit()
     return loader::context->init();
 }
 
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Exported function for getting tracing lib handle
+///
+/// @returns
+///     - ::handle to tracing library
+ZE_DLLEXPORT HMODULE ZE_APICALL
+zeLoaderGetTracingHandle()
+{
+    return loader::context->tracingLayer;
+}
+
+
+
 
 #if defined(__cplusplus)
 }

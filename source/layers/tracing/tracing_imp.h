@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Intel Corporation
+ * Copyright (C) 2020-2021 Intel Corporation
  *
  * SPDX-License-Identifier: MIT
  *
@@ -9,6 +9,7 @@
 
 #include "tracing.h"
 #include "ze_api.h"
+#include "ze_tracing_cb_structs.h"
 
 #include <atomic>
 #include <chrono>
@@ -32,8 +33,8 @@ extern thread_local ze_bool_t tracingInProgress;
 extern struct APITracerContextImp *pGlobalAPITracerContextImp;
 
 typedef struct tracer_array_entry {
-    zel_core_callbacks_t corePrologues;
-    zel_core_callbacks_t coreEpilogues;
+    zel_all_core_callbacks_t corePrologues;
+    zel_all_core_callbacks_t coreEpilogues;
     void *pUserData;
 } tracer_array_entry_t;
 
@@ -52,12 +53,16 @@ struct APITracerImp : APITracer {
     ze_result_t destroyTracer(zel_tracer_handle_t phTracer) override;
     ze_result_t setPrologues(zel_core_callbacks_t *pCoreCbs) override;
     ze_result_t setEpilogues(zel_core_callbacks_t *pCoreCbs) override;
+    zel_all_core_callbacks_t& getProEpilogues(zel_tracer_reg_t callback_type, ze_result_t& result) override;
+    ze_result_t resetAllCallbacks() override;
     ze_result_t enableTracer(ze_bool_t enable) override;
 
     tracer_array_entry_t tracerFunctions;
     tracingState_t tracingState;
 
   private:
+
+    void copyCoreCbsToAllCbs(zel_all_core_callbacks_t& allCbs, zel_core_callbacks_t& Cbs);
 };
 
 class ThreadPrivateTracerData {

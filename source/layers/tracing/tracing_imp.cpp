@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Intel Corporation
+ * Copyright (C) 2020-2021 Intel Corporation
  *
  * SPDX-License-Identifier: MIT
  *
@@ -68,7 +68,7 @@ ze_result_t APITracerImp::setPrologues(zel_core_callbacks_t *pCoreCbs) {
         return ZE_RESULT_ERROR_INVALID_ARGUMENT;
     }
 
-    this->tracerFunctions.corePrologues = *pCoreCbs;
+    copyCoreCbsToAllCbs(this->tracerFunctions.corePrologues, *pCoreCbs);
 
     return ZE_RESULT_SUCCESS;
 }
@@ -79,7 +79,31 @@ ze_result_t APITracerImp::setEpilogues(zel_core_callbacks_t *pCoreCbs) {
         return ZE_RESULT_ERROR_INVALID_ARGUMENT;
     }
 
-    this->tracerFunctions.coreEpilogues = *pCoreCbs;
+    copyCoreCbsToAllCbs(this->tracerFunctions.coreEpilogues, *pCoreCbs);
+
+    return ZE_RESULT_SUCCESS;
+}
+
+zel_all_core_callbacks_t& APITracerImp::getProEpilogues(zel_tracer_reg_t callback_type, ze_result_t& result) {
+
+    result = ZE_RESULT_SUCCESS;
+
+    if (this->tracingState != disabledState)
+        result = ZE_RESULT_ERROR_INVALID_ARGUMENT;
+
+    if (callback_type == ZEL_REGISTER_PROLOGUE)
+        return this->tracerFunctions.corePrologues;
+    else
+        return this->tracerFunctions.coreEpilogues;
+}
+
+ze_result_t APITracerImp::resetAllCallbacks() {
+
+    if (this->tracingState != disabledState) {
+        return ZE_RESULT_ERROR_INVALID_ARGUMENT;
+    }
+
+    this->tracerFunctions.coreEpilogues = {};
 
     return ZE_RESULT_SUCCESS;
 }
@@ -88,6 +112,131 @@ ze_result_t APITracerImp::enableTracer(ze_bool_t enable) {
     return pGlobalAPITracerContextImp->enableTracingImp(this, enable);
 }
 
+void APITracerImp::copyCoreCbsToAllCbs(zel_all_core_callbacks_t& allCbs, zel_core_callbacks_t& cbs) {
+
+    allCbs.Global.pfnInitCb = cbs.Global.pfnInitCb;
+    allCbs.Driver.pfnGetCb = cbs.Driver.pfnGetCb;
+    allCbs.Driver.pfnGetApiVersionCb = cbs.Driver.pfnGetApiVersionCb;
+    allCbs.Driver.pfnGetPropertiesCb = cbs.Driver.pfnGetPropertiesCb;
+    allCbs.Driver.pfnGetIpcPropertiesCb = cbs.Driver.pfnGetIpcPropertiesCb;
+    allCbs.Driver.pfnGetExtensionPropertiesCb = cbs.Driver.pfnGetExtensionPropertiesCb;
+    allCbs.Device.pfnGetCb = cbs.Device.pfnGetCb;
+    allCbs.Device.pfnGetSubDevicesCb = cbs.Device.pfnGetSubDevicesCb;
+    allCbs.Device.pfnGetPropertiesCb = cbs.Device.pfnGetPropertiesCb;
+    allCbs.Device.pfnGetComputePropertiesCb = cbs.Device.pfnGetComputePropertiesCb;
+    allCbs.Device.pfnGetModulePropertiesCb = cbs.Device.pfnGetModulePropertiesCb;
+    allCbs.Device.pfnGetCommandQueueGroupPropertiesCb = cbs.Device.pfnGetCommandQueueGroupPropertiesCb;
+    allCbs.Device.pfnGetMemoryPropertiesCb = cbs.Device.pfnGetMemoryPropertiesCb;
+    allCbs.Device.pfnGetMemoryAccessPropertiesCb = cbs.Device.pfnGetMemoryAccessPropertiesCb;
+    allCbs.Device.pfnGetCachePropertiesCb = cbs.Device.pfnGetCachePropertiesCb;
+    allCbs.Device.pfnGetImagePropertiesCb = cbs.Device.pfnGetImagePropertiesCb;
+    allCbs.Device.pfnGetExternalMemoryPropertiesCb = cbs.Device.pfnGetExternalMemoryPropertiesCb;
+    allCbs.Device.pfnGetP2PPropertiesCb = cbs.Device.pfnGetP2PPropertiesCb;
+    allCbs.Device.pfnCanAccessPeerCb = cbs.Device.pfnCanAccessPeerCb;
+    allCbs.Device.pfnGetStatusCb = cbs.Device.pfnGetStatusCb;
+    allCbs.Context.pfnCreateCb = cbs.Context.pfnCreateCb;
+    allCbs.Context.pfnDestroyCb = cbs.Context.pfnDestroyCb;
+    allCbs.Context.pfnGetStatusCb = cbs.Context.pfnGetStatusCb;
+    allCbs.Context.pfnSystemBarrierCb = cbs.Context.pfnSystemBarrierCb;
+    allCbs.Context.pfnMakeMemoryResidentCb = cbs.Context.pfnMakeMemoryResidentCb;
+    allCbs.Context.pfnEvictMemoryCb = cbs.Context.pfnEvictMemoryCb;
+    allCbs.Context.pfnMakeImageResidentCb = cbs.Context.pfnMakeImageResidentCb;
+    allCbs.Context.pfnEvictImageCb = cbs.Context.pfnEvictImageCb;
+    allCbs.CommandQueue.pfnCreateCb = cbs.CommandQueue.pfnCreateCb;
+    allCbs.CommandQueue.pfnDestroyCb = cbs.CommandQueue.pfnDestroyCb;
+    allCbs.CommandQueue.pfnExecuteCommandListsCb = cbs.CommandQueue.pfnExecuteCommandListsCb;
+    allCbs.CommandQueue.pfnSynchronizeCb = cbs.CommandQueue.pfnSynchronizeCb;
+    allCbs.CommandList.pfnCreateCb = cbs.CommandList.pfnCreateCb;
+    allCbs.CommandList.pfnCreateImmediateCb = cbs.CommandList.pfnCreateImmediateCb;
+    allCbs.CommandList.pfnDestroyCb = cbs.CommandList.pfnDestroyCb;
+    allCbs.CommandList.pfnCloseCb = cbs.CommandList.pfnCloseCb;
+    allCbs.CommandList.pfnResetCb = cbs.CommandList.pfnResetCb;
+    allCbs.CommandList.pfnAppendWriteGlobalTimestampCb = cbs.CommandList.pfnAppendWriteGlobalTimestampCb;
+    allCbs.CommandList.pfnAppendBarrierCb = cbs.CommandList.pfnAppendBarrierCb;
+    allCbs.CommandList.pfnAppendMemoryRangesBarrierCb = cbs.CommandList.pfnAppendMemoryRangesBarrierCb;
+    allCbs.CommandList.pfnAppendMemoryCopyCb = cbs.CommandList.pfnAppendMemoryCopyCb;
+    allCbs.CommandList.pfnAppendMemoryFillCb = cbs.CommandList.pfnAppendMemoryFillCb;
+    allCbs.CommandList.pfnAppendMemoryCopyRegionCb = cbs.CommandList.pfnAppendMemoryCopyRegionCb;
+    allCbs.CommandList.pfnAppendMemoryCopyFromContextCb = cbs.CommandList.pfnAppendMemoryCopyFromContextCb;
+    allCbs.CommandList.pfnAppendImageCopyCb = cbs.CommandList.pfnAppendImageCopyCb;
+    allCbs.CommandList.pfnAppendImageCopyRegionCb = cbs.CommandList.pfnAppendImageCopyRegionCb;
+    allCbs.CommandList.pfnAppendImageCopyToMemoryCb = cbs.CommandList.pfnAppendImageCopyToMemoryCb;
+    allCbs.CommandList.pfnAppendImageCopyFromMemoryCb = cbs.CommandList.pfnAppendImageCopyFromMemoryCb;
+    allCbs.CommandList.pfnAppendMemoryPrefetchCb = cbs.CommandList.pfnAppendMemoryPrefetchCb;
+    allCbs.CommandList.pfnAppendMemAdviseCb = cbs.CommandList.pfnAppendMemAdviseCb;
+    allCbs.CommandList.pfnAppendSignalEventCb = cbs.CommandList.pfnAppendSignalEventCb;
+    allCbs.CommandList.pfnAppendWaitOnEventsCb = cbs.CommandList.pfnAppendWaitOnEventsCb;
+    allCbs.CommandList.pfnAppendEventResetCb = cbs.CommandList.pfnAppendEventResetCb;
+    allCbs.CommandList.pfnAppendQueryKernelTimestampsCb = cbs.CommandList.pfnAppendQueryKernelTimestampsCb;
+    allCbs.CommandList.pfnAppendLaunchKernelCb = cbs.CommandList.pfnAppendLaunchKernelCb;
+    allCbs.CommandList.pfnAppendLaunchCooperativeKernelCb = cbs.CommandList.pfnAppendLaunchCooperativeKernelCb;
+    allCbs.CommandList.pfnAppendLaunchKernelIndirectCb = cbs.CommandList.pfnAppendLaunchKernelIndirectCb;
+    allCbs.CommandList.pfnAppendLaunchMultipleKernelsIndirectCb = cbs.CommandList.pfnAppendLaunchMultipleKernelsIndirectCb;
+    allCbs.Fence.pfnCreateCb = cbs.Fence.pfnCreateCb;
+    allCbs.Fence.pfnDestroyCb = cbs.Fence.pfnDestroyCb;
+    allCbs.Fence.pfnHostSynchronizeCb = cbs.Fence.pfnHostSynchronizeCb;
+    allCbs.Fence.pfnQueryStatusCb = cbs.Fence.pfnQueryStatusCb;
+    allCbs.Fence.pfnResetCb = cbs.Fence.pfnResetCb;
+    allCbs.EventPool.pfnCreateCb = cbs.EventPool.pfnCreateCb;
+    allCbs.EventPool.pfnDestroyCb = cbs.EventPool.pfnDestroyCb;
+    allCbs.EventPool.pfnGetIpcHandleCb = cbs.EventPool.pfnGetIpcHandleCb;
+    allCbs.EventPool.pfnOpenIpcHandleCb = cbs.EventPool.pfnOpenIpcHandleCb;
+    allCbs.EventPool.pfnCloseIpcHandleCb = cbs.EventPool.pfnCloseIpcHandleCb;
+    allCbs.Event.pfnCreateCb = cbs.Event.pfnCreateCb;
+    allCbs.Event.pfnDestroyCb = cbs.Event.pfnDestroyCb;
+    allCbs.Event.pfnHostSignalCb = cbs.Event.pfnHostSignalCb;
+    allCbs.Event.pfnHostSynchronizeCb = cbs.Event.pfnHostSynchronizeCb;
+    allCbs.Event.pfnQueryStatusCb = cbs.Event.pfnQueryStatusCb;
+    allCbs.Event.pfnHostResetCb = cbs.Event.pfnHostResetCb;
+    allCbs.Event.pfnQueryKernelTimestampCb = cbs.Event.pfnQueryKernelTimestampCb;
+    allCbs.Image.pfnGetPropertiesCb = cbs.Image.pfnGetPropertiesCb;
+    allCbs.Image.pfnCreateCb = cbs.Image.pfnCreateCb;
+    allCbs.Image.pfnDestroyCb = cbs.Image.pfnDestroyCb;
+    allCbs.Module.pfnCreateCb = cbs.Module.pfnCreateCb;
+    allCbs.Module.pfnDestroyCb = cbs.Module.pfnDestroyCb;
+    allCbs.Module.pfnDynamicLinkCb = cbs.Module.pfnDynamicLinkCb;
+    allCbs.Module.pfnGetNativeBinaryCb = cbs.Module.pfnGetNativeBinaryCb;
+    allCbs.Module.pfnGetGlobalPointerCb = cbs.Module.pfnGetGlobalPointerCb;
+    allCbs.Module.pfnGetKernelNamesCb = cbs.Module.pfnGetKernelNamesCb;
+    allCbs.Module.pfnGetPropertiesCb = cbs.Module.pfnGetPropertiesCb;
+    allCbs.Module.pfnGetFunctionPointerCb = cbs.Module.pfnGetFunctionPointerCb;
+    allCbs.ModuleBuildLog.pfnDestroyCb = cbs.ModuleBuildLog.pfnDestroyCb;
+    allCbs.ModuleBuildLog.pfnGetStringCb = cbs.ModuleBuildLog.pfnGetStringCb;
+    allCbs.Kernel.pfnCreateCb = cbs.Kernel.pfnCreateCb;
+    allCbs.Kernel.pfnDestroyCb = cbs.Kernel.pfnDestroyCb;
+    allCbs.Kernel.pfnSetCacheConfigCb = cbs.Kernel.pfnSetCacheConfigCb;
+    allCbs.Kernel.pfnSetGroupSizeCb = cbs.Kernel.pfnSetGroupSizeCb;
+    allCbs.Kernel.pfnSuggestGroupSizeCb = cbs.Kernel.pfnSuggestGroupSizeCb;
+    allCbs.Kernel.pfnSuggestMaxCooperativeGroupCountCb = cbs.Kernel.pfnSuggestMaxCooperativeGroupCountCb;
+    allCbs.Kernel.pfnSetArgumentValueCb = cbs.Kernel.pfnSetArgumentValueCb;
+    allCbs.Kernel.pfnSetIndirectAccessCb = cbs.Kernel.pfnSetIndirectAccessCb;
+    allCbs.Kernel.pfnGetIndirectAccessCb = cbs.Kernel.pfnGetIndirectAccessCb;
+    allCbs.Kernel.pfnGetSourceAttributesCb = cbs.Kernel.pfnGetSourceAttributesCb;
+    allCbs.Kernel.pfnGetPropertiesCb = cbs.Kernel.pfnGetPropertiesCb;
+    allCbs.Kernel.pfnGetNameCb = cbs.Kernel.pfnGetNameCb;
+    allCbs.Sampler.pfnCreateCb = cbs.Sampler.pfnCreateCb;
+    allCbs.Sampler.pfnDestroyCb = cbs.Sampler.pfnDestroyCb;
+    allCbs.PhysicalMem.pfnCreateCb = cbs.PhysicalMem.pfnCreateCb;
+    allCbs.PhysicalMem.pfnDestroyCb = cbs.PhysicalMem.pfnDestroyCb;
+    allCbs.Mem.pfnAllocSharedCb = cbs.Mem.pfnAllocSharedCb;
+    allCbs.Mem.pfnAllocDeviceCb = cbs.Mem.pfnAllocDeviceCb;
+    allCbs.Mem.pfnAllocHostCb = cbs.Mem.pfnAllocHostCb;
+    allCbs.Mem.pfnFreeCb = cbs.Mem.pfnFreeCb;
+    allCbs.Mem.pfnGetAllocPropertiesCb = cbs.Mem.pfnGetAllocPropertiesCb;
+    allCbs.Mem.pfnGetAddressRangeCb = cbs.Mem.pfnGetAddressRangeCb;
+    allCbs.Mem.pfnGetIpcHandleCb = cbs.Mem.pfnGetIpcHandleCb;
+    allCbs.Mem.pfnOpenIpcHandleCb = cbs.Mem.pfnOpenIpcHandleCb;
+    allCbs.Mem.pfnCloseIpcHandleCb = cbs.Mem.pfnCloseIpcHandleCb;
+    allCbs.VirtualMem.pfnReserveCb = cbs.VirtualMem.pfnReserveCb;
+    allCbs.VirtualMem.pfnFreeCb = cbs.VirtualMem.pfnFreeCb;
+    allCbs.VirtualMem.pfnQueryPageSizeCb = cbs.VirtualMem.pfnQueryPageSizeCb;
+    allCbs.VirtualMem.pfnMapCb = cbs.VirtualMem.pfnMapCb;
+    allCbs.VirtualMem.pfnUnmapCb = cbs.VirtualMem.pfnUnmapCb;
+    allCbs.VirtualMem.pfnSetAccessAttributeCb = cbs.VirtualMem.pfnSetAccessAttributeCb;
+    allCbs.VirtualMem.pfnGetAccessAttributeCb = cbs.VirtualMem.pfnGetAccessAttributeCb;
+
+}
+    
 void APITracerContextImp::addThreadTracerDataToList(
     ThreadPrivateTracerData *threadDataP) {
     std::lock_guard<std::mutex> lock(threadTracerDataListMutex);

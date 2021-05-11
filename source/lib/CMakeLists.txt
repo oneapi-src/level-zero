@@ -12,6 +12,7 @@ target_sources(${TARGET_LOADER_NAME}
         ${CMAKE_CURRENT_SOURCE_DIR}/zel_tracing_libddi.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/ze_lib.h
         ${CMAKE_CURRENT_SOURCE_DIR}/ze_lib.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/ze_tracing_register_cb_libapi.cpp
 )
 
 
