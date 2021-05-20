@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (C) 2020 Intel Corporation
+ * Copyright (C) 2020-2021 Intel Corporation
  *
  * SPDX-License-Identifier: MIT
  *
@@ -9,6 +9,26 @@
 #include <memory>
 
 #include "zello_init.h"
+
+void print_loader_versions(){
+
+    zel_component_version_t *versions;
+    size_t size = 0;
+    zelLoaderGetVersions(&size, nullptr);
+    std::cout << "zelLoaderGetVersions number of components found: " << size << std::endl;
+    versions = new zel_component_version_t[size];
+    zelLoaderGetVersions(&size, versions);
+
+    for(int i = 0; i < size; i++){
+        std::cout << "Version " << i << std::endl;
+        std::cout << "Name: " << versions[i].component_name << std::endl;
+        std::cout << "Major: " << versions[i].component_lib_version.major << std::endl;
+        std::cout << "Minor: " << versions[i].component_lib_version.minor << std::endl;
+        std::cout << "Patch: " << versions[i].component_lib_version.patch << std::endl;
+    }
+
+    delete[] versions;
+}
 
 //////////////////////////////////////////////////////////////////////////
 int main( int argc, char *argv[] )
@@ -26,6 +46,10 @@ int main( int argc, char *argv[] )
         putenv( const_cast<char *>( "ZE_ENABLE_VALIDATION_LAYER=1" ) );
         putenv( const_cast<char *>( "ZE_ENABLE_PARAMETER_VALIDATION=1" ) );
     }
+    if( argparse( argc, argv, "-trace", "--enable_tracing_layer" ) )
+    {
+        putenv( const_cast<char *>( "ZE_ENABLE_TRACING_LAYER=1" ) );
+    }
 
     ze_result_t status;
     const ze_device_type_t type = ZE_DEVICE_TYPE_GPU;
@@ -34,6 +58,9 @@ int main( int argc, char *argv[] )
     ze_device_handle_t pDevice = nullptr;
     if( init_ze() )
     {
+
+        print_loader_versions();
+
         uint32_t driverCount = 0;
         status = zeDriverGet(&driverCount, nullptr);
         if(status != ZE_RESULT_SUCCESS) {

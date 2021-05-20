@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (C) 2020 Intel Corporation
+ * Copyright (C) 2020-2021 Intel Corporation
  *
  * SPDX-License-Identifier: MIT
  *
@@ -37,8 +37,20 @@ zeLoaderGetTracingHandle()
     return loader::context->tracingLayer;
 }
 
+ZE_DLLEXPORT ze_result_t ZE_APICALL
+zelLoaderGetVersionsInternal(
+   size_t *num_elems,                     //Pointer to num versions to get.  
+   zel_component_version_t *versions)    //Pointer to array of versions. If set to NULL, num_elems is returned
+{
+    if(nullptr == versions){
+        *num_elems = loader::context->compVersions.size();
+        return ZE_RESULT_SUCCESS;
+    }
+    auto size = *num_elems > loader::context->compVersions.size() ? loader::context->compVersions.size() : *num_elems;
+    memcpy(versions, loader::context->compVersions.data(), size * sizeof(zel_component_version_t));
 
-
+    return ZE_RESULT_SUCCESS;
+}
 
 #if defined(__cplusplus)
 }

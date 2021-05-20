@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (C) 2020 Intel Corporation
+ * Copyright (C) 2020-2021 Intel Corporation
  *
  * SPDX-License-Identifier: MIT
  *
@@ -11,6 +11,7 @@
 #include <string.h> 
 #include "ze_api.h"
 #include "zet_api.h"
+#include "loader/ze_loader.h"
 #include "zello_log.h"
 
 //////////////////////////////////////////////////////////////////////////

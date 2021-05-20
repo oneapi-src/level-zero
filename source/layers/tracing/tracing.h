@@ -14,6 +14,7 @@
 
 struct _zel_tracer_handle_t {};
 
+#define TRACING_COMP_NAME "tracing layer"
 namespace tracing_layer {
 
 struct APITracer : _zel_tracer_handle_t {

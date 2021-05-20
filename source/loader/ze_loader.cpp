@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (C) 2019 Intel Corporation
+ * Copyright (C) 2019-2021 Intel Corporation
  *
  * SPDX-License-Identifier: MIT
  *
@@ -41,14 +41,36 @@ namespace loader
 
         }
 
+        add_loader_version();
+        typedef ze_result_t (ZE_APICALL *getVersion_t)(zel_component_version_t *version);
         if( getenv_tobool( "ZE_ENABLE_VALIDATION_LAYER" ) )
         {
             validationLayer = LOAD_DRIVER_LIBRARY( MAKE_LAYER_NAME( "ze_validation_layer" ) );
+            if(validationLayer)
+            {
+                auto getVersion = reinterpret_cast<getVersion_t>(
+                    GET_FUNCTION_PTR(validationLayer, "zelLoaderGetVersion"));
+                zel_component_version_t version;
+                if(getVersion && ZE_RESULT_SUCCESS == getVersion(&version))
+                {   
+                    compVersions.push_back(version);
+                }
+            }
         }
 
         if( getenv_tobool( "ZE_ENABLE_TRACING_LAYER" ) )
         {
             tracingLayer = LOAD_DRIVER_LIBRARY( MAKE_LAYER_NAME( "ze_tracing_layer" ) );
+            if(tracingLayer)
+            {
+                auto getVersion = reinterpret_cast<getVersion_t>(
+                    GET_FUNCTION_PTR(tracingLayer, "zelLoaderGetVersion"));
+                zel_component_version_t version;
+                if(getVersion && ZE_RESULT_SUCCESS == getVersion(&version))
+                {   
+                    compVersions.push_back(version);
+                }
+            }
         }
 
         forceIntercept = getenv_tobool( "ZE_ENABLE_LOADER_INTERCEPT" );
@@ -67,4 +89,16 @@ namespace loader
             FREE_DRIVER_LIBRARY( drv.handle );
         }
     };
+
+    void context_t::add_loader_version(){
+        zel_component_version_t version = {};
+        strncpy(version.component_name, LOADER_COMP_NAME, ZEL_COMPONENT_STRING_SIZE);
+        version.spec_version = ZE_API_VERSION_CURRENT;
+        version.component_lib_version.major = LOADER_VERSION_MAJOR;
+        version.component_lib_version.minor = LOADER_VERSION_MINOR;
+        version.component_lib_version.patch = LOADER_VERSION_PATCH;
+
+        compVersions.push_back(version);
+    }
+
 }

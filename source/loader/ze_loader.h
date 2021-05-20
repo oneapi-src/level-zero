@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (C) 2019 Intel Corporation
+ * Copyright (C) 2019-2021 Intel Corporation
  *
  * SPDX-License-Identifier: MIT
  *
@@ -18,6 +18,8 @@
 #include "ze_ldrddi.h"
 #include "zet_ldrddi.h"
 #include "zes_ldrddi.h"
+
+#include "loader/ze_loader.h"
 
 namespace loader
 {
@@ -43,12 +45,15 @@ namespace loader
         HMODULE tracingLayer = nullptr;
 
         bool forceIntercept = false;
+        std::vector<zel_component_version_t> compVersions;
+        const char *LOADER_COMP_NAME = "loader";
 
         ze_result_t init();
+        void add_loader_version();
         ~context_t();
     };
 
     extern context_t *context;
     extern ze_event_factory_t ze_event_factory;
-
+    
 }

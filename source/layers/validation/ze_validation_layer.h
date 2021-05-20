@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (C) 2019 Intel Corporation
+ * Copyright (C) 2019-2021 Intel Corporation
  *
  * SPDX-License-Identifier: MIT
  *
@@ -12,6 +12,9 @@
 #include "zet_ddi.h"
 #include "zes_ddi.h"
 #include "ze_util.h"
+#include "loader/ze_loader.h"
+
+#define VALIDATION_COMP_NAME "validation layer"
 
 namespace validation_layer
 {
