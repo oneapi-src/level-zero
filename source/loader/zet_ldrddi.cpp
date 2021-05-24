@@ -1274,6 +1274,11 @@ zetGetDeviceProcAddrTable(
         {
             auto getTable = reinterpret_cast<zet_pfnGetDeviceProcAddrTable_t>(
                 GET_FUNCTION_PTR( drv.handle, "zetGetDeviceProcAddrTable") );
+            if(!getTable)
+            {
+                result = ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+                continue;
+            }
             result = getTable( version, &drv.dditable.zet.Device );
         }
     }
@@ -1336,6 +1341,11 @@ zetGetContextProcAddrTable(
         {
             auto getTable = reinterpret_cast<zet_pfnGetContextProcAddrTable_t>(
                 GET_FUNCTION_PTR( drv.handle, "zetGetContextProcAddrTable") );
+            if(!getTable)
+            {
+                result = ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+                continue;
+            }
             result = getTable( version, &drv.dditable.zet.Context );
         }
     }
@@ -1398,6 +1408,11 @@ zetGetCommandListProcAddrTable(
         {
             auto getTable = reinterpret_cast<zet_pfnGetCommandListProcAddrTable_t>(
                 GET_FUNCTION_PTR( drv.handle, "zetGetCommandListProcAddrTable") );
+            if(!getTable)
+            {
+                result = ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+                continue;
+            }
             result = getTable( version, &drv.dditable.zet.CommandList );
         }
     }
@@ -1463,6 +1478,11 @@ zetGetKernelProcAddrTable(
         {
             auto getTable = reinterpret_cast<zet_pfnGetKernelProcAddrTable_t>(
                 GET_FUNCTION_PTR( drv.handle, "zetGetKernelProcAddrTable") );
+            if(!getTable)
+            {
+                result = ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+                continue;
+            }
             result = getTable( version, &drv.dditable.zet.Kernel );
         }
     }
@@ -1525,6 +1545,11 @@ zetGetModuleProcAddrTable(
         {
             auto getTable = reinterpret_cast<zet_pfnGetModuleProcAddrTable_t>(
                 GET_FUNCTION_PTR( drv.handle, "zetGetModuleProcAddrTable") );
+            if(!getTable)
+            {
+                result = ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+                continue;
+            }
             result = getTable( version, &drv.dditable.zet.Module );
         }
     }
@@ -1587,6 +1612,11 @@ zetGetDebugProcAddrTable(
         {
             auto getTable = reinterpret_cast<zet_pfnGetDebugProcAddrTable_t>(
                 GET_FUNCTION_PTR( drv.handle, "zetGetDebugProcAddrTable") );
+            if(!getTable)
+            {
+                result = ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+                continue;
+            }
             result = getTable( version, &drv.dditable.zet.Debug );
         }
     }
@@ -1659,6 +1689,11 @@ zetGetMetricProcAddrTable(
         {
             auto getTable = reinterpret_cast<zet_pfnGetMetricProcAddrTable_t>(
                 GET_FUNCTION_PTR( drv.handle, "zetGetMetricProcAddrTable") );
+            if(!getTable)
+            {
+                result = ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+                continue;
+            }
             result = getTable( version, &drv.dditable.zet.Metric );
         }
     }
@@ -1722,6 +1757,11 @@ zetGetMetricGroupProcAddrTable(
         {
             auto getTable = reinterpret_cast<zet_pfnGetMetricGroupProcAddrTable_t>(
                 GET_FUNCTION_PTR( drv.handle, "zetGetMetricGroupProcAddrTable") );
+            if(!getTable)
+            {
+                result = ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+                continue;
+            }
             result = getTable( version, &drv.dditable.zet.MetricGroup );
         }
     }
@@ -1786,6 +1826,11 @@ zetGetMetricQueryProcAddrTable(
         {
             auto getTable = reinterpret_cast<zet_pfnGetMetricQueryProcAddrTable_t>(
                 GET_FUNCTION_PTR( drv.handle, "zetGetMetricQueryProcAddrTable") );
+            if(!getTable)
+            {
+                result = ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+                continue;
+            }
             result = getTable( version, &drv.dditable.zet.MetricQuery );
         }
     }
@@ -1851,6 +1896,11 @@ zetGetMetricQueryPoolProcAddrTable(
         {
             auto getTable = reinterpret_cast<zet_pfnGetMetricQueryPoolProcAddrTable_t>(
                 GET_FUNCTION_PTR( drv.handle, "zetGetMetricQueryPoolProcAddrTable") );
+            if(!getTable)
+            {
+                result = ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+                continue;
+            }
             result = getTable( version, &drv.dditable.zet.MetricQueryPool );
         }
     }
@@ -1914,6 +1964,11 @@ zetGetMetricStreamerProcAddrTable(
         {
             auto getTable = reinterpret_cast<zet_pfnGetMetricStreamerProcAddrTable_t>(
                 GET_FUNCTION_PTR( drv.handle, "zetGetMetricStreamerProcAddrTable") );
+            if(!getTable)
+            {
+                result = ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+                continue;
+            }
             result = getTable( version, &drv.dditable.zet.MetricStreamer );
         }
     }
@@ -1978,6 +2033,11 @@ zetGetTracerExpProcAddrTable(
         {
             auto getTable = reinterpret_cast<zet_pfnGetTracerExpProcAddrTable_t>(
                 GET_FUNCTION_PTR( drv.handle, "zetGetTracerExpProcAddrTable") );
+            if(!getTable)
+            {
+                result = ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+                continue;
+            }
             result = getTable( version, &drv.dditable.zet.TracerExp );
         }
     }

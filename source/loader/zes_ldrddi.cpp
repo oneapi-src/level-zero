@@ -3056,6 +3056,11 @@ zesGetDeviceProcAddrTable(
         {
             auto getTable = reinterpret_cast<zes_pfnGetDeviceProcAddrTable_t>(
                 GET_FUNCTION_PTR( drv.handle, "zesGetDeviceProcAddrTable") );
+            if(!getTable)
+            {
+                result = ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+                continue;
+            }
             result = getTable( version, &drv.dditable.zes.Device );
         }
     }
@@ -3141,6 +3146,11 @@ zesGetDriverProcAddrTable(
         {
             auto getTable = reinterpret_cast<zes_pfnGetDriverProcAddrTable_t>(
                 GET_FUNCTION_PTR( drv.handle, "zesGetDriverProcAddrTable") );
+            if(!getTable)
+            {
+                result = ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+                continue;
+            }
             result = getTable( version, &drv.dditable.zes.Driver );
         }
     }
@@ -3204,6 +3214,11 @@ zesGetDiagnosticsProcAddrTable(
         {
             auto getTable = reinterpret_cast<zes_pfnGetDiagnosticsProcAddrTable_t>(
                 GET_FUNCTION_PTR( drv.handle, "zesGetDiagnosticsProcAddrTable") );
+            if(!getTable)
+            {
+                result = ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+                continue;
+            }
             result = getTable( version, &drv.dditable.zes.Diagnostics );
         }
     }
@@ -3268,6 +3283,11 @@ zesGetEngineProcAddrTable(
         {
             auto getTable = reinterpret_cast<zes_pfnGetEngineProcAddrTable_t>(
                 GET_FUNCTION_PTR( drv.handle, "zesGetEngineProcAddrTable") );
+            if(!getTable)
+            {
+                result = ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+                continue;
+            }
             result = getTable( version, &drv.dditable.zes.Engine );
         }
     }
@@ -3331,6 +3351,11 @@ zesGetFabricPortProcAddrTable(
         {
             auto getTable = reinterpret_cast<zes_pfnGetFabricPortProcAddrTable_t>(
                 GET_FUNCTION_PTR( drv.handle, "zesGetFabricPortProcAddrTable") );
+            if(!getTable)
+            {
+                result = ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+                continue;
+            }
             result = getTable( version, &drv.dditable.zes.FabricPort );
         }
     }
@@ -3398,6 +3423,11 @@ zesGetFanProcAddrTable(
         {
             auto getTable = reinterpret_cast<zes_pfnGetFanProcAddrTable_t>(
                 GET_FUNCTION_PTR( drv.handle, "zesGetFanProcAddrTable") );
+            if(!getTable)
+            {
+                result = ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+                continue;
+            }
             result = getTable( version, &drv.dditable.zes.Fan );
         }
     }
@@ -3465,6 +3495,11 @@ zesGetFirmwareProcAddrTable(
         {
             auto getTable = reinterpret_cast<zes_pfnGetFirmwareProcAddrTable_t>(
                 GET_FUNCTION_PTR( drv.handle, "zesGetFirmwareProcAddrTable") );
+            if(!getTable)
+            {
+                result = ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+                continue;
+            }
             result = getTable( version, &drv.dditable.zes.Firmware );
         }
     }
@@ -3528,6 +3563,11 @@ zesGetFrequencyProcAddrTable(
         {
             auto getTable = reinterpret_cast<zes_pfnGetFrequencyProcAddrTable_t>(
                 GET_FUNCTION_PTR( drv.handle, "zesGetFrequencyProcAddrTable") );
+            if(!getTable)
+            {
+                result = ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+                continue;
+            }
             result = getTable( version, &drv.dditable.zes.Frequency );
         }
     }
@@ -3606,6 +3646,11 @@ zesGetLedProcAddrTable(
         {
             auto getTable = reinterpret_cast<zes_pfnGetLedProcAddrTable_t>(
                 GET_FUNCTION_PTR( drv.handle, "zesGetLedProcAddrTable") );
+            if(!getTable)
+            {
+                result = ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+                continue;
+            }
             result = getTable( version, &drv.dditable.zes.Led );
         }
     }
@@ -3671,6 +3716,11 @@ zesGetMemoryProcAddrTable(
         {
             auto getTable = reinterpret_cast<zes_pfnGetMemoryProcAddrTable_t>(
                 GET_FUNCTION_PTR( drv.handle, "zesGetMemoryProcAddrTable") );
+            if(!getTable)
+            {
+                result = ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+                continue;
+            }
             result = getTable( version, &drv.dditable.zes.Memory );
         }
     }
@@ -3735,6 +3785,11 @@ zesGetPerformanceFactorProcAddrTable(
         {
             auto getTable = reinterpret_cast<zes_pfnGetPerformanceFactorProcAddrTable_t>(
                 GET_FUNCTION_PTR( drv.handle, "zesGetPerformanceFactorProcAddrTable") );
+            if(!getTable)
+            {
+                result = ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+                continue;
+            }
             result = getTable( version, &drv.dditable.zes.PerformanceFactor );
         }
     }
@@ -3799,6 +3854,11 @@ zesGetPowerProcAddrTable(
         {
             auto getTable = reinterpret_cast<zes_pfnGetPowerProcAddrTable_t>(
                 GET_FUNCTION_PTR( drv.handle, "zesGetPowerProcAddrTable") );
+            if(!getTable)
+            {
+                result = ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+                continue;
+            }
             result = getTable( version, &drv.dditable.zes.Power );
         }
     }
@@ -3866,6 +3926,11 @@ zesGetPsuProcAddrTable(
         {
             auto getTable = reinterpret_cast<zes_pfnGetPsuProcAddrTable_t>(
                 GET_FUNCTION_PTR( drv.handle, "zesGetPsuProcAddrTable") );
+            if(!getTable)
+            {
+                result = ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+                continue;
+            }
             result = getTable( version, &drv.dditable.zes.Psu );
         }
     }
@@ -3929,6 +3994,11 @@ zesGetRasProcAddrTable(
         {
             auto getTable = reinterpret_cast<zes_pfnGetRasProcAddrTable_t>(
                 GET_FUNCTION_PTR( drv.handle, "zesGetRasProcAddrTable") );
+            if(!getTable)
+            {
+                result = ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+                continue;
+            }
             result = getTable( version, &drv.dditable.zes.Ras );
         }
     }
@@ -3994,6 +4064,11 @@ zesGetSchedulerProcAddrTable(
         {
             auto getTable = reinterpret_cast<zes_pfnGetSchedulerProcAddrTable_t>(
                 GET_FUNCTION_PTR( drv.handle, "zesGetSchedulerProcAddrTable") );
+            if(!getTable)
+            {
+                result = ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+                continue;
+            }
             result = getTable( version, &drv.dditable.zes.Scheduler );
         }
     }
@@ -4063,6 +4138,11 @@ zesGetStandbyProcAddrTable(
         {
             auto getTable = reinterpret_cast<zes_pfnGetStandbyProcAddrTable_t>(
                 GET_FUNCTION_PTR( drv.handle, "zesGetStandbyProcAddrTable") );
+            if(!getTable)
+            {
+                result = ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+                continue;
+            }
             result = getTable( version, &drv.dditable.zes.Standby );
         }
     }
@@ -4127,6 +4207,11 @@ zesGetTemperatureProcAddrTable(
         {
             auto getTable = reinterpret_cast<zes_pfnGetTemperatureProcAddrTable_t>(
                 GET_FUNCTION_PTR( drv.handle, "zesGetTemperatureProcAddrTable") );
+            if(!getTable)
+            {
+                result = ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+                continue;
+            }
             result = getTable( version, &drv.dditable.zes.Temperature );
         }
     }
