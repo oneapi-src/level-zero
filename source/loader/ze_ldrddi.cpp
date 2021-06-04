@@ -4172,6 +4172,8 @@ zeGetGlobalProcAddrTable(
     {
         auto getTable = reinterpret_cast<ze_pfnGetGlobalProcAddrTable_t>(
             GET_FUNCTION_PTR(loader::context->validationLayer, "zeGetGlobalProcAddrTable") );
+        if(!getTable)
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
         result = getTable( version, pDdiTable );
     }
 
@@ -4180,6 +4182,8 @@ zeGetGlobalProcAddrTable(
     {
         auto getTable = reinterpret_cast<ze_pfnGetGlobalProcAddrTable_t>(
             GET_FUNCTION_PTR(loader::context->tracingLayer, "zeGetGlobalProcAddrTable") );
+        if(!getTable)
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
         result = getTable( version, pDdiTable );
     }
 
@@ -4252,6 +4256,8 @@ zeGetDriverProcAddrTable(
     {
         auto getTable = reinterpret_cast<ze_pfnGetDriverProcAddrTable_t>(
             GET_FUNCTION_PTR(loader::context->validationLayer, "zeGetDriverProcAddrTable") );
+        if(!getTable)
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
         result = getTable( version, pDdiTable );
     }
 
@@ -4260,6 +4266,8 @@ zeGetDriverProcAddrTable(
     {
         auto getTable = reinterpret_cast<ze_pfnGetDriverProcAddrTable_t>(
             GET_FUNCTION_PTR(loader::context->tracingLayer, "zeGetDriverProcAddrTable") );
+        if(!getTable)
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
         result = getTable( version, pDdiTable );
     }
 
@@ -4341,6 +4349,8 @@ zeGetDeviceProcAddrTable(
     {
         auto getTable = reinterpret_cast<ze_pfnGetDeviceProcAddrTable_t>(
             GET_FUNCTION_PTR(loader::context->validationLayer, "zeGetDeviceProcAddrTable") );
+        if(!getTable)
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
         result = getTable( version, pDdiTable );
     }
 
@@ -4349,6 +4359,8 @@ zeGetDeviceProcAddrTable(
     {
         auto getTable = reinterpret_cast<ze_pfnGetDeviceProcAddrTable_t>(
             GET_FUNCTION_PTR(loader::context->tracingLayer, "zeGetDeviceProcAddrTable") );
+        if(!getTable)
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
         result = getTable( version, pDdiTable );
     }
 
@@ -4424,6 +4436,8 @@ zeGetContextProcAddrTable(
     {
         auto getTable = reinterpret_cast<ze_pfnGetContextProcAddrTable_t>(
             GET_FUNCTION_PTR(loader::context->validationLayer, "zeGetContextProcAddrTable") );
+        if(!getTable)
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
         result = getTable( version, pDdiTable );
     }
 
@@ -4432,6 +4446,8 @@ zeGetContextProcAddrTable(
     {
         auto getTable = reinterpret_cast<ze_pfnGetContextProcAddrTable_t>(
             GET_FUNCTION_PTR(loader::context->tracingLayer, "zeGetContextProcAddrTable") );
+        if(!getTable)
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
         result = getTable( version, pDdiTable );
     }
 
@@ -4502,6 +4518,8 @@ zeGetCommandQueueProcAddrTable(
     {
         auto getTable = reinterpret_cast<ze_pfnGetCommandQueueProcAddrTable_t>(
             GET_FUNCTION_PTR(loader::context->validationLayer, "zeGetCommandQueueProcAddrTable") );
+        if(!getTable)
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
         result = getTable( version, pDdiTable );
     }
 
@@ -4510,6 +4528,8 @@ zeGetCommandQueueProcAddrTable(
     {
         auto getTable = reinterpret_cast<ze_pfnGetCommandQueueProcAddrTable_t>(
             GET_FUNCTION_PTR(loader::context->tracingLayer, "zeGetCommandQueueProcAddrTable") );
+        if(!getTable)
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
         result = getTable( version, pDdiTable );
     }
 
@@ -4602,6 +4622,8 @@ zeGetCommandListProcAddrTable(
     {
         auto getTable = reinterpret_cast<ze_pfnGetCommandListProcAddrTable_t>(
             GET_FUNCTION_PTR(loader::context->validationLayer, "zeGetCommandListProcAddrTable") );
+        if(!getTable)
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
         result = getTable( version, pDdiTable );
     }
 
@@ -4610,6 +4632,8 @@ zeGetCommandListProcAddrTable(
     {
         auto getTable = reinterpret_cast<ze_pfnGetCommandListProcAddrTable_t>(
             GET_FUNCTION_PTR(loader::context->tracingLayer, "zeGetCommandListProcAddrTable") );
+        if(!getTable)
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
         result = getTable( version, pDdiTable );
     }
 
@@ -4683,6 +4707,8 @@ zeGetEventProcAddrTable(
     {
         auto getTable = reinterpret_cast<ze_pfnGetEventProcAddrTable_t>(
             GET_FUNCTION_PTR(loader::context->validationLayer, "zeGetEventProcAddrTable") );
+        if(!getTable)
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
         result = getTable( version, pDdiTable );
     }
 
@@ -4691,6 +4717,8 @@ zeGetEventProcAddrTable(
     {
         auto getTable = reinterpret_cast<ze_pfnGetEventProcAddrTable_t>(
             GET_FUNCTION_PTR(loader::context->tracingLayer, "zeGetEventProcAddrTable") );
+        if(!getTable)
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
         result = getTable( version, pDdiTable );
     }
 
@@ -4762,6 +4790,8 @@ zeGetEventPoolProcAddrTable(
     {
         auto getTable = reinterpret_cast<ze_pfnGetEventPoolProcAddrTable_t>(
             GET_FUNCTION_PTR(loader::context->validationLayer, "zeGetEventPoolProcAddrTable") );
+        if(!getTable)
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
         result = getTable( version, pDdiTable );
     }
 
@@ -4770,6 +4800,8 @@ zeGetEventPoolProcAddrTable(
     {
         auto getTable = reinterpret_cast<ze_pfnGetEventPoolProcAddrTable_t>(
             GET_FUNCTION_PTR(loader::context->tracingLayer, "zeGetEventPoolProcAddrTable") );
+        if(!getTable)
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
         result = getTable( version, pDdiTable );
     }
 
@@ -4841,6 +4873,8 @@ zeGetFenceProcAddrTable(
     {
         auto getTable = reinterpret_cast<ze_pfnGetFenceProcAddrTable_t>(
             GET_FUNCTION_PTR(loader::context->validationLayer, "zeGetFenceProcAddrTable") );
+        if(!getTable)
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
         result = getTable( version, pDdiTable );
     }
 
@@ -4849,6 +4883,8 @@ zeGetFenceProcAddrTable(
     {
         auto getTable = reinterpret_cast<ze_pfnGetFenceProcAddrTable_t>(
             GET_FUNCTION_PTR(loader::context->tracingLayer, "zeGetFenceProcAddrTable") );
+        if(!getTable)
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
         result = getTable( version, pDdiTable );
     }
 
@@ -4918,6 +4954,8 @@ zeGetImageProcAddrTable(
     {
         auto getTable = reinterpret_cast<ze_pfnGetImageProcAddrTable_t>(
             GET_FUNCTION_PTR(loader::context->validationLayer, "zeGetImageProcAddrTable") );
+        if(!getTable)
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
         result = getTable( version, pDdiTable );
     }
 
@@ -4926,6 +4964,8 @@ zeGetImageProcAddrTable(
     {
         auto getTable = reinterpret_cast<ze_pfnGetImageProcAddrTable_t>(
             GET_FUNCTION_PTR(loader::context->tracingLayer, "zeGetImageProcAddrTable") );
+        if(!getTable)
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
         result = getTable( version, pDdiTable );
     }
 
@@ -5004,6 +5044,8 @@ zeGetKernelProcAddrTable(
     {
         auto getTable = reinterpret_cast<ze_pfnGetKernelProcAddrTable_t>(
             GET_FUNCTION_PTR(loader::context->validationLayer, "zeGetKernelProcAddrTable") );
+        if(!getTable)
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
         result = getTable( version, pDdiTable );
     }
 
@@ -5012,6 +5054,8 @@ zeGetKernelProcAddrTable(
     {
         auto getTable = reinterpret_cast<ze_pfnGetKernelProcAddrTable_t>(
             GET_FUNCTION_PTR(loader::context->tracingLayer, "zeGetKernelProcAddrTable") );
+        if(!getTable)
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
         result = getTable( version, pDdiTable );
     }
 
@@ -5075,6 +5119,8 @@ zeGetKernelExpProcAddrTable(
     {
         auto getTable = reinterpret_cast<ze_pfnGetKernelExpProcAddrTable_t>(
             GET_FUNCTION_PTR(loader::context->validationLayer, "zeGetKernelExpProcAddrTable") );
+        if(!getTable)
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
         result = getTable( version, pDdiTable );
     }
 
@@ -5083,6 +5129,8 @@ zeGetKernelExpProcAddrTable(
     {
         auto getTable = reinterpret_cast<ze_pfnGetKernelExpProcAddrTable_t>(
             GET_FUNCTION_PTR(loader::context->tracingLayer, "zeGetKernelExpProcAddrTable") );
+        if(!getTable)
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
         result = getTable( version, pDdiTable );
     }
 
@@ -5158,6 +5206,8 @@ zeGetMemProcAddrTable(
     {
         auto getTable = reinterpret_cast<ze_pfnGetMemProcAddrTable_t>(
             GET_FUNCTION_PTR(loader::context->validationLayer, "zeGetMemProcAddrTable") );
+        if(!getTable)
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
         result = getTable( version, pDdiTable );
     }
 
@@ -5166,6 +5216,8 @@ zeGetMemProcAddrTable(
     {
         auto getTable = reinterpret_cast<ze_pfnGetMemProcAddrTable_t>(
             GET_FUNCTION_PTR(loader::context->tracingLayer, "zeGetMemProcAddrTable") );
+        if(!getTable)
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
         result = getTable( version, pDdiTable );
     }
 
@@ -5240,6 +5292,8 @@ zeGetModuleProcAddrTable(
     {
         auto getTable = reinterpret_cast<ze_pfnGetModuleProcAddrTable_t>(
             GET_FUNCTION_PTR(loader::context->validationLayer, "zeGetModuleProcAddrTable") );
+        if(!getTable)
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
         result = getTable( version, pDdiTable );
     }
 
@@ -5248,6 +5302,8 @@ zeGetModuleProcAddrTable(
     {
         auto getTable = reinterpret_cast<ze_pfnGetModuleProcAddrTable_t>(
             GET_FUNCTION_PTR(loader::context->tracingLayer, "zeGetModuleProcAddrTable") );
+        if(!getTable)
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
         result = getTable( version, pDdiTable );
     }
 
@@ -5316,6 +5372,8 @@ zeGetModuleBuildLogProcAddrTable(
     {
         auto getTable = reinterpret_cast<ze_pfnGetModuleBuildLogProcAddrTable_t>(
             GET_FUNCTION_PTR(loader::context->validationLayer, "zeGetModuleBuildLogProcAddrTable") );
+        if(!getTable)
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
         result = getTable( version, pDdiTable );
     }
 
@@ -5324,6 +5382,8 @@ zeGetModuleBuildLogProcAddrTable(
     {
         auto getTable = reinterpret_cast<ze_pfnGetModuleBuildLogProcAddrTable_t>(
             GET_FUNCTION_PTR(loader::context->tracingLayer, "zeGetModuleBuildLogProcAddrTable") );
+        if(!getTable)
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
         result = getTable( version, pDdiTable );
     }
 
@@ -5392,6 +5452,8 @@ zeGetPhysicalMemProcAddrTable(
     {
         auto getTable = reinterpret_cast<ze_pfnGetPhysicalMemProcAddrTable_t>(
             GET_FUNCTION_PTR(loader::context->validationLayer, "zeGetPhysicalMemProcAddrTable") );
+        if(!getTable)
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
         result = getTable( version, pDdiTable );
     }
 
@@ -5400,6 +5462,8 @@ zeGetPhysicalMemProcAddrTable(
     {
         auto getTable = reinterpret_cast<ze_pfnGetPhysicalMemProcAddrTable_t>(
             GET_FUNCTION_PTR(loader::context->tracingLayer, "zeGetPhysicalMemProcAddrTable") );
+        if(!getTable)
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
         result = getTable( version, pDdiTable );
     }
 
@@ -5468,6 +5532,8 @@ zeGetSamplerProcAddrTable(
     {
         auto getTable = reinterpret_cast<ze_pfnGetSamplerProcAddrTable_t>(
             GET_FUNCTION_PTR(loader::context->validationLayer, "zeGetSamplerProcAddrTable") );
+        if(!getTable)
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
         result = getTable( version, pDdiTable );
     }
 
@@ -5476,6 +5542,8 @@ zeGetSamplerProcAddrTable(
     {
         auto getTable = reinterpret_cast<ze_pfnGetSamplerProcAddrTable_t>(
             GET_FUNCTION_PTR(loader::context->tracingLayer, "zeGetSamplerProcAddrTable") );
+        if(!getTable)
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
         result = getTable( version, pDdiTable );
     }
 
@@ -5549,6 +5617,8 @@ zeGetVirtualMemProcAddrTable(
     {
         auto getTable = reinterpret_cast<ze_pfnGetVirtualMemProcAddrTable_t>(
             GET_FUNCTION_PTR(loader::context->validationLayer, "zeGetVirtualMemProcAddrTable") );
+        if(!getTable)
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
         result = getTable( version, pDdiTable );
     }
 
@@ -5557,6 +5627,8 @@ zeGetVirtualMemProcAddrTable(
     {
         auto getTable = reinterpret_cast<ze_pfnGetVirtualMemProcAddrTable_t>(
             GET_FUNCTION_PTR(loader::context->tracingLayer, "zeGetVirtualMemProcAddrTable") );
+        if(!getTable)
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
         result = getTable( version, pDdiTable );
     }
 
