@@ -140,6 +140,13 @@ install(FILES ${LEVEL_ZERO_LAYERS_API_HEADERS}
     COMPONENT level-zero-devel
 )
 
+file(GLOB LEVEL_ZERO_LOADER_API_HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/include/loader/*.h")
+
+install(FILES ${LEVEL_ZERO_LOADER_API_HEADERS}
+    DESTINATION ${CMAKE_INSTALL_PREFIX}/include/level_zero/loader
+    COMPONENT level-zero-devel
+)
+
 # If generators list was not define build native package for current distro
 if(NOT DEFINED CPACK_GENERATOR)
 	if(EXISTS "/etc/debian_version")
