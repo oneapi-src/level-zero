@@ -103,6 +103,7 @@ ze_result_t APITracerImp::resetAllCallbacks() {
         return ZE_RESULT_ERROR_INVALID_ARGUMENT;
     }
 
+    this->tracerFunctions.corePrologues = {};
     this->tracerFunctions.coreEpilogues = {};
 
     return ZE_RESULT_SUCCESS;

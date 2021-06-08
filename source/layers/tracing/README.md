@@ -18,7 +18,7 @@ The API for using this tracing implementation is this header file below.  Please
 __zelTracerCreate__ returns a __tracer handle__ representing that __tracer__.  A __tracer__ represents a set of __prolog__ callbacks and __epilog__ callbacks.  See **Creation, Registration, Enabling, Disabling, Destroy** below.
 
 ## Callback Structures
-The per-**L0-API** function structures used to pass arguments into callback handlers (`..params_t`) are defined in the `ze_api.h.  Only **L0 API** functions declared in `ze_api.h` can be traced.
+The per-**L0-API** function structures used to pass arguments into callback handlers (`..params_t`) are defined in the `ze_api.h`.  Only **L0 API** functions declared in `ze_api.h` can be traced.
 
   `include/level_zero/ze_api.h`
 
@@ -31,15 +31,40 @@ The structure used to declare sets of __prologue__ and __epilogue__ callbacks (`
 Users of tracing must first create one or more __tracers__, using __zelTracerCreate__
 
 ## Registration
-Users of tracing may independently register for enter and exit callbacks for individual **L0 AP**I calls. These callbacks associated with a __tracer handle__ returned from the __zelTracerCreate__.  The set of __tracers__ apply across all drivers and devices.
+Users of tracing may independently register for enter and exit callbacks for individual **L0 API** calls. These callbacks are associated with a __tracer handle__ returned from the __zelTracerCreate__.  The set of __tracers__ apply across all drivers and devices.  There are now TWO classes of interfaces for registering callbacks:
+
+### Registration functions that take `zet_core_calllbacks_t` argument
+
+For this class of registration functions, the `zet_core_callbacks_t` argument is a structure of pointers to callback handler functions.  A __nullptr__ value for one of these entries means no callback handler is defined for the corresponding **L0 API** function.
+
+This `zet_core_callbacks_t` structure is not extensible in a way that could support binary compatbility as new APIs are added to the **L0 specification**.  As a consequence, these registration functions are deprecated and will be removed in the future.  The definition of the `zet_core_callbacks_t` structure is frozen as of the **L0 API 1.0** specification.  Any new **L0 API** functions added since version 1.0 will not be tracable using these registration functions.
 
 - __zelTracerSetPrologues__ is used to specify all the enter callbacks for a __tracer handle__.
 
 - __zelTracerSetEpilogues__ is used to specify all the exit callbacks for a __tracer handle__.
 
-  If the value of a callback is __nullptr__, then it will be ignored. There
+These functions can be called only when the tracer specified by __tracer handle__ is in the disabled state. Enabling, Disabling, Destruction below.
 
-  The callbacks are defined as a collection of per-API function pointers, with the following parameters:
+### A set of unique registration function for each API function
+
+A new set of registration functions has been added, one for each **L0 API** function.  These registration  functions have the general form:
+
+-__zelTracerXRegisterCallback(zel_tracer_handle_t hTracer, zel_tracer_reg_t callback_type, ze_pfnXCb_t callback_handler_function)__
+
+The `zel_tracer_reg_t` value can be either `ZEL_REGISTER_PROLOGUE` or `ZEL_REGISTER_EPILOGUE`, specifying whether a prologue or an epilogue handler is being registered.
+These new registration functions are defined in the header file `include/level_zero/layers/tracing/zel_tracing_register_cb.h`.  This header file also includes prototypes for callback handler functions and `Xcb_t` structure declarations for **L0 API** functions that have been added since specification version 1.0. When the older __zelTracerSetPrologues__ and __zelTracerSetEpilogues__ functions are removed, the `zet_core_callbacks_t` structure will also be removed, and all __ze_pfnXCb_t__ and `XCb_t` declerations that are in `ze_api.h` will be relocated into this header file.
+
+If the __callback_handler_function__ pointer is NULL, then there is no callback handler will be registered for that API function.
+
+These register callback functions can be called only when the __hTracer__ argument references a tracer that is in the disabled state.
+
+## Reset All callbacks
+
+__zelTracerResetAllCallbacks(zel_tracer_handle_t hTracer)__ can be used to set ALL prologue and epilogue callback handlers to NULL.
+
+## callback handlers
+
+Callback handlers are functions that are implemented by the application, and registered through either the set epilogue/set prologue functions, or the RegisterCallback APIs.  The `ze_api.h` header file or the `zel_tracing_register_cb.h` header file contain prototype declarations for these functions. Generally, these functions take the following parameters:
 
     - __params__ : a structure capturing pointers to the input and output parameters of the current instance
 
@@ -49,7 +74,7 @@ Users of tracing may independently register for enter and exit callbacks for ind
 
     - __ppTracerInstanceUserData__ : a per-tracer, per-instance, per-thread storage location; typically used for passing data from the prologue to the epilogue.  See example below.
 
- __ZeInit__ is traceable for all calls subsequent from the creation and enabling of the tracer itself.
+##  __ZeInit__ is traceable for all calls subsequent from the creation and enabling of the tracer itself.
 
 ## Enabling, Disabling and Destruction
 The __tracer__ is created in a disabled state and must be explicitly enabled by calling __zelTracerSetEnabled__. The implementation guarantees that __prologue__ and __epilogue__ handlers for a given **L0 API** function will always be executed in pairs; i.e.
@@ -104,7 +129,8 @@ void OnExitCommandListAppendLaunchKernel(
     free(instance_data);
 }
 
-void TracingExample( ... )
+// An example using deprecated setepilogue/setprologue functions
+void TracingExample1( ... )
 {
     my_tracer_data_t tracer_data = {};
     zel_tracer_desc_t tracer_desc;
@@ -116,8 +142,8 @@ void TracingExample( ... )
     // Set all callbacks
     zel_core_callbacks_t prologCbs = {};
     zel_core_callbacks_t epilogCbs = {};
-    prologCbs.CommandList.pfnAppendLaunchFunction = OnEnterCommandListAppendLaunchKernel;
-    epilogCbs.CommandList.pfnAppendLaunchFunction = OnExitCommandListAppendLaunchKernel;
+    prologCbs.CommandList.pfnAppendLaunchKernelCb = OnEnterCommandListAppendLaunchKernel;
+    epilogCbs.CommandList.pfnAppendLaunchKernelCb = OnExitCommandListAppendLaunchKernel;
 
     zelTracerSetPrologues(hTracer, &prologCbs);
     zelTracerSetEpilogues(hTracer, &epilogCbs);
@@ -125,7 +151,26 @@ void TracingExample( ... )
     zelTracerSetEnabled(hTracer, true);
 
     zeCommandListAppendLaunchKernel(hCommandList, hFunction, &launchArgs, nullptr, 0, nullptr);
-    zeCommandListAppendLaunchKernel(hCommandList, hFunction, &launchArgs, nullptr, 0, nullptr);
+
+    zelTracerSetEnabled(hTracer, false);
+    zelTracerDestroy(hTracer);
+}
+
+// an example using RegisterCallback functions
+void TracingExample2( ... )
+{
+    my_tracer_data_t tracer_data = {};
+    zel_tracer_desc_t tracer_desc;
+    tracer_desc.stype = ZEL_STRUCTURE_TYPE_TRACER_DESC;
+    tracer_desc.pUserData = &tracer_data;
+    zel_tracer_handle_t hTracer;
+    zelTracerCreate(hDevice, &tracer_desc, &hTracer);
+
+    zelTracerCommandListAppendLaunchKernelRegisterCallback(hTracer, ZEL_REGISTER_PROLOGUE, OnEnterCommandListAppendLaunchKernel);
+    zelTracerCommandListAppendLaunchKernelRegisterCallback(hTracer, ZEL_REGISTER_EPILOGUE, OnExitCommandListAppendLaunchKernel);
+
+    zelTracerSetEnabled(hTracer, true);
+
     zeCommandListAppendLaunchKernel(hCommandList, hFunction, &launchArgs, nullptr, 0, nullptr);
 
     zelTracerSetEnabled(hTracer, false);
