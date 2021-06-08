@@ -1,6 +1,6 @@
 # Level zero loader changelog
 
-## v1.3.0
+## v1.3.6
 * New Tracing Layer APIs to support tracing Level Zero core APIs introduced after the 1.0 Specification. A change of design was needed to allow extension to new APIs without breaking backwards compatibility of original tracing APIs. The original tracing layer APIs will continue to be supported for 1.0 core APIs, but users are encouraged to switch to the new tracing layer APIs. 
 * New Loader API to retrieve version information of loader and layers: `zelLoaderGetVersions`
 * Enabled discovery of Level Zero Compute Accelerators Drivers on windows
