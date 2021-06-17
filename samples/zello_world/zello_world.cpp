@@ -19,7 +19,7 @@ void print_loader_versions(){
     versions = new zel_component_version_t[size];
     zelLoaderGetVersions(&size, versions);
 
-    for(int i = 0; i < size; i++){
+    for(size_t i = 0; i < size; i++){
         std::cout << "Version " << i << std::endl;
         std::cout << "Name: " << versions[i].component_name << std::endl;
         std::cout << "Major: " << versions[i].component_lib_version.major << std::endl;
