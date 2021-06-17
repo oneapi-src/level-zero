@@ -37,13 +37,18 @@ namespace loader
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
 
+        bool atLeastOneDriverValid = false;
         for( auto& drv : context->drivers )
         {
-            if( ZE_RESULT_SUCCESS == result )
-            {
-                result = drv.dditable.ze.Global.pfnInit( flags );
-            }
+            if(drv.initStatus != ZE_RESULT_SUCCESS)
+                continue;
+            drv.initStatus = drv.dditable.ze.Global.pfnInit( flags );
+            if(drv.initStatus == ZE_RESULT_SUCCESS)
+                atLeastOneDriverValid = true;
         }
+
+        if(!atLeastOneDriverValid)
+            result=ZE_RESULT_ERROR_UNINITIALIZED;
 
         return result;
     }
@@ -68,6 +73,9 @@ namespace loader
 
         for( auto& drv : context->drivers )
         {
+            if(drv.initStatus != ZE_RESULT_SUCCESS)
+                continue;
+
             if( ( 0 < *pCount ) && ( *pCount == total_driver_handle_count))
                 break;
 
@@ -4137,21 +4145,25 @@ zeGetGlobalProcAddrTable(
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
+    bool atLeastOneDriverValid = false;
     // Load the device-driver DDI tables
     for( auto& drv : loader::context->drivers )
     {
-        if( ZE_RESULT_SUCCESS == result )
-        {
-            auto getTable = reinterpret_cast<ze_pfnGetGlobalProcAddrTable_t>(
-                GET_FUNCTION_PTR( drv.handle, "zeGetGlobalProcAddrTable") );
-            if(!getTable)
-            {
-                result = ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-                continue;
-            }
-            result = getTable( version, &drv.dditable.ze.Global );
-        }
+
+        auto getTable = reinterpret_cast<ze_pfnGetGlobalProcAddrTable_t>(
+            GET_FUNCTION_PTR( drv.handle, "zeGetGlobalProcAddrTable") );
+        if(!getTable) 
+            continue; 
+        if(getTable( version, &drv.dditable.ze.Global ) == ZE_RESULT_SUCCESS) 
+            atLeastOneDriverValid = true;
+        else
+            drv.initStatus = result;
     }
+
+    if(!atLeastOneDriverValid)
+        result = ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+    else
+        result = ZE_RESULT_SUCCESS;
 
     if( ZE_RESULT_SUCCESS == result )
     {
@@ -4216,21 +4228,25 @@ zeGetDriverProcAddrTable(
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
+    bool atLeastOneDriverValid = false;
     // Load the device-driver DDI tables
     for( auto& drv : loader::context->drivers )
     {
-        if( ZE_RESULT_SUCCESS == result )
-        {
-            auto getTable = reinterpret_cast<ze_pfnGetDriverProcAddrTable_t>(
-                GET_FUNCTION_PTR( drv.handle, "zeGetDriverProcAddrTable") );
-            if(!getTable)
-            {
-                result = ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-                continue;
-            }
-            result = getTable( version, &drv.dditable.ze.Driver );
-        }
+
+        auto getTable = reinterpret_cast<ze_pfnGetDriverProcAddrTable_t>(
+            GET_FUNCTION_PTR( drv.handle, "zeGetDriverProcAddrTable") );
+        if(!getTable) 
+            continue; 
+        if(getTable( version, &drv.dditable.ze.Driver ) == ZE_RESULT_SUCCESS) 
+            atLeastOneDriverValid = true;
+        else
+            drv.initStatus = result;
     }
+
+    if(!atLeastOneDriverValid)
+        result = ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+    else
+        result = ZE_RESULT_SUCCESS;
 
     if( ZE_RESULT_SUCCESS == result )
     {
@@ -4300,21 +4316,25 @@ zeGetDeviceProcAddrTable(
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
+    bool atLeastOneDriverValid = false;
     // Load the device-driver DDI tables
     for( auto& drv : loader::context->drivers )
     {
-        if( ZE_RESULT_SUCCESS == result )
-        {
-            auto getTable = reinterpret_cast<ze_pfnGetDeviceProcAddrTable_t>(
-                GET_FUNCTION_PTR( drv.handle, "zeGetDeviceProcAddrTable") );
-            if(!getTable)
-            {
-                result = ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-                continue;
-            }
-            result = getTable( version, &drv.dditable.ze.Device );
-        }
+
+        auto getTable = reinterpret_cast<ze_pfnGetDeviceProcAddrTable_t>(
+            GET_FUNCTION_PTR( drv.handle, "zeGetDeviceProcAddrTable") );
+        if(!getTable) 
+            continue; 
+        if(getTable( version, &drv.dditable.ze.Device ) == ZE_RESULT_SUCCESS) 
+            atLeastOneDriverValid = true;
+        else
+            drv.initStatus = result;
     }
+
+    if(!atLeastOneDriverValid)
+        result = ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+    else
+        result = ZE_RESULT_SUCCESS;
 
     if( ZE_RESULT_SUCCESS == result )
     {
@@ -4393,21 +4413,25 @@ zeGetContextProcAddrTable(
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
+    bool atLeastOneDriverValid = false;
     // Load the device-driver DDI tables
     for( auto& drv : loader::context->drivers )
     {
-        if( ZE_RESULT_SUCCESS == result )
-        {
-            auto getTable = reinterpret_cast<ze_pfnGetContextProcAddrTable_t>(
-                GET_FUNCTION_PTR( drv.handle, "zeGetContextProcAddrTable") );
-            if(!getTable)
-            {
-                result = ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-                continue;
-            }
-            result = getTable( version, &drv.dditable.ze.Context );
-        }
+
+        auto getTable = reinterpret_cast<ze_pfnGetContextProcAddrTable_t>(
+            GET_FUNCTION_PTR( drv.handle, "zeGetContextProcAddrTable") );
+        if(!getTable) 
+            continue; 
+        if(getTable( version, &drv.dditable.ze.Context ) == ZE_RESULT_SUCCESS) 
+            atLeastOneDriverValid = true;
+        else
+            drv.initStatus = result;
     }
+
+    if(!atLeastOneDriverValid)
+        result = ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+    else
+        result = ZE_RESULT_SUCCESS;
 
     if( ZE_RESULT_SUCCESS == result )
     {
@@ -4480,21 +4504,25 @@ zeGetCommandQueueProcAddrTable(
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
+    bool atLeastOneDriverValid = false;
     // Load the device-driver DDI tables
     for( auto& drv : loader::context->drivers )
     {
-        if( ZE_RESULT_SUCCESS == result )
-        {
-            auto getTable = reinterpret_cast<ze_pfnGetCommandQueueProcAddrTable_t>(
-                GET_FUNCTION_PTR( drv.handle, "zeGetCommandQueueProcAddrTable") );
-            if(!getTable)
-            {
-                result = ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-                continue;
-            }
-            result = getTable( version, &drv.dditable.ze.CommandQueue );
-        }
+
+        auto getTable = reinterpret_cast<ze_pfnGetCommandQueueProcAddrTable_t>(
+            GET_FUNCTION_PTR( drv.handle, "zeGetCommandQueueProcAddrTable") );
+        if(!getTable) 
+            continue; 
+        if(getTable( version, &drv.dditable.ze.CommandQueue ) == ZE_RESULT_SUCCESS) 
+            atLeastOneDriverValid = true;
+        else
+            drv.initStatus = result;
     }
+
+    if(!atLeastOneDriverValid)
+        result = ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+    else
+        result = ZE_RESULT_SUCCESS;
 
     if( ZE_RESULT_SUCCESS == result )
     {
@@ -4562,21 +4590,25 @@ zeGetCommandListProcAddrTable(
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
+    bool atLeastOneDriverValid = false;
     // Load the device-driver DDI tables
     for( auto& drv : loader::context->drivers )
     {
-        if( ZE_RESULT_SUCCESS == result )
-        {
-            auto getTable = reinterpret_cast<ze_pfnGetCommandListProcAddrTable_t>(
-                GET_FUNCTION_PTR( drv.handle, "zeGetCommandListProcAddrTable") );
-            if(!getTable)
-            {
-                result = ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-                continue;
-            }
-            result = getTable( version, &drv.dditable.ze.CommandList );
-        }
+
+        auto getTable = reinterpret_cast<ze_pfnGetCommandListProcAddrTable_t>(
+            GET_FUNCTION_PTR( drv.handle, "zeGetCommandListProcAddrTable") );
+        if(!getTable) 
+            continue; 
+        if(getTable( version, &drv.dditable.ze.CommandList ) == ZE_RESULT_SUCCESS) 
+            atLeastOneDriverValid = true;
+        else
+            drv.initStatus = result;
     }
+
+    if(!atLeastOneDriverValid)
+        result = ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+    else
+        result = ZE_RESULT_SUCCESS;
 
     if( ZE_RESULT_SUCCESS == result )
     {
@@ -4666,21 +4698,25 @@ zeGetEventProcAddrTable(
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
+    bool atLeastOneDriverValid = false;
     // Load the device-driver DDI tables
     for( auto& drv : loader::context->drivers )
     {
-        if( ZE_RESULT_SUCCESS == result )
-        {
-            auto getTable = reinterpret_cast<ze_pfnGetEventProcAddrTable_t>(
-                GET_FUNCTION_PTR( drv.handle, "zeGetEventProcAddrTable") );
-            if(!getTable)
-            {
-                result = ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-                continue;
-            }
-            result = getTable( version, &drv.dditable.ze.Event );
-        }
+
+        auto getTable = reinterpret_cast<ze_pfnGetEventProcAddrTable_t>(
+            GET_FUNCTION_PTR( drv.handle, "zeGetEventProcAddrTable") );
+        if(!getTable) 
+            continue; 
+        if(getTable( version, &drv.dditable.ze.Event ) == ZE_RESULT_SUCCESS) 
+            atLeastOneDriverValid = true;
+        else
+            drv.initStatus = result;
     }
+
+    if(!atLeastOneDriverValid)
+        result = ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+    else
+        result = ZE_RESULT_SUCCESS;
 
     if( ZE_RESULT_SUCCESS == result )
     {
@@ -4751,21 +4787,25 @@ zeGetEventPoolProcAddrTable(
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
+    bool atLeastOneDriverValid = false;
     // Load the device-driver DDI tables
     for( auto& drv : loader::context->drivers )
     {
-        if( ZE_RESULT_SUCCESS == result )
-        {
-            auto getTable = reinterpret_cast<ze_pfnGetEventPoolProcAddrTable_t>(
-                GET_FUNCTION_PTR( drv.handle, "zeGetEventPoolProcAddrTable") );
-            if(!getTable)
-            {
-                result = ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-                continue;
-            }
-            result = getTable( version, &drv.dditable.ze.EventPool );
-        }
+
+        auto getTable = reinterpret_cast<ze_pfnGetEventPoolProcAddrTable_t>(
+            GET_FUNCTION_PTR( drv.handle, "zeGetEventPoolProcAddrTable") );
+        if(!getTable) 
+            continue; 
+        if(getTable( version, &drv.dditable.ze.EventPool ) == ZE_RESULT_SUCCESS) 
+            atLeastOneDriverValid = true;
+        else
+            drv.initStatus = result;
     }
+
+    if(!atLeastOneDriverValid)
+        result = ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+    else
+        result = ZE_RESULT_SUCCESS;
 
     if( ZE_RESULT_SUCCESS == result )
     {
@@ -4834,21 +4874,25 @@ zeGetFenceProcAddrTable(
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
+    bool atLeastOneDriverValid = false;
     // Load the device-driver DDI tables
     for( auto& drv : loader::context->drivers )
     {
-        if( ZE_RESULT_SUCCESS == result )
-        {
-            auto getTable = reinterpret_cast<ze_pfnGetFenceProcAddrTable_t>(
-                GET_FUNCTION_PTR( drv.handle, "zeGetFenceProcAddrTable") );
-            if(!getTable)
-            {
-                result = ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-                continue;
-            }
-            result = getTable( version, &drv.dditable.ze.Fence );
-        }
+
+        auto getTable = reinterpret_cast<ze_pfnGetFenceProcAddrTable_t>(
+            GET_FUNCTION_PTR( drv.handle, "zeGetFenceProcAddrTable") );
+        if(!getTable) 
+            continue; 
+        if(getTable( version, &drv.dditable.ze.Fence ) == ZE_RESULT_SUCCESS) 
+            atLeastOneDriverValid = true;
+        else
+            drv.initStatus = result;
     }
+
+    if(!atLeastOneDriverValid)
+        result = ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+    else
+        result = ZE_RESULT_SUCCESS;
 
     if( ZE_RESULT_SUCCESS == result )
     {
@@ -4917,21 +4961,25 @@ zeGetImageProcAddrTable(
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
+    bool atLeastOneDriverValid = false;
     // Load the device-driver DDI tables
     for( auto& drv : loader::context->drivers )
     {
-        if( ZE_RESULT_SUCCESS == result )
-        {
-            auto getTable = reinterpret_cast<ze_pfnGetImageProcAddrTable_t>(
-                GET_FUNCTION_PTR( drv.handle, "zeGetImageProcAddrTable") );
-            if(!getTable)
-            {
-                result = ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-                continue;
-            }
-            result = getTable( version, &drv.dditable.ze.Image );
-        }
+
+        auto getTable = reinterpret_cast<ze_pfnGetImageProcAddrTable_t>(
+            GET_FUNCTION_PTR( drv.handle, "zeGetImageProcAddrTable") );
+        if(!getTable) 
+            continue; 
+        if(getTable( version, &drv.dditable.ze.Image ) == ZE_RESULT_SUCCESS) 
+            atLeastOneDriverValid = true;
+        else
+            drv.initStatus = result;
     }
+
+    if(!atLeastOneDriverValid)
+        result = ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+    else
+        result = ZE_RESULT_SUCCESS;
 
     if( ZE_RESULT_SUCCESS == result )
     {
@@ -4998,21 +5046,25 @@ zeGetKernelProcAddrTable(
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
+    bool atLeastOneDriverValid = false;
     // Load the device-driver DDI tables
     for( auto& drv : loader::context->drivers )
     {
-        if( ZE_RESULT_SUCCESS == result )
-        {
-            auto getTable = reinterpret_cast<ze_pfnGetKernelProcAddrTable_t>(
-                GET_FUNCTION_PTR( drv.handle, "zeGetKernelProcAddrTable") );
-            if(!getTable)
-            {
-                result = ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-                continue;
-            }
-            result = getTable( version, &drv.dditable.ze.Kernel );
-        }
+
+        auto getTable = reinterpret_cast<ze_pfnGetKernelProcAddrTable_t>(
+            GET_FUNCTION_PTR( drv.handle, "zeGetKernelProcAddrTable") );
+        if(!getTable) 
+            continue; 
+        if(getTable( version, &drv.dditable.ze.Kernel ) == ZE_RESULT_SUCCESS) 
+            atLeastOneDriverValid = true;
+        else
+            drv.initStatus = result;
     }
+
+    if(!atLeastOneDriverValid)
+        result = ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+    else
+        result = ZE_RESULT_SUCCESS;
 
     if( ZE_RESULT_SUCCESS == result )
     {
@@ -5088,17 +5140,19 @@ zeGetKernelExpProcAddrTable(
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
+    bool atLeastOneDriverValid = false;
     // Load the device-driver DDI tables
     for( auto& drv : loader::context->drivers )
     {
-        if( ZE_RESULT_SUCCESS == result )
-        {
-            auto getTable = reinterpret_cast<ze_pfnGetKernelExpProcAddrTable_t>(
-                GET_FUNCTION_PTR( drv.handle, "zeGetKernelExpProcAddrTable") );
-            if(!getTable) continue; //Experimental Tables may not be implemented in driver
-            result = getTable( version, &drv.dditable.ze.KernelExp );
-        }
+
+        auto getTable = reinterpret_cast<ze_pfnGetKernelExpProcAddrTable_t>(
+            GET_FUNCTION_PTR( drv.handle, "zeGetKernelExpProcAddrTable") );
+        if(!getTable) 
+            continue; 
+        if(getTable( version, &drv.dditable.ze.KernelExp ) == ZE_RESULT_SUCCESS) 
+            atLeastOneDriverValid = true;
     }
+
 
     if( ZE_RESULT_SUCCESS == result )
     {
@@ -5163,21 +5217,25 @@ zeGetMemProcAddrTable(
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
+    bool atLeastOneDriverValid = false;
     // Load the device-driver DDI tables
     for( auto& drv : loader::context->drivers )
     {
-        if( ZE_RESULT_SUCCESS == result )
-        {
-            auto getTable = reinterpret_cast<ze_pfnGetMemProcAddrTable_t>(
-                GET_FUNCTION_PTR( drv.handle, "zeGetMemProcAddrTable") );
-            if(!getTable)
-            {
-                result = ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-                continue;
-            }
-            result = getTable( version, &drv.dditable.ze.Mem );
-        }
+
+        auto getTable = reinterpret_cast<ze_pfnGetMemProcAddrTable_t>(
+            GET_FUNCTION_PTR( drv.handle, "zeGetMemProcAddrTable") );
+        if(!getTable) 
+            continue; 
+        if(getTable( version, &drv.dditable.ze.Mem ) == ZE_RESULT_SUCCESS) 
+            atLeastOneDriverValid = true;
+        else
+            drv.initStatus = result;
     }
+
+    if(!atLeastOneDriverValid)
+        result = ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+    else
+        result = ZE_RESULT_SUCCESS;
 
     if( ZE_RESULT_SUCCESS == result )
     {
@@ -5250,21 +5308,25 @@ zeGetModuleProcAddrTable(
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
+    bool atLeastOneDriverValid = false;
     // Load the device-driver DDI tables
     for( auto& drv : loader::context->drivers )
     {
-        if( ZE_RESULT_SUCCESS == result )
-        {
-            auto getTable = reinterpret_cast<ze_pfnGetModuleProcAddrTable_t>(
-                GET_FUNCTION_PTR( drv.handle, "zeGetModuleProcAddrTable") );
-            if(!getTable)
-            {
-                result = ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-                continue;
-            }
-            result = getTable( version, &drv.dditable.ze.Module );
-        }
+
+        auto getTable = reinterpret_cast<ze_pfnGetModuleProcAddrTable_t>(
+            GET_FUNCTION_PTR( drv.handle, "zeGetModuleProcAddrTable") );
+        if(!getTable) 
+            continue; 
+        if(getTable( version, &drv.dditable.ze.Module ) == ZE_RESULT_SUCCESS) 
+            atLeastOneDriverValid = true;
+        else
+            drv.initStatus = result;
     }
+
+    if(!atLeastOneDriverValid)
+        result = ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+    else
+        result = ZE_RESULT_SUCCESS;
 
     if( ZE_RESULT_SUCCESS == result )
     {
@@ -5336,21 +5398,25 @@ zeGetModuleBuildLogProcAddrTable(
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
+    bool atLeastOneDriverValid = false;
     // Load the device-driver DDI tables
     for( auto& drv : loader::context->drivers )
     {
-        if( ZE_RESULT_SUCCESS == result )
-        {
-            auto getTable = reinterpret_cast<ze_pfnGetModuleBuildLogProcAddrTable_t>(
-                GET_FUNCTION_PTR( drv.handle, "zeGetModuleBuildLogProcAddrTable") );
-            if(!getTable)
-            {
-                result = ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-                continue;
-            }
-            result = getTable( version, &drv.dditable.ze.ModuleBuildLog );
-        }
+
+        auto getTable = reinterpret_cast<ze_pfnGetModuleBuildLogProcAddrTable_t>(
+            GET_FUNCTION_PTR( drv.handle, "zeGetModuleBuildLogProcAddrTable") );
+        if(!getTable) 
+            continue; 
+        if(getTable( version, &drv.dditable.ze.ModuleBuildLog ) == ZE_RESULT_SUCCESS) 
+            atLeastOneDriverValid = true;
+        else
+            drv.initStatus = result;
     }
+
+    if(!atLeastOneDriverValid)
+        result = ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+    else
+        result = ZE_RESULT_SUCCESS;
 
     if( ZE_RESULT_SUCCESS == result )
     {
@@ -5416,21 +5482,25 @@ zeGetPhysicalMemProcAddrTable(
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
+    bool atLeastOneDriverValid = false;
     // Load the device-driver DDI tables
     for( auto& drv : loader::context->drivers )
     {
-        if( ZE_RESULT_SUCCESS == result )
-        {
-            auto getTable = reinterpret_cast<ze_pfnGetPhysicalMemProcAddrTable_t>(
-                GET_FUNCTION_PTR( drv.handle, "zeGetPhysicalMemProcAddrTable") );
-            if(!getTable)
-            {
-                result = ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-                continue;
-            }
-            result = getTable( version, &drv.dditable.ze.PhysicalMem );
-        }
+
+        auto getTable = reinterpret_cast<ze_pfnGetPhysicalMemProcAddrTable_t>(
+            GET_FUNCTION_PTR( drv.handle, "zeGetPhysicalMemProcAddrTable") );
+        if(!getTable) 
+            continue; 
+        if(getTable( version, &drv.dditable.ze.PhysicalMem ) == ZE_RESULT_SUCCESS) 
+            atLeastOneDriverValid = true;
+        else
+            drv.initStatus = result;
     }
+
+    if(!atLeastOneDriverValid)
+        result = ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+    else
+        result = ZE_RESULT_SUCCESS;
 
     if( ZE_RESULT_SUCCESS == result )
     {
@@ -5496,21 +5566,25 @@ zeGetSamplerProcAddrTable(
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
+    bool atLeastOneDriverValid = false;
     // Load the device-driver DDI tables
     for( auto& drv : loader::context->drivers )
     {
-        if( ZE_RESULT_SUCCESS == result )
-        {
-            auto getTable = reinterpret_cast<ze_pfnGetSamplerProcAddrTable_t>(
-                GET_FUNCTION_PTR( drv.handle, "zeGetSamplerProcAddrTable") );
-            if(!getTable)
-            {
-                result = ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-                continue;
-            }
-            result = getTable( version, &drv.dditable.ze.Sampler );
-        }
+
+        auto getTable = reinterpret_cast<ze_pfnGetSamplerProcAddrTable_t>(
+            GET_FUNCTION_PTR( drv.handle, "zeGetSamplerProcAddrTable") );
+        if(!getTable) 
+            continue; 
+        if(getTable( version, &drv.dditable.ze.Sampler ) == ZE_RESULT_SUCCESS) 
+            atLeastOneDriverValid = true;
+        else
+            drv.initStatus = result;
     }
+
+    if(!atLeastOneDriverValid)
+        result = ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+    else
+        result = ZE_RESULT_SUCCESS;
 
     if( ZE_RESULT_SUCCESS == result )
     {
@@ -5576,21 +5650,25 @@ zeGetVirtualMemProcAddrTable(
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
+    bool atLeastOneDriverValid = false;
     // Load the device-driver DDI tables
     for( auto& drv : loader::context->drivers )
     {
-        if( ZE_RESULT_SUCCESS == result )
-        {
-            auto getTable = reinterpret_cast<ze_pfnGetVirtualMemProcAddrTable_t>(
-                GET_FUNCTION_PTR( drv.handle, "zeGetVirtualMemProcAddrTable") );
-            if(!getTable)
-            {
-                result = ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-                continue;
-            }
-            result = getTable( version, &drv.dditable.ze.VirtualMem );
-        }
+
+        auto getTable = reinterpret_cast<ze_pfnGetVirtualMemProcAddrTable_t>(
+            GET_FUNCTION_PTR( drv.handle, "zeGetVirtualMemProcAddrTable") );
+        if(!getTable) 
+            continue; 
+        if(getTable( version, &drv.dditable.ze.VirtualMem ) == ZE_RESULT_SUCCESS) 
+            atLeastOneDriverValid = true;
+        else
+            drv.initStatus = result;
     }
+
+    if(!atLeastOneDriverValid)
+        result = ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+    else
+        result = ZE_RESULT_SUCCESS;
 
     if( ZE_RESULT_SUCCESS == result )
     {

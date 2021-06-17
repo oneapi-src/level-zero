@@ -27,7 +27,7 @@ namespace loader
     struct driver_t
     {
         HMODULE handle = NULL;
-
+        ze_result_t initStatus = ZE_RESULT_SUCCESS;
         dditable_t dditable = {};
     };
 
