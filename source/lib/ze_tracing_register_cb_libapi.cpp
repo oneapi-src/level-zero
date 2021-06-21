@@ -3118,4 +3118,154 @@ zelTracerKernelSetGlobalOffsetExpRegisterCallback(
 }
 
 
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zelTracerDeviceReserveCacheExtRegisterCallback(
+    zel_tracer_handle_t hTracer,
+    zel_tracer_reg_t callback_type,
+    ze_pfnDeviceReserveCacheExtCb_t pfnReserveCacheExtCb
+    ) {
+
+    if(!ze_lib::context->tracing_lib)
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    typedef ze_result_t (ZE_APICALL *ze_pfnSetCallback_t)(
+        zel_tracer_handle_t hTracer,
+        zel_tracer_reg_t callback_type,
+        ze_pfnDeviceReserveCacheExtCb_t pfnReserveCacheExtCb
+    );
+
+    auto func = reinterpret_cast<ze_pfnSetCallback_t>(
+        GET_FUNCTION_PTR(ze_lib::context->tracing_lib, "zelTracerDeviceReserveCacheExtRegisterCallback") );
+
+    if(func)
+        return func(hTracer, callback_type, pfnReserveCacheExtCb);
+
+    return ZE_RESULT_ERROR_UNINITIALIZED;    
+}
+
+
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zelTracerDeviceSetCacheAdviceExtRegisterCallback(
+    zel_tracer_handle_t hTracer,
+    zel_tracer_reg_t callback_type,
+    ze_pfnDeviceSetCacheAdviceExtCb_t pfnSetCacheAdviceExtCb
+    ) {
+
+    if(!ze_lib::context->tracing_lib)
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    typedef ze_result_t (ZE_APICALL *ze_pfnSetCallback_t)(
+        zel_tracer_handle_t hTracer,
+        zel_tracer_reg_t callback_type,
+        ze_pfnDeviceSetCacheAdviceExtCb_t pfnSetCacheAdviceExtCb
+    );
+
+    auto func = reinterpret_cast<ze_pfnSetCallback_t>(
+        GET_FUNCTION_PTR(ze_lib::context->tracing_lib, "zelTracerDeviceSetCacheAdviceExtRegisterCallback") );
+
+    if(func)
+        return func(hTracer, callback_type, pfnSetCacheAdviceExtCb);
+
+    return ZE_RESULT_ERROR_UNINITIALIZED;    
+}
+
+
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zelTracerEventQueryTimestampsExpRegisterCallback(
+    zel_tracer_handle_t hTracer,
+    zel_tracer_reg_t callback_type,
+    ze_pfnEventQueryTimestampsExpCb_t pfnQueryTimestampsExpCb
+    ) {
+
+    if(!ze_lib::context->tracing_lib)
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    typedef ze_result_t (ZE_APICALL *ze_pfnSetCallback_t)(
+        zel_tracer_handle_t hTracer,
+        zel_tracer_reg_t callback_type,
+        ze_pfnEventQueryTimestampsExpCb_t pfnQueryTimestampsExpCb
+    );
+
+    auto func = reinterpret_cast<ze_pfnSetCallback_t>(
+        GET_FUNCTION_PTR(ze_lib::context->tracing_lib, "zelTracerEventQueryTimestampsExpRegisterCallback") );
+
+    if(func)
+        return func(hTracer, callback_type, pfnQueryTimestampsExpCb);
+
+    return ZE_RESULT_ERROR_UNINITIALIZED;    
+}
+
+
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zelTracerImageGetMemoryPropertiesExpRegisterCallback(
+    zel_tracer_handle_t hTracer,
+    zel_tracer_reg_t callback_type,
+    ze_pfnImageGetMemoryPropertiesExpCb_t pfnGetMemoryPropertiesExpCb
+    ) {
+
+    if(!ze_lib::context->tracing_lib)
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    typedef ze_result_t (ZE_APICALL *ze_pfnSetCallback_t)(
+        zel_tracer_handle_t hTracer,
+        zel_tracer_reg_t callback_type,
+        ze_pfnImageGetMemoryPropertiesExpCb_t pfnGetMemoryPropertiesExpCb
+    );
+
+    auto func = reinterpret_cast<ze_pfnSetCallback_t>(
+        GET_FUNCTION_PTR(ze_lib::context->tracing_lib, "zelTracerImageGetMemoryPropertiesExpRegisterCallback") );
+
+    if(func)
+        return func(hTracer, callback_type, pfnGetMemoryPropertiesExpCb);
+
+    return ZE_RESULT_ERROR_UNINITIALIZED;    
+}
+
+
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zelTracerImageViewCreateExpRegisterCallback(
+    zel_tracer_handle_t hTracer,
+    zel_tracer_reg_t callback_type,
+    ze_pfnImageViewCreateExpCb_t pfnViewCreateExpCb
+    ) {
+
+    if(!ze_lib::context->tracing_lib)
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    typedef ze_result_t (ZE_APICALL *ze_pfnSetCallback_t)(
+        zel_tracer_handle_t hTracer,
+        zel_tracer_reg_t callback_type,
+        ze_pfnImageViewCreateExpCb_t pfnViewCreateExpCb
+    );
+
+    auto func = reinterpret_cast<ze_pfnSetCallback_t>(
+        GET_FUNCTION_PTR(ze_lib::context->tracing_lib, "zelTracerImageViewCreateExpRegisterCallback") );
+
+    if(func)
+        return func(hTracer, callback_type, pfnViewCreateExpCb);
+
+    return ZE_RESULT_ERROR_UNINITIALIZED;    
+}
+
+
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zelTracerKernelSchedulingHintExpRegisterCallback(
+    zel_tracer_handle_t hTracer,
+    zel_tracer_reg_t callback_type,
+    ze_pfnKernelSchedulingHintExpCb_t pfnSchedulingHintExpCb
+    ) {
+
+    if(!ze_lib::context->tracing_lib)
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    typedef ze_result_t (ZE_APICALL *ze_pfnSetCallback_t)(
+        zel_tracer_handle_t hTracer,
+        zel_tracer_reg_t callback_type,
+        ze_pfnKernelSchedulingHintExpCb_t pfnSchedulingHintExpCb
+    );
+
+    auto func = reinterpret_cast<ze_pfnSetCallback_t>(
+        GET_FUNCTION_PTR(ze_lib::context->tracing_lib, "zelTracerKernelSchedulingHintExpRegisterCallback") );
+
+    if(func)
+        return func(hTracer, callback_type, pfnSchedulingHintExpCb);
+
+    return ZE_RESULT_ERROR_UNINITIALIZED;    
+}
+
+
 } //Extern C

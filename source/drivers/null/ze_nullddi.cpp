@@ -178,7 +178,7 @@ namespace driver
     __zedlllocal ze_result_t ZE_APICALL
     zeDriverGetExtensionFunctionAddress(
         ze_driver_handle_t hDriver,                     ///< [in] handle of the driver instance
-        const char* name,                               ///< [in] extension name
+        const char* name,                               ///< [in] extension function name
         void** ppFunctionAddress                        ///< [out] pointer to function pointer
         )
     {
@@ -3360,6 +3360,164 @@ namespace driver
         return result;
     }
 
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeDeviceReserveCacheExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeDeviceReserveCacheExt(
+        ze_device_handle_t hDevice,                     ///< [in] handle of the device object
+        size_t cacheLevel,                              ///< [in] cache level where application want to reserve. If zero, then the
+                                                        ///< driver shall default to last level of cache and attempt to reserve in
+                                                        ///< that cache.
+        size_t cacheReservationSize                     ///< [in] value for reserving size, in bytes. If zero, then the driver
+                                                        ///< shall remove prior reservation
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnReserveCacheExt = context.zeDdiTable.Device.pfnReserveCacheExt;
+        if( nullptr != pfnReserveCacheExt )
+        {
+            result = pfnReserveCacheExt( hDevice, cacheLevel, cacheReservationSize );
+        }
+        else
+        {
+            // generic implementation
+        }
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeDeviceSetCacheAdviceExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeDeviceSetCacheAdviceExt(
+        ze_device_handle_t hDevice,                     ///< [in] handle of the device object
+        void* ptr,                                      ///< [in] memory pointer to query
+        size_t regionSize,                              ///< [in] region size, in pages
+        ze_cache_ext_region_t cacheRegion               ///< [in] reservation region
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnSetCacheAdviceExt = context.zeDdiTable.Device.pfnSetCacheAdviceExt;
+        if( nullptr != pfnSetCacheAdviceExt )
+        {
+            result = pfnSetCacheAdviceExt( hDevice, ptr, regionSize, cacheRegion );
+        }
+        else
+        {
+            // generic implementation
+        }
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeEventQueryTimestampsExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zeEventQueryTimestampsExp(
+        ze_event_handle_t hEvent,                       ///< [in] handle of the event
+        ze_device_handle_t hDevice,                     ///< [in] handle of the device to query
+        uint32_t* pCount,                               ///< [in,out] pointer to the number of timestamp results
+        ze_kernel_timestamp_result_t* pTimestamps       ///< [in,out][range(0, *pCount)] pointer to memory where timestamp results
+                                                        ///< will be written.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnQueryTimestampsExp = context.zeDdiTable.EventExp.pfnQueryTimestampsExp;
+        if( nullptr != pfnQueryTimestampsExp )
+        {
+            result = pfnQueryTimestampsExp( hEvent, hDevice, pCount, pTimestamps );
+        }
+        else
+        {
+            // generic implementation
+        }
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeImageGetMemoryPropertiesExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zeImageGetMemoryPropertiesExp(
+        ze_image_handle_t hImage,                       ///< [in] handle of image object
+        ze_image_memory_properties_exp_t* pMemoryProperties ///< [in,out] query result for image memory properties.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnGetMemoryPropertiesExp = context.zeDdiTable.ImageExp.pfnGetMemoryPropertiesExp;
+        if( nullptr != pfnGetMemoryPropertiesExp )
+        {
+            result = pfnGetMemoryPropertiesExp( hImage, pMemoryProperties );
+        }
+        else
+        {
+            // generic implementation
+        }
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeImageViewCreateExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zeImageViewCreateExp(
+        ze_context_handle_t hContext,                   ///< [in] handle of the context object
+        ze_device_handle_t hDevice,                     ///< [in] handle of the device
+        const ze_image_desc_t* desc,                    ///< [in] pointer to image descriptor
+        ze_image_handle_t hImage,                       ///< [in] handle of image object to create view from
+        ze_image_handle_t* phImageView                  ///< [out] pointer to handle of image object created for view
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnViewCreateExp = context.zeDdiTable.ImageExp.pfnViewCreateExp;
+        if( nullptr != pfnViewCreateExp )
+        {
+            result = pfnViewCreateExp( hContext, hDevice, desc, hImage, phImageView );
+        }
+        else
+        {
+            // generic implementation
+            *phImageView = reinterpret_cast<ze_image_handle_t>( context.get() );
+
+        }
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeKernelSchedulingHintExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zeKernelSchedulingHintExp(
+        ze_kernel_handle_t hKernel,                     ///< [in] handle of the kernel object
+        ze_scheduling_hint_exp_desc_t* pHint            ///< [in] pointer to kernel scheduling hint descriptor
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnSchedulingHintExp = context.zeDdiTable.KernelExp.pfnSchedulingHintExp;
+        if( nullptr != pfnSchedulingHintExp )
+        {
+            result = pfnSchedulingHintExp( hKernel, pHint );
+        }
+        else
+        {
+            // generic implementation
+        }
+
+        return result;
+    }
+
 } // namespace driver
 
 namespace instrumented
@@ -3702,7 +3860,7 @@ namespace instrumented
     __zedlllocal ze_result_t ZE_APICALL
     zeDriverGetExtensionFunctionAddress(
         ze_driver_handle_t hDriver,                     ///< [in] handle of the driver instance
-        const char* name,                               ///< [in] extension name
+        const char* name,                               ///< [in] extension function name
         void** ppFunctionAddress                        ///< [out] pointer to function pointer
         )
     {
@@ -10415,6 +10573,108 @@ namespace instrumented
         return result;
     }
 
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeDeviceReserveCacheExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeDeviceReserveCacheExt(
+        ze_device_handle_t hDevice,                     ///< [in] handle of the device object
+        size_t cacheLevel,                              ///< [in] cache level where application want to reserve. If zero, then the
+                                                        ///< driver shall default to last level of cache and attempt to reserve in
+                                                        ///< that cache.
+        size_t cacheReservationSize                     ///< [in] value for reserving size, in bytes. If zero, then the driver
+                                                        ///< shall remove prior reservation
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+
+        result = driver::zeDeviceReserveCacheExt( hDevice, cacheLevel, cacheReservationSize );
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeDeviceSetCacheAdviceExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeDeviceSetCacheAdviceExt(
+        ze_device_handle_t hDevice,                     ///< [in] handle of the device object
+        void* ptr,                                      ///< [in] memory pointer to query
+        size_t regionSize,                              ///< [in] region size, in pages
+        ze_cache_ext_region_t cacheRegion               ///< [in] reservation region
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+
+        result = driver::zeDeviceSetCacheAdviceExt( hDevice, ptr, regionSize, cacheRegion );
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeEventQueryTimestampsExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zeEventQueryTimestampsExp(
+        ze_event_handle_t hEvent,                       ///< [in] handle of the event
+        ze_device_handle_t hDevice,                     ///< [in] handle of the device to query
+        uint32_t* pCount,                               ///< [in,out] pointer to the number of timestamp results
+        ze_kernel_timestamp_result_t* pTimestamps       ///< [in,out][range(0, *pCount)] pointer to memory where timestamp results
+                                                        ///< will be written.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+
+        result = driver::zeEventQueryTimestampsExp( hEvent, hDevice, pCount, pTimestamps );
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeImageGetMemoryPropertiesExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zeImageGetMemoryPropertiesExp(
+        ze_image_handle_t hImage,                       ///< [in] handle of image object
+        ze_image_memory_properties_exp_t* pMemoryProperties ///< [in,out] query result for image memory properties.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+
+        result = driver::zeImageGetMemoryPropertiesExp( hImage, pMemoryProperties );
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeImageViewCreateExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zeImageViewCreateExp(
+        ze_context_handle_t hContext,                   ///< [in] handle of the context object
+        ze_device_handle_t hDevice,                     ///< [in] handle of the device
+        const ze_image_desc_t* desc,                    ///< [in] pointer to image descriptor
+        ze_image_handle_t hImage,                       ///< [in] handle of image object to create view from
+        ze_image_handle_t* phImageView                  ///< [out] pointer to handle of image object created for view
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+
+        result = driver::zeImageViewCreateExp( hContext, hDevice, desc, hImage, phImageView );
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeKernelSchedulingHintExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zeKernelSchedulingHintExp(
+        ze_kernel_handle_t hKernel,                     ///< [in] handle of the kernel object
+        ze_scheduling_hint_exp_desc_t* pHint            ///< [in] pointer to kernel scheduling hint descriptor
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+
+        result = driver::zeKernelSchedulingHintExp( hKernel, pHint );
+        return result;
+    }
+
 } // namespace instrumented
 
 #if defined(__cplusplus)
@@ -10602,6 +10862,16 @@ zeGetDeviceProcAddrTable(
         pDdiTable->pfnGetGlobalTimestamps                    = instrumented::zeDeviceGetGlobalTimestamps;
     else
         pDdiTable->pfnGetGlobalTimestamps                    = driver::zeDeviceGetGlobalTimestamps;
+
+    if( instrumented::context.enableTracing )
+        pDdiTable->pfnReserveCacheExt                        = instrumented::zeDeviceReserveCacheExt;
+    else
+        pDdiTable->pfnReserveCacheExt                        = driver::zeDeviceReserveCacheExt;
+
+    if( instrumented::context.enableTracing )
+        pDdiTable->pfnSetCacheAdviceExt                      = instrumented::zeDeviceSetCacheAdviceExt;
+    else
+        pDdiTable->pfnSetCacheAdviceExt                      = driver::zeDeviceSetCacheAdviceExt;
 
     return result;
 }
@@ -10937,6 +11207,36 @@ zeGetEventProcAddrTable(
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+/// @brief Exported function for filling application's EventExp table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+ZE_DLLEXPORT ze_result_t ZE_APICALL
+zeGetEventExpProcAddrTable(
+    ze_api_version_t version,                       ///< [in] API version requested
+    ze_event_exp_dditable_t* pDdiTable              ///< [in,out] pointer to table of DDI function pointers
+    )
+{
+    if( nullptr == pDdiTable )
+        return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+    if( driver::context.version < version )
+        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+
+    ze_result_t result = ZE_RESULT_SUCCESS;
+
+    if( instrumented::context.enableTracing )
+        pDdiTable->pfnQueryTimestampsExp                     = instrumented::zeEventQueryTimestampsExp;
+    else
+        pDdiTable->pfnQueryTimestampsExp                     = driver::zeEventQueryTimestampsExp;
+
+    return result;
+}
+
+///////////////////////////////////////////////////////////////////////////////
 /// @brief Exported function for filling application's EventPool table
 ///        with current process' addresses
 ///
@@ -11077,6 +11377,41 @@ zeGetImageProcAddrTable(
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+/// @brief Exported function for filling application's ImageExp table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+ZE_DLLEXPORT ze_result_t ZE_APICALL
+zeGetImageExpProcAddrTable(
+    ze_api_version_t version,                       ///< [in] API version requested
+    ze_image_exp_dditable_t* pDdiTable              ///< [in,out] pointer to table of DDI function pointers
+    )
+{
+    if( nullptr == pDdiTable )
+        return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+    if( driver::context.version < version )
+        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+
+    ze_result_t result = ZE_RESULT_SUCCESS;
+
+    if( instrumented::context.enableTracing )
+        pDdiTable->pfnGetMemoryPropertiesExp                 = instrumented::zeImageGetMemoryPropertiesExp;
+    else
+        pDdiTable->pfnGetMemoryPropertiesExp                 = driver::zeImageGetMemoryPropertiesExp;
+
+    if( instrumented::context.enableTracing )
+        pDdiTable->pfnViewCreateExp                          = instrumented::zeImageViewCreateExp;
+    else
+        pDdiTable->pfnViewCreateExp                          = driver::zeImageViewCreateExp;
+
+    return result;
+}
+
+///////////////////////////////////////////////////////////////////////////////
 /// @brief Exported function for filling application's Kernel table
 ///        with current process' addresses
 ///
@@ -11187,6 +11522,11 @@ zeGetKernelExpProcAddrTable(
         pDdiTable->pfnSetGlobalOffsetExp                     = instrumented::zeKernelSetGlobalOffsetExp;
     else
         pDdiTable->pfnSetGlobalOffsetExp                     = driver::zeKernelSetGlobalOffsetExp;
+
+    if( instrumented::context.enableTracing )
+        pDdiTable->pfnSchedulingHintExp                      = instrumented::zeKernelSchedulingHintExp;
+    else
+        pDdiTable->pfnSchedulingHintExp                      = driver::zeKernelSchedulingHintExp;
 
     return result;
 }

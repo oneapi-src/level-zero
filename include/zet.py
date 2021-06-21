@@ -4,7 +4,7 @@
  SPDX-License-Identifier: MIT
 
  @file zet.py
- @version v1.1-r1.1.10
+ @version v1.2-r1.2.13
 
  """
 import platform
@@ -313,23 +313,10 @@ class zet_debug_memory_space_desc_t(Structure):
     ]
 
 ###############################################################################
-## @brief Supported device register set types.
-class zet_debug_regset_type_v(IntEnum):
-    INVALID = 0                                     ## An invalid register set
-    GPR = 1                                         ## The general purpose register set
-    ACC = 2                                         ## The accumulator register set
-    ADDR = 3                                        ## The address register set
-    FLAG = 4                                        ## The flags register set
-
-class zet_debug_regset_type_t(c_int):
-    def __str__(self):
-        return str(zet_debug_regset_type_v(self.value))
-
-
-###############################################################################
-## @brief Supported device register set flags.
+## @brief Supported general register set flags.
 class zet_debug_regset_flags_v(IntEnum):
-    READ_ONLY = ZE_BIT(0)                           ## register set is read-only
+    READABLE = ZE_BIT(0)                            ## register set is readable
+    WRITEABLE = ZE_BIT(1)                           ## register set is writeable
 
 class zet_debug_regset_flags_t(c_int):
     def __str__(self):
@@ -343,11 +330,13 @@ class zet_debug_regset_properties_t(Structure):
     _fields_ = [
         ("stype", zet_structure_type_t),                                ## [in] type of this structure
         ("pNext", c_void_p),                                            ## [in,out][optional] pointer to extension-specific structure
-        ("type", zet_debug_regset_type_t),                              ## [out] register set type
-        ("flags", zet_debug_regset_flags_t),                            ## [out] register set flags
+        ("type", c_ulong),                                              ## [out] device-specific register set type
+        ("version", c_ulong),                                           ## [out] device-specific version of this register set
+        ("generalFlags", zet_debug_regset_flags_t),                     ## [out] general register set flags
+        ("deviceFlags", c_ulong),                                       ## [out] device-specific register set flags
         ("count", c_ulong),                                             ## [out] number of registers in the set
-        ("valueType", zet_value_type_t),                                ## [out] register value type
-        ("valueSize", c_size_t)                                         ## [out] register value size in bytes
+        ("bitSize", c_ulong),                                           ## [out] the size of a register in bits
+        ("byteSize", c_ulong)                                           ## [out] the size required for reading or writing a register in bytes
     ]
 
 ###############################################################################
@@ -920,16 +909,16 @@ else:
 ###############################################################################
 ## @brief Function-pointer for zetDebugReadRegisters
 if __use_win_types:
-    _zetDebugReadRegisters_t = WINFUNCTYPE( ze_result_t, zet_debug_session_handle_t, ze_device_thread_t, zet_debug_regset_type_t, c_ulong, c_ulong, c_void_p )
+    _zetDebugReadRegisters_t = WINFUNCTYPE( ze_result_t, zet_debug_session_handle_t, ze_device_thread_t, c_ulong, c_ulong, c_ulong, c_void_p )
 else:
-    _zetDebugReadRegisters_t = CFUNCTYPE( ze_result_t, zet_debug_session_handle_t, ze_device_thread_t, zet_debug_regset_type_t, c_ulong, c_ulong, c_void_p )
+    _zetDebugReadRegisters_t = CFUNCTYPE( ze_result_t, zet_debug_session_handle_t, ze_device_thread_t, c_ulong, c_ulong, c_ulong, c_void_p )
 
 ###############################################################################
 ## @brief Function-pointer for zetDebugWriteRegisters
 if __use_win_types:
-    _zetDebugWriteRegisters_t = WINFUNCTYPE( ze_result_t, zet_debug_session_handle_t, ze_device_thread_t, zet_debug_regset_type_t, c_ulong, c_ulong, c_void_p )
+    _zetDebugWriteRegisters_t = WINFUNCTYPE( ze_result_t, zet_debug_session_handle_t, ze_device_thread_t, c_ulong, c_ulong, c_ulong, c_void_p )
 else:
-    _zetDebugWriteRegisters_t = CFUNCTYPE( ze_result_t, zet_debug_session_handle_t, ze_device_thread_t, zet_debug_regset_type_t, c_ulong, c_ulong, c_void_p )
+    _zetDebugWriteRegisters_t = CFUNCTYPE( ze_result_t, zet_debug_session_handle_t, ze_device_thread_t, c_ulong, c_ulong, c_ulong, c_void_p )
 
 
 ###############################################################################

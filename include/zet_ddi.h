@@ -5,7 +5,7 @@
  * SPDX-License-Identifier: MIT
  *
  * @file zet_ddi.h
- * @version v1.1-r1.1.10
+ * @version v1.2-r1.2.13
  *
  */
 #ifndef _ZET_DDI_H
@@ -639,7 +639,7 @@ typedef ze_result_t (ZE_APICALL *zet_pfnDebugGetRegisterSetProperties_t)(
 typedef ze_result_t (ZE_APICALL *zet_pfnDebugReadRegisters_t)(
     zet_debug_session_handle_t,
     ze_device_thread_t,
-    zet_debug_regset_type_t,
+    uint32_t,
     uint32_t,
     uint32_t,
     void*
@@ -650,7 +650,7 @@ typedef ze_result_t (ZE_APICALL *zet_pfnDebugReadRegisters_t)(
 typedef ze_result_t (ZE_APICALL *zet_pfnDebugWriteRegisters_t)(
     zet_debug_session_handle_t,
     ze_device_thread_t,
-    zet_debug_regset_type_t,
+    uint32_t,
     uint32_t,
     uint32_t,
     void*

@@ -5,7 +5,7 @@
  * SPDX-License-Identifier: MIT
  *
  * @file zet_api.h
- * @version v1.1-r1.1.10
+ * @version v1.2-r1.2.13
  *
  */
 #ifndef _ZET_API_H
@@ -659,24 +659,12 @@ zetDebugWriteMemory(
     );
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Supported device register set types.
-typedef enum _zet_debug_regset_type_t
-{
-    ZET_DEBUG_REGSET_TYPE_INVALID = 0,              ///< An invalid register set
-    ZET_DEBUG_REGSET_TYPE_GPR = 1,                  ///< The general purpose register set
-    ZET_DEBUG_REGSET_TYPE_ACC = 2,                  ///< The accumulator register set
-    ZET_DEBUG_REGSET_TYPE_ADDR = 3,                 ///< The address register set
-    ZET_DEBUG_REGSET_TYPE_FLAG = 4,                 ///< The flags register set
-    ZET_DEBUG_REGSET_TYPE_FORCE_UINT32 = 0x7fffffff
-
-} zet_debug_regset_type_t;
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Supported device register set flags.
+/// @brief Supported general register set flags.
 typedef uint32_t zet_debug_regset_flags_t;
 typedef enum _zet_debug_regset_flag_t
 {
-    ZET_DEBUG_REGSET_FLAG_READ_ONLY = ZE_BIT(0),    ///< register set is read-only
+    ZET_DEBUG_REGSET_FLAG_READABLE = ZE_BIT(0),     ///< register set is readable
+    ZET_DEBUG_REGSET_FLAG_WRITEABLE = ZE_BIT(1),    ///< register set is writeable
     ZET_DEBUG_REGSET_FLAG_FORCE_UINT32 = 0x7fffffff
 
 } zet_debug_regset_flag_t;
@@ -688,11 +676,13 @@ typedef struct _zet_debug_regset_properties_t
 {
     zet_structure_type_t stype;                     ///< [in] type of this structure
     void* pNext;                                    ///< [in,out][optional] pointer to extension-specific structure
-    zet_debug_regset_type_t type;                   ///< [out] register set type
-    zet_debug_regset_flags_t flags;                 ///< [out] register set flags
+    uint32_t type;                                  ///< [out] device-specific register set type
+    uint32_t version;                               ///< [out] device-specific version of this register set
+    zet_debug_regset_flags_t generalFlags;          ///< [out] general register set flags
+    uint32_t deviceFlags;                           ///< [out] device-specific register set flags
     uint32_t count;                                 ///< [out] number of registers in the set
-    zet_value_type_t valueType;                     ///< [out] register value type
-    size_t valueSize;                               ///< [out] register value size in bytes
+    uint32_t bitSize;                               ///< [out] the size of a register in bits
+    uint32_t byteSize;                              ///< [out] the size required for reading or writing a register in bytes
 
 } zet_debug_regset_properties_t;
 
@@ -731,15 +721,13 @@ zetDebugGetRegisterSetProperties(
 ///     - ::ZE_RESULT_ERROR_DEVICE_LOST
 ///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
 ///         + `nullptr == hDebug`
-///     - ::ZE_RESULT_ERROR_INVALID_ENUMERATION
-///         + `::ZET_DEBUG_REGSET_TYPE_FLAG < type`
 ///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
 ///         + the thread is running or unavailable
 ZE_APIEXPORT ze_result_t ZE_APICALL
 zetDebugReadRegisters(
     zet_debug_session_handle_t hDebug,              ///< [in] debug session handle
     ze_device_thread_t thread,                      ///< [in] the thread identifier
-    zet_debug_regset_type_t type,                   ///< [in] register set type
+    uint32_t type,                                  ///< [in] register set type
     uint32_t start,                                 ///< [in] the starting offset into the register state area; must be less
                                                     ///< than ::zet_debug_regset_properties_t.count for the type
     uint32_t count,                                 ///< [in] the number of registers to read; start+count must be <=
@@ -756,15 +744,13 @@ zetDebugReadRegisters(
 ///     - ::ZE_RESULT_ERROR_DEVICE_LOST
 ///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
 ///         + `nullptr == hDebug`
-///     - ::ZE_RESULT_ERROR_INVALID_ENUMERATION
-///         + `::ZET_DEBUG_REGSET_TYPE_FLAG < type`
 ///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
 ///         + the thread is running or unavailable
 ZE_APIEXPORT ze_result_t ZE_APICALL
 zetDebugWriteRegisters(
     zet_debug_session_handle_t hDebug,              ///< [in] debug session handle
     ze_device_thread_t thread,                      ///< [in] the thread identifier
-    zet_debug_regset_type_t type,                   ///< [in] register set type
+    uint32_t type,                                  ///< [in] register set type
     uint32_t start,                                 ///< [in] the starting offset into the register state area; must be less
                                                     ///< than ::zet_debug_regset_properties_t.count for the type
     uint32_t count,                                 ///< [in] the number of registers to write; start+count must be <=
@@ -1376,7 +1362,7 @@ zetCommandListAppendMetricQueryEnd(
     zet_metric_query_handle_t hMetricQuery,         ///< [in] handle of the metric query
     ze_event_handle_t hSignalEvent,                 ///< [in][optional] handle of the event to signal on completion
     uint32_t numWaitEvents,                         ///< [in] must be zero
-    ze_event_handle_t* phWaitEvents                 ///< [in] must be nullptr
+    ze_event_handle_t* phWaitEvents                 ///< [in][mbz] must be nullptr
     );
 
 ///////////////////////////////////////////////////////////////////////////////

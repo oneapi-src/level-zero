@@ -229,7 +229,7 @@ namespace loader
     __zedlllocal ze_result_t ZE_APICALL
     zeDriverGetExtensionFunctionAddress(
         ze_driver_handle_t hDriver,                     ///< [in] handle of the driver instance
-        const char* name,                               ///< [in] extension name
+        const char* name,                               ///< [in] extension function name
         void** ppFunctionAddress                        ///< [out] pointer to function pointer
         )
     {
@@ -4113,6 +4113,191 @@ namespace loader
         return result;
     }
 
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeDeviceReserveCacheExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeDeviceReserveCacheExt(
+        ze_device_handle_t hDevice,                     ///< [in] handle of the device object
+        size_t cacheLevel,                              ///< [in] cache level where application want to reserve. If zero, then the
+                                                        ///< driver shall default to last level of cache and attempt to reserve in
+                                                        ///< that cache.
+        size_t cacheReservationSize                     ///< [in] value for reserving size, in bytes. If zero, then the driver
+                                                        ///< shall remove prior reservation
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<ze_device_object_t*>( hDevice )->dditable;
+        auto pfnReserveCacheExt = dditable->ze.Device.pfnReserveCacheExt;
+        if( nullptr == pfnReserveCacheExt )
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+
+        // convert loader handle to driver handle
+        hDevice = reinterpret_cast<ze_device_object_t*>( hDevice )->handle;
+
+        // forward to device-driver
+        result = pfnReserveCacheExt( hDevice, cacheLevel, cacheReservationSize );
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeDeviceSetCacheAdviceExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeDeviceSetCacheAdviceExt(
+        ze_device_handle_t hDevice,                     ///< [in] handle of the device object
+        void* ptr,                                      ///< [in] memory pointer to query
+        size_t regionSize,                              ///< [in] region size, in pages
+        ze_cache_ext_region_t cacheRegion               ///< [in] reservation region
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<ze_device_object_t*>( hDevice )->dditable;
+        auto pfnSetCacheAdviceExt = dditable->ze.Device.pfnSetCacheAdviceExt;
+        if( nullptr == pfnSetCacheAdviceExt )
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+
+        // convert loader handle to driver handle
+        hDevice = reinterpret_cast<ze_device_object_t*>( hDevice )->handle;
+
+        // forward to device-driver
+        result = pfnSetCacheAdviceExt( hDevice, ptr, regionSize, cacheRegion );
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeEventQueryTimestampsExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zeEventQueryTimestampsExp(
+        ze_event_handle_t hEvent,                       ///< [in] handle of the event
+        ze_device_handle_t hDevice,                     ///< [in] handle of the device to query
+        uint32_t* pCount,                               ///< [in,out] pointer to the number of timestamp results
+        ze_kernel_timestamp_result_t* pTimestamps       ///< [in,out][range(0, *pCount)] pointer to memory where timestamp results
+                                                        ///< will be written.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<ze_event_object_t*>( hEvent )->dditable;
+        auto pfnQueryTimestampsExp = dditable->ze.EventExp.pfnQueryTimestampsExp;
+        if( nullptr == pfnQueryTimestampsExp )
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+
+        // convert loader handle to driver handle
+        hEvent = reinterpret_cast<ze_event_object_t*>( hEvent )->handle;
+
+        // convert loader handle to driver handle
+        hDevice = reinterpret_cast<ze_device_object_t*>( hDevice )->handle;
+
+        // forward to device-driver
+        result = pfnQueryTimestampsExp( hEvent, hDevice, pCount, pTimestamps );
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeImageGetMemoryPropertiesExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zeImageGetMemoryPropertiesExp(
+        ze_image_handle_t hImage,                       ///< [in] handle of image object
+        ze_image_memory_properties_exp_t* pMemoryProperties ///< [in,out] query result for image memory properties.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<ze_image_object_t*>( hImage )->dditable;
+        auto pfnGetMemoryPropertiesExp = dditable->ze.ImageExp.pfnGetMemoryPropertiesExp;
+        if( nullptr == pfnGetMemoryPropertiesExp )
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+
+        // convert loader handle to driver handle
+        hImage = reinterpret_cast<ze_image_object_t*>( hImage )->handle;
+
+        // forward to device-driver
+        result = pfnGetMemoryPropertiesExp( hImage, pMemoryProperties );
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeImageViewCreateExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zeImageViewCreateExp(
+        ze_context_handle_t hContext,                   ///< [in] handle of the context object
+        ze_device_handle_t hDevice,                     ///< [in] handle of the device
+        const ze_image_desc_t* desc,                    ///< [in] pointer to image descriptor
+        ze_image_handle_t hImage,                       ///< [in] handle of image object to create view from
+        ze_image_handle_t* phImageView                  ///< [out] pointer to handle of image object created for view
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<ze_context_object_t*>( hContext )->dditable;
+        auto pfnViewCreateExp = dditable->ze.ImageExp.pfnViewCreateExp;
+        if( nullptr == pfnViewCreateExp )
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+
+        // convert loader handle to driver handle
+        hContext = reinterpret_cast<ze_context_object_t*>( hContext )->handle;
+
+        // convert loader handle to driver handle
+        hDevice = reinterpret_cast<ze_device_object_t*>( hDevice )->handle;
+
+        // convert loader handle to driver handle
+        hImage = reinterpret_cast<ze_image_object_t*>( hImage )->handle;
+
+        // forward to device-driver
+        result = pfnViewCreateExp( hContext, hDevice, desc, hImage, phImageView );
+
+        if( ZE_RESULT_SUCCESS != result )
+            return result;
+
+        try
+        {
+            // convert driver handle to loader handle
+            *phImageView = reinterpret_cast<ze_image_handle_t>(
+                ze_image_factory.getInstance( *phImageView, dditable ) );
+        }
+        catch( std::bad_alloc& )
+        {
+            result = ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY;
+        }
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeKernelSchedulingHintExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zeKernelSchedulingHintExp(
+        ze_kernel_handle_t hKernel,                     ///< [in] handle of the kernel object
+        ze_scheduling_hint_exp_desc_t* pHint            ///< [in] pointer to kernel scheduling hint descriptor
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<ze_kernel_object_t*>( hKernel )->dditable;
+        auto pfnSchedulingHintExp = dditable->ze.KernelExp.pfnSchedulingHintExp;
+        if( nullptr == pfnSchedulingHintExp )
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+
+        // convert loader handle to driver handle
+        hKernel = reinterpret_cast<ze_kernel_object_t*>( hKernel )->handle;
+
+        // forward to device-driver
+        result = pfnSchedulingHintExp( hKernel, pHint );
+
+        return result;
+    }
+
 } // namespace loader
 
 #if defined(__cplusplus)
@@ -4356,6 +4541,8 @@ zeGetDeviceProcAddrTable(
             pDdiTable->pfnCanAccessPeer                            = loader::zeDeviceCanAccessPeer;
             pDdiTable->pfnGetStatus                                = loader::zeDeviceGetStatus;
             pDdiTable->pfnGetGlobalTimestamps                      = loader::zeDeviceGetGlobalTimestamps;
+            pDdiTable->pfnReserveCacheExt                          = loader::zeDeviceReserveCacheExt;
+            pDdiTable->pfnSetCacheAdviceExt                        = loader::zeDeviceSetCacheAdviceExt;
         }
         else
         {
@@ -4762,6 +4949,83 @@ zeGetEventProcAddrTable(
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+/// @brief Exported function for filling application's EventExp table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+ZE_DLLEXPORT ze_result_t ZE_APICALL
+zeGetEventExpProcAddrTable(
+    ze_api_version_t version,                       ///< [in] API version requested
+    ze_event_exp_dditable_t* pDdiTable              ///< [in,out] pointer to table of DDI function pointers
+    )
+{
+    if( loader::context->drivers.size() < 1 )
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+
+    if( nullptr == pDdiTable )
+        return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+    if( loader::context->version < version )
+        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+
+    ze_result_t result = ZE_RESULT_SUCCESS;
+
+    bool atLeastOneDriverValid = false;
+    // Load the device-driver DDI tables
+    for( auto& drv : loader::context->drivers )
+    {
+
+        auto getTable = reinterpret_cast<ze_pfnGetEventExpProcAddrTable_t>(
+            GET_FUNCTION_PTR( drv.handle, "zeGetEventExpProcAddrTable") );
+        if(!getTable) 
+            continue; 
+        if(getTable( version, &drv.dditable.ze.EventExp ) == ZE_RESULT_SUCCESS) 
+            atLeastOneDriverValid = true;
+    }
+
+
+    if( ZE_RESULT_SUCCESS == result )
+    {
+        if( ( loader::context->drivers.size() > 1 ) || loader::context->forceIntercept )
+        {
+            // return pointers to loader's DDIs
+            pDdiTable->pfnQueryTimestampsExp                       = loader::zeEventQueryTimestampsExp;
+        }
+        else
+        {
+            // return pointers directly to driver's DDIs
+            *pDdiTable = loader::context->drivers.front().dditable.ze.EventExp;
+        }
+    }
+
+    // If the validation layer is enabled, then intercept the loader's DDIs
+    if(( ZE_RESULT_SUCCESS == result ) && ( nullptr != loader::context->validationLayer ))
+    {
+        auto getTable = reinterpret_cast<ze_pfnGetEventExpProcAddrTable_t>(
+            GET_FUNCTION_PTR(loader::context->validationLayer, "zeGetEventExpProcAddrTable") );
+        if(!getTable)
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        result = getTable( version, pDdiTable );
+    }
+
+    // If the API tracing layer is enabled, then intercept the loader's DDIs
+    if(( ZE_RESULT_SUCCESS == result ) && ( nullptr != loader::context->tracingLayer ))
+    {
+        auto getTable = reinterpret_cast<ze_pfnGetEventExpProcAddrTable_t>(
+            GET_FUNCTION_PTR(loader::context->tracingLayer, "zeGetEventExpProcAddrTable") );
+        if(!getTable)
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        result = getTable( version, pDdiTable );
+    }
+
+    return result;
+}
+
+///////////////////////////////////////////////////////////////////////////////
 /// @brief Exported function for filling application's EventPool table
 ///        with current process' addresses
 ///
@@ -5021,6 +5285,84 @@ zeGetImageProcAddrTable(
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+/// @brief Exported function for filling application's ImageExp table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+ZE_DLLEXPORT ze_result_t ZE_APICALL
+zeGetImageExpProcAddrTable(
+    ze_api_version_t version,                       ///< [in] API version requested
+    ze_image_exp_dditable_t* pDdiTable              ///< [in,out] pointer to table of DDI function pointers
+    )
+{
+    if( loader::context->drivers.size() < 1 )
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+
+    if( nullptr == pDdiTable )
+        return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+    if( loader::context->version < version )
+        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+
+    ze_result_t result = ZE_RESULT_SUCCESS;
+
+    bool atLeastOneDriverValid = false;
+    // Load the device-driver DDI tables
+    for( auto& drv : loader::context->drivers )
+    {
+
+        auto getTable = reinterpret_cast<ze_pfnGetImageExpProcAddrTable_t>(
+            GET_FUNCTION_PTR( drv.handle, "zeGetImageExpProcAddrTable") );
+        if(!getTable) 
+            continue; 
+        if(getTable( version, &drv.dditable.ze.ImageExp ) == ZE_RESULT_SUCCESS) 
+            atLeastOneDriverValid = true;
+    }
+
+
+    if( ZE_RESULT_SUCCESS == result )
+    {
+        if( ( loader::context->drivers.size() > 1 ) || loader::context->forceIntercept )
+        {
+            // return pointers to loader's DDIs
+            pDdiTable->pfnGetMemoryPropertiesExp                   = loader::zeImageGetMemoryPropertiesExp;
+            pDdiTable->pfnViewCreateExp                            = loader::zeImageViewCreateExp;
+        }
+        else
+        {
+            // return pointers directly to driver's DDIs
+            *pDdiTable = loader::context->drivers.front().dditable.ze.ImageExp;
+        }
+    }
+
+    // If the validation layer is enabled, then intercept the loader's DDIs
+    if(( ZE_RESULT_SUCCESS == result ) && ( nullptr != loader::context->validationLayer ))
+    {
+        auto getTable = reinterpret_cast<ze_pfnGetImageExpProcAddrTable_t>(
+            GET_FUNCTION_PTR(loader::context->validationLayer, "zeGetImageExpProcAddrTable") );
+        if(!getTable)
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        result = getTable( version, pDdiTable );
+    }
+
+    // If the API tracing layer is enabled, then intercept the loader's DDIs
+    if(( ZE_RESULT_SUCCESS == result ) && ( nullptr != loader::context->tracingLayer ))
+    {
+        auto getTable = reinterpret_cast<ze_pfnGetImageExpProcAddrTable_t>(
+            GET_FUNCTION_PTR(loader::context->tracingLayer, "zeGetImageExpProcAddrTable") );
+        if(!getTable)
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        result = getTable( version, pDdiTable );
+    }
+
+    return result;
+}
+
+///////////////////////////////////////////////////////////////////////////////
 /// @brief Exported function for filling application's Kernel table
 ///        with current process' addresses
 ///
@@ -5160,6 +5502,7 @@ zeGetKernelExpProcAddrTable(
         {
             // return pointers to loader's DDIs
             pDdiTable->pfnSetGlobalOffsetExp                       = loader::zeKernelSetGlobalOffsetExp;
+            pDdiTable->pfnSchedulingHintExp                        = loader::zeKernelSchedulingHintExp;
         }
         else
         {

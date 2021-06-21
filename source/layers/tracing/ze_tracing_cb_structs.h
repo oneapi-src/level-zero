@@ -56,6 +56,8 @@ typedef struct _zel_device_callbacks_t
     ze_pfnDeviceCanAccessPeerCb_t                                   pfnCanAccessPeerCb;
     ze_pfnDeviceGetStatusCb_t                                       pfnGetStatusCb;
     ze_pfnDeviceGetGlobalTimestampsCb_t                             pfnGetGlobalTimestampsCb;
+    ze_pfnDeviceReserveCacheExtCb_t                                 pfnReserveCacheExtCb;
+    ze_pfnDeviceSetCacheAdviceExtCb_t                               pfnSetCacheAdviceExtCb;
 } zel_device_callbacks_t;
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -126,6 +128,7 @@ typedef struct _zel_event_callbacks_t
     ze_pfnEventQueryStatusCb_t                                      pfnQueryStatusCb;
     ze_pfnEventHostResetCb_t                                        pfnHostResetCb;
     ze_pfnEventQueryKernelTimestampCb_t                             pfnQueryKernelTimestampCb;
+    ze_pfnEventQueryTimestampsExpCb_t                               pfnQueryTimestampsExpCb;
 } zel_event_callbacks_t;
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -157,6 +160,8 @@ typedef struct _zel_image_callbacks_t
     ze_pfnImageGetPropertiesCb_t                                    pfnGetPropertiesCb;
     ze_pfnImageCreateCb_t                                           pfnCreateCb;
     ze_pfnImageDestroyCb_t                                          pfnDestroyCb;
+    ze_pfnImageGetMemoryPropertiesExpCb_t                           pfnGetMemoryPropertiesExpCb;
+    ze_pfnImageViewCreateExpCb_t                                    pfnViewCreateExpCb;
 } zel_image_callbacks_t;
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -176,6 +181,7 @@ typedef struct _zel_kernel_callbacks_t
     ze_pfnKernelGetPropertiesCb_t                                   pfnGetPropertiesCb;
     ze_pfnKernelGetNameCb_t                                         pfnGetNameCb;
     ze_pfnKernelSetGlobalOffsetExpCb_t                              pfnSetGlobalOffsetExpCb;
+    ze_pfnKernelSchedulingHintExpCb_t                               pfnSchedulingHintExpCb;
 } zel_kernel_callbacks_t;
 
 ///////////////////////////////////////////////////////////////////////////////

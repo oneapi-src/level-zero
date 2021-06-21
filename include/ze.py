@@ -4,7 +4,7 @@
  SPDX-License-Identifier: MIT
 
  @file ze.py
- @version v1.1-r1.1.10
+ @version v1.2-r1.2.13
 
  """
 import platform
@@ -153,6 +153,8 @@ class ze_result_v(IntEnum):
     ERROR_OUT_OF_DEVICE_MEMORY = 0x70000003         ## [Core] insufficient device memory to satisfy call
     ERROR_MODULE_BUILD_FAILURE = 0x70000004         ## [Core] error occurred when building module, see build log for details
     ERROR_MODULE_LINK_FAILURE = 0x70000005          ## [Core] error occurred when linking modules, see build log for details
+    ERROR_DEVICE_REQUIRES_RESET = 0x70000006        ## [Core] device requires a reset
+    ERROR_DEVICE_IN_LOW_POWER_STATE = 0x70000007    ## [Core] device currently in low power state
     ERROR_INSUFFICIENT_PERMISSIONS = 0x70010000     ## [Sysman] access denied due to permission level
     ERROR_NOT_AVAILABLE = 0x70010001                ## [Sysman] resource already in use and simultaneous access not allowed
                                                     ## or resource was removed
@@ -232,11 +234,19 @@ class ze_structure_type_v(IntEnum):
     KERNEL_PROPERTIES = 0x1e                        ## ::ze_kernel_properties_t
     SAMPLER_DESC = 0x1f                             ## ::ze_sampler_desc_t
     PHYSICAL_MEM_DESC = 0x20                        ## ::ze_physical_mem_desc_t
+    KERNEL_PREFERRED_GROUP_SIZE_PROPERTIES = 0x21   ## ::ze_kernel_preferred_group_size_properties_t
+    EXTERNAL_MEMORY_IMPORT_WIN32 = 0x22             ## ::ze_external_memory_import_win32_handle_t
+    EXTERNAL_MEMORY_EXPORT_WIN32 = 0x23             ## ::ze_external_memory_export_win32_handle_t
     DEVICE_RAYTRACING_EXT_PROPERTIES = 0x00010001   ## ::ze_device_raytracing_ext_properties_t
     RAYTRACING_MEM_ALLOC_EXT_DESC = 0x10002         ## ::ze_raytracing_mem_alloc_ext_desc_t
     FLOAT_ATOMIC_EXT_PROPERTIES = 0x10003           ## ::ze_float_atomic_ext_properties_t
+    CACHE_RESERVATION_EXT_DESC = 0x10004            ## ::ze_cache_reservation_ext_desc_t
     RELAXED_ALLOCATION_LIMITS_EXP_DESC = 0x00020001 ## ::ze_relaxed_allocation_limits_exp_desc_t
     MODULE_PROGRAM_EXP_DESC = 0x00020002            ## ::ze_module_program_exp_desc_t
+    SCHEDULING_HINT_EXP_PROPERTIES = 0x00020003     ## ::ze_scheduling_hint_exp_properties_t
+    SCHEDULING_HINT_EXP_DESC = 0x00020004           ## ::ze_scheduling_hint_exp_desc_t
+    IMAGE_VIEW_PLANAR_EXP_DESC = 0x00020005         ## ::ze_image_view_planar_exp_desc_t
+    DEVICE_PROPERTIES_1_2 = 0x20006                 ## ::ze_device_properties_t
 
 class ze_structure_type_t(c_int):
     def __str__(self):
@@ -248,6 +258,13 @@ class ze_structure_type_t(c_int):
 class ze_external_memory_type_flags_v(IntEnum):
     OPAQUE_FD = ZE_BIT(0)                           ## an opaque POSIX file descriptor handle
     DMA_BUF = ZE_BIT(1)                             ## a file descriptor handle for a Linux dma_buf
+    OPAQUE_WIN32 = ZE_BIT(2)                        ## an NT handle
+    OPAQUE_WIN32_KMT = ZE_BIT(3)                    ## a global share (KMT) handle
+    D3D11_TEXTURE = ZE_BIT(4)                       ## an NT handle referring to a Direct3D 10 or 11 texture resource
+    D3D11_TEXTURE_KMT = ZE_BIT(5)                   ## a global share (KMT) handle referring to a Direct3D 10 or 11 texture
+                                                    ## resource
+    D3D12_HEAP = ZE_BIT(6)                          ## an NT handle referring to a Direct3D 12 heap resource
+    D3D12_RESOURCE = ZE_BIT(7)                      ## an NT handle referring to a Direct3D 12 committed resource
 
 class ze_external_memory_type_flags_t(c_int):
     def __str__(self):
@@ -284,6 +301,7 @@ class ze_base_desc_t(Structure):
 ## @brief Supported initialization flags
 class ze_init_flags_v(IntEnum):
     GPU_ONLY = ZE_BIT(0)                            ## only initialize GPU drivers
+    VPU_ONLY = ZE_BIT(1)                            ## only initialize VPU drivers
 
 class ze_init_flags_t(c_int):
     def __str__(self):
@@ -299,7 +317,8 @@ class ze_init_flags_t(c_int):
 class ze_api_version_v(IntEnum):
     _1_0 = ZE_MAKE_VERSION( 1, 0 )                  ## version 1.0
     _1_1 = ZE_MAKE_VERSION( 1, 1 )                  ## version 1.1
-    CURRENT = ZE_MAKE_VERSION( 1, 1 )               ## latest known version
+    _1_2 = ZE_MAKE_VERSION( 1, 2 )                  ## version 1.2
+    CURRENT = ZE_MAKE_VERSION( 1, 2 )               ## latest known version
 
 class ze_api_version_t(c_int):
     def __str__(self):
@@ -370,6 +389,7 @@ class ze_device_type_v(IntEnum):
     CPU = 2                                         ## Central Processing Unit
     FPGA = 3                                        ## Field Programmable Gate Array
     MCA = 4                                         ## Memory Copy Accelerator
+    VPU = 5                                         ## Vision Processing Unit
 
 class ze_device_type_t(c_int):
     def __str__(self):
@@ -426,8 +446,11 @@ class ze_device_properties_t(Structure):
         ("numEUsPerSubslice", c_ulong),                                 ## [out] Number of EUs per sub-slice.
         ("numSubslicesPerSlice", c_ulong),                              ## [out] Number of sub-slices per slice.
         ("numSlices", c_ulong),                                         ## [out] Number of slices.
-        ("timerResolution", c_ulonglong),                               ## [out] Returns the resolution of device timer in cycles per second used
-                                                                        ## for profiling, timestamps, etc.
+        ("timerResolution", c_ulonglong),                               ## [out] Returns the resolution of device timer used for profiling,
+                                                                        ## timestamps, etc. When stype==::ZE_STRUCTURE_TYPE_DEVICE_PROPERTIES the
+                                                                        ## units are in nanoseconds. When
+                                                                        ## stype==::ZE_STRUCTURE_TYPE_DEVICE_PROPERTIES_1_2 units are in
+                                                                        ## cycles/sec
         ("timestampValidBits", c_ulong),                                ## [out] Returns the number of valid bits in the timestamp value.
         ("kernelTimestampValidBits", c_ulong),                          ## [out] Returns the number of valid bits in the kernel timestamp values
         ("uuid", ze_device_uuid_t),                                     ## [out] universal unique identifier. Note: Subdevices will have their
@@ -1046,6 +1069,8 @@ class ze_image_format_layout_v(IntEnum):
     _422H = 38                                      ## Media Format: 422H. Format type and swizzle is ignored for this.
     _422V = 39                                      ## Media Format: 422V. Format type and swizzle is ignored for this.
     _444P = 40                                      ## Media Format: 444P. Format type and swizzle is ignored for this.
+    RGBP = 41                                       ## Media Format: RGBP. Format type and swizzle is ignored for this.
+    BRGP = 42                                       ## Media Format: BRGP. Format type and swizzle is ignored for this.
 
 class ze_image_format_layout_t(c_int):
     def __str__(self):
@@ -1158,6 +1183,7 @@ class ze_image_properties_t(Structure):
 class ze_device_mem_alloc_flags_v(IntEnum):
     BIAS_CACHED = ZE_BIT(0)                         ## device should cache allocation
     BIAS_UNCACHED = ZE_BIT(1)                       ## device should not cache allocation (UC)
+    BIAS_INITIAL_PLACEMENT = ZE_BIT(2)              ## optimize shared allocation for first access on the device
 
 class ze_device_mem_alloc_flags_t(c_int):
     def __str__(self):
@@ -1183,6 +1209,7 @@ class ze_host_mem_alloc_flags_v(IntEnum):
     BIAS_CACHED = ZE_BIT(0)                         ## host should cache allocation
     BIAS_UNCACHED = ZE_BIT(1)                       ## host should not cache allocation (UC)
     BIAS_WRITE_COMBINED = ZE_BIT(2)                 ## host memory should be allocated write-combined (WC)
+    BIAS_INITIAL_PLACEMENT = ZE_BIT(3)              ## optimize shared allocation for first access on the host
 
 class ze_host_mem_alloc_flags_t(c_int):
     def __str__(self):
@@ -1227,7 +1254,8 @@ class ze_memory_allocation_properties_t(Structure):
 ###############################################################################
 ## @brief Supported IPC memory flags
 class ze_ipc_memory_flags_v(IntEnum):
-    TBD = ZE_BIT(0)                                 ## reserved for future use
+    BIAS_CACHED = ZE_BIT(0)                         ## device should cache allocation
+    BIAS_UNCACHED = ZE_BIT(1)                       ## device should not cache allocation (UC)
 
 class ze_ipc_memory_flags_t(c_int):
     def __str__(self):
@@ -1292,6 +1320,51 @@ class ze_external_memory_export_fd_t(Structure):
     ]
 
 ###############################################################################
+## @brief Additional allocation descriptor for importing external memory as a
+##        Win32 handle
+## 
+## @details
+##     - When `handle` is `nullptr`, `name` must not be `nullptr`.
+##     - When `name` is `nullptr`, `handle` must not be `nullptr`.
+##     - When `flags` is ::ZE_EXTERNAL_MEMORY_TYPE_FLAG_OPAQUE_WIN32_KMT,
+##       `name` must be `nullptr`.
+##     - This structure may be passed to ::zeMemAllocDevice, via the `pNext`
+##       member of ::ze_device_mem_alloc_desc_t, to import memory from a Win32
+##       handle.
+##     - This structure may be passed to ::zeImageCreate, via the `pNext`
+##       member of ::ze_image_desc_t, to import memory from a Win32 handle.
+class ze_external_memory_import_win32_handle_t(Structure):
+    _fields_ = [
+        ("stype", ze_structure_type_t),                                 ## [in] type of this structure
+        ("pNext", c_void_p),                                            ## [in][optional] pointer to extension-specific structure
+        ("flags", ze_external_memory_type_flags_t),                     ## [in] flags specifying the memory import type for the Win32 handle.
+                                                                        ## must be 0 (default) or a valid combination of ::ze_external_memory_type_flags_t
+        ("handle", c_void_p),                                           ## [in][optional] the Win32 handle to import
+        ("name", c_void_p)                                              ## [in][optional] name of a memory object to import
+    ]
+
+###############################################################################
+## @brief Exports an allocation as a Win32 handle
+## 
+## @details
+##     - This structure may be passed to ::zeMemGetAllocProperties, via the
+##       `pNext` member of ::ze_memory_allocation_properties_t, to export a
+##       memory allocation as a file descriptor.
+##     - This structure may be passed to ::zeImageGetProperties, via the
+##       `pNext` member of ::ze_image_properties_t, to export an image as a
+##       file descriptor.
+##     - The requested memory export type must have been specified when the
+##       allocation was made.
+class ze_external_memory_export_win32_handle_t(Structure):
+    _fields_ = [
+        ("stype", ze_structure_type_t),                                 ## [in] type of this structure
+        ("pNext", c_void_p),                                            ## [in][optional] pointer to extension-specific structure
+        ("flags", ze_external_memory_type_flags_t),                     ## [in] flags specifying the memory export type for the file descriptor.
+                                                                        ## must be 0 (default) or a valid combination of ::ze_external_memory_type_flags_t
+        ("handle", c_void_p)                                            ## [out] the exported Win32 handle representing the allocation.
+    ]
+
+###############################################################################
 ## @brief Supported module creation input formats
 class ze_module_format_v(IntEnum):
     IL_SPIRV = 0                                    ## Format is SPIRV IL format
@@ -1325,6 +1398,12 @@ class ze_module_desc_t(Structure):
         ("pBuildFlags", c_char_p),                                      ## [in][optional] string containing compiler flags. Following options are supported.
                                                                         ##  - "-ze-opt-disable"
                                                                         ##       - Disable optimizations
+                                                                        ##  - "-ze-opt-level"
+                                                                        ##       - Specifies optimization level for compiler. Levels are
+                                                                        ## implementation specific.
+                                                                        ##           - 0 is no optimizations (equivalent to -ze-opt-disable)
+                                                                        ##           - 1 is optimize minimally (may be the same as 2)
+                                                                        ##           - 2 is optimize more (default)
                                                                         ##  - "-ze-opt-greater-than-4GB-buffer-required"
                                                                         ##       - Use 64-bit offset calculations for buffers.
                                                                         ##  - "-ze-opt-large-register-file"
@@ -1449,6 +1528,20 @@ class ze_kernel_properties_t(Structure):
     ]
 
 ###############################################################################
+## @brief Additional kernel preferred group size properties
+## 
+## @details
+##     - This structure may be passed to ::zeKernelGetProperties, via the
+##       `pNext` member of ::ze_kernel_properties_t, to query additional kernel
+##       preferred group size properties.
+class ze_kernel_preferred_group_size_properties_t(Structure):
+    _fields_ = [
+        ("stype", ze_structure_type_t),                                 ## [in] type of this structure
+        ("pNext", c_void_p),                                            ## [in,out][optional] pointer to extension-specific structure
+        ("preferredMultiple", c_ulong)                                  ## [out] preferred group size multiple
+    ]
+
+###############################################################################
 ## @brief Kernel dispatch group count.
 class ze_group_count_t(Structure):
     _fields_ = [
@@ -1477,6 +1570,10 @@ class ze_module_program_exp_version_t(c_int):
 ## 
 ## @details
 ##     - Implementation must support ::ZE_experimental_module_program extension
+##     - Modules support import and export linkage for functions and global
+##       variables.
+##     - SPIR-V import and export linkage types are used. See SPIR-V
+##       specification for linkage details.
 ##     - pInputModules, pBuildFlags, and pConstants from ::ze_module_desc_t is
 ##       ignored.
 ##     - Format in ::ze_module_desc_t needs to be set to
@@ -1740,6 +1837,213 @@ class ze_relaxed_allocation_limits_exp_desc_t(Structure):
     ]
 
 ###############################################################################
+## @brief Cache_Reservation Extension Name
+ZE_CACHE_RESERVATION_EXT_NAME = "ZE_extension_cache_reservation"
+
+###############################################################################
+## @brief Cache_Reservation Extension Version(s)
+class ze_cache_reservation_ext_version_v(IntEnum):
+    _1_0 = ZE_MAKE_VERSION( 1, 0 )                  ## version 1.0
+    CURRENT = ZE_MAKE_VERSION( 1, 0 )               ## latest known version
+
+class ze_cache_reservation_ext_version_t(c_int):
+    def __str__(self):
+        return str(ze_cache_reservation_ext_version_v(self.value))
+
+
+###############################################################################
+## @brief Cache Reservation Region
+class ze_cache_ext_region_v(IntEnum):
+    ZE_CACHE_REGION_DEFAULT = 0                     ## utilize driver default scheme
+    ZE_CACHE_RESERVE_REGION = 1                     ## Utilize reserver region
+    ZE_CACHE_NON_RESERVED_REGION = 2                ## Utilize non-reserverd region
+
+class ze_cache_ext_region_t(c_int):
+    def __str__(self):
+        return str(ze_cache_ext_region_v(self.value))
+
+
+###############################################################################
+## @brief CacheReservation structure
+## 
+## @details
+##     - This structure must be passed to ::zeDeviceGetCacheProperties via
+##       `pNext` member of ::ze_device_cache_properties_t
+##     - Used for determining the max cache reservation allowed on device. Size
+##       of zero means no reservation available.
+class ze_cache_reservation_ext_desc_t(Structure):
+    _fields_ = [
+        ("stype", ze_structure_type_t),                                 ## [in] type of this structure
+        ("pNext", c_void_p),                                            ## [in][optional] pointer to extension-specific structure
+        ("maxCacheReservationSize", c_size_t)                           ## [out] max cache reservation size
+    ]
+
+###############################################################################
+## @brief Event Query Timestamps Extension Name
+ZE_EVENT_QUERY_TIMESTAMPS_EXP_NAME = "ZE_experimental_event_query_timestamps"
+
+###############################################################################
+## @brief Event Query Timestamps Extension Version(s)
+class ze_event_query_timestamps_exp_version_v(IntEnum):
+    _1_0 = ZE_MAKE_VERSION( 1, 0 )                  ## version 1.0
+    CURRENT = ZE_MAKE_VERSION( 1, 0 )               ## latest known version
+
+class ze_event_query_timestamps_exp_version_t(c_int):
+    def __str__(self):
+        return str(ze_event_query_timestamps_exp_version_v(self.value))
+
+
+###############################################################################
+## @brief Image Memory Properties Extension Name
+ZE_IMAGE_MEMORY_PROPERTIES_EXP_NAME = "ZE_experimental_image_memory_properties"
+
+###############################################################################
+## @brief Image Memory Properties Extension Version(s)
+class ze_image_memory_properties_exp_version_v(IntEnum):
+    _1_0 = ZE_MAKE_VERSION( 1, 0 )                  ## version 1.0
+    CURRENT = ZE_MAKE_VERSION( 1, 0 )               ## latest known version
+
+class ze_image_memory_properties_exp_version_t(c_int):
+    def __str__(self):
+        return str(ze_image_memory_properties_exp_version_v(self.value))
+
+
+###############################################################################
+## @brief Image memory properties
+class ze_image_memory_properties_exp_t(Structure):
+    _fields_ = [
+        ("stype", ze_structure_type_t),                                 ## [in] type of this structure
+        ("pNext", c_void_p),                                            ## [in][optional] pointer to extension-specific structure
+        ("size", c_ulonglong),                                          ## [out] size of image allocation in bytes.
+        ("rowPitch", c_ulonglong),                                      ## [out] size of image row in bytes.
+        ("slicePitch", c_ulonglong)                                     ## [out] size of image slice in bytes.
+    ]
+
+###############################################################################
+## @brief Image View Extension Name
+ZE_IMAGE_VIEW_EXP_NAME = "ZE_experimental_image_view"
+
+###############################################################################
+## @brief Image View Extension Version(s)
+class ze_image_view_exp_version_v(IntEnum):
+    _1_0 = ZE_MAKE_VERSION( 1, 0 )                  ## version 1.0
+    CURRENT = ZE_MAKE_VERSION( 1, 0 )               ## latest known version
+
+class ze_image_view_exp_version_t(c_int):
+    def __str__(self):
+        return str(ze_image_view_exp_version_v(self.value))
+
+
+###############################################################################
+## @brief Image View Planar Extension Name
+ZE_IMAGE_VIEW_PLANAR_EXP_NAME = "ZE_experimental_image_view_planar"
+
+###############################################################################
+## @brief Image View Planar Extension Version(s)
+class ze_image_view_planar_exp_version_v(IntEnum):
+    _1_0 = ZE_MAKE_VERSION( 1, 0 )                  ## version 1.0
+    CURRENT = ZE_MAKE_VERSION( 1, 0 )               ## latest known version
+
+class ze_image_view_planar_exp_version_t(c_int):
+    def __str__(self):
+        return str(ze_image_view_planar_exp_version_v(self.value))
+
+
+###############################################################################
+## @brief Image view planar descriptor
+class ze_image_view_planar_exp_desc_t(Structure):
+    _fields_ = [
+        ("stype", ze_structure_type_t),                                 ## [in] type of this structure
+        ("pNext", c_void_p),                                            ## [in][optional] pointer to extension-specific structure
+        ("planeIndex", c_ulong)                                         ## [in] the 0-based plane index (e.g. NV12 is 0 = Y plane, 1 UV plane)
+    ]
+
+###############################################################################
+## @brief Kernel Scheduling Hints Extension Name
+ZE_KERNEL_SCHEDULING_HINTS_EXP_NAME = "ZE_experimental_scheduling_hints"
+
+###############################################################################
+## @brief Kernel Scheduling Hints Extension Version(s)
+class ze_scheduling_hints_exp_version_v(IntEnum):
+    _1_0 = ZE_MAKE_VERSION( 1, 0 )                  ## version 1.0
+    CURRENT = ZE_MAKE_VERSION( 1, 0 )               ## latest known version
+
+class ze_scheduling_hints_exp_version_t(c_int):
+    def __str__(self):
+        return str(ze_scheduling_hints_exp_version_v(self.value))
+
+
+###############################################################################
+## @brief Supported kernel scheduling hint flags
+class ze_scheduling_hint_exp_flags_v(IntEnum):
+    OLDEST_FIRST = ZE_BIT(0)                        ## Hint that the kernel prefers oldest-first scheduling
+    ROUND_ROBIN = ZE_BIT(1)                         ## Hint that the kernel prefers round-robin scheduling
+    STALL_BASED_ROUND_ROBIN = ZE_BIT(2)             ## Hint that the kernel prefers stall-based round-robin scheduling
+
+class ze_scheduling_hint_exp_flags_t(c_int):
+    def __str__(self):
+        return hex(self.value)
+
+
+###############################################################################
+## @brief Device kernel scheduling hint properties queried using
+##        ::zeDeviceGetModuleProperties
+## 
+## @details
+##     - This structure may be returned from ::zeDeviceGetModuleProperties, via
+##       `pNext` member of ::ze_device_module_properties_t.
+class ze_scheduling_hint_exp_properties_t(Structure):
+    _fields_ = [
+        ("stype", ze_structure_type_t),                                 ## [in] type of this structure
+        ("pNext", c_void_p),                                            ## [in,out][optional] pointer to extension-specific structure
+        ("schedulingHintFlags", ze_scheduling_hint_exp_flags_t)         ## [out] Supported kernel scheduling hints.
+                                                                        ## May be 0 (none) or a valid combination of ::ze_scheduling_hint_exp_flag_t.
+    ]
+
+###############################################################################
+## @brief Kernel scheduling hint descriptor
+## 
+## @details
+##     - This structure may be passed to ::zeKernelSchedulingHintExp.
+class ze_scheduling_hint_exp_desc_t(Structure):
+    _fields_ = [
+        ("stype", ze_structure_type_t),                                 ## [in] type of this structure
+        ("pNext", c_void_p),                                            ## [in][optional] pointer to extension-specific structure
+        ("flags", ze_scheduling_hint_exp_flags_t)                       ## [in] flags specifying kernel scheduling hints.
+                                                                        ## must be 0 (default) or a valid combination of ::ze_scheduling_hint_exp_flag_t.
+    ]
+
+###############################################################################
+## @brief Linkonce ODR Extension Name
+ZE_LINKONCE_ODR_EXT_NAME = "ZE_extension_linkonce_odr"
+
+###############################################################################
+## @brief Linkonce ODR Extension Version(s)
+class ze_linkonce_odr_ext_version_v(IntEnum):
+    _1_0 = ZE_MAKE_VERSION( 1, 0 )                  ## version 1.0
+    CURRENT = ZE_MAKE_VERSION( 1, 0 )               ## latest known version
+
+class ze_linkonce_odr_ext_version_t(c_int):
+    def __str__(self):
+        return str(ze_linkonce_odr_ext_version_v(self.value))
+
+
+###############################################################################
+## @brief Subgroups Extension Name
+ZE_SUBGROUPS_EXT_NAME = "ZE_extension_subgroups"
+
+###############################################################################
+## @brief Subgroups Extension Version(s)
+class ze_subgroup_ext_version_v(IntEnum):
+    _1_0 = ZE_MAKE_VERSION( 1, 0 )                  ## version 1.0
+    CURRENT = ZE_MAKE_VERSION( 1, 0 )               ## latest known version
+
+class ze_subgroup_ext_version_t(c_int):
+    def __str__(self):
+        return str(ze_subgroup_ext_version_v(self.value))
+
+
+###############################################################################
 __use_win_types = "Windows" == platform.uname()[0]
 
 ###############################################################################
@@ -1917,6 +2221,20 @@ if __use_win_types:
 else:
     _zeDeviceGetGlobalTimestamps_t = CFUNCTYPE( ze_result_t, ze_device_handle_t, POINTER(c_ulonglong), POINTER(c_ulonglong) )
 
+###############################################################################
+## @brief Function-pointer for zeDeviceReserveCacheExt
+if __use_win_types:
+    _zeDeviceReserveCacheExt_t = WINFUNCTYPE( ze_result_t, ze_device_handle_t, c_size_t, c_size_t )
+else:
+    _zeDeviceReserveCacheExt_t = CFUNCTYPE( ze_result_t, ze_device_handle_t, c_size_t, c_size_t )
+
+###############################################################################
+## @brief Function-pointer for zeDeviceSetCacheAdviceExt
+if __use_win_types:
+    _zeDeviceSetCacheAdviceExt_t = WINFUNCTYPE( ze_result_t, ze_device_handle_t, c_void_p, c_size_t, ze_cache_ext_region_t )
+else:
+    _zeDeviceSetCacheAdviceExt_t = CFUNCTYPE( ze_result_t, ze_device_handle_t, c_void_p, c_size_t, ze_cache_ext_region_t )
+
 
 ###############################################################################
 ## @brief Table of Device functions pointers
@@ -1936,7 +2254,9 @@ class _ze_device_dditable_t(Structure):
         ("pfnGetP2PProperties", c_void_p),                              ## _zeDeviceGetP2PProperties_t
         ("pfnCanAccessPeer", c_void_p),                                 ## _zeDeviceCanAccessPeer_t
         ("pfnGetStatus", c_void_p),                                     ## _zeDeviceGetStatus_t
-        ("pfnGetGlobalTimestamps", c_void_p)                            ## _zeDeviceGetGlobalTimestamps_t
+        ("pfnGetGlobalTimestamps", c_void_p),                           ## _zeDeviceGetGlobalTimestamps_t
+        ("pfnReserveCacheExt", c_void_p),                               ## _zeDeviceReserveCacheExt_t
+        ("pfnSetCacheAdviceExt", c_void_p)                              ## _zeDeviceSetCacheAdviceExt_t
     ]
 
 ###############################################################################
@@ -2430,6 +2750,21 @@ class _ze_event_dditable_t(Structure):
     ]
 
 ###############################################################################
+## @brief Function-pointer for zeEventQueryTimestampsExp
+if __use_win_types:
+    _zeEventQueryTimestampsExp_t = WINFUNCTYPE( ze_result_t, ze_event_handle_t, ze_device_handle_t, POINTER(c_ulong), POINTER(ze_kernel_timestamp_result_t) )
+else:
+    _zeEventQueryTimestampsExp_t = CFUNCTYPE( ze_result_t, ze_event_handle_t, ze_device_handle_t, POINTER(c_ulong), POINTER(ze_kernel_timestamp_result_t) )
+
+
+###############################################################################
+## @brief Table of EventExp functions pointers
+class _ze_event_exp_dditable_t(Structure):
+    _fields_ = [
+        ("pfnQueryTimestampsExp", c_void_p)                             ## _zeEventQueryTimestampsExp_t
+    ]
+
+###############################################################################
 ## @brief Function-pointer for zeImageGetProperties
 if __use_win_types:
     _zeImageGetProperties_t = WINFUNCTYPE( ze_result_t, ze_device_handle_t, POINTER(ze_image_desc_t), POINTER(ze_image_properties_t) )
@@ -2458,6 +2793,29 @@ class _ze_image_dditable_t(Structure):
         ("pfnGetProperties", c_void_p),                                 ## _zeImageGetProperties_t
         ("pfnCreate", c_void_p),                                        ## _zeImageCreate_t
         ("pfnDestroy", c_void_p)                                        ## _zeImageDestroy_t
+    ]
+
+###############################################################################
+## @brief Function-pointer for zeImageGetMemoryPropertiesExp
+if __use_win_types:
+    _zeImageGetMemoryPropertiesExp_t = WINFUNCTYPE( ze_result_t, ze_image_handle_t, POINTER(ze_image_memory_properties_exp_t) )
+else:
+    _zeImageGetMemoryPropertiesExp_t = CFUNCTYPE( ze_result_t, ze_image_handle_t, POINTER(ze_image_memory_properties_exp_t) )
+
+###############################################################################
+## @brief Function-pointer for zeImageViewCreateExp
+if __use_win_types:
+    _zeImageViewCreateExp_t = WINFUNCTYPE( ze_result_t, ze_context_handle_t, ze_device_handle_t, POINTER(ze_image_desc_t), ze_image_handle_t, POINTER(ze_image_handle_t) )
+else:
+    _zeImageViewCreateExp_t = CFUNCTYPE( ze_result_t, ze_context_handle_t, ze_device_handle_t, POINTER(ze_image_desc_t), ze_image_handle_t, POINTER(ze_image_handle_t) )
+
+
+###############################################################################
+## @brief Table of ImageExp functions pointers
+class _ze_image_exp_dditable_t(Structure):
+    _fields_ = [
+        ("pfnGetMemoryPropertiesExp", c_void_p),                        ## _zeImageGetMemoryPropertiesExp_t
+        ("pfnViewCreateExp", c_void_p)                                  ## _zeImageViewCreateExp_t
     ]
 
 ###############################################################################
@@ -2664,12 +3022,20 @@ if __use_win_types:
 else:
     _zeKernelSetGlobalOffsetExp_t = CFUNCTYPE( ze_result_t, ze_kernel_handle_t, c_ulong, c_ulong, c_ulong )
 
+###############################################################################
+## @brief Function-pointer for zeKernelSchedulingHintExp
+if __use_win_types:
+    _zeKernelSchedulingHintExp_t = WINFUNCTYPE( ze_result_t, ze_kernel_handle_t, POINTER(ze_scheduling_hint_exp_desc_t) )
+else:
+    _zeKernelSchedulingHintExp_t = CFUNCTYPE( ze_result_t, ze_kernel_handle_t, POINTER(ze_scheduling_hint_exp_desc_t) )
+
 
 ###############################################################################
 ## @brief Table of KernelExp functions pointers
 class _ze_kernel_exp_dditable_t(Structure):
     _fields_ = [
-        ("pfnSetGlobalOffsetExp", c_void_p)                             ## _zeKernelSetGlobalOffsetExp_t
+        ("pfnSetGlobalOffsetExp", c_void_p),                            ## _zeKernelSetGlobalOffsetExp_t
+        ("pfnSchedulingHintExp", c_void_p)                              ## _zeKernelSchedulingHintExp_t
     ]
 
 ###############################################################################
@@ -2872,7 +3238,9 @@ class _ze_dditable_t(Structure):
         ("Fence", _ze_fence_dditable_t),
         ("EventPool", _ze_event_pool_dditable_t),
         ("Event", _ze_event_dditable_t),
+        ("EventExp", _ze_event_exp_dditable_t),
         ("Image", _ze_image_dditable_t),
+        ("ImageExp", _ze_image_exp_dditable_t),
         ("Module", _ze_module_dditable_t),
         ("ModuleBuildLog", _ze_module_build_log_dditable_t),
         ("Kernel", _ze_kernel_dditable_t),
@@ -2944,6 +3312,8 @@ class ZE_DDI:
         self.zeDeviceCanAccessPeer = _zeDeviceCanAccessPeer_t(self.__dditable.Device.pfnCanAccessPeer)
         self.zeDeviceGetStatus = _zeDeviceGetStatus_t(self.__dditable.Device.pfnGetStatus)
         self.zeDeviceGetGlobalTimestamps = _zeDeviceGetGlobalTimestamps_t(self.__dditable.Device.pfnGetGlobalTimestamps)
+        self.zeDeviceReserveCacheExt = _zeDeviceReserveCacheExt_t(self.__dditable.Device.pfnReserveCacheExt)
+        self.zeDeviceSetCacheAdviceExt = _zeDeviceSetCacheAdviceExt_t(self.__dditable.Device.pfnSetCacheAdviceExt)
 
         # call driver to get function pointers
         _Context = _ze_context_dditable_t()
@@ -3056,6 +3426,16 @@ class ZE_DDI:
         self.zeEventQueryKernelTimestamp = _zeEventQueryKernelTimestamp_t(self.__dditable.Event.pfnQueryKernelTimestamp)
 
         # call driver to get function pointers
+        _EventExp = _ze_event_exp_dditable_t()
+        r = ze_result_v(self.__dll.zeGetEventExpProcAddrTable(version, byref(_EventExp)))
+        if r != ze_result_v.SUCCESS:
+            raise Exception(r)
+        self.__dditable.EventExp = _EventExp
+
+        # attach function interface to function address
+        self.zeEventQueryTimestampsExp = _zeEventQueryTimestampsExp_t(self.__dditable.EventExp.pfnQueryTimestampsExp)
+
+        # call driver to get function pointers
         _Image = _ze_image_dditable_t()
         r = ze_result_v(self.__dll.zeGetImageProcAddrTable(version, byref(_Image)))
         if r != ze_result_v.SUCCESS:
@@ -3066,6 +3446,17 @@ class ZE_DDI:
         self.zeImageGetProperties = _zeImageGetProperties_t(self.__dditable.Image.pfnGetProperties)
         self.zeImageCreate = _zeImageCreate_t(self.__dditable.Image.pfnCreate)
         self.zeImageDestroy = _zeImageDestroy_t(self.__dditable.Image.pfnDestroy)
+
+        # call driver to get function pointers
+        _ImageExp = _ze_image_exp_dditable_t()
+        r = ze_result_v(self.__dll.zeGetImageExpProcAddrTable(version, byref(_ImageExp)))
+        if r != ze_result_v.SUCCESS:
+            raise Exception(r)
+        self.__dditable.ImageExp = _ImageExp
+
+        # attach function interface to function address
+        self.zeImageGetMemoryPropertiesExp = _zeImageGetMemoryPropertiesExp_t(self.__dditable.ImageExp.pfnGetMemoryPropertiesExp)
+        self.zeImageViewCreateExp = _zeImageViewCreateExp_t(self.__dditable.ImageExp.pfnViewCreateExp)
 
         # call driver to get function pointers
         _Module = _ze_module_dditable_t()
@@ -3125,6 +3516,7 @@ class ZE_DDI:
 
         # attach function interface to function address
         self.zeKernelSetGlobalOffsetExp = _zeKernelSetGlobalOffsetExp_t(self.__dditable.KernelExp.pfnSetGlobalOffsetExp)
+        self.zeKernelSchedulingHintExp = _zeKernelSchedulingHintExp_t(self.__dditable.KernelExp.pfnSchedulingHintExp)
 
         # call driver to get function pointers
         _Sampler = _ze_sampler_dditable_t()

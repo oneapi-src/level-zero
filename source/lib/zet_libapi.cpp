@@ -351,15 +351,13 @@ zetDebugGetRegisterSetProperties(
 ///     - ::ZE_RESULT_ERROR_DEVICE_LOST
 ///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
 ///         + `nullptr == hDebug`
-///     - ::ZE_RESULT_ERROR_INVALID_ENUMERATION
-///         + `::ZET_DEBUG_REGSET_TYPE_FLAG < type`
 ///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
 ///         + the thread is running or unavailable
 ze_result_t ZE_APICALL
 zetDebugReadRegisters(
     zet_debug_session_handle_t hDebug,              ///< [in] debug session handle
     ze_device_thread_t thread,                      ///< [in] the thread identifier
-    zet_debug_regset_type_t type,                   ///< [in] register set type
+    uint32_t type,                                  ///< [in] register set type
     uint32_t start,                                 ///< [in] the starting offset into the register state area; must be less
                                                     ///< than ::zet_debug_regset_properties_t.count for the type
     uint32_t count,                                 ///< [in] the number of registers to read; start+count must be <=
@@ -383,15 +381,13 @@ zetDebugReadRegisters(
 ///     - ::ZE_RESULT_ERROR_DEVICE_LOST
 ///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
 ///         + `nullptr == hDebug`
-///     - ::ZE_RESULT_ERROR_INVALID_ENUMERATION
-///         + `::ZET_DEBUG_REGSET_TYPE_FLAG < type`
 ///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
 ///         + the thread is running or unavailable
 ze_result_t ZE_APICALL
 zetDebugWriteRegisters(
     zet_debug_session_handle_t hDebug,              ///< [in] debug session handle
     ze_device_thread_t thread,                      ///< [in] the thread identifier
-    zet_debug_regset_type_t type,                   ///< [in] register set type
+    uint32_t type,                                  ///< [in] register set type
     uint32_t start,                                 ///< [in] the starting offset into the register state area; must be less
                                                     ///< than ::zet_debug_regset_properties_t.count for the type
     uint32_t count,                                 ///< [in] the number of registers to write; start+count must be <=

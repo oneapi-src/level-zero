@@ -82,6 +82,61 @@ typedef void (ZE_APICALL *ze_pfnDeviceGetGlobalTimestampsCb_t)(
     );
 
 ///////////////////////////////////////////////////////////////////////////////
+/// @brief Callback function parameters for zeDeviceReserveCacheExt 
+/// @details Each entry is a pointer to the parameter passed to the function;
+///     allowing the callback the ability to modify the parameter's value
+
+typedef struct _ze_device_reserve_cache_ext_params_t
+{
+    ze_device_handle_t* phDevice;
+    size_t* pcacheLevel;
+    size_t* pcacheReservationSize;
+} ze_device_reserve_cache_ext_params_t;
+
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Callback function-pointer for zeDeviceReserveCacheExt 
+/// @param[in] params Parameters passed to this instance
+/// @param[in] result Return value
+/// @param[in] pTracerUserData Per-Tracer user data
+/// @param[in,out] ppTracerInstanceUserData Per-Tracer, Per-Instance user data
+
+typedef void (ZE_APICALL *ze_pfnDeviceReserveCacheExtCb_t)(
+    ze_device_reserve_cache_ext_params_t* params,
+    ze_result_t result,
+    void* pTracerUserData,
+    void** ppTracerInstanceUserData
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Callback function parameters for zeDeviceSetCacheAdviceExt 
+/// @details Each entry is a pointer to the parameter passed to the function;
+///     allowing the callback the ability to modify the parameter's value
+
+typedef struct _ze_device_set_cache_advice_ext_params_t
+{
+    ze_device_handle_t* phDevice;
+    void** pptr;
+    size_t* pregionSize;
+    ze_cache_ext_region_t* pcacheRegion;
+} ze_device_set_cache_advice_ext_params_t;
+
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Callback function-pointer for zeDeviceSetCacheAdviceExt 
+/// @param[in] params Parameters passed to this instance
+/// @param[in] result Return value
+/// @param[in] pTracerUserData Per-Tracer user data
+/// @param[in,out] ppTracerInstanceUserData Per-Tracer, Per-Instance user data
+
+typedef void (ZE_APICALL *ze_pfnDeviceSetCacheAdviceExtCb_t)(
+    ze_device_set_cache_advice_ext_params_t* params,
+    ze_result_t result,
+    void* pTracerUserData,
+    void** ppTracerInstanceUserData
+    );
+
+///////////////////////////////////////////////////////////////////////////////
 /// @brief Callback function parameters for zeContextCreateEx 
 /// @details Each entry is a pointer to the parameter passed to the function;
 ///     allowing the callback the ability to modify the parameter's value
@@ -111,6 +166,89 @@ typedef void (ZE_APICALL *ze_pfnContextCreateExCb_t)(
     );
 
 ///////////////////////////////////////////////////////////////////////////////
+/// @brief Callback function parameters for zeEventQueryTimestampsExp 
+/// @details Each entry is a pointer to the parameter passed to the function;
+///     allowing the callback the ability to modify the parameter's value
+
+typedef struct _ze_event_query_timestamps_exp_params_t
+{
+    ze_event_handle_t* phEvent;
+    ze_device_handle_t* phDevice;
+    uint32_t** ppCount;
+    ze_kernel_timestamp_result_t** ppTimestamps;
+} ze_event_query_timestamps_exp_params_t;
+
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Callback function-pointer for zeEventQueryTimestampsExp 
+/// @param[in] params Parameters passed to this instance
+/// @param[in] result Return value
+/// @param[in] pTracerUserData Per-Tracer user data
+/// @param[in,out] ppTracerInstanceUserData Per-Tracer, Per-Instance user data
+
+typedef void (ZE_APICALL *ze_pfnEventQueryTimestampsExpCb_t)(
+    ze_event_query_timestamps_exp_params_t* params,
+    ze_result_t result,
+    void* pTracerUserData,
+    void** ppTracerInstanceUserData
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Callback function parameters for zeImageGetMemoryPropertiesExp 
+/// @details Each entry is a pointer to the parameter passed to the function;
+///     allowing the callback the ability to modify the parameter's value
+
+typedef struct _ze_image_get_memory_properties_exp_params_t
+{
+    ze_image_handle_t* phImage;
+    ze_image_memory_properties_exp_t** ppMemoryProperties;
+} ze_image_get_memory_properties_exp_params_t;
+
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Callback function-pointer for zeImageGetMemoryPropertiesExp 
+/// @param[in] params Parameters passed to this instance
+/// @param[in] result Return value
+/// @param[in] pTracerUserData Per-Tracer user data
+/// @param[in,out] ppTracerInstanceUserData Per-Tracer, Per-Instance user data
+
+typedef void (ZE_APICALL *ze_pfnImageGetMemoryPropertiesExpCb_t)(
+    ze_image_get_memory_properties_exp_params_t* params,
+    ze_result_t result,
+    void* pTracerUserData,
+    void** ppTracerInstanceUserData
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Callback function parameters for zeImageViewCreateExp 
+/// @details Each entry is a pointer to the parameter passed to the function;
+///     allowing the callback the ability to modify the parameter's value
+
+typedef struct _ze_image_view_create_exp_params_t
+{
+    ze_context_handle_t* phContext;
+    ze_device_handle_t* phDevice;
+    const ze_image_desc_t** pdesc;
+    ze_image_handle_t* phImage;
+    ze_image_handle_t** pphImageView;
+} ze_image_view_create_exp_params_t;
+
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Callback function-pointer for zeImageViewCreateExp 
+/// @param[in] params Parameters passed to this instance
+/// @param[in] result Return value
+/// @param[in] pTracerUserData Per-Tracer user data
+/// @param[in,out] ppTracerInstanceUserData Per-Tracer, Per-Instance user data
+
+typedef void (ZE_APICALL *ze_pfnImageViewCreateExpCb_t)(
+    ze_image_view_create_exp_params_t* params,
+    ze_result_t result,
+    void* pTracerUserData,
+    void** ppTracerInstanceUserData
+    );
+
+///////////////////////////////////////////////////////////////////////////////
 /// @brief Callback function parameters for zeKernelSetGlobalOffsetExp 
 /// @details Each entry is a pointer to the parameter passed to the function;
 ///     allowing the callback the ability to modify the parameter's value
@@ -133,6 +271,32 @@ typedef struct _ze_kernel_set_global_offset_exp_params_t
 
 typedef void (ZE_APICALL *ze_pfnKernelSetGlobalOffsetExpCb_t)(
     ze_kernel_set_global_offset_exp_params_t* params,
+    ze_result_t result,
+    void* pTracerUserData,
+    void** ppTracerInstanceUserData
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Callback function parameters for zeKernelSchedulingHintExp 
+/// @details Each entry is a pointer to the parameter passed to the function;
+///     allowing the callback the ability to modify the parameter's value
+
+typedef struct _ze_kernel_scheduling_hint_exp_params_t
+{
+    ze_kernel_handle_t* phKernel;
+    ze_scheduling_hint_exp_desc_t** ppHint;
+} ze_kernel_scheduling_hint_exp_params_t;
+
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Callback function-pointer for zeKernelSchedulingHintExp 
+/// @param[in] params Parameters passed to this instance
+/// @param[in] result Return value
+/// @param[in] pTracerUserData Per-Tracer user data
+/// @param[in,out] ppTracerInstanceUserData Per-Tracer, Per-Instance user data
+
+typedef void (ZE_APICALL *ze_pfnKernelSchedulingHintExpCb_t)(
+    ze_kernel_scheduling_hint_exp_params_t* params,
     ze_result_t result,
     void* pTracerUserData,
     void** ppTracerInstanceUserData
@@ -1136,6 +1300,54 @@ zelTracerKernelSetGlobalOffsetExpRegisterCallback(
     zel_tracer_handle_t hTracer,
     zel_tracer_reg_t callback_type,
     ze_pfnKernelSetGlobalOffsetExpCb_t pfnSetGlobalOffsetExpCb
+    );
+
+
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zelTracerDeviceReserveCacheExtRegisterCallback(
+    zel_tracer_handle_t hTracer,
+    zel_tracer_reg_t callback_type,
+    ze_pfnDeviceReserveCacheExtCb_t pfnReserveCacheExtCb
+    );
+
+
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zelTracerDeviceSetCacheAdviceExtRegisterCallback(
+    zel_tracer_handle_t hTracer,
+    zel_tracer_reg_t callback_type,
+    ze_pfnDeviceSetCacheAdviceExtCb_t pfnSetCacheAdviceExtCb
+    );
+
+
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zelTracerEventQueryTimestampsExpRegisterCallback(
+    zel_tracer_handle_t hTracer,
+    zel_tracer_reg_t callback_type,
+    ze_pfnEventQueryTimestampsExpCb_t pfnQueryTimestampsExpCb
+    );
+
+
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zelTracerImageGetMemoryPropertiesExpRegisterCallback(
+    zel_tracer_handle_t hTracer,
+    zel_tracer_reg_t callback_type,
+    ze_pfnImageGetMemoryPropertiesExpCb_t pfnGetMemoryPropertiesExpCb
+    );
+
+
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zelTracerImageViewCreateExpRegisterCallback(
+    zel_tracer_handle_t hTracer,
+    zel_tracer_reg_t callback_type,
+    ze_pfnImageViewCreateExpCb_t pfnViewCreateExpCb
+    );
+
+
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zelTracerKernelSchedulingHintExpRegisterCallback(
+    zel_tracer_handle_t hTracer,
+    zel_tracer_reg_t callback_type,
+    ze_pfnKernelSchedulingHintExpCb_t pfnSchedulingHintExpCb
     );
 
 

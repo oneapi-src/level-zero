@@ -4,7 +4,7 @@
  SPDX-License-Identifier: MIT
 
  @file zes.py
- @version v1.1-r1.1.10
+ @version v1.2-r1.2.13
 
  """
 import platform
@@ -137,6 +137,7 @@ class zes_structure_type_v(IntEnum):
     RAS_CONFIG = 0x21                               ## ::zes_ras_config_t
     RAS_STATE = 0x22                                ## ::zes_ras_state_t
     TEMP_CONFIG = 0x23                              ## ::zes_temp_config_t
+    PCI_BAR_PROPERTIES_1_2 = 0x24                   ## ::zes_pci_bar_properties_1_2_t
 
 class zes_structure_type_t(c_int):
     def __str__(self):
@@ -401,6 +402,20 @@ class zes_pci_bar_properties_t(Structure):
         ("index", c_ulong),                                             ## [out] The index of the bar
         ("base", c_ulonglong),                                          ## [out] Base address of the bar.
         ("size", c_ulonglong)                                           ## [out] Size of the bar.
+    ]
+
+###############################################################################
+## @brief Properties of a pci bar, including the resizable bar.
+class zes_pci_bar_properties_1_2_t(Structure):
+    _fields_ = [
+        ("stype", zes_structure_type_t),                                ## [in] type of this structure
+        ("pNext", c_void_p),                                            ## [in,out][optional] pointer to extension-specific structure
+        ("type", zes_pci_bar_type_t),                                   ## [out] The type of bar
+        ("index", c_ulong),                                             ## [out] The index of the bar
+        ("base", c_ulonglong),                                          ## [out] Base address of the bar.
+        ("size", c_ulonglong),                                          ## [out] Size of the bar.
+        ("resizableBarSupported", ze_bool_t),                           ## [out] Support for Resizable Bar on this device.
+        ("resizableBarEnabled", ze_bool_t)                              ## [out] Resizable Bar enabled on this device
     ]
 
 ###############################################################################

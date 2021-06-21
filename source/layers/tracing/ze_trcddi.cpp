@@ -243,7 +243,7 @@ namespace tracing_layer
     __zedlllocal ze_result_t ZE_APICALL
     zeDriverGetExtensionFunctionAddress(
         ze_driver_handle_t hDriver,                     ///< [in] handle of the driver instance
-        const char* name,                               ///< [in] extension name
+        const char* name,                               ///< [in] extension function name
         void** ppFunctionAddress                        ///< [out] pointer to function pointer
         )
     {
@@ -4908,6 +4908,114 @@ namespace tracing_layer
         return pfnSetGlobalOffsetExp( hKernel, offsetX, offsetY, offsetZ );
     }
 
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeDeviceReserveCacheExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeDeviceReserveCacheExt(
+        ze_device_handle_t hDevice,                     ///< [in] handle of the device object
+        size_t cacheLevel,                              ///< [in] cache level where application want to reserve. If zero, then the
+                                                        ///< driver shall default to last level of cache and attempt to reserve in
+                                                        ///< that cache.
+        size_t cacheReservationSize                     ///< [in] value for reserving size, in bytes. If zero, then the driver
+                                                        ///< shall remove prior reservation
+        )
+    {
+        auto pfnReserveCacheExt = context.zeDdiTable.Device.pfnReserveCacheExt;
+
+        if( nullptr == pfnReserveCacheExt)
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+
+        return pfnReserveCacheExt( hDevice, cacheLevel, cacheReservationSize );
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeDeviceSetCacheAdviceExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeDeviceSetCacheAdviceExt(
+        ze_device_handle_t hDevice,                     ///< [in] handle of the device object
+        void* ptr,                                      ///< [in] memory pointer to query
+        size_t regionSize,                              ///< [in] region size, in pages
+        ze_cache_ext_region_t cacheRegion               ///< [in] reservation region
+        )
+    {
+        auto pfnSetCacheAdviceExt = context.zeDdiTable.Device.pfnSetCacheAdviceExt;
+
+        if( nullptr == pfnSetCacheAdviceExt)
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+
+        return pfnSetCacheAdviceExt( hDevice, ptr, regionSize, cacheRegion );
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeEventQueryTimestampsExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zeEventQueryTimestampsExp(
+        ze_event_handle_t hEvent,                       ///< [in] handle of the event
+        ze_device_handle_t hDevice,                     ///< [in] handle of the device to query
+        uint32_t* pCount,                               ///< [in,out] pointer to the number of timestamp results
+        ze_kernel_timestamp_result_t* pTimestamps       ///< [in,out][range(0, *pCount)] pointer to memory where timestamp results
+                                                        ///< will be written.
+        )
+    {
+        auto pfnQueryTimestampsExp = context.zeDdiTable.EventExp.pfnQueryTimestampsExp;
+
+        if( nullptr == pfnQueryTimestampsExp)
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+
+        return pfnQueryTimestampsExp( hEvent, hDevice, pCount, pTimestamps );
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeImageGetMemoryPropertiesExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zeImageGetMemoryPropertiesExp(
+        ze_image_handle_t hImage,                       ///< [in] handle of image object
+        ze_image_memory_properties_exp_t* pMemoryProperties ///< [in,out] query result for image memory properties.
+        )
+    {
+        auto pfnGetMemoryPropertiesExp = context.zeDdiTable.ImageExp.pfnGetMemoryPropertiesExp;
+
+        if( nullptr == pfnGetMemoryPropertiesExp)
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+
+        return pfnGetMemoryPropertiesExp( hImage, pMemoryProperties );
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeImageViewCreateExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zeImageViewCreateExp(
+        ze_context_handle_t hContext,                   ///< [in] handle of the context object
+        ze_device_handle_t hDevice,                     ///< [in] handle of the device
+        const ze_image_desc_t* desc,                    ///< [in] pointer to image descriptor
+        ze_image_handle_t hImage,                       ///< [in] handle of image object to create view from
+        ze_image_handle_t* phImageView                  ///< [out] pointer to handle of image object created for view
+        )
+    {
+        auto pfnViewCreateExp = context.zeDdiTable.ImageExp.pfnViewCreateExp;
+
+        if( nullptr == pfnViewCreateExp)
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+
+        return pfnViewCreateExp( hContext, hDevice, desc, hImage, phImageView );
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeKernelSchedulingHintExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zeKernelSchedulingHintExp(
+        ze_kernel_handle_t hKernel,                     ///< [in] handle of the kernel object
+        ze_scheduling_hint_exp_desc_t* pHint            ///< [in] pointer to kernel scheduling hint descriptor
+        )
+    {
+        auto pfnSchedulingHintExp = context.zeDdiTable.KernelExp.pfnSchedulingHintExp;
+
+        if( nullptr == pfnSchedulingHintExp)
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+
+        return pfnSchedulingHintExp( hKernel, pHint );
+    }
+
 } // namespace tracing_layer
 
 #if defined(__cplusplus)
@@ -5060,6 +5168,12 @@ zeGetDeviceProcAddrTable(
 
     dditable.pfnGetGlobalTimestamps                      = pDdiTable->pfnGetGlobalTimestamps;
     pDdiTable->pfnGetGlobalTimestamps                    = tracing_layer::zeDeviceGetGlobalTimestamps;
+
+    dditable.pfnReserveCacheExt                          = pDdiTable->pfnReserveCacheExt;
+    pDdiTable->pfnReserveCacheExt                        = tracing_layer::zeDeviceReserveCacheExt;
+
+    dditable.pfnSetCacheAdviceExt                        = pDdiTable->pfnSetCacheAdviceExt;
+    pDdiTable->pfnSetCacheAdviceExt                      = tracing_layer::zeDeviceSetCacheAdviceExt;
 
     return result;
 }
@@ -5315,6 +5429,37 @@ zeGetEventProcAddrTable(
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+/// @brief Exported function for filling application's EventExp table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+ZE_DLLEXPORT ze_result_t ZE_APICALL
+zeGetEventExpProcAddrTable(
+    ze_api_version_t version,                       ///< [in] API version requested
+    ze_event_exp_dditable_t* pDdiTable              ///< [in,out] pointer to table of DDI function pointers
+    )
+{
+    auto& dditable = tracing_layer::context.zeDdiTable.EventExp;
+
+    if( nullptr == pDdiTable )
+        return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+    if (ZE_MAJOR_VERSION(tracing_layer::context.version) != ZE_MAJOR_VERSION(version) ||
+        ZE_MINOR_VERSION(tracing_layer::context.version) > ZE_MINOR_VERSION(version))
+        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+
+    ze_result_t result = ZE_RESULT_SUCCESS;
+
+    dditable.pfnQueryTimestampsExp                       = pDdiTable->pfnQueryTimestampsExp;
+    pDdiTable->pfnQueryTimestampsExp                     = tracing_layer::zeEventQueryTimestampsExp;
+
+    return result;
+}
+
+///////////////////////////////////////////////////////////////////////////////
 /// @brief Exported function for filling application's EventPool table
 ///        with current process' addresses
 ///
@@ -5438,6 +5583,40 @@ zeGetImageProcAddrTable(
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+/// @brief Exported function for filling application's ImageExp table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+ZE_DLLEXPORT ze_result_t ZE_APICALL
+zeGetImageExpProcAddrTable(
+    ze_api_version_t version,                       ///< [in] API version requested
+    ze_image_exp_dditable_t* pDdiTable              ///< [in,out] pointer to table of DDI function pointers
+    )
+{
+    auto& dditable = tracing_layer::context.zeDdiTable.ImageExp;
+
+    if( nullptr == pDdiTable )
+        return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+    if (ZE_MAJOR_VERSION(tracing_layer::context.version) != ZE_MAJOR_VERSION(version) ||
+        ZE_MINOR_VERSION(tracing_layer::context.version) > ZE_MINOR_VERSION(version))
+        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+
+    ze_result_t result = ZE_RESULT_SUCCESS;
+
+    dditable.pfnGetMemoryPropertiesExp                   = pDdiTable->pfnGetMemoryPropertiesExp;
+    pDdiTable->pfnGetMemoryPropertiesExp                 = tracing_layer::zeImageGetMemoryPropertiesExp;
+
+    dditable.pfnViewCreateExp                            = pDdiTable->pfnViewCreateExp;
+    pDdiTable->pfnViewCreateExp                          = tracing_layer::zeImageViewCreateExp;
+
+    return result;
+}
+
+///////////////////////////////////////////////////////////////////////////////
 /// @brief Exported function for filling application's Kernel table
 ///        with current process' addresses
 ///
@@ -5528,6 +5707,9 @@ zeGetKernelExpProcAddrTable(
 
     dditable.pfnSetGlobalOffsetExp                       = pDdiTable->pfnSetGlobalOffsetExp;
     pDdiTable->pfnSetGlobalOffsetExp                     = tracing_layer::zeKernelSetGlobalOffsetExp;
+
+    dditable.pfnSchedulingHintExp                        = pDdiTable->pfnSchedulingHintExp;
+    pDdiTable->pfnSchedulingHintExp                      = tracing_layer::zeKernelSchedulingHintExp;
 
     return result;
 }

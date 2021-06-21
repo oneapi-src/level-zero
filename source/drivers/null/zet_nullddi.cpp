@@ -308,7 +308,7 @@ namespace driver
     zetDebugReadRegisters(
         zet_debug_session_handle_t hDebug,              ///< [in] debug session handle
         ze_device_thread_t thread,                      ///< [in] the thread identifier
-        zet_debug_regset_type_t type,                   ///< [in] register set type
+        uint32_t type,                                  ///< [in] register set type
         uint32_t start,                                 ///< [in] the starting offset into the register state area; must be less
                                                         ///< than ::zet_debug_regset_properties_t.count for the type
         uint32_t count,                                 ///< [in] the number of registers to read; start+count must be <=
@@ -338,7 +338,7 @@ namespace driver
     zetDebugWriteRegisters(
         zet_debug_session_handle_t hDebug,              ///< [in] debug session handle
         ze_device_thread_t thread,                      ///< [in] the thread identifier
-        zet_debug_regset_type_t type,                   ///< [in] register set type
+        uint32_t type,                                  ///< [in] register set type
         uint32_t start,                                 ///< [in] the starting offset into the register state area; must be less
                                                         ///< than ::zet_debug_regset_properties_t.count for the type
         uint32_t count,                                 ///< [in] the number of registers to write; start+count must be <=

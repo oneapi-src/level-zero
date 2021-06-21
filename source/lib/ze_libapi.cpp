@@ -33,7 +33,7 @@ extern "C" {
 ///     - ::ZE_RESULT_ERROR_UNINITIALIZED
 ///     - ::ZE_RESULT_ERROR_DEVICE_LOST
 ///     - ::ZE_RESULT_ERROR_INVALID_ENUMERATION
-///         + `0x1 < flags`
+///         + `0x3 < flags`
 ///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
 ze_result_t ZE_APICALL
 zeInit(
@@ -246,7 +246,7 @@ zeDriverGetExtensionProperties(
 ze_result_t ZE_APICALL
 zeDriverGetExtensionFunctionAddress(
     ze_driver_handle_t hDriver,                     ///< [in] handle of the driver instance
-    const char* name,                               ///< [in] extension name
+    const char* name,                               ///< [in] extension function name
     void** ppFunctionAddress                        ///< [out] pointer to function pointer
     )
 {
@@ -1030,9 +1030,9 @@ zeCommandQueueDestroy(
 ///       threads) or a single call with multiple command lists.
 ///     - The application must ensure the command lists are accessible by the
 ///       device on which the command queue was created.
-///     - The application must ensure the command lists are not currently
-///       referencing the command list since the implementation is allowed to
-///       modify the contents of the command list for submission.
+///     - The application must ensure the device is not currently referencing
+///       the command list since the implementation is allowed to modify the
+///       contents of the command list for submission.
 ///     - The application must only execute command lists created with an
 ///       identical command queue group ordinal to the command queue.
 ///     - The application must use a fence created using the same command queue.
@@ -1523,11 +1523,11 @@ zeCommandListAppendMemoryCopy(
 ///       execution.
 ///     - The value to initialize memory to is described by the pattern and the
 ///       pattern size.
-///     - The pattern size must be a power-of-two and less than
+///     - The pattern size must be a power-of-two and less than or equal to
 ///       ::ze_command_queue_group_properties_t.maxMemoryFillPatternSize.
 ///     - The application must ensure the events are accessible by the device on
 ///       which the command list was created.
-///     - The application must enusre the command list and events were created,
+///     - The application must ensure the command list and events were created,
 ///       and the memory was allocated, on the same context.
 ///     - The application must **not** call this function from simultaneous
 ///       threads with the same command list handle.
@@ -2909,8 +2909,8 @@ zeImageDestroy(
 ///         + `nullptr == host_desc`
 ///         + `nullptr == pptr`
 ///     - ::ZE_RESULT_ERROR_INVALID_ENUMERATION
-///         + `0x3 < device_desc->flags`
-///         + `0x7 < host_desc->flags`
+///         + `0x7 < device_desc->flags`
+///         + `0xf < host_desc->flags`
 ///     - ::ZE_RESULT_ERROR_UNSUPPORTED_SIZE
 ///         + `0 == size`
 ///     - ::ZE_RESULT_ERROR_UNSUPPORTED_ALIGNMENT
@@ -2961,7 +2961,7 @@ zeMemAllocShared(
 ///         + `nullptr == device_desc`
 ///         + `nullptr == pptr`
 ///     - ::ZE_RESULT_ERROR_INVALID_ENUMERATION
-///         + `0x3 < device_desc->flags`
+///         + `0x7 < device_desc->flags`
 ///     - ::ZE_RESULT_ERROR_UNSUPPORTED_SIZE
 ///         + `0 == size`
 ///     - ::ZE_RESULT_ERROR_UNSUPPORTED_ALIGNMENT
@@ -3012,7 +3012,7 @@ zeMemAllocDevice(
 ///         + `nullptr == host_desc`
 ///         + `nullptr == pptr`
 ///     - ::ZE_RESULT_ERROR_INVALID_ENUMERATION
-///         + `0x7 < host_desc->flags`
+///         + `0xf < host_desc->flags`
 ///     - ::ZE_RESULT_ERROR_UNSUPPORTED_SIZE
 ///         + `0 == size`
 ///     - ::ZE_RESULT_ERROR_UNSUPPORTED_ALIGNMENT
@@ -3192,7 +3192,7 @@ zeMemGetIpcHandle(
 ///         + `nullptr == hContext`
 ///         + `nullptr == hDevice`
 ///     - ::ZE_RESULT_ERROR_INVALID_ENUMERATION
-///         + `0x1 < flags`
+///         + `0x3 < flags`
 ///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
 ///         + `nullptr == pptr`
 ze_result_t ZE_APICALL
@@ -3352,7 +3352,8 @@ zeModuleDestroy(
 ///       whether it is linked or not.
 ///     - A link log can optionally be returned to the caller. The caller is
 ///       responsible for destroying build log using ::zeModuleBuildLogDestroy.
-///     - See SPIR-V specification for linkage details.
+///     - SPIR-V import and export linkage types are used. See SPIR-V
+///       specification for linkage details.
 ///     - The application must ensure the modules being linked were created on
 ///       the same context.
 ///     - The application may call this function from simultaneous threads as
@@ -3681,7 +3682,7 @@ zeModuleGetFunctionPointer(
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Set group size for a kernel on the current Host thread.
+/// @brief Set group size for a kernel.
 /// 
 /// @details
 ///     - The group size will be used when a ::zeCommandListAppendLaunchKernel
@@ -3780,7 +3781,7 @@ zeKernelSuggestMaxCooperativeGroupCount(
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Set kernel argument for a kernel on the current Host thread.
+/// @brief Set kernel argument for a kernel.
 /// 
 /// @details
 ///     - The argument values will be used when a
@@ -3909,8 +3910,7 @@ zeKernelGetSourceAttributes(
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Sets the preferred cache configuration for a kernel on the current
-///        Host thread.
+/// @brief Sets the preferred cache configuration.
 /// 
 /// @details
 ///     - The cache configuration will be used when a
@@ -4772,7 +4772,7 @@ zeVirtualMemGetAccessAttribute(
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Set global work offset for a kernel on the current Host thread.
+/// @brief Set global work offset for a kernel.
 /// 
 /// @details
 ///     - The global work offset will be used when
@@ -4800,6 +4800,242 @@ zeKernelSetGlobalOffsetExp(
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     return pfnSetGlobalOffsetExp( hKernel, offsetX, offsetY, offsetZ );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Reserve Cache on Device
+/// 
+/// @details
+///     - The application may call this function but may not be successful as
+///       some other application may have reserve prior
+/// 
+/// @remarks
+///   _Analogues_
+///     - None
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hDevice`
+ze_result_t ZE_APICALL
+zeDeviceReserveCacheExt(
+    ze_device_handle_t hDevice,                     ///< [in] handle of the device object
+    size_t cacheLevel,                              ///< [in] cache level where application want to reserve. If zero, then the
+                                                    ///< driver shall default to last level of cache and attempt to reserve in
+                                                    ///< that cache.
+    size_t cacheReservationSize                     ///< [in] value for reserving size, in bytes. If zero, then the driver
+                                                    ///< shall remove prior reservation
+    )
+{
+    auto pfnReserveCacheExt = ze_lib::context->zeDdiTable.Device.pfnReserveCacheExt;
+    if( nullptr == pfnReserveCacheExt )
+        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+
+    return pfnReserveCacheExt( hDevice, cacheLevel, cacheReservationSize );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Assign VA section to use reserved section
+/// 
+/// @details
+///     - The application may call this function to assign VA to particular
+///       reservartion region
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hDevice`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == ptr`
+///     - ::ZE_RESULT_ERROR_INVALID_ENUMERATION
+///         + `::ZE_CACHE_EXT_REGION_::ZE_CACHE_NON_RESERVED_REGION < cacheRegion`
+ze_result_t ZE_APICALL
+zeDeviceSetCacheAdviceExt(
+    ze_device_handle_t hDevice,                     ///< [in] handle of the device object
+    void* ptr,                                      ///< [in] memory pointer to query
+    size_t regionSize,                              ///< [in] region size, in pages
+    ze_cache_ext_region_t cacheRegion               ///< [in] reservation region
+    )
+{
+    auto pfnSetCacheAdviceExt = ze_lib::context->zeDdiTable.Device.pfnSetCacheAdviceExt;
+    if( nullptr == pfnSetCacheAdviceExt )
+        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+
+    return pfnSetCacheAdviceExt( hDevice, ptr, regionSize, cacheRegion );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Query event timestamps for a device or sub-device.
+/// 
+/// @details
+///     - The application may call this function from simultaneous threads.
+///     - The implementation of this function must be thread-safe.
+///     - The implementation must support
+///       ::ZE_experimental_event_query_timestamps.
+///     - The implementation must return all timestamps for the specified event
+///       and device pair.
+///     - The implementation must return all timestamps for all sub-devices when
+///       device handle is parent device.
+///     - The implementation may return all timestamps for sub-devices when
+///       device handle is sub-device or may return 0 for count.
+/// 
+/// @remarks
+///   _Analogues_
+///     - None
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hEvent`
+///         + `nullptr == hDevice`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == pCount`
+///         + `nullptr == pTimestamps`
+ze_result_t ZE_APICALL
+zeEventQueryTimestampsExp(
+    ze_event_handle_t hEvent,                       ///< [in] handle of the event
+    ze_device_handle_t hDevice,                     ///< [in] handle of the device to query
+    uint32_t* pCount,                               ///< [in,out] pointer to the number of timestamp results
+    ze_kernel_timestamp_result_t* pTimestamps       ///< [in,out][range(0, *pCount)] pointer to memory where timestamp results
+                                                    ///< will be written.
+    )
+{
+    auto pfnQueryTimestampsExp = ze_lib::context->zeDdiTable.EventExp.pfnQueryTimestampsExp;
+    if( nullptr == pfnQueryTimestampsExp )
+        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+
+    return pfnQueryTimestampsExp( hEvent, hDevice, pCount, pTimestamps );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Query image memory properties.
+/// 
+/// @details
+///     - The application may call this function from simultaneous threads.
+///     - The implementation of this function must be thread-safe.
+///     - The implementation must support
+///       ::ZE_experimental_image_memory_properties extension.
+/// 
+/// @remarks
+///   _Analogues_
+///     - None
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hImage`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == pMemoryProperties`
+ze_result_t ZE_APICALL
+zeImageGetMemoryPropertiesExp(
+    ze_image_handle_t hImage,                       ///< [in] handle of image object
+    ze_image_memory_properties_exp_t* pMemoryProperties ///< [in,out] query result for image memory properties.
+    )
+{
+    auto pfnGetMemoryPropertiesExp = ze_lib::context->zeDdiTable.ImageExp.pfnGetMemoryPropertiesExp;
+    if( nullptr == pfnGetMemoryPropertiesExp )
+        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+
+    return pfnGetMemoryPropertiesExp( hImage, pMemoryProperties );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Create image view on the context.
+/// 
+/// @details
+///     - The application must only use the image view for the device, or its
+///       sub-devices, which was provided during creation.
+///     - The application may call this function from simultaneous threads.
+///     - The implementation of this function must be thread-safe.
+///     - The implementation must support ::ZE_experimental_image_view
+///       extension.
+///     - Image views are treated as images from the API.
+///     - Image views provide a mechanism to redescribe how an image is
+///       interpreted (e.g. different format).
+///     - Image views become disabled when their corresponding image resource is
+///       destroyed.
+///     - Use ::zeImageDestroy to destroy image view objects.
+/// 
+/// @remarks
+///   _Analogues_
+///     - None
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hContext`
+///         + `nullptr == hDevice`
+///         + `nullptr == hImage`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == desc`
+///         + `nullptr == phImageView`
+///     - ::ZE_RESULT_ERROR_INVALID_ENUMERATION
+///         + `0x3 < desc->flags`
+///         + `::ZE_IMAGE_TYPE_BUFFER < desc->type`
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_IMAGE_FORMAT
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+ze_result_t ZE_APICALL
+zeImageViewCreateExp(
+    ze_context_handle_t hContext,                   ///< [in] handle of the context object
+    ze_device_handle_t hDevice,                     ///< [in] handle of the device
+    const ze_image_desc_t* desc,                    ///< [in] pointer to image descriptor
+    ze_image_handle_t hImage,                       ///< [in] handle of image object to create view from
+    ze_image_handle_t* phImageView                  ///< [out] pointer to handle of image object created for view
+    )
+{
+    auto pfnViewCreateExp = ze_lib::context->zeDdiTable.ImageExp.pfnViewCreateExp;
+    if( nullptr == pfnViewCreateExp )
+        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+
+    return pfnViewCreateExp( hContext, hDevice, desc, hImage, phImageView );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Provide kernel scheduling hints that may improve performance
+/// 
+/// @details
+///     - The scheduling hints may improve performance only and are not required
+///       for correctness.
+///     - If a specified scheduling hint is unsupported it will be silently
+///       ignored.
+///     - If two conflicting scheduling hints are specified there is no defined behavior;
+///       the hints may be ignored or one hint may be chosen arbitrarily.
+///     - The application must not call this function from simultaneous threads
+///       with the same kernel handle.
+///     - The implementation of this function should be lock-free.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hKernel`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == pHint`
+///     - ::ZE_RESULT_ERROR_INVALID_ENUMERATION
+///         + `0x7 < pHint->flags`
+ze_result_t ZE_APICALL
+zeKernelSchedulingHintExp(
+    ze_kernel_handle_t hKernel,                     ///< [in] handle of the kernel object
+    ze_scheduling_hint_exp_desc_t* pHint            ///< [in] pointer to kernel scheduling hint descriptor
+    )
+{
+    auto pfnSchedulingHintExp = ze_lib::context->zeDdiTable.KernelExp.pfnSchedulingHintExp;
+    if( nullptr == pfnSchedulingHintExp )
+        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+
+    return pfnSchedulingHintExp( hKernel, pHint );
 }
 
 } // extern "C"

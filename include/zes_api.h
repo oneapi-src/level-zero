@@ -5,7 +5,7 @@
  * SPDX-License-Identifier: MIT
  *
  * @file zes_api.h
- * @version v1.1-r1.1.10
+ * @version v1.2-r1.2.13
  *
  */
 #ifndef _ZES_API_H
@@ -132,6 +132,7 @@ typedef enum _zes_structure_type_t
     ZES_STRUCTURE_TYPE_RAS_CONFIG = 0x21,           ///< ::zes_ras_config_t
     ZES_STRUCTURE_TYPE_RAS_STATE = 0x22,            ///< ::zes_ras_state_t
     ZES_STRUCTURE_TYPE_TEMP_CONFIG = 0x23,          ///< ::zes_temp_config_t
+    ZES_STRUCTURE_TYPE_PCI_BAR_PROPERTIES_1_2 = 0x24,   ///< ::zes_pci_bar_properties_1_2_t
     ZES_STRUCTURE_TYPE_FORCE_UINT32 = 0x7fffffff
 
 } zes_structure_type_t;
@@ -232,6 +233,10 @@ typedef struct _zes_pci_state_t zes_pci_state_t;
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief Forward-declare zes_pci_bar_properties_t
 typedef struct _zes_pci_bar_properties_t zes_pci_bar_properties_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Forward-declare zes_pci_bar_properties_1_2_t
+typedef struct _zes_pci_bar_properties_1_2_t zes_pci_bar_properties_1_2_t;
 
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief Forward-declare zes_pci_stats_t
@@ -771,6 +776,21 @@ typedef struct _zes_pci_bar_properties_t
     uint64_t size;                                  ///< [out] Size of the bar.
 
 } zes_pci_bar_properties_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Properties of a pci bar, including the resizable bar.
+typedef struct _zes_pci_bar_properties_1_2_t
+{
+    zes_structure_type_t stype;                     ///< [in] type of this structure
+    void* pNext;                                    ///< [in,out][optional] pointer to extension-specific structure
+    zes_pci_bar_type_t type;                        ///< [out] The type of bar
+    uint32_t index;                                 ///< [out] The index of the bar
+    uint64_t base;                                  ///< [out] Base address of the bar.
+    uint64_t size;                                  ///< [out] Size of the bar.
+    ze_bool_t resizableBarSupported;                ///< [out] Support for Resizable Bar on this device.
+    ze_bool_t resizableBarEnabled;                  ///< [out] Resizable Bar enabled on this device
+
+} zes_pci_bar_properties_1_2_t;
 
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief PCI stats counters
