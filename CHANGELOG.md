@@ -1,5 +1,9 @@
 # Level zero loader changelog
 
+## v1.4.1
+* Added support for Level Zero Specification 1.2.13
+* Fixed a bug that resulted in zeInit failing when multiple drivers are discovered and one of them fails to load. 
+
 ## v1.3.7
 * Fixed build warnings generated when `-Wall` is enabled
 
