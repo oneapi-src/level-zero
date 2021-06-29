@@ -70,6 +70,16 @@ docker run \
   cmake --build . --config Release
 ```
 
+## Windows
+Use Microsoft* Visual Studio x64 command prompt to run the following commands and build the project:
+```sh
+mkdir build
+cd build
+cmake -G "NMake Makefiles" CMAKE_CXX_FLAGS="/EHsc" ..
+nmake
+```
+
+
 # Contributing
 
 See [CONTRIBUTING](CONTRIBUTING.md) for more information.
