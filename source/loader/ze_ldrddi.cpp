@@ -4334,15 +4334,17 @@ zeGetGlobalProcAddrTable(
     // Load the device-driver DDI tables
     for( auto& drv : loader::context->drivers )
     {
-
+        if(drv.initStatus != ZE_RESULT_SUCCESS)
+            continue;
         auto getTable = reinterpret_cast<ze_pfnGetGlobalProcAddrTable_t>(
             GET_FUNCTION_PTR( drv.handle, "zeGetGlobalProcAddrTable") );
         if(!getTable) 
             continue; 
-        if(getTable( version, &drv.dditable.ze.Global ) == ZE_RESULT_SUCCESS) 
+        auto getTableResult = getTable( version, &drv.dditable.ze.Global);
+        if(getTableResult == ZE_RESULT_SUCCESS) 
             atLeastOneDriverValid = true;
         else
-            drv.initStatus = result;
+            drv.initStatus = getTableResult;
     }
 
     if(!atLeastOneDriverValid)
@@ -4417,15 +4419,17 @@ zeGetDriverProcAddrTable(
     // Load the device-driver DDI tables
     for( auto& drv : loader::context->drivers )
     {
-
+        if(drv.initStatus != ZE_RESULT_SUCCESS)
+            continue;
         auto getTable = reinterpret_cast<ze_pfnGetDriverProcAddrTable_t>(
             GET_FUNCTION_PTR( drv.handle, "zeGetDriverProcAddrTable") );
         if(!getTable) 
             continue; 
-        if(getTable( version, &drv.dditable.ze.Driver ) == ZE_RESULT_SUCCESS) 
+        auto getTableResult = getTable( version, &drv.dditable.ze.Driver);
+        if(getTableResult == ZE_RESULT_SUCCESS) 
             atLeastOneDriverValid = true;
         else
-            drv.initStatus = result;
+            drv.initStatus = getTableResult;
     }
 
     if(!atLeastOneDriverValid)
@@ -4505,15 +4509,17 @@ zeGetDeviceProcAddrTable(
     // Load the device-driver DDI tables
     for( auto& drv : loader::context->drivers )
     {
-
+        if(drv.initStatus != ZE_RESULT_SUCCESS)
+            continue;
         auto getTable = reinterpret_cast<ze_pfnGetDeviceProcAddrTable_t>(
             GET_FUNCTION_PTR( drv.handle, "zeGetDeviceProcAddrTable") );
         if(!getTable) 
             continue; 
-        if(getTable( version, &drv.dditable.ze.Device ) == ZE_RESULT_SUCCESS) 
+        auto getTableResult = getTable( version, &drv.dditable.ze.Device);
+        if(getTableResult == ZE_RESULT_SUCCESS) 
             atLeastOneDriverValid = true;
         else
-            drv.initStatus = result;
+            drv.initStatus = getTableResult;
     }
 
     if(!atLeastOneDriverValid)
@@ -4604,15 +4610,17 @@ zeGetContextProcAddrTable(
     // Load the device-driver DDI tables
     for( auto& drv : loader::context->drivers )
     {
-
+        if(drv.initStatus != ZE_RESULT_SUCCESS)
+            continue;
         auto getTable = reinterpret_cast<ze_pfnGetContextProcAddrTable_t>(
             GET_FUNCTION_PTR( drv.handle, "zeGetContextProcAddrTable") );
         if(!getTable) 
             continue; 
-        if(getTable( version, &drv.dditable.ze.Context ) == ZE_RESULT_SUCCESS) 
+        auto getTableResult = getTable( version, &drv.dditable.ze.Context);
+        if(getTableResult == ZE_RESULT_SUCCESS) 
             atLeastOneDriverValid = true;
         else
-            drv.initStatus = result;
+            drv.initStatus = getTableResult;
     }
 
     if(!atLeastOneDriverValid)
@@ -4695,15 +4703,17 @@ zeGetCommandQueueProcAddrTable(
     // Load the device-driver DDI tables
     for( auto& drv : loader::context->drivers )
     {
-
+        if(drv.initStatus != ZE_RESULT_SUCCESS)
+            continue;
         auto getTable = reinterpret_cast<ze_pfnGetCommandQueueProcAddrTable_t>(
             GET_FUNCTION_PTR( drv.handle, "zeGetCommandQueueProcAddrTable") );
         if(!getTable) 
             continue; 
-        if(getTable( version, &drv.dditable.ze.CommandQueue ) == ZE_RESULT_SUCCESS) 
+        auto getTableResult = getTable( version, &drv.dditable.ze.CommandQueue);
+        if(getTableResult == ZE_RESULT_SUCCESS) 
             atLeastOneDriverValid = true;
         else
-            drv.initStatus = result;
+            drv.initStatus = getTableResult;
     }
 
     if(!atLeastOneDriverValid)
@@ -4781,15 +4791,17 @@ zeGetCommandListProcAddrTable(
     // Load the device-driver DDI tables
     for( auto& drv : loader::context->drivers )
     {
-
+        if(drv.initStatus != ZE_RESULT_SUCCESS)
+            continue;
         auto getTable = reinterpret_cast<ze_pfnGetCommandListProcAddrTable_t>(
             GET_FUNCTION_PTR( drv.handle, "zeGetCommandListProcAddrTable") );
         if(!getTable) 
             continue; 
-        if(getTable( version, &drv.dditable.ze.CommandList ) == ZE_RESULT_SUCCESS) 
+        auto getTableResult = getTable( version, &drv.dditable.ze.CommandList);
+        if(getTableResult == ZE_RESULT_SUCCESS) 
             atLeastOneDriverValid = true;
         else
-            drv.initStatus = result;
+            drv.initStatus = getTableResult;
     }
 
     if(!atLeastOneDriverValid)
@@ -4889,15 +4901,17 @@ zeGetEventProcAddrTable(
     // Load the device-driver DDI tables
     for( auto& drv : loader::context->drivers )
     {
-
+        if(drv.initStatus != ZE_RESULT_SUCCESS)
+            continue;
         auto getTable = reinterpret_cast<ze_pfnGetEventProcAddrTable_t>(
             GET_FUNCTION_PTR( drv.handle, "zeGetEventProcAddrTable") );
         if(!getTable) 
             continue; 
-        if(getTable( version, &drv.dditable.ze.Event ) == ZE_RESULT_SUCCESS) 
+        auto getTableResult = getTable( version, &drv.dditable.ze.Event);
+        if(getTableResult == ZE_RESULT_SUCCESS) 
             atLeastOneDriverValid = true;
         else
-            drv.initStatus = result;
+            drv.initStatus = getTableResult;
     }
 
     if(!atLeastOneDriverValid)
@@ -4978,12 +4992,14 @@ zeGetEventExpProcAddrTable(
     // Load the device-driver DDI tables
     for( auto& drv : loader::context->drivers )
     {
-
+        if(drv.initStatus != ZE_RESULT_SUCCESS)
+            continue;
         auto getTable = reinterpret_cast<ze_pfnGetEventExpProcAddrTable_t>(
             GET_FUNCTION_PTR( drv.handle, "zeGetEventExpProcAddrTable") );
         if(!getTable) 
             continue; 
-        if(getTable( version, &drv.dditable.ze.EventExp ) == ZE_RESULT_SUCCESS) 
+        auto getTableResult = getTable( version, &drv.dditable.ze.EventExp);
+        if(getTableResult == ZE_RESULT_SUCCESS) 
             atLeastOneDriverValid = true;
     }
 
@@ -5055,15 +5071,17 @@ zeGetEventPoolProcAddrTable(
     // Load the device-driver DDI tables
     for( auto& drv : loader::context->drivers )
     {
-
+        if(drv.initStatus != ZE_RESULT_SUCCESS)
+            continue;
         auto getTable = reinterpret_cast<ze_pfnGetEventPoolProcAddrTable_t>(
             GET_FUNCTION_PTR( drv.handle, "zeGetEventPoolProcAddrTable") );
         if(!getTable) 
             continue; 
-        if(getTable( version, &drv.dditable.ze.EventPool ) == ZE_RESULT_SUCCESS) 
+        auto getTableResult = getTable( version, &drv.dditable.ze.EventPool);
+        if(getTableResult == ZE_RESULT_SUCCESS) 
             atLeastOneDriverValid = true;
         else
-            drv.initStatus = result;
+            drv.initStatus = getTableResult;
     }
 
     if(!atLeastOneDriverValid)
@@ -5142,15 +5160,17 @@ zeGetFenceProcAddrTable(
     // Load the device-driver DDI tables
     for( auto& drv : loader::context->drivers )
     {
-
+        if(drv.initStatus != ZE_RESULT_SUCCESS)
+            continue;
         auto getTable = reinterpret_cast<ze_pfnGetFenceProcAddrTable_t>(
             GET_FUNCTION_PTR( drv.handle, "zeGetFenceProcAddrTable") );
         if(!getTable) 
             continue; 
-        if(getTable( version, &drv.dditable.ze.Fence ) == ZE_RESULT_SUCCESS) 
+        auto getTableResult = getTable( version, &drv.dditable.ze.Fence);
+        if(getTableResult == ZE_RESULT_SUCCESS) 
             atLeastOneDriverValid = true;
         else
-            drv.initStatus = result;
+            drv.initStatus = getTableResult;
     }
 
     if(!atLeastOneDriverValid)
@@ -5229,15 +5249,17 @@ zeGetImageProcAddrTable(
     // Load the device-driver DDI tables
     for( auto& drv : loader::context->drivers )
     {
-
+        if(drv.initStatus != ZE_RESULT_SUCCESS)
+            continue;
         auto getTable = reinterpret_cast<ze_pfnGetImageProcAddrTable_t>(
             GET_FUNCTION_PTR( drv.handle, "zeGetImageProcAddrTable") );
         if(!getTable) 
             continue; 
-        if(getTable( version, &drv.dditable.ze.Image ) == ZE_RESULT_SUCCESS) 
+        auto getTableResult = getTable( version, &drv.dditable.ze.Image);
+        if(getTableResult == ZE_RESULT_SUCCESS) 
             atLeastOneDriverValid = true;
         else
-            drv.initStatus = result;
+            drv.initStatus = getTableResult;
     }
 
     if(!atLeastOneDriverValid)
@@ -5314,12 +5336,14 @@ zeGetImageExpProcAddrTable(
     // Load the device-driver DDI tables
     for( auto& drv : loader::context->drivers )
     {
-
+        if(drv.initStatus != ZE_RESULT_SUCCESS)
+            continue;
         auto getTable = reinterpret_cast<ze_pfnGetImageExpProcAddrTable_t>(
             GET_FUNCTION_PTR( drv.handle, "zeGetImageExpProcAddrTable") );
         if(!getTable) 
             continue; 
-        if(getTable( version, &drv.dditable.ze.ImageExp ) == ZE_RESULT_SUCCESS) 
+        auto getTableResult = getTable( version, &drv.dditable.ze.ImageExp);
+        if(getTableResult == ZE_RESULT_SUCCESS) 
             atLeastOneDriverValid = true;
     }
 
@@ -5392,15 +5416,17 @@ zeGetKernelProcAddrTable(
     // Load the device-driver DDI tables
     for( auto& drv : loader::context->drivers )
     {
-
+        if(drv.initStatus != ZE_RESULT_SUCCESS)
+            continue;
         auto getTable = reinterpret_cast<ze_pfnGetKernelProcAddrTable_t>(
             GET_FUNCTION_PTR( drv.handle, "zeGetKernelProcAddrTable") );
         if(!getTable) 
             continue; 
-        if(getTable( version, &drv.dditable.ze.Kernel ) == ZE_RESULT_SUCCESS) 
+        auto getTableResult = getTable( version, &drv.dditable.ze.Kernel);
+        if(getTableResult == ZE_RESULT_SUCCESS) 
             atLeastOneDriverValid = true;
         else
-            drv.initStatus = result;
+            drv.initStatus = getTableResult;
     }
 
     if(!atLeastOneDriverValid)
@@ -5486,12 +5512,14 @@ zeGetKernelExpProcAddrTable(
     // Load the device-driver DDI tables
     for( auto& drv : loader::context->drivers )
     {
-
+        if(drv.initStatus != ZE_RESULT_SUCCESS)
+            continue;
         auto getTable = reinterpret_cast<ze_pfnGetKernelExpProcAddrTable_t>(
             GET_FUNCTION_PTR( drv.handle, "zeGetKernelExpProcAddrTable") );
         if(!getTable) 
             continue; 
-        if(getTable( version, &drv.dditable.ze.KernelExp ) == ZE_RESULT_SUCCESS) 
+        auto getTableResult = getTable( version, &drv.dditable.ze.KernelExp);
+        if(getTableResult == ZE_RESULT_SUCCESS) 
             atLeastOneDriverValid = true;
     }
 
@@ -5564,15 +5592,17 @@ zeGetMemProcAddrTable(
     // Load the device-driver DDI tables
     for( auto& drv : loader::context->drivers )
     {
-
+        if(drv.initStatus != ZE_RESULT_SUCCESS)
+            continue;
         auto getTable = reinterpret_cast<ze_pfnGetMemProcAddrTable_t>(
             GET_FUNCTION_PTR( drv.handle, "zeGetMemProcAddrTable") );
         if(!getTable) 
             continue; 
-        if(getTable( version, &drv.dditable.ze.Mem ) == ZE_RESULT_SUCCESS) 
+        auto getTableResult = getTable( version, &drv.dditable.ze.Mem);
+        if(getTableResult == ZE_RESULT_SUCCESS) 
             atLeastOneDriverValid = true;
         else
-            drv.initStatus = result;
+            drv.initStatus = getTableResult;
     }
 
     if(!atLeastOneDriverValid)
@@ -5655,15 +5685,17 @@ zeGetModuleProcAddrTable(
     // Load the device-driver DDI tables
     for( auto& drv : loader::context->drivers )
     {
-
+        if(drv.initStatus != ZE_RESULT_SUCCESS)
+            continue;
         auto getTable = reinterpret_cast<ze_pfnGetModuleProcAddrTable_t>(
             GET_FUNCTION_PTR( drv.handle, "zeGetModuleProcAddrTable") );
         if(!getTable) 
             continue; 
-        if(getTable( version, &drv.dditable.ze.Module ) == ZE_RESULT_SUCCESS) 
+        auto getTableResult = getTable( version, &drv.dditable.ze.Module);
+        if(getTableResult == ZE_RESULT_SUCCESS) 
             atLeastOneDriverValid = true;
         else
-            drv.initStatus = result;
+            drv.initStatus = getTableResult;
     }
 
     if(!atLeastOneDriverValid)
@@ -5745,15 +5777,17 @@ zeGetModuleBuildLogProcAddrTable(
     // Load the device-driver DDI tables
     for( auto& drv : loader::context->drivers )
     {
-
+        if(drv.initStatus != ZE_RESULT_SUCCESS)
+            continue;
         auto getTable = reinterpret_cast<ze_pfnGetModuleBuildLogProcAddrTable_t>(
             GET_FUNCTION_PTR( drv.handle, "zeGetModuleBuildLogProcAddrTable") );
         if(!getTable) 
             continue; 
-        if(getTable( version, &drv.dditable.ze.ModuleBuildLog ) == ZE_RESULT_SUCCESS) 
+        auto getTableResult = getTable( version, &drv.dditable.ze.ModuleBuildLog);
+        if(getTableResult == ZE_RESULT_SUCCESS) 
             atLeastOneDriverValid = true;
         else
-            drv.initStatus = result;
+            drv.initStatus = getTableResult;
     }
 
     if(!atLeastOneDriverValid)
@@ -5829,15 +5863,17 @@ zeGetPhysicalMemProcAddrTable(
     // Load the device-driver DDI tables
     for( auto& drv : loader::context->drivers )
     {
-
+        if(drv.initStatus != ZE_RESULT_SUCCESS)
+            continue;
         auto getTable = reinterpret_cast<ze_pfnGetPhysicalMemProcAddrTable_t>(
             GET_FUNCTION_PTR( drv.handle, "zeGetPhysicalMemProcAddrTable") );
         if(!getTable) 
             continue; 
-        if(getTable( version, &drv.dditable.ze.PhysicalMem ) == ZE_RESULT_SUCCESS) 
+        auto getTableResult = getTable( version, &drv.dditable.ze.PhysicalMem);
+        if(getTableResult == ZE_RESULT_SUCCESS) 
             atLeastOneDriverValid = true;
         else
-            drv.initStatus = result;
+            drv.initStatus = getTableResult;
     }
 
     if(!atLeastOneDriverValid)
@@ -5913,15 +5949,17 @@ zeGetSamplerProcAddrTable(
     // Load the device-driver DDI tables
     for( auto& drv : loader::context->drivers )
     {
-
+        if(drv.initStatus != ZE_RESULT_SUCCESS)
+            continue;
         auto getTable = reinterpret_cast<ze_pfnGetSamplerProcAddrTable_t>(
             GET_FUNCTION_PTR( drv.handle, "zeGetSamplerProcAddrTable") );
         if(!getTable) 
             continue; 
-        if(getTable( version, &drv.dditable.ze.Sampler ) == ZE_RESULT_SUCCESS) 
+        auto getTableResult = getTable( version, &drv.dditable.ze.Sampler);
+        if(getTableResult == ZE_RESULT_SUCCESS) 
             atLeastOneDriverValid = true;
         else
-            drv.initStatus = result;
+            drv.initStatus = getTableResult;
     }
 
     if(!atLeastOneDriverValid)
@@ -5997,15 +6035,17 @@ zeGetVirtualMemProcAddrTable(
     // Load the device-driver DDI tables
     for( auto& drv : loader::context->drivers )
     {
-
+        if(drv.initStatus != ZE_RESULT_SUCCESS)
+            continue;
         auto getTable = reinterpret_cast<ze_pfnGetVirtualMemProcAddrTable_t>(
             GET_FUNCTION_PTR( drv.handle, "zeGetVirtualMemProcAddrTable") );
         if(!getTable) 
             continue; 
-        if(getTable( version, &drv.dditable.ze.VirtualMem ) == ZE_RESULT_SUCCESS) 
+        auto getTableResult = getTable( version, &drv.dditable.ze.VirtualMem);
+        if(getTableResult == ZE_RESULT_SUCCESS) 
             atLeastOneDriverValid = true;
         else
-            drv.initStatus = result;
+            drv.initStatus = getTableResult;
     }
 
     if(!atLeastOneDriverValid)
