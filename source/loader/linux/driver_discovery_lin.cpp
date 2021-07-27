@@ -17,6 +17,7 @@ namespace loader {
 
 static const char *knownDriverNames[] = {
     MAKE_LIBRARY_NAME("ze_intel_gpu", "1"),
+    MAKE_LIBRARY_NAME("ze_intel_vpu", "1"),
 };
 
 std::vector<DriverLibraryPath> discoverEnabledDrivers() {
