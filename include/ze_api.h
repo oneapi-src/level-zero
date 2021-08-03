@@ -59,10 +59,19 @@ extern "C" {
 #if defined(_WIN32)
 /// @brief Microsoft-specific dllexport storage-class attribute
 #define ZE_APIEXPORT  __declspec(dllexport)
-#else
-#define ZE_APIEXPORT  
 #endif // defined(_WIN32)
 #endif // ZE_APIEXPORT
+
+///////////////////////////////////////////////////////////////////////////////
+#ifndef ZE_APIEXPORT
+#if __GNUC__ >= 4
+/// @brief GCC-specific dllexport storage-class attribute
+#define ZE_APIEXPORT  __attribute__ ((visibility ("default")))
+#else
+#define ZE_APIEXPORT  
+#endif // __GNUC__ >= 4
+#endif // ZE_APIEXPORT
+
 
 ///////////////////////////////////////////////////////////////////////////////
 #ifndef ZE_DLLEXPORT
