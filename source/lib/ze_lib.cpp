@@ -31,7 +31,7 @@ namespace ze_lib
     };
 
     //////////////////////////////////////////////////////////////////////////
-    __zedlllocal ze_result_t context_t::Init()
+    __zedlllocal ze_result_t context_t::Init(ze_init_flags_t flags)
     {
         ze_result_t result;
 #ifdef DYNAMIC_LOAD_LOADER
@@ -51,7 +51,7 @@ namespace ze_lib
             tracing_lib = getTracing();
         }
 #else
-        result = zeLoaderInit();
+        result = zeLoaderInit(flags);
         if( ZE_RESULT_SUCCESS == result ) {
             tracing_lib = zeLoaderGetTracingHandle();
         }

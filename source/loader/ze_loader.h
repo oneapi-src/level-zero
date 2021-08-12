@@ -48,7 +48,7 @@ namespace loader
         std::vector<zel_component_version_t> compVersions;
         const char *LOADER_COMP_NAME = "loader";
 
-        ze_result_t init();
+        ze_result_t init(ze_init_flags_t flags);
         void add_loader_version();
         ~context_t();
     };

@@ -15,7 +15,7 @@ namespace loader
     context_t *context;
 
     ///////////////////////////////////////////////////////////////////////////////
-    ze_result_t context_t::init()
+    ze_result_t context_t::init(ze_init_flags_t flags)
     {
         auto discoveredDrivers = discoverEnabledDrivers();
 
@@ -35,11 +35,37 @@ namespace loader
             auto handle = LOAD_DRIVER_LIBRARY( name.c_str() );
             if( NULL != handle )
             {
+                auto getTable = reinterpret_cast<ze_pfnGetGlobalProcAddrTable_t>(
+                    GET_FUNCTION_PTR(handle, "zeGetGlobalProcAddrTable"));
+                ze_global_dditable_t global;
+                auto getTableResult = getTable(ZE_API_VERSION_CURRENT, &global);
+                if(!getTable) {
+                    FREE_DRIVER_LIBRARY(handle);
+                    continue;
+                }
+                if(getTableResult != ZE_RESULT_SUCCESS) {
+                    FREE_DRIVER_LIBRARY(handle);
+                    continue;
+                }
+                
+                auto pfnInit = global.pfnInit;
+                if(nullptr == pfnInit) {
+                    FREE_DRIVER_LIBRARY(handle);
+                    continue;
+                }
+
+                if(pfnInit(flags) != ZE_RESULT_SUCCESS) {
+                    FREE_DRIVER_LIBRARY(handle);
+                    continue;
+                }
+
                 drivers.emplace_back();
                 drivers.rbegin()->handle = handle;
             }
-
         }
+
+        if(drivers.size()==0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         add_loader_version();
         typedef ze_result_t (ZE_APICALL *getVersion_t)(zel_component_version_t *version);

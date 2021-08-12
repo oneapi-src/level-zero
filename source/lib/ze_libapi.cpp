@@ -42,8 +42,8 @@ zeInit(
     )
 {
     ze_result_t result = ZE_RESULT_SUCCESS;
-    std::call_once(ze_lib::context->initOnce, [&result]() {
-        result = ze_lib::context->Init();
+    std::call_once(ze_lib::context->initOnce, [&result, flags]() {
+        result = ze_lib::context->Init(flags);
     });
 
     if( ZE_RESULT_SUCCESS != result )

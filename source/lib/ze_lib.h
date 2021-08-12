@@ -35,7 +35,7 @@ namespace ze_lib
 
         std::once_flag initOnce;
 
-        ze_result_t Init();
+        ze_result_t Init(ze_init_flags_t flags);
 
         ze_result_t zeInit();
         ze_dditable_t   zeDdiTable = {};
