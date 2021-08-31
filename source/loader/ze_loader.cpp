@@ -38,11 +38,11 @@ namespace loader
                 auto getTable = reinterpret_cast<ze_pfnGetGlobalProcAddrTable_t>(
                     GET_FUNCTION_PTR(handle, "zeGetGlobalProcAddrTable"));
                 ze_global_dditable_t global;
-                auto getTableResult = getTable(ZE_API_VERSION_CURRENT, &global);
                 if(!getTable) {
                     FREE_DRIVER_LIBRARY(handle);
                     continue;
                 }
+                auto getTableResult = getTable(ZE_API_VERSION_CURRENT, &global);
                 if(getTableResult != ZE_RESULT_SUCCESS) {
                     FREE_DRIVER_LIBRARY(handle);
                     continue;
