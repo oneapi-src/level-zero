@@ -13,6 +13,54 @@ namespace loader
 {
     ///////////////////////////////////////////////////////////////////////////////
     context_t *context;
+    
+    ze_result_t context_t::init_driver(driver_t driver, ze_init_flags_t flags) {
+        
+        auto getTable = reinterpret_cast<ze_pfnGetGlobalProcAddrTable_t>(
+            GET_FUNCTION_PTR(driver.handle, "zeGetGlobalProcAddrTable"));
+        if(!getTable) {
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
+        
+        ze_global_dditable_t global;
+        auto getTableResult = getTable(ZE_API_VERSION_CURRENT, &global);
+        if(getTableResult != ZE_RESULT_SUCCESS) {
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
+        
+        if(nullptr == global.pfnInit) {
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
+
+        if(nullptr != validationLayer) {
+            auto getTable = reinterpret_cast<ze_pfnGetGlobalProcAddrTable_t>(
+                GET_FUNCTION_PTR(validationLayer, "zeGetGlobalProcAddrTable") );
+            if(!getTable)
+                return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            auto getTableResult = getTable( version, &global);
+            if(getTableResult != ZE_RESULT_SUCCESS) {
+                return ZE_RESULT_ERROR_UNINITIALIZED;
+            }
+        }
+
+        if(nullptr != tracingLayer) {
+            auto getTable = reinterpret_cast<ze_pfnGetGlobalProcAddrTable_t>(
+                GET_FUNCTION_PTR(tracingLayer, "zeGetGlobalProcAddrTable") );
+            if(!getTable)
+                return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            auto getTableResult = getTable( version, &global);
+            if(getTableResult != ZE_RESULT_SUCCESS) {
+                return ZE_RESULT_ERROR_UNINITIALIZED;
+            }
+        }
+
+        auto pfnInit = global.pfnInit;
+        if(nullptr == pfnInit) {
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
+
+        return pfnInit(flags);
+    }
 
     ///////////////////////////////////////////////////////////////////////////////
     ze_result_t context_t::init(ze_init_flags_t flags)
@@ -35,30 +83,6 @@ namespace loader
             auto handle = LOAD_DRIVER_LIBRARY( name.c_str() );
             if( NULL != handle )
             {
-                auto getTable = reinterpret_cast<ze_pfnGetGlobalProcAddrTable_t>(
-                    GET_FUNCTION_PTR(handle, "zeGetGlobalProcAddrTable"));
-                ze_global_dditable_t global;
-                if(!getTable) {
-                    FREE_DRIVER_LIBRARY(handle);
-                    continue;
-                }
-                auto getTableResult = getTable(ZE_API_VERSION_CURRENT, &global);
-                if(getTableResult != ZE_RESULT_SUCCESS) {
-                    FREE_DRIVER_LIBRARY(handle);
-                    continue;
-                }
-                
-                auto pfnInit = global.pfnInit;
-                if(nullptr == pfnInit) {
-                    FREE_DRIVER_LIBRARY(handle);
-                    continue;
-                }
-
-                if(pfnInit(flags) != ZE_RESULT_SUCCESS) {
-                    FREE_DRIVER_LIBRARY(handle);
-                    continue;
-                }
-
                 drivers.emplace_back();
                 drivers.rbegin()->handle = handle;
             }
@@ -100,6 +124,28 @@ namespace loader
         }
 
         forceIntercept = getenv_tobool( "ZE_ENABLE_LOADER_INTERCEPT" );
+
+        bool return_first_driver_result=false;
+        if(drivers.size()==1) {
+            return_first_driver_result=true;
+        }
+
+        for(auto it = drivers.begin(); it != drivers.end(); )
+        {
+            ze_result_t result = init_driver(*it, flags);
+            if(result != ZE_RESULT_SUCCESS) {
+                FREE_DRIVER_LIBRARY(it->handle);
+                it = drivers.erase(it);
+                if(return_first_driver_result)
+                    return result;
+            }
+            else {
+                it++;
+            }
+        }
+
+        if(drivers.size()==0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         return ZE_RESULT_SUCCESS;
     };
