@@ -123,6 +123,8 @@ add_subdirectory(samples)
 
 include("os_release_info.cmake")
 get_os_release_info(os_name os_version os_codename)
+string(APPEND os_type "${os_name}")
+string(COMPARE EQUAL "${os_type}" "sles" sles_distro)
 #Pick only first character of os_name
 string(SUBSTRING "${os_name}" 0 1 os_name)
 
@@ -153,7 +155,7 @@ if(NOT DEFINED CPACK_GENERATOR)
 		set(CPACK_GENERATOR "DEB")
 	elseif(EXISTS "/etc/redhat-release")
 		set(CPACK_GENERATOR "RPM")
-	elseif(EXISTS "/etc/SUSE-brand" OR EXISTS "/etc/SUSE-release")
+	elseif(EXISTS "/etc/SUSE-brand" OR EXISTS "/etc/SUSE-release" OR sles_distro)
 		set(CPACK_GENERATOR "RPM")
 	else()
 		set(CPACK_GENERATOR "ZIP")
