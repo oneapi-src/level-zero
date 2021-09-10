@@ -4,7 +4,7 @@
  SPDX-License-Identifier: MIT
 
  @file zet.py
- @version v1.2-r1.2.13
+ @version v1.2-r1.2.43
 
  """
 import platform
@@ -548,6 +548,21 @@ class zet_tracer_exp_desc_t(Structure):
     ]
 
 ###############################################################################
+## @brief Calculating Multiple Metrics Experimental Extension Name
+ZET_MULTI_METRICS_EXP_NAME = "ZET_experimental_calculate_multiple_metrics"
+
+###############################################################################
+## @brief Calculating Multiple Metrics Experimental Extension Version(s)
+class ze_calculate_multiple_metrics_exp_version_v(IntEnum):
+    _1_0 = ZE_MAKE_VERSION( 1, 0 )                  ## version 1.0
+    CURRENT = ZE_MAKE_VERSION( 1, 0 )               ## latest known version
+
+class ze_calculate_multiple_metrics_exp_version_t(c_int):
+    def __str__(self):
+        return str(ze_calculate_multiple_metrics_exp_version_v(self.value))
+
+
+###############################################################################
 __use_win_types = "Windows" == platform.uname()[0]
 
 ###############################################################################
@@ -678,6 +693,21 @@ class _zet_metric_group_dditable_t(Structure):
         ("pfnGet", c_void_p),                                           ## _zetMetricGroupGet_t
         ("pfnGetProperties", c_void_p),                                 ## _zetMetricGroupGetProperties_t
         ("pfnCalculateMetricValues", c_void_p)                          ## _zetMetricGroupCalculateMetricValues_t
+    ]
+
+###############################################################################
+## @brief Function-pointer for zetMetricGroupCalculateMultipleMetricValuesExp
+if __use_win_types:
+    _zetMetricGroupCalculateMultipleMetricValuesExp_t = WINFUNCTYPE( ze_result_t, zet_metric_group_handle_t, zet_metric_group_calculation_type_t, c_size_t, POINTER(c_ubyte), POINTER(c_ulong), POINTER(c_ulong), POINTER(c_ulong), POINTER(zet_typed_value_t) )
+else:
+    _zetMetricGroupCalculateMultipleMetricValuesExp_t = CFUNCTYPE( ze_result_t, zet_metric_group_handle_t, zet_metric_group_calculation_type_t, c_size_t, POINTER(c_ubyte), POINTER(c_ulong), POINTER(c_ulong), POINTER(c_ulong), POINTER(zet_typed_value_t) )
+
+
+###############################################################################
+## @brief Table of MetricGroupExp functions pointers
+class _zet_metric_group_exp_dditable_t(Structure):
+    _fields_ = [
+        ("pfnCalculateMultipleMetricValuesExp", c_void_p)               ## _zetMetricGroupCalculateMultipleMetricValuesExp_t
     ]
 
 ###############################################################################
@@ -947,6 +977,7 @@ class _zet_dditable_t(Structure):
         ("Module", _zet_module_dditable_t),
         ("Kernel", _zet_kernel_dditable_t),
         ("MetricGroup", _zet_metric_group_dditable_t),
+        ("MetricGroupExp", _zet_metric_group_exp_dditable_t),
         ("Metric", _zet_metric_dditable_t),
         ("MetricStreamer", _zet_metric_streamer_dditable_t),
         ("MetricQueryPool", _zet_metric_query_pool_dditable_t),
@@ -1032,6 +1063,16 @@ class ZET_DDI:
         self.zetMetricGroupGet = _zetMetricGroupGet_t(self.__dditable.MetricGroup.pfnGet)
         self.zetMetricGroupGetProperties = _zetMetricGroupGetProperties_t(self.__dditable.MetricGroup.pfnGetProperties)
         self.zetMetricGroupCalculateMetricValues = _zetMetricGroupCalculateMetricValues_t(self.__dditable.MetricGroup.pfnCalculateMetricValues)
+
+        # call driver to get function pointers
+        _MetricGroupExp = _zet_metric_group_exp_dditable_t()
+        r = ze_result_v(self.__dll.zetGetMetricGroupExpProcAddrTable(version, byref(_MetricGroupExp)))
+        if r != ze_result_v.SUCCESS:
+            raise Exception(r)
+        self.__dditable.MetricGroupExp = _MetricGroupExp
+
+        # attach function interface to function address
+        self.zetMetricGroupCalculateMultipleMetricValuesExp = _zetMetricGroupCalculateMultipleMetricValuesExp_t(self.__dditable.MetricGroupExp.pfnCalculateMultipleMetricValuesExp)
 
         # call driver to get function pointers
         _Metric = _zet_metric_dditable_t()

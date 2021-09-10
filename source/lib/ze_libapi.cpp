@@ -24,6 +24,8 @@ extern "C" {
 ///     - Only one instance of each driver will be initialized per process.
 ///     - The application may call this function multiple times with different
 ///       flags or environment variables enabled.
+///     - The application must call this function after forking new processes.
+///       Each forked process must call this function.
 ///     - The application may call this function from simultaneous threads.
 ///     - The implementation of this function must be thread-safe for scenarios
 ///       where multiple libraries may initialize the driver(s) simultaneously.
@@ -1334,9 +1336,10 @@ zeCommandListAppendWriteGlobalTimestamp(
 /// @details
 ///     - The application must ensure the events are accessible by the device on
 ///       which the command list was created.
-///     - If numWaitEvents is zero, then all previous commands are completed
-///       prior to the execution of the barrier.
-///     - If numWaitEvents is non-zero, then then all phWaitEvents must be
+///     - If numWaitEvents is zero, then all previous commands, enqueued on same
+///       command queue, must complete prior to the execution of the barrier.
+///       This is not the case when numWaitEvents is non-zero.
+///     - If numWaitEvents is non-zero, then only all phWaitEvents must be
 ///       signaled prior to the execution of the barrier.
 ///     - This command blocks all following commands from beginning until the
 ///       execution of the barrier completes.
@@ -3332,32 +3335,30 @@ zeModuleDestroy(
 ///        dependencies.
 /// 
 /// @details
-///     - Modules support import and export linkage for functions and global
-///       variables.
-///     - Modules that have imports can be dynamically linked to export modules
-///       that satisfy those import requirements.
-///     - Modules can have both import and export linkages.
+///     - Modules support SPIR-V import and export linkage types for functions
+///       and global variables. See SPIR-V specification for linkage details.
+///     - Modules can have both import and export linkage.
 ///     - Modules that do not have any imports or exports do not need to be
 ///       linked.
-///     - Modules cannot be partially linked. All modules needed to satisfy all
-///       import dependencies for a module must be passed in or
-///       ::ZE_RESULT_ERROR_MODULE_LINK_FAILURE will returned.
-///     - Modules with imports need to be linked before kernel objects can be
-///       created from them.
+///     - All module import requirements must be satisfied via linking before
+///       kernel objects can be created from them.
+///     - Modules cannot be partially linked. Unsatisfiable import dependencies
+///       in the set of modules passed to ::zeModuleDynamicLink will result in 
+///       ::ZE_RESULT_ERROR_MODULE_LINK_FAILURE being returned.
 ///     - Modules will only be linked once. A module can be used in multiple
-///       link calls if it has exports but it's imports will not be re-linked.
+///       link calls if it has exports but its imports will not be re-linked.
 ///     - Ambiguous dependencies, where multiple modules satisfy the import
-///       dependencies for another module, is not allowed.
-///     - ModuleGetNativeBinary can be called on any module regardless of
-///       whether it is linked or not.
-///     - A link log can optionally be returned to the caller. The caller is
-///       responsible for destroying build log using ::zeModuleBuildLogDestroy.
-///     - SPIR-V import and export linkage types are used. See SPIR-V
-///       specification for linkage details.
+///       dependencies for another module, are not allowed.
 ///     - The application must ensure the modules being linked were created on
 ///       the same context.
 ///     - The application may call this function from simultaneous threads as
 ///       long as the import modules being linked are not the same.
+///     - ModuleGetNativeBinary can be called on any module regardless of
+///       whether it is linked or not.
+///     - A link log can optionally be returned to the caller. The caller is
+///       responsible for destroying build log using ::zeModuleBuildLogDestroy.
+///     - The link log may contain a list of the unresolved import dependencies
+///       if present.
 ///     - The implementation of this function should be lock-free.
 /// 
 /// @returns
@@ -3931,7 +3932,7 @@ zeKernelGetSourceAttributes(
 ze_result_t ZE_APICALL
 zeKernelSetCacheConfig(
     ze_kernel_handle_t hKernel,                     ///< [in] handle of the kernel object
-    ze_cache_config_flags_t flags                   ///< [in] cache configuration. 
+    ze_cache_config_flags_t flags                   ///< [in] cache configuration.
                                                     ///< must be 0 (default configuration) or a valid combination of ::ze_cache_config_flag_t.
     )
 {
@@ -4896,14 +4897,18 @@ zeDeviceSetCacheAdviceExt(
 ///         + `nullptr == hDevice`
 ///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
 ///         + `nullptr == pCount`
-///         + `nullptr == pTimestamps`
 ze_result_t ZE_APICALL
 zeEventQueryTimestampsExp(
     ze_event_handle_t hEvent,                       ///< [in] handle of the event
     ze_device_handle_t hDevice,                     ///< [in] handle of the device to query
-    uint32_t* pCount,                               ///< [in,out] pointer to the number of timestamp results
-    ze_kernel_timestamp_result_t* pTimestamps       ///< [in,out][range(0, *pCount)] pointer to memory where timestamp results
-                                                    ///< will be written.
+    uint32_t* pCount,                               ///< [in,out] pointer to the number of timestamp results.
+                                                    ///< if count is zero, then the driver shall update the value with the
+                                                    ///< total number of timestamps available.
+                                                    ///< if count is greater than the number of timestamps available, then the
+                                                    ///< driver shall update the value with the correct number of timestamps available.
+    ze_kernel_timestamp_result_t* pTimestamps       ///< [in,out][optional][range(0, *pCount)] array of timestamp results.
+                                                    ///< if count is less than the number of timestamps available, then driver
+                                                    ///< shall only retrieve that number of timestamps.
     )
 {
     auto pfnQueryTimestampsExp = ze_lib::context->zeDdiTable.EventExp.pfnQueryTimestampsExp;

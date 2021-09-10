@@ -79,6 +79,13 @@ namespace ze_lib
 
         if( ZE_RESULT_SUCCESS == result )
         {
+            auto getTable = reinterpret_cast<zet_pfnGetMetricGroupExpProcAddrTable_t>(
+                GET_FUNCTION_PTR(loader, "zetGetMetricGroupExpProcAddrTable") );
+            result = getTable( ZE_API_VERSION_1_2, &zetDdiTable.MetricGroupExp );
+        }
+
+        if( ZE_RESULT_SUCCESS == result )
+        {
             auto getTable = reinterpret_cast<zet_pfnGetMetricQueryProcAddrTable_t>(
                 GET_FUNCTION_PTR(loader, "zetGetMetricQueryProcAddrTable") );
             result = getTable( ZE_API_VERSION_1_2, &zetDdiTable.MetricQuery );
@@ -150,6 +157,11 @@ namespace ze_lib
         if( ZE_RESULT_SUCCESS == result )
         {
             result = zetGetMetricGroupProcAddrTable( ZE_API_VERSION_1_2, &zetDdiTable.MetricGroup );
+        }
+
+        if( ZE_RESULT_SUCCESS == result )
+        {
+            result = zetGetMetricGroupExpProcAddrTable( ZE_API_VERSION_1_2, &zetDdiTable.MetricGroupExp );
         }
 
         if( ZE_RESULT_SUCCESS == result )

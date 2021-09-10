@@ -2741,7 +2741,7 @@ namespace driver
     __zedlllocal ze_result_t ZE_APICALL
     zeKernelSetCacheConfig(
         ze_kernel_handle_t hKernel,                     ///< [in] handle of the kernel object
-        ze_cache_config_flags_t flags                   ///< [in] cache configuration. 
+        ze_cache_config_flags_t flags                   ///< [in] cache configuration.
                                                         ///< must be 0 (default configuration) or a valid combination of ::ze_cache_config_flag_t.
         )
     {
@@ -3420,9 +3420,14 @@ namespace driver
     zeEventQueryTimestampsExp(
         ze_event_handle_t hEvent,                       ///< [in] handle of the event
         ze_device_handle_t hDevice,                     ///< [in] handle of the device to query
-        uint32_t* pCount,                               ///< [in,out] pointer to the number of timestamp results
-        ze_kernel_timestamp_result_t* pTimestamps       ///< [in,out][range(0, *pCount)] pointer to memory where timestamp results
-                                                        ///< will be written.
+        uint32_t* pCount,                               ///< [in,out] pointer to the number of timestamp results.
+                                                        ///< if count is zero, then the driver shall update the value with the
+                                                        ///< total number of timestamps available.
+                                                        ///< if count is greater than the number of timestamps available, then the
+                                                        ///< driver shall update the value with the correct number of timestamps available.
+        ze_kernel_timestamp_result_t* pTimestamps       ///< [in,out][optional][range(0, *pCount)] array of timestamp results.
+                                                        ///< if count is less than the number of timestamps available, then driver
+                                                        ///< shall only retrieve that number of timestamps.
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
@@ -9245,7 +9250,7 @@ namespace instrumented
     __zedlllocal ze_result_t ZE_APICALL
     zeKernelSetCacheConfig(
         ze_kernel_handle_t hKernel,                     ///< [in] handle of the kernel object
-        ze_cache_config_flags_t flags                   ///< [in] cache configuration. 
+        ze_cache_config_flags_t flags                   ///< [in] cache configuration.
                                                         ///< must be 0 (default configuration) or a valid combination of ::ze_cache_config_flag_t.
         )
     {
@@ -10615,9 +10620,14 @@ namespace instrumented
     zeEventQueryTimestampsExp(
         ze_event_handle_t hEvent,                       ///< [in] handle of the event
         ze_device_handle_t hDevice,                     ///< [in] handle of the device to query
-        uint32_t* pCount,                               ///< [in,out] pointer to the number of timestamp results
-        ze_kernel_timestamp_result_t* pTimestamps       ///< [in,out][range(0, *pCount)] pointer to memory where timestamp results
-                                                        ///< will be written.
+        uint32_t* pCount,                               ///< [in,out] pointer to the number of timestamp results.
+                                                        ///< if count is zero, then the driver shall update the value with the
+                                                        ///< total number of timestamps available.
+                                                        ///< if count is greater than the number of timestamps available, then the
+                                                        ///< driver shall update the value with the correct number of timestamps available.
+        ze_kernel_timestamp_result_t* pTimestamps       ///< [in,out][optional][range(0, *pCount)] array of timestamp results.
+                                                        ///< if count is less than the number of timestamps available, then driver
+                                                        ///< shall only retrieve that number of timestamps.
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;

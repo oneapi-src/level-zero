@@ -4,7 +4,7 @@
  SPDX-License-Identifier: MIT
 
  @file ze.py
- @version v1.2-r1.2.13
+ @version v1.2-r1.2.43
 
  """
 import platform
@@ -35,6 +35,10 @@ def ZE_MINOR_VERSION( _ver ):
 
 ###############################################################################
 ## @brief Microsoft-specific dllexport storage-class attribute
+# ZE_APIEXPORT not required for python
+
+###############################################################################
+## @brief GCC-specific dllexport storage-class attribute
 # ZE_APIEXPORT not required for python
 
 ###############################################################################
@@ -246,7 +250,8 @@ class ze_structure_type_v(IntEnum):
     SCHEDULING_HINT_EXP_PROPERTIES = 0x00020003     ## ::ze_scheduling_hint_exp_properties_t
     SCHEDULING_HINT_EXP_DESC = 0x00020004           ## ::ze_scheduling_hint_exp_desc_t
     IMAGE_VIEW_PLANAR_EXP_DESC = 0x00020005         ## ::ze_image_view_planar_exp_desc_t
-    DEVICE_PROPERTIES_1_2 = 0x20006                 ## ::ze_device_properties_t
+    DEVICE_PROPERTIES_1_2 = 0x00020006              ## ::ze_device_properties_t
+    IMAGE_MEMORY_EXP_PROPERTIES = 0x00020007        ## ::ze_image_memory_properties_exp_t
 
 class ze_structure_type_t(c_int):
     def __str__(self):
@@ -276,7 +281,8 @@ class ze_external_memory_type_flags_t(c_int):
 class ze_base_properties_t(Structure):
     _fields_ = [
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
-        ("pNext", c_void_p)                                             ## [in,out][optional] pointer to extension-specific structure
+        ("pNext", c_void_p)                                             ## [in,out][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains sType and pNext).
     ]
 
 ###############################################################################
@@ -284,7 +290,8 @@ class ze_base_properties_t(Structure):
 class ze_base_desc_t(Structure):
     _fields_ = [
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
-        ("pNext", c_void_p)                                             ## [in][optional] pointer to extension-specific structure
+        ("pNext", c_void_p)                                             ## [in][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains sType and pNext).
     ]
 
 ###############################################################################
@@ -341,7 +348,8 @@ class ze_driver_uuid_t(Structure):
 class ze_driver_properties_t(Structure):
     _fields_ = [
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
-        ("pNext", c_void_p),                                            ## [in,out][optional] pointer to extension-specific structure
+        ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains sType and pNext).
         ("uuid", ze_driver_uuid_t),                                     ## [out] universal unique identifier.
         ("driverVersion", c_ulong)                                      ## [out] driver version
                                                                         ## The driver version is a non-zero, monotonically increasing value where
@@ -366,7 +374,8 @@ class ze_ipc_property_flags_t(c_int):
 class ze_driver_ipc_properties_t(Structure):
     _fields_ = [
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
-        ("pNext", c_void_p),                                            ## [in,out][optional] pointer to extension-specific structure
+        ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains sType and pNext).
         ("flags", ze_ipc_property_flags_t)                              ## [out] 0 (none) or a valid combination of ::ze_ipc_property_flag_t
     ]
 
@@ -429,7 +438,8 @@ class ze_device_property_flags_t(c_int):
 class ze_device_properties_t(Structure):
     _fields_ = [
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
-        ("pNext", c_void_p),                                            ## [in,out][optional] pointer to extension-specific structure
+        ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains sType and pNext).
         ("type", ze_device_type_t),                                     ## [out] generic device type
         ("vendorId", c_ulong),                                          ## [out] vendor id from PCI configuration
         ("deviceId", c_ulong),                                          ## [out] device id from PCI configuration
@@ -441,11 +451,11 @@ class ze_device_properties_t(Structure):
         ("maxHardwareContexts", c_ulong),                               ## [out] Maximum number of logical hardware contexts.
         ("maxCommandQueuePriority", c_ulong),                           ## [out] Maximum priority for command queues. Higher value is higher
                                                                         ## priority.
-        ("numThreadsPerEU", c_ulong),                                   ## [out] Number of threads per EU.
+        ("numThreadsPerEU", c_ulong),                                   ## [out] Maximum number of threads per EU.
         ("physicalEUSimdWidth", c_ulong),                               ## [out] The physical EU simd width.
-        ("numEUsPerSubslice", c_ulong),                                 ## [out] Number of EUs per sub-slice.
-        ("numSubslicesPerSlice", c_ulong),                              ## [out] Number of sub-slices per slice.
-        ("numSlices", c_ulong),                                         ## [out] Number of slices.
+        ("numEUsPerSubslice", c_ulong),                                 ## [out] Maximum number of EUs per sub-slice.
+        ("numSubslicesPerSlice", c_ulong),                              ## [out] Maximum number of sub-slices per slice.
+        ("numSlices", c_ulong),                                         ## [out] Maximum number of slices.
         ("timerResolution", c_ulonglong),                               ## [out] Returns the resolution of device timer used for profiling,
                                                                         ## timestamps, etc. When stype==::ZE_STRUCTURE_TYPE_DEVICE_PROPERTIES the
                                                                         ## units are in nanoseconds. When
@@ -481,7 +491,8 @@ ZE_SUBGROUPSIZE_COUNT = 8
 class ze_device_compute_properties_t(Structure):
     _fields_ = [
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
-        ("pNext", c_void_p),                                            ## [in,out][optional] pointer to extension-specific structure
+        ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains sType and pNext).
         ("maxTotalGroupSize", c_ulong),                                 ## [out] Maximum items per compute group. (groupSizeX * groupSizeY *
                                                                         ## groupSizeZ) <= maxTotalGroupSize
         ("maxGroupSizeX", c_ulong),                                     ## [out] Maximum items for X dimension in group
@@ -543,7 +554,8 @@ class ze_device_fp_flags_t(c_int):
 class ze_device_module_properties_t(Structure):
     _fields_ = [
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
-        ("pNext", c_void_p),                                            ## [in,out][optional] pointer to extension-specific structure
+        ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains sType and pNext).
         ("spirvVersionSupported", c_ulong),                             ## [out] Maximum supported SPIR-V version.
                                                                         ## Returns zero if SPIR-V is not supported.
                                                                         ## Contains major and minor attributes, use ::ZE_MAJOR_VERSION and ::ZE_MINOR_VERSION.
@@ -587,7 +599,8 @@ class ze_command_queue_group_property_flags_t(c_int):
 class ze_command_queue_group_properties_t(Structure):
     _fields_ = [
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
-        ("pNext", c_void_p),                                            ## [in,out][optional] pointer to extension-specific structure
+        ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains sType and pNext).
         ("flags", ze_command_queue_group_property_flags_t),             ## [out] 0 (none) or a valid combination of
                                                                         ## ::ze_command_queue_group_property_flag_t
         ("maxMemoryFillPatternSize", c_size_t),                         ## [out] maximum `pattern_size` supported by command queue group.
@@ -611,7 +624,8 @@ class ze_device_memory_property_flags_t(c_int):
 class ze_device_memory_properties_t(Structure):
     _fields_ = [
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
-        ("pNext", c_void_p),                                            ## [in,out][optional] pointer to extension-specific structure
+        ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains sType and pNext).
         ("flags", ze_device_memory_property_flags_t),                   ## [out] 0 (none) or a valid combination of
                                                                         ## ::ze_device_memory_property_flag_t
         ("maxClockRate", c_ulong),                                      ## [out] Maximum clock rate for device memory.
@@ -643,7 +657,8 @@ class ze_memory_access_cap_flags_t(c_int):
 class ze_device_memory_access_properties_t(Structure):
     _fields_ = [
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
-        ("pNext", c_void_p),                                            ## [in,out][optional] pointer to extension-specific structure
+        ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains sType and pNext).
         ("hostAllocCapabilities", ze_memory_access_cap_flags_t),        ## [out] host memory capabilities.
                                                                         ## returns 0 (unsupported) or a combination of ::ze_memory_access_cap_flag_t.
         ("deviceAllocCapabilities", ze_memory_access_cap_flags_t),      ## [out] device memory capabilities.
@@ -671,7 +686,8 @@ class ze_device_cache_property_flags_t(c_int):
 class ze_device_cache_properties_t(Structure):
     _fields_ = [
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
-        ("pNext", c_void_p),                                            ## [in,out][optional] pointer to extension-specific structure
+        ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains sType and pNext).
         ("flags", ze_device_cache_property_flags_t),                    ## [out] 0 (none) or a valid combination of
                                                                         ## ::ze_device_cache_property_flag_t
         ("cacheSize", c_size_t)                                         ## [out] Per-cache size, in bytes
@@ -682,7 +698,8 @@ class ze_device_cache_properties_t(Structure):
 class ze_device_image_properties_t(Structure):
     _fields_ = [
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
-        ("pNext", c_void_p),                                            ## [in,out][optional] pointer to extension-specific structure
+        ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains sType and pNext).
         ("maxImageDims1D", c_ulong),                                    ## [out] Maximum image dimensions for 1D resources. if 0, then 1D images
                                                                         ## are unsupported.
         ("maxImageDims2D", c_ulong),                                    ## [out] Maximum image dimensions for 2D resources. if 0, then 2D images
@@ -708,7 +725,8 @@ class ze_device_image_properties_t(Structure):
 class ze_device_external_memory_properties_t(Structure):
     _fields_ = [
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
-        ("pNext", c_void_p),                                            ## [in,out][optional] pointer to extension-specific structure
+        ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains sType and pNext).
         ("memoryAllocationImportTypes", ze_external_memory_type_flags_t),   ## [out] Supported external memory import types for memory allocations.
         ("memoryAllocationExportTypes", ze_external_memory_type_flags_t),   ## [out] Supported external memory export types for memory allocations.
         ("imageImportTypes", ze_external_memory_type_flags_t),          ## [out] Supported external memory import types for images.
@@ -732,7 +750,8 @@ class ze_device_p2p_property_flags_t(c_int):
 class ze_device_p2p_properties_t(Structure):
     _fields_ = [
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
-        ("pNext", c_void_p),                                            ## [in,out][optional] pointer to extension-specific structure
+        ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains sType and pNext).
         ("flags", ze_device_p2p_property_flags_t)                       ## [out] 0 (none) or a valid combination of
                                                                         ## ::ze_device_p2p_property_flag_t
     ]
@@ -752,7 +771,8 @@ class ze_context_flags_t(c_int):
 class ze_context_desc_t(Structure):
     _fields_ = [
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
-        ("pNext", c_void_p),                                            ## [in][optional] pointer to extension-specific structure
+        ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains sType and pNext).
         ("flags", ze_context_flags_t)                                   ## [in] creation flags.
                                                                         ## must be 0 (default) or a valid combination of ::ze_context_flag_t;
                                                                         ## default behavior may use implicit driver-based heuristics.
@@ -803,7 +823,8 @@ class ze_command_queue_priority_t(c_int):
 class ze_command_queue_desc_t(Structure):
     _fields_ = [
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
-        ("pNext", c_void_p),                                            ## [in][optional] pointer to extension-specific structure
+        ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains sType and pNext).
         ("ordinal", c_ulong),                                           ## [in] command queue group ordinal
         ("index", c_ulong),                                             ## [in] command queue index within the group;
                                                                         ## must be zero if ::ZE_COMMAND_QUEUE_FLAG_EXPLICIT_ONLY is not set
@@ -843,7 +864,8 @@ class ze_command_list_flags_t(c_int):
 class ze_command_list_desc_t(Structure):
     _fields_ = [
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
-        ("pNext", c_void_p),                                            ## [in][optional] pointer to extension-specific structure
+        ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains sType and pNext).
         ("commandQueueGroupOrdinal", c_ulong),                          ## [in] command queue group ordinal to which this command list will be
                                                                         ## submitted
         ("flags", ze_command_list_flags_t)                              ## [in] usage flags.
@@ -913,7 +935,8 @@ class ze_event_pool_flags_t(c_int):
 class ze_event_pool_desc_t(Structure):
     _fields_ = [
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
-        ("pNext", c_void_p),                                            ## [in][optional] pointer to extension-specific structure
+        ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains sType and pNext).
         ("flags", ze_event_pool_flags_t),                               ## [in] creation flags.
                                                                         ## must be 0 (default) or a valid combination of ::ze_event_pool_flag_t;
                                                                         ## default behavior is signals and waits are visible to the entire device
@@ -941,7 +964,8 @@ class ze_event_scope_flags_t(c_int):
 class ze_event_desc_t(Structure):
     _fields_ = [
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
-        ("pNext", c_void_p),                                            ## [in][optional] pointer to extension-specific structure
+        ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains sType and pNext).
         ("index", c_ulong),                                             ## [in] index of the event within the pool; must be less-than the count
                                                                         ## specified during pool creation
         ("signal", ze_event_scope_flags_t),                             ## [in] defines the scope of relevant cache hierarchies to flush on a
@@ -994,7 +1018,8 @@ class ze_fence_flags_t(c_int):
 class ze_fence_desc_t(Structure):
     _fields_ = [
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
-        ("pNext", c_void_p),                                            ## [in][optional] pointer to extension-specific structure
+        ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains sType and pNext).
         ("flags", ze_fence_flags_t)                                     ## [in] creation flags.
                                                                         ## must be 0 (default) or a valid combination of ::ze_fence_flag_t.
     ]
@@ -1125,7 +1150,8 @@ class ze_image_format_t(Structure):
 class ze_image_desc_t(Structure):
     _fields_ = [
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
-        ("pNext", c_void_p),                                            ## [in][optional] pointer to extension-specific structure
+        ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains sType and pNext).
         ("flags", ze_image_flags_t),                                    ## [in] creation flags.
                                                                         ## must be 0 (default) or a valid combination of ::ze_image_flag_t;
                                                                         ## default is read-only, cached access.
@@ -1173,7 +1199,8 @@ class ze_image_sampler_filter_flags_t(c_int):
 class ze_image_properties_t(Structure):
     _fields_ = [
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
-        ("pNext", c_void_p),                                            ## [in,out][optional] pointer to extension-specific structure
+        ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains sType and pNext).
         ("samplerFilterFlags", ze_image_sampler_filter_flags_t)         ## [out] supported sampler filtering.
                                                                         ## returns 0 (unsupported) or a combination of ::ze_image_sampler_filter_flag_t.
     ]
@@ -1195,7 +1222,8 @@ class ze_device_mem_alloc_flags_t(c_int):
 class ze_device_mem_alloc_desc_t(Structure):
     _fields_ = [
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
-        ("pNext", c_void_p),                                            ## [in][optional] pointer to extension-specific structure
+        ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains sType and pNext).
         ("flags", ze_device_mem_alloc_flags_t),                         ## [in] flags specifying additional allocation controls.
                                                                         ## must be 0 (default) or a valid combination of ::ze_device_mem_alloc_flag_t;
                                                                         ## default behavior may use implicit driver-based heuristics.
@@ -1221,7 +1249,8 @@ class ze_host_mem_alloc_flags_t(c_int):
 class ze_host_mem_alloc_desc_t(Structure):
     _fields_ = [
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
-        ("pNext", c_void_p),                                            ## [in][optional] pointer to extension-specific structure
+        ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains sType and pNext).
         ("flags", ze_host_mem_alloc_flags_t)                            ## [in] flags specifying additional allocation controls.
                                                                         ## must be 0 (default) or a valid combination of ::ze_host_mem_alloc_flag_t;
                                                                         ## default behavior may use implicit driver-based heuristics.
@@ -1245,7 +1274,8 @@ class ze_memory_type_t(c_int):
 class ze_memory_allocation_properties_t(Structure):
     _fields_ = [
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
-        ("pNext", c_void_p),                                            ## [in,out][optional] pointer to extension-specific structure
+        ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains sType and pNext).
         ("type", ze_memory_type_t),                                     ## [out] type of allocated memory
         ("id", c_ulonglong),                                            ## [out] identifier for this allocation
         ("pageSize", c_ulonglong)                                       ## [out] page size used for allocation
@@ -1274,7 +1304,8 @@ class ze_ipc_memory_flags_t(c_int):
 class ze_external_memory_export_desc_t(Structure):
     _fields_ = [
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
-        ("pNext", c_void_p),                                            ## [in][optional] pointer to extension-specific structure
+        ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains sType and pNext).
         ("flags", ze_external_memory_type_flags_t)                      ## [in] flags specifying memory export types for this allocation.
                                                                         ## must be 0 (default) or a valid combination of ::ze_external_memory_type_flags_t
     ]
@@ -1292,7 +1323,8 @@ class ze_external_memory_export_desc_t(Structure):
 class ze_external_memory_import_fd_t(Structure):
     _fields_ = [
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
-        ("pNext", c_void_p),                                            ## [in][optional] pointer to extension-specific structure
+        ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains sType and pNext).
         ("flags", ze_external_memory_type_flags_t),                     ## [in] flags specifying the memory import type for the file descriptor.
                                                                         ## must be 0 (default) or a valid combination of ::ze_external_memory_type_flags_t
         ("fd", c_int)                                                   ## [in] the file descriptor handle to import
@@ -1313,7 +1345,8 @@ class ze_external_memory_import_fd_t(Structure):
 class ze_external_memory_export_fd_t(Structure):
     _fields_ = [
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
-        ("pNext", c_void_p),                                            ## [in][optional] pointer to extension-specific structure
+        ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains sType and pNext).
         ("flags", ze_external_memory_type_flags_t),                     ## [in] flags specifying the memory export type for the file descriptor.
                                                                         ## must be 0 (default) or a valid combination of ::ze_external_memory_type_flags_t
         ("fd", c_int)                                                   ## [out] the exported file descriptor handle representing the allocation.
@@ -1336,7 +1369,8 @@ class ze_external_memory_export_fd_t(Structure):
 class ze_external_memory_import_win32_handle_t(Structure):
     _fields_ = [
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
-        ("pNext", c_void_p),                                            ## [in][optional] pointer to extension-specific structure
+        ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains sType and pNext).
         ("flags", ze_external_memory_type_flags_t),                     ## [in] flags specifying the memory import type for the Win32 handle.
                                                                         ## must be 0 (default) or a valid combination of ::ze_external_memory_type_flags_t
         ("handle", c_void_p),                                           ## [in][optional] the Win32 handle to import
@@ -1358,7 +1392,8 @@ class ze_external_memory_import_win32_handle_t(Structure):
 class ze_external_memory_export_win32_handle_t(Structure):
     _fields_ = [
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
-        ("pNext", c_void_p),                                            ## [in][optional] pointer to extension-specific structure
+        ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains sType and pNext).
         ("flags", ze_external_memory_type_flags_t),                     ## [in] flags specifying the memory export type for the file descriptor.
                                                                         ## must be 0 (default) or a valid combination of ::ze_external_memory_type_flags_t
         ("handle", c_void_p)                                            ## [out] the exported Win32 handle representing the allocation.
@@ -1391,7 +1426,8 @@ class ze_module_constants_t(Structure):
 class ze_module_desc_t(Structure):
     _fields_ = [
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
-        ("pNext", c_void_p),                                            ## [in][optional] pointer to extension-specific structure
+        ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains sType and pNext).
         ("format", ze_module_format_t),                                 ## [in] Module format passed in with pInputModule
         ("inputSize", c_size_t),                                        ## [in] size of input IL or ISA from pInputModule.
         ("pInputModule", POINTER(c_ubyte)),                             ## [in] pointer to IL or ISA
@@ -1435,7 +1471,8 @@ class ze_module_property_flags_t(c_int):
 class ze_module_properties_t(Structure):
     _fields_ = [
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
-        ("pNext", c_void_p),                                            ## [in,out][optional] pointer to extension-specific structure
+        ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains sType and pNext).
         ("flags", ze_module_property_flags_t)                           ## [out] 0 (none) or a valid combination of ::ze_module_property_flag_t
     ]
 
@@ -1456,7 +1493,8 @@ class ze_kernel_flags_t(c_int):
 class ze_kernel_desc_t(Structure):
     _fields_ = [
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
-        ("pNext", c_void_p),                                            ## [in][optional] pointer to extension-specific structure
+        ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains sType and pNext).
         ("flags", ze_kernel_flags_t),                                   ## [in] creation flags.
                                                                         ## must be 0 (default) or a valid combination of ::ze_kernel_flag_t;
                                                                         ## default behavior may use driver-based residency.
@@ -1507,7 +1545,8 @@ class ze_kernel_uuid_t(Structure):
 class ze_kernel_properties_t(Structure):
     _fields_ = [
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
-        ("pNext", c_void_p),                                            ## [in,out][optional] pointer to extension-specific structure
+        ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains sType and pNext).
         ("numKernelArgs", c_ulong),                                     ## [out] number of kernel arguments.
         ("requiredGroupSizeX", c_ulong),                                ## [out] required group size in the X dimension,
                                                                         ## or zero if there is no required group size
@@ -1537,7 +1576,8 @@ class ze_kernel_properties_t(Structure):
 class ze_kernel_preferred_group_size_properties_t(Structure):
     _fields_ = [
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
-        ("pNext", c_void_p),                                            ## [in,out][optional] pointer to extension-specific structure
+        ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains sType and pNext).
         ("preferredMultiple", c_ulong)                                  ## [out] preferred group size multiple
     ]
 
@@ -1581,7 +1621,8 @@ class ze_module_program_exp_version_t(c_int):
 class ze_module_program_exp_desc_t(Structure):
     _fields_ = [
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
-        ("pNext", c_void_p),                                            ## [in][optional] pointer to extension-specific structure
+        ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains sType and pNext).
         ("count", c_ulong),                                             ## [in] Count of input modules
         ("inputSizes", POINTER(c_size_t)),                              ## [in][range(0, count)] sizes of each input IL module in pInputModules.
         ("pInputModules", POINTER(c_ubyte*)),                           ## [in][range(0, count)] pointer to an array of IL (e.g. SPIR-V modules).
@@ -1627,7 +1668,8 @@ class ze_device_raytracing_ext_flags_t(c_int):
 class ze_device_raytracing_ext_properties_t(Structure):
     _fields_ = [
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
-        ("pNext", c_void_p),                                            ## [in,out][optional] pointer to extension-specific structure
+        ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains sType and pNext).
         ("flags", ze_device_raytracing_ext_flags_t),                    ## [out] 0 or a valid combination of ::ze_device_raytracing_ext_flags_t
         ("maxBVHLevels", c_ulong)                                       ## [out] Maximum number of BVH levels supported
     ]
@@ -1653,7 +1695,8 @@ class ze_raytracing_mem_alloc_ext_flags_t(c_int):
 class ze_raytracing_mem_alloc_ext_desc_t(Structure):
     _fields_ = [
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
-        ("pNext", c_void_p),                                            ## [in][optional] pointer to extension-specific structure
+        ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains sType and pNext).
         ("flags", ze_raytracing_mem_alloc_ext_flags_t)                  ## [in] flags specifying additional allocation controls.
                                                                         ## must be 0 (default) or a valid combination of ::ze_raytracing_mem_alloc_ext_flag_t;
                                                                         ## default behavior may use implicit driver-based heuristics.
@@ -1691,7 +1734,8 @@ class ze_sampler_filter_mode_t(c_int):
 class ze_sampler_desc_t(Structure):
     _fields_ = [
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
-        ("pNext", c_void_p),                                            ## [in][optional] pointer to extension-specific structure
+        ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains sType and pNext).
         ("addressMode", ze_sampler_address_mode_t),                     ## [in] Sampler addressing mode to determine how out-of-bounds
                                                                         ## coordinates are handled.
         ("filterMode", ze_sampler_filter_mode_t),                       ## [in] Sampler filter mode to determine how samples are filtered.
@@ -1725,7 +1769,8 @@ class ze_physical_mem_flags_t(c_int):
 class ze_physical_mem_desc_t(Structure):
     _fields_ = [
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
-        ("pNext", c_void_p),                                            ## [in][optional] pointer to extension-specific structure
+        ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains sType and pNext).
         ("flags", ze_physical_mem_flags_t),                             ## [in] creation flags.
                                                                         ## must be 0 (default) or a valid combination of ::ze_physical_mem_flag_t.
         ("size", c_size_t)                                              ## [in] size in bytes to reserve; must be page aligned.
@@ -1771,7 +1816,8 @@ class ze_device_fp_atomic_ext_flags_t(c_int):
 class ze_float_atomic_ext_properties_t(Structure):
     _fields_ = [
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
-        ("pNext", c_void_p),                                            ## [in,out][optional] pointer to extension-specific structure
+        ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains sType and pNext).
         ("fp16Flags", ze_device_fp_atomic_ext_flags_t),                 ## [out] Capabilities for half-precision floating-point atomic operations
         ("fp32Flags", ze_device_fp_atomic_ext_flags_t),                 ## [out] Capabilities for single-precision floating-point atomic
                                                                         ## operations
@@ -1831,7 +1877,8 @@ class ze_relaxed_allocation_limits_exp_flags_t(c_int):
 class ze_relaxed_allocation_limits_exp_desc_t(Structure):
     _fields_ = [
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
-        ("pNext", c_void_p),                                            ## [in][optional] pointer to extension-specific structure
+        ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains sType and pNext).
         ("flags", ze_relaxed_allocation_limits_exp_flags_t)             ## [in] flags specifying allocation limits to relax.
                                                                         ## must be 0 (default) or a valid combination of ::ze_relaxed_allocation_limits_exp_flag_t;
     ]
@@ -1874,7 +1921,8 @@ class ze_cache_ext_region_t(c_int):
 class ze_cache_reservation_ext_desc_t(Structure):
     _fields_ = [
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
-        ("pNext", c_void_p),                                            ## [in][optional] pointer to extension-specific structure
+        ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains sType and pNext).
         ("maxCacheReservationSize", c_size_t)                           ## [out] max cache reservation size
     ]
 
@@ -1913,7 +1961,8 @@ class ze_image_memory_properties_exp_version_t(c_int):
 class ze_image_memory_properties_exp_t(Structure):
     _fields_ = [
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
-        ("pNext", c_void_p),                                            ## [in][optional] pointer to extension-specific structure
+        ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains sType and pNext).
         ("size", c_ulonglong),                                          ## [out] size of image allocation in bytes.
         ("rowPitch", c_ulonglong),                                      ## [out] size of image row in bytes.
         ("slicePitch", c_ulonglong)                                     ## [out] size of image slice in bytes.
@@ -1954,7 +2003,8 @@ class ze_image_view_planar_exp_version_t(c_int):
 class ze_image_view_planar_exp_desc_t(Structure):
     _fields_ = [
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
-        ("pNext", c_void_p),                                            ## [in][optional] pointer to extension-specific structure
+        ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains sType and pNext).
         ("planeIndex", c_ulong)                                         ## [in] the 0-based plane index (e.g. NV12 is 0 = Y plane, 1 UV plane)
     ]
 
@@ -1995,7 +2045,8 @@ class ze_scheduling_hint_exp_flags_t(c_int):
 class ze_scheduling_hint_exp_properties_t(Structure):
     _fields_ = [
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
-        ("pNext", c_void_p),                                            ## [in,out][optional] pointer to extension-specific structure
+        ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains sType and pNext).
         ("schedulingHintFlags", ze_scheduling_hint_exp_flags_t)         ## [out] Supported kernel scheduling hints.
                                                                         ## May be 0 (none) or a valid combination of ::ze_scheduling_hint_exp_flag_t.
     ]
@@ -2008,7 +2059,8 @@ class ze_scheduling_hint_exp_properties_t(Structure):
 class ze_scheduling_hint_exp_desc_t(Structure):
     _fields_ = [
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
-        ("pNext", c_void_p),                                            ## [in][optional] pointer to extension-specific structure
+        ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains sType and pNext).
         ("flags", ze_scheduling_hint_exp_flags_t)                       ## [in] flags specifying kernel scheduling hints.
                                                                         ## must be 0 (default) or a valid combination of ::ze_scheduling_hint_exp_flag_t.
     ]

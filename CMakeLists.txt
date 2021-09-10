@@ -12,7 +12,7 @@ endif()
 
 # This project follows semantic versioning (https://semver.org/). Only set the
 # major and minor version here - patch version is determined dynamically.
-project(level-zero VERSION 1.4)
+project(level-zero VERSION 1.5)
 
 # Patch version corresponds to # of commits on master since last version
 # major/minor tag (e.g., v1.0). If not building in a git repository, then get

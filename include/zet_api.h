@@ -5,7 +5,7 @@
  * SPDX-License-Identifier: MIT
  *
  * @file zet_api.h
- * @version v1.2-r1.2.13
+ * @version v1.2-r1.2.43
  *
  */
 #ifndef _ZET_API_H
@@ -1656,6 +1656,82 @@ ZE_APIEXPORT ze_result_t ZE_APICALL
 zetTracerExpSetEnabled(
     zet_tracer_exp_handle_t hTracer,                ///< [in] handle of the tracer
     ze_bool_t enable                                ///< [in] enable the tracer if true; disable if false
+    );
+
+#if !defined(__GNUC__)
+#pragma endregion
+#endif
+// Intel 'oneAPI' Level-Zero Tool Experimental Extension for Calculating Multiple Metrics
+#if !defined(__GNUC__)
+#pragma region multiMetricValues
+#endif
+///////////////////////////////////////////////////////////////////////////////
+#ifndef ZET_MULTI_METRICS_EXP_NAME
+/// @brief Calculating Multiple Metrics Experimental Extension Name
+#define ZET_MULTI_METRICS_EXP_NAME  "ZET_experimental_calculate_multiple_metrics"
+#endif // ZET_MULTI_METRICS_EXP_NAME
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Calculating Multiple Metrics Experimental Extension Version(s)
+typedef enum _ze_calculate_multiple_metrics_exp_version_t
+{
+    ZE_CALCULATE_MULTIPLE_METRICS_EXP_VERSION_1_0 = ZE_MAKE_VERSION( 1, 0 ),///< version 1.0
+    ZE_CALCULATE_MULTIPLE_METRICS_EXP_VERSION_CURRENT = ZE_MAKE_VERSION( 1, 0 ),///< latest known version
+    ZE_CALCULATE_MULTIPLE_METRICS_EXP_VERSION_FORCE_UINT32 = 0x7fffffff
+
+} ze_calculate_multiple_metrics_exp_version_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Calculate one or more sets of metric values from raw data.
+/// 
+/// @details
+///     - This function is similar to ::zetMetricGroupCalculateMetricValues
+///       except it may calculate more than one set of metric values from a
+///       single data buffer.  There may be one set of metric values for each
+///       sub-device, for example.
+///     - Each set of metric values may consist of a different number of metric
+///       values, returned as the metric value count.
+///     - All metric values are calculated into a single buffer; use the metric
+///       counts to determine which metric values belong to which set.
+///     - The application may call this function from simultaneous threads.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hMetricGroup`
+///     - ::ZE_RESULT_ERROR_INVALID_ENUMERATION
+///         + `::ZET_METRIC_GROUP_CALCULATION_TYPE_MAX_METRIC_VALUES < type`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == pRawData`
+///         + `nullptr == pSetCount`
+///         + `nullptr == pTotalMetricValueCount`
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zetMetricGroupCalculateMultipleMetricValuesExp(
+    zet_metric_group_handle_t hMetricGroup,         ///< [in] handle of the metric group
+    zet_metric_group_calculation_type_t type,       ///< [in] calculation type to be applied on raw data
+    size_t rawDataSize,                             ///< [in] size in bytes of raw data buffer
+    const uint8_t* pRawData,                        ///< [in][range(0, rawDataSize)] buffer of raw data to calculate
+    uint32_t* pSetCount,                            ///< [in,out] pointer to number of metric sets.
+                                                    ///< if count is zero, then the driver shall update the value with the
+                                                    ///< total number of metric sets to be calculated.
+                                                    ///< if count is greater than the number available in the raw data buffer,
+                                                    ///< then the driver shall update the value with the actual number of
+                                                    ///< metric sets to be calculated.
+    uint32_t* pTotalMetricValueCount,               ///< [in,out] pointer to number of the total number of metric values
+                                                    ///< calculated, for all metric sets.
+                                                    ///< if count is zero, then the driver shall update the value with the
+                                                    ///< total number of metric values to be calculated.
+                                                    ///< if count is greater than the number available in the raw data buffer,
+                                                    ///< then the driver shall update the value with the actual number of
+                                                    ///< metric values to be calculated.
+    uint32_t* pMetricCounts,                        ///< [in,out][optional][range(0, *pSetCount)] buffer of metric counts per
+                                                    ///< metric set.
+    zet_typed_value_t* pMetricValues                ///< [in,out][optional][range(0, *pTotalMetricValueCount)] buffer of
+                                                    ///< calculated metrics.
+                                                    ///< if count is less than the number available in the raw data buffer,
+                                                    ///< then driver shall only calculate that number of metric values.
     );
 
 #if !defined(__GNUC__)

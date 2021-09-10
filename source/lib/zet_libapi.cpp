@@ -1232,4 +1232,64 @@ zetTracerExpSetEnabled(
     return pfnSetEnabled( hTracer, enable );
 }
 
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Calculate one or more sets of metric values from raw data.
+/// 
+/// @details
+///     - This function is similar to ::zetMetricGroupCalculateMetricValues
+///       except it may calculate more than one set of metric values from a
+///       single data buffer.  There may be one set of metric values for each
+///       sub-device, for example.
+///     - Each set of metric values may consist of a different number of metric
+///       values, returned as the metric value count.
+///     - All metric values are calculated into a single buffer; use the metric
+///       counts to determine which metric values belong to which set.
+///     - The application may call this function from simultaneous threads.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hMetricGroup`
+///     - ::ZE_RESULT_ERROR_INVALID_ENUMERATION
+///         + `::ZET_METRIC_GROUP_CALCULATION_TYPE_MAX_METRIC_VALUES < type`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == pRawData`
+///         + `nullptr == pSetCount`
+///         + `nullptr == pTotalMetricValueCount`
+ze_result_t ZE_APICALL
+zetMetricGroupCalculateMultipleMetricValuesExp(
+    zet_metric_group_handle_t hMetricGroup,         ///< [in] handle of the metric group
+    zet_metric_group_calculation_type_t type,       ///< [in] calculation type to be applied on raw data
+    size_t rawDataSize,                             ///< [in] size in bytes of raw data buffer
+    const uint8_t* pRawData,                        ///< [in][range(0, rawDataSize)] buffer of raw data to calculate
+    uint32_t* pSetCount,                            ///< [in,out] pointer to number of metric sets.
+                                                    ///< if count is zero, then the driver shall update the value with the
+                                                    ///< total number of metric sets to be calculated.
+                                                    ///< if count is greater than the number available in the raw data buffer,
+                                                    ///< then the driver shall update the value with the actual number of
+                                                    ///< metric sets to be calculated.
+    uint32_t* pTotalMetricValueCount,               ///< [in,out] pointer to number of the total number of metric values
+                                                    ///< calculated, for all metric sets.
+                                                    ///< if count is zero, then the driver shall update the value with the
+                                                    ///< total number of metric values to be calculated.
+                                                    ///< if count is greater than the number available in the raw data buffer,
+                                                    ///< then the driver shall update the value with the actual number of
+                                                    ///< metric values to be calculated.
+    uint32_t* pMetricCounts,                        ///< [in,out][optional][range(0, *pSetCount)] buffer of metric counts per
+                                                    ///< metric set.
+    zet_typed_value_t* pMetricValues                ///< [in,out][optional][range(0, *pTotalMetricValueCount)] buffer of
+                                                    ///< calculated metrics.
+                                                    ///< if count is less than the number available in the raw data buffer,
+                                                    ///< then driver shall only calculate that number of metric values.
+    )
+{
+    auto pfnCalculateMultipleMetricValuesExp = ze_lib::context->zetDdiTable.MetricGroupExp.pfnCalculateMultipleMetricValuesExp;
+    if( nullptr == pfnCalculateMultipleMetricValuesExp )
+        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+
+    return pfnCalculateMultipleMetricValuesExp( hMetricGroup, type, rawDataSize, pRawData, pSetCount, pTotalMetricValueCount, pMetricCounts, pMetricValues );
+}
+
 } // extern "C"

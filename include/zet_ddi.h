@@ -5,7 +5,7 @@
  * SPDX-License-Identifier: MIT
  *
  * @file zet_ddi.h
- * @version v1.2-r1.2.13
+ * @version v1.2-r1.2.43
  *
  */
 #ifndef _ZET_DDI_H
@@ -285,6 +285,48 @@ zetGetMetricGroupProcAddrTable(
 typedef ze_result_t (ZE_APICALL *zet_pfnGetMetricGroupProcAddrTable_t)(
     ze_api_version_t,
     zet_metric_group_dditable_t*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zetMetricGroupCalculateMultipleMetricValuesExp 
+typedef ze_result_t (ZE_APICALL *zet_pfnMetricGroupCalculateMultipleMetricValuesExp_t)(
+    zet_metric_group_handle_t,
+    zet_metric_group_calculation_type_t,
+    size_t,
+    const uint8_t*,
+    uint32_t*,
+    uint32_t*,
+    uint32_t*,
+    zet_typed_value_t*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Table of MetricGroupExp functions pointers
+typedef struct _zet_metric_group_exp_dditable_t
+{
+    zet_pfnMetricGroupCalculateMultipleMetricValuesExp_t        pfnCalculateMultipleMetricValuesExp;
+} zet_metric_group_exp_dditable_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Exported function for filling application's MetricGroupExp table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+ZE_DLLEXPORT ze_result_t ZE_APICALL
+zetGetMetricGroupExpProcAddrTable(
+    ze_api_version_t version,                       ///< [in] API version requested
+    zet_metric_group_exp_dditable_t* pDdiTable      ///< [in,out] pointer to table of DDI function pointers
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zetGetMetricGroupExpProcAddrTable
+typedef ze_result_t (ZE_APICALL *zet_pfnGetMetricGroupExpProcAddrTable_t)(
+    ze_api_version_t,
+    zet_metric_group_exp_dditable_t*
     );
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -705,6 +747,7 @@ typedef struct _zet_dditable_t
     zet_module_dditable_t               Module;
     zet_kernel_dditable_t               Kernel;
     zet_metric_group_dditable_t         MetricGroup;
+    zet_metric_group_exp_dditable_t     MetricGroupExp;
     zet_metric_dditable_t               Metric;
     zet_metric_streamer_dditable_t      MetricStreamer;
     zet_metric_query_pool_dditable_t    MetricQueryPool;

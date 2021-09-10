@@ -5,7 +5,7 @@
  * SPDX-License-Identifier: MIT
  *
  * @file ze_api.h
- * @version v1.2-r1.2.13
+ * @version v1.2-r1.2.43
  *
  */
 #ifndef _ZE_API_H
@@ -71,7 +71,6 @@ extern "C" {
 #define ZE_APIEXPORT  
 #endif // __GNUC__ >= 4
 #endif // ZE_APIEXPORT
-
 
 ///////////////////////////////////////////////////////////////////////////////
 #ifndef ZE_DLLEXPORT
@@ -282,7 +281,8 @@ typedef enum _ze_structure_type_t
     ZE_STRUCTURE_TYPE_SCHEDULING_HINT_EXP_PROPERTIES = 0x00020003,  ///< ::ze_scheduling_hint_exp_properties_t
     ZE_STRUCTURE_TYPE_SCHEDULING_HINT_EXP_DESC = 0x00020004,///< ::ze_scheduling_hint_exp_desc_t
     ZE_STRUCTURE_TYPE_IMAGE_VIEW_PLANAR_EXP_DESC = 0x00020005,  ///< ::ze_image_view_planar_exp_desc_t
-    ZE_STRUCTURE_TYPE_DEVICE_PROPERTIES_1_2 = 0x20006,  ///< ::ze_device_properties_t
+    ZE_STRUCTURE_TYPE_DEVICE_PROPERTIES_1_2 = 0x00020006,   ///< ::ze_device_properties_t
+    ZE_STRUCTURE_TYPE_IMAGE_MEMORY_EXP_PROPERTIES = 0x00020007, ///< ::ze_image_memory_properties_exp_t
     ZE_STRUCTURE_TYPE_FORCE_UINT32 = 0x7fffffff
 
 } ze_structure_type_t;
@@ -310,7 +310,8 @@ typedef enum _ze_external_memory_type_flag_t
 typedef struct _ze_base_properties_t
 {
     ze_structure_type_t stype;                      ///< [in] type of this structure
-    void* pNext;                                    ///< [in,out][optional] pointer to extension-specific structure
+    void* pNext;                                    ///< [in,out][optional] must be null or a pointer to an extension-specific
+                                                    ///< structure (i.e. contains sType and pNext).
 
 } ze_base_properties_t;
 
@@ -319,7 +320,8 @@ typedef struct _ze_base_properties_t
 typedef struct _ze_base_desc_t
 {
     ze_structure_type_t stype;                      ///< [in] type of this structure
-    const void* pNext;                              ///< [in][optional] pointer to extension-specific structure
+    const void* pNext;                              ///< [in][optional] must be null or a pointer to an extension-specific
+                                                    ///< structure (i.e. contains sType and pNext).
 
 } ze_base_desc_t;
 
@@ -611,6 +613,8 @@ typedef enum _ze_init_flag_t
 ///     - Only one instance of each driver will be initialized per process.
 ///     - The application may call this function multiple times with different
 ///       flags or environment variables enabled.
+///     - The application must call this function after forking new processes.
+///       Each forked process must call this function.
 ///     - The application may call this function from simultaneous threads.
 ///     - The implementation of this function must be thread-safe for scenarios
 ///       where multiple libraries may initialize the driver(s) simultaneously.
@@ -718,7 +722,8 @@ typedef struct _ze_driver_uuid_t
 typedef struct _ze_driver_properties_t
 {
     ze_structure_type_t stype;                      ///< [in] type of this structure
-    void* pNext;                                    ///< [in,out][optional] pointer to extension-specific structure
+    void* pNext;                                    ///< [in,out][optional] must be null or a pointer to an extension-specific
+                                                    ///< structure (i.e. contains sType and pNext).
     ze_driver_uuid_t uuid;                          ///< [out] universal unique identifier.
     uint32_t driverVersion;                         ///< [out] driver version
                                                     ///< The driver version is a non-zero, monotonically increasing value where
@@ -769,7 +774,8 @@ typedef enum _ze_ipc_property_flag_t
 typedef struct _ze_driver_ipc_properties_t
 {
     ze_structure_type_t stype;                      ///< [in] type of this structure
-    void* pNext;                                    ///< [in,out][optional] pointer to extension-specific structure
+    void* pNext;                                    ///< [in,out][optional] must be null or a pointer to an extension-specific
+                                                    ///< structure (i.e. contains sType and pNext).
     ze_ipc_property_flags_t flags;                  ///< [out] 0 (none) or a valid combination of ::ze_ipc_property_flag_t
 
 } ze_driver_ipc_properties_t;
@@ -995,7 +1001,8 @@ typedef enum _ze_device_property_flag_t
 typedef struct _ze_device_properties_t
 {
     ze_structure_type_t stype;                      ///< [in] type of this structure
-    void* pNext;                                    ///< [in,out][optional] pointer to extension-specific structure
+    void* pNext;                                    ///< [in,out][optional] must be null or a pointer to an extension-specific
+                                                    ///< structure (i.e. contains sType and pNext).
     ze_device_type_t type;                          ///< [out] generic device type
     uint32_t vendorId;                              ///< [out] vendor id from PCI configuration
     uint32_t deviceId;                              ///< [out] device id from PCI configuration
@@ -1007,11 +1014,11 @@ typedef struct _ze_device_properties_t
     uint32_t maxHardwareContexts;                   ///< [out] Maximum number of logical hardware contexts.
     uint32_t maxCommandQueuePriority;               ///< [out] Maximum priority for command queues. Higher value is higher
                                                     ///< priority.
-    uint32_t numThreadsPerEU;                       ///< [out] Number of threads per EU.
+    uint32_t numThreadsPerEU;                       ///< [out] Maximum number of threads per EU.
     uint32_t physicalEUSimdWidth;                   ///< [out] The physical EU simd width.
-    uint32_t numEUsPerSubslice;                     ///< [out] Number of EUs per sub-slice.
-    uint32_t numSubslicesPerSlice;                  ///< [out] Number of sub-slices per slice.
-    uint32_t numSlices;                             ///< [out] Number of slices.
+    uint32_t numEUsPerSubslice;                     ///< [out] Maximum number of EUs per sub-slice.
+    uint32_t numSubslicesPerSlice;                  ///< [out] Maximum number of sub-slices per slice.
+    uint32_t numSlices;                             ///< [out] Maximum number of slices.
     uint64_t timerResolution;                       ///< [out] Returns the resolution of device timer used for profiling,
                                                     ///< timestamps, etc. When stype==::ZE_STRUCTURE_TYPE_DEVICE_PROPERTIES the
                                                     ///< units are in nanoseconds. When
@@ -1076,7 +1083,8 @@ zeDeviceGetProperties(
 typedef struct _ze_device_compute_properties_t
 {
     ze_structure_type_t stype;                      ///< [in] type of this structure
-    void* pNext;                                    ///< [in,out][optional] pointer to extension-specific structure
+    void* pNext;                                    ///< [in,out][optional] must be null or a pointer to an extension-specific
+                                                    ///< structure (i.e. contains sType and pNext).
     uint32_t maxTotalGroupSize;                     ///< [out] Maximum items per compute group. (groupSizeX * groupSizeY *
                                                     ///< groupSizeZ) <= maxTotalGroupSize
     uint32_t maxGroupSizeX;                         ///< [out] Maximum items for X dimension in group
@@ -1167,7 +1175,8 @@ typedef enum _ze_device_fp_flag_t
 typedef struct _ze_device_module_properties_t
 {
     ze_structure_type_t stype;                      ///< [in] type of this structure
-    void* pNext;                                    ///< [in,out][optional] pointer to extension-specific structure
+    void* pNext;                                    ///< [in,out][optional] must be null or a pointer to an extension-specific
+                                                    ///< structure (i.e. contains sType and pNext).
     uint32_t spirvVersionSupported;                 ///< [out] Maximum supported SPIR-V version.
                                                     ///< Returns zero if SPIR-V is not supported.
                                                     ///< Contains major and minor attributes, use ::ZE_MAJOR_VERSION and ::ZE_MINOR_VERSION.
@@ -1233,7 +1242,8 @@ typedef enum _ze_command_queue_group_property_flag_t
 typedef struct _ze_command_queue_group_properties_t
 {
     ze_structure_type_t stype;                      ///< [in] type of this structure
-    void* pNext;                                    ///< [in,out][optional] pointer to extension-specific structure
+    void* pNext;                                    ///< [in,out][optional] must be null or a pointer to an extension-specific
+                                                    ///< structure (i.e. contains sType and pNext).
     ze_command_queue_group_property_flags_t flags;  ///< [out] 0 (none) or a valid combination of
                                                     ///< ::ze_command_queue_group_property_flag_t
     size_t maxMemoryFillPatternSize;                ///< [out] maximum `pattern_size` supported by command queue group.
@@ -1299,7 +1309,8 @@ typedef enum _ze_device_memory_property_flag_t
 typedef struct _ze_device_memory_properties_t
 {
     ze_structure_type_t stype;                      ///< [in] type of this structure
-    void* pNext;                                    ///< [in,out][optional] pointer to extension-specific structure
+    void* pNext;                                    ///< [in,out][optional] must be null or a pointer to an extension-specific
+                                                    ///< structure (i.e. contains sType and pNext).
     ze_device_memory_property_flags_t flags;        ///< [out] 0 (none) or a valid combination of
                                                     ///< ::ze_device_memory_property_flag_t
     uint32_t maxClockRate;                          ///< [out] Maximum clock rate for device memory.
@@ -1372,7 +1383,8 @@ typedef enum _ze_memory_access_cap_flag_t
 typedef struct _ze_device_memory_access_properties_t
 {
     ze_structure_type_t stype;                      ///< [in] type of this structure
-    void* pNext;                                    ///< [in,out][optional] pointer to extension-specific structure
+    void* pNext;                                    ///< [in,out][optional] must be null or a pointer to an extension-specific
+                                                    ///< structure (i.e. contains sType and pNext).
     ze_memory_access_cap_flags_t hostAllocCapabilities; ///< [out] host memory capabilities.
                                                     ///< returns 0 (unsupported) or a combination of ::ze_memory_access_cap_flag_t.
     ze_memory_access_cap_flags_t deviceAllocCapabilities;   ///< [out] device memory capabilities.
@@ -1426,7 +1438,8 @@ typedef enum _ze_device_cache_property_flag_t
 typedef struct _ze_device_cache_properties_t
 {
     ze_structure_type_t stype;                      ///< [in] type of this structure
-    void* pNext;                                    ///< [in,out][optional] pointer to extension-specific structure
+    void* pNext;                                    ///< [in,out][optional] must be null or a pointer to an extension-specific
+                                                    ///< structure (i.e. contains sType and pNext).
     ze_device_cache_property_flags_t flags;         ///< [out] 0 (none) or a valid combination of
                                                     ///< ::ze_device_cache_property_flag_t
     size_t cacheSize;                               ///< [out] Per-cache size, in bytes
@@ -1471,7 +1484,8 @@ zeDeviceGetCacheProperties(
 typedef struct _ze_device_image_properties_t
 {
     ze_structure_type_t stype;                      ///< [in] type of this structure
-    void* pNext;                                    ///< [in,out][optional] pointer to extension-specific structure
+    void* pNext;                                    ///< [in,out][optional] must be null or a pointer to an extension-specific
+                                                    ///< structure (i.e. contains sType and pNext).
     uint32_t maxImageDims1D;                        ///< [out] Maximum image dimensions for 1D resources. if 0, then 1D images
                                                     ///< are unsupported.
     uint32_t maxImageDims2D;                        ///< [out] Maximum image dimensions for 2D resources. if 0, then 2D images
@@ -1520,7 +1534,8 @@ zeDeviceGetImageProperties(
 typedef struct _ze_device_external_memory_properties_t
 {
     ze_structure_type_t stype;                      ///< [in] type of this structure
-    void* pNext;                                    ///< [in,out][optional] pointer to extension-specific structure
+    void* pNext;                                    ///< [in,out][optional] must be null or a pointer to an extension-specific
+                                                    ///< structure (i.e. contains sType and pNext).
     ze_external_memory_type_flags_t memoryAllocationImportTypes;///< [out] Supported external memory import types for memory allocations.
     ze_external_memory_type_flags_t memoryAllocationExportTypes;///< [out] Supported external memory export types for memory allocations.
     ze_external_memory_type_flags_t imageImportTypes;   ///< [out] Supported external memory import types for images.
@@ -1566,7 +1581,8 @@ typedef enum _ze_device_p2p_property_flag_t
 typedef struct _ze_device_p2p_properties_t
 {
     ze_structure_type_t stype;                      ///< [in] type of this structure
-    void* pNext;                                    ///< [in,out][optional] pointer to extension-specific structure
+    void* pNext;                                    ///< [in,out][optional] must be null or a pointer to an extension-specific
+                                                    ///< structure (i.e. contains sType and pNext).
     ze_device_p2p_property_flags_t flags;           ///< [out] 0 (none) or a valid combination of
                                                     ///< ::ze_device_p2p_property_flag_t
 
@@ -1706,7 +1722,8 @@ typedef enum _ze_context_flag_t
 typedef struct _ze_context_desc_t
 {
     ze_structure_type_t stype;                      ///< [in] type of this structure
-    const void* pNext;                              ///< [in][optional] pointer to extension-specific structure
+    const void* pNext;                              ///< [in][optional] must be null or a pointer to an extension-specific
+                                                    ///< structure (i.e. contains sType and pNext).
     ze_context_flags_t flags;                       ///< [in] creation flags.
                                                     ///< must be 0 (default) or a valid combination of ::ze_context_flag_t;
                                                     ///< default behavior may use implicit driver-based heuristics.
@@ -1877,7 +1894,8 @@ typedef enum _ze_command_queue_priority_t
 typedef struct _ze_command_queue_desc_t
 {
     ze_structure_type_t stype;                      ///< [in] type of this structure
-    const void* pNext;                              ///< [in][optional] pointer to extension-specific structure
+    const void* pNext;                              ///< [in][optional] must be null or a pointer to an extension-specific
+                                                    ///< structure (i.e. contains sType and pNext).
     uint32_t ordinal;                               ///< [in] command queue group ordinal
     uint32_t index;                                 ///< [in] command queue index within the group;
                                                     ///< must be zero if ::ZE_COMMAND_QUEUE_FLAG_EXPLICIT_ONLY is not set
@@ -2066,7 +2084,8 @@ typedef enum _ze_command_list_flag_t
 typedef struct _ze_command_list_desc_t
 {
     ze_structure_type_t stype;                      ///< [in] type of this structure
-    const void* pNext;                              ///< [in][optional] pointer to extension-specific structure
+    const void* pNext;                              ///< [in][optional] must be null or a pointer to an extension-specific
+                                                    ///< structure (i.e. contains sType and pNext).
     uint32_t commandQueueGroupOrdinal;              ///< [in] command queue group ordinal to which this command list will be
                                                     ///< submitted
     ze_command_list_flags_t flags;                  ///< [in] usage flags.
@@ -2268,9 +2287,10 @@ zeCommandListAppendWriteGlobalTimestamp(
 /// @details
 ///     - The application must ensure the events are accessible by the device on
 ///       which the command list was created.
-///     - If numWaitEvents is zero, then all previous commands are completed
-///       prior to the execution of the barrier.
-///     - If numWaitEvents is non-zero, then then all phWaitEvents must be
+///     - If numWaitEvents is zero, then all previous commands, enqueued on same
+///       command queue, must complete prior to the execution of the barrier.
+///       This is not the case when numWaitEvents is non-zero.
+///     - If numWaitEvents is non-zero, then only all phWaitEvents must be
 ///       signaled prior to the execution of the barrier.
 ///     - This command blocks all following commands from beginning until the
 ///       execution of the barrier completes.
@@ -2917,7 +2937,8 @@ typedef enum _ze_event_pool_flag_t
 typedef struct _ze_event_pool_desc_t
 {
     ze_structure_type_t stype;                      ///< [in] type of this structure
-    const void* pNext;                              ///< [in][optional] pointer to extension-specific structure
+    const void* pNext;                              ///< [in][optional] must be null or a pointer to an extension-specific
+                                                    ///< structure (i.e. contains sType and pNext).
     ze_event_pool_flags_t flags;                    ///< [in] creation flags.
                                                     ///< must be 0 (default) or a valid combination of ::ze_event_pool_flag_t;
                                                     ///< default behavior is signals and waits are visible to the entire device
@@ -3010,7 +3031,8 @@ typedef enum _ze_event_scope_flag_t
 typedef struct _ze_event_desc_t
 {
     ze_structure_type_t stype;                      ///< [in] type of this structure
-    const void* pNext;                              ///< [in][optional] pointer to extension-specific structure
+    const void* pNext;                              ///< [in][optional] must be null or a pointer to an extension-specific
+                                                    ///< structure (i.e. contains sType and pNext).
     uint32_t index;                                 ///< [in] index of the event within the pool; must be less-than the count
                                                     ///< specified during pool creation
     ze_event_scope_flags_t signal;                  ///< [in] defines the scope of relevant cache hierarchies to flush on a
@@ -3490,7 +3512,8 @@ typedef enum _ze_fence_flag_t
 typedef struct _ze_fence_desc_t
 {
     ze_structure_type_t stype;                      ///< [in] type of this structure
-    const void* pNext;                              ///< [in][optional] pointer to extension-specific structure
+    const void* pNext;                              ///< [in][optional] must be null or a pointer to an extension-specific
+                                                    ///< structure (i.e. contains sType and pNext).
     ze_fence_flags_t flags;                         ///< [in] creation flags.
                                                     ///< must be 0 (default) or a valid combination of ::ze_fence_flag_t.
 
@@ -3768,7 +3791,8 @@ typedef struct _ze_image_format_t
 typedef struct _ze_image_desc_t
 {
     ze_structure_type_t stype;                      ///< [in] type of this structure
-    const void* pNext;                              ///< [in][optional] pointer to extension-specific structure
+    const void* pNext;                              ///< [in][optional] must be null or a pointer to an extension-specific
+                                                    ///< structure (i.e. contains sType and pNext).
     ze_image_flags_t flags;                         ///< [in] creation flags.
                                                     ///< must be 0 (default) or a valid combination of ::ze_image_flag_t;
                                                     ///< default is read-only, cached access.
@@ -3817,7 +3841,8 @@ typedef enum _ze_image_sampler_filter_flag_t
 typedef struct _ze_image_properties_t
 {
     ze_structure_type_t stype;                      ///< [in] type of this structure
-    void* pNext;                                    ///< [in,out][optional] pointer to extension-specific structure
+    void* pNext;                                    ///< [in,out][optional] must be null or a pointer to an extension-specific
+                                                    ///< structure (i.e. contains sType and pNext).
     ze_image_sampler_filter_flags_t samplerFilterFlags; ///< [out] supported sampler filtering.
                                                     ///< returns 0 (unsupported) or a combination of ::ze_image_sampler_filter_flag_t.
 
@@ -3934,7 +3959,8 @@ typedef enum _ze_device_mem_alloc_flag_t
 typedef struct _ze_device_mem_alloc_desc_t
 {
     ze_structure_type_t stype;                      ///< [in] type of this structure
-    const void* pNext;                              ///< [in][optional] pointer to extension-specific structure
+    const void* pNext;                              ///< [in][optional] must be null or a pointer to an extension-specific
+                                                    ///< structure (i.e. contains sType and pNext).
     ze_device_mem_alloc_flags_t flags;              ///< [in] flags specifying additional allocation controls.
                                                     ///< must be 0 (default) or a valid combination of ::ze_device_mem_alloc_flag_t;
                                                     ///< default behavior may use implicit driver-based heuristics.
@@ -3961,7 +3987,8 @@ typedef enum _ze_host_mem_alloc_flag_t
 typedef struct _ze_host_mem_alloc_desc_t
 {
     ze_structure_type_t stype;                      ///< [in] type of this structure
-    const void* pNext;                              ///< [in][optional] pointer to extension-specific structure
+    const void* pNext;                              ///< [in][optional] must be null or a pointer to an extension-specific
+                                                    ///< structure (i.e. contains sType and pNext).
     ze_host_mem_alloc_flags_t flags;                ///< [in] flags specifying additional allocation controls.
                                                     ///< must be 0 (default) or a valid combination of ::ze_host_mem_alloc_flag_t;
                                                     ///< default behavior may use implicit driver-based heuristics.
@@ -4153,7 +4180,8 @@ typedef enum _ze_memory_type_t
 typedef struct _ze_memory_allocation_properties_t
 {
     ze_structure_type_t stype;                      ///< [in] type of this structure
-    void* pNext;                                    ///< [in,out][optional] pointer to extension-specific structure
+    void* pNext;                                    ///< [in,out][optional] must be null or a pointer to an extension-specific
+                                                    ///< structure (i.e. contains sType and pNext).
     ze_memory_type_t type;                          ///< [out] type of allocated memory
     uint64_t id;                                    ///< [out] identifier for this allocation
     uint64_t pageSize;                              ///< [out] page size used for allocation
@@ -4319,7 +4347,8 @@ zeMemCloseIpcHandle(
 typedef struct _ze_external_memory_export_desc_t
 {
     ze_structure_type_t stype;                      ///< [in] type of this structure
-    const void* pNext;                              ///< [in][optional] pointer to extension-specific structure
+    const void* pNext;                              ///< [in][optional] must be null or a pointer to an extension-specific
+                                                    ///< structure (i.e. contains sType and pNext).
     ze_external_memory_type_flags_t flags;          ///< [in] flags specifying memory export types for this allocation.
                                                     ///< must be 0 (default) or a valid combination of ::ze_external_memory_type_flags_t
 
@@ -4338,7 +4367,8 @@ typedef struct _ze_external_memory_export_desc_t
 typedef struct _ze_external_memory_import_fd_t
 {
     ze_structure_type_t stype;                      ///< [in] type of this structure
-    const void* pNext;                              ///< [in][optional] pointer to extension-specific structure
+    const void* pNext;                              ///< [in][optional] must be null or a pointer to an extension-specific
+                                                    ///< structure (i.e. contains sType and pNext).
     ze_external_memory_type_flags_t flags;          ///< [in] flags specifying the memory import type for the file descriptor.
                                                     ///< must be 0 (default) or a valid combination of ::ze_external_memory_type_flags_t
     int fd;                                         ///< [in] the file descriptor handle to import
@@ -4360,7 +4390,8 @@ typedef struct _ze_external_memory_import_fd_t
 typedef struct _ze_external_memory_export_fd_t
 {
     ze_structure_type_t stype;                      ///< [in] type of this structure
-    const void* pNext;                              ///< [in][optional] pointer to extension-specific structure
+    const void* pNext;                              ///< [in][optional] must be null or a pointer to an extension-specific
+                                                    ///< structure (i.e. contains sType and pNext).
     ze_external_memory_type_flags_t flags;          ///< [in] flags specifying the memory export type for the file descriptor.
                                                     ///< must be 0 (default) or a valid combination of ::ze_external_memory_type_flags_t
     int fd;                                         ///< [out] the exported file descriptor handle representing the allocation.
@@ -4384,7 +4415,8 @@ typedef struct _ze_external_memory_export_fd_t
 typedef struct _ze_external_memory_import_win32_handle_t
 {
     ze_structure_type_t stype;                      ///< [in] type of this structure
-    const void* pNext;                              ///< [in][optional] pointer to extension-specific structure
+    const void* pNext;                              ///< [in][optional] must be null or a pointer to an extension-specific
+                                                    ///< structure (i.e. contains sType and pNext).
     ze_external_memory_type_flags_t flags;          ///< [in] flags specifying the memory import type for the Win32 handle.
                                                     ///< must be 0 (default) or a valid combination of ::ze_external_memory_type_flags_t
     void* handle;                                   ///< [in][optional] the Win32 handle to import
@@ -4407,7 +4439,8 @@ typedef struct _ze_external_memory_import_win32_handle_t
 typedef struct _ze_external_memory_export_win32_handle_t
 {
     ze_structure_type_t stype;                      ///< [in] type of this structure
-    const void* pNext;                              ///< [in][optional] pointer to extension-specific structure
+    const void* pNext;                              ///< [in][optional] must be null or a pointer to an extension-specific
+                                                    ///< structure (i.e. contains sType and pNext).
     ze_external_memory_type_flags_t flags;          ///< [in] flags specifying the memory export type for the file descriptor.
                                                     ///< must be 0 (default) or a valid combination of ::ze_external_memory_type_flags_t
     void* handle;                                   ///< [out] the exported Win32 handle representing the allocation.
@@ -4448,7 +4481,8 @@ typedef struct _ze_module_constants_t
 typedef struct _ze_module_desc_t
 {
     ze_structure_type_t stype;                      ///< [in] type of this structure
-    const void* pNext;                              ///< [in][optional] pointer to extension-specific structure
+    const void* pNext;                              ///< [in][optional] must be null or a pointer to an extension-specific
+                                                    ///< structure (i.e. contains sType and pNext).
     ze_module_format_t format;                      ///< [in] Module format passed in with pInputModule
     size_t inputSize;                               ///< [in] size of input IL or ISA from pInputModule.
     const uint8_t* pInputModule;                    ///< [in] pointer to IL or ISA
@@ -4552,32 +4586,30 @@ zeModuleDestroy(
 ///        dependencies.
 /// 
 /// @details
-///     - Modules support import and export linkage for functions and global
-///       variables.
-///     - Modules that have imports can be dynamically linked to export modules
-///       that satisfy those import requirements.
-///     - Modules can have both import and export linkages.
+///     - Modules support SPIR-V import and export linkage types for functions
+///       and global variables. See SPIR-V specification for linkage details.
+///     - Modules can have both import and export linkage.
 ///     - Modules that do not have any imports or exports do not need to be
 ///       linked.
-///     - Modules cannot be partially linked. All modules needed to satisfy all
-///       import dependencies for a module must be passed in or
-///       ::ZE_RESULT_ERROR_MODULE_LINK_FAILURE will returned.
-///     - Modules with imports need to be linked before kernel objects can be
-///       created from them.
+///     - All module import requirements must be satisfied via linking before
+///       kernel objects can be created from them.
+///     - Modules cannot be partially linked. Unsatisfiable import dependencies
+///       in the set of modules passed to ::zeModuleDynamicLink will result in 
+///       ::ZE_RESULT_ERROR_MODULE_LINK_FAILURE being returned.
 ///     - Modules will only be linked once. A module can be used in multiple
-///       link calls if it has exports but it's imports will not be re-linked.
+///       link calls if it has exports but its imports will not be re-linked.
 ///     - Ambiguous dependencies, where multiple modules satisfy the import
-///       dependencies for another module, is not allowed.
-///     - ModuleGetNativeBinary can be called on any module regardless of
-///       whether it is linked or not.
-///     - A link log can optionally be returned to the caller. The caller is
-///       responsible for destroying build log using ::zeModuleBuildLogDestroy.
-///     - SPIR-V import and export linkage types are used. See SPIR-V
-///       specification for linkage details.
+///       dependencies for another module, are not allowed.
 ///     - The application must ensure the modules being linked were created on
 ///       the same context.
 ///     - The application may call this function from simultaneous threads as
 ///       long as the import modules being linked are not the same.
+///     - ModuleGetNativeBinary can be called on any module regardless of
+///       whether it is linked or not.
+///     - A link log can optionally be returned to the caller. The caller is
+///       responsible for destroying build log using ::zeModuleBuildLogDestroy.
+///     - The link log may contain a list of the unresolved import dependencies
+///       if present.
 ///     - The implementation of this function should be lock-free.
 /// 
 /// @returns
@@ -4745,7 +4777,8 @@ typedef enum _ze_module_property_flag_t
 typedef struct _ze_module_properties_t
 {
     ze_structure_type_t stype;                      ///< [in] type of this structure
-    void* pNext;                                    ///< [in,out][optional] pointer to extension-specific structure
+    void* pNext;                                    ///< [in,out][optional] must be null or a pointer to an extension-specific
+                                                    ///< structure (i.e. contains sType and pNext).
     ze_module_property_flags_t flags;               ///< [out] 0 (none) or a valid combination of ::ze_module_property_flag_t
 
 } ze_module_properties_t;
@@ -4788,7 +4821,8 @@ typedef enum _ze_kernel_flag_t
 typedef struct _ze_kernel_desc_t
 {
     ze_structure_type_t stype;                      ///< [in] type of this structure
-    const void* pNext;                              ///< [in][optional] pointer to extension-specific structure
+    const void* pNext;                              ///< [in][optional] must be null or a pointer to an extension-specific
+                                                    ///< structure (i.e. contains sType and pNext).
     ze_kernel_flags_t flags;                        ///< [in] creation flags.
                                                     ///< must be 0 (default) or a valid combination of ::ze_kernel_flag_t;
                                                     ///< default behavior may use driver-based residency.
@@ -5101,7 +5135,7 @@ typedef enum _ze_cache_config_flag_t
 ZE_APIEXPORT ze_result_t ZE_APICALL
 zeKernelSetCacheConfig(
     ze_kernel_handle_t hKernel,                     ///< [in] handle of the kernel object
-    ze_cache_config_flags_t flags                   ///< [in] cache configuration. 
+    ze_cache_config_flags_t flags                   ///< [in] cache configuration.
                                                     ///< must be 0 (default configuration) or a valid combination of ::ze_cache_config_flag_t.
     );
 
@@ -5131,7 +5165,8 @@ typedef struct _ze_kernel_uuid_t
 typedef struct _ze_kernel_properties_t
 {
     ze_structure_type_t stype;                      ///< [in] type of this structure
-    void* pNext;                                    ///< [in,out][optional] pointer to extension-specific structure
+    void* pNext;                                    ///< [in,out][optional] must be null or a pointer to an extension-specific
+                                                    ///< structure (i.e. contains sType and pNext).
     uint32_t numKernelArgs;                         ///< [out] number of kernel arguments.
     uint32_t requiredGroupSizeX;                    ///< [out] required group size in the X dimension,
                                                     ///< or zero if there is no required group size
@@ -5162,7 +5197,8 @@ typedef struct _ze_kernel_properties_t
 typedef struct _ze_kernel_preferred_group_size_properties_t
 {
     ze_structure_type_t stype;                      ///< [in] type of this structure
-    void* pNext;                                    ///< [in,out][optional] pointer to extension-specific structure
+    void* pNext;                                    ///< [in,out][optional] must be null or a pointer to an extension-specific
+                                                    ///< structure (i.e. contains sType and pNext).
     uint32_t preferredMultiple;                     ///< [out] preferred group size multiple
 
 } ze_kernel_preferred_group_size_properties_t;
@@ -5438,7 +5474,8 @@ typedef enum _ze_module_program_exp_version_t
 typedef struct _ze_module_program_exp_desc_t
 {
     ze_structure_type_t stype;                      ///< [in] type of this structure
-    const void* pNext;                              ///< [in][optional] pointer to extension-specific structure
+    const void* pNext;                              ///< [in][optional] must be null or a pointer to an extension-specific
+                                                    ///< structure (i.e. contains sType and pNext).
     uint32_t count;                                 ///< [in] Count of input modules
     const size_t* inputSizes;                       ///< [in][range(0, count)] sizes of each input IL module in pInputModules.
     const uint8_t** pInputModules;                  ///< [in][range(0, count)] pointer to an array of IL (e.g. SPIR-V modules).
@@ -5493,7 +5530,8 @@ typedef enum _ze_device_raytracing_ext_flag_t
 typedef struct _ze_device_raytracing_ext_properties_t
 {
     ze_structure_type_t stype;                      ///< [in] type of this structure
-    void* pNext;                                    ///< [in,out][optional] pointer to extension-specific structure
+    void* pNext;                                    ///< [in,out][optional] must be null or a pointer to an extension-specific
+                                                    ///< structure (i.e. contains sType and pNext).
     ze_device_raytracing_ext_flags_t flags;         ///< [out] 0 or a valid combination of ::ze_device_raytracing_ext_flags_t
     uint32_t maxBVHLevels;                          ///< [out] Maximum number of BVH levels supported
 
@@ -5520,7 +5558,8 @@ typedef enum _ze_raytracing_mem_alloc_ext_flag_t
 typedef struct _ze_raytracing_mem_alloc_ext_desc_t
 {
     ze_structure_type_t stype;                      ///< [in] type of this structure
-    const void* pNext;                              ///< [in][optional] pointer to extension-specific structure
+    const void* pNext;                              ///< [in][optional] must be null or a pointer to an extension-specific
+                                                    ///< structure (i.e. contains sType and pNext).
     ze_raytracing_mem_alloc_ext_flags_t flags;      ///< [in] flags specifying additional allocation controls.
                                                     ///< must be 0 (default) or a valid combination of ::ze_raytracing_mem_alloc_ext_flag_t;
                                                     ///< default behavior may use implicit driver-based heuristics.
@@ -5683,7 +5722,8 @@ typedef enum _ze_sampler_filter_mode_t
 typedef struct _ze_sampler_desc_t
 {
     ze_structure_type_t stype;                      ///< [in] type of this structure
-    const void* pNext;                              ///< [in][optional] pointer to extension-specific structure
+    const void* pNext;                              ///< [in][optional] must be null or a pointer to an extension-specific
+                                                    ///< structure (i.e. contains sType and pNext).
     ze_sampler_address_mode_t addressMode;          ///< [in] Sampler addressing mode to determine how out-of-bounds
                                                     ///< coordinates are handled.
     ze_sampler_filter_mode_t filterMode;            ///< [in] Sampler filter mode to determine how samples are filtered.
@@ -5873,7 +5913,8 @@ typedef enum _ze_physical_mem_flag_t
 typedef struct _ze_physical_mem_desc_t
 {
     ze_structure_type_t stype;                      ///< [in] type of this structure
-    const void* pNext;                              ///< [in][optional] pointer to extension-specific structure
+    const void* pNext;                              ///< [in][optional] must be null or a pointer to an extension-specific
+                                                    ///< structure (i.e. contains sType and pNext).
     ze_physical_mem_flags_t flags;                  ///< [in] creation flags.
                                                     ///< must be 0 (default) or a valid combination of ::ze_physical_mem_flag_t.
     size_t size;                                    ///< [in] size in bytes to reserve; must be page aligned.
@@ -6127,7 +6168,8 @@ typedef enum _ze_device_fp_atomic_ext_flag_t
 typedef struct _ze_float_atomic_ext_properties_t
 {
     ze_structure_type_t stype;                      ///< [in] type of this structure
-    void* pNext;                                    ///< [in,out][optional] pointer to extension-specific structure
+    void* pNext;                                    ///< [in,out][optional] must be null or a pointer to an extension-specific
+                                                    ///< structure (i.e. contains sType and pNext).
     ze_device_fp_atomic_ext_flags_t fp16Flags;      ///< [out] Capabilities for half-precision floating-point atomic operations
     ze_device_fp_atomic_ext_flags_t fp32Flags;      ///< [out] Capabilities for single-precision floating-point atomic
                                                     ///< operations
@@ -6228,7 +6270,8 @@ typedef enum _ze_relaxed_allocation_limits_exp_flag_t
 typedef struct _ze_relaxed_allocation_limits_exp_desc_t
 {
     ze_structure_type_t stype;                      ///< [in] type of this structure
-    const void* pNext;                              ///< [in][optional] pointer to extension-specific structure
+    const void* pNext;                              ///< [in][optional] must be null or a pointer to an extension-specific
+                                                    ///< structure (i.e. contains sType and pNext).
     ze_relaxed_allocation_limits_exp_flags_t flags; ///< [in] flags specifying allocation limits to relax.
                                                     ///< must be 0 (default) or a valid combination of ::ze_relaxed_allocation_limits_exp_flag_t;
 
@@ -6279,7 +6322,8 @@ typedef enum _ze_cache_ext_region_t
 typedef struct _ze_cache_reservation_ext_desc_t
 {
     ze_structure_type_t stype;                      ///< [in] type of this structure
-    const void* pNext;                              ///< [in][optional] pointer to extension-specific structure
+    const void* pNext;                              ///< [in][optional] must be null or a pointer to an extension-specific
+                                                    ///< structure (i.e. contains sType and pNext).
     size_t maxCacheReservationSize;                 ///< [out] max cache reservation size
 
 } ze_cache_reservation_ext_desc_t;
@@ -6387,14 +6431,18 @@ typedef enum _ze_event_query_timestamps_exp_version_t
 ///         + `nullptr == hDevice`
 ///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
 ///         + `nullptr == pCount`
-///         + `nullptr == pTimestamps`
 ZE_APIEXPORT ze_result_t ZE_APICALL
 zeEventQueryTimestampsExp(
     ze_event_handle_t hEvent,                       ///< [in] handle of the event
     ze_device_handle_t hDevice,                     ///< [in] handle of the device to query
-    uint32_t* pCount,                               ///< [in,out] pointer to the number of timestamp results
-    ze_kernel_timestamp_result_t* pTimestamps       ///< [in,out][range(0, *pCount)] pointer to memory where timestamp results
-                                                    ///< will be written.
+    uint32_t* pCount,                               ///< [in,out] pointer to the number of timestamp results.
+                                                    ///< if count is zero, then the driver shall update the value with the
+                                                    ///< total number of timestamps available.
+                                                    ///< if count is greater than the number of timestamps available, then the
+                                                    ///< driver shall update the value with the correct number of timestamps available.
+    ze_kernel_timestamp_result_t* pTimestamps       ///< [in,out][optional][range(0, *pCount)] array of timestamp results.
+                                                    ///< if count is less than the number of timestamps available, then driver
+                                                    ///< shall only retrieve that number of timestamps.
     );
 
 #if !defined(__GNUC__)
@@ -6425,7 +6473,8 @@ typedef enum _ze_image_memory_properties_exp_version_t
 typedef struct _ze_image_memory_properties_exp_t
 {
     ze_structure_type_t stype;                      ///< [in] type of this structure
-    const void* pNext;                              ///< [in][optional] pointer to extension-specific structure
+    const void* pNext;                              ///< [in][optional] must be null or a pointer to an extension-specific
+                                                    ///< structure (i.e. contains sType and pNext).
     uint64_t size;                                  ///< [out] size of image allocation in bytes.
     uint64_t rowPitch;                              ///< [out] size of image row in bytes.
     uint64_t slicePitch;                            ///< [out] size of image slice in bytes.
@@ -6557,7 +6606,8 @@ typedef enum _ze_image_view_planar_exp_version_t
 typedef struct _ze_image_view_planar_exp_desc_t
 {
     ze_structure_type_t stype;                      ///< [in] type of this structure
-    const void* pNext;                              ///< [in][optional] pointer to extension-specific structure
+    const void* pNext;                              ///< [in][optional] must be null or a pointer to an extension-specific
+                                                    ///< structure (i.e. contains sType and pNext).
     uint32_t planeIndex;                            ///< [in] the 0-based plane index (e.g. NV12 is 0 = Y plane, 1 UV plane)
 
 } ze_image_view_planar_exp_desc_t;
@@ -6607,7 +6657,8 @@ typedef enum _ze_scheduling_hint_exp_flag_t
 typedef struct _ze_scheduling_hint_exp_properties_t
 {
     ze_structure_type_t stype;                      ///< [in] type of this structure
-    void* pNext;                                    ///< [in,out][optional] pointer to extension-specific structure
+    void* pNext;                                    ///< [in,out][optional] must be null or a pointer to an extension-specific
+                                                    ///< structure (i.e. contains sType and pNext).
     ze_scheduling_hint_exp_flags_t schedulingHintFlags; ///< [out] Supported kernel scheduling hints.
                                                     ///< May be 0 (none) or a valid combination of ::ze_scheduling_hint_exp_flag_t.
 
@@ -6621,7 +6672,8 @@ typedef struct _ze_scheduling_hint_exp_properties_t
 typedef struct _ze_scheduling_hint_exp_desc_t
 {
     ze_structure_type_t stype;                      ///< [in] type of this structure
-    const void* pNext;                              ///< [in][optional] pointer to extension-specific structure
+    const void* pNext;                              ///< [in][optional] must be null or a pointer to an extension-specific
+                                                    ///< structure (i.e. contains sType and pNext).
     ze_scheduling_hint_exp_flags_t flags;           ///< [in] flags specifying kernel scheduling hints.
                                                     ///< must be 0 (default) or a valid combination of ::ze_scheduling_hint_exp_flag_t.
 

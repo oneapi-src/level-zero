@@ -1037,6 +1037,51 @@ namespace driver
         return result;
     }
 
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zetMetricGroupCalculateMultipleMetricValuesExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zetMetricGroupCalculateMultipleMetricValuesExp(
+        zet_metric_group_handle_t hMetricGroup,         ///< [in] handle of the metric group
+        zet_metric_group_calculation_type_t type,       ///< [in] calculation type to be applied on raw data
+        size_t rawDataSize,                             ///< [in] size in bytes of raw data buffer
+        const uint8_t* pRawData,                        ///< [in][range(0, rawDataSize)] buffer of raw data to calculate
+        uint32_t* pSetCount,                            ///< [in,out] pointer to number of metric sets.
+                                                        ///< if count is zero, then the driver shall update the value with the
+                                                        ///< total number of metric sets to be calculated.
+                                                        ///< if count is greater than the number available in the raw data buffer,
+                                                        ///< then the driver shall update the value with the actual number of
+                                                        ///< metric sets to be calculated.
+        uint32_t* pTotalMetricValueCount,               ///< [in,out] pointer to number of the total number of metric values
+                                                        ///< calculated, for all metric sets.
+                                                        ///< if count is zero, then the driver shall update the value with the
+                                                        ///< total number of metric values to be calculated.
+                                                        ///< if count is greater than the number available in the raw data buffer,
+                                                        ///< then the driver shall update the value with the actual number of
+                                                        ///< metric values to be calculated.
+        uint32_t* pMetricCounts,                        ///< [in,out][optional][range(0, *pSetCount)] buffer of metric counts per
+                                                        ///< metric set.
+        zet_typed_value_t* pMetricValues                ///< [in,out][optional][range(0, *pTotalMetricValueCount)] buffer of
+                                                        ///< calculated metrics.
+                                                        ///< if count is less than the number available in the raw data buffer,
+                                                        ///< then driver shall only calculate that number of metric values.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnCalculateMultipleMetricValuesExp = context.zetDdiTable.MetricGroupExp.pfnCalculateMultipleMetricValuesExp;
+        if( nullptr != pfnCalculateMultipleMetricValuesExp )
+        {
+            result = pfnCalculateMultipleMetricValuesExp( hMetricGroup, type, rawDataSize, pRawData, pSetCount, pTotalMetricValueCount, pMetricCounts, pMetricValues );
+        }
+        else
+        {
+            // generic implementation
+        }
+
+        return result;
+    }
+
 } // namespace driver
 
 #if defined(__cplusplus)
@@ -1287,6 +1332,33 @@ zetGetMetricGroupProcAddrTable(
     pDdiTable->pfnGetProperties                          = driver::zetMetricGroupGetProperties;
 
     pDdiTable->pfnCalculateMetricValues                  = driver::zetMetricGroupCalculateMetricValues;
+
+    return result;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Exported function for filling application's MetricGroupExp table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+ZE_DLLEXPORT ze_result_t ZE_APICALL
+zetGetMetricGroupExpProcAddrTable(
+    ze_api_version_t version,                       ///< [in] API version requested
+    zet_metric_group_exp_dditable_t* pDdiTable      ///< [in,out] pointer to table of DDI function pointers
+    )
+{
+    if( nullptr == pDdiTable )
+        return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+    if( driver::context.version < version )
+        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+
+    ze_result_t result = ZE_RESULT_SUCCESS;
+
+    pDdiTable->pfnCalculateMultipleMetricValuesExp       = driver::zetMetricGroupCalculateMultipleMetricValuesExp;
 
     return result;
 }
