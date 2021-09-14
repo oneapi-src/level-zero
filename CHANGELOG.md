@@ -1,5 +1,17 @@
 # Level zero loader changelog
 
+## v1.5.0
+* Added Intel VPU driver to Linux known driver list
+* Fixed default symbol visibility in Linux builds
+* Added zeInit call earlier in loader init path to prevent loading drivers that don't match the ze_init_flags_t
+* Fixed build for certain SLES distros
+* Fixed bug that prevented tracers from being reenabled after being disabled. 
+* Multi Driver Support: Return success if initialization of at least one driver succeeds. 
+* Updated L0 API headers to 1.2.43 which includes:
+  * Clarification to documentation of several APIs
+  * Added missing STYPE ZE_STRUCTURE_TYPE_IMAGE_MEMORY_EXP_PROPERTIES
+  * Added new experimental metrics extension to retrieve multiple metrics values
+
 ## v1.4.1
 * Added support for Level Zero Specification 1.2.13
 * Fixed a bug that resulted in zeInit failing when multiple drivers are discovered and one of them fails to load. 
