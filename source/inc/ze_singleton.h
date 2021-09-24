@@ -49,6 +49,9 @@ public:
     {
         auto key = getKey( std::forward<Ts>( _params )... );
 
+        if(key == 0) // No zero keys allowed in map
+            return static_cast<_singleton_t*>(0);
+
         std::lock_guard<std::mutex> lk( mut );
         auto iter = map.find( key );
 
