@@ -51,13 +51,12 @@ namespace ze_lib
             tracing_lib = getTracing();
         }
 #else
-        result = zeLoaderInit(flags);
+        result = zeLoaderInit();
         if( ZE_RESULT_SUCCESS == result ) {
             tracing_lib = zeLoaderGetTracingHandle();
         }
         
 #endif
-
 
         if( ZE_RESULT_SUCCESS == result )
         {
@@ -78,6 +77,8 @@ namespace ze_lib
         {
             result = zelTracingInit();
         }
+
+        result = zelLoaderDriverCheck(flags);
 
         return result;
     }

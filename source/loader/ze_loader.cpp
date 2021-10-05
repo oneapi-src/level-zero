@@ -13,7 +13,33 @@ namespace loader
 {
     ///////////////////////////////////////////////////////////////////////////////
     context_t *context;
-    
+
+    ze_result_t context_t::check_drivers(ze_init_flags_t flags) {
+        bool return_first_driver_result=false;
+        if(drivers.size()==1) {
+            return_first_driver_result=true;
+        }
+
+        for(auto it = drivers.begin(); it != drivers.end(); )
+        {
+            ze_result_t result = init_driver(*it, flags);
+            if(result != ZE_RESULT_SUCCESS) {
+                FREE_DRIVER_LIBRARY(it->handle);
+                it = drivers.erase(it);
+                if(return_first_driver_result)
+                    return result;
+            }
+            else {
+                it++;
+            }
+        }
+
+        if(drivers.size() == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        return ZE_RESULT_SUCCESS;
+    }
+
     ze_result_t context_t::init_driver(driver_t driver, ze_init_flags_t flags) {
         
         auto getTable = reinterpret_cast<ze_pfnGetGlobalProcAddrTable_t>(
@@ -63,7 +89,7 @@ namespace loader
     }
 
     ///////////////////////////////////////////////////////////////////////////////
-    ze_result_t context_t::init(ze_init_flags_t flags)
+    ze_result_t context_t::init()
     {
         auto discoveredDrivers = discoverEnabledDrivers();
 
@@ -124,28 +150,6 @@ namespace loader
         }
 
         forceIntercept = getenv_tobool( "ZE_ENABLE_LOADER_INTERCEPT" );
-
-        bool return_first_driver_result=false;
-        if(drivers.size()==1) {
-            return_first_driver_result=true;
-        }
-
-        for(auto it = drivers.begin(); it != drivers.end(); )
-        {
-            ze_result_t result = init_driver(*it, flags);
-            if(result != ZE_RESULT_SUCCESS) {
-                FREE_DRIVER_LIBRARY(it->handle);
-                it = drivers.erase(it);
-                if(return_first_driver_result)
-                    return result;
-            }
-            else {
-                it++;
-            }
-        }
-
-        if(drivers.size()==0)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         return ZE_RESULT_SUCCESS;
     };

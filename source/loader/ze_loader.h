@@ -48,7 +48,8 @@ namespace loader
         std::vector<zel_component_version_t> compVersions;
         const char *LOADER_COMP_NAME = "loader";
 
-        ze_result_t init(ze_init_flags_t flags);
+        ze_result_t check_drivers(ze_init_flags_t flags);
+        ze_result_t init();
         ze_result_t init_driver(driver_t driver, ze_init_flags_t flags);
         void add_loader_version();
         ~context_t();

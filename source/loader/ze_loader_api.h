@@ -24,7 +24,16 @@ extern "C" {
 ///     - ::ZE_RESULT_SUCCESS
 ///     - ::ZE_RESULT_ERROR_UNINITIALIZED
 ZE_DLLEXPORT ze_result_t ZE_APICALL
-zeLoaderInit(ze_init_flags_t flags);
+zeLoaderInit();
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Exported function for verifying usable L0 Drivers for Loader to report
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+ZE_DLLEXPORT ze_result_t ZE_APICALL
+zelLoaderDriverCheck(ze_init_flags_t flags);
 
 
 ///////////////////////////////////////////////////////////////////////////////
