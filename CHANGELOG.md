@@ -1,5 +1,10 @@
 # Level zero loader changelog
 
+## v1.5.4
+* Fixed a bug verifying L0 Driver stability after initializing ddi tables
+* Updated Windows usage of LoadLibrary for security to only load libraries from system32
+* Fixed a bug allowing nullptr keys into handle maps
+
 ## v1.5.0
 * Added Intel VPU driver to Linux known driver list
 * Fixed default symbol visibility in Linux builds
