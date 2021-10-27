@@ -11,9 +11,7 @@ namespace tracing_layer {
 
 thread_local ze_bool_t tracingInProgress = 0;
 
-struct APITracerContextImp globalAPITracerContextImp;
-struct APITracerContextImp *pGlobalAPITracerContextImp =
-    &globalAPITracerContextImp;
+struct APITracerContextImp *pGlobalAPITracerContextImp;
 
 APITracer *APITracer::create() {
     APITracerImp *tracer = new APITracerImp;
@@ -262,7 +260,7 @@ ThreadPrivateTracerData::ThreadPrivateTracerData() {
 
 ThreadPrivateTracerData::~ThreadPrivateTracerData() {
     if (onList) {
-        globalAPITracerContextImp.removeThreadTracerDataFromList(this);
+        pGlobalAPITracerContextImp->removeThreadTracerDataFromList(this);
         onList = false;
     }
     tracerArrayPointer.store(nullptr, std::memory_order_relaxed);
@@ -270,7 +268,7 @@ ThreadPrivateTracerData::~ThreadPrivateTracerData() {
 
 void ThreadPrivateTracerData::removeThreadTracerDataFromList(void) {
     if (onList) {
-        globalAPITracerContextImp.removeThreadTracerDataFromList(this);
+        pGlobalAPITracerContextImp->removeThreadTracerDataFromList(this);
         onList = false;
     }
     tracerArrayPointer.store(nullptr, std::memory_order_relaxed);
@@ -281,7 +279,7 @@ bool ThreadPrivateTracerData::testAndSetThreadTracerDataInitializedAndOnList(
     if (!isInitialized) {
         isInitialized = true;
         onList = true;
-        globalAPITracerContextImp.addThreadTracerDataToList(
+        pGlobalAPITracerContextImp->addThreadTracerDataToList(
             &myThreadPrivateTracerData);
     }
     return onList;

@@ -21,6 +21,18 @@ add_library(${TARGET_NAME}
         ${CMAKE_CURRENT_BINARY_DIR}/ZeTracingLayerVersion.rc
 )
 
+if(WIN32)
+    target_sources(${TARGET_NAME}
+        PRIVATE
+            ${CMAKE_CURRENT_SOURCE_DIR}/windows/tracing_init.cpp
+    )
+else()
+    target_sources(${TARGET_NAME}
+        PRIVATE
+            ${CMAKE_CURRENT_SOURCE_DIR}/linux/tracing_init.cpp
+    )
+endif()
+
 target_include_directories(${TARGET_NAME}
     PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}
