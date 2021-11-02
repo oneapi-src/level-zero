@@ -1,5 +1,18 @@
 # Level zero loader changelog
 
+## v1.6.1
+* Updated L0 API headers to 1.3.0 which includes:
+  * Get PCI Properties Extension
+  * Get Image Allocation Properties Extension
+  * Memory Free Extension
+  * Module Linkage Inspection Extension
+  * Image Copy To/From Memory Extensions
+  * GDDR Memory Type support in SysMan
+  * PCIe Card-level power domains in SysMan
+* Fixed Return Codes for uninitialized function pointers & tables to return ZE_RESULT_ERROR_UNINITIALIZED vs ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+* Tracing Context handled during library init & destroy
+* Enable CPACK support for ARM64 Package Generation
+
 ## v1.5.4
 * Fixed a bug verifying L0 Driver stability after initializing ddi tables
 * Updated Windows usage of LoadLibrary for security to only load libraries from system32
