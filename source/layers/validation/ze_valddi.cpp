@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (C) 2019 Intel Corporation
+ * Copyright (C) 2019-2021 Intel Corporation
  *
  * SPDX-License-Identifier: MIT
  *
@@ -22,7 +22,7 @@ namespace validation_layer
         auto pfnInit = context.zeDdiTable.Global.pfnInit;
 
         if( nullptr == pfnInit )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         if( context.enableParameterValidation )
         {
@@ -51,7 +51,7 @@ namespace validation_layer
         auto pfnGet = context.zeDdiTable.Driver.pfnGet;
 
         if( nullptr == pfnGet )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         if( context.enableParameterValidation )
         {
@@ -74,7 +74,7 @@ namespace validation_layer
         auto pfnGetApiVersion = context.zeDdiTable.Driver.pfnGetApiVersion;
 
         if( nullptr == pfnGetApiVersion )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         if( context.enableParameterValidation )
         {
@@ -100,7 +100,7 @@ namespace validation_layer
         auto pfnGetProperties = context.zeDdiTable.Driver.pfnGetProperties;
 
         if( nullptr == pfnGetProperties )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         if( context.enableParameterValidation )
         {
@@ -126,7 +126,7 @@ namespace validation_layer
         auto pfnGetIpcProperties = context.zeDdiTable.Driver.pfnGetIpcProperties;
 
         if( nullptr == pfnGetIpcProperties )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         if( context.enableParameterValidation )
         {
@@ -161,7 +161,7 @@ namespace validation_layer
         auto pfnGetExtensionProperties = context.zeDdiTable.Driver.pfnGetExtensionProperties;
 
         if( nullptr == pfnGetExtensionProperties )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         if( context.enableParameterValidation )
         {
@@ -188,7 +188,7 @@ namespace validation_layer
         auto pfnGetExtensionFunctionAddress = context.zeDdiTable.Driver.pfnGetExtensionFunctionAddress;
 
         if( nullptr == pfnGetExtensionFunctionAddress )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         if( context.enableParameterValidation )
         {
@@ -224,7 +224,7 @@ namespace validation_layer
         auto pfnGet = context.zeDdiTable.Device.pfnGet;
 
         if( nullptr == pfnGet )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         if( context.enableParameterValidation )
         {
@@ -257,7 +257,7 @@ namespace validation_layer
         auto pfnGetSubDevices = context.zeDdiTable.Device.pfnGetSubDevices;
 
         if( nullptr == pfnGetSubDevices )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         if( context.enableParameterValidation )
         {
@@ -283,7 +283,7 @@ namespace validation_layer
         auto pfnGetProperties = context.zeDdiTable.Device.pfnGetProperties;
 
         if( nullptr == pfnGetProperties )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         if( context.enableParameterValidation )
         {
@@ -309,7 +309,7 @@ namespace validation_layer
         auto pfnGetComputeProperties = context.zeDdiTable.Device.pfnGetComputeProperties;
 
         if( nullptr == pfnGetComputeProperties )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         if( context.enableParameterValidation )
         {
@@ -335,7 +335,7 @@ namespace validation_layer
         auto pfnGetModuleProperties = context.zeDdiTable.Device.pfnGetModuleProperties;
 
         if( nullptr == pfnGetModuleProperties )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         if( context.enableParameterValidation )
         {
@@ -371,7 +371,7 @@ namespace validation_layer
         auto pfnGetCommandQueueGroupProperties = context.zeDdiTable.Device.pfnGetCommandQueueGroupProperties;
 
         if( nullptr == pfnGetCommandQueueGroupProperties )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         if( context.enableParameterValidation )
         {
@@ -406,7 +406,7 @@ namespace validation_layer
         auto pfnGetMemoryProperties = context.zeDdiTable.Device.pfnGetMemoryProperties;
 
         if( nullptr == pfnGetMemoryProperties )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         if( context.enableParameterValidation )
         {
@@ -432,7 +432,7 @@ namespace validation_layer
         auto pfnGetMemoryAccessProperties = context.zeDdiTable.Device.pfnGetMemoryAccessProperties;
 
         if( nullptr == pfnGetMemoryAccessProperties )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         if( context.enableParameterValidation )
         {
@@ -466,7 +466,7 @@ namespace validation_layer
         auto pfnGetCacheProperties = context.zeDdiTable.Device.pfnGetCacheProperties;
 
         if( nullptr == pfnGetCacheProperties )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         if( context.enableParameterValidation )
         {
@@ -492,7 +492,7 @@ namespace validation_layer
         auto pfnGetImageProperties = context.zeDdiTable.Device.pfnGetImageProperties;
 
         if( nullptr == pfnGetImageProperties )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         if( context.enableParameterValidation )
         {
@@ -518,7 +518,7 @@ namespace validation_layer
         auto pfnGetExternalMemoryProperties = context.zeDdiTable.Device.pfnGetExternalMemoryProperties;
 
         if( nullptr == pfnGetExternalMemoryProperties )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         if( context.enableParameterValidation )
         {
@@ -545,7 +545,7 @@ namespace validation_layer
         auto pfnGetP2PProperties = context.zeDdiTable.Device.pfnGetP2PProperties;
 
         if( nullptr == pfnGetP2PProperties )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         if( context.enableParameterValidation )
         {
@@ -575,7 +575,7 @@ namespace validation_layer
         auto pfnCanAccessPeer = context.zeDdiTable.Device.pfnCanAccessPeer;
 
         if( nullptr == pfnCanAccessPeer )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         if( context.enableParameterValidation )
         {
@@ -603,7 +603,7 @@ namespace validation_layer
         auto pfnGetStatus = context.zeDdiTable.Device.pfnGetStatus;
 
         if( nullptr == pfnGetStatus )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         if( context.enableParameterValidation )
         {
@@ -629,7 +629,7 @@ namespace validation_layer
         auto pfnGetGlobalTimestamps = context.zeDdiTable.Device.pfnGetGlobalTimestamps;
 
         if( nullptr == pfnGetGlobalTimestamps )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         if( context.enableParameterValidation )
         {
@@ -659,7 +659,7 @@ namespace validation_layer
         auto pfnCreate = context.zeDdiTable.Context.pfnCreate;
 
         if( nullptr == pfnCreate )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         if( context.enableParameterValidation )
         {
@@ -699,7 +699,7 @@ namespace validation_layer
         auto pfnCreateEx = context.zeDdiTable.Context.pfnCreateEx;
 
         if( nullptr == pfnCreateEx )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         if( context.enableParameterValidation )
         {
@@ -733,7 +733,7 @@ namespace validation_layer
         auto pfnDestroy = context.zeDdiTable.Context.pfnDestroy;
 
         if( nullptr == pfnDestroy )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         if( context.enableParameterValidation )
         {
@@ -755,7 +755,7 @@ namespace validation_layer
         auto pfnGetStatus = context.zeDdiTable.Context.pfnGetStatus;
 
         if( nullptr == pfnGetStatus )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         if( context.enableParameterValidation )
         {
@@ -780,7 +780,7 @@ namespace validation_layer
         auto pfnCreate = context.zeDdiTable.CommandQueue.pfnCreate;
 
         if( nullptr == pfnCreate )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         if( context.enableParameterValidation )
         {
@@ -820,7 +820,7 @@ namespace validation_layer
         auto pfnDestroy = context.zeDdiTable.CommandQueue.pfnDestroy;
 
         if( nullptr == pfnDestroy )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         if( context.enableParameterValidation )
         {
@@ -846,7 +846,7 @@ namespace validation_layer
         auto pfnExecuteCommandLists = context.zeDdiTable.CommandQueue.pfnExecuteCommandLists;
 
         if( nullptr == pfnExecuteCommandLists )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         if( context.enableParameterValidation )
         {
@@ -881,7 +881,7 @@ namespace validation_layer
         auto pfnSynchronize = context.zeDdiTable.CommandQueue.pfnSynchronize;
 
         if( nullptr == pfnSynchronize )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         if( context.enableParameterValidation )
         {
@@ -906,7 +906,7 @@ namespace validation_layer
         auto pfnCreate = context.zeDdiTable.CommandList.pfnCreate;
 
         if( nullptr == pfnCreate )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         if( context.enableParameterValidation )
         {
@@ -943,7 +943,7 @@ namespace validation_layer
         auto pfnCreateImmediate = context.zeDdiTable.CommandList.pfnCreateImmediate;
 
         if( nullptr == pfnCreateImmediate )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         if( context.enableParameterValidation )
         {
@@ -983,7 +983,7 @@ namespace validation_layer
         auto pfnDestroy = context.zeDdiTable.CommandList.pfnDestroy;
 
         if( nullptr == pfnDestroy )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         if( context.enableParameterValidation )
         {
@@ -1005,7 +1005,7 @@ namespace validation_layer
         auto pfnClose = context.zeDdiTable.CommandList.pfnClose;
 
         if( nullptr == pfnClose )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         if( context.enableParameterValidation )
         {
@@ -1027,7 +1027,7 @@ namespace validation_layer
         auto pfnReset = context.zeDdiTable.CommandList.pfnReset;
 
         if( nullptr == pfnReset )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         if( context.enableParameterValidation )
         {
@@ -1056,7 +1056,7 @@ namespace validation_layer
         auto pfnAppendWriteGlobalTimestamp = context.zeDdiTable.CommandList.pfnAppendWriteGlobalTimestamp;
 
         if( nullptr == pfnAppendWriteGlobalTimestamp )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         if( context.enableParameterValidation )
         {
@@ -1089,7 +1089,7 @@ namespace validation_layer
         auto pfnAppendBarrier = context.zeDdiTable.CommandList.pfnAppendBarrier;
 
         if( nullptr == pfnAppendBarrier )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         if( context.enableParameterValidation )
         {
@@ -1122,7 +1122,7 @@ namespace validation_layer
         auto pfnAppendMemoryRangesBarrier = context.zeDdiTable.CommandList.pfnAppendMemoryRangesBarrier;
 
         if( nullptr == pfnAppendMemoryRangesBarrier )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         if( context.enableParameterValidation )
         {
@@ -1154,7 +1154,7 @@ namespace validation_layer
         auto pfnSystemBarrier = context.zeDdiTable.Context.pfnSystemBarrier;
 
         if( nullptr == pfnSystemBarrier )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         if( context.enableParameterValidation )
         {
@@ -1187,7 +1187,7 @@ namespace validation_layer
         auto pfnAppendMemoryCopy = context.zeDdiTable.CommandList.pfnAppendMemoryCopy;
 
         if( nullptr == pfnAppendMemoryCopy )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         if( context.enableParameterValidation )
         {
@@ -1227,7 +1227,7 @@ namespace validation_layer
         auto pfnAppendMemoryFill = context.zeDdiTable.CommandList.pfnAppendMemoryFill;
 
         if( nullptr == pfnAppendMemoryFill )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         if( context.enableParameterValidation )
         {
@@ -1275,7 +1275,7 @@ namespace validation_layer
         auto pfnAppendMemoryCopyRegion = context.zeDdiTable.CommandList.pfnAppendMemoryCopyRegion;
 
         if( nullptr == pfnAppendMemoryCopyRegion )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         if( context.enableParameterValidation )
         {
@@ -1321,7 +1321,7 @@ namespace validation_layer
         auto pfnAppendMemoryCopyFromContext = context.zeDdiTable.CommandList.pfnAppendMemoryCopyFromContext;
 
         if( nullptr == pfnAppendMemoryCopyFromContext )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         if( context.enableParameterValidation )
         {
@@ -1362,7 +1362,7 @@ namespace validation_layer
         auto pfnAppendImageCopy = context.zeDdiTable.CommandList.pfnAppendImageCopy;
 
         if( nullptr == pfnAppendImageCopy )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         if( context.enableParameterValidation )
         {
@@ -1402,7 +1402,7 @@ namespace validation_layer
         auto pfnAppendImageCopyRegion = context.zeDdiTable.CommandList.pfnAppendImageCopyRegion;
 
         if( nullptr == pfnAppendImageCopyRegion )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         if( context.enableParameterValidation )
         {
@@ -1441,7 +1441,7 @@ namespace validation_layer
         auto pfnAppendImageCopyToMemory = context.zeDdiTable.CommandList.pfnAppendImageCopyToMemory;
 
         if( nullptr == pfnAppendImageCopyToMemory )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         if( context.enableParameterValidation )
         {
@@ -1480,7 +1480,7 @@ namespace validation_layer
         auto pfnAppendImageCopyFromMemory = context.zeDdiTable.CommandList.pfnAppendImageCopyFromMemory;
 
         if( nullptr == pfnAppendImageCopyFromMemory )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         if( context.enableParameterValidation )
         {
@@ -1513,7 +1513,7 @@ namespace validation_layer
         auto pfnAppendMemoryPrefetch = context.zeDdiTable.CommandList.pfnAppendMemoryPrefetch;
 
         if( nullptr == pfnAppendMemoryPrefetch )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         if( context.enableParameterValidation )
         {
@@ -1542,7 +1542,7 @@ namespace validation_layer
         auto pfnAppendMemAdvise = context.zeDdiTable.CommandList.pfnAppendMemAdvise;
 
         if( nullptr == pfnAppendMemAdvise )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         if( context.enableParameterValidation )
         {
@@ -1581,7 +1581,7 @@ namespace validation_layer
         auto pfnCreate = context.zeDdiTable.EventPool.pfnCreate;
 
         if( nullptr == pfnCreate )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         if( context.enableParameterValidation )
         {
@@ -1618,7 +1618,7 @@ namespace validation_layer
         auto pfnDestroy = context.zeDdiTable.EventPool.pfnDestroy;
 
         if( nullptr == pfnDestroy )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         if( context.enableParameterValidation )
         {
@@ -1642,7 +1642,7 @@ namespace validation_layer
         auto pfnCreate = context.zeDdiTable.Event.pfnCreate;
 
         if( nullptr == pfnCreate )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         if( context.enableParameterValidation )
         {
@@ -1676,7 +1676,7 @@ namespace validation_layer
         auto pfnDestroy = context.zeDdiTable.Event.pfnDestroy;
 
         if( nullptr == pfnDestroy )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         if( context.enableParameterValidation )
         {
@@ -1699,7 +1699,7 @@ namespace validation_layer
         auto pfnGetIpcHandle = context.zeDdiTable.EventPool.pfnGetIpcHandle;
 
         if( nullptr == pfnGetIpcHandle )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         if( context.enableParameterValidation )
         {
@@ -1727,7 +1727,7 @@ namespace validation_layer
         auto pfnOpenIpcHandle = context.zeDdiTable.EventPool.pfnOpenIpcHandle;
 
         if( nullptr == pfnOpenIpcHandle )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         if( context.enableParameterValidation )
         {
@@ -1752,7 +1752,7 @@ namespace validation_layer
         auto pfnCloseIpcHandle = context.zeDdiTable.EventPool.pfnCloseIpcHandle;
 
         if( nullptr == pfnCloseIpcHandle )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         if( context.enableParameterValidation )
         {
@@ -1775,7 +1775,7 @@ namespace validation_layer
         auto pfnAppendSignalEvent = context.zeDdiTable.CommandList.pfnAppendSignalEvent;
 
         if( nullptr == pfnAppendSignalEvent )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         if( context.enableParameterValidation )
         {
@@ -1803,7 +1803,7 @@ namespace validation_layer
         auto pfnAppendWaitOnEvents = context.zeDdiTable.CommandList.pfnAppendWaitOnEvents;
 
         if( nullptr == pfnAppendWaitOnEvents )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         if( context.enableParameterValidation )
         {
@@ -1828,7 +1828,7 @@ namespace validation_layer
         auto pfnHostSignal = context.zeDdiTable.Event.pfnHostSignal;
 
         if( nullptr == pfnHostSignal )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         if( context.enableParameterValidation )
         {
@@ -1857,7 +1857,7 @@ namespace validation_layer
         auto pfnHostSynchronize = context.zeDdiTable.Event.pfnHostSynchronize;
 
         if( nullptr == pfnHostSynchronize )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         if( context.enableParameterValidation )
         {
@@ -1879,7 +1879,7 @@ namespace validation_layer
         auto pfnQueryStatus = context.zeDdiTable.Event.pfnQueryStatus;
 
         if( nullptr == pfnQueryStatus )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         if( context.enableParameterValidation )
         {
@@ -1902,7 +1902,7 @@ namespace validation_layer
         auto pfnAppendEventReset = context.zeDdiTable.CommandList.pfnAppendEventReset;
 
         if( nullptr == pfnAppendEventReset )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         if( context.enableParameterValidation )
         {
@@ -1927,7 +1927,7 @@ namespace validation_layer
         auto pfnHostReset = context.zeDdiTable.Event.pfnHostReset;
 
         if( nullptr == pfnHostReset )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         if( context.enableParameterValidation )
         {
@@ -1950,7 +1950,7 @@ namespace validation_layer
         auto pfnQueryKernelTimestamp = context.zeDdiTable.Event.pfnQueryKernelTimestamp;
 
         if( nullptr == pfnQueryKernelTimestamp )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         if( context.enableParameterValidation )
         {
@@ -1987,7 +1987,7 @@ namespace validation_layer
         auto pfnAppendQueryKernelTimestamps = context.zeDdiTable.CommandList.pfnAppendQueryKernelTimestamps;
 
         if( nullptr == pfnAppendQueryKernelTimestamps )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         if( context.enableParameterValidation )
         {
@@ -2020,7 +2020,7 @@ namespace validation_layer
         auto pfnCreate = context.zeDdiTable.Fence.pfnCreate;
 
         if( nullptr == pfnCreate )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         if( context.enableParameterValidation )
         {
@@ -2051,7 +2051,7 @@ namespace validation_layer
         auto pfnDestroy = context.zeDdiTable.Fence.pfnDestroy;
 
         if( nullptr == pfnDestroy )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         if( context.enableParameterValidation )
         {
@@ -2080,7 +2080,7 @@ namespace validation_layer
         auto pfnHostSynchronize = context.zeDdiTable.Fence.pfnHostSynchronize;
 
         if( nullptr == pfnHostSynchronize )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         if( context.enableParameterValidation )
         {
@@ -2102,7 +2102,7 @@ namespace validation_layer
         auto pfnQueryStatus = context.zeDdiTable.Fence.pfnQueryStatus;
 
         if( nullptr == pfnQueryStatus )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         if( context.enableParameterValidation )
         {
@@ -2124,7 +2124,7 @@ namespace validation_layer
         auto pfnReset = context.zeDdiTable.Fence.pfnReset;
 
         if( nullptr == pfnReset )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         if( context.enableParameterValidation )
         {
@@ -2148,7 +2148,7 @@ namespace validation_layer
         auto pfnGetProperties = context.zeDdiTable.Image.pfnGetProperties;
 
         if( nullptr == pfnGetProperties )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         if( context.enableParameterValidation )
         {
@@ -2185,7 +2185,7 @@ namespace validation_layer
         auto pfnCreate = context.zeDdiTable.Image.pfnCreate;
 
         if( nullptr == pfnCreate )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         if( context.enableParameterValidation )
         {
@@ -2222,7 +2222,7 @@ namespace validation_layer
         auto pfnDestroy = context.zeDdiTable.Image.pfnDestroy;
 
         if( nullptr == pfnDestroy )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         if( context.enableParameterValidation )
         {
@@ -2252,7 +2252,7 @@ namespace validation_layer
         auto pfnAllocShared = context.zeDdiTable.Mem.pfnAllocShared;
 
         if( nullptr == pfnAllocShared )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         if( context.enableParameterValidation )
         {
@@ -2302,7 +2302,7 @@ namespace validation_layer
         auto pfnAllocDevice = context.zeDdiTable.Mem.pfnAllocDevice;
 
         if( nullptr == pfnAllocDevice )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         if( context.enableParameterValidation )
         {
@@ -2348,7 +2348,7 @@ namespace validation_layer
         auto pfnAllocHost = context.zeDdiTable.Mem.pfnAllocHost;
 
         if( nullptr == pfnAllocHost )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         if( context.enableParameterValidation )
         {
@@ -2386,7 +2386,7 @@ namespace validation_layer
         auto pfnFree = context.zeDdiTable.Mem.pfnFree;
 
         if( nullptr == pfnFree )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         if( context.enableParameterValidation )
         {
@@ -2414,7 +2414,7 @@ namespace validation_layer
         auto pfnGetAllocProperties = context.zeDdiTable.Mem.pfnGetAllocProperties;
 
         if( nullptr == pfnGetAllocProperties )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         if( context.enableParameterValidation )
         {
@@ -2445,7 +2445,7 @@ namespace validation_layer
         auto pfnGetAddressRange = context.zeDdiTable.Mem.pfnGetAddressRange;
 
         if( nullptr == pfnGetAddressRange )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         if( context.enableParameterValidation )
         {
@@ -2472,7 +2472,7 @@ namespace validation_layer
         auto pfnGetIpcHandle = context.zeDdiTable.Mem.pfnGetIpcHandle;
 
         if( nullptr == pfnGetIpcHandle )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         if( context.enableParameterValidation )
         {
@@ -2505,7 +2505,7 @@ namespace validation_layer
         auto pfnOpenIpcHandle = context.zeDdiTable.Mem.pfnOpenIpcHandle;
 
         if( nullptr == pfnOpenIpcHandle )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         if( context.enableParameterValidation )
         {
@@ -2537,7 +2537,7 @@ namespace validation_layer
         auto pfnCloseIpcHandle = context.zeDdiTable.Mem.pfnCloseIpcHandle;
 
         if( nullptr == pfnCloseIpcHandle )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         if( context.enableParameterValidation )
         {
@@ -2566,7 +2566,7 @@ namespace validation_layer
         auto pfnCreate = context.zeDdiTable.Module.pfnCreate;
 
         if( nullptr == pfnCreate )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         if( context.enableParameterValidation )
         {
@@ -2606,7 +2606,7 @@ namespace validation_layer
         auto pfnDestroy = context.zeDdiTable.Module.pfnDestroy;
 
         if( nullptr == pfnDestroy )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         if( context.enableParameterValidation )
         {
@@ -2631,7 +2631,7 @@ namespace validation_layer
         auto pfnDynamicLink = context.zeDdiTable.Module.pfnDynamicLink;
 
         if( nullptr == pfnDynamicLink )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         if( context.enableParameterValidation )
         {
@@ -2653,7 +2653,7 @@ namespace validation_layer
         auto pfnDestroy = context.zeDdiTable.ModuleBuildLog.pfnDestroy;
 
         if( nullptr == pfnDestroy )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         if( context.enableParameterValidation )
         {
@@ -2677,7 +2677,7 @@ namespace validation_layer
         auto pfnGetString = context.zeDdiTable.ModuleBuildLog.pfnGetString;
 
         if( nullptr == pfnGetString )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         if( context.enableParameterValidation )
         {
@@ -2704,7 +2704,7 @@ namespace validation_layer
         auto pfnGetNativeBinary = context.zeDdiTable.Module.pfnGetNativeBinary;
 
         if( nullptr == pfnGetNativeBinary )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         if( context.enableParameterValidation )
         {
@@ -2732,7 +2732,7 @@ namespace validation_layer
         auto pfnGetGlobalPointer = context.zeDdiTable.Module.pfnGetGlobalPointer;
 
         if( nullptr == pfnGetGlobalPointer )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         if( context.enableParameterValidation )
         {
@@ -2765,7 +2765,7 @@ namespace validation_layer
         auto pfnGetKernelNames = context.zeDdiTable.Module.pfnGetKernelNames;
 
         if( nullptr == pfnGetKernelNames )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         if( context.enableParameterValidation )
         {
@@ -2791,7 +2791,7 @@ namespace validation_layer
         auto pfnGetProperties = context.zeDdiTable.Module.pfnGetProperties;
 
         if( nullptr == pfnGetProperties )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         if( context.enableParameterValidation )
         {
@@ -2818,7 +2818,7 @@ namespace validation_layer
         auto pfnCreate = context.zeDdiTable.Kernel.pfnCreate;
 
         if( nullptr == pfnCreate )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         if( context.enableParameterValidation )
         {
@@ -2852,7 +2852,7 @@ namespace validation_layer
         auto pfnDestroy = context.zeDdiTable.Kernel.pfnDestroy;
 
         if( nullptr == pfnDestroy )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         if( context.enableParameterValidation )
         {
@@ -2876,7 +2876,7 @@ namespace validation_layer
         auto pfnGetFunctionPointer = context.zeDdiTable.Module.pfnGetFunctionPointer;
 
         if( nullptr == pfnGetFunctionPointer )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         if( context.enableParameterValidation )
         {
@@ -2907,7 +2907,7 @@ namespace validation_layer
         auto pfnSetGroupSize = context.zeDdiTable.Kernel.pfnSetGroupSize;
 
         if( nullptr == pfnSetGroupSize )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         if( context.enableParameterValidation )
         {
@@ -2935,7 +2935,7 @@ namespace validation_layer
         auto pfnSuggestGroupSize = context.zeDdiTable.Kernel.pfnSuggestGroupSize;
 
         if( nullptr == pfnSuggestGroupSize )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         if( context.enableParameterValidation )
         {
@@ -2967,7 +2967,7 @@ namespace validation_layer
         auto pfnSuggestMaxCooperativeGroupCount = context.zeDdiTable.Kernel.pfnSuggestMaxCooperativeGroupCount;
 
         if( nullptr == pfnSuggestMaxCooperativeGroupCount )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         if( context.enableParameterValidation )
         {
@@ -2996,7 +2996,7 @@ namespace validation_layer
         auto pfnSetArgumentValue = context.zeDdiTable.Kernel.pfnSetArgumentValue;
 
         if( nullptr == pfnSetArgumentValue )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         if( context.enableParameterValidation )
         {
@@ -3019,7 +3019,7 @@ namespace validation_layer
         auto pfnSetIndirectAccess = context.zeDdiTable.Kernel.pfnSetIndirectAccess;
 
         if( nullptr == pfnSetIndirectAccess )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         if( context.enableParameterValidation )
         {
@@ -3045,7 +3045,7 @@ namespace validation_layer
         auto pfnGetIndirectAccess = context.zeDdiTable.Kernel.pfnGetIndirectAccess;
 
         if( nullptr == pfnGetIndirectAccess )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         if( context.enableParameterValidation )
         {
@@ -3074,7 +3074,7 @@ namespace validation_layer
         auto pfnGetSourceAttributes = context.zeDdiTable.Kernel.pfnGetSourceAttributes;
 
         if( nullptr == pfnGetSourceAttributes )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         if( context.enableParameterValidation )
         {
@@ -3104,7 +3104,7 @@ namespace validation_layer
         auto pfnSetCacheConfig = context.zeDdiTable.Kernel.pfnSetCacheConfig;
 
         if( nullptr == pfnSetCacheConfig )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         if( context.enableParameterValidation )
         {
@@ -3130,7 +3130,7 @@ namespace validation_layer
         auto pfnGetProperties = context.zeDdiTable.Kernel.pfnGetProperties;
 
         if( nullptr == pfnGetProperties )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         if( context.enableParameterValidation )
         {
@@ -3158,7 +3158,7 @@ namespace validation_layer
         auto pfnGetName = context.zeDdiTable.Kernel.pfnGetName;
 
         if( nullptr == pfnGetName )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         if( context.enableParameterValidation )
         {
@@ -3190,7 +3190,7 @@ namespace validation_layer
         auto pfnAppendLaunchKernel = context.zeDdiTable.CommandList.pfnAppendLaunchKernel;
 
         if( nullptr == pfnAppendLaunchKernel )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         if( context.enableParameterValidation )
         {
@@ -3228,7 +3228,7 @@ namespace validation_layer
         auto pfnAppendLaunchCooperativeKernel = context.zeDdiTable.CommandList.pfnAppendLaunchCooperativeKernel;
 
         if( nullptr == pfnAppendLaunchCooperativeKernel )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         if( context.enableParameterValidation )
         {
@@ -3267,7 +3267,7 @@ namespace validation_layer
         auto pfnAppendLaunchKernelIndirect = context.zeDdiTable.CommandList.pfnAppendLaunchKernelIndirect;
 
         if( nullptr == pfnAppendLaunchKernelIndirect )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         if( context.enableParameterValidation )
         {
@@ -3310,7 +3310,7 @@ namespace validation_layer
         auto pfnAppendLaunchMultipleKernelsIndirect = context.zeDdiTable.CommandList.pfnAppendLaunchMultipleKernelsIndirect;
 
         if( nullptr == pfnAppendLaunchMultipleKernelsIndirect )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         if( context.enableParameterValidation )
         {
@@ -3347,7 +3347,7 @@ namespace validation_layer
         auto pfnMakeMemoryResident = context.zeDdiTable.Context.pfnMakeMemoryResident;
 
         if( nullptr == pfnMakeMemoryResident )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         if( context.enableParameterValidation )
         {
@@ -3378,7 +3378,7 @@ namespace validation_layer
         auto pfnEvictMemory = context.zeDdiTable.Context.pfnEvictMemory;
 
         if( nullptr == pfnEvictMemory )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         if( context.enableParameterValidation )
         {
@@ -3408,7 +3408,7 @@ namespace validation_layer
         auto pfnMakeImageResident = context.zeDdiTable.Context.pfnMakeImageResident;
 
         if( nullptr == pfnMakeImageResident )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         if( context.enableParameterValidation )
         {
@@ -3438,7 +3438,7 @@ namespace validation_layer
         auto pfnEvictImage = context.zeDdiTable.Context.pfnEvictImage;
 
         if( nullptr == pfnEvictImage )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         if( context.enableParameterValidation )
         {
@@ -3469,7 +3469,7 @@ namespace validation_layer
         auto pfnCreate = context.zeDdiTable.Sampler.pfnCreate;
 
         if( nullptr == pfnCreate )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         if( context.enableParameterValidation )
         {
@@ -3506,7 +3506,7 @@ namespace validation_layer
         auto pfnDestroy = context.zeDdiTable.Sampler.pfnDestroy;
 
         if( nullptr == pfnDestroy )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         if( context.enableParameterValidation )
         {
@@ -3532,7 +3532,7 @@ namespace validation_layer
         auto pfnReserve = context.zeDdiTable.VirtualMem.pfnReserve;
 
         if( nullptr == pfnReserve )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         if( context.enableParameterValidation )
         {
@@ -3565,7 +3565,7 @@ namespace validation_layer
         auto pfnFree = context.zeDdiTable.VirtualMem.pfnFree;
 
         if( nullptr == pfnFree )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         if( context.enableParameterValidation )
         {
@@ -3597,7 +3597,7 @@ namespace validation_layer
         auto pfnQueryPageSize = context.zeDdiTable.VirtualMem.pfnQueryPageSize;
 
         if( nullptr == pfnQueryPageSize )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         if( context.enableParameterValidation )
         {
@@ -3631,7 +3631,7 @@ namespace validation_layer
         auto pfnCreate = context.zeDdiTable.PhysicalMem.pfnCreate;
 
         if( nullptr == pfnCreate )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         if( context.enableParameterValidation )
         {
@@ -3669,7 +3669,7 @@ namespace validation_layer
         auto pfnDestroy = context.zeDdiTable.PhysicalMem.pfnDestroy;
 
         if( nullptr == pfnDestroy )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         if( context.enableParameterValidation )
         {
@@ -3702,7 +3702,7 @@ namespace validation_layer
         auto pfnMap = context.zeDdiTable.VirtualMem.pfnMap;
 
         if( nullptr == pfnMap )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         if( context.enableParameterValidation )
         {
@@ -3738,7 +3738,7 @@ namespace validation_layer
         auto pfnUnmap = context.zeDdiTable.VirtualMem.pfnUnmap;
 
         if( nullptr == pfnUnmap )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         if( context.enableParameterValidation )
         {
@@ -3770,7 +3770,7 @@ namespace validation_layer
         auto pfnSetAccessAttribute = context.zeDdiTable.VirtualMem.pfnSetAccessAttribute;
 
         if( nullptr == pfnSetAccessAttribute )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         if( context.enableParameterValidation )
         {
@@ -3806,7 +3806,7 @@ namespace validation_layer
         auto pfnGetAccessAttribute = context.zeDdiTable.VirtualMem.pfnGetAccessAttribute;
 
         if( nullptr == pfnGetAccessAttribute )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         if( context.enableParameterValidation )
         {
@@ -3843,7 +3843,7 @@ namespace validation_layer
         auto pfnSetGlobalOffsetExp = context.zeDdiTable.KernelExp.pfnSetGlobalOffsetExp;
 
         if( nullptr == pfnSetGlobalOffsetExp )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         if( context.enableParameterValidation )
         {
@@ -3870,7 +3870,7 @@ namespace validation_layer
         auto pfnReserveCacheExt = context.zeDdiTable.Device.pfnReserveCacheExt;
 
         if( nullptr == pfnReserveCacheExt )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         if( context.enableParameterValidation )
         {
@@ -3895,7 +3895,7 @@ namespace validation_layer
         auto pfnSetCacheAdviceExt = context.zeDdiTable.Device.pfnSetCacheAdviceExt;
 
         if( nullptr == pfnSetCacheAdviceExt )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         if( context.enableParameterValidation )
         {
@@ -3932,7 +3932,7 @@ namespace validation_layer
         auto pfnQueryTimestampsExp = context.zeDdiTable.EventExp.pfnQueryTimestampsExp;
 
         if( nullptr == pfnQueryTimestampsExp )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         if( context.enableParameterValidation )
         {
@@ -3961,7 +3961,7 @@ namespace validation_layer
         auto pfnGetMemoryPropertiesExp = context.zeDdiTable.ImageExp.pfnGetMemoryPropertiesExp;
 
         if( nullptr == pfnGetMemoryPropertiesExp )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         if( context.enableParameterValidation )
         {
@@ -3990,7 +3990,7 @@ namespace validation_layer
         auto pfnViewCreateExp = context.zeDdiTable.ImageExp.pfnViewCreateExp;
 
         if( nullptr == pfnViewCreateExp )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         if( context.enableParameterValidation )
         {
@@ -4031,7 +4031,7 @@ namespace validation_layer
         auto pfnSchedulingHintExp = context.zeDdiTable.KernelExp.pfnSchedulingHintExp;
 
         if( nullptr == pfnSchedulingHintExp )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         if( context.enableParameterValidation )
         {
@@ -4047,6 +4047,217 @@ namespace validation_layer
         }
 
         return pfnSchedulingHintExp( hKernel, pHint );
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeDevicePciGetPropertiesExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeDevicePciGetPropertiesExt(
+        ze_device_handle_t hDevice,                     ///< [in] handle of the device object.
+        ze_pci_ext_properties_t* pProperties            ///< [in,out] returns the PCI properties of the device.
+        )
+    {
+        auto pfnPciGetPropertiesExt = context.zeDdiTable.Device.pfnPciGetPropertiesExt;
+
+        if( nullptr == pfnPciGetPropertiesExt )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        if( context.enableParameterValidation )
+        {
+            if( nullptr == hDevice )
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+            if( nullptr == pProperties )
+                return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+        }
+
+        return pfnPciGetPropertiesExt( hDevice, pProperties );
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeCommandListAppendImageCopyToMemoryExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeCommandListAppendImageCopyToMemoryExt(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of command list
+        void* dstptr,                                   ///< [in] pointer to destination memory to copy to
+        ze_image_handle_t hSrcImage,                    ///< [in] handle of source image to copy from
+        const ze_image_region_t* pSrcRegion,            ///< [in][optional] source region descriptor
+        uint32_t destRowPitch,                          ///< [in] size in bytes of the 1D slice of the 2D region of a 2D or 3D
+                                                        ///< image or each image of a 1D or 2D image array being written
+        uint32_t destSlicePitch,                        ///< [in] size in bytes of the 2D slice of the 3D region of a 3D image or
+                                                        ///< each image of a 1D or 2D image array being written
+        ze_event_handle_t hSignalEvent,                 ///< [in][optional] handle of the event to signal on completion
+        uint32_t numWaitEvents,                         ///< [in][optional] number of events to wait on before launching; must be 0
+                                                        ///< if `nullptr == phWaitEvents`
+        ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
+                                                        ///< on before launching
+        )
+    {
+        auto pfnAppendImageCopyToMemoryExt = context.zeDdiTable.CommandList.pfnAppendImageCopyToMemoryExt;
+
+        if( nullptr == pfnAppendImageCopyToMemoryExt )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        if( context.enableParameterValidation )
+        {
+            if( nullptr == hCommandList )
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+            if( nullptr == hSrcImage )
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+            if( nullptr == dstptr )
+                return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+            if( (nullptr == phWaitEvents) && (0 < numWaitEvents) )
+                return ZE_RESULT_ERROR_INVALID_SIZE;
+
+        }
+
+        return pfnAppendImageCopyToMemoryExt( hCommandList, dstptr, hSrcImage, pSrcRegion, destRowPitch, destSlicePitch, hSignalEvent, numWaitEvents, phWaitEvents );
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeCommandListAppendImageCopyFromMemoryExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeCommandListAppendImageCopyFromMemoryExt(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of command list
+        ze_image_handle_t hDstImage,                    ///< [in] handle of destination image to copy to
+        const void* srcptr,                             ///< [in] pointer to source memory to copy from
+        const ze_image_region_t* pDstRegion,            ///< [in][optional] destination region descriptor
+        uint32_t srcRowPitch,                           ///< [in] size in bytes of the 1D slice of the 2D region of a 2D or 3D
+                                                        ///< image or each image of a 1D or 2D image array being read
+        uint32_t srcSlicePitch,                         ///< [in] size in bytes of the 2D slice of the 3D region of a 3D image or
+                                                        ///< each image of a 1D or 2D image array being read
+        ze_event_handle_t hSignalEvent,                 ///< [in][optional] handle of the event to signal on completion
+        uint32_t numWaitEvents,                         ///< [in][optional] number of events to wait on before launching; must be 0
+                                                        ///< if `nullptr == phWaitEvents`
+        ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
+                                                        ///< on before launching
+        )
+    {
+        auto pfnAppendImageCopyFromMemoryExt = context.zeDdiTable.CommandList.pfnAppendImageCopyFromMemoryExt;
+
+        if( nullptr == pfnAppendImageCopyFromMemoryExt )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        if( context.enableParameterValidation )
+        {
+            if( nullptr == hCommandList )
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+            if( nullptr == hDstImage )
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+            if( nullptr == srcptr )
+                return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+            if( (nullptr == phWaitEvents) && (0 < numWaitEvents) )
+                return ZE_RESULT_ERROR_INVALID_SIZE;
+
+        }
+
+        return pfnAppendImageCopyFromMemoryExt( hCommandList, hDstImage, srcptr, pDstRegion, srcRowPitch, srcSlicePitch, hSignalEvent, numWaitEvents, phWaitEvents );
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeImageGetAllocPropertiesExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeImageGetAllocPropertiesExt(
+        ze_context_handle_t hContext,                   ///< [in] handle of the context object
+        ze_image_handle_t hImage,                       ///< [in] handle of image object to query
+        ze_image_allocation_ext_properties_t* pImageAllocProperties ///< [in,out] query result for image allocation properties
+        )
+    {
+        auto pfnGetAllocPropertiesExt = context.zeDdiTable.Image.pfnGetAllocPropertiesExt;
+
+        if( nullptr == pfnGetAllocPropertiesExt )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        if( context.enableParameterValidation )
+        {
+            if( nullptr == hContext )
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+            if( nullptr == hImage )
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+            if( nullptr == pImageAllocProperties )
+                return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+        }
+
+        return pfnGetAllocPropertiesExt( hContext, hImage, pImageAllocProperties );
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeModuleInspectLinkageExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeModuleInspectLinkageExt(
+        ze_linkage_inspection_ext_desc_t* pInspectDesc, ///< [in] pointer to linkage inspection descriptor structure.
+        uint32_t numModules,                            ///< [in] number of modules to be inspected pointed to by phModules.
+        ze_module_handle_t* phModules,                  ///< [in][range(0, numModules)] pointer to an array of modules to be
+                                                        ///< inspected for import dependencies.
+        ze_module_build_log_handle_t* phLog             ///< [out] pointer to handle of linkage inspection log. Log object will
+                                                        ///< contain separate lists of imports, un-resolvable imports, and exports.
+        )
+    {
+        auto pfnInspectLinkageExt = context.zeDdiTable.Module.pfnInspectLinkageExt;
+
+        if( nullptr == pfnInspectLinkageExt )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        if( context.enableParameterValidation )
+        {
+            if( nullptr == pInspectDesc )
+                return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+            if( nullptr == phModules )
+                return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+            if( nullptr == phLog )
+                return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+            if( 0x7 < pInspectDesc->flags )
+                return ZE_RESULT_ERROR_INVALID_ENUMERATION;
+
+        }
+
+        return pfnInspectLinkageExt( pInspectDesc, numModules, phModules, phLog );
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeMemFreeExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeMemFreeExt(
+        ze_context_handle_t hContext,                   ///< [in] handle of the context object
+        const ze_memory_free_ext_desc_t* desc,          ///< [in] pointer to memory free descriptor
+        void* ptr                                       ///< [in][release] pointer to memory to free
+        )
+    {
+        auto pfnFreeExt = context.zeDdiTable.Mem.pfnFreeExt;
+
+        if( nullptr == pfnFreeExt )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        if( context.enableParameterValidation )
+        {
+            if( nullptr == hContext )
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+            if( nullptr == desc )
+                return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+            if( nullptr == ptr )
+                return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+            if( 0x3 < desc->freePolicy )
+                return ZE_RESULT_ERROR_INVALID_ENUMERATION;
+
+        }
+
+        return pfnFreeExt( hContext, desc, ptr );
     }
 
 } // namespace validation_layer
@@ -4207,6 +4418,9 @@ zeGetDeviceProcAddrTable(
 
     dditable.pfnSetCacheAdviceExt                        = pDdiTable->pfnSetCacheAdviceExt;
     pDdiTable->pfnSetCacheAdviceExt                      = validation_layer::zeDeviceSetCacheAdviceExt;
+
+    dditable.pfnPciGetPropertiesExt                      = pDdiTable->pfnPciGetPropertiesExt;
+    pDdiTable->pfnPciGetPropertiesExt                    = validation_layer::zeDevicePciGetPropertiesExt;
 
     return result;
 }
@@ -4408,6 +4622,12 @@ zeGetCommandListProcAddrTable(
 
     dditable.pfnAppendLaunchMultipleKernelsIndirect      = pDdiTable->pfnAppendLaunchMultipleKernelsIndirect;
     pDdiTable->pfnAppendLaunchMultipleKernelsIndirect    = validation_layer::zeCommandListAppendLaunchMultipleKernelsIndirect;
+
+    dditable.pfnAppendImageCopyToMemoryExt               = pDdiTable->pfnAppendImageCopyToMemoryExt;
+    pDdiTable->pfnAppendImageCopyToMemoryExt             = validation_layer::zeCommandListAppendImageCopyToMemoryExt;
+
+    dditable.pfnAppendImageCopyFromMemoryExt             = pDdiTable->pfnAppendImageCopyFromMemoryExt;
+    pDdiTable->pfnAppendImageCopyFromMemoryExt           = validation_layer::zeCommandListAppendImageCopyFromMemoryExt;
 
     return result;
 }
@@ -4612,6 +4832,9 @@ zeGetImageProcAddrTable(
     dditable.pfnDestroy                                  = pDdiTable->pfnDestroy;
     pDdiTable->pfnDestroy                                = validation_layer::zeImageDestroy;
 
+    dditable.pfnGetAllocPropertiesExt                    = pDdiTable->pfnGetAllocPropertiesExt;
+    pDdiTable->pfnGetAllocPropertiesExt                  = validation_layer::zeImageGetAllocPropertiesExt;
+
     return result;
 }
 
@@ -4799,6 +5022,9 @@ zeGetMemProcAddrTable(
     dditable.pfnCloseIpcHandle                           = pDdiTable->pfnCloseIpcHandle;
     pDdiTable->pfnCloseIpcHandle                         = validation_layer::zeMemCloseIpcHandle;
 
+    dditable.pfnFreeExt                                  = pDdiTable->pfnFreeExt;
+    pDdiTable->pfnFreeExt                                = validation_layer::zeMemFreeExt;
+
     return result;
 }
 
@@ -4850,6 +5076,9 @@ zeGetModuleProcAddrTable(
 
     dditable.pfnGetFunctionPointer                       = pDdiTable->pfnGetFunctionPointer;
     pDdiTable->pfnGetFunctionPointer                     = validation_layer::zeModuleGetFunctionPointer;
+
+    dditable.pfnInspectLinkageExt                        = pDdiTable->pfnInspectLinkageExt;
+    pDdiTable->pfnInspectLinkageExt                      = validation_layer::zeModuleInspectLinkageExt;
 
     return result;
 }

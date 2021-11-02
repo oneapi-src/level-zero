@@ -62,7 +62,7 @@ namespace loader
             auto getTable = reinterpret_cast<ze_pfnGetGlobalProcAddrTable_t>(
                 GET_FUNCTION_PTR(validationLayer, "zeGetGlobalProcAddrTable") );
             if(!getTable)
-                return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+                return ZE_RESULT_ERROR_UNINITIALIZED;
             auto getTableResult = getTable( version, &global);
             if(getTableResult != ZE_RESULT_SUCCESS) {
                 return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -73,7 +73,7 @@ namespace loader
             auto getTable = reinterpret_cast<ze_pfnGetGlobalProcAddrTable_t>(
                 GET_FUNCTION_PTR(tracingLayer, "zeGetGlobalProcAddrTable") );
             if(!getTable)
-                return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+                return ZE_RESULT_ERROR_UNINITIALIZED;
             auto getTableResult = getTable( version, &global);
             if(getTableResult != ZE_RESULT_SUCCESS) {
                 return ZE_RESULT_ERROR_UNINITIALIZED;

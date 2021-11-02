@@ -38,7 +38,7 @@ zelTracerCreate(
 {
     auto pfnCreate = ze_lib::context->zelTracingDdiTable.Tracer.pfnCreate;
     if( nullptr == pfnCreate )
-        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        return ZE_RESULT_ERROR_UNINITIALIZED;
 
     return pfnCreate( desc, phTracer );
 }
@@ -68,7 +68,7 @@ zelTracerDestroy(
 {
     auto pfnDestroy = ze_lib::context->zelTracingDdiTable.Tracer.pfnDestroy;
     if( nullptr == pfnDestroy )
-        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        return ZE_RESULT_ERROR_UNINITIALIZED;
 
     return pfnDestroy( hTracer );
 }
@@ -101,7 +101,7 @@ zelTracerSetPrologues(
 {
     auto pfnSetPrologues = ze_lib::context->zelTracingDdiTable.Tracer.pfnSetPrologues;
     if( nullptr == pfnSetPrologues )
-        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        return ZE_RESULT_ERROR_UNINITIALIZED;
 
     return pfnSetPrologues( hTracer, pCoreCbs );
 }
@@ -134,7 +134,7 @@ zelTracerSetEpilogues(
 {
     auto pfnSetEpilogues = ze_lib::context->zelTracingDdiTable.Tracer.pfnSetEpilogues;
     if( nullptr == pfnSetEpilogues )
-        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        return ZE_RESULT_ERROR_UNINITIALIZED;
 
     return pfnSetEpilogues( hTracer, pCoreCbs );
 }
@@ -160,7 +160,7 @@ zelTracerSetEnabled(
 {
     auto pfnSetEnabled = ze_lib::context->zelTracingDdiTable.Tracer.pfnSetEnabled;
     if( nullptr == pfnSetEnabled )
-        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        return ZE_RESULT_ERROR_UNINITIALIZED;
 
     return pfnSetEnabled( hTracer, enable );
 }

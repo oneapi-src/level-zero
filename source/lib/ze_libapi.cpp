@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (C) 2019 Intel Corporation
+ * Copyright (C) 2019-2021 Intel Corporation
  *
  * SPDX-License-Identifier: MIT
  *
@@ -53,7 +53,7 @@ zeInit(
 
     auto pfnInit = ze_lib::context->zeDdiTable.Global.pfnInit;
     if( nullptr == pfnInit )
-        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        return ZE_RESULT_ERROR_UNINITIALIZED;
 
     return pfnInit( flags );
 }
@@ -94,7 +94,7 @@ zeDriverGet(
 {
     auto pfnGet = ze_lib::context->zeDdiTable.Driver.pfnGet;
     if( nullptr == pfnGet )
-        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        return ZE_RESULT_ERROR_UNINITIALIZED;
 
     return pfnGet( pCount, phDrivers );
 }
@@ -122,7 +122,7 @@ zeDriverGetApiVersion(
 {
     auto pfnGetApiVersion = ze_lib::context->zeDdiTable.Driver.pfnGetApiVersion;
     if( nullptr == pfnGetApiVersion )
-        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        return ZE_RESULT_ERROR_UNINITIALIZED;
 
     return pfnGetApiVersion( hDriver, version );
 }
@@ -154,7 +154,7 @@ zeDriverGetProperties(
 {
     auto pfnGetProperties = ze_lib::context->zeDdiTable.Driver.pfnGetProperties;
     if( nullptr == pfnGetProperties )
-        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        return ZE_RESULT_ERROR_UNINITIALIZED;
 
     return pfnGetProperties( hDriver, pDriverProperties );
 }
@@ -182,7 +182,7 @@ zeDriverGetIpcProperties(
 {
     auto pfnGetIpcProperties = ze_lib::context->zeDdiTable.Driver.pfnGetIpcProperties;
     if( nullptr == pfnGetIpcProperties )
-        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        return ZE_RESULT_ERROR_UNINITIALIZED;
 
     return pfnGetIpcProperties( hDriver, pIpcProperties );
 }
@@ -223,7 +223,7 @@ zeDriverGetExtensionProperties(
 {
     auto pfnGetExtensionProperties = ze_lib::context->zeDdiTable.Driver.pfnGetExtensionProperties;
     if( nullptr == pfnGetExtensionProperties )
-        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        return ZE_RESULT_ERROR_UNINITIALIZED;
 
     return pfnGetExtensionProperties( hDriver, pCount, pExtensionProperties );
 }
@@ -254,7 +254,7 @@ zeDriverGetExtensionFunctionAddress(
 {
     auto pfnGetExtensionFunctionAddress = ze_lib::context->zeDdiTable.Driver.pfnGetExtensionFunctionAddress;
     if( nullptr == pfnGetExtensionFunctionAddress )
-        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        return ZE_RESULT_ERROR_UNINITIALIZED;
 
     return pfnGetExtensionFunctionAddress( hDriver, name, ppFunctionAddress );
 }
@@ -294,7 +294,7 @@ zeDeviceGet(
 {
     auto pfnGet = ze_lib::context->zeDdiTable.Device.pfnGet;
     if( nullptr == pfnGet )
-        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        return ZE_RESULT_ERROR_UNINITIALIZED;
 
     return pfnGet( hDriver, pCount, phDevices );
 }
@@ -337,7 +337,7 @@ zeDeviceGetSubDevices(
 {
     auto pfnGetSubDevices = ze_lib::context->zeDdiTable.Device.pfnGetSubDevices;
     if( nullptr == pfnGetSubDevices )
-        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        return ZE_RESULT_ERROR_UNINITIALIZED;
 
     return pfnGetSubDevices( hDevice, pCount, phSubdevices );
 }
@@ -369,7 +369,7 @@ zeDeviceGetProperties(
 {
     auto pfnGetProperties = ze_lib::context->zeDdiTable.Device.pfnGetProperties;
     if( nullptr == pfnGetProperties )
-        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        return ZE_RESULT_ERROR_UNINITIALIZED;
 
     return pfnGetProperties( hDevice, pDeviceProperties );
 }
@@ -401,7 +401,7 @@ zeDeviceGetComputeProperties(
 {
     auto pfnGetComputeProperties = ze_lib::context->zeDdiTable.Device.pfnGetComputeProperties;
     if( nullptr == pfnGetComputeProperties )
-        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        return ZE_RESULT_ERROR_UNINITIALIZED;
 
     return pfnGetComputeProperties( hDevice, pComputeProperties );
 }
@@ -429,7 +429,7 @@ zeDeviceGetModuleProperties(
 {
     auto pfnGetModuleProperties = ze_lib::context->zeDdiTable.Device.pfnGetModuleProperties;
     if( nullptr == pfnGetModuleProperties )
-        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        return ZE_RESULT_ERROR_UNINITIALIZED;
 
     return pfnGetModuleProperties( hDevice, pModuleProperties );
 }
@@ -477,7 +477,7 @@ zeDeviceGetCommandQueueGroupProperties(
 {
     auto pfnGetCommandQueueGroupProperties = ze_lib::context->zeDdiTable.Device.pfnGetCommandQueueGroupProperties;
     if( nullptr == pfnGetCommandQueueGroupProperties )
-        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        return ZE_RESULT_ERROR_UNINITIALIZED;
 
     return pfnGetCommandQueueGroupProperties( hDevice, pCount, pCommandQueueGroupProperties );
 }
@@ -524,7 +524,7 @@ zeDeviceGetMemoryProperties(
 {
     auto pfnGetMemoryProperties = ze_lib::context->zeDdiTable.Device.pfnGetMemoryProperties;
     if( nullptr == pfnGetMemoryProperties )
-        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        return ZE_RESULT_ERROR_UNINITIALIZED;
 
     return pfnGetMemoryProperties( hDevice, pCount, pMemProperties );
 }
@@ -556,7 +556,7 @@ zeDeviceGetMemoryAccessProperties(
 {
     auto pfnGetMemoryAccessProperties = ze_lib::context->zeDdiTable.Device.pfnGetMemoryAccessProperties;
     if( nullptr == pfnGetMemoryAccessProperties )
-        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        return ZE_RESULT_ERROR_UNINITIALIZED;
 
     return pfnGetMemoryAccessProperties( hDevice, pMemAccessProperties );
 }
@@ -596,7 +596,7 @@ zeDeviceGetCacheProperties(
 {
     auto pfnGetCacheProperties = ze_lib::context->zeDdiTable.Device.pfnGetCacheProperties;
     if( nullptr == pfnGetCacheProperties )
-        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        return ZE_RESULT_ERROR_UNINITIALIZED;
 
     return pfnGetCacheProperties( hDevice, pCount, pCacheProperties );
 }
@@ -625,7 +625,7 @@ zeDeviceGetImageProperties(
 {
     auto pfnGetImageProperties = ze_lib::context->zeDdiTable.Device.pfnGetImageProperties;
     if( nullptr == pfnGetImageProperties )
-        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        return ZE_RESULT_ERROR_UNINITIALIZED;
 
     return pfnGetImageProperties( hDevice, pImageProperties );
 }
@@ -653,7 +653,7 @@ zeDeviceGetExternalMemoryProperties(
 {
     auto pfnGetExternalMemoryProperties = ze_lib::context->zeDdiTable.Device.pfnGetExternalMemoryProperties;
     if( nullptr == pfnGetExternalMemoryProperties )
-        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        return ZE_RESULT_ERROR_UNINITIALIZED;
 
     return pfnGetExternalMemoryProperties( hDevice, pExternalMemoryProperties );
 }
@@ -684,7 +684,7 @@ zeDeviceGetP2PProperties(
 {
     auto pfnGetP2PProperties = ze_lib::context->zeDdiTable.Device.pfnGetP2PProperties;
     if( nullptr == pfnGetP2PProperties )
-        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        return ZE_RESULT_ERROR_UNINITIALIZED;
 
     return pfnGetP2PProperties( hDevice, hPeerDevice, pP2PProperties );
 }
@@ -728,7 +728,7 @@ zeDeviceCanAccessPeer(
 {
     auto pfnCanAccessPeer = ze_lib::context->zeDdiTable.Device.pfnCanAccessPeer;
     if( nullptr == pfnCanAccessPeer )
-        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        return ZE_RESULT_ERROR_UNINITIALIZED;
 
     return pfnCanAccessPeer( hDevice, hPeerDevice, value );
 }
@@ -760,7 +760,7 @@ zeDeviceGetStatus(
 {
     auto pfnGetStatus = ze_lib::context->zeDdiTable.Device.pfnGetStatus;
     if( nullptr == pfnGetStatus )
-        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        return ZE_RESULT_ERROR_UNINITIALIZED;
 
     return pfnGetStatus( hDevice );
 }
@@ -793,7 +793,7 @@ zeDeviceGetGlobalTimestamps(
 {
     auto pfnGetGlobalTimestamps = ze_lib::context->zeDdiTable.Device.pfnGetGlobalTimestamps;
     if( nullptr == pfnGetGlobalTimestamps )
-        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        return ZE_RESULT_ERROR_UNINITIALIZED;
 
     return pfnGetGlobalTimestamps( hDevice, hostTimestamp, deviceTimestamp );
 }
@@ -829,7 +829,7 @@ zeContextCreate(
 {
     auto pfnCreate = ze_lib::context->zeDdiTable.Context.pfnCreate;
     if( nullptr == pfnCreate )
-        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        return ZE_RESULT_ERROR_UNINITIALIZED;
 
     return pfnCreate( hDriver, desc, phContext );
 }
@@ -874,7 +874,7 @@ zeContextCreateEx(
 {
     auto pfnCreateEx = ze_lib::context->zeDdiTable.Context.pfnCreateEx;
     if( nullptr == pfnCreateEx )
-        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        return ZE_RESULT_ERROR_UNINITIALIZED;
 
     return pfnCreateEx( hDriver, desc, numDevices, phDevices, phContext );
 }
@@ -905,7 +905,7 @@ zeContextDestroy(
 {
     auto pfnDestroy = ze_lib::context->zeDdiTable.Context.pfnDestroy;
     if( nullptr == pfnDestroy )
-        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        return ZE_RESULT_ERROR_UNINITIALIZED;
 
     return pfnDestroy( hContext );
 }
@@ -935,7 +935,7 @@ zeContextGetStatus(
 {
     auto pfnGetStatus = ze_lib::context->zeDdiTable.Context.pfnGetStatus;
     if( nullptr == pfnGetStatus )
-        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        return ZE_RESULT_ERROR_UNINITIALIZED;
 
     return pfnGetStatus( hContext );
 }
@@ -981,7 +981,7 @@ zeCommandQueueCreate(
 {
     auto pfnCreate = ze_lib::context->zeDdiTable.CommandQueue.pfnCreate;
     if( nullptr == pfnCreate )
-        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        return ZE_RESULT_ERROR_UNINITIALIZED;
 
     return pfnCreate( hContext, hDevice, desc, phCommandQueue );
 }
@@ -1018,7 +1018,7 @@ zeCommandQueueDestroy(
 {
     auto pfnDestroy = ze_lib::context->zeDdiTable.CommandQueue.pfnDestroy;
     if( nullptr == pfnDestroy )
-        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        return ZE_RESULT_ERROR_UNINITIALIZED;
 
     return pfnDestroy( hCommandQueue );
 }
@@ -1070,7 +1070,7 @@ zeCommandQueueExecuteCommandLists(
 {
     auto pfnExecuteCommandLists = ze_lib::context->zeDdiTable.CommandQueue.pfnExecuteCommandLists;
     if( nullptr == pfnExecuteCommandLists )
-        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        return ZE_RESULT_ERROR_UNINITIALIZED;
 
     return pfnExecuteCommandLists( hCommandQueue, numCommandLists, phCommandLists, hFence );
 }
@@ -1104,7 +1104,7 @@ zeCommandQueueSynchronize(
 {
     auto pfnSynchronize = ze_lib::context->zeDdiTable.CommandQueue.pfnSynchronize;
     if( nullptr == pfnSynchronize )
-        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        return ZE_RESULT_ERROR_UNINITIALIZED;
 
     return pfnSynchronize( hCommandQueue, timeout );
 }
@@ -1145,7 +1145,7 @@ zeCommandListCreate(
 {
     auto pfnCreate = ze_lib::context->zeDdiTable.CommandList.pfnCreate;
     if( nullptr == pfnCreate )
-        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        return ZE_RESULT_ERROR_UNINITIALIZED;
 
     return pfnCreate( hContext, hDevice, desc, phCommandList );
 }
@@ -1190,7 +1190,7 @@ zeCommandListCreateImmediate(
 {
     auto pfnCreateImmediate = ze_lib::context->zeDdiTable.CommandList.pfnCreateImmediate;
     if( nullptr == pfnCreateImmediate )
-        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        return ZE_RESULT_ERROR_UNINITIALIZED;
 
     return pfnCreateImmediate( hContext, hDevice, altdesc, phCommandList );
 }
@@ -1221,7 +1221,7 @@ zeCommandListDestroy(
 {
     auto pfnDestroy = ze_lib::context->zeDdiTable.CommandList.pfnDestroy;
     if( nullptr == pfnDestroy )
-        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        return ZE_RESULT_ERROR_UNINITIALIZED;
 
     return pfnDestroy( hCommandList );
 }
@@ -1247,7 +1247,7 @@ zeCommandListClose(
 {
     auto pfnClose = ze_lib::context->zeDdiTable.CommandList.pfnClose;
     if( nullptr == pfnClose )
-        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        return ZE_RESULT_ERROR_UNINITIALIZED;
 
     return pfnClose( hCommandList );
 }
@@ -1276,7 +1276,7 @@ zeCommandListReset(
 {
     auto pfnReset = ze_lib::context->zeDdiTable.CommandList.pfnReset;
     if( nullptr == pfnReset )
-        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        return ZE_RESULT_ERROR_UNINITIALIZED;
 
     return pfnReset( hCommandList );
 }
@@ -1325,7 +1325,7 @@ zeCommandListAppendWriteGlobalTimestamp(
 {
     auto pfnAppendWriteGlobalTimestamp = ze_lib::context->zeDdiTable.CommandList.pfnAppendWriteGlobalTimestamp;
     if( nullptr == pfnAppendWriteGlobalTimestamp )
-        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        return ZE_RESULT_ERROR_UNINITIALIZED;
 
     return pfnAppendWriteGlobalTimestamp( hCommandList, dstptr, hSignalEvent, numWaitEvents, phWaitEvents );
 }
@@ -1373,7 +1373,7 @@ zeCommandListAppendBarrier(
 {
     auto pfnAppendBarrier = ze_lib::context->zeDdiTable.CommandList.pfnAppendBarrier;
     if( nullptr == pfnAppendBarrier )
-        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        return ZE_RESULT_ERROR_UNINITIALIZED;
 
     return pfnAppendBarrier( hCommandList, hSignalEvent, numWaitEvents, phWaitEvents );
 }
@@ -1421,7 +1421,7 @@ zeCommandListAppendMemoryRangesBarrier(
 {
     auto pfnAppendMemoryRangesBarrier = ze_lib::context->zeDdiTable.CommandList.pfnAppendMemoryRangesBarrier;
     if( nullptr == pfnAppendMemoryRangesBarrier )
-        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        return ZE_RESULT_ERROR_UNINITIALIZED;
 
     return pfnAppendMemoryRangesBarrier( hCommandList, numRanges, pRangeSizes, pRanges, hSignalEvent, numWaitEvents, phWaitEvents );
 }
@@ -1454,7 +1454,7 @@ zeContextSystemBarrier(
 {
     auto pfnSystemBarrier = ze_lib::context->zeDdiTable.Context.pfnSystemBarrier;
     if( nullptr == pfnSystemBarrier )
-        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        return ZE_RESULT_ERROR_UNINITIALIZED;
 
     return pfnSystemBarrier( hContext, hDevice );
 }
@@ -1510,7 +1510,7 @@ zeCommandListAppendMemoryCopy(
 {
     auto pfnAppendMemoryCopy = ze_lib::context->zeDdiTable.CommandList.pfnAppendMemoryCopy;
     if( nullptr == pfnAppendMemoryCopy )
-        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        return ZE_RESULT_ERROR_UNINITIALIZED;
 
     return pfnAppendMemoryCopy( hCommandList, dstptr, srcptr, size, hSignalEvent, numWaitEvents, phWaitEvents );
 }
@@ -1569,7 +1569,7 @@ zeCommandListAppendMemoryFill(
 {
     auto pfnAppendMemoryFill = ze_lib::context->zeDdiTable.CommandList.pfnAppendMemoryFill;
     if( nullptr == pfnAppendMemoryFill )
-        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        return ZE_RESULT_ERROR_UNINITIALIZED;
 
     return pfnAppendMemoryFill( hCommandList, ptr, pattern, pattern_size, size, hSignalEvent, numWaitEvents, phWaitEvents );
 }
@@ -1634,7 +1634,7 @@ zeCommandListAppendMemoryCopyRegion(
 {
     auto pfnAppendMemoryCopyRegion = ze_lib::context->zeDdiTable.CommandList.pfnAppendMemoryCopyRegion;
     if( nullptr == pfnAppendMemoryCopyRegion )
-        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        return ZE_RESULT_ERROR_UNINITIALIZED;
 
     return pfnAppendMemoryCopyRegion( hCommandList, dstptr, dstRegion, dstPitch, dstSlicePitch, srcptr, srcRegion, srcPitch, srcSlicePitch, hSignalEvent, numWaitEvents, phWaitEvents );
 }
@@ -1686,7 +1686,7 @@ zeCommandListAppendMemoryCopyFromContext(
 {
     auto pfnAppendMemoryCopyFromContext = ze_lib::context->zeDdiTable.CommandList.pfnAppendMemoryCopyFromContext;
     if( nullptr == pfnAppendMemoryCopyFromContext )
-        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        return ZE_RESULT_ERROR_UNINITIALIZED;
 
     return pfnAppendMemoryCopyFromContext( hCommandList, dstptr, hContextSrc, srcptr, size, hSignalEvent, numWaitEvents, phWaitEvents );
 }
@@ -1734,7 +1734,7 @@ zeCommandListAppendImageCopy(
 {
     auto pfnAppendImageCopy = ze_lib::context->zeDdiTable.CommandList.pfnAppendImageCopy;
     if( nullptr == pfnAppendImageCopy )
-        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        return ZE_RESULT_ERROR_UNINITIALIZED;
 
     return pfnAppendImageCopy( hCommandList, hDstImage, hSrcImage, hSignalEvent, numWaitEvents, phWaitEvents );
 }
@@ -1784,7 +1784,7 @@ zeCommandListAppendImageCopyRegion(
 {
     auto pfnAppendImageCopyRegion = ze_lib::context->zeDdiTable.CommandList.pfnAppendImageCopyRegion;
     if( nullptr == pfnAppendImageCopyRegion )
-        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        return ZE_RESULT_ERROR_UNINITIALIZED;
 
     return pfnAppendImageCopyRegion( hCommandList, hDstImage, hSrcImage, pDstRegion, pSrcRegion, hSignalEvent, numWaitEvents, phWaitEvents );
 }
@@ -1801,7 +1801,7 @@ zeCommandListAppendImageCopyRegion(
 ///     - The application must ensure the image and events are accessible by the
 ///       device on which the command list was created.
 ///     - The application must ensure the image format descriptor for the source
-///       image is not a media format.
+///       image is a single-planar format.
 ///     - The application must ensure the command list, image and events were
 ///       created, and the memory was allocated, on the same context.
 ///     - The application must **not** call this function from simultaneous
@@ -1839,7 +1839,7 @@ zeCommandListAppendImageCopyToMemory(
 {
     auto pfnAppendImageCopyToMemory = ze_lib::context->zeDdiTable.CommandList.pfnAppendImageCopyToMemory;
     if( nullptr == pfnAppendImageCopyToMemory )
-        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        return ZE_RESULT_ERROR_UNINITIALIZED;
 
     return pfnAppendImageCopyToMemory( hCommandList, dstptr, hSrcImage, pSrcRegion, hSignalEvent, numWaitEvents, phWaitEvents );
 }
@@ -1856,7 +1856,7 @@ zeCommandListAppendImageCopyToMemory(
 ///     - The application must ensure the image and events are accessible by the
 ///       device on which the command list was created.
 ///     - The application must ensure the image format descriptor for the
-///       destination image is not a media format.
+///       destination image is a single-planar format.
 ///     - The application must ensure the command list, image and events were
 ///       created, and the memory was allocated, on the same context.
 ///     - The application must **not** call this function from simultaneous
@@ -1894,7 +1894,7 @@ zeCommandListAppendImageCopyFromMemory(
 {
     auto pfnAppendImageCopyFromMemory = ze_lib::context->zeDdiTable.CommandList.pfnAppendImageCopyFromMemory;
     if( nullptr == pfnAppendImageCopyFromMemory )
-        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        return ZE_RESULT_ERROR_UNINITIALIZED;
 
     return pfnAppendImageCopyFromMemory( hCommandList, hDstImage, srcptr, pDstRegion, hSignalEvent, numWaitEvents, phWaitEvents );
 }
@@ -1945,7 +1945,7 @@ zeCommandListAppendMemoryPrefetch(
 {
     auto pfnAppendMemoryPrefetch = ze_lib::context->zeDdiTable.CommandList.pfnAppendMemoryPrefetch;
     if( nullptr == pfnAppendMemoryPrefetch )
-        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        return ZE_RESULT_ERROR_UNINITIALIZED;
 
     return pfnAppendMemoryPrefetch( hCommandList, ptr, size );
 }
@@ -1996,7 +1996,7 @@ zeCommandListAppendMemAdvise(
 {
     auto pfnAppendMemAdvise = ze_lib::context->zeDdiTable.CommandList.pfnAppendMemAdvise;
     if( nullptr == pfnAppendMemAdvise )
-        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        return ZE_RESULT_ERROR_UNINITIALIZED;
 
     return pfnAppendMemAdvise( hCommandList, hDevice, ptr, size, advice );
 }
@@ -2041,7 +2041,7 @@ zeEventPoolCreate(
 {
     auto pfnCreate = ze_lib::context->zeDdiTable.EventPool.pfnCreate;
     if( nullptr == pfnCreate )
-        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        return ZE_RESULT_ERROR_UNINITIALIZED;
 
     return pfnCreate( hContext, desc, numDevices, phDevices, phEventPool );
 }
@@ -2074,7 +2074,7 @@ zeEventPoolDestroy(
 {
     auto pfnDestroy = ze_lib::context->zeDdiTable.EventPool.pfnDestroy;
     if( nullptr == pfnDestroy )
-        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        return ZE_RESULT_ERROR_UNINITIALIZED;
 
     return pfnDestroy( hEventPool );
 }
@@ -2118,7 +2118,7 @@ zeEventCreate(
 {
     auto pfnCreate = ze_lib::context->zeDdiTable.Event.pfnCreate;
     if( nullptr == pfnCreate )
-        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        return ZE_RESULT_ERROR_UNINITIALIZED;
 
     return pfnCreate( hEventPool, desc, phEvent );
 }
@@ -2154,7 +2154,7 @@ zeEventDestroy(
 {
     auto pfnDestroy = ze_lib::context->zeDdiTable.Event.pfnDestroy;
     if( nullptr == pfnDestroy )
-        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        return ZE_RESULT_ERROR_UNINITIALIZED;
 
     return pfnDestroy( hEvent );
 }
@@ -2184,7 +2184,7 @@ zeEventPoolGetIpcHandle(
 {
     auto pfnGetIpcHandle = ze_lib::context->zeDdiTable.EventPool.pfnGetIpcHandle;
     if( nullptr == pfnGetIpcHandle )
-        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        return ZE_RESULT_ERROR_UNINITIALIZED;
 
     return pfnGetIpcHandle( hEventPool, phIpc );
 }
@@ -2218,7 +2218,7 @@ zeEventPoolOpenIpcHandle(
 {
     auto pfnOpenIpcHandle = ze_lib::context->zeDdiTable.EventPool.pfnOpenIpcHandle;
     if( nullptr == pfnOpenIpcHandle )
-        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        return ZE_RESULT_ERROR_UNINITIALIZED;
 
     return pfnOpenIpcHandle( hContext, hIpc, phEventPool );
 }
@@ -2245,7 +2245,7 @@ zeEventPoolCloseIpcHandle(
 {
     auto pfnCloseIpcHandle = ze_lib::context->zeDdiTable.EventPool.pfnCloseIpcHandle;
     if( nullptr == pfnCloseIpcHandle )
-        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        return ZE_RESULT_ERROR_UNINITIALIZED;
 
     return pfnCloseIpcHandle( hEventPool );
 }
@@ -2287,7 +2287,7 @@ zeCommandListAppendSignalEvent(
 {
     auto pfnAppendSignalEvent = ze_lib::context->zeDdiTable.CommandList.pfnAppendSignalEvent;
     if( nullptr == pfnAppendSignalEvent )
-        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        return ZE_RESULT_ERROR_UNINITIALIZED;
 
     return pfnAppendSignalEvent( hCommandList, hEvent );
 }
@@ -2323,7 +2323,7 @@ zeCommandListAppendWaitOnEvents(
 {
     auto pfnAppendWaitOnEvents = ze_lib::context->zeDdiTable.CommandList.pfnAppendWaitOnEvents;
     if( nullptr == pfnAppendWaitOnEvents )
-        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        return ZE_RESULT_ERROR_UNINITIALIZED;
 
     return pfnAppendWaitOnEvents( hCommandList, numEvents, phEvents );
 }
@@ -2357,7 +2357,7 @@ zeEventHostSignal(
 {
     auto pfnHostSignal = ze_lib::context->zeDdiTable.Event.pfnHostSignal;
     if( nullptr == pfnHostSignal )
-        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        return ZE_RESULT_ERROR_UNINITIALIZED;
 
     return pfnHostSignal( hEvent );
 }
@@ -2396,7 +2396,7 @@ zeEventHostSynchronize(
 {
     auto pfnHostSynchronize = ze_lib::context->zeDdiTable.Event.pfnHostSynchronize;
     if( nullptr == pfnHostSynchronize )
-        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        return ZE_RESULT_ERROR_UNINITIALIZED;
 
     return pfnHostSynchronize( hEvent, timeout );
 }
@@ -2429,7 +2429,7 @@ zeEventQueryStatus(
 {
     auto pfnQueryStatus = ze_lib::context->zeDdiTable.Event.pfnQueryStatus;
     if( nullptr == pfnQueryStatus )
-        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        return ZE_RESULT_ERROR_UNINITIALIZED;
 
     return pfnQueryStatus( hEvent );
 }
@@ -2467,7 +2467,7 @@ zeCommandListAppendEventReset(
 {
     auto pfnAppendEventReset = ze_lib::context->zeDdiTable.CommandList.pfnAppendEventReset;
     if( nullptr == pfnAppendEventReset )
-        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        return ZE_RESULT_ERROR_UNINITIALIZED;
 
     return pfnAppendEventReset( hCommandList, hEvent );
 }
@@ -2497,7 +2497,7 @@ zeEventHostReset(
 {
     auto pfnHostReset = ze_lib::context->zeDdiTable.Event.pfnHostReset;
     if( nullptr == pfnHostReset )
-        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        return ZE_RESULT_ERROR_UNINITIALIZED;
 
     return pfnHostReset( hEvent );
 }
@@ -2532,7 +2532,7 @@ zeEventQueryKernelTimestamp(
 {
     auto pfnQueryKernelTimestamp = ze_lib::context->zeDdiTable.Event.pfnQueryKernelTimestamp;
     if( nullptr == pfnQueryKernelTimestamp )
-        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        return ZE_RESULT_ERROR_UNINITIALIZED;
 
     return pfnQueryKernelTimestamp( hEvent, dstptr );
 }
@@ -2589,7 +2589,7 @@ zeCommandListAppendQueryKernelTimestamps(
 {
     auto pfnAppendQueryKernelTimestamps = ze_lib::context->zeDdiTable.CommandList.pfnAppendQueryKernelTimestamps;
     if( nullptr == pfnAppendQueryKernelTimestamps )
-        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        return ZE_RESULT_ERROR_UNINITIALIZED;
 
     return pfnAppendQueryKernelTimestamps( hCommandList, numEvents, phEvents, dstptr, pOffsets, hSignalEvent, numWaitEvents, phWaitEvents );
 }
@@ -2631,7 +2631,7 @@ zeFenceCreate(
 {
     auto pfnCreate = ze_lib::context->zeDdiTable.Fence.pfnCreate;
     if( nullptr == pfnCreate )
-        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        return ZE_RESULT_ERROR_UNINITIALIZED;
 
     return pfnCreate( hCommandQueue, desc, phFence );
 }
@@ -2666,7 +2666,7 @@ zeFenceDestroy(
 {
     auto pfnDestroy = ze_lib::context->zeDdiTable.Fence.pfnDestroy;
     if( nullptr == pfnDestroy )
-        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        return ZE_RESULT_ERROR_UNINITIALIZED;
 
     return pfnDestroy( hFence );
 }
@@ -2705,7 +2705,7 @@ zeFenceHostSynchronize(
 {
     auto pfnHostSynchronize = ze_lib::context->zeDdiTable.Fence.pfnHostSynchronize;
     if( nullptr == pfnHostSynchronize )
-        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        return ZE_RESULT_ERROR_UNINITIALIZED;
 
     return pfnHostSynchronize( hFence, timeout );
 }
@@ -2737,7 +2737,7 @@ zeFenceQueryStatus(
 {
     auto pfnQueryStatus = ze_lib::context->zeDdiTable.Fence.pfnQueryStatus;
     if( nullptr == pfnQueryStatus )
-        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        return ZE_RESULT_ERROR_UNINITIALIZED;
 
     return pfnQueryStatus( hFence );
 }
@@ -2766,7 +2766,7 @@ zeFenceReset(
 {
     auto pfnReset = ze_lib::context->zeDdiTable.Fence.pfnReset;
     if( nullptr == pfnReset )
-        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        return ZE_RESULT_ERROR_UNINITIALIZED;
 
     return pfnReset( hFence );
 }
@@ -2799,7 +2799,7 @@ zeImageGetProperties(
 {
     auto pfnGetProperties = ze_lib::context->zeDdiTable.Image.pfnGetProperties;
     if( nullptr == pfnGetProperties )
-        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        return ZE_RESULT_ERROR_UNINITIALIZED;
 
     return pfnGetProperties( hDevice, desc, pImageProperties );
 }
@@ -2843,7 +2843,7 @@ zeImageCreate(
 {
     auto pfnCreate = ze_lib::context->zeDdiTable.Image.pfnCreate;
     if( nullptr == pfnCreate )
-        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        return ZE_RESULT_ERROR_UNINITIALIZED;
 
     return pfnCreate( hContext, hDevice, desc, phImage );
 }
@@ -2874,7 +2874,7 @@ zeImageDestroy(
 {
     auto pfnDestroy = ze_lib::context->zeDdiTable.Image.pfnDestroy;
     if( nullptr == pfnDestroy )
-        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        return ZE_RESULT_ERROR_UNINITIALIZED;
 
     return pfnDestroy( hImage );
 }
@@ -2936,7 +2936,7 @@ zeMemAllocShared(
 {
     auto pfnAllocShared = ze_lib::context->zeDdiTable.Mem.pfnAllocShared;
     if( nullptr == pfnAllocShared )
-        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        return ZE_RESULT_ERROR_UNINITIALIZED;
 
     return pfnAllocShared( hContext, device_desc, host_desc, size, alignment, hDevice, pptr );
 }
@@ -2986,7 +2986,7 @@ zeMemAllocDevice(
 {
     auto pfnAllocDevice = ze_lib::context->zeDdiTable.Mem.pfnAllocDevice;
     if( nullptr == pfnAllocDevice )
-        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        return ZE_RESULT_ERROR_UNINITIALIZED;
 
     return pfnAllocDevice( hContext, device_desc, size, alignment, hDevice, pptr );
 }
@@ -3036,7 +3036,7 @@ zeMemAllocHost(
 {
     auto pfnAllocHost = ze_lib::context->zeDdiTable.Mem.pfnAllocHost;
     if( nullptr == pfnAllocHost )
-        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        return ZE_RESULT_ERROR_UNINITIALIZED;
 
     return pfnAllocHost( hContext, host_desc, size, alignment, pptr );
 }
@@ -3070,7 +3070,7 @@ zeMemFree(
 {
     auto pfnFree = ze_lib::context->zeDdiTable.Mem.pfnFree;
     if( nullptr == pfnFree )
-        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        return ZE_RESULT_ERROR_UNINITIALIZED;
 
     return pfnFree( hContext, ptr );
 }
@@ -3105,7 +3105,7 @@ zeMemGetAllocProperties(
 {
     auto pfnGetAllocProperties = ze_lib::context->zeDdiTable.Mem.pfnGetAllocProperties;
     if( nullptr == pfnGetAllocProperties )
-        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        return ZE_RESULT_ERROR_UNINITIALIZED;
 
     return pfnGetAllocProperties( hContext, ptr, pMemAllocProperties, phDevice );
 }
@@ -3134,7 +3134,7 @@ zeMemGetAddressRange(
 {
     auto pfnGetAddressRange = ze_lib::context->zeDdiTable.Mem.pfnGetAddressRange;
     if( nullptr == pfnGetAddressRange )
-        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        return ZE_RESULT_ERROR_UNINITIALIZED;
 
     return pfnGetAddressRange( hContext, ptr, pBase, pSize );
 }
@@ -3168,7 +3168,7 @@ zeMemGetIpcHandle(
 {
     auto pfnGetIpcHandle = ze_lib::context->zeDdiTable.Mem.pfnGetIpcHandle;
     if( nullptr == pfnGetIpcHandle )
-        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        return ZE_RESULT_ERROR_UNINITIALIZED;
 
     return pfnGetIpcHandle( hContext, ptr, pIpcHandle );
 }
@@ -3210,7 +3210,7 @@ zeMemOpenIpcHandle(
 {
     auto pfnOpenIpcHandle = ze_lib::context->zeDdiTable.Mem.pfnOpenIpcHandle;
     if( nullptr == pfnOpenIpcHandle )
-        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        return ZE_RESULT_ERROR_UNINITIALIZED;
 
     return pfnOpenIpcHandle( hContext, hDevice, handle, flags, pptr );
 }
@@ -3241,7 +3241,7 @@ zeMemCloseIpcHandle(
 {
     auto pfnCloseIpcHandle = ze_lib::context->zeDdiTable.Mem.pfnCloseIpcHandle;
     if( nullptr == pfnCloseIpcHandle )
-        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        return ZE_RESULT_ERROR_UNINITIALIZED;
 
     return pfnCloseIpcHandle( hContext, ptr );
 }
@@ -3292,7 +3292,7 @@ zeModuleCreate(
 {
     auto pfnCreate = ze_lib::context->zeDdiTable.Module.pfnCreate;
     if( nullptr == pfnCreate )
-        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        return ZE_RESULT_ERROR_UNINITIALIZED;
 
     return pfnCreate( hContext, hDevice, desc, phModule, phBuildLog );
 }
@@ -3325,7 +3325,7 @@ zeModuleDestroy(
 {
     auto pfnDestroy = ze_lib::context->zeDdiTable.Module.pfnDestroy;
     if( nullptr == pfnDestroy )
-        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        return ZE_RESULT_ERROR_UNINITIALIZED;
 
     return pfnDestroy( hModule );
 }
@@ -3336,7 +3336,8 @@ zeModuleDestroy(
 /// 
 /// @details
 ///     - Modules support SPIR-V import and export linkage types for functions
-///       and global variables. See SPIR-V specification for linkage details.
+///       and global variables. See the SPIR-V specification for linkage
+///       details.
 ///     - Modules can have both import and export linkage.
 ///     - Modules that do not have any imports or exports do not need to be
 ///       linked.
@@ -3347,8 +3348,8 @@ zeModuleDestroy(
 ///       ::ZE_RESULT_ERROR_MODULE_LINK_FAILURE being returned.
 ///     - Modules will only be linked once. A module can be used in multiple
 ///       link calls if it has exports but its imports will not be re-linked.
-///     - Ambiguous dependencies, where multiple modules satisfy the import
-///       dependencies for another module, are not allowed.
+///     - Ambiguous dependencies, where multiple modules satisfy the same import
+///       dependencies for a module, are not allowed.
 ///     - The application must ensure the modules being linked were created on
 ///       the same context.
 ///     - The application may call this function from simultaneous threads as
@@ -3356,7 +3357,8 @@ zeModuleDestroy(
 ///     - ModuleGetNativeBinary can be called on any module regardless of
 ///       whether it is linked or not.
 ///     - A link log can optionally be returned to the caller. The caller is
-///       responsible for destroying build log using ::zeModuleBuildLogDestroy.
+///       responsible for destroying the link log using
+///       ::zeModuleBuildLogDestroy.
 ///     - The link log may contain a list of the unresolved import dependencies
 ///       if present.
 ///     - The implementation of this function should be lock-free.
@@ -3378,7 +3380,7 @@ zeModuleDynamicLink(
 {
     auto pfnDynamicLink = ze_lib::context->zeDdiTable.Module.pfnDynamicLink;
     if( nullptr == pfnDynamicLink )
-        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        return ZE_RESULT_ERROR_UNINITIALIZED;
 
     return pfnDynamicLink( numModules, phModules, phLinkLog );
 }
@@ -3409,7 +3411,7 @@ zeModuleBuildLogDestroy(
 {
     auto pfnDestroy = ze_lib::context->zeDdiTable.ModuleBuildLog.pfnDestroy;
     if( nullptr == pfnDestroy )
-        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        return ZE_RESULT_ERROR_UNINITIALIZED;
 
     return pfnDestroy( hModuleBuildLog );
 }
@@ -3440,7 +3442,7 @@ zeModuleBuildLogGetString(
 {
     auto pfnGetString = ze_lib::context->zeDdiTable.ModuleBuildLog.pfnGetString;
     if( nullptr == pfnGetString )
-        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        return ZE_RESULT_ERROR_UNINITIALIZED;
 
     return pfnGetString( hModuleBuildLog, pSize, pBuildLog );
 }
@@ -3477,7 +3479,7 @@ zeModuleGetNativeBinary(
 {
     auto pfnGetNativeBinary = ze_lib::context->zeDdiTable.Module.pfnGetNativeBinary;
     if( nullptr == pfnGetNativeBinary )
-        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        return ZE_RESULT_ERROR_UNINITIALIZED;
 
     return pfnGetNativeBinary( hModule, pSize, pModuleNativeBinary );
 }
@@ -3512,7 +3514,7 @@ zeModuleGetGlobalPointer(
 {
     auto pfnGetGlobalPointer = ze_lib::context->zeDdiTable.Module.pfnGetGlobalPointer;
     if( nullptr == pfnGetGlobalPointer )
-        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        return ZE_RESULT_ERROR_UNINITIALIZED;
 
     return pfnGetGlobalPointer( hModule, pGlobalName, pSize, pptr );
 }
@@ -3547,7 +3549,7 @@ zeModuleGetKernelNames(
 {
     auto pfnGetKernelNames = ze_lib::context->zeDdiTable.Module.pfnGetKernelNames;
     if( nullptr == pfnGetKernelNames )
-        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        return ZE_RESULT_ERROR_UNINITIALIZED;
 
     return pfnGetKernelNames( hModule, pCount, pNames );
 }
@@ -3575,7 +3577,7 @@ zeModuleGetProperties(
 {
     auto pfnGetProperties = ze_lib::context->zeDdiTable.Module.pfnGetProperties;
     if( nullptr == pfnGetProperties )
-        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        return ZE_RESULT_ERROR_UNINITIALIZED;
 
     return pfnGetProperties( hModule, pModuleProperties );
 }
@@ -3612,7 +3614,7 @@ zeKernelCreate(
 {
     auto pfnCreate = ze_lib::context->zeDdiTable.Kernel.pfnCreate;
     if( nullptr == pfnCreate )
-        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        return ZE_RESULT_ERROR_UNINITIALIZED;
 
     return pfnCreate( hModule, desc, phKernel );
 }
@@ -3643,7 +3645,7 @@ zeKernelDestroy(
 {
     auto pfnDestroy = ze_lib::context->zeDdiTable.Kernel.pfnDestroy;
     if( nullptr == pfnDestroy )
-        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        return ZE_RESULT_ERROR_UNINITIALIZED;
 
     return pfnDestroy( hKernel );
 }
@@ -3677,7 +3679,7 @@ zeModuleGetFunctionPointer(
 {
     auto pfnGetFunctionPointer = ze_lib::context->zeDdiTable.Module.pfnGetFunctionPointer;
     if( nullptr == pfnGetFunctionPointer )
-        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        return ZE_RESULT_ERROR_UNINITIALIZED;
 
     return pfnGetFunctionPointer( hModule, pFunctionName, pfnFunction );
 }
@@ -3709,7 +3711,7 @@ zeKernelSetGroupSize(
 {
     auto pfnSetGroupSize = ze_lib::context->zeDdiTable.Kernel.pfnSetGroupSize;
     if( nullptr == pfnSetGroupSize )
-        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        return ZE_RESULT_ERROR_UNINITIALIZED;
 
     return pfnSetGroupSize( hKernel, groupSizeX, groupSizeY, groupSizeZ );
 }
@@ -3748,7 +3750,7 @@ zeKernelSuggestGroupSize(
 {
     auto pfnSuggestGroupSize = ze_lib::context->zeDdiTable.Kernel.pfnSuggestGroupSize;
     if( nullptr == pfnSuggestGroupSize )
-        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        return ZE_RESULT_ERROR_UNINITIALIZED;
 
     return pfnSuggestGroupSize( hKernel, globalSizeX, globalSizeY, globalSizeZ, groupSizeX, groupSizeY, groupSizeZ );
 }
@@ -3776,7 +3778,7 @@ zeKernelSuggestMaxCooperativeGroupCount(
 {
     auto pfnSuggestMaxCooperativeGroupCount = ze_lib::context->zeDdiTable.Kernel.pfnSuggestMaxCooperativeGroupCount;
     if( nullptr == pfnSuggestMaxCooperativeGroupCount )
-        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        return ZE_RESULT_ERROR_UNINITIALIZED;
 
     return pfnSuggestMaxCooperativeGroupCount( hKernel, totalGroupCount );
 }
@@ -3810,7 +3812,7 @@ zeKernelSetArgumentValue(
 {
     auto pfnSetArgumentValue = ze_lib::context->zeDdiTable.Kernel.pfnSetArgumentValue;
     if( nullptr == pfnSetArgumentValue )
-        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        return ZE_RESULT_ERROR_UNINITIALIZED;
 
     return pfnSetArgumentValue( hKernel, argIndex, argSize, pArgValue );
 }
@@ -3842,7 +3844,7 @@ zeKernelSetIndirectAccess(
 {
     auto pfnSetIndirectAccess = ze_lib::context->zeDdiTable.Kernel.pfnSetIndirectAccess;
     if( nullptr == pfnSetIndirectAccess )
-        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        return ZE_RESULT_ERROR_UNINITIALIZED;
 
     return pfnSetIndirectAccess( hKernel, flags );
 }
@@ -3871,7 +3873,7 @@ zeKernelGetIndirectAccess(
 {
     auto pfnGetIndirectAccess = ze_lib::context->zeDdiTable.Kernel.pfnGetIndirectAccess;
     if( nullptr == pfnGetIndirectAccess )
-        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        return ZE_RESULT_ERROR_UNINITIALIZED;
 
     return pfnGetIndirectAccess( hKernel, pFlags );
 }
@@ -3905,7 +3907,7 @@ zeKernelGetSourceAttributes(
 {
     auto pfnGetSourceAttributes = ze_lib::context->zeDdiTable.Kernel.pfnGetSourceAttributes;
     if( nullptr == pfnGetSourceAttributes )
-        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        return ZE_RESULT_ERROR_UNINITIALIZED;
 
     return pfnGetSourceAttributes( hKernel, pSize, pString );
 }
@@ -3938,7 +3940,7 @@ zeKernelSetCacheConfig(
 {
     auto pfnSetCacheConfig = ze_lib::context->zeDdiTable.Kernel.pfnSetCacheConfig;
     if( nullptr == pfnSetCacheConfig )
-        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        return ZE_RESULT_ERROR_UNINITIALIZED;
 
     return pfnSetCacheConfig( hKernel, flags );
 }
@@ -3966,7 +3968,7 @@ zeKernelGetProperties(
 {
     auto pfnGetProperties = ze_lib::context->zeDdiTable.Kernel.pfnGetProperties;
     if( nullptr == pfnGetProperties )
-        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        return ZE_RESULT_ERROR_UNINITIALIZED;
 
     return pfnGetProperties( hKernel, pKernelProperties );
 }
@@ -3999,7 +4001,7 @@ zeKernelGetName(
 {
     auto pfnGetName = ze_lib::context->zeDdiTable.Kernel.pfnGetName;
     if( nullptr == pfnGetName )
-        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        return ZE_RESULT_ERROR_UNINITIALIZED;
 
     return pfnGetName( hKernel, pSize, pName );
 }
@@ -4044,7 +4046,7 @@ zeCommandListAppendLaunchKernel(
 {
     auto pfnAppendLaunchKernel = ze_lib::context->zeDdiTable.CommandList.pfnAppendLaunchKernel;
     if( nullptr == pfnAppendLaunchKernel )
-        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        return ZE_RESULT_ERROR_UNINITIALIZED;
 
     return pfnAppendLaunchKernel( hCommandList, hKernel, pLaunchFuncArgs, hSignalEvent, numWaitEvents, phWaitEvents );
 }
@@ -4093,7 +4095,7 @@ zeCommandListAppendLaunchCooperativeKernel(
 {
     auto pfnAppendLaunchCooperativeKernel = ze_lib::context->zeDdiTable.CommandList.pfnAppendLaunchCooperativeKernel;
     if( nullptr == pfnAppendLaunchCooperativeKernel )
-        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        return ZE_RESULT_ERROR_UNINITIALIZED;
 
     return pfnAppendLaunchCooperativeKernel( hCommandList, hKernel, pLaunchFuncArgs, hSignalEvent, numWaitEvents, phWaitEvents );
 }
@@ -4144,7 +4146,7 @@ zeCommandListAppendLaunchKernelIndirect(
 {
     auto pfnAppendLaunchKernelIndirect = ze_lib::context->zeDdiTable.CommandList.pfnAppendLaunchKernelIndirect;
     if( nullptr == pfnAppendLaunchKernelIndirect )
-        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        return ZE_RESULT_ERROR_UNINITIALIZED;
 
     return pfnAppendLaunchKernelIndirect( hCommandList, hKernel, pLaunchArgumentsBuffer, hSignalEvent, numWaitEvents, phWaitEvents );
 }
@@ -4202,7 +4204,7 @@ zeCommandListAppendLaunchMultipleKernelsIndirect(
 {
     auto pfnAppendLaunchMultipleKernelsIndirect = ze_lib::context->zeDdiTable.CommandList.pfnAppendLaunchMultipleKernelsIndirect;
     if( nullptr == pfnAppendLaunchMultipleKernelsIndirect )
-        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        return ZE_RESULT_ERROR_UNINITIALIZED;
 
     return pfnAppendLaunchMultipleKernelsIndirect( hCommandList, numKernels, phKernels, pCountBuffer, pLaunchArgumentsBuffer, hSignalEvent, numWaitEvents, phWaitEvents );
 }
@@ -4237,7 +4239,7 @@ zeContextMakeMemoryResident(
 {
     auto pfnMakeMemoryResident = ze_lib::context->zeDdiTable.Context.pfnMakeMemoryResident;
     if( nullptr == pfnMakeMemoryResident )
-        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        return ZE_RESULT_ERROR_UNINITIALIZED;
 
     return pfnMakeMemoryResident( hContext, hDevice, ptr, size );
 }
@@ -4274,7 +4276,7 @@ zeContextEvictMemory(
 {
     auto pfnEvictMemory = ze_lib::context->zeDdiTable.Context.pfnEvictMemory;
     if( nullptr == pfnEvictMemory )
-        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        return ZE_RESULT_ERROR_UNINITIALIZED;
 
     return pfnEvictMemory( hContext, hDevice, ptr, size );
 }
@@ -4307,7 +4309,7 @@ zeContextMakeImageResident(
 {
     auto pfnMakeImageResident = ze_lib::context->zeDdiTable.Context.pfnMakeImageResident;
     if( nullptr == pfnMakeImageResident )
-        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        return ZE_RESULT_ERROR_UNINITIALIZED;
 
     return pfnMakeImageResident( hContext, hDevice, hImage );
 }
@@ -4342,7 +4344,7 @@ zeContextEvictImage(
 {
     auto pfnEvictImage = ze_lib::context->zeDdiTable.Context.pfnEvictImage;
     if( nullptr == pfnEvictImage )
-        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        return ZE_RESULT_ERROR_UNINITIALIZED;
 
     return pfnEvictImage( hContext, hDevice, hImage );
 }
@@ -4380,7 +4382,7 @@ zeSamplerCreate(
 {
     auto pfnCreate = ze_lib::context->zeDdiTable.Sampler.pfnCreate;
     if( nullptr == pfnCreate )
-        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        return ZE_RESULT_ERROR_UNINITIALIZED;
 
     return pfnCreate( hContext, hDevice, desc, phSampler );
 }
@@ -4411,7 +4413,7 @@ zeSamplerDestroy(
 {
     auto pfnDestroy = ze_lib::context->zeDdiTable.Sampler.pfnDestroy;
     if( nullptr == pfnDestroy )
-        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        return ZE_RESULT_ERROR_UNINITIALIZED;
 
     return pfnDestroy( hSampler );
 }
@@ -4456,7 +4458,7 @@ zeVirtualMemReserve(
 {
     auto pfnReserve = ze_lib::context->zeDdiTable.VirtualMem.pfnReserve;
     if( nullptr == pfnReserve )
-        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        return ZE_RESULT_ERROR_UNINITIALIZED;
 
     return pfnReserve( hContext, pStart, size, pptr );
 }
@@ -4491,7 +4493,7 @@ zeVirtualMemFree(
 {
     auto pfnFree = ze_lib::context->zeDdiTable.VirtualMem.pfnFree;
     if( nullptr == pfnFree )
-        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        return ZE_RESULT_ERROR_UNINITIALIZED;
 
     return pfnFree( hContext, ptr, size );
 }
@@ -4526,7 +4528,7 @@ zeVirtualMemQueryPageSize(
 {
     auto pfnQueryPageSize = ze_lib::context->zeDdiTable.VirtualMem.pfnQueryPageSize;
     if( nullptr == pfnQueryPageSize )
-        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        return ZE_RESULT_ERROR_UNINITIALIZED;
 
     return pfnQueryPageSize( hContext, hDevice, size, pagesize );
 }
@@ -4567,7 +4569,7 @@ zePhysicalMemCreate(
 {
     auto pfnCreate = ze_lib::context->zeDdiTable.PhysicalMem.pfnCreate;
     if( nullptr == pfnCreate )
-        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        return ZE_RESULT_ERROR_UNINITIALIZED;
 
     return pfnCreate( hContext, hDevice, desc, phPhysicalMemory );
 }
@@ -4598,7 +4600,7 @@ zePhysicalMemDestroy(
 {
     auto pfnDestroy = ze_lib::context->zeDdiTable.PhysicalMem.pfnDestroy;
     if( nullptr == pfnDestroy )
-        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        return ZE_RESULT_ERROR_UNINITIALIZED;
 
     return pfnDestroy( hContext, hPhysicalMemory );
 }
@@ -4650,7 +4652,7 @@ zeVirtualMemMap(
 {
     auto pfnMap = ze_lib::context->zeDdiTable.VirtualMem.pfnMap;
     if( nullptr == pfnMap )
-        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        return ZE_RESULT_ERROR_UNINITIALIZED;
 
     return pfnMap( hContext, ptr, size, hPhysicalMemory, offset, access );
 }
@@ -4688,7 +4690,7 @@ zeVirtualMemUnmap(
 {
     auto pfnUnmap = ze_lib::context->zeDdiTable.VirtualMem.pfnUnmap;
     if( nullptr == pfnUnmap )
-        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        return ZE_RESULT_ERROR_UNINITIALIZED;
 
     return pfnUnmap( hContext, ptr, size );
 }
@@ -4726,7 +4728,7 @@ zeVirtualMemSetAccessAttribute(
 {
     auto pfnSetAccessAttribute = ze_lib::context->zeDdiTable.VirtualMem.pfnSetAccessAttribute;
     if( nullptr == pfnSetAccessAttribute )
-        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        return ZE_RESULT_ERROR_UNINITIALIZED;
 
     return pfnSetAccessAttribute( hContext, ptr, size, access );
 }
@@ -4767,7 +4769,7 @@ zeVirtualMemGetAccessAttribute(
 {
     auto pfnGetAccessAttribute = ze_lib::context->zeDdiTable.VirtualMem.pfnGetAccessAttribute;
     if( nullptr == pfnGetAccessAttribute )
-        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        return ZE_RESULT_ERROR_UNINITIALIZED;
 
     return pfnGetAccessAttribute( hContext, ptr, size, access, outSize );
 }
@@ -4798,7 +4800,7 @@ zeKernelSetGlobalOffsetExp(
 {
     auto pfnSetGlobalOffsetExp = ze_lib::context->zeDdiTable.KernelExp.pfnSetGlobalOffsetExp;
     if( nullptr == pfnSetGlobalOffsetExp )
-        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        return ZE_RESULT_ERROR_UNINITIALIZED;
 
     return pfnSetGlobalOffsetExp( hKernel, offsetX, offsetY, offsetZ );
 }
@@ -4832,7 +4834,7 @@ zeDeviceReserveCacheExt(
 {
     auto pfnReserveCacheExt = ze_lib::context->zeDdiTable.Device.pfnReserveCacheExt;
     if( nullptr == pfnReserveCacheExt )
-        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        return ZE_RESULT_ERROR_UNINITIALIZED;
 
     return pfnReserveCacheExt( hDevice, cacheLevel, cacheReservationSize );
 }
@@ -4864,7 +4866,7 @@ zeDeviceSetCacheAdviceExt(
 {
     auto pfnSetCacheAdviceExt = ze_lib::context->zeDdiTable.Device.pfnSetCacheAdviceExt;
     if( nullptr == pfnSetCacheAdviceExt )
-        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        return ZE_RESULT_ERROR_UNINITIALIZED;
 
     return pfnSetCacheAdviceExt( hDevice, ptr, regionSize, cacheRegion );
 }
@@ -4913,7 +4915,7 @@ zeEventQueryTimestampsExp(
 {
     auto pfnQueryTimestampsExp = ze_lib::context->zeDdiTable.EventExp.pfnQueryTimestampsExp;
     if( nullptr == pfnQueryTimestampsExp )
-        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        return ZE_RESULT_ERROR_UNINITIALIZED;
 
     return pfnQueryTimestampsExp( hEvent, hDevice, pCount, pTimestamps );
 }
@@ -4947,7 +4949,7 @@ zeImageGetMemoryPropertiesExp(
 {
     auto pfnGetMemoryPropertiesExp = ze_lib::context->zeDdiTable.ImageExp.pfnGetMemoryPropertiesExp;
     if( nullptr == pfnGetMemoryPropertiesExp )
-        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        return ZE_RESULT_ERROR_UNINITIALIZED;
 
     return pfnGetMemoryPropertiesExp( hImage, pMemoryProperties );
 }
@@ -5001,7 +5003,7 @@ zeImageViewCreateExp(
 {
     auto pfnViewCreateExp = ze_lib::context->zeDdiTable.ImageExp.pfnViewCreateExp;
     if( nullptr == pfnViewCreateExp )
-        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        return ZE_RESULT_ERROR_UNINITIALIZED;
 
     return pfnViewCreateExp( hContext, hDevice, desc, hImage, phImageView );
 }
@@ -5038,9 +5040,281 @@ zeKernelSchedulingHintExp(
 {
     auto pfnSchedulingHintExp = ze_lib::context->zeDdiTable.KernelExp.pfnSchedulingHintExp;
     if( nullptr == pfnSchedulingHintExp )
-        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        return ZE_RESULT_ERROR_UNINITIALIZED;
 
     return pfnSchedulingHintExp( hKernel, pHint );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Get PCI properties - address, max speed
+/// 
+/// @details
+///     - The application may call this function from simultaneous threads.
+///     - The implementation of this function should be lock-free.
+/// 
+/// @remarks
+///   _Analogues_
+///     - None
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hDevice`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == pProperties`
+ze_result_t ZE_APICALL
+zeDevicePciGetPropertiesExt(
+    ze_device_handle_t hDevice,                     ///< [in] handle of the device object.
+    ze_pci_ext_properties_t* pProperties            ///< [in,out] returns the PCI properties of the device.
+    )
+{
+    auto pfnPciGetPropertiesExt = ze_lib::context->zeDdiTable.Device.pfnPciGetPropertiesExt;
+    if( nullptr == pfnPciGetPropertiesExt )
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+
+    return pfnPciGetPropertiesExt( hDevice, pProperties );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Copies from an image to device or shared memory.
+/// 
+/// @details
+///     - The application must ensure the memory pointed to by dstptr is
+///       accessible by the device on which the command list was created.
+///     - The implementation must not access the memory pointed to by dstptr as
+///       it is free to be modified by either the Host or device up until
+///       execution.
+///     - The application must ensure the image and events are accessible by the
+///       device on which the command list was created.
+///     - The application must ensure the image format descriptor for the source
+///       image is a single-planar format.
+///     - The application must ensure that the rowPitch is set to 0 if image is
+///       a 1D image. Otherwise the rowPitch must be greater than or equal to
+///       the element size in bytes × width.
+///     - If rowPitch is set to 0, the appropriate row pitch is calculated based
+///       on the size of each element in bytes multiplied by width
+///     - The application must ensure that the slicePitch is set to 0 if image
+///       is a 1D or 2D image. Otherwise this value must be greater than or
+///       equal to rowPitch × height.
+///     - If slicePitch is set to 0, the appropriate slice pitch is calculated
+///       based on the rowPitch × height.
+///     - The application must ensure the command list, image and events were
+///       created, and the memory was allocated, on the same context.
+///     - The application must **not** call this function from simultaneous
+///       threads with the same command list handle.
+///     - The implementation of this function should be lock-free.
+/// 
+/// @remarks
+///   _Analogues_
+///     - clEnqueueReadImage
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hCommandList`
+///         + `nullptr == hSrcImage`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == dstptr`
+///     - ::ZE_RESULT_ERROR_INVALID_SYNCHRONIZATION_OBJECT
+///     - ::ZE_RESULT_ERROR_INVALID_SIZE
+///         + `(nullptr == phWaitEvents) && (0 < numWaitEvents)`
+ze_result_t ZE_APICALL
+zeCommandListAppendImageCopyToMemoryExt(
+    ze_command_list_handle_t hCommandList,          ///< [in] handle of command list
+    void* dstptr,                                   ///< [in] pointer to destination memory to copy to
+    ze_image_handle_t hSrcImage,                    ///< [in] handle of source image to copy from
+    const ze_image_region_t* pSrcRegion,            ///< [in][optional] source region descriptor
+    uint32_t destRowPitch,                          ///< [in] size in bytes of the 1D slice of the 2D region of a 2D or 3D
+                                                    ///< image or each image of a 1D or 2D image array being written
+    uint32_t destSlicePitch,                        ///< [in] size in bytes of the 2D slice of the 3D region of a 3D image or
+                                                    ///< each image of a 1D or 2D image array being written
+    ze_event_handle_t hSignalEvent,                 ///< [in][optional] handle of the event to signal on completion
+    uint32_t numWaitEvents,                         ///< [in][optional] number of events to wait on before launching; must be 0
+                                                    ///< if `nullptr == phWaitEvents`
+    ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
+                                                    ///< on before launching
+    )
+{
+    auto pfnAppendImageCopyToMemoryExt = ze_lib::context->zeDdiTable.CommandList.pfnAppendImageCopyToMemoryExt;
+    if( nullptr == pfnAppendImageCopyToMemoryExt )
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+
+    return pfnAppendImageCopyToMemoryExt( hCommandList, dstptr, hSrcImage, pSrcRegion, destRowPitch, destSlicePitch, hSignalEvent, numWaitEvents, phWaitEvents );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Copies to an image from device or shared memory.
+/// 
+/// @details
+///     - The application must ensure the memory pointed to by srcptr is
+///       accessible by the device on which the command list was created.
+///     - The implementation must not access the memory pointed to by srcptr as
+///       it is free to be modified by either the Host or device up until
+///       execution.
+///     - The application must ensure the image and events are accessible by the
+///       device on which the command list was created.
+///     - The application must ensure the image format descriptor for the
+///       destination image is a single-planar format.
+///     - The application must ensure that the rowPitch is set to 0 if image is
+///       a 1D image. Otherwise the rowPitch must be greater than or equal to
+///       the element size in bytes × width.
+///     - If rowPitch is set to 0, the appropriate row pitch is calculated based
+///       on the size of each element in bytes multiplied by width
+///     - The application must ensure that the slicePitch is set to 0 if image
+///       is a 1D or 2D image. Otherwise this value must be greater than or
+///       equal to rowPitch × height.
+///     - If slicePitch is set to 0, the appropriate slice pitch is calculated
+///       based on the rowPitch × height.
+///     - The application must ensure the command list, image and events were
+///       created, and the memory was allocated, on the same context.
+///     - The application must **not** call this function from simultaneous
+///       threads with the same command list handle.
+///     - The implementation of this function should be lock-free.
+/// 
+/// @remarks
+///   _Analogues_
+///     - clEnqueueWriteImage
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hCommandList`
+///         + `nullptr == hDstImage`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == srcptr`
+///     - ::ZE_RESULT_ERROR_INVALID_SYNCHRONIZATION_OBJECT
+///     - ::ZE_RESULT_ERROR_INVALID_SIZE
+///         + `(nullptr == phWaitEvents) && (0 < numWaitEvents)`
+ze_result_t ZE_APICALL
+zeCommandListAppendImageCopyFromMemoryExt(
+    ze_command_list_handle_t hCommandList,          ///< [in] handle of command list
+    ze_image_handle_t hDstImage,                    ///< [in] handle of destination image to copy to
+    const void* srcptr,                             ///< [in] pointer to source memory to copy from
+    const ze_image_region_t* pDstRegion,            ///< [in][optional] destination region descriptor
+    uint32_t srcRowPitch,                           ///< [in] size in bytes of the 1D slice of the 2D region of a 2D or 3D
+                                                    ///< image or each image of a 1D or 2D image array being read
+    uint32_t srcSlicePitch,                         ///< [in] size in bytes of the 2D slice of the 3D region of a 3D image or
+                                                    ///< each image of a 1D or 2D image array being read
+    ze_event_handle_t hSignalEvent,                 ///< [in][optional] handle of the event to signal on completion
+    uint32_t numWaitEvents,                         ///< [in][optional] number of events to wait on before launching; must be 0
+                                                    ///< if `nullptr == phWaitEvents`
+    ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
+                                                    ///< on before launching
+    )
+{
+    auto pfnAppendImageCopyFromMemoryExt = ze_lib::context->zeDdiTable.CommandList.pfnAppendImageCopyFromMemoryExt;
+    if( nullptr == pfnAppendImageCopyFromMemoryExt )
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+
+    return pfnAppendImageCopyFromMemoryExt( hCommandList, hDstImage, srcptr, pDstRegion, srcRowPitch, srcSlicePitch, hSignalEvent, numWaitEvents, phWaitEvents );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Retrieves attributes of an image allocation
+/// 
+/// @details
+///     - The application may call this function from simultaneous threads.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hContext`
+///         + `nullptr == hImage`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == pImageAllocProperties`
+ze_result_t ZE_APICALL
+zeImageGetAllocPropertiesExt(
+    ze_context_handle_t hContext,                   ///< [in] handle of the context object
+    ze_image_handle_t hImage,                       ///< [in] handle of image object to query
+    ze_image_allocation_ext_properties_t* pImageAllocProperties ///< [in,out] query result for image allocation properties
+    )
+{
+    auto pfnGetAllocPropertiesExt = ze_lib::context->zeDdiTable.Image.pfnGetAllocPropertiesExt;
+    if( nullptr == pfnGetAllocPropertiesExt )
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+
+    return pfnGetAllocPropertiesExt( hContext, hImage, pImageAllocProperties );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief List Imports & Exports
+/// 
+/// @details
+///     - List all the import & unresolveable import dependencies & exports of a
+///       set of modules
+/// 
+/// @remarks
+///   _Analogues_
+///     - None
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == pInspectDesc`
+///         + `nullptr == phModules`
+///         + `nullptr == phLog`
+///     - ::ZE_RESULT_ERROR_INVALID_ENUMERATION
+///         + `0x7 < pInspectDesc->flags`
+ze_result_t ZE_APICALL
+zeModuleInspectLinkageExt(
+    ze_linkage_inspection_ext_desc_t* pInspectDesc, ///< [in] pointer to linkage inspection descriptor structure.
+    uint32_t numModules,                            ///< [in] number of modules to be inspected pointed to by phModules.
+    ze_module_handle_t* phModules,                  ///< [in][range(0, numModules)] pointer to an array of modules to be
+                                                    ///< inspected for import dependencies.
+    ze_module_build_log_handle_t* phLog             ///< [out] pointer to handle of linkage inspection log. Log object will
+                                                    ///< contain separate lists of imports, un-resolvable imports, and exports.
+    )
+{
+    auto pfnInspectLinkageExt = ze_lib::context->zeDdiTable.Module.pfnInspectLinkageExt;
+    if( nullptr == pfnInspectLinkageExt )
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+
+    return pfnInspectLinkageExt( pInspectDesc, numModules, phModules, phLog );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Frees allocated host memory, device memory, or shared memory using the
+///        specified free policy.
+/// 
+/// @details
+///     - The memory free policy is specified by the memory free descriptor.
+///     - The application must **not** call this function from simultaneous
+///       threads with the same pointer.
+///     - The implementation of this function must be thread-safe.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hContext`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == desc`
+///         + `nullptr == ptr`
+///     - ::ZE_RESULT_ERROR_INVALID_ENUMERATION
+///         + `0x3 < desc->freePolicy`
+ze_result_t ZE_APICALL
+zeMemFreeExt(
+    ze_context_handle_t hContext,                   ///< [in] handle of the context object
+    const ze_memory_free_ext_desc_t* desc,          ///< [in] pointer to memory free descriptor
+    void* ptr                                       ///< [in][release] pointer to memory to free
+    )
+{
+    auto pfnFreeExt = ze_lib::context->zeDdiTable.Mem.pfnFreeExt;
+    if( nullptr == pfnFreeExt )
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+
+    return pfnFreeExt( hContext, desc, ptr );
 }
 
 } // extern "C"

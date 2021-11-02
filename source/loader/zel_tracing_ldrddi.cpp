@@ -47,7 +47,7 @@ zelGetTracerApiProcAddrTable(
         auto getTable = reinterpret_cast<zel_pfnGetTracerApiProcAddrTable_t>(
             GET_FUNCTION_PTR(loader::context->tracingLayer, "zelGetTracerApiProcAddrTable") );
         if(!getTable)
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         result = getTable( version, pDdiTable );
     }
 

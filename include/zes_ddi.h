@@ -1,11 +1,11 @@
 /*
  *
- * Copyright (C) 2019 Intel Corporation
+ * Copyright (C) 2019-2021 Intel Corporation
  *
  * SPDX-License-Identifier: MIT
  *
  * @file zes_ddi.h
- * @version v1.2-r1.2.43
+ * @version v1.3-r1.3.0
  *
  */
 #ifndef _ZES_DDI_H
@@ -217,6 +217,13 @@ typedef ze_result_t (ZE_APICALL *zes_pfnDeviceEnumPowerDomains_t)(
     );
 
 ///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zesDeviceGetCardPowerDomain 
+typedef ze_result_t (ZE_APICALL *zes_pfnDeviceGetCardPowerDomain_t)(
+    zes_device_handle_t,
+    zes_pwr_handle_t*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
 /// @brief Function-pointer for zesDeviceEnumPsus 
 typedef ze_result_t (ZE_APICALL *zes_pfnDeviceEnumPsus_t)(
     zes_device_handle_t,
@@ -279,6 +286,7 @@ typedef struct _zes_device_dditable_t
     zes_pfnDeviceEnumMemoryModules_t                            pfnEnumMemoryModules;
     zes_pfnDeviceEnumPerformanceFactorDomains_t                 pfnEnumPerformanceFactorDomains;
     zes_pfnDeviceEnumPowerDomains_t                             pfnEnumPowerDomains;
+    zes_pfnDeviceGetCardPowerDomain_t                           pfnGetCardPowerDomain;
     zes_pfnDeviceEnumPsus_t                                     pfnEnumPsus;
     zes_pfnDeviceEnumRasErrorSets_t                             pfnEnumRasErrorSets;
     zes_pfnDeviceEnumSchedulers_t                               pfnEnumSchedulers;

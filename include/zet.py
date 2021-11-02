@@ -1,10 +1,10 @@
 """
- Copyright (C) 2019 Intel Corporation
+ Copyright (C) 2019-2021 Intel Corporation
 
  SPDX-License-Identifier: MIT
 
  @file zet.py
- @version v1.2-r1.2.43
+ @version v1.3-r1.3.0
 
  """
 import platform
@@ -236,8 +236,8 @@ class zet_debug_event_info_detached_t(Structure):
 class zet_debug_event_info_module_t(Structure):
     _fields_ = [
         ("format", zet_module_debug_info_format_t),                     ## [out] the module format
-        ("moduleBegin", c_ulonglong),                                   ## [out] the begin address of the in-memory module
-        ("moduleEnd", c_ulonglong),                                     ## [out] the end address of the in-memory module
+        ("moduleBegin", c_ulonglong),                                   ## [out] the begin address of the in-memory module (inclusive)
+        ("moduleEnd", c_ulonglong),                                     ## [out] the end address of the in-memory module (exclusive)
         ("load", c_ulonglong)                                           ## [out] the load address of the module on the device
     ]
 

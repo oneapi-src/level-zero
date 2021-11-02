@@ -58,6 +58,7 @@ typedef struct _zel_device_callbacks_t
     ze_pfnDeviceGetGlobalTimestampsCb_t                             pfnGetGlobalTimestampsCb;
     ze_pfnDeviceReserveCacheExtCb_t                                 pfnReserveCacheExtCb;
     ze_pfnDeviceSetCacheAdviceExtCb_t                               pfnSetCacheAdviceExtCb;
+    ze_pfnDevicePciGetPropertiesExtCb_t                             pfnPciGetPropertiesExtCb;
 } zel_device_callbacks_t;
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -115,6 +116,8 @@ typedef struct _zel_command_list_callbacks_t
     ze_pfnCommandListAppendLaunchCooperativeKernelCb_t              pfnAppendLaunchCooperativeKernelCb;
     ze_pfnCommandListAppendLaunchKernelIndirectCb_t                 pfnAppendLaunchKernelIndirectCb;
     ze_pfnCommandListAppendLaunchMultipleKernelsIndirectCb_t        pfnAppendLaunchMultipleKernelsIndirectCb;
+    ze_pfnCommandListAppendImageCopyToMemoryExtCb_t                 pfnAppendImageCopyToMemoryExtCb;
+    ze_pfnCommandListAppendImageCopyFromMemoryExtCb_t               pfnAppendImageCopyFromMemoryExtCb;
 } zel_command_list_callbacks_t;
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -162,6 +165,7 @@ typedef struct _zel_image_callbacks_t
     ze_pfnImageDestroyCb_t                                          pfnDestroyCb;
     ze_pfnImageGetMemoryPropertiesExpCb_t                           pfnGetMemoryPropertiesExpCb;
     ze_pfnImageViewCreateExpCb_t                                    pfnViewCreateExpCb;
+    ze_pfnImageGetAllocPropertiesExtCb_t                            pfnGetAllocPropertiesExtCb;
 } zel_image_callbacks_t;
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -197,6 +201,7 @@ typedef struct _zel_mem_callbacks_t
     ze_pfnMemGetIpcHandleCb_t                                       pfnGetIpcHandleCb;
     ze_pfnMemOpenIpcHandleCb_t                                      pfnOpenIpcHandleCb;
     ze_pfnMemCloseIpcHandleCb_t                                     pfnCloseIpcHandleCb;
+    ze_pfnMemFreeExtCb_t                                            pfnFreeExtCb;
 } zel_mem_callbacks_t;
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -211,6 +216,7 @@ typedef struct _zel_module_callbacks_t
     ze_pfnModuleGetKernelNamesCb_t                                  pfnGetKernelNamesCb;
     ze_pfnModuleGetPropertiesCb_t                                   pfnGetPropertiesCb;
     ze_pfnModuleGetFunctionPointerCb_t                              pfnGetFunctionPointerCb;
+    ze_pfnModuleInspectLinkageExtCb_t                               pfnInspectLinkageExtCb;
 } zel_module_callbacks_t;
 
 ///////////////////////////////////////////////////////////////////////////////

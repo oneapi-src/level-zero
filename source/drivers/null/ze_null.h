@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (C) 2019 Intel Corporation
+ * Copyright (C) 2019-2021 Intel Corporation
  *
  * SPDX-License-Identifier: MIT
  *
@@ -21,7 +21,7 @@ namespace driver
     class __zedlllocal context_t
     {
     public:
-        ze_api_version_t version = ZE_API_VERSION_1_2;
+        ze_api_version_t version = ZE_API_VERSION_1_3;
 
         ze_dditable_t   zeDdiTable = {};
         zet_dditable_t  zetDdiTable = {};

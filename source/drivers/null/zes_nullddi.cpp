@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (C) 2019 Intel Corporation
+ * Copyright (C) 2019-2021 Intel Corporation
  *
  * SPDX-License-Identifier: MIT
  *
@@ -320,9 +320,9 @@ namespace driver
     __zedlllocal ze_result_t ZE_APICALL
     zesDiagnosticsRunTests(
         zes_diag_handle_t hDiagnostics,                 ///< [in] Handle for the component.
-        uint32_t start,                                 ///< [in] The index of the first test to run. Set to
+        uint32_t startIndex,                            ///< [in] The index of the first test to run. Set to
                                                         ///< ::ZES_DIAG_FIRST_TEST_INDEX to start from the beginning.
-        uint32_t end,                                   ///< [in] The index of the last test to run. Set to
+        uint32_t endIndex,                              ///< [in] The index of the last test to run. Set to
                                                         ///< ::ZES_DIAG_LAST_TEST_INDEX to complete all tests after the start test.
         zes_diag_result_t* pResult                      ///< [in,out] The result of the diagnostics
         )
@@ -333,7 +333,7 @@ namespace driver
         auto pfnRunTests = context.zesDdiTable.Diagnostics.pfnRunTests;
         if( nullptr != pfnRunTests )
         {
-            result = pfnRunTests( hDiagnostics, start, end, pResult );
+            result = pfnRunTests( hDiagnostics, startIndex, endIndex, pResult );
         }
         else
         {
@@ -1850,6 +1850,32 @@ namespace driver
     }
 
     ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesDeviceGetCardPowerDomain
+    __zedlllocal ze_result_t ZE_APICALL
+    zesDeviceGetCardPowerDomain(
+        zes_device_handle_t hDevice,                    ///< [in] Sysman handle of the device.
+        zes_pwr_handle_t* phPower                       ///< [in,out] power domain handle for the entire PCIe card.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnGetCardPowerDomain = context.zesDdiTable.Device.pfnGetCardPowerDomain;
+        if( nullptr != pfnGetCardPowerDomain )
+        {
+            result = pfnGetCardPowerDomain( hDevice, phPower );
+        }
+        else
+        {
+            // generic implementation
+            *phPower = reinterpret_cast<zes_pwr_handle_t>( context.get() );
+
+        }
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
     /// @brief Intercept function for zesPowerGetProperties
     __zedlllocal ze_result_t ZE_APICALL
     zesPowerGetProperties(
@@ -2772,6 +2798,8 @@ zesGetDeviceProcAddrTable(
     pDdiTable->pfnEnumPerformanceFactorDomains           = driver::zesDeviceEnumPerformanceFactorDomains;
 
     pDdiTable->pfnEnumPowerDomains                       = driver::zesDeviceEnumPowerDomains;
+
+    pDdiTable->pfnGetCardPowerDomain                     = driver::zesDeviceGetCardPowerDomain;
 
     pDdiTable->pfnEnumPsus                               = driver::zesDeviceEnumPsus;
 

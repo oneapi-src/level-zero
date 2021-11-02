@@ -1,10 +1,10 @@
 """
- Copyright (C) 2019 Intel Corporation
+ Copyright (C) 2019-2021 Intel Corporation
 
  SPDX-License-Identifier: MIT
 
  @file zes.py
- @version v1.2-r1.2.43
+ @version v1.3-r1.3.0
 
  """
 import platform
@@ -1124,6 +1124,12 @@ class zes_mem_type_v(IntEnum):
     L3 = 11                                         ## L3 cache
     GRF = 12                                        ## Execution unit register file
     SLM = 13                                        ## Execution unit shared local memory
+    GDDR4 = 14                                      ## GDDR4 memory
+    GDDR5 = 15                                      ## GDDR5 memory
+    GDDR5X = 16                                     ## GDDR5X memory
+    GDDR6 = 17                                      ## GDDR6 memory
+    GDDR6X = 18                                     ## GDDR6X memory
+    GDDR7 = 19                                      ## GDDR7 memory
 
 class zes_mem_type_t(c_int):
     def __str__(self):
@@ -1299,10 +1305,10 @@ class zes_power_burst_limit_t(Structure):
 ## @brief Peak power limit
 ## 
 ## @details
-##     - The power controller (Punit) will preemptively throttle the operating
-##       frequency of the device when the instantaneous power exceeds this
-##       limit. The limit is known as PL4. It expresses the maximum power that
-##       can be drawn from the power supply.
+##     - The power controller (Punit) will reactively/proactively throttle the
+##       operating frequency of the device when the instantaneous/100usec power
+##       exceeds this limit. The limit is known as PL4 or Psys. It expresses
+##       the maximum power that can be drawn from the power supply.
 ##     - If this power limit is removed or set too high, the power supply will
 ##       generate an interrupt when it detects an overcurrent condition and the
 ##       power controller will throttle the device frequencies down to min. It
@@ -1789,6 +1795,13 @@ else:
     _zesDeviceEnumPowerDomains_t = CFUNCTYPE( ze_result_t, zes_device_handle_t, POINTER(c_ulong), POINTER(zes_pwr_handle_t) )
 
 ###############################################################################
+## @brief Function-pointer for zesDeviceGetCardPowerDomain
+if __use_win_types:
+    _zesDeviceGetCardPowerDomain_t = WINFUNCTYPE( ze_result_t, zes_device_handle_t, POINTER(zes_pwr_handle_t) )
+else:
+    _zesDeviceGetCardPowerDomain_t = CFUNCTYPE( ze_result_t, zes_device_handle_t, POINTER(zes_pwr_handle_t) )
+
+###############################################################################
 ## @brief Function-pointer for zesDeviceEnumPsus
 if __use_win_types:
     _zesDeviceEnumPsus_t = WINFUNCTYPE( ze_result_t, zes_device_handle_t, POINTER(c_ulong), POINTER(zes_psu_handle_t) )
@@ -1847,6 +1860,7 @@ class _zes_device_dditable_t(Structure):
         ("pfnEnumMemoryModules", c_void_p),                             ## _zesDeviceEnumMemoryModules_t
         ("pfnEnumPerformanceFactorDomains", c_void_p),                  ## _zesDeviceEnumPerformanceFactorDomains_t
         ("pfnEnumPowerDomains", c_void_p),                              ## _zesDeviceEnumPowerDomains_t
+        ("pfnGetCardPowerDomain", c_void_p),                            ## _zesDeviceGetCardPowerDomain_t
         ("pfnEnumPsus", c_void_p),                                      ## _zesDeviceEnumPsus_t
         ("pfnEnumRasErrorSets", c_void_p),                              ## _zesDeviceEnumRasErrorSets_t
         ("pfnEnumSchedulers", c_void_p),                                ## _zesDeviceEnumSchedulers_t
@@ -2616,6 +2630,7 @@ class ZES_DDI:
         self.zesDeviceEnumMemoryModules = _zesDeviceEnumMemoryModules_t(self.__dditable.Device.pfnEnumMemoryModules)
         self.zesDeviceEnumPerformanceFactorDomains = _zesDeviceEnumPerformanceFactorDomains_t(self.__dditable.Device.pfnEnumPerformanceFactorDomains)
         self.zesDeviceEnumPowerDomains = _zesDeviceEnumPowerDomains_t(self.__dditable.Device.pfnEnumPowerDomains)
+        self.zesDeviceGetCardPowerDomain = _zesDeviceGetCardPowerDomain_t(self.__dditable.Device.pfnGetCardPowerDomain)
         self.zesDeviceEnumPsus = _zesDeviceEnumPsus_t(self.__dditable.Device.pfnEnumPsus)
         self.zesDeviceEnumRasErrorSets = _zesDeviceEnumRasErrorSets_t(self.__dditable.Device.pfnEnumRasErrorSets)
         self.zesDeviceEnumSchedulers = _zesDeviceEnumSchedulers_t(self.__dditable.Device.pfnEnumSchedulers)

@@ -1,11 +1,11 @@
 /*
  *
- * Copyright (C) 2019 Intel Corporation
+ * Copyright (C) 2019-2021 Intel Corporation
  *
  * SPDX-License-Identifier: MIT
  *
  * @file zes_api.h
- * @version v1.2-r1.2.43
+ * @version v1.3-r1.3.0
  *
  */
 #ifndef _ZES_API_H
@@ -1070,7 +1070,7 @@ zesDiagnosticsGetTests(
 /// @brief Run a diagnostics test suite, either all tests or a subset of tests.
 /// 
 /// @details
-///     - WARNING: Performancing diagnostics may destroy current device state
+///     - WARNING: Running diagnostics may destroy current device state
 ///       information. Gracefully close any running workloads before initiating.
 ///     - To run all tests in a test suite, set start =
 ///       ::ZES_DIAG_FIRST_TEST_INDEX and end = ::ZES_DIAG_LAST_TEST_INDEX.
@@ -1079,7 +1079,8 @@ zesDiagnosticsGetTests(
 ///       function ::zesDiagnosticsGetTests() can be called to get the list of
 ///       tests and corresponding indices that can be supplied to the arguments
 ///       start and end in this function.
-///     - This function will block until the diagnostics have completed.
+///     - This function will block until the diagnostics have completed and
+///       force reset based on result
 /// 
 /// @returns
 ///     - ::ZE_RESULT_SUCCESS
@@ -1094,9 +1095,9 @@ zesDiagnosticsGetTests(
 ZE_APIEXPORT ze_result_t ZE_APICALL
 zesDiagnosticsRunTests(
     zes_diag_handle_t hDiagnostics,                 ///< [in] Handle for the component.
-    uint32_t start,                                 ///< [in] The index of the first test to run. Set to
+    uint32_t startIndex,                            ///< [in] The index of the first test to run. Set to
                                                     ///< ::ZES_DIAG_FIRST_TEST_INDEX to start from the beginning.
-    uint32_t end,                                   ///< [in] The index of the last test to run. Set to
+    uint32_t endIndex,                              ///< [in] The index of the last test to run. Set to
                                                     ///< ::ZES_DIAG_LAST_TEST_INDEX to complete all tests after the start test.
     zes_diag_result_t* pResult                      ///< [in,out] The result of the diagnostics
     );
@@ -3013,6 +3014,12 @@ typedef enum _zes_mem_type_t
     ZES_MEM_TYPE_L3 = 11,                           ///< L3 cache
     ZES_MEM_TYPE_GRF = 12,                          ///< Execution unit register file
     ZES_MEM_TYPE_SLM = 13,                          ///< Execution unit shared local memory
+    ZES_MEM_TYPE_GDDR4 = 14,                        ///< GDDR4 memory
+    ZES_MEM_TYPE_GDDR5 = 15,                        ///< GDDR5 memory
+    ZES_MEM_TYPE_GDDR5X = 16,                       ///< GDDR5X memory
+    ZES_MEM_TYPE_GDDR6 = 17,                        ///< GDDR6 memory
+    ZES_MEM_TYPE_GDDR6X = 18,                       ///< GDDR6X memory
+    ZES_MEM_TYPE_GDDR7 = 19,                        ///< GDDR7 memory
     ZES_MEM_TYPE_FORCE_UINT32 = 0x7fffffff
 
 } zes_mem_type_t;
@@ -3404,10 +3411,10 @@ typedef struct _zes_power_burst_limit_t
 /// @brief Peak power limit
 /// 
 /// @details
-///     - The power controller (Punit) will preemptively throttle the operating
-///       frequency of the device when the instantaneous power exceeds this
-///       limit. The limit is known as PL4. It expresses the maximum power that
-///       can be drawn from the power supply.
+///     - The power controller (Punit) will reactively/proactively throttle the
+///       operating frequency of the device when the instantaneous/100usec power
+///       exceeds this limit. The limit is known as PL4 or Psys. It expresses
+///       the maximum power that can be drawn from the power supply.
 ///     - If this power limit is removed or set too high, the power supply will
 ///       generate an interrupt when it detects an overcurrent condition and the
 ///       power controller will throttle the device frequencies down to min. It
@@ -3466,6 +3473,29 @@ zesDeviceEnumPowerDomains(
                                                     ///< if count is less than the number of components of this type that are
                                                     ///< available, then the driver shall only retrieve that number of
                                                     ///< component handles.
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Get handle of the PCIe card-level power
+/// 
+/// @details
+///     - The application may call this function from simultaneous threads.
+///     - The implementation of this function should be lock-free.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hDevice`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == phPower`
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
+///         + The device does not provide access to card level power controls or telemetry. An invalid power domain handle will be returned in phPower.
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zesDeviceGetCardPowerDomain(
+    zes_device_handle_t hDevice,                    ///< [in] Sysman handle of the device.
+    zes_pwr_handle_t* phPower                       ///< [in,out] power domain handle for the entire PCIe card.
     );
 
 ///////////////////////////////////////////////////////////////////////////////

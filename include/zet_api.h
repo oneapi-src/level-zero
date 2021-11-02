@@ -1,11 +1,11 @@
 /*
  *
- * Copyright (C) 2019 Intel Corporation
+ * Copyright (C) 2019-2021 Intel Corporation
  *
  * SPDX-License-Identifier: MIT
  *
  * @file zet_api.h
- * @version v1.2-r1.2.43
+ * @version v1.3-r1.3.0
  *
  */
 #ifndef _ZET_API_H
@@ -441,8 +441,8 @@ typedef struct _zet_debug_event_info_detached_t
 typedef struct _zet_debug_event_info_module_t
 {
     zet_module_debug_info_format_t format;          ///< [out] the module format
-    uint64_t moduleBegin;                           ///< [out] the begin address of the in-memory module
-    uint64_t moduleEnd;                             ///< [out] the end address of the in-memory module
+    uint64_t moduleBegin;                           ///< [out] the begin address of the in-memory module (inclusive)
+    uint64_t moduleEnd;                             ///< [out] the end address of the in-memory module (exclusive)
     uint64_t load;                                  ///< [out] the load address of the module on the device
 
 } zet_debug_event_info_module_t;

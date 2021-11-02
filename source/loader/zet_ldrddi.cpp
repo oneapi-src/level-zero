@@ -42,7 +42,7 @@ namespace loader
         auto dditable = reinterpret_cast<zet_module_object_t*>( hModule )->dditable;
         auto pfnGetDebugInfo = dditable->zet.Module.pfnGetDebugInfo;
         if( nullptr == pfnGetDebugInfo )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         // convert loader handle to driver handle
         hModule = reinterpret_cast<zet_module_object_t*>( hModule )->handle;
@@ -67,7 +67,7 @@ namespace loader
         auto dditable = reinterpret_cast<zet_device_object_t*>( hDevice )->dditable;
         auto pfnGetDebugProperties = dditable->zet.Device.pfnGetDebugProperties;
         if( nullptr == pfnGetDebugProperties )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         // convert loader handle to driver handle
         hDevice = reinterpret_cast<zet_device_object_t*>( hDevice )->handle;
@@ -93,7 +93,7 @@ namespace loader
         auto dditable = reinterpret_cast<zet_device_object_t*>( hDevice )->dditable;
         auto pfnAttach = dditable->zet.Debug.pfnAttach;
         if( nullptr == pfnAttach )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         // convert loader handle to driver handle
         hDevice = reinterpret_cast<zet_device_object_t*>( hDevice )->handle;
@@ -131,7 +131,7 @@ namespace loader
         auto dditable = reinterpret_cast<zet_debug_session_object_t*>( hDebug )->dditable;
         auto pfnDetach = dditable->zet.Debug.pfnDetach;
         if( nullptr == pfnDetach )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         // convert loader handle to driver handle
         hDebug = reinterpret_cast<zet_debug_session_object_t*>( hDebug )->handle;
@@ -169,7 +169,7 @@ namespace loader
         auto dditable = reinterpret_cast<zet_debug_session_object_t*>( hDebug )->dditable;
         auto pfnReadEvent = dditable->zet.Debug.pfnReadEvent;
         if( nullptr == pfnReadEvent )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         // convert loader handle to driver handle
         hDebug = reinterpret_cast<zet_debug_session_object_t*>( hDebug )->handle;
@@ -194,7 +194,7 @@ namespace loader
         auto dditable = reinterpret_cast<zet_debug_session_object_t*>( hDebug )->dditable;
         auto pfnAcknowledgeEvent = dditable->zet.Debug.pfnAcknowledgeEvent;
         if( nullptr == pfnAcknowledgeEvent )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         // convert loader handle to driver handle
         hDebug = reinterpret_cast<zet_debug_session_object_t*>( hDebug )->handle;
@@ -219,7 +219,7 @@ namespace loader
         auto dditable = reinterpret_cast<zet_debug_session_object_t*>( hDebug )->dditable;
         auto pfnInterrupt = dditable->zet.Debug.pfnInterrupt;
         if( nullptr == pfnInterrupt )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         // convert loader handle to driver handle
         hDebug = reinterpret_cast<zet_debug_session_object_t*>( hDebug )->handle;
@@ -244,7 +244,7 @@ namespace loader
         auto dditable = reinterpret_cast<zet_debug_session_object_t*>( hDebug )->dditable;
         auto pfnResume = dditable->zet.Debug.pfnResume;
         if( nullptr == pfnResume )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         // convert loader handle to driver handle
         hDebug = reinterpret_cast<zet_debug_session_object_t*>( hDebug )->handle;
@@ -272,7 +272,7 @@ namespace loader
         auto dditable = reinterpret_cast<zet_debug_session_object_t*>( hDebug )->dditable;
         auto pfnReadMemory = dditable->zet.Debug.pfnReadMemory;
         if( nullptr == pfnReadMemory )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         // convert loader handle to driver handle
         hDebug = reinterpret_cast<zet_debug_session_object_t*>( hDebug )->handle;
@@ -300,7 +300,7 @@ namespace loader
         auto dditable = reinterpret_cast<zet_debug_session_object_t*>( hDebug )->dditable;
         auto pfnWriteMemory = dditable->zet.Debug.pfnWriteMemory;
         if( nullptr == pfnWriteMemory )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         // convert loader handle to driver handle
         hDebug = reinterpret_cast<zet_debug_session_object_t*>( hDebug )->handle;
@@ -334,7 +334,7 @@ namespace loader
         auto dditable = reinterpret_cast<zet_device_object_t*>( hDevice )->dditable;
         auto pfnGetRegisterSetProperties = dditable->zet.Debug.pfnGetRegisterSetProperties;
         if( nullptr == pfnGetRegisterSetProperties )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         // convert loader handle to driver handle
         hDevice = reinterpret_cast<zet_device_object_t*>( hDevice )->handle;
@@ -365,7 +365,7 @@ namespace loader
         auto dditable = reinterpret_cast<zet_debug_session_object_t*>( hDebug )->dditable;
         auto pfnReadRegisters = dditable->zet.Debug.pfnReadRegisters;
         if( nullptr == pfnReadRegisters )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         // convert loader handle to driver handle
         hDebug = reinterpret_cast<zet_debug_session_object_t*>( hDebug )->handle;
@@ -396,7 +396,7 @@ namespace loader
         auto dditable = reinterpret_cast<zet_debug_session_object_t*>( hDebug )->dditable;
         auto pfnWriteRegisters = dditable->zet.Debug.pfnWriteRegisters;
         if( nullptr == pfnWriteRegisters )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         // convert loader handle to driver handle
         hDebug = reinterpret_cast<zet_debug_session_object_t*>( hDebug )->handle;
@@ -429,7 +429,7 @@ namespace loader
         auto dditable = reinterpret_cast<zet_device_object_t*>( hDevice )->dditable;
         auto pfnGet = dditable->zet.MetricGroup.pfnGet;
         if( nullptr == pfnGet )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         // convert loader handle to driver handle
         hDevice = reinterpret_cast<zet_device_object_t*>( hDevice )->handle;
@@ -469,7 +469,7 @@ namespace loader
         auto dditable = reinterpret_cast<zet_metric_group_object_t*>( hMetricGroup )->dditable;
         auto pfnGetProperties = dditable->zet.MetricGroup.pfnGetProperties;
         if( nullptr == pfnGetProperties )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         // convert loader handle to driver handle
         hMetricGroup = reinterpret_cast<zet_metric_group_object_t*>( hMetricGroup )->handle;
@@ -505,7 +505,7 @@ namespace loader
         auto dditable = reinterpret_cast<zet_metric_group_object_t*>( hMetricGroup )->dditable;
         auto pfnCalculateMetricValues = dditable->zet.MetricGroup.pfnCalculateMetricValues;
         if( nullptr == pfnCalculateMetricValues )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         // convert loader handle to driver handle
         hMetricGroup = reinterpret_cast<zet_metric_group_object_t*>( hMetricGroup )->handle;
@@ -537,7 +537,7 @@ namespace loader
         auto dditable = reinterpret_cast<zet_metric_group_object_t*>( hMetricGroup )->dditable;
         auto pfnGet = dditable->zet.Metric.pfnGet;
         if( nullptr == pfnGet )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         // convert loader handle to driver handle
         hMetricGroup = reinterpret_cast<zet_metric_group_object_t*>( hMetricGroup )->handle;
@@ -577,7 +577,7 @@ namespace loader
         auto dditable = reinterpret_cast<zet_metric_object_t*>( hMetric )->dditable;
         auto pfnGetProperties = dditable->zet.Metric.pfnGetProperties;
         if( nullptr == pfnGetProperties )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         // convert loader handle to driver handle
         hMetric = reinterpret_cast<zet_metric_object_t*>( hMetric )->handle;
@@ -608,7 +608,7 @@ namespace loader
         auto dditable = reinterpret_cast<zet_context_object_t*>( hContext )->dditable;
         auto pfnActivateMetricGroups = dditable->zet.Context.pfnActivateMetricGroups;
         if( nullptr == pfnActivateMetricGroups )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         // convert loader handle to driver handle
         hContext = reinterpret_cast<zet_context_object_t*>( hContext )->handle;
@@ -646,7 +646,7 @@ namespace loader
         auto dditable = reinterpret_cast<zet_context_object_t*>( hContext )->dditable;
         auto pfnOpen = dditable->zet.MetricStreamer.pfnOpen;
         if( nullptr == pfnOpen )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         // convert loader handle to driver handle
         hContext = reinterpret_cast<zet_context_object_t*>( hContext )->handle;
@@ -695,7 +695,7 @@ namespace loader
         auto dditable = reinterpret_cast<zet_command_list_object_t*>( hCommandList )->dditable;
         auto pfnAppendMetricStreamerMarker = dditable->zet.CommandList.pfnAppendMetricStreamerMarker;
         if( nullptr == pfnAppendMetricStreamerMarker )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         // convert loader handle to driver handle
         hCommandList = reinterpret_cast<zet_command_list_object_t*>( hCommandList )->handle;
@@ -722,7 +722,7 @@ namespace loader
         auto dditable = reinterpret_cast<zet_metric_streamer_object_t*>( hMetricStreamer )->dditable;
         auto pfnClose = dditable->zet.MetricStreamer.pfnClose;
         if( nullptr == pfnClose )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         // convert loader handle to driver handle
         hMetricStreamer = reinterpret_cast<zet_metric_streamer_object_t*>( hMetricStreamer )->handle;
@@ -763,7 +763,7 @@ namespace loader
         auto dditable = reinterpret_cast<zet_metric_streamer_object_t*>( hMetricStreamer )->dditable;
         auto pfnReadData = dditable->zet.MetricStreamer.pfnReadData;
         if( nullptr == pfnReadData )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         // convert loader handle to driver handle
         hMetricStreamer = reinterpret_cast<zet_metric_streamer_object_t*>( hMetricStreamer )->handle;
@@ -791,7 +791,7 @@ namespace loader
         auto dditable = reinterpret_cast<zet_context_object_t*>( hContext )->dditable;
         auto pfnCreate = dditable->zet.MetricQueryPool.pfnCreate;
         if( nullptr == pfnCreate )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         // convert loader handle to driver handle
         hContext = reinterpret_cast<zet_context_object_t*>( hContext )->handle;
@@ -835,7 +835,7 @@ namespace loader
         auto dditable = reinterpret_cast<zet_metric_query_pool_object_t*>( hMetricQueryPool )->dditable;
         auto pfnDestroy = dditable->zet.MetricQueryPool.pfnDestroy;
         if( nullptr == pfnDestroy )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         // convert loader handle to driver handle
         hMetricQueryPool = reinterpret_cast<zet_metric_query_pool_object_t*>( hMetricQueryPool )->handle;
@@ -867,7 +867,7 @@ namespace loader
         auto dditable = reinterpret_cast<zet_metric_query_pool_object_t*>( hMetricQueryPool )->dditable;
         auto pfnCreate = dditable->zet.MetricQuery.pfnCreate;
         if( nullptr == pfnCreate )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         // convert loader handle to driver handle
         hMetricQueryPool = reinterpret_cast<zet_metric_query_pool_object_t*>( hMetricQueryPool )->handle;
@@ -905,7 +905,7 @@ namespace loader
         auto dditable = reinterpret_cast<zet_metric_query_object_t*>( hMetricQuery )->dditable;
         auto pfnDestroy = dditable->zet.MetricQuery.pfnDestroy;
         if( nullptr == pfnDestroy )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         // convert loader handle to driver handle
         hMetricQuery = reinterpret_cast<zet_metric_query_object_t*>( hMetricQuery )->handle;
@@ -935,7 +935,7 @@ namespace loader
         auto dditable = reinterpret_cast<zet_metric_query_object_t*>( hMetricQuery )->dditable;
         auto pfnReset = dditable->zet.MetricQuery.pfnReset;
         if( nullptr == pfnReset )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         // convert loader handle to driver handle
         hMetricQuery = reinterpret_cast<zet_metric_query_object_t*>( hMetricQuery )->handle;
@@ -960,7 +960,7 @@ namespace loader
         auto dditable = reinterpret_cast<zet_command_list_object_t*>( hCommandList )->dditable;
         auto pfnAppendMetricQueryBegin = dditable->zet.CommandList.pfnAppendMetricQueryBegin;
         if( nullptr == pfnAppendMetricQueryBegin )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         // convert loader handle to driver handle
         hCommandList = reinterpret_cast<zet_command_list_object_t*>( hCommandList )->handle;
@@ -991,7 +991,7 @@ namespace loader
         auto dditable = reinterpret_cast<zet_command_list_object_t*>( hCommandList )->dditable;
         auto pfnAppendMetricQueryEnd = dditable->zet.CommandList.pfnAppendMetricQueryEnd;
         if( nullptr == pfnAppendMetricQueryEnd )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         // convert loader handle to driver handle
         hCommandList = reinterpret_cast<zet_command_list_object_t*>( hCommandList )->handle;
@@ -1021,7 +1021,7 @@ namespace loader
         auto dditable = reinterpret_cast<zet_command_list_object_t*>( hCommandList )->dditable;
         auto pfnAppendMetricMemoryBarrier = dditable->zet.CommandList.pfnAppendMetricMemoryBarrier;
         if( nullptr == pfnAppendMetricMemoryBarrier )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         // convert loader handle to driver handle
         hCommandList = reinterpret_cast<zet_command_list_object_t*>( hCommandList )->handle;
@@ -1054,7 +1054,7 @@ namespace loader
         auto dditable = reinterpret_cast<zet_metric_query_object_t*>( hMetricQuery )->dditable;
         auto pfnGetData = dditable->zet.MetricQuery.pfnGetData;
         if( nullptr == pfnGetData )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         // convert loader handle to driver handle
         hMetricQuery = reinterpret_cast<zet_metric_query_object_t*>( hMetricQuery )->handle;
@@ -1079,7 +1079,7 @@ namespace loader
         auto dditable = reinterpret_cast<zet_kernel_object_t*>( hKernel )->dditable;
         auto pfnGetProfileInfo = dditable->zet.Kernel.pfnGetProfileInfo;
         if( nullptr == pfnGetProfileInfo )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         // convert loader handle to driver handle
         hKernel = reinterpret_cast<zet_kernel_object_t*>( hKernel )->handle;
@@ -1105,7 +1105,7 @@ namespace loader
         auto dditable = reinterpret_cast<zet_context_object_t*>( hContext )->dditable;
         auto pfnCreate = dditable->zet.TracerExp.pfnCreate;
         if( nullptr == pfnCreate )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         // convert loader handle to driver handle
         hContext = reinterpret_cast<zet_context_object_t*>( hContext )->handle;
@@ -1143,7 +1143,7 @@ namespace loader
         auto dditable = reinterpret_cast<zet_tracer_exp_object_t*>( hTracer )->dditable;
         auto pfnDestroy = dditable->zet.TracerExp.pfnDestroy;
         if( nullptr == pfnDestroy )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         // convert loader handle to driver handle
         hTracer = reinterpret_cast<zet_tracer_exp_object_t*>( hTracer )->handle;
@@ -1174,7 +1174,7 @@ namespace loader
         auto dditable = reinterpret_cast<zet_tracer_exp_object_t*>( hTracer )->dditable;
         auto pfnSetPrologues = dditable->zet.TracerExp.pfnSetPrologues;
         if( nullptr == pfnSetPrologues )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         // convert loader handle to driver handle
         hTracer = reinterpret_cast<zet_tracer_exp_object_t*>( hTracer )->handle;
@@ -1199,7 +1199,7 @@ namespace loader
         auto dditable = reinterpret_cast<zet_tracer_exp_object_t*>( hTracer )->dditable;
         auto pfnSetEpilogues = dditable->zet.TracerExp.pfnSetEpilogues;
         if( nullptr == pfnSetEpilogues )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         // convert loader handle to driver handle
         hTracer = reinterpret_cast<zet_tracer_exp_object_t*>( hTracer )->handle;
@@ -1224,7 +1224,7 @@ namespace loader
         auto dditable = reinterpret_cast<zet_tracer_exp_object_t*>( hTracer )->dditable;
         auto pfnSetEnabled = dditable->zet.TracerExp.pfnSetEnabled;
         if( nullptr == pfnSetEnabled )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         // convert loader handle to driver handle
         hTracer = reinterpret_cast<zet_tracer_exp_object_t*>( hTracer )->handle;
@@ -1270,7 +1270,7 @@ namespace loader
         auto dditable = reinterpret_cast<zet_metric_group_object_t*>( hMetricGroup )->dditable;
         auto pfnCalculateMultipleMetricValuesExp = dditable->zet.MetricGroupExp.pfnCalculateMultipleMetricValuesExp;
         if( nullptr == pfnCalculateMultipleMetricValuesExp )
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
 
         // convert loader handle to driver handle
         hMetricGroup = reinterpret_cast<zet_metric_group_object_t*>( hMetricGroup )->handle;
@@ -1331,7 +1331,7 @@ zetGetDeviceProcAddrTable(
     }
 
     if(!atLeastOneDriverValid)
-        result = ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        result = ZE_RESULT_ERROR_UNINITIALIZED;
     else
         result = ZE_RESULT_SUCCESS;
 
@@ -1355,7 +1355,7 @@ zetGetDeviceProcAddrTable(
         auto getTable = reinterpret_cast<zet_pfnGetDeviceProcAddrTable_t>(
             GET_FUNCTION_PTR(loader::context->validationLayer, "zetGetDeviceProcAddrTable") );
         if(!getTable)
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         result = getTable( version, pDdiTable );
     }
 
@@ -1406,7 +1406,7 @@ zetGetContextProcAddrTable(
     }
 
     if(!atLeastOneDriverValid)
-        result = ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        result = ZE_RESULT_ERROR_UNINITIALIZED;
     else
         result = ZE_RESULT_SUCCESS;
 
@@ -1430,7 +1430,7 @@ zetGetContextProcAddrTable(
         auto getTable = reinterpret_cast<zet_pfnGetContextProcAddrTable_t>(
             GET_FUNCTION_PTR(loader::context->validationLayer, "zetGetContextProcAddrTable") );
         if(!getTable)
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         result = getTable( version, pDdiTable );
     }
 
@@ -1481,7 +1481,7 @@ zetGetCommandListProcAddrTable(
     }
 
     if(!atLeastOneDriverValid)
-        result = ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        result = ZE_RESULT_ERROR_UNINITIALIZED;
     else
         result = ZE_RESULT_SUCCESS;
 
@@ -1508,7 +1508,7 @@ zetGetCommandListProcAddrTable(
         auto getTable = reinterpret_cast<zet_pfnGetCommandListProcAddrTable_t>(
             GET_FUNCTION_PTR(loader::context->validationLayer, "zetGetCommandListProcAddrTable") );
         if(!getTable)
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         result = getTable( version, pDdiTable );
     }
 
@@ -1559,7 +1559,7 @@ zetGetKernelProcAddrTable(
     }
 
     if(!atLeastOneDriverValid)
-        result = ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        result = ZE_RESULT_ERROR_UNINITIALIZED;
     else
         result = ZE_RESULT_SUCCESS;
 
@@ -1583,7 +1583,7 @@ zetGetKernelProcAddrTable(
         auto getTable = reinterpret_cast<zet_pfnGetKernelProcAddrTable_t>(
             GET_FUNCTION_PTR(loader::context->validationLayer, "zetGetKernelProcAddrTable") );
         if(!getTable)
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         result = getTable( version, pDdiTable );
     }
 
@@ -1634,7 +1634,7 @@ zetGetModuleProcAddrTable(
     }
 
     if(!atLeastOneDriverValid)
-        result = ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        result = ZE_RESULT_ERROR_UNINITIALIZED;
     else
         result = ZE_RESULT_SUCCESS;
 
@@ -1658,7 +1658,7 @@ zetGetModuleProcAddrTable(
         auto getTable = reinterpret_cast<zet_pfnGetModuleProcAddrTable_t>(
             GET_FUNCTION_PTR(loader::context->validationLayer, "zetGetModuleProcAddrTable") );
         if(!getTable)
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         result = getTable( version, pDdiTable );
     }
 
@@ -1709,7 +1709,7 @@ zetGetDebugProcAddrTable(
     }
 
     if(!atLeastOneDriverValid)
-        result = ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        result = ZE_RESULT_ERROR_UNINITIALIZED;
     else
         result = ZE_RESULT_SUCCESS;
 
@@ -1743,7 +1743,7 @@ zetGetDebugProcAddrTable(
         auto getTable = reinterpret_cast<zet_pfnGetDebugProcAddrTable_t>(
             GET_FUNCTION_PTR(loader::context->validationLayer, "zetGetDebugProcAddrTable") );
         if(!getTable)
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         result = getTable( version, pDdiTable );
     }
 
@@ -1794,7 +1794,7 @@ zetGetMetricProcAddrTable(
     }
 
     if(!atLeastOneDriverValid)
-        result = ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        result = ZE_RESULT_ERROR_UNINITIALIZED;
     else
         result = ZE_RESULT_SUCCESS;
 
@@ -1819,7 +1819,7 @@ zetGetMetricProcAddrTable(
         auto getTable = reinterpret_cast<zet_pfnGetMetricProcAddrTable_t>(
             GET_FUNCTION_PTR(loader::context->validationLayer, "zetGetMetricProcAddrTable") );
         if(!getTable)
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         result = getTable( version, pDdiTable );
     }
 
@@ -1870,7 +1870,7 @@ zetGetMetricGroupProcAddrTable(
     }
 
     if(!atLeastOneDriverValid)
-        result = ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        result = ZE_RESULT_ERROR_UNINITIALIZED;
     else
         result = ZE_RESULT_SUCCESS;
 
@@ -1896,7 +1896,7 @@ zetGetMetricGroupProcAddrTable(
         auto getTable = reinterpret_cast<zet_pfnGetMetricGroupProcAddrTable_t>(
             GET_FUNCTION_PTR(loader::context->validationLayer, "zetGetMetricGroupProcAddrTable") );
         if(!getTable)
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         result = getTable( version, pDdiTable );
     }
 
@@ -1965,7 +1965,7 @@ zetGetMetricGroupExpProcAddrTable(
         auto getTable = reinterpret_cast<zet_pfnGetMetricGroupExpProcAddrTable_t>(
             GET_FUNCTION_PTR(loader::context->validationLayer, "zetGetMetricGroupExpProcAddrTable") );
         if(!getTable)
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         result = getTable( version, pDdiTable );
     }
 
@@ -2016,7 +2016,7 @@ zetGetMetricQueryProcAddrTable(
     }
 
     if(!atLeastOneDriverValid)
-        result = ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        result = ZE_RESULT_ERROR_UNINITIALIZED;
     else
         result = ZE_RESULT_SUCCESS;
 
@@ -2043,7 +2043,7 @@ zetGetMetricQueryProcAddrTable(
         auto getTable = reinterpret_cast<zet_pfnGetMetricQueryProcAddrTable_t>(
             GET_FUNCTION_PTR(loader::context->validationLayer, "zetGetMetricQueryProcAddrTable") );
         if(!getTable)
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         result = getTable( version, pDdiTable );
     }
 
@@ -2094,7 +2094,7 @@ zetGetMetricQueryPoolProcAddrTable(
     }
 
     if(!atLeastOneDriverValid)
-        result = ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        result = ZE_RESULT_ERROR_UNINITIALIZED;
     else
         result = ZE_RESULT_SUCCESS;
 
@@ -2119,7 +2119,7 @@ zetGetMetricQueryPoolProcAddrTable(
         auto getTable = reinterpret_cast<zet_pfnGetMetricQueryPoolProcAddrTable_t>(
             GET_FUNCTION_PTR(loader::context->validationLayer, "zetGetMetricQueryPoolProcAddrTable") );
         if(!getTable)
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         result = getTable( version, pDdiTable );
     }
 
@@ -2170,7 +2170,7 @@ zetGetMetricStreamerProcAddrTable(
     }
 
     if(!atLeastOneDriverValid)
-        result = ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        result = ZE_RESULT_ERROR_UNINITIALIZED;
     else
         result = ZE_RESULT_SUCCESS;
 
@@ -2196,7 +2196,7 @@ zetGetMetricStreamerProcAddrTable(
         auto getTable = reinterpret_cast<zet_pfnGetMetricStreamerProcAddrTable_t>(
             GET_FUNCTION_PTR(loader::context->validationLayer, "zetGetMetricStreamerProcAddrTable") );
         if(!getTable)
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         result = getTable( version, pDdiTable );
     }
 
@@ -2247,7 +2247,7 @@ zetGetTracerExpProcAddrTable(
     }
 
     if(!atLeastOneDriverValid)
-        result = ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        result = ZE_RESULT_ERROR_UNINITIALIZED;
     else
         result = ZE_RESULT_SUCCESS;
 
@@ -2275,7 +2275,7 @@ zetGetTracerExpProcAddrTable(
         auto getTable = reinterpret_cast<zet_pfnGetTracerExpProcAddrTable_t>(
             GET_FUNCTION_PTR(loader::context->validationLayer, "zetGetTracerExpProcAddrTable") );
         if(!getTable)
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         result = getTable( version, pDdiTable );
     }
 

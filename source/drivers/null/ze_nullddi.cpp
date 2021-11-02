@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (C) 2019 Intel Corporation
+ * Copyright (C) 2019-2021 Intel Corporation
  *
  * SPDX-License-Identifier: MIT
  *
@@ -3514,6 +3514,180 @@ namespace driver
         if( nullptr != pfnSchedulingHintExp )
         {
             result = pfnSchedulingHintExp( hKernel, pHint );
+        }
+        else
+        {
+            // generic implementation
+        }
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeDevicePciGetPropertiesExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeDevicePciGetPropertiesExt(
+        ze_device_handle_t hDevice,                     ///< [in] handle of the device object.
+        ze_pci_ext_properties_t* pProperties            ///< [in,out] returns the PCI properties of the device.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnPciGetPropertiesExt = context.zeDdiTable.Device.pfnPciGetPropertiesExt;
+        if( nullptr != pfnPciGetPropertiesExt )
+        {
+            result = pfnPciGetPropertiesExt( hDevice, pProperties );
+        }
+        else
+        {
+            // generic implementation
+        }
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeCommandListAppendImageCopyToMemoryExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeCommandListAppendImageCopyToMemoryExt(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of command list
+        void* dstptr,                                   ///< [in] pointer to destination memory to copy to
+        ze_image_handle_t hSrcImage,                    ///< [in] handle of source image to copy from
+        const ze_image_region_t* pSrcRegion,            ///< [in][optional] source region descriptor
+        uint32_t destRowPitch,                          ///< [in] size in bytes of the 1D slice of the 2D region of a 2D or 3D
+                                                        ///< image or each image of a 1D or 2D image array being written
+        uint32_t destSlicePitch,                        ///< [in] size in bytes of the 2D slice of the 3D region of a 3D image or
+                                                        ///< each image of a 1D or 2D image array being written
+        ze_event_handle_t hSignalEvent,                 ///< [in][optional] handle of the event to signal on completion
+        uint32_t numWaitEvents,                         ///< [in][optional] number of events to wait on before launching; must be 0
+                                                        ///< if `nullptr == phWaitEvents`
+        ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
+                                                        ///< on before launching
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnAppendImageCopyToMemoryExt = context.zeDdiTable.CommandList.pfnAppendImageCopyToMemoryExt;
+        if( nullptr != pfnAppendImageCopyToMemoryExt )
+        {
+            result = pfnAppendImageCopyToMemoryExt( hCommandList, dstptr, hSrcImage, pSrcRegion, destRowPitch, destSlicePitch, hSignalEvent, numWaitEvents, phWaitEvents );
+        }
+        else
+        {
+            // generic implementation
+        }
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeCommandListAppendImageCopyFromMemoryExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeCommandListAppendImageCopyFromMemoryExt(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of command list
+        ze_image_handle_t hDstImage,                    ///< [in] handle of destination image to copy to
+        const void* srcptr,                             ///< [in] pointer to source memory to copy from
+        const ze_image_region_t* pDstRegion,            ///< [in][optional] destination region descriptor
+        uint32_t srcRowPitch,                           ///< [in] size in bytes of the 1D slice of the 2D region of a 2D or 3D
+                                                        ///< image or each image of a 1D or 2D image array being read
+        uint32_t srcSlicePitch,                         ///< [in] size in bytes of the 2D slice of the 3D region of a 3D image or
+                                                        ///< each image of a 1D or 2D image array being read
+        ze_event_handle_t hSignalEvent,                 ///< [in][optional] handle of the event to signal on completion
+        uint32_t numWaitEvents,                         ///< [in][optional] number of events to wait on before launching; must be 0
+                                                        ///< if `nullptr == phWaitEvents`
+        ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
+                                                        ///< on before launching
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnAppendImageCopyFromMemoryExt = context.zeDdiTable.CommandList.pfnAppendImageCopyFromMemoryExt;
+        if( nullptr != pfnAppendImageCopyFromMemoryExt )
+        {
+            result = pfnAppendImageCopyFromMemoryExt( hCommandList, hDstImage, srcptr, pDstRegion, srcRowPitch, srcSlicePitch, hSignalEvent, numWaitEvents, phWaitEvents );
+        }
+        else
+        {
+            // generic implementation
+        }
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeImageGetAllocPropertiesExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeImageGetAllocPropertiesExt(
+        ze_context_handle_t hContext,                   ///< [in] handle of the context object
+        ze_image_handle_t hImage,                       ///< [in] handle of image object to query
+        ze_image_allocation_ext_properties_t* pImageAllocProperties ///< [in,out] query result for image allocation properties
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnGetAllocPropertiesExt = context.zeDdiTable.Image.pfnGetAllocPropertiesExt;
+        if( nullptr != pfnGetAllocPropertiesExt )
+        {
+            result = pfnGetAllocPropertiesExt( hContext, hImage, pImageAllocProperties );
+        }
+        else
+        {
+            // generic implementation
+        }
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeModuleInspectLinkageExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeModuleInspectLinkageExt(
+        ze_linkage_inspection_ext_desc_t* pInspectDesc, ///< [in] pointer to linkage inspection descriptor structure.
+        uint32_t numModules,                            ///< [in] number of modules to be inspected pointed to by phModules.
+        ze_module_handle_t* phModules,                  ///< [in][range(0, numModules)] pointer to an array of modules to be
+                                                        ///< inspected for import dependencies.
+        ze_module_build_log_handle_t* phLog             ///< [out] pointer to handle of linkage inspection log. Log object will
+                                                        ///< contain separate lists of imports, un-resolvable imports, and exports.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnInspectLinkageExt = context.zeDdiTable.Module.pfnInspectLinkageExt;
+        if( nullptr != pfnInspectLinkageExt )
+        {
+            result = pfnInspectLinkageExt( pInspectDesc, numModules, phModules, phLog );
+        }
+        else
+        {
+            // generic implementation
+            *phLog = reinterpret_cast<ze_module_build_log_handle_t>( context.get() );
+
+        }
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeMemFreeExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeMemFreeExt(
+        ze_context_handle_t hContext,                   ///< [in] handle of the context object
+        const ze_memory_free_ext_desc_t* desc,          ///< [in] pointer to memory free descriptor
+        void* ptr                                       ///< [in][release] pointer to memory to free
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnFreeExt = context.zeDdiTable.Mem.pfnFreeExt;
+        if( nullptr != pfnFreeExt )
+        {
+            result = pfnFreeExt( hContext, desc, ptr );
         }
         else
         {
@@ -10685,6 +10859,228 @@ namespace instrumented
         return result;
     }
 
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeDevicePciGetPropertiesExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeDevicePciGetPropertiesExt(
+        ze_device_handle_t hDevice,                     ///< [in] handle of the device object.
+        ze_pci_ext_properties_t* pProperties            ///< [in,out] returns the PCI properties of the device.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+
+        result = driver::zeDevicePciGetPropertiesExt( hDevice, pProperties );
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeCommandListAppendImageCopyToMemoryExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeCommandListAppendImageCopyToMemoryExt(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of command list
+        void* dstptr,                                   ///< [in] pointer to destination memory to copy to
+        ze_image_handle_t hSrcImage,                    ///< [in] handle of source image to copy from
+        const ze_image_region_t* pSrcRegion,            ///< [in][optional] source region descriptor
+        uint32_t destRowPitch,                          ///< [in] size in bytes of the 1D slice of the 2D region of a 2D or 3D
+                                                        ///< image or each image of a 1D or 2D image array being written
+        uint32_t destSlicePitch,                        ///< [in] size in bytes of the 2D slice of the 3D region of a 3D image or
+                                                        ///< each image of a 1D or 2D image array being written
+        ze_event_handle_t hSignalEvent,                 ///< [in][optional] handle of the event to signal on completion
+        uint32_t numWaitEvents,                         ///< [in][optional] number of events to wait on before launching; must be 0
+                                                        ///< if `nullptr == phWaitEvents`
+        ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
+                                                        ///< on before launching
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // capture parameters
+        ze_command_list_append_image_copy_to_memory_ext_params_t in_params = {
+            &hCommandList,
+            &dstptr,
+            &hSrcImage,
+            &pSrcRegion,
+            &destRowPitch,
+            &destSlicePitch,
+            &hSignalEvent,
+            &numWaitEvents,
+            &phWaitEvents
+        };
+
+        // create storage locations for callbacks
+        std::vector<void*> instanceUserData;
+        instanceUserData.resize( context.tracerData.size() );
+
+        // call each callback registered
+        for( uint32_t i = 0; i < context.tracerData.size(); ++i )
+            if( context.tracerData[ i ].enabled )
+            {
+                auto& table = context.tracerData[ i ].zePrologueCbs.CommandList;
+                if( nullptr != table.pfnAppendImageCopyToMemoryExtCb )
+                    table.pfnAppendImageCopyToMemoryExtCb( &in_params, result,
+                        context.tracerData[ i ].userData,
+                        &instanceUserData[ i ] );
+            }
+
+        result = driver::zeCommandListAppendImageCopyToMemoryExt( hCommandList, dstptr, hSrcImage, pSrcRegion, destRowPitch, destSlicePitch, hSignalEvent, numWaitEvents, phWaitEvents );
+
+        // capture parameters
+        ze_command_list_append_image_copy_to_memory_ext_params_t out_params = {
+            &hCommandList,
+            &dstptr,
+            &hSrcImage,
+            &pSrcRegion,
+            &destRowPitch,
+            &destSlicePitch,
+            &hSignalEvent,
+            &numWaitEvents,
+            &phWaitEvents
+        };
+
+        // call each callback registered
+        for( uint32_t i = 0; i < context.tracerData.size(); ++i )
+            if( context.tracerData[ i ].enabled )
+            {
+                auto& table = context.tracerData[ i ].zeEpilogueCbs.CommandList;
+                if( nullptr != table.pfnAppendImageCopyToMemoryExtCb )
+                    table.pfnAppendImageCopyToMemoryExtCb( &out_params, result,
+                        context.tracerData[ i ].userData,
+                        &instanceUserData[ i ] );
+            }
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeCommandListAppendImageCopyFromMemoryExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeCommandListAppendImageCopyFromMemoryExt(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of command list
+        ze_image_handle_t hDstImage,                    ///< [in] handle of destination image to copy to
+        const void* srcptr,                             ///< [in] pointer to source memory to copy from
+        const ze_image_region_t* pDstRegion,            ///< [in][optional] destination region descriptor
+        uint32_t srcRowPitch,                           ///< [in] size in bytes of the 1D slice of the 2D region of a 2D or 3D
+                                                        ///< image or each image of a 1D or 2D image array being read
+        uint32_t srcSlicePitch,                         ///< [in] size in bytes of the 2D slice of the 3D region of a 3D image or
+                                                        ///< each image of a 1D or 2D image array being read
+        ze_event_handle_t hSignalEvent,                 ///< [in][optional] handle of the event to signal on completion
+        uint32_t numWaitEvents,                         ///< [in][optional] number of events to wait on before launching; must be 0
+                                                        ///< if `nullptr == phWaitEvents`
+        ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
+                                                        ///< on before launching
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // capture parameters
+        ze_command_list_append_image_copy_from_memory_ext_params_t in_params = {
+            &hCommandList,
+            &hDstImage,
+            &srcptr,
+            &pDstRegion,
+            &srcRowPitch,
+            &srcSlicePitch,
+            &hSignalEvent,
+            &numWaitEvents,
+            &phWaitEvents
+        };
+
+        // create storage locations for callbacks
+        std::vector<void*> instanceUserData;
+        instanceUserData.resize( context.tracerData.size() );
+
+        // call each callback registered
+        for( uint32_t i = 0; i < context.tracerData.size(); ++i )
+            if( context.tracerData[ i ].enabled )
+            {
+                auto& table = context.tracerData[ i ].zePrologueCbs.CommandList;
+                if( nullptr != table.pfnAppendImageCopyFromMemoryExtCb )
+                    table.pfnAppendImageCopyFromMemoryExtCb( &in_params, result,
+                        context.tracerData[ i ].userData,
+                        &instanceUserData[ i ] );
+            }
+
+        result = driver::zeCommandListAppendImageCopyFromMemoryExt( hCommandList, hDstImage, srcptr, pDstRegion, srcRowPitch, srcSlicePitch, hSignalEvent, numWaitEvents, phWaitEvents );
+
+        // capture parameters
+        ze_command_list_append_image_copy_from_memory_ext_params_t out_params = {
+            &hCommandList,
+            &hDstImage,
+            &srcptr,
+            &pDstRegion,
+            &srcRowPitch,
+            &srcSlicePitch,
+            &hSignalEvent,
+            &numWaitEvents,
+            &phWaitEvents
+        };
+
+        // call each callback registered
+        for( uint32_t i = 0; i < context.tracerData.size(); ++i )
+            if( context.tracerData[ i ].enabled )
+            {
+                auto& table = context.tracerData[ i ].zeEpilogueCbs.CommandList;
+                if( nullptr != table.pfnAppendImageCopyFromMemoryExtCb )
+                    table.pfnAppendImageCopyFromMemoryExtCb( &out_params, result,
+                        context.tracerData[ i ].userData,
+                        &instanceUserData[ i ] );
+            }
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeImageGetAllocPropertiesExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeImageGetAllocPropertiesExt(
+        ze_context_handle_t hContext,                   ///< [in] handle of the context object
+        ze_image_handle_t hImage,                       ///< [in] handle of image object to query
+        ze_image_allocation_ext_properties_t* pImageAllocProperties ///< [in,out] query result for image allocation properties
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+
+        result = driver::zeImageGetAllocPropertiesExt( hContext, hImage, pImageAllocProperties );
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeModuleInspectLinkageExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeModuleInspectLinkageExt(
+        ze_linkage_inspection_ext_desc_t* pInspectDesc, ///< [in] pointer to linkage inspection descriptor structure.
+        uint32_t numModules,                            ///< [in] number of modules to be inspected pointed to by phModules.
+        ze_module_handle_t* phModules,                  ///< [in][range(0, numModules)] pointer to an array of modules to be
+                                                        ///< inspected for import dependencies.
+        ze_module_build_log_handle_t* phLog             ///< [out] pointer to handle of linkage inspection log. Log object will
+                                                        ///< contain separate lists of imports, un-resolvable imports, and exports.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+
+        result = driver::zeModuleInspectLinkageExt( pInspectDesc, numModules, phModules, phLog );
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeMemFreeExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeMemFreeExt(
+        ze_context_handle_t hContext,                   ///< [in] handle of the context object
+        const ze_memory_free_ext_desc_t* desc,          ///< [in] pointer to memory free descriptor
+        void* ptr                                       ///< [in][release] pointer to memory to free
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+
+        result = driver::zeMemFreeExt( hContext, desc, ptr );
+        return result;
+    }
+
 } // namespace instrumented
 
 #if defined(__cplusplus)
@@ -10882,6 +11278,11 @@ zeGetDeviceProcAddrTable(
         pDdiTable->pfnSetCacheAdviceExt                      = instrumented::zeDeviceSetCacheAdviceExt;
     else
         pDdiTable->pfnSetCacheAdviceExt                      = driver::zeDeviceSetCacheAdviceExt;
+
+    if( instrumented::context.enableTracing )
+        pDdiTable->pfnPciGetPropertiesExt                    = instrumented::zeDevicePciGetPropertiesExt;
+    else
+        pDdiTable->pfnPciGetPropertiesExt                    = driver::zeDevicePciGetPropertiesExt;
 
     return result;
 }
@@ -11153,6 +11554,16 @@ zeGetCommandListProcAddrTable(
     else
         pDdiTable->pfnAppendLaunchMultipleKernelsIndirect    = driver::zeCommandListAppendLaunchMultipleKernelsIndirect;
 
+    if( instrumented::context.enableTracing )
+        pDdiTable->pfnAppendImageCopyToMemoryExt             = instrumented::zeCommandListAppendImageCopyToMemoryExt;
+    else
+        pDdiTable->pfnAppendImageCopyToMemoryExt             = driver::zeCommandListAppendImageCopyToMemoryExt;
+
+    if( instrumented::context.enableTracing )
+        pDdiTable->pfnAppendImageCopyFromMemoryExt           = instrumented::zeCommandListAppendImageCopyFromMemoryExt;
+    else
+        pDdiTable->pfnAppendImageCopyFromMemoryExt           = driver::zeCommandListAppendImageCopyFromMemoryExt;
+
     return result;
 }
 
@@ -11383,6 +11794,11 @@ zeGetImageProcAddrTable(
     else
         pDdiTable->pfnDestroy                                = driver::zeImageDestroy;
 
+    if( instrumented::context.enableTracing )
+        pDdiTable->pfnGetAllocPropertiesExt                  = instrumented::zeImageGetAllocPropertiesExt;
+    else
+        pDdiTable->pfnGetAllocPropertiesExt                  = driver::zeImageGetAllocPropertiesExt;
+
     return result;
 }
 
@@ -11608,6 +12024,11 @@ zeGetMemProcAddrTable(
     else
         pDdiTable->pfnCloseIpcHandle                         = driver::zeMemCloseIpcHandle;
 
+    if( instrumented::context.enableTracing )
+        pDdiTable->pfnFreeExt                                = instrumented::zeMemFreeExt;
+    else
+        pDdiTable->pfnFreeExt                                = driver::zeMemFreeExt;
+
     return result;
 }
 
@@ -11672,6 +12093,11 @@ zeGetModuleProcAddrTable(
         pDdiTable->pfnGetFunctionPointer                     = instrumented::zeModuleGetFunctionPointer;
     else
         pDdiTable->pfnGetFunctionPointer                     = driver::zeModuleGetFunctionPointer;
+
+    if( instrumented::context.enableTracing )
+        pDdiTable->pfnInspectLinkageExt                      = instrumented::zeModuleInspectLinkageExt;
+    else
+        pDdiTable->pfnInspectLinkageExt                      = driver::zeModuleInspectLinkageExt;
 
     return result;
 }
