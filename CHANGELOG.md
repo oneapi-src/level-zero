@@ -1,5 +1,8 @@
 # Level zero loader changelog
 
+## v1.6.2
+* Removed Null Driver Tracing Support (Tracing supported using the Layer implementation)
+* Fixed ze_callbacks_t for backwards compatibility
 ## v1.6.1
 * Updated L0 API headers to 1.3.0 which includes:
   * Get PCI Properties Extension

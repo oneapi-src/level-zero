@@ -9054,8 +9054,6 @@ typedef struct _ze_command_list_callbacks_t
     ze_pfnCommandListAppendLaunchCooperativeKernelCb_t              pfnAppendLaunchCooperativeKernelCb;
     ze_pfnCommandListAppendLaunchKernelIndirectCb_t                 pfnAppendLaunchKernelIndirectCb;
     ze_pfnCommandListAppendLaunchMultipleKernelsIndirectCb_t        pfnAppendLaunchMultipleKernelsIndirectCb;
-    ze_pfnCommandListAppendImageCopyToMemoryExtCb_t                 pfnAppendImageCopyToMemoryExtCb;
-    ze_pfnCommandListAppendImageCopyFromMemoryExtCb_t               pfnAppendImageCopyFromMemoryExtCb;
 } ze_command_list_callbacks_t;
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -10678,10 +10676,10 @@ typedef struct _ze_callbacks_t
     ze_context_callbacks_t              Context;
     ze_command_queue_callbacks_t        CommandQueue;
     ze_command_list_callbacks_t         CommandList;
-    ze_image_callbacks_t                Image;
     ze_fence_callbacks_t                Fence;
     ze_event_pool_callbacks_t           EventPool;
     ze_event_callbacks_t                Event;
+    ze_image_callbacks_t                Image;
     ze_module_callbacks_t               Module;
     ze_module_build_log_callbacks_t     ModuleBuildLog;
     ze_kernel_callbacks_t               Kernel;
