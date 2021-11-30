@@ -7023,7 +7023,7 @@ typedef struct _ze_srgb_ext_desc_t
     ze_structure_type_t stype;                      ///< [in] type of this structure
     const void* pNext;                              ///< [in][optional] must be null or a pointer to an extension-specific
                                                     ///< structure (i.e. contains sType and pNext).
-    bool sRGB;                                      ///< [in] Is sRGB.
+    ze_bool_t sRGB;                                 ///< [in] Is sRGB.
 
 } ze_srgb_ext_desc_t;
 
