@@ -5,7 +5,7 @@
  * SPDX-License-Identifier: MIT
  *
  * @file ze_api.h
- * @version v1.3-r1.3.0
+ * @version v1.3-r1.3.4
  *
  */
 #ifndef _ZE_API_H
@@ -6981,11 +6981,11 @@ typedef struct _ze_pci_ext_properties_t
 ///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
 ///         + `nullptr == hDevice`
 ///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
-///         + `nullptr == pProperties`
+///         + `nullptr == pPciProperties`
 ZE_APIEXPORT ze_result_t ZE_APICALL
 zeDevicePciGetPropertiesExt(
     ze_device_handle_t hDevice,                     ///< [in] handle of the device object.
-    ze_pci_ext_properties_t* pProperties            ///< [in,out] returns the PCI properties of the device.
+    ze_pci_ext_properties_t* pPciProperties         ///< [in,out] returns the PCI properties of the device.
     );
 
 #if !defined(__GNUC__)
@@ -7023,7 +7023,7 @@ typedef struct _ze_srgb_ext_desc_t
     ze_structure_type_t stype;                      ///< [in] type of this structure
     const void* pNext;                              ///< [in][optional] must be null or a pointer to an extension-specific
                                                     ///< structure (i.e. contains sType and pNext).
-    bool sRGB;                                      ///< [in] Is sRGB.
+    ze_bool_t sRGB;                                 ///< [in] Is sRGB.
 
 } ze_srgb_ext_desc_t;
 
@@ -7449,14 +7449,14 @@ typedef struct _ze_memory_free_ext_desc_t
 ///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
 ///         + `nullptr == hContext`
 ///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
-///         + `nullptr == desc`
+///         + `nullptr == pMemFreeDesc`
 ///         + `nullptr == ptr`
 ///     - ::ZE_RESULT_ERROR_INVALID_ENUMERATION
-///         + `0x3 < desc->freePolicy`
+///         + `0x3 < pMemFreeDesc->freePolicy`
 ZE_APIEXPORT ze_result_t ZE_APICALL
 zeMemFreeExt(
     ze_context_handle_t hContext,                   ///< [in] handle of the context object
-    const ze_memory_free_ext_desc_t* desc,          ///< [in] pointer to memory free descriptor
+    const ze_memory_free_ext_desc_t* pMemFreeDesc,  ///< [in] pointer to memory free descriptor
     void* ptr                                       ///< [in][release] pointer to memory to free
     );
 
@@ -8959,66 +8959,6 @@ typedef struct _ze_command_list_append_launch_multiple_kernels_indirect_params_t
 /// @param[in,out] ppTracerInstanceUserData Per-Tracer, Per-Instance user data
 typedef void (ZE_APICALL *ze_pfnCommandListAppendLaunchMultipleKernelsIndirectCb_t)(
     ze_command_list_append_launch_multiple_kernels_indirect_params_t* params,
-    ze_result_t result,
-    void* pTracerUserData,
-    void** ppTracerInstanceUserData
-    );
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Callback function parameters for zeCommandListAppendImageCopyToMemoryExt 
-/// @details Each entry is a pointer to the parameter passed to the function;
-///     allowing the callback the ability to modify the parameter's value
-typedef struct _ze_command_list_append_image_copy_to_memory_ext_params_t
-{
-    ze_command_list_handle_t* phCommandList;
-    void** pdstptr;
-    ze_image_handle_t* phSrcImage;
-    const ze_image_region_t** ppSrcRegion;
-    uint32_t* pdestRowPitch;
-    uint32_t* pdestSlicePitch;
-    ze_event_handle_t* phSignalEvent;
-    uint32_t* pnumWaitEvents;
-    ze_event_handle_t** pphWaitEvents;
-} ze_command_list_append_image_copy_to_memory_ext_params_t;
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Callback function-pointer for zeCommandListAppendImageCopyToMemoryExt 
-/// @param[in] params Parameters passed to this instance
-/// @param[in] result Return value
-/// @param[in] pTracerUserData Per-Tracer user data
-/// @param[in,out] ppTracerInstanceUserData Per-Tracer, Per-Instance user data
-typedef void (ZE_APICALL *ze_pfnCommandListAppendImageCopyToMemoryExtCb_t)(
-    ze_command_list_append_image_copy_to_memory_ext_params_t* params,
-    ze_result_t result,
-    void* pTracerUserData,
-    void** ppTracerInstanceUserData
-    );
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Callback function parameters for zeCommandListAppendImageCopyFromMemoryExt 
-/// @details Each entry is a pointer to the parameter passed to the function;
-///     allowing the callback the ability to modify the parameter's value
-typedef struct _ze_command_list_append_image_copy_from_memory_ext_params_t
-{
-    ze_command_list_handle_t* phCommandList;
-    ze_image_handle_t* phDstImage;
-    const void** psrcptr;
-    const ze_image_region_t** ppDstRegion;
-    uint32_t* psrcRowPitch;
-    uint32_t* psrcSlicePitch;
-    ze_event_handle_t* phSignalEvent;
-    uint32_t* pnumWaitEvents;
-    ze_event_handle_t** pphWaitEvents;
-} ze_command_list_append_image_copy_from_memory_ext_params_t;
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Callback function-pointer for zeCommandListAppendImageCopyFromMemoryExt 
-/// @param[in] params Parameters passed to this instance
-/// @param[in] result Return value
-/// @param[in] pTracerUserData Per-Tracer user data
-/// @param[in,out] ppTracerInstanceUserData Per-Tracer, Per-Instance user data
-typedef void (ZE_APICALL *ze_pfnCommandListAppendImageCopyFromMemoryExtCb_t)(
-    ze_command_list_append_image_copy_from_memory_ext_params_t* params,
     ze_result_t result,
     void* pTracerUserData,
     void** ppTracerInstanceUserData
@@ -10688,7 +10628,6 @@ typedef struct _ze_callbacks_t
     ze_mem_callbacks_t                  Mem;
     ze_virtual_mem_callbacks_t          VirtualMem;
 } ze_callbacks_t;
-
 #if !defined(__GNUC__)
 #pragma endregion
 #endif

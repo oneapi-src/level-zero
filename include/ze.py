@@ -4,7 +4,7 @@
  SPDX-License-Identifier: MIT
 
  @file ze.py
- @version v1.3-r1.3.0
+ @version v1.3-r1.3.4
 
  """
 import platform
@@ -334,7 +334,8 @@ class ze_api_version_v(IntEnum):
     _1_0 = ZE_MAKE_VERSION( 1, 0 )                  ## version 1.0
     _1_1 = ZE_MAKE_VERSION( 1, 1 )                  ## version 1.1
     _1_2 = ZE_MAKE_VERSION( 1, 2 )                  ## version 1.2
-    CURRENT = ZE_MAKE_VERSION( 1, 2 )               ## latest known version
+    _1_3 = ZE_MAKE_VERSION( 1, 3 )                  ## version 1.3
+    CURRENT = ZE_MAKE_VERSION( 1, 3 )               ## latest known version
 
 class ze_api_version_t(c_int):
     def __str__(self):
@@ -2255,7 +2256,7 @@ class ze_srgb_ext_desc_t(Structure):
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
         ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
                                                                         ## structure (i.e. contains sType and pNext).
-        ("sRGB", bool)                                                  ## [in] Is sRGB.
+        ("sRGB", ze_bool_t)                                             ## [in] Is sRGB.
     ]
 
 ###############################################################################

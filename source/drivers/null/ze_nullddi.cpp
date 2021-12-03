@@ -3528,7 +3528,7 @@ namespace driver
     __zedlllocal ze_result_t ZE_APICALL
     zeDevicePciGetPropertiesExt(
         ze_device_handle_t hDevice,                     ///< [in] handle of the device object.
-        ze_pci_ext_properties_t* pProperties            ///< [in,out] returns the PCI properties of the device.
+        ze_pci_ext_properties_t* pPciProperties         ///< [in,out] returns the PCI properties of the device.
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
@@ -3537,7 +3537,7 @@ namespace driver
         auto pfnPciGetPropertiesExt = context.zeDdiTable.Device.pfnPciGetPropertiesExt;
         if( nullptr != pfnPciGetPropertiesExt )
         {
-            result = pfnPciGetPropertiesExt( hDevice, pProperties );
+            result = pfnPciGetPropertiesExt( hDevice, pPciProperties );
         }
         else
         {
@@ -3677,7 +3677,7 @@ namespace driver
     __zedlllocal ze_result_t ZE_APICALL
     zeMemFreeExt(
         ze_context_handle_t hContext,                   ///< [in] handle of the context object
-        const ze_memory_free_ext_desc_t* desc,          ///< [in] pointer to memory free descriptor
+        const ze_memory_free_ext_desc_t* pMemFreeDesc,  ///< [in] pointer to memory free descriptor
         void* ptr                                       ///< [in][release] pointer to memory to free
         )
     {
@@ -3687,7 +3687,7 @@ namespace driver
         auto pfnFreeExt = context.zeDdiTable.Mem.pfnFreeExt;
         if( nullptr != pfnFreeExt )
         {
-            result = pfnFreeExt( hContext, desc, ptr );
+            result = pfnFreeExt( hContext, pMemFreeDesc, ptr );
         }
         else
         {

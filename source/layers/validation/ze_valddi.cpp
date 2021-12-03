@@ -4054,7 +4054,7 @@ namespace validation_layer
     __zedlllocal ze_result_t ZE_APICALL
     zeDevicePciGetPropertiesExt(
         ze_device_handle_t hDevice,                     ///< [in] handle of the device object.
-        ze_pci_ext_properties_t* pProperties            ///< [in,out] returns the PCI properties of the device.
+        ze_pci_ext_properties_t* pPciProperties         ///< [in,out] returns the PCI properties of the device.
         )
     {
         auto pfnPciGetPropertiesExt = context.zeDdiTable.Device.pfnPciGetPropertiesExt;
@@ -4067,12 +4067,12 @@ namespace validation_layer
             if( nullptr == hDevice )
                 return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
 
-            if( nullptr == pProperties )
+            if( nullptr == pPciProperties )
                 return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
         }
 
-        return pfnPciGetPropertiesExt( hDevice, pProperties );
+        return pfnPciGetPropertiesExt( hDevice, pPciProperties );
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -4232,7 +4232,7 @@ namespace validation_layer
     __zedlllocal ze_result_t ZE_APICALL
     zeMemFreeExt(
         ze_context_handle_t hContext,                   ///< [in] handle of the context object
-        const ze_memory_free_ext_desc_t* desc,          ///< [in] pointer to memory free descriptor
+        const ze_memory_free_ext_desc_t* pMemFreeDesc,  ///< [in] pointer to memory free descriptor
         void* ptr                                       ///< [in][release] pointer to memory to free
         )
     {
@@ -4246,18 +4246,18 @@ namespace validation_layer
             if( nullptr == hContext )
                 return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
 
-            if( nullptr == desc )
+            if( nullptr == pMemFreeDesc )
                 return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
             if( nullptr == ptr )
                 return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-            if( 0x3 < desc->freePolicy )
+            if( 0x3 < pMemFreeDesc->freePolicy )
                 return ZE_RESULT_ERROR_INVALID_ENUMERATION;
 
         }
 
-        return pfnFreeExt( hContext, desc, ptr );
+        return pfnFreeExt( hContext, pMemFreeDesc, ptr );
     }
 
 } // namespace validation_layer

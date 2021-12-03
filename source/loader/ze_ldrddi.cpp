@@ -4308,7 +4308,7 @@ namespace loader
     __zedlllocal ze_result_t ZE_APICALL
     zeDevicePciGetPropertiesExt(
         ze_device_handle_t hDevice,                     ///< [in] handle of the device object.
-        ze_pci_ext_properties_t* pProperties            ///< [in,out] returns the PCI properties of the device.
+        ze_pci_ext_properties_t* pPciProperties         ///< [in,out] returns the PCI properties of the device.
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
@@ -4323,7 +4323,7 @@ namespace loader
         hDevice = reinterpret_cast<ze_device_object_t*>( hDevice )->handle;
 
         // forward to device-driver
-        result = pfnPciGetPropertiesExt( hDevice, pProperties );
+        result = pfnPciGetPropertiesExt( hDevice, pPciProperties );
 
         return result;
     }
@@ -4504,7 +4504,7 @@ namespace loader
     __zedlllocal ze_result_t ZE_APICALL
     zeMemFreeExt(
         ze_context_handle_t hContext,                   ///< [in] handle of the context object
-        const ze_memory_free_ext_desc_t* desc,          ///< [in] pointer to memory free descriptor
+        const ze_memory_free_ext_desc_t* pMemFreeDesc,  ///< [in] pointer to memory free descriptor
         void* ptr                                       ///< [in][release] pointer to memory to free
         )
     {
@@ -4520,7 +4520,7 @@ namespace loader
         hContext = reinterpret_cast<ze_context_object_t*>( hContext )->handle;
 
         // forward to device-driver
-        result = pfnFreeExt( hContext, desc, ptr );
+        result = pfnFreeExt( hContext, pMemFreeDesc, ptr );
 
         return result;
     }

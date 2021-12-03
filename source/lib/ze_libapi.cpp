@@ -5063,18 +5063,18 @@ zeKernelSchedulingHintExp(
 ///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
 ///         + `nullptr == hDevice`
 ///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
-///         + `nullptr == pProperties`
+///         + `nullptr == pPciProperties`
 ze_result_t ZE_APICALL
 zeDevicePciGetPropertiesExt(
     ze_device_handle_t hDevice,                     ///< [in] handle of the device object.
-    ze_pci_ext_properties_t* pProperties            ///< [in,out] returns the PCI properties of the device.
+    ze_pci_ext_properties_t* pPciProperties         ///< [in,out] returns the PCI properties of the device.
     )
 {
     auto pfnPciGetPropertiesExt = ze_lib::context->zeDdiTable.Device.pfnPciGetPropertiesExt;
     if( nullptr == pfnPciGetPropertiesExt )
         return ZE_RESULT_ERROR_UNINITIALIZED;
 
-    return pfnPciGetPropertiesExt( hDevice, pProperties );
+    return pfnPciGetPropertiesExt( hDevice, pPciProperties );
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -5299,14 +5299,14 @@ zeModuleInspectLinkageExt(
 ///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
 ///         + `nullptr == hContext`
 ///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
-///         + `nullptr == desc`
+///         + `nullptr == pMemFreeDesc`
 ///         + `nullptr == ptr`
 ///     - ::ZE_RESULT_ERROR_INVALID_ENUMERATION
-///         + `0x3 < desc->freePolicy`
+///         + `0x3 < pMemFreeDesc->freePolicy`
 ze_result_t ZE_APICALL
 zeMemFreeExt(
     ze_context_handle_t hContext,                   ///< [in] handle of the context object
-    const ze_memory_free_ext_desc_t* desc,          ///< [in] pointer to memory free descriptor
+    const ze_memory_free_ext_desc_t* pMemFreeDesc,  ///< [in] pointer to memory free descriptor
     void* ptr                                       ///< [in][release] pointer to memory to free
     )
 {
@@ -5314,7 +5314,7 @@ zeMemFreeExt(
     if( nullptr == pfnFreeExt )
         return ZE_RESULT_ERROR_UNINITIALIZED;
 
-    return pfnFreeExt( hContext, desc, ptr );
+    return pfnFreeExt( hContext, pMemFreeDesc, ptr );
 }
 
 } // extern "C"

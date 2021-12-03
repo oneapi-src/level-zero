@@ -144,7 +144,7 @@ typedef void (ZE_APICALL *ze_pfnDeviceSetCacheAdviceExtCb_t)(
 typedef struct _ze_device_pci_get_properties_ext_params_t
 {
     ze_device_handle_t* phDevice;
-    ze_pci_ext_properties_t** ppProperties;
+    ze_pci_ext_properties_t** ppPciProperties;
 } ze_device_pci_get_properties_ext_params_t;
 
 
@@ -186,6 +186,72 @@ typedef struct _ze_context_create_ex_params_t
 
 typedef void (ZE_APICALL *ze_pfnContextCreateExCb_t)(
     ze_context_create_ex_params_t* params,
+    ze_result_t result,
+    void* pTracerUserData,
+    void** ppTracerInstanceUserData
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Callback function parameters for zeCommandListAppendImageCopyToMemoryExt
+/// @details Each entry is a pointer to the parameter passed to the function;
+///     allowing the callback the ability to modify the parameter's value
+
+typedef struct _ze_command_list_append_image_copy_to_memory_ext_params_t
+{
+    ze_command_list_handle_t* phCommandList;
+    void** pdstptr;
+    ze_image_handle_t* phSrcImage;
+    const ze_image_region_t** ppSrcRegion;
+    uint32_t* pdestRowPitch;
+    uint32_t* pdestSlicePitch;
+    ze_event_handle_t* phSignalEvent;
+    uint32_t* pnumWaitEvents;
+    ze_event_handle_t** pphWaitEvents;
+} ze_command_list_append_image_copy_to_memory_ext_params_t;
+
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Callback function-pointer for zeCommandListAppendImageCopyToMemoryExt
+/// @param[in] params Parameters passed to this instance
+/// @param[in] result Return value
+/// @param[in] pTracerUserData Per-Tracer user data
+/// @param[in,out] ppTracerInstanceUserData Per-Tracer, Per-Instance user data
+
+typedef void (ZE_APICALL *ze_pfnCommandListAppendImageCopyToMemoryExtCb_t)(
+    ze_command_list_append_image_copy_to_memory_ext_params_t* params,
+    ze_result_t result,
+    void* pTracerUserData,
+    void** ppTracerInstanceUserData
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Callback function parameters for zeCommandListAppendImageCopyFromMemoryExt
+/// @details Each entry is a pointer to the parameter passed to the function;
+///     allowing the callback the ability to modify the parameter's value
+
+typedef struct _ze_command_list_append_image_copy_from_memory_ext_params_t
+{
+    ze_command_list_handle_t* phCommandList;
+    ze_image_handle_t* phDstImage;
+    const void** psrcptr;
+    const ze_image_region_t** ppDstRegion;
+    uint32_t* psrcRowPitch;
+    uint32_t* psrcSlicePitch;
+    ze_event_handle_t* phSignalEvent;
+    uint32_t* pnumWaitEvents;
+    ze_event_handle_t** pphWaitEvents;
+} ze_command_list_append_image_copy_from_memory_ext_params_t;
+
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Callback function-pointer for zeCommandListAppendImageCopyFromMemoryExt
+/// @param[in] params Parameters passed to this instance
+/// @param[in] result Return value
+/// @param[in] pTracerUserData Per-Tracer user data
+/// @param[in,out] ppTracerInstanceUserData Per-Tracer, Per-Instance user data
+
+typedef void (ZE_APICALL *ze_pfnCommandListAppendImageCopyFromMemoryExtCb_t)(
+    ze_command_list_append_image_copy_from_memory_ext_params_t* params,
     ze_result_t result,
     void* pTracerUserData,
     void** ppTracerInstanceUserData
@@ -363,7 +429,7 @@ typedef void (ZE_APICALL *ze_pfnKernelSchedulingHintExpCb_t)(
 typedef struct _ze_mem_free_ext_params_t
 {
     ze_context_handle_t* phContext;
-    const ze_memory_free_ext_desc_t** pdesc;
+    const ze_memory_free_ext_desc_t** ppMemFreeDesc;
     void** pptr;
 } ze_mem_free_ext_params_t;
 
