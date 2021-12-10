@@ -5,7 +5,7 @@
  * SPDX-License-Identifier: MIT
  *
  * @file ze_api.h
- * @version v1.3-r1.3.4
+ * @version v1.3-r1.3.7
  *
  */
 #ifndef _ZE_API_H

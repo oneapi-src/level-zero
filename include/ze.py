@@ -4,7 +4,7 @@
  SPDX-License-Identifier: MIT
 
  @file ze.py
- @version v1.3-r1.3.4
+ @version v1.3-r1.3.7
 
  """
 import platform

@@ -4,7 +4,7 @@
  SPDX-License-Identifier: MIT
 
  @file zet.py
- @version v1.3-r1.3.4
+ @version v1.3-r1.3.7
 
  """
 import platform
@@ -384,6 +384,7 @@ class zet_metric_type_v(IntEnum):
     FLAG = 5                                        ## Metric type: flag
     RATIO = 6                                       ## Metric type: ratio
     RAW = 7                                         ## Metric type: raw
+    IP_EXP = 0x7ffffffe                             ## Metric type: instruction pointer
 
 class zet_metric_type_t(c_int):
     def __str__(self):

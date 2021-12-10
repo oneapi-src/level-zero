@@ -5,7 +5,7 @@
  * SPDX-License-Identifier: MIT
  *
  * @file zet_api.h
- * @version v1.3-r1.3.4
+ * @version v1.3-r1.3.7
  *
  */
 #ifndef _ZET_API_H
@@ -864,6 +864,7 @@ typedef enum _zet_metric_type_t
     ZET_METRIC_TYPE_FLAG = 5,                       ///< Metric type: flag
     ZET_METRIC_TYPE_RATIO = 6,                      ///< Metric type: ratio
     ZET_METRIC_TYPE_RAW = 7,                        ///< Metric type: raw
+    ZET_METRIC_TYPE_IP_EXP = 0x7ffffffe,            ///< Metric type: instruction pointer
     ZET_METRIC_TYPE_FORCE_UINT32 = 0x7fffffff
 
 } zet_metric_type_t;
