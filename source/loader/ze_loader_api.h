@@ -60,6 +60,14 @@ zelLoaderGetVersionsInternal(
    size_t *num_elems,                     //Pointer to num versions to get.  
    zel_component_version_t *versions);    //Pointer to array of versions. If set to NULL, num_elems is returned
 
+
+ZE_DLLEXPORT ze_result_t ZE_APICALL
+zelLoaderTranslateHandleInternal(
+   zel_handle_type_t handleType,         //Handle type
+   void *handleIn,                        //Input: handle to translate from loader handle to driver handle 
+   void **handleOut);                      //Output: Pointer to handleOut is set to driver handle if successful
+   
+
 #if defined(__cplusplus)
 }
 #endif

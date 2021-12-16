@@ -64,6 +64,70 @@ zelLoaderGetVersionsInternal(
     return ZE_RESULT_SUCCESS;
 }
 
+
+ZE_DLLEXPORT ze_result_t ZE_APICALL
+zelLoaderTranslateHandleInternal(
+   zel_handle_type_t handleType,
+   void *handleIn,                       
+   void **handleOut)
+{
+
+    if((loader::context->drivers.size() == 1 ) && !loader::context->forceIntercept) {
+        *handleOut = handleIn;
+        return ZE_RESULT_SUCCESS;
+    }
+
+    switch(handleType){
+        case ZEL_HANDLE_DRIVER: 
+            *handleOut = reinterpret_cast<loader::ze_driver_object_t*>( handleIn )->handle;
+            break;
+        case ZEL_HANDLE_DEVICE: 
+            *handleOut = reinterpret_cast<loader::ze_device_object_t*>( handleIn )->handle;
+            break;
+        case ZEL_HANDLE_CONTEXT: 
+            *handleOut = reinterpret_cast<loader::ze_context_object_t*>( handleIn )->handle;
+            break;            
+        case ZEL_HANDLE_COMMAND_QUEUE: 
+            *handleOut = reinterpret_cast<loader::ze_command_queue_object_t*>( handleIn )->handle;
+            break;
+        case ZEL_HANDLE_COMMAND_LIST: 
+            *handleOut = reinterpret_cast<loader::ze_command_list_object_t*>( handleIn )->handle;
+            break;
+        case ZEL_HANDLE_FENCE: 
+            *handleOut = reinterpret_cast<loader::ze_fence_object_t*>( handleIn )->handle;
+            break;
+        case ZEL_HANDLE_EVENT_POOL: 
+            *handleOut = reinterpret_cast<loader::ze_event_pool_object_t*>( handleIn )->handle;
+            break;
+        case ZEL_HANDLE_EVENT: 
+            *handleOut = reinterpret_cast<loader::ze_event_object_t*>( handleIn )->handle;
+            break;
+        case ZEL_HANDLE_IMAGE: 
+            *handleOut = reinterpret_cast<loader::ze_image_object_t*>( handleIn )->handle;
+            break;
+        case ZEL_HANDLE_MODULE: 
+            *handleOut = reinterpret_cast<loader::ze_module_object_t*>( handleIn )->handle;
+            break;
+        case ZEL_HANDLE_MODULE_BUILD_LOG: 
+            *handleOut = reinterpret_cast<loader::ze_module_build_log_object_t*>( handleIn )->handle;
+            break;
+        case ZEL_HANDLE_KERNEL: 
+            *handleOut = reinterpret_cast<loader::ze_kernel_object_t*>( handleIn )->handle;
+            break;
+        case ZEL_HANDLE_SAMPLER: 
+            *handleOut = reinterpret_cast<loader::ze_sampler_object_t*>( handleIn )->handle;
+            break;
+        case ZEL_HANDLE_PHYSICAL_MEM: 
+            *handleOut = reinterpret_cast<loader::ze_physical_mem_object_t*>( handleIn )->handle;
+            break;
+        default:
+            return ZE_RESULT_ERROR_INVALID_ENUMERATION;
+    }
+        
+    return ZE_RESULT_SUCCESS;
+}
+
+
 #if defined(__cplusplus)
 }
 #endif

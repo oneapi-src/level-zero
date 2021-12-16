@@ -105,4 +105,18 @@ zelLoaderGetVersions(
 #endif
 }
 
+
+ze_result_t ZE_APICALL
+zelLoaderTranslateHandle(
+   zel_handle_type_t handleType,
+   void *handleIn,                     
+   void **handleOut)    
+
+{
+    return zelLoaderTranslateHandleInternal(handleType, handleIn, handleOut);
+}
+
+
+
+
 } //extern "c"
