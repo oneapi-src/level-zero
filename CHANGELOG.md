@@ -1,5 +1,14 @@
 # Level zero loader changelog
 
+
+## v1.7.2
+* Addition of new Loader API to perform handle translations. See doc/loader_api.md
+* Add Ability to read optional Level Zero Registry Key Containing the Level Zero Loader libraries on windows
+* Update L0 headers to 1.3.7 Spec which includes:
+  * Fix to bool type that caused compilation issues
+  * Addition of new metrics enum for stall sampling
+  * Changing some param names for consistency
+
 ## v1.6.2
 * Removed Null Driver Tracing Support (Tracing supported using the Layer implementation)
 * Fixed ze_callbacks_t for backwards compatibility
