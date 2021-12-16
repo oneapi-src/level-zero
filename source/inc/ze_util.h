@@ -11,6 +11,7 @@
 #endif
 #include <stdlib.h>
 #include <string.h>
+#include <string>
 
 ///////////////////////////////////////////////////////////////////////////////
 #if defined(_WIN32)
@@ -28,6 +29,57 @@
 #  define LOAD_DRIVER_LIBRARY(NAME) dlopen(NAME, RTLD_LAZY|RTLD_LOCAL|RTLD_DEEPBIND)
 #  define FREE_DRIVER_LIBRARY(LIB)  if(LIB) dlclose(LIB)
 #  define GET_FUNCTION_PTR(LIB, FUNC_NAME) dlsym(LIB, FUNC_NAME)
+#endif
+
+inline std::string create_library_path(char *name, const char *path){
+    std::string library_path;
+    if (path && (strcmp("", path) != 0)) {
+        library_path.assign(path);
+#ifdef _WIN32
+        library_path.append("\\");
+#else
+        library_path.append("/");
+#endif
+        library_path.append(name);
+    } else {
+        library_path.assign(name);
+    }
+    return library_path;
+}
+
+#ifdef _WIN32
+inline std::string readLevelZeroLoaderLibraryPath() {
+    std::string LoaderRegKeyPath = "";
+    HKEY regKey = {};
+    DWORD regValueType = {};
+    DWORD pathSize = {};
+    std::string loaderMajorVersionString = std::to_string(LOADER_VERSION_MAJOR);
+    std::string loaderRegistryKeyPath = "Software\\Intel\\oneAPI\\LevelZero\\";
+    loaderRegistryKeyPath.append(loaderMajorVersionString);
+    static constexpr char levelZeroLoaderPathKey[] = "LevelZeroLoaderPath";
+
+    LSTATUS regOpenStatus = RegOpenKeyA(HKEY_LOCAL_MACHINE, loaderRegistryKeyPath.c_str(), &regKey);
+
+    if (ERROR_SUCCESS != regOpenStatus) {
+        return LoaderRegKeyPath;
+    }
+
+    LSTATUS regOpStatus = RegQueryValueExA(regKey, levelZeroLoaderPathKey, NULL,
+                                           &regValueType, NULL, &pathSize);
+
+    if ((ERROR_SUCCESS == regOpStatus) && (REG_SZ == regValueType)) {
+        LoaderRegKeyPath.resize(pathSize);
+        regOpStatus = RegQueryValueExA(regKey, levelZeroLoaderPathKey, NULL,
+                                       &regValueType, (LPBYTE) & *LoaderRegKeyPath.begin(),
+                                       &pathSize);
+        if (ERROR_SUCCESS != regOpStatus) {
+            LoaderRegKeyPath.clear();
+            LoaderRegKeyPath.assign("");
+        }
+    }
+
+    return LoaderRegKeyPath;
+}
 #endif
 
 //////////////////////////////////////////////////////////////////////////

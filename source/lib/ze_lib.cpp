@@ -35,7 +35,12 @@ namespace ze_lib
     {
         ze_result_t result;
 #ifdef DYNAMIC_LOAD_LOADER
-        loader = LOAD_DRIVER_LIBRARY( MAKE_LIBRARY_NAME( "ze_loader", L0_LOADER_VERSION) );
+        std::string loaderLibraryPath;
+#ifdef _WIN32
+        loaderLibraryPath = readLevelZeroLoaderLibraryPath();
+#endif
+        std::string loaderFullLibraryPath = create_library_path(MAKE_LIBRARY_NAME( "ze_loader", L0_LOADER_VERSION), loaderLibraryPath.c_str());
+        loader = LOAD_DRIVER_LIBRARY(loaderFullLibraryPath.c_str());
 
         if( NULL == loader )
             return ZE_RESULT_ERROR_UNINITIALIZED;

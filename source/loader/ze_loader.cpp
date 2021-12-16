@@ -118,10 +118,15 @@ namespace loader
             return ZE_RESULT_ERROR_UNINITIALIZED;
 
         add_loader_version();
+        std::string loaderLibraryPath;
+#ifdef _WIN32
+        loaderLibraryPath = readLevelZeroLoaderLibraryPath();
+#endif
         typedef ze_result_t (ZE_APICALL *getVersion_t)(zel_component_version_t *version);
         if( getenv_tobool( "ZE_ENABLE_VALIDATION_LAYER" ) )
         {
-            validationLayer = LOAD_DRIVER_LIBRARY( MAKE_LAYER_NAME( "ze_validation_layer" ) );
+            std::string validationLayerLibraryPath = create_library_path(MAKE_LAYER_NAME( "ze_validation_layer" ), loaderLibraryPath.c_str());
+            validationLayer = LOAD_DRIVER_LIBRARY( validationLayerLibraryPath.c_str() );
             if(validationLayer)
             {
                 auto getVersion = reinterpret_cast<getVersion_t>(
@@ -136,7 +141,8 @@ namespace loader
 
         if( getenv_tobool( "ZE_ENABLE_TRACING_LAYER" ) )
         {
-            tracingLayer = LOAD_DRIVER_LIBRARY( MAKE_LAYER_NAME( "ze_tracing_layer" ) );
+            std::string tracingLayerLibraryPath = create_library_path(MAKE_LAYER_NAME( "ze_tracing_layer" ), loaderLibraryPath.c_str());
+            tracingLayer = LOAD_DRIVER_LIBRARY( tracingLayerLibraryPath.c_str() );
             if(tracingLayer)
             {
                 auto getVersion = reinterpret_cast<getVersion_t>(

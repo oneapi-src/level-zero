@@ -18,6 +18,6 @@ namespace loader
             context = new context_t;
         }
         return TRUE;
-    }       
+    }
 #endif
 }
