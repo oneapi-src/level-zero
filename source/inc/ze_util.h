@@ -31,7 +31,7 @@
 #  define GET_FUNCTION_PTR(LIB, FUNC_NAME) dlsym(LIB, FUNC_NAME)
 #endif
 
-inline std::string create_library_path(char *name, const char *path){
+inline std::string create_library_path(const char *name, const char *path){
     std::string library_path;
     if (path && (strcmp("", path) != 0)) {
         library_path.assign(path);
