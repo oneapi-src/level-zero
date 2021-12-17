@@ -1,7 +1,7 @@
 # Level zero loader changelog
 
 
-## v1.7.3
+## v1.7.4
 * Addition of new Loader API to perform handle translations. See doc/loader_api.md
 * Add Ability to read optional Level Zero Registry Key Containing the Level Zero Loader libraries on windows
 * Update L0 headers to 1.3.7 Spec which includes:
