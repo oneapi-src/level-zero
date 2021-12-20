@@ -144,7 +144,7 @@ namespace loader
             std::string tracingLayerLibraryPath = create_library_path(MAKE_LAYER_NAME( "ze_tracing_layer" ), loaderLibraryPath.c_str());
             tracingLayer = LOAD_DRIVER_LIBRARY( tracingLayerLibraryPath.c_str() );
             if(tracingLayer)
-            {
+            {   
                 auto getVersion = reinterpret_cast<getVersion_t>(
                     GET_FUNCTION_PTR(tracingLayer, "zelLoaderGetVersion"));
                 zel_component_version_t version;
@@ -156,6 +156,9 @@ namespace loader
         }
 
         forceIntercept = getenv_tobool( "ZE_ENABLE_LOADER_INTERCEPT" );
+
+        if(forceIntercept || drivers.size() > 1)
+             intercept_enabled = true;
 
         return ZE_RESULT_SUCCESS;
     };

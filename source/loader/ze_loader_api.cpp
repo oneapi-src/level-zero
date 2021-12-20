@@ -72,7 +72,7 @@ zelLoaderTranslateHandleInternal(
    void **handleOut)
 {
 
-    if((loader::context->drivers.size() == 1 ) && !loader::context->forceIntercept) {
+    if(!loader::context->intercept_enabled) {
         *handleOut = handleIn;
         return ZE_RESULT_SUCCESS;
     }

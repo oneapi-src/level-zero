@@ -53,6 +53,7 @@ namespace loader
         ze_result_t init_driver(driver_t driver, ze_init_flags_t flags);
         void add_loader_version();
         ~context_t();
+        bool intercept_enabled = false;
     };
 
     extern context_t *context;
