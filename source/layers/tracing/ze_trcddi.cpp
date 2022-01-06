@@ -252,7 +252,28 @@ namespace tracing_layer
         if( nullptr == pfnGetExtensionFunctionAddress)
             return ZE_RESULT_ERROR_UNINITIALIZED;
 
-        return pfnGetExtensionFunctionAddress( hDriver, name, ppFunctionAddress );
+        ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.Driver.pfnGetExtensionFunctionAddress, hDriver, name, ppFunctionAddress);
+
+        // capture parameters
+        ze_driver_get_extension_function_address_params_t tracerParams = {
+            &hDriver,
+            &name,
+            &ppFunctionAddress
+        };
+
+        tracing_layer::APITracerCallbackDataImp<ze_pfnDriverGetExtensionFunctionAddressCb_t> apiCallbackData;
+
+        ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnDriverGetExtensionFunctionAddressCb_t, Driver, pfnGetExtensionFunctionAddressCb);
+
+
+        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.Driver.pfnGetExtensionFunctionAddress,
+                                                  &tracerParams,
+                                                  apiCallbackData.apiOrdinal,
+                                                  apiCallbackData.prologCallbacks,
+                                                  apiCallbackData.epilogCallbacks,
+                                                  *tracerParams.phDriver,
+                                                  *tracerParams.pname,
+                                                  *tracerParams.pppFunctionAddress);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -815,7 +836,28 @@ namespace tracing_layer
         if( nullptr == pfnGetGlobalTimestamps)
             return ZE_RESULT_ERROR_UNINITIALIZED;
 
-        return pfnGetGlobalTimestamps( hDevice, hostTimestamp, deviceTimestamp );
+        ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.Device.pfnGetGlobalTimestamps, hDevice, hostTimestamp, deviceTimestamp);
+
+        // capture parameters
+        ze_device_get_global_timestamps_params_t tracerParams = {
+            &hDevice,
+            &hostTimestamp,
+            &deviceTimestamp
+        };
+
+        tracing_layer::APITracerCallbackDataImp<ze_pfnDeviceGetGlobalTimestampsCb_t> apiCallbackData;
+
+        ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnDeviceGetGlobalTimestampsCb_t, Device, pfnGetGlobalTimestampsCb);
+
+
+        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.Device.pfnGetGlobalTimestamps,
+                                                  &tracerParams,
+                                                  apiCallbackData.apiOrdinal,
+                                                  apiCallbackData.prologCallbacks,
+                                                  apiCallbackData.epilogCallbacks,
+                                                  *tracerParams.phDevice,
+                                                  *tracerParams.phostTimestamp,
+                                                  *tracerParams.pdeviceTimestamp);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -877,7 +919,32 @@ namespace tracing_layer
         if( nullptr == pfnCreateEx)
             return ZE_RESULT_ERROR_UNINITIALIZED;
 
-        return pfnCreateEx( hDriver, desc, numDevices, phDevices, phContext );
+        ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.Context.pfnCreateEx, hDriver, desc, numDevices, phDevices, phContext);
+
+        // capture parameters
+        ze_context_create_ex_params_t tracerParams = {
+            &hDriver,
+            &desc,
+            &numDevices,
+            &phDevices,
+            &phContext
+        };
+
+        tracing_layer::APITracerCallbackDataImp<ze_pfnContextCreateExCb_t> apiCallbackData;
+
+        ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnContextCreateExCb_t, Context, pfnCreateExCb);
+
+
+        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.Context.pfnCreateEx,
+                                                  &tracerParams,
+                                                  apiCallbackData.apiOrdinal,
+                                                  apiCallbackData.prologCallbacks,
+                                                  apiCallbackData.epilogCallbacks,
+                                                  *tracerParams.phDriver,
+                                                  *tracerParams.pdesc,
+                                                  *tracerParams.pnumDevices,
+                                                  *tracerParams.pphDevices,
+                                                  *tracerParams.pphContext);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -4905,7 +4972,30 @@ namespace tracing_layer
         if( nullptr == pfnSetGlobalOffsetExp)
             return ZE_RESULT_ERROR_UNINITIALIZED;
 
-        return pfnSetGlobalOffsetExp( hKernel, offsetX, offsetY, offsetZ );
+        ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.KernelExp.pfnSetGlobalOffsetExp, hKernel, offsetX, offsetY, offsetZ);
+
+        // capture parameters
+        ze_kernel_set_global_offset_exp_params_t tracerParams = {
+            &hKernel,
+            &offsetX,
+            &offsetY,
+            &offsetZ
+        };
+
+        tracing_layer::APITracerCallbackDataImp<ze_pfnKernelSetGlobalOffsetExpCb_t> apiCallbackData;
+
+        ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnKernelSetGlobalOffsetExpCb_t, Kernel, pfnSetGlobalOffsetExpCb);
+
+
+        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.KernelExp.pfnSetGlobalOffsetExp,
+                                                  &tracerParams,
+                                                  apiCallbackData.apiOrdinal,
+                                                  apiCallbackData.prologCallbacks,
+                                                  apiCallbackData.epilogCallbacks,
+                                                  *tracerParams.phKernel,
+                                                  *tracerParams.poffsetX,
+                                                  *tracerParams.poffsetY,
+                                                  *tracerParams.poffsetZ);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -4925,7 +5015,28 @@ namespace tracing_layer
         if( nullptr == pfnReserveCacheExt)
             return ZE_RESULT_ERROR_UNINITIALIZED;
 
-        return pfnReserveCacheExt( hDevice, cacheLevel, cacheReservationSize );
+        ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.Device.pfnReserveCacheExt, hDevice, cacheLevel, cacheReservationSize);
+
+        // capture parameters
+        ze_device_reserve_cache_ext_params_t tracerParams = {
+            &hDevice,
+            &cacheLevel,
+            &cacheReservationSize
+        };
+
+        tracing_layer::APITracerCallbackDataImp<ze_pfnDeviceReserveCacheExtCb_t> apiCallbackData;
+
+        ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnDeviceReserveCacheExtCb_t, Device, pfnReserveCacheExtCb);
+
+
+        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.Device.pfnReserveCacheExt,
+                                                  &tracerParams,
+                                                  apiCallbackData.apiOrdinal,
+                                                  apiCallbackData.prologCallbacks,
+                                                  apiCallbackData.epilogCallbacks,
+                                                  *tracerParams.phDevice,
+                                                  *tracerParams.pcacheLevel,
+                                                  *tracerParams.pcacheReservationSize);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -4943,7 +5054,30 @@ namespace tracing_layer
         if( nullptr == pfnSetCacheAdviceExt)
             return ZE_RESULT_ERROR_UNINITIALIZED;
 
-        return pfnSetCacheAdviceExt( hDevice, ptr, regionSize, cacheRegion );
+        ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.Device.pfnSetCacheAdviceExt, hDevice, ptr, regionSize, cacheRegion);
+
+        // capture parameters
+        ze_device_set_cache_advice_ext_params_t tracerParams = {
+            &hDevice,
+            &ptr,
+            &regionSize,
+            &cacheRegion
+        };
+
+        tracing_layer::APITracerCallbackDataImp<ze_pfnDeviceSetCacheAdviceExtCb_t> apiCallbackData;
+
+        ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnDeviceSetCacheAdviceExtCb_t, Device, pfnSetCacheAdviceExtCb);
+
+
+        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.Device.pfnSetCacheAdviceExt,
+                                                  &tracerParams,
+                                                  apiCallbackData.apiOrdinal,
+                                                  apiCallbackData.prologCallbacks,
+                                                  apiCallbackData.epilogCallbacks,
+                                                  *tracerParams.phDevice,
+                                                  *tracerParams.pptr,
+                                                  *tracerParams.pregionSize,
+                                                  *tracerParams.pcacheRegion);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -4967,7 +5101,30 @@ namespace tracing_layer
         if( nullptr == pfnQueryTimestampsExp)
             return ZE_RESULT_ERROR_UNINITIALIZED;
 
-        return pfnQueryTimestampsExp( hEvent, hDevice, pCount, pTimestamps );
+        ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.EventExp.pfnQueryTimestampsExp, hEvent, hDevice, pCount, pTimestamps);
+
+        // capture parameters
+        ze_event_query_timestamps_exp_params_t tracerParams = {
+            &hEvent,
+            &hDevice,
+            &pCount,
+            &pTimestamps
+        };
+
+        tracing_layer::APITracerCallbackDataImp<ze_pfnEventQueryTimestampsExpCb_t> apiCallbackData;
+
+        ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnEventQueryTimestampsExpCb_t, Event, pfnQueryTimestampsExpCb);
+
+
+        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.EventExp.pfnQueryTimestampsExp,
+                                                  &tracerParams,
+                                                  apiCallbackData.apiOrdinal,
+                                                  apiCallbackData.prologCallbacks,
+                                                  apiCallbackData.epilogCallbacks,
+                                                  *tracerParams.phEvent,
+                                                  *tracerParams.phDevice,
+                                                  *tracerParams.ppCount,
+                                                  *tracerParams.ppTimestamps);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -4983,7 +5140,26 @@ namespace tracing_layer
         if( nullptr == pfnGetMemoryPropertiesExp)
             return ZE_RESULT_ERROR_UNINITIALIZED;
 
-        return pfnGetMemoryPropertiesExp( hImage, pMemoryProperties );
+        ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.ImageExp.pfnGetMemoryPropertiesExp, hImage, pMemoryProperties);
+
+        // capture parameters
+        ze_image_get_memory_properties_exp_params_t tracerParams = {
+            &hImage,
+            &pMemoryProperties
+        };
+
+        tracing_layer::APITracerCallbackDataImp<ze_pfnImageGetMemoryPropertiesExpCb_t> apiCallbackData;
+
+        ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnImageGetMemoryPropertiesExpCb_t, Image, pfnGetMemoryPropertiesExpCb);
+
+
+        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.ImageExp.pfnGetMemoryPropertiesExp,
+                                                  &tracerParams,
+                                                  apiCallbackData.apiOrdinal,
+                                                  apiCallbackData.prologCallbacks,
+                                                  apiCallbackData.epilogCallbacks,
+                                                  *tracerParams.phImage,
+                                                  *tracerParams.ppMemoryProperties);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -5002,7 +5178,32 @@ namespace tracing_layer
         if( nullptr == pfnViewCreateExp)
             return ZE_RESULT_ERROR_UNINITIALIZED;
 
-        return pfnViewCreateExp( hContext, hDevice, desc, hImage, phImageView );
+        ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.ImageExp.pfnViewCreateExp, hContext, hDevice, desc, hImage, phImageView);
+
+        // capture parameters
+        ze_image_view_create_exp_params_t tracerParams = {
+            &hContext,
+            &hDevice,
+            &desc,
+            &hImage,
+            &phImageView
+        };
+
+        tracing_layer::APITracerCallbackDataImp<ze_pfnImageViewCreateExpCb_t> apiCallbackData;
+
+        ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnImageViewCreateExpCb_t, Image, pfnViewCreateExpCb);
+
+
+        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.ImageExp.pfnViewCreateExp,
+                                                  &tracerParams,
+                                                  apiCallbackData.apiOrdinal,
+                                                  apiCallbackData.prologCallbacks,
+                                                  apiCallbackData.epilogCallbacks,
+                                                  *tracerParams.phContext,
+                                                  *tracerParams.phDevice,
+                                                  *tracerParams.pdesc,
+                                                  *tracerParams.phImage,
+                                                  *tracerParams.pphImageView);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -5018,7 +5219,26 @@ namespace tracing_layer
         if( nullptr == pfnSchedulingHintExp)
             return ZE_RESULT_ERROR_UNINITIALIZED;
 
-        return pfnSchedulingHintExp( hKernel, pHint );
+        ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.KernelExp.pfnSchedulingHintExp, hKernel, pHint);
+
+        // capture parameters
+        ze_kernel_scheduling_hint_exp_params_t tracerParams = {
+            &hKernel,
+            &pHint
+        };
+
+        tracing_layer::APITracerCallbackDataImp<ze_pfnKernelSchedulingHintExpCb_t> apiCallbackData;
+
+        ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnKernelSchedulingHintExpCb_t, Kernel, pfnSchedulingHintExpCb);
+
+
+        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.KernelExp.pfnSchedulingHintExp,
+                                                  &tracerParams,
+                                                  apiCallbackData.apiOrdinal,
+                                                  apiCallbackData.prologCallbacks,
+                                                  apiCallbackData.epilogCallbacks,
+                                                  *tracerParams.phKernel,
+                                                  *tracerParams.ppHint);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -5034,7 +5254,26 @@ namespace tracing_layer
         if( nullptr == pfnPciGetPropertiesExt)
             return ZE_RESULT_ERROR_UNINITIALIZED;
 
-        return pfnPciGetPropertiesExt( hDevice, pPciProperties );
+        ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.Device.pfnPciGetPropertiesExt, hDevice, pPciProperties);
+
+        // capture parameters
+        ze_device_pci_get_properties_ext_params_t tracerParams = {
+            &hDevice,
+            &pPciProperties
+        };
+
+        tracing_layer::APITracerCallbackDataImp<ze_pfnDevicePciGetPropertiesExtCb_t> apiCallbackData;
+
+        ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnDevicePciGetPropertiesExtCb_t, Device, pfnPciGetPropertiesExtCb);
+
+
+        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.Device.pfnPciGetPropertiesExt,
+                                                  &tracerParams,
+                                                  apiCallbackData.apiOrdinal,
+                                                  apiCallbackData.prologCallbacks,
+                                                  apiCallbackData.epilogCallbacks,
+                                                  *tracerParams.phDevice,
+                                                  *tracerParams.ppPciProperties);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -5061,7 +5300,40 @@ namespace tracing_layer
         if( nullptr == pfnAppendImageCopyToMemoryExt)
             return ZE_RESULT_ERROR_UNINITIALIZED;
 
-        return pfnAppendImageCopyToMemoryExt( hCommandList, dstptr, hSrcImage, pSrcRegion, destRowPitch, destSlicePitch, hSignalEvent, numWaitEvents, phWaitEvents );
+        ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.CommandList.pfnAppendImageCopyToMemoryExt, hCommandList, dstptr, hSrcImage, pSrcRegion, destRowPitch, destSlicePitch, hSignalEvent, numWaitEvents, phWaitEvents);
+
+        // capture parameters
+        ze_command_list_append_image_copy_to_memory_ext_params_t tracerParams = {
+            &hCommandList,
+            &dstptr,
+            &hSrcImage,
+            &pSrcRegion,
+            &destRowPitch,
+            &destSlicePitch,
+            &hSignalEvent,
+            &numWaitEvents,
+            &phWaitEvents
+        };
+
+        tracing_layer::APITracerCallbackDataImp<ze_pfnCommandListAppendImageCopyToMemoryExtCb_t> apiCallbackData;
+
+        ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnCommandListAppendImageCopyToMemoryExtCb_t, CommandList, pfnAppendImageCopyToMemoryExtCb);
+
+
+        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.CommandList.pfnAppendImageCopyToMemoryExt,
+                                                  &tracerParams,
+                                                  apiCallbackData.apiOrdinal,
+                                                  apiCallbackData.prologCallbacks,
+                                                  apiCallbackData.epilogCallbacks,
+                                                  *tracerParams.phCommandList,
+                                                  *tracerParams.pdstptr,
+                                                  *tracerParams.phSrcImage,
+                                                  *tracerParams.ppSrcRegion,
+                                                  *tracerParams.pdestRowPitch,
+                                                  *tracerParams.pdestSlicePitch,
+                                                  *tracerParams.phSignalEvent,
+                                                  *tracerParams.pnumWaitEvents,
+                                                  *tracerParams.pphWaitEvents);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -5088,7 +5360,40 @@ namespace tracing_layer
         if( nullptr == pfnAppendImageCopyFromMemoryExt)
             return ZE_RESULT_ERROR_UNINITIALIZED;
 
-        return pfnAppendImageCopyFromMemoryExt( hCommandList, hDstImage, srcptr, pDstRegion, srcRowPitch, srcSlicePitch, hSignalEvent, numWaitEvents, phWaitEvents );
+        ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.CommandList.pfnAppendImageCopyFromMemoryExt, hCommandList, hDstImage, srcptr, pDstRegion, srcRowPitch, srcSlicePitch, hSignalEvent, numWaitEvents, phWaitEvents);
+
+        // capture parameters
+        ze_command_list_append_image_copy_from_memory_ext_params_t tracerParams = {
+            &hCommandList,
+            &hDstImage,
+            &srcptr,
+            &pDstRegion,
+            &srcRowPitch,
+            &srcSlicePitch,
+            &hSignalEvent,
+            &numWaitEvents,
+            &phWaitEvents
+        };
+
+        tracing_layer::APITracerCallbackDataImp<ze_pfnCommandListAppendImageCopyFromMemoryExtCb_t> apiCallbackData;
+
+        ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnCommandListAppendImageCopyFromMemoryExtCb_t, CommandList, pfnAppendImageCopyFromMemoryExtCb);
+
+
+        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.CommandList.pfnAppendImageCopyFromMemoryExt,
+                                                  &tracerParams,
+                                                  apiCallbackData.apiOrdinal,
+                                                  apiCallbackData.prologCallbacks,
+                                                  apiCallbackData.epilogCallbacks,
+                                                  *tracerParams.phCommandList,
+                                                  *tracerParams.phDstImage,
+                                                  *tracerParams.psrcptr,
+                                                  *tracerParams.ppDstRegion,
+                                                  *tracerParams.psrcRowPitch,
+                                                  *tracerParams.psrcSlicePitch,
+                                                  *tracerParams.phSignalEvent,
+                                                  *tracerParams.pnumWaitEvents,
+                                                  *tracerParams.pphWaitEvents);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -5105,7 +5410,28 @@ namespace tracing_layer
         if( nullptr == pfnGetAllocPropertiesExt)
             return ZE_RESULT_ERROR_UNINITIALIZED;
 
-        return pfnGetAllocPropertiesExt( hContext, hImage, pImageAllocProperties );
+        ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.Image.pfnGetAllocPropertiesExt, hContext, hImage, pImageAllocProperties);
+
+        // capture parameters
+        ze_image_get_alloc_properties_ext_params_t tracerParams = {
+            &hContext,
+            &hImage,
+            &pImageAllocProperties
+        };
+
+        tracing_layer::APITracerCallbackDataImp<ze_pfnImageGetAllocPropertiesExtCb_t> apiCallbackData;
+
+        ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnImageGetAllocPropertiesExtCb_t, Image, pfnGetAllocPropertiesExtCb);
+
+
+        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.Image.pfnGetAllocPropertiesExt,
+                                                  &tracerParams,
+                                                  apiCallbackData.apiOrdinal,
+                                                  apiCallbackData.prologCallbacks,
+                                                  apiCallbackData.epilogCallbacks,
+                                                  *tracerParams.phContext,
+                                                  *tracerParams.phImage,
+                                                  *tracerParams.ppImageAllocProperties);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -5125,7 +5451,30 @@ namespace tracing_layer
         if( nullptr == pfnInspectLinkageExt)
             return ZE_RESULT_ERROR_UNINITIALIZED;
 
-        return pfnInspectLinkageExt( pInspectDesc, numModules, phModules, phLog );
+        ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.Module.pfnInspectLinkageExt, pInspectDesc, numModules, phModules, phLog);
+
+        // capture parameters
+        ze_module_inspect_linkage_ext_params_t tracerParams = {
+            &pInspectDesc,
+            &numModules,
+            &phModules,
+            &phLog
+        };
+
+        tracing_layer::APITracerCallbackDataImp<ze_pfnModuleInspectLinkageExtCb_t> apiCallbackData;
+
+        ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnModuleInspectLinkageExtCb_t, Module, pfnInspectLinkageExtCb);
+
+
+        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.Module.pfnInspectLinkageExt,
+                                                  &tracerParams,
+                                                  apiCallbackData.apiOrdinal,
+                                                  apiCallbackData.prologCallbacks,
+                                                  apiCallbackData.epilogCallbacks,
+                                                  *tracerParams.ppInspectDesc,
+                                                  *tracerParams.pnumModules,
+                                                  *tracerParams.pphModules,
+                                                  *tracerParams.pphLog);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -5142,7 +5491,28 @@ namespace tracing_layer
         if( nullptr == pfnFreeExt)
             return ZE_RESULT_ERROR_UNINITIALIZED;
 
-        return pfnFreeExt( hContext, pMemFreeDesc, ptr );
+        ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.Mem.pfnFreeExt, hContext, pMemFreeDesc, ptr);
+
+        // capture parameters
+        ze_mem_free_ext_params_t tracerParams = {
+            &hContext,
+            &pMemFreeDesc,
+            &ptr
+        };
+
+        tracing_layer::APITracerCallbackDataImp<ze_pfnMemFreeExtCb_t> apiCallbackData;
+
+        ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnMemFreeExtCb_t, Mem, pfnFreeExtCb);
+
+
+        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.Mem.pfnFreeExt,
+                                                  &tracerParams,
+                                                  apiCallbackData.apiOrdinal,
+                                                  apiCallbackData.prologCallbacks,
+                                                  apiCallbackData.epilogCallbacks,
+                                                  *tracerParams.phContext,
+                                                  *tracerParams.ppMemFreeDesc,
+                                                  *tracerParams.pptr);
     }
 
 } // namespace tracing_layer
