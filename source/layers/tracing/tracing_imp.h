@@ -140,7 +140,7 @@ class APITracerCallbackStateImp {
 template <class T>
 class APITracerCallbackDataImp {
   public:
-    T apiOrdinal = {};
+    T apiOrdinal = nullptr;
     std::vector<tracing_layer::APITracerCallbackStateImp<T>> prologCallbacks;
     std::vector<tracing_layer::APITracerCallbackStateImp<T>> epilogCallbacks;
 };
