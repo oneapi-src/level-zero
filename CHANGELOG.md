@@ -1,5 +1,8 @@
 # Level zero loader changelog
 
+## v1.7.7
+* Fix bug in loader handle translation API
+* Fix tracing layer functionality in newer APIs
 
 ## v1.7.4
 * Addition of new Loader API to perform handle translations. See doc/loader_api.md
