@@ -1,0 +1,24 @@
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+  workflow_dispatch:
+
+jobs:
+  build-linux:
+    if: github.repository_owner == 'oneapi-src'
+    runs-on: [ubuntu-latest]
+    steps:
+      - uses: actions/checkout@v2
+      - uses: hendrikmuhs/ccache-action@v1
+      - name: Build Loader
+        run: |
+          mkdir build
+          cd build
+          cmake \
+            -D CMAKE_C_COMPILER_LAUNCHER=ccache \
+            -D CMAKE_CXX_COMPILER_LAUNCHER=ccache \
+            -D CMAKE_BUILD_TYPE=Release \
+            ..
+          make -j$(nproc)
