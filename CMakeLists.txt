@@ -111,6 +111,9 @@ if(MSVC)
     # enable creation of PDB files for Release Builds
     set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /Zi")
     set(CMAKE_SHARED_LINKER_FLAGS_RELEASE "${CMAKE_SHARED_LINKER_FLAGS_RELEASE} /DEBUG /OPT:REF /OPT:ICF")
+		
+    # enable CET shadow stack
+    set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} /CETCOMPAT")
 
     #Use of sccache with MSVC requires workaround of replacing /Zi with /Z7
     #https://github.com/mozilla/sccache
