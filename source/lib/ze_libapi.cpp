@@ -43,8 +43,8 @@ zeInit(
                                                     ///< must be 0 (default) or a combination of ::ze_init_flag_t.
     )
 {
-    ze_result_t result = ZE_RESULT_SUCCESS;
-    std::call_once(ze_lib::context->initOnce, [&result, flags]() {
+    static ze_result_t result = ZE_RESULT_SUCCESS;
+    std::call_once(ze_lib::context->initOnce, [flags]() {
         result = ze_lib::context->Init(flags);
     });
 
