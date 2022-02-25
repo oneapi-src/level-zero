@@ -21,6 +21,7 @@
 #  define LOAD_DRIVER_LIBRARY(NAME) LoadLibraryExA(NAME, nullptr, LOAD_LIBRARY_SEARCH_SYSTEM32)
 #  define FREE_DRIVER_LIBRARY(LIB)  if(LIB) FreeLibrary(LIB)
 #  define GET_FUNCTION_PTR(LIB, FUNC_NAME) GetProcAddress(LIB, FUNC_NAME)
+#  define string_copy_s strncpy_s
 #else
 #  include <dlfcn.h>
 #  define HMODULE void*
@@ -29,6 +30,7 @@
 #  define LOAD_DRIVER_LIBRARY(NAME) dlopen(NAME, RTLD_LAZY|RTLD_LOCAL|RTLD_DEEPBIND)
 #  define FREE_DRIVER_LIBRARY(LIB)  if(LIB) dlclose(LIB)
 #  define GET_FUNCTION_PTR(LIB, FUNC_NAME) dlsym(LIB, FUNC_NAME)
+#  define string_copy_s strncpy
 #endif
 
 inline std::string create_library_path(const char *name, const char *path){

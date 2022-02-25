@@ -130,7 +130,11 @@ namespace driver
             ze_device_properties_t deviceProperties = {};
             deviceProperties.stype = ZE_STRUCTURE_TYPE_DEVICE_PROPERTIES;
             deviceProperties.type = ZE_DEVICE_TYPE_GPU;
+#if defined(_WIN32)
+            strcpy_s( deviceProperties.name, "Null Device" );
+#else
             strcpy( deviceProperties.name, "Null Device" );
+#endif
 
             *pDeviceProperties = deviceProperties;
             return ZE_RESULT_SUCCESS;
@@ -235,7 +239,11 @@ namespace driver
             if( nullptr != pExtensionProperties )
             {
                 ze_driver_extension_properties_t driverExtensionProperties = {};
+#if defined(_WIN32)
+                strcpy_s( driverExtensionProperties.name, ZET_API_TRACING_EXP_NAME );
+#else
                 strcpy( driverExtensionProperties.name, ZET_API_TRACING_EXP_NAME );
+#endif
                 driverExtensionProperties.version = ZET_API_TRACING_EXP_VERSION_1_0;
 
                 *pExtensionProperties = driverExtensionProperties;
@@ -267,7 +275,11 @@ namespace driver
             metricGroupProperties.samplingType = 
                 ZET_METRIC_GROUP_SAMPLING_TYPE_FLAG_EVENT_BASED |
                 ZET_METRIC_GROUP_SAMPLING_TYPE_FLAG_TIME_BASED;
+#if defined(_WIN32)
+            strcpy_s( metricGroupProperties.name, "Null Metric Group" );
+#else
             strcpy( metricGroupProperties.name, "Null Metric Group" );
+#endif
 
             *pProperties = metricGroupProperties;
             return ZE_RESULT_SUCCESS;
@@ -307,9 +319,15 @@ namespace driver
             metricProperties.stype = ZET_STRUCTURE_TYPE_METRIC_PROPERTIES;
             metricProperties.metricType = ZET_METRIC_TYPE_DURATION;
             metricProperties.resultType = ZET_VALUE_TYPE_UINT32;
+#if defined(_WIN32)
+            strcpy_s( metricProperties.name, "Null Metric" );
+            strcpy_s( metricProperties.resultUnits, "ns" );
+
+#else
             strcpy( metricProperties.name, "Null Metric" );
             strcpy( metricProperties.resultUnits, "ns" );
-
+#endif
+            
             *pProperties = metricProperties;
             return ZE_RESULT_SUCCESS;
         };

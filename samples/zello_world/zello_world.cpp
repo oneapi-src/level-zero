@@ -30,25 +30,32 @@ void print_loader_versions(){
     delete[] versions;
 }
 
+#if defined(_WIN32)
+    #define putenv_safe _putenv
+#else
+    #define putenv_safe putenv
+#endif
+
 //////////////////////////////////////////////////////////////////////////
 int main( int argc, char *argv[] )
 {
+
     if( argparse( argc, argv, "-null", "--enable_null_driver" ) )
     {
-        putenv( const_cast<char *>( "ZE_ENABLE_NULL_DRIVER=1" ) );
+        putenv_safe( const_cast<char *>( "ZE_ENABLE_NULL_DRIVER=1" ) );
     }
     if( argparse( argc, argv, "-ldr", "--force_loader_intercepts" ) )
     {
-        putenv( const_cast<char *>( "ZE_ENABLE_LOADER_INTERCEPT=1" ) );
+        putenv_safe( const_cast<char *>( "ZE_ENABLE_LOADER_INTERCEPT=1" ) );
     }
     if( argparse( argc, argv, "-val", "--enable_validation_layer" ) )
     {
-        putenv( const_cast<char *>( "ZE_ENABLE_VALIDATION_LAYER=1" ) );
-        putenv( const_cast<char *>( "ZE_ENABLE_PARAMETER_VALIDATION=1" ) );
+        putenv_safe( const_cast<char *>( "ZE_ENABLE_VALIDATION_LAYER=1" ) );
+        putenv_safe( const_cast<char *>( "ZE_ENABLE_PARAMETER_VALIDATION=1" ) );
     }
     if( argparse( argc, argv, "-trace", "--enable_tracing_layer" ) )
     {
-        putenv( const_cast<char *>( "ZE_ENABLE_TRACING_LAYER=1" ) );
+        putenv_safe( const_cast<char *>( "ZE_ENABLE_TRACING_LAYER=1" ) );
     }
 
     ze_result_t status;

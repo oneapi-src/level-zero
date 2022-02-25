@@ -100,7 +100,7 @@ if(MSVC)
     string(REPLACE "/MD" "/MT" CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE}")
 
     # treat warnings as errors
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /WX /W3 /wd4996")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /WX /W3")
 
     # enable multi-process compilation
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
