@@ -1,5 +1,9 @@
 # Level zero loader changelog
 
+## v1.7.15
+* Fix bug during multiple calls to zeInit with no driver present
+* Add option to support build with sccache
+
 ## v1.7.9
 * Fix bug in loader handle translation API
 * Fix tracing layer functionality in newer APIs
