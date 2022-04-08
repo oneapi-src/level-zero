@@ -44,7 +44,7 @@ namespace ze_lib
 
         if( NULL == loader )
             return ZE_RESULT_ERROR_UNINITIALIZED;
-          
+
         typedef ze_result_t (ZE_APICALL *loaderInit_t)();
         auto loaderInit = reinterpret_cast<loaderInit_t>(
                 GET_FUNCTION_PTR(loader, "zeLoaderInit") );
@@ -60,7 +60,7 @@ namespace ze_lib
         if( ZE_RESULT_SUCCESS == result ) {
             tracing_lib = zeLoaderGetTracingHandle();
         }
-        
+
 #endif
 
         if( ZE_RESULT_SUCCESS == result )
@@ -76,14 +76,17 @@ namespace ze_lib
         if( ZE_RESULT_SUCCESS == result )
         {
             result = zesInit();
-        } 
+        }
 
         if( ZE_RESULT_SUCCESS == result )
         {
             result = zelTracingInit();
         }
 
-        result = zelLoaderDriverCheck(flags);
+        if( ZE_RESULT_SUCCESS == result )
+        {
+            result = zelLoaderDriverCheck(flags);
+        }
 
         return result;
     }
@@ -95,7 +98,7 @@ extern "C" {
 
 ze_result_t ZE_APICALL
 zelLoaderGetVersions(
-   size_t *num_elems,                     //Pointer to num versions to get.  
+   size_t *num_elems,                     //Pointer to num versions to get.
    zel_component_version_t *versions)     //Pointer to array of versions. If set to NULL, num_elems is returned
 {
 #ifdef DYNAMIC_LOAD_LOADER
@@ -114,8 +117,8 @@ zelLoaderGetVersions(
 ze_result_t ZE_APICALL
 zelLoaderTranslateHandle(
    zel_handle_type_t handleType,
-   void *handleIn,                     
-   void **handleOut)    
+   void *handleIn,
+   void **handleOut)
 
 {
     return zelLoaderTranslateHandleInternal(handleType, handleIn, handleOut);
