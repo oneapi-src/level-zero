@@ -4,7 +4,7 @@
  SPDX-License-Identifier: MIT
 
  @file zes.py
- @version v1.3-r1.3.7
+ @version v1.4-r1.4.0
 
  """
 import platform
@@ -500,6 +500,51 @@ class zes_diag_properties_t(Structure):
     ]
 
 ###############################################################################
+## @brief ECC State
+class zes_device_ecc_state_v(IntEnum):
+    UNAVAILABLE = 0                                 ## None
+    ENABLED = 1                                     ## ECC enabled.
+    DISABLED = 2                                    ## ECC disabled.
+
+class zes_device_ecc_state_t(c_int):
+    def __str__(self):
+        return str(zes_device_ecc_state_v(self.value))
+
+
+###############################################################################
+## @brief State Change Requirements
+class zes_device_action_v(IntEnum):
+    NONE = 0                                        ## No action.
+    WARM_CARD_RESET = 1                             ## Warm reset of the card.
+    COLD_CARD_RESET = 2                             ## Cold reset of the card.
+    COLD_SYSTEM_REBOOT = 3                          ## Cold reboot of the system.
+
+class zes_device_action_t(c_int):
+    def __str__(self):
+        return str(zes_device_action_v(self.value))
+
+
+###############################################################################
+## @brief ECC State Descriptor
+class zes_device_ecc_desc_t(Structure):
+    _fields_ = [
+        ("stype", zes_structure_type_t),                                ## [in] type of this structure
+        ("pNext", c_void_p),                                            ## [in][optional] pointer to extension-specific structure
+        ("state", zes_device_ecc_state_t)                               ## [out] ECC state
+    ]
+
+###############################################################################
+## @brief ECC State
+class zes_device_ecc_properties_t(Structure):
+    _fields_ = [
+        ("stype", zes_structure_type_t),                                ## [in] type of this structure
+        ("pNext", c_void_p),                                            ## [in,out][optional] pointer to extension-specific structure
+        ("currentState", zes_device_ecc_state_t),                       ## [out] Current ECC state
+        ("pendingState", zes_device_ecc_state_t),                       ## [out] Pending ECC state
+        ("pendingAction", zes_device_action_t)                          ## [out] Pending action
+    ]
+
+###############################################################################
 ## @brief Accelerator engine groups
 class zes_engine_group_v(IntEnum):
     ALL = 0                                         ## Access information about all engines combined.
@@ -729,9 +774,8 @@ class zes_fabric_port_properties_t(Structure):
 ## @brief Provides information about the fabric link attached to a port
 class zes_fabric_link_type_t(Structure):
     _fields_ = [
-        ("desc", c_char * ZES_MAX_FABRIC_LINK_TYPE_SIZE)                ## [out] This provides a static textural description of the physic
-                                                                        ## attachment type. Will be set to the string "unkown" if this cannot be
-                                                                        ## determined for this port.
+        ("desc", c_char * ZES_MAX_FABRIC_LINK_TYPE_SIZE)                ## [out] Description of link technology. Will be set to the string
+                                                                        ## "unkown" if this cannot be determined for this link.
     ]
 
 ###############################################################################
@@ -751,7 +795,7 @@ class zes_fabric_port_state_t(Structure):
         ("stype", zes_structure_type_t),                                ## [in] type of this structure
         ("pNext", c_void_p),                                            ## [in][optional] pointer to extension-specific structure
         ("status", zes_fabric_port_status_t),                           ## [out] The current status of the port
-        ("qualityIssues", zes_fabric_port_qual_issue_flags_t),          ## [out] If status is ::ZES_FABRIC_PORT_STATUS_DEGRADED, 
+        ("qualityIssues", zes_fabric_port_qual_issue_flags_t),          ## [out] If status is ::ZES_FABRIC_PORT_STATUS_DEGRADED,
                                                                         ## then this gives a combination of ::zes_fabric_port_qual_issue_flag_t
                                                                         ## for quality issues that have been detected;
                                                                         ## otherwise, 0 indicates there are no quality issues with the link at
@@ -934,21 +978,29 @@ class zes_freq_properties_t(Structure):
     ]
 
 ###############################################################################
-## @brief Frequency range between which the hardware can operate. The limits can
-##        be above or below the hardware limits - the hardware will clamp
-##        appropriately.
+## @brief Frequency range between which the hardware can operate.
+## 
+## @details
+##     - When setting limits, they will be clamped to the hardware limits.
+##     - When setting limits, ensure that the max frequency is greater than or
+##       equal to the min frequency specified.
+##     - When setting limits to return to factory settings, specify -1 for both
+##       the min and max limit.
 class zes_freq_range_t(Structure):
     _fields_ = [
         ("min", c_double),                                              ## [in,out] The min frequency in MHz below which hardware frequency
                                                                         ## management will not request frequencies. On input, setting to 0 will
-                                                                        ## permit the frequency to go down to the hardware minimum. On output, a
-                                                                        ## negative value indicates that no external minimum frequency limit is
-                                                                        ## in effect.
+                                                                        ## permit the frequency to go down to the hardware minimum while setting
+                                                                        ## to -1 will return the min frequency limit to the factory value (can be
+                                                                        ## larger than the hardware min). On output, a negative value indicates
+                                                                        ## that no external minimum frequency limit is in effect.
         ("max", c_double)                                               ## [in,out] The max frequency in MHz above which hardware frequency
                                                                         ## management will not request frequencies. On input, setting to 0 or a
                                                                         ## very big number will permit the frequency to go all the way up to the
-                                                                        ## hardware maximum. On output, a negative number indicates that no
-                                                                        ## external maximum frequency limit is in effect.
+                                                                        ## hardware maximum while setting to -1 will return the max frequency to
+                                                                        ## the factory value (which can be less than the hardware max). On
+                                                                        ## output, a negative number indicates that no external maximum frequency
+                                                                        ## limit is in effect.
     ]
 
 ###############################################################################
@@ -1235,6 +1287,65 @@ class zes_perf_properties_t(Structure):
     ]
 
 ###############################################################################
+## @brief Power Domain
+class zes_power_domain_v(IntEnum):
+    UNKNOWN = 0                                     ## The PUnit power domain level cannot be determined.
+    CARD = 1                                        ## The PUnit power domain is a card-level power domain.
+    PACKAGE = 2                                     ## The PUnit power domain is a package-level power domain.
+    STACK = 3                                       ## The PUnit power domain is a stack-level power domain.
+
+class zes_power_domain_t(c_int):
+    def __str__(self):
+        return str(zes_power_domain_v(self.value))
+
+
+###############################################################################
+## @brief Power Level Type
+class zes_power_level_v(IntEnum):
+    UNKNOWN = 0                                     ## The PUnit power monitoring duration cannot be determined.
+    SUSTAINED = 1                                   ## The PUnit determines effective power draw by computing a moving
+                                                    ## average of the actual power draw over a time interval (longer than
+                                                    ## BURST).
+    BURST = 2                                       ## The PUnit determines effective power draw by computing a moving
+                                                    ## average of the actual power draw over a time interval (longer than
+                                                    ## PEAK).
+    PEAK = 3                                        ## The PUnit determines effective power draw by computing a moving
+                                                    ## average of the actual power draw over a very short time interval.
+    INSTANTANEOUS = 4                               ## The PUnit predicts effective power draw using the current device
+                                                    ## configuration (frequency, voltage, etc...) & throttles proactively to
+                                                    ## stay within the specified limit.
+
+class zes_power_level_t(c_int):
+    def __str__(self):
+        return str(zes_power_level_v(self.value))
+
+
+###############################################################################
+## @brief Power Source Type
+class zes_power_source_v(IntEnum):
+    ANY = 0                                         ## Limit active no matter whether the power source is mains powered or
+                                                    ## battery powered.
+    MAINS = 1                                       ## Limit active only when the device is mains powered.
+    BATTERY = 2                                     ## Limit active only when the device is battery powered.
+
+class zes_power_source_t(c_int):
+    def __str__(self):
+        return str(zes_power_source_v(self.value))
+
+
+###############################################################################
+## @brief Limit Unit
+class zes_limit_unit_v(IntEnum):
+    UNKNOWN = 0                                     ## The PUnit power monitoring unit cannot be determined.
+    CURRENT = 1                                     ## The limit is specified in milliamperes of current drawn.
+    POWER = 2                                       ## The limit is specified in milliwatts of power generated.
+
+class zes_limit_unit_t(c_int):
+    def __str__(self):
+        return str(zes_limit_unit_v(self.value))
+
+
+###############################################################################
 ## @brief Properties related to device power settings
 class zes_power_properties_t(Structure):
     _fields_ = [
@@ -1247,10 +1358,12 @@ class zes_power_properties_t(Structure):
                                                                         ## user has permissions.
         ("isEnergyThresholdSupported", ze_bool_t),                      ## [out] Indicates if this power domain supports the energy threshold
                                                                         ## event (::ZES_EVENT_TYPE_FLAG_ENERGY_THRESHOLD_CROSSED).
-        ("defaultLimit", c_int32_t),                                    ## [out] The factory default TDP power limit of the part in milliwatts. A
-                                                                        ## value of -1 means that this is not known.
-        ("minLimit", c_int32_t),                                        ## [out] The minimum power limit in milliwatts that can be requested.
-        ("maxLimit", c_int32_t)                                         ## [out] The maximum power limit in milliwatts that can be requested.
+        ("defaultLimit", c_int32_t),                                    ## [out] (Deprecated) The factory default TDP power limit of the part in
+                                                                        ## milliwatts. A value of -1 means that this is not known.
+        ("minLimit", c_int32_t),                                        ## [out] (Deprecated) The minimum power limit in milliwatts that can be
+                                                                        ## requested. A value of -1 means that this is not known.
+        ("maxLimit", c_int32_t)                                         ## [out] (Deprecated) The maximum power limit in milliwatts that can be
+                                                                        ## requested. A value of -1 means that this is not known.
     ]
 
 ###############################################################################
@@ -1636,6 +1749,66 @@ class zes_temp_config_t(Structure):
     ]
 
 ###############################################################################
+## @brief Power Limits Extension Name
+ZES_POWER_LIMITS_EXT_NAME = "ZES_extension_power_limits"
+
+###############################################################################
+## @brief Power Limits Extension Version(s)
+class zes_power_limits_ext_version_v(IntEnum):
+    _1_0 = ZE_MAKE_VERSION( 1, 0 )                  ## version 1.0
+    CURRENT = ZE_MAKE_VERSION( 1, 0 )               ## latest known version
+
+class zes_power_limits_ext_version_t(c_int):
+    def __str__(self):
+        return str(zes_power_limits_ext_version_v(self.value))
+
+
+###############################################################################
+## @brief Device power/current limit descriptor.
+class zes_power_limit_ext_desc_t(Structure):
+    _fields_ = [
+        ("stype", ze_structure_type_t),                                 ## [in] type of this structure
+        ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains sType and pNext).
+        ("level", const),                                               ## [out] duration type over which the power draw is measured, i.e.
+                                                                        ## sustained, burst, peak, or critical.
+        ("source", const),                                              ## [out] source of power used by the system, i.e. AC or DC.
+        ("limitUnit", const),                                           ## [out] unit used for specifying limit, i.e. current units (milliamps)
+                                                                        ## or power units (milliwatts).
+        ("enabledStateLocked", const),                                  ## [out] indicates if the power limit state (enabled/ignored) can be set
+                                                                        ## (false) or is locked (true).
+        ("enabled", ze_bool_t),                                         ## [in,out] indicates if the limit is enabled (true) or ignored (false).
+                                                                        ## If enabledStateIsLocked is True, this value is ignored.
+        ("intervalValueLocked", const),                                 ## [out] indicates if the interval can be modified (false) or is fixed
+                                                                        ## (true).
+        ("interval", c_int32_t),                                        ## [in,out] power averaging window in milliseconds. If
+                                                                        ## intervalValueLocked is true, this value is ignored.
+        ("limitValueLocked", const),                                    ## [out] indicates if the limit can be set (false) or if the limit is
+                                                                        ## fixed (true).
+        ("limit", c_int32_t)                                            ## [in,out] limit value. If limitValueLocked is true, this value is
+                                                                        ## ignored. The value should be provided in the unit specified by
+                                                                        ## limitUnit.
+    ]
+
+###############################################################################
+## @brief Extension properties related to device power settings
+## 
+## @details
+##     - This structure may be returned from ::zesPowerGetProperties via the
+##       `pNext` member of ::zes_power_properties_t.
+##     - This structure may also be returned from ::zesPowerGetProperties via
+##       the `pNext` member of ::zes_power_ext_properties_t
+##     - Used for determining the power domain level, i.e. card-level v/s
+##       package-level v/s stack-level & the factory default power limits.
+class zes_power_ext_properties_t(Structure):
+    _fields_ = [
+        ("stype", zes_structure_type_t),                                ## [in] type of this structure
+        ("pNext", c_void_p),                                            ## [in,out][optional] pointer to extension-specific structure
+        ("domain", const),                                              ## [out] domain that the power limit belongs to.
+        ("defaultLimit", POINTER(zes_power_limit_ext_desc_t))           ## [out] the factory default limit of the part.
+    ]
+
+###############################################################################
 __use_win_types = "Windows" == platform.uname()[0]
 
 ###############################################################################
@@ -1836,6 +2009,34 @@ if __use_win_types:
 else:
     _zesDeviceEnumTemperatureSensors_t = CFUNCTYPE( ze_result_t, zes_device_handle_t, POINTER(c_ulong), POINTER(zes_temp_handle_t) )
 
+###############################################################################
+## @brief Function-pointer for zesDeviceEccAvailable
+if __use_win_types:
+    _zesDeviceEccAvailable_t = WINFUNCTYPE( ze_result_t, zes_device_handle_t, POINTER(ze_bool_t) )
+else:
+    _zesDeviceEccAvailable_t = CFUNCTYPE( ze_result_t, zes_device_handle_t, POINTER(ze_bool_t) )
+
+###############################################################################
+## @brief Function-pointer for zesDeviceEccConfigurable
+if __use_win_types:
+    _zesDeviceEccConfigurable_t = WINFUNCTYPE( ze_result_t, zes_device_handle_t, POINTER(ze_bool_t) )
+else:
+    _zesDeviceEccConfigurable_t = CFUNCTYPE( ze_result_t, zes_device_handle_t, POINTER(ze_bool_t) )
+
+###############################################################################
+## @brief Function-pointer for zesDeviceGetEccState
+if __use_win_types:
+    _zesDeviceGetEccState_t = WINFUNCTYPE( ze_result_t, zes_device_handle_t, POINTER(zes_device_ecc_properties_t) )
+else:
+    _zesDeviceGetEccState_t = CFUNCTYPE( ze_result_t, zes_device_handle_t, POINTER(zes_device_ecc_properties_t) )
+
+###############################################################################
+## @brief Function-pointer for zesDeviceSetEccState
+if __use_win_types:
+    _zesDeviceSetEccState_t = WINFUNCTYPE( ze_result_t, zes_device_handle_t, POINTER(zes_device_ecc_desc_t), POINTER(zes_device_ecc_properties_t) )
+else:
+    _zesDeviceSetEccState_t = CFUNCTYPE( ze_result_t, zes_device_handle_t, POINTER(zes_device_ecc_desc_t), POINTER(zes_device_ecc_properties_t) )
+
 
 ###############################################################################
 ## @brief Table of Device functions pointers
@@ -1865,7 +2066,11 @@ class _zes_device_dditable_t(Structure):
         ("pfnEnumRasErrorSets", c_void_p),                              ## _zesDeviceEnumRasErrorSets_t
         ("pfnEnumSchedulers", c_void_p),                                ## _zesDeviceEnumSchedulers_t
         ("pfnEnumStandbyDomains", c_void_p),                            ## _zesDeviceEnumStandbyDomains_t
-        ("pfnEnumTemperatureSensors", c_void_p)                         ## _zesDeviceEnumTemperatureSensors_t
+        ("pfnEnumTemperatureSensors", c_void_p),                        ## _zesDeviceEnumTemperatureSensors_t
+        ("pfnEccAvailable", c_void_p),                                  ## _zesDeviceEccAvailable_t
+        ("pfnEccConfigurable", c_void_p),                               ## _zesDeviceEccConfigurable_t
+        ("pfnGetEccState", c_void_p),                                   ## _zesDeviceGetEccState_t
+        ("pfnSetEccState", c_void_p)                                    ## _zesDeviceSetEccState_t
     ]
 
 ###############################################################################
@@ -2012,6 +2217,20 @@ if __use_win_types:
 else:
     _zesPowerSetEnergyThreshold_t = CFUNCTYPE( ze_result_t, zes_pwr_handle_t, c_double )
 
+###############################################################################
+## @brief Function-pointer for zesPowerGetLimitsExt
+if __use_win_types:
+    _zesPowerGetLimitsExt_t = WINFUNCTYPE( ze_result_t, zes_pwr_handle_t, POINTER(c_ulong), POINTER(zes_power_limit_ext_desc_t) )
+else:
+    _zesPowerGetLimitsExt_t = CFUNCTYPE( ze_result_t, zes_pwr_handle_t, POINTER(c_ulong), POINTER(zes_power_limit_ext_desc_t) )
+
+###############################################################################
+## @brief Function-pointer for zesPowerSetLimitsExt
+if __use_win_types:
+    _zesPowerSetLimitsExt_t = WINFUNCTYPE( ze_result_t, zes_pwr_handle_t, POINTER(c_ulong), POINTER(zes_power_limit_ext_desc_t) )
+else:
+    _zesPowerSetLimitsExt_t = CFUNCTYPE( ze_result_t, zes_pwr_handle_t, POINTER(c_ulong), POINTER(zes_power_limit_ext_desc_t) )
+
 
 ###############################################################################
 ## @brief Table of Power functions pointers
@@ -2022,7 +2241,9 @@ class _zes_power_dditable_t(Structure):
         ("pfnGetLimits", c_void_p),                                     ## _zesPowerGetLimits_t
         ("pfnSetLimits", c_void_p),                                     ## _zesPowerSetLimits_t
         ("pfnGetEnergyThreshold", c_void_p),                            ## _zesPowerGetEnergyThreshold_t
-        ("pfnSetEnergyThreshold", c_void_p)                             ## _zesPowerSetEnergyThreshold_t
+        ("pfnSetEnergyThreshold", c_void_p),                            ## _zesPowerSetEnergyThreshold_t
+        ("pfnGetLimitsExt", c_void_p),                                  ## _zesPowerGetLimitsExt_t
+        ("pfnSetLimitsExt", c_void_p)                                   ## _zesPowerSetLimitsExt_t
     ]
 
 ###############################################################################
@@ -2636,6 +2857,10 @@ class ZES_DDI:
         self.zesDeviceEnumSchedulers = _zesDeviceEnumSchedulers_t(self.__dditable.Device.pfnEnumSchedulers)
         self.zesDeviceEnumStandbyDomains = _zesDeviceEnumStandbyDomains_t(self.__dditable.Device.pfnEnumStandbyDomains)
         self.zesDeviceEnumTemperatureSensors = _zesDeviceEnumTemperatureSensors_t(self.__dditable.Device.pfnEnumTemperatureSensors)
+        self.zesDeviceEccAvailable = _zesDeviceEccAvailable_t(self.__dditable.Device.pfnEccAvailable)
+        self.zesDeviceEccConfigurable = _zesDeviceEccConfigurable_t(self.__dditable.Device.pfnEccConfigurable)
+        self.zesDeviceGetEccState = _zesDeviceGetEccState_t(self.__dditable.Device.pfnGetEccState)
+        self.zesDeviceSetEccState = _zesDeviceSetEccState_t(self.__dditable.Device.pfnSetEccState)
 
         # call driver to get function pointers
         _Scheduler = _zes_scheduler_dditable_t()
@@ -2680,6 +2905,8 @@ class ZES_DDI:
         self.zesPowerSetLimits = _zesPowerSetLimits_t(self.__dditable.Power.pfnSetLimits)
         self.zesPowerGetEnergyThreshold = _zesPowerGetEnergyThreshold_t(self.__dditable.Power.pfnGetEnergyThreshold)
         self.zesPowerSetEnergyThreshold = _zesPowerSetEnergyThreshold_t(self.__dditable.Power.pfnSetEnergyThreshold)
+        self.zesPowerGetLimitsExt = _zesPowerGetLimitsExt_t(self.__dditable.Power.pfnGetLimitsExt)
+        self.zesPowerSetLimitsExt = _zesPowerSetLimitsExt_t(self.__dditable.Power.pfnSetLimitsExt)
 
         # call driver to get function pointers
         _Frequency = _zes_frequency_dditable_t()

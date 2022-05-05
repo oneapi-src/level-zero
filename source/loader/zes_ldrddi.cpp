@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (C) 2019-2021 Intel Corporation
+ * Copyright (C) 2019-2022 Intel Corporation
  *
  * SPDX-License-Identifier: MIT
  *
@@ -382,6 +382,107 @@ namespace loader
 
         // forward to device-driver
         result = pfnRunTests( hDiagnostics, startIndex, endIndex, pResult );
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesDeviceEccAvailable
+    __zedlllocal ze_result_t ZE_APICALL
+    zesDeviceEccAvailable(
+        zes_device_handle_t hDevice,                    ///< [in] Handle for the component.
+        ze_bool_t* pAvailable                           ///< [out] ECC functionality is available (true)/unavailable (false).
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_device_object_t*>( hDevice )->dditable;
+        auto pfnEccAvailable = dditable->zes.Device.pfnEccAvailable;
+        if( nullptr == pfnEccAvailable )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hDevice = reinterpret_cast<zes_device_object_t*>( hDevice )->handle;
+
+        // forward to device-driver
+        result = pfnEccAvailable( hDevice, pAvailable );
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesDeviceEccConfigurable
+    __zedlllocal ze_result_t ZE_APICALL
+    zesDeviceEccConfigurable(
+        zes_device_handle_t hDevice,                    ///< [in] Handle for the component.
+        ze_bool_t* pConfigurable                        ///< [out] ECC can be enabled/disabled (true)/enabled/disabled (false).
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_device_object_t*>( hDevice )->dditable;
+        auto pfnEccConfigurable = dditable->zes.Device.pfnEccConfigurable;
+        if( nullptr == pfnEccConfigurable )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hDevice = reinterpret_cast<zes_device_object_t*>( hDevice )->handle;
+
+        // forward to device-driver
+        result = pfnEccConfigurable( hDevice, pConfigurable );
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesDeviceGetEccState
+    __zedlllocal ze_result_t ZE_APICALL
+    zesDeviceGetEccState(
+        zes_device_handle_t hDevice,                    ///< [in] Handle for the component.
+        zes_device_ecc_properties_t* pState             ///< [out] ECC state, pending state, and pending action for state change.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_device_object_t*>( hDevice )->dditable;
+        auto pfnGetEccState = dditable->zes.Device.pfnGetEccState;
+        if( nullptr == pfnGetEccState )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hDevice = reinterpret_cast<zes_device_object_t*>( hDevice )->handle;
+
+        // forward to device-driver
+        result = pfnGetEccState( hDevice, pState );
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesDeviceSetEccState
+    __zedlllocal ze_result_t ZE_APICALL
+    zesDeviceSetEccState(
+        zes_device_handle_t hDevice,                    ///< [in] Handle for the component.
+        const zes_device_ecc_desc_t* newState,          ///< [in] Pointer to desired ECC state.
+        zes_device_ecc_properties_t* pState             ///< [out] ECC state, pending state, and pending action for state change.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_device_object_t*>( hDevice )->dditable;
+        auto pfnSetEccState = dditable->zes.Device.pfnSetEccState;
+        if( nullptr == pfnSetEccState )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hDevice = reinterpret_cast<zes_device_object_t*>( hDevice )->handle;
+
+        // forward to device-driver
+        result = pfnSetEccState( hDevice, newState, pState );
 
         return result;
     }
@@ -3056,6 +3157,65 @@ namespace loader
         return result;
     }
 
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesPowerGetLimitsExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zesPowerGetLimitsExt(
+        zes_pwr_handle_t hPower,                        ///< [in] Power domain handle instance.
+        uint32_t* pCount,                               ///< [in,out] Pointer to the number of power limit descriptors. If count is
+                                                        ///< zero, then the driver shall update the value with the total number of
+                                                        ///< components of this type that are available. If count is greater than
+                                                        ///< the number of components of this type that are available, then the
+                                                        ///< driver shall update the value with the correct number of components.
+        zes_power_limit_ext_desc_t* pSustained          ///< [in,out][optional][range(0, *pCount)] Array of query results for power
+                                                        ///< limit descriptors. If count is less than the number of components of
+                                                        ///< this type that are available, then the driver shall only retrieve that
+                                                        ///< number of components.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_pwr_object_t*>( hPower )->dditable;
+        auto pfnGetLimitsExt = dditable->zes.Power.pfnGetLimitsExt;
+        if( nullptr == pfnGetLimitsExt )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hPower = reinterpret_cast<zes_pwr_object_t*>( hPower )->handle;
+
+        // forward to device-driver
+        result = pfnGetLimitsExt( hPower, pCount, pSustained );
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesPowerSetLimitsExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zesPowerSetLimitsExt(
+        zes_pwr_handle_t hPower,                        ///< [in] Handle for the component.
+        uint32_t* pCount,                               ///< [in] Pointer to the number of power limit descriptors.
+        zes_power_limit_ext_desc_t* pSustained          ///< [in][optional][range(0, *pCount)] Array of power limit descriptors.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_pwr_object_t*>( hPower )->dditable;
+        auto pfnSetLimitsExt = dditable->zes.Power.pfnSetLimitsExt;
+        if( nullptr == pfnSetLimitsExt )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hPower = reinterpret_cast<zes_pwr_object_t*>( hPower )->handle;
+
+        // forward to device-driver
+        result = pfnSetLimitsExt( hPower, pCount, pSustained );
+
+        return result;
+    }
+
 } // namespace loader
 
 #if defined(__cplusplus)
@@ -3140,6 +3300,10 @@ zesGetDeviceProcAddrTable(
             pDdiTable->pfnEnumSchedulers                           = loader::zesDeviceEnumSchedulers;
             pDdiTable->pfnEnumStandbyDomains                       = loader::zesDeviceEnumStandbyDomains;
             pDdiTable->pfnEnumTemperatureSensors                   = loader::zesDeviceEnumTemperatureSensors;
+            pDdiTable->pfnEccAvailable                             = loader::zesDeviceEccAvailable;
+            pDdiTable->pfnEccConfigurable                          = loader::zesDeviceEccConfigurable;
+            pDdiTable->pfnGetEccState                              = loader::zesDeviceGetEccState;
+            pDdiTable->pfnSetEccState                              = loader::zesDeviceSetEccState;
         }
         else
         {
@@ -4008,6 +4172,8 @@ zesGetPowerProcAddrTable(
             pDdiTable->pfnSetLimits                                = loader::zesPowerSetLimits;
             pDdiTable->pfnGetEnergyThreshold                       = loader::zesPowerGetEnergyThreshold;
             pDdiTable->pfnSetEnergyThreshold                       = loader::zesPowerSetEnergyThreshold;
+            pDdiTable->pfnGetLimitsExt                             = loader::zesPowerGetLimitsExt;
+            pDdiTable->pfnSetLimitsExt                             = loader::zesPowerSetLimitsExt;
         }
         else
         {

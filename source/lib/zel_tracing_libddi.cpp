@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Intel Corporation
+ * Copyright (C) 2020-2022 Intel Corporation
  *
  * SPDX-License-Identifier: MIT
  *
@@ -23,7 +23,7 @@ namespace ze_lib
         {
             auto getTable = reinterpret_cast<zel_pfnGetTracerApiProcAddrTable_t>(
                 GET_FUNCTION_PTR(loader, "zelGetTracerApiProcAddrTable") );
-            result = getTable( ZE_API_VERSION_1_3, &zelTracingDdiTable.Tracer);
+            result = getTable( ZE_API_VERSION_1_4, &zelTracingDdiTable.Tracer);
         }
 
         return result;
@@ -32,7 +32,7 @@ namespace ze_lib
     __zedlllocal ze_result_t context_t::zelTracingInit()
     {
         ze_result_t result;
-        result = zelGetTracerApiProcAddrTable( ZE_API_VERSION_1_3, &zelTracingDdiTable.Tracer);
+        result = zelGetTracerApiProcAddrTable( ZE_API_VERSION_1_4, &zelTracingDdiTable.Tracer);
         return result;
     }
 #endif

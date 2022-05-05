@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (C) 2021 Intel Corporation
+ * Copyright (C) 2021-2022 Intel Corporation
  *
  * SPDX-License-Identifier: MIT
  *
@@ -157,6 +157,32 @@ typedef struct _ze_device_pci_get_properties_ext_params_t
 
 typedef void (ZE_APICALL *ze_pfnDevicePciGetPropertiesExtCb_t)(
     ze_device_pci_get_properties_ext_params_t* params,
+    ze_result_t result,
+    void* pTracerUserData,
+    void** ppTracerInstanceUserData
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Callback function parameters for zeDeviceGetFabricVertexExp
+/// @details Each entry is a pointer to the parameter passed to the function;
+///     allowing the callback the ability to modify the parameter's value
+
+typedef struct _ze_device_get_fabric_vertex_exp_params_t
+{
+    ze_device_handle_t* phVertex;
+    ze_fabric_vertex_handle_t** ppVertex;
+} ze_device_get_fabric_vertex_exp_params_t;
+
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Callback function-pointer for zeDeviceGetFabricVertexExp
+/// @param[in] params Parameters passed to this instance
+/// @param[in] result Return value
+/// @param[in] pTracerUserData Per-Tracer user data
+/// @param[in,out] ppTracerInstanceUserData Per-Tracer, Per-Instance user data
+
+typedef void (ZE_APICALL *ze_pfnDeviceGetFabricVertexExpCb_t)(
+    ze_device_get_fabric_vertex_exp_params_t* params,
     ze_result_t result,
     void* pTracerUserData,
     void** ppTracerInstanceUserData
@@ -471,6 +497,193 @@ typedef struct _ze_module_inspect_linkage_ext_params_t
 
 typedef void (ZE_APICALL *ze_pfnModuleInspectLinkageExtCb_t)(
     ze_module_inspect_linkage_ext_params_t* params,
+    ze_result_t result,
+    void* pTracerUserData,
+    void** ppTracerInstanceUserData
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Callback function parameters for zeFabricEdgeGetExp
+/// @details Each entry is a pointer to the parameter passed to the function;
+///     allowing the callback the ability to modify the parameter's value
+
+typedef struct _ze_fabric_edge_get_exp_params_t
+{
+    ze_fabric_vertex_handle_t* phVertexA;
+    ze_fabric_vertex_handle_t* phVertexB;
+    uint32_t** ppCount;
+    ze_fabric_edge_handle_t** pphEdges;
+} ze_fabric_edge_get_exp_params_t;
+
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Callback function-pointer for zeFabricEdgeGetExp
+/// @param[in] params Parameters passed to this instance
+/// @param[in] result Return value
+/// @param[in] pTracerUserData Per-Tracer user data
+/// @param[in,out] ppTracerInstanceUserData Per-Tracer, Per-Instance user data
+
+typedef void (ZE_APICALL *ze_pfnFabricEdgeGetExpCb_t)(
+    ze_fabric_edge_get_exp_params_t* params,
+    ze_result_t result,
+    void* pTracerUserData,
+    void** ppTracerInstanceUserData
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Callback function parameters for zeFabricEdgeGetVerticesExp
+/// @details Each entry is a pointer to the parameter passed to the function;
+///     allowing the callback the ability to modify the parameter's value
+
+typedef struct _ze_fabric_edge_get_vertices_exp_params_t
+{
+    ze_fabric_edge_handle_t* phEdge;
+    ze_fabric_vertex_handle_t** pphVertexA;
+    ze_fabric_vertex_handle_t** pphVertexB;
+} ze_fabric_edge_get_vertices_exp_params_t;
+
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Callback function-pointer for zeFabricEdgeGetVerticesExp
+/// @param[in] params Parameters passed to this instance
+/// @param[in] result Return value
+/// @param[in] pTracerUserData Per-Tracer user data
+/// @param[in,out] ppTracerInstanceUserData Per-Tracer, Per-Instance user data
+
+typedef void (ZE_APICALL *ze_pfnFabricEdgeGetVerticesExpCb_t)(
+    ze_fabric_edge_get_vertices_exp_params_t* params,
+    ze_result_t result,
+    void* pTracerUserData,
+    void** ppTracerInstanceUserData
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Callback function parameters for zeFabricEdgeGetPropertiesExp
+/// @details Each entry is a pointer to the parameter passed to the function;
+///     allowing the callback the ability to modify the parameter's value
+
+typedef struct _ze_fabric_edge_get_properties_exp_params_t
+{
+    ze_fabric_edge_handle_t* phEdge;
+    ze_fabric_edge_exp_properties_t** ppEdgeProperties;
+} ze_fabric_edge_get_properties_exp_params_t;
+
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Callback function-pointer for zeFabricEdgeGetPropertiesExp
+/// @param[in] params Parameters passed to this instance
+/// @param[in] result Return value
+/// @param[in] pTracerUserData Per-Tracer user data
+/// @param[in,out] ppTracerInstanceUserData Per-Tracer, Per-Instance user data
+
+typedef void (ZE_APICALL *ze_pfnFabricEdgeGetPropertiesExpCb_t)(
+    ze_fabric_edge_get_properties_exp_params_t* params,
+    ze_result_t result,
+    void* pTracerUserData,
+    void** ppTracerInstanceUserData
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Callback function parameters for zeFabricVertexGetExp
+/// @details Each entry is a pointer to the parameter passed to the function;
+///     allowing the callback the ability to modify the parameter's value
+
+typedef struct _ze_fabric_vertex_get_exp_params_t
+{
+    ze_driver_handle_t* phDriver;
+    uint32_t** ppCount;
+    ze_fabric_vertex_handle_t** pphVertices;
+} ze_fabric_vertex_get_exp_params_t;
+
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Callback function-pointer for zeFabricVertexGetExp
+/// @param[in] params Parameters passed to this instance
+/// @param[in] result Return value
+/// @param[in] pTracerUserData Per-Tracer user data
+/// @param[in,out] ppTracerInstanceUserData Per-Tracer, Per-Instance user data
+
+typedef void (ZE_APICALL *ze_pfnFabricVertexGetExpCb_t)(
+    ze_fabric_vertex_get_exp_params_t* params,
+    ze_result_t result,
+    void* pTracerUserData,
+    void** ppTracerInstanceUserData
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Callback function parameters for zeFabricVertexGetSubVerticesExp
+/// @details Each entry is a pointer to the parameter passed to the function;
+///     allowing the callback the ability to modify the parameter's value
+
+typedef struct _ze_fabric_vertex_get_sub_vertices_exp_params_t
+{
+    ze_fabric_vertex_handle_t* phVertex;
+    uint32_t** ppCount;
+    ze_fabric_vertex_handle_t** pphSubvertices;
+} ze_fabric_vertex_get_sub_vertices_exp_params_t;
+
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Callback function-pointer for zeFabricVertexGetSubVerticesExp
+/// @param[in] params Parameters passed to this instance
+/// @param[in] result Return value
+/// @param[in] pTracerUserData Per-Tracer user data
+/// @param[in,out] ppTracerInstanceUserData Per-Tracer, Per-Instance user data
+
+typedef void (ZE_APICALL *ze_pfnFabricVertexGetSubVerticesExpCb_t)(
+    ze_fabric_vertex_get_sub_vertices_exp_params_t* params,
+    ze_result_t result,
+    void* pTracerUserData,
+    void** ppTracerInstanceUserData
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Callback function parameters for zeFabricVertexGetPropertiesExp
+/// @details Each entry is a pointer to the parameter passed to the function;
+///     allowing the callback the ability to modify the parameter's value
+
+typedef struct _ze_fabric_vertex_get_properties_exp_params_t
+{
+    ze_fabric_vertex_handle_t* phVertex;
+    ze_fabric_vertex_exp_properties_t** ppVertexProperties;
+} ze_fabric_vertex_get_properties_exp_params_t;
+
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Callback function-pointer for zeFabricVertexGetPropertiesExp
+/// @param[in] params Parameters passed to this instance
+/// @param[in] result Return value
+/// @param[in] pTracerUserData Per-Tracer user data
+/// @param[in,out] ppTracerInstanceUserData Per-Tracer, Per-Instance user data
+
+typedef void (ZE_APICALL *ze_pfnFabricVertexGetPropertiesExpCb_t)(
+    ze_fabric_vertex_get_properties_exp_params_t* params,
+    ze_result_t result,
+    void* pTracerUserData,
+    void** ppTracerInstanceUserData
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Callback function parameters for zeFabricVertexGetDeviceExp
+/// @details Each entry is a pointer to the parameter passed to the function;
+///     allowing the callback the ability to modify the parameter's value
+
+typedef struct _ze_fabric_vertex_get_device_exp_params_t
+{
+    ze_fabric_vertex_handle_t* phVertex;
+    ze_device_handle_t** ppDevice;
+} ze_fabric_vertex_get_device_exp_params_t;
+
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Callback function-pointer for zeFabricVertexGetDeviceExp
+/// @param[in] params Parameters passed to this instance
+/// @param[in] result Return value
+/// @param[in] pTracerUserData Per-Tracer user data
+/// @param[in,out] ppTracerInstanceUserData Per-Tracer, Per-Instance user data
+
+typedef void (ZE_APICALL *ze_pfnFabricVertexGetDeviceExpCb_t)(
+    ze_fabric_vertex_get_device_exp_params_t* params,
     ze_result_t result,
     void* pTracerUserData,
     void** ppTracerInstanceUserData
@@ -1570,6 +1783,70 @@ zelTracerMemFreeExtRegisterCallback(
     zel_tracer_handle_t hTracer,
     zel_tracer_reg_t callback_type,
     ze_pfnMemFreeExtCb_t pfnFreeExtCb
+    );
+
+
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zelTracerFabricVertexGetExpRegisterCallback(
+    zel_tracer_handle_t hTracer,
+    zel_tracer_reg_t callback_type,
+    ze_pfnFabricVertexGetExpCb_t pfnGetExpCb
+    );
+
+
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zelTracerFabricVertexGetSubVerticesExpRegisterCallback(
+    zel_tracer_handle_t hTracer,
+    zel_tracer_reg_t callback_type,
+    ze_pfnFabricVertexGetSubVerticesExpCb_t pfnGetSubVerticesExpCb
+    );
+
+
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zelTracerFabricVertexGetPropertiesExpRegisterCallback(
+    zel_tracer_handle_t hTracer,
+    zel_tracer_reg_t callback_type,
+    ze_pfnFabricVertexGetPropertiesExpCb_t pfnGetPropertiesExpCb
+    );
+
+
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zelTracerFabricVertexGetDeviceExpRegisterCallback(
+    zel_tracer_handle_t hTracer,
+    zel_tracer_reg_t callback_type,
+    ze_pfnFabricVertexGetDeviceExpCb_t pfnGetDeviceExpCb
+    );
+
+
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zelTracerDeviceGetFabricVertexExpRegisterCallback(
+    zel_tracer_handle_t hTracer,
+    zel_tracer_reg_t callback_type,
+    ze_pfnDeviceGetFabricVertexExpCb_t pfnGetFabricVertexExpCb
+    );
+
+
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zelTracerFabricEdgeGetExpRegisterCallback(
+    zel_tracer_handle_t hTracer,
+    zel_tracer_reg_t callback_type,
+    ze_pfnFabricEdgeGetExpCb_t pfnGetExpCb
+    );
+
+
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zelTracerFabricEdgeGetVerticesExpRegisterCallback(
+    zel_tracer_handle_t hTracer,
+    zel_tracer_reg_t callback_type,
+    ze_pfnFabricEdgeGetVerticesExpCb_t pfnGetVerticesExpCb
+    );
+
+
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zelTracerFabricEdgeGetPropertiesExpRegisterCallback(
+    zel_tracer_handle_t hTracer,
+    zel_tracer_reg_t callback_type,
+    ze_pfnFabricEdgeGetPropertiesExpCb_t pfnGetPropertiesExpCb
     );
 
 

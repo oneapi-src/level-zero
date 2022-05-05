@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (C) 2019-2021 Intel Corporation
+ * Copyright (C) 2019-2022 Intel Corporation
  *
  * SPDX-License-Identifier: MIT
  *
@@ -37,7 +37,7 @@ namespace loader
     class context_t
     {
     public:
-        ze_api_version_t version = ZE_API_VERSION_1_3;
+        ze_api_version_t version = ZE_API_VERSION_1_4;
 
         driver_vector_t drivers;
 

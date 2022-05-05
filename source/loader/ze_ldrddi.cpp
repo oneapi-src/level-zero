@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (C) 2019-2021 Intel Corporation
+ * Copyright (C) 2019-2022 Intel Corporation
  *
  * SPDX-License-Identifier: MIT
  *
@@ -26,6 +26,8 @@ namespace loader
     ze_kernel_factory_t                 ze_kernel_factory;
     ze_sampler_factory_t                ze_sampler_factory;
     ze_physical_mem_factory_t           ze_physical_mem_factory;
+    ze_fabric_vertex_factory_t          ze_fabric_vertex_factory;
+    ze_fabric_edge_factory_t            ze_fabric_edge_factory;
 
     ///////////////////////////////////////////////////////////////////////////////
     /// @brief Intercept function for zeInit
@@ -4525,6 +4527,333 @@ namespace loader
         return result;
     }
 
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeFabricVertexGetExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zeFabricVertexGetExp(
+        ze_driver_handle_t hDriver,                     ///< [in] handle of the driver instance
+        uint32_t* pCount,                               ///< [in,out] pointer to the number of fabric vertices.
+                                                        ///< if count is zero, then the driver shall update the value with the
+                                                        ///< total number of fabric vertices available.
+                                                        ///< if count is greater than the number of fabric vertices available, then
+                                                        ///< the driver shall update the value with the correct number of fabric
+                                                        ///< vertices available.
+        ze_fabric_vertex_handle_t* phVertices           ///< [in,out][optional][range(0, *pCount)] array of handle of fabric vertices.
+                                                        ///< if count is less than the number of fabric vertices available, then
+                                                        ///< driver shall only retrieve that number of fabric vertices.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<ze_driver_object_t*>( hDriver )->dditable;
+        auto pfnGetExp = dditable->ze.FabricVertexExp.pfnGetExp;
+        if( nullptr == pfnGetExp )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hDriver = reinterpret_cast<ze_driver_object_t*>( hDriver )->handle;
+
+        // forward to device-driver
+        result = pfnGetExp( hDriver, pCount, phVertices );
+
+        if( ZE_RESULT_SUCCESS != result )
+            return result;
+
+        try
+        {
+            // convert driver handles to loader handles
+            for( size_t i = 0; ( nullptr != phVertices ) && ( i < *pCount ); ++i )
+                phVertices[ i ] = reinterpret_cast<ze_fabric_vertex_handle_t>(
+                    ze_fabric_vertex_factory.getInstance( phVertices[ i ], dditable ) );
+        }
+        catch( std::bad_alloc& )
+        {
+            result = ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY;
+        }
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeFabricVertexGetSubVerticesExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zeFabricVertexGetSubVerticesExp(
+        ze_fabric_vertex_handle_t hVertex,              ///< [in] handle of the fabric vertex object
+        uint32_t* pCount,                               ///< [in,out] pointer to the number of sub-vertices.
+                                                        ///< if count is zero, then the driver shall update the value with the
+                                                        ///< total number of sub-vertices available.
+                                                        ///< if count is greater than the number of sub-vertices available, then
+                                                        ///< the driver shall update the value with the correct number of
+                                                        ///< sub-vertices available.
+        ze_fabric_vertex_handle_t* phSubvertices        ///< [in,out][optional][range(0, *pCount)] array of handle of sub-vertices.
+                                                        ///< if count is less than the number of sub-vertices available, then
+                                                        ///< driver shall only retrieve that number of sub-vertices.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<ze_fabric_vertex_object_t*>( hVertex )->dditable;
+        auto pfnGetSubVerticesExp = dditable->ze.FabricVertexExp.pfnGetSubVerticesExp;
+        if( nullptr == pfnGetSubVerticesExp )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hVertex = reinterpret_cast<ze_fabric_vertex_object_t*>( hVertex )->handle;
+
+        // forward to device-driver
+        result = pfnGetSubVerticesExp( hVertex, pCount, phSubvertices );
+
+        if( ZE_RESULT_SUCCESS != result )
+            return result;
+
+        try
+        {
+            // convert driver handles to loader handles
+            for( size_t i = 0; ( nullptr != phSubvertices ) && ( i < *pCount ); ++i )
+                phSubvertices[ i ] = reinterpret_cast<ze_fabric_vertex_handle_t>(
+                    ze_fabric_vertex_factory.getInstance( phSubvertices[ i ], dditable ) );
+        }
+        catch( std::bad_alloc& )
+        {
+            result = ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY;
+        }
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeFabricVertexGetPropertiesExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zeFabricVertexGetPropertiesExp(
+        ze_fabric_vertex_handle_t hVertex,              ///< [in] handle of the fabric vertex
+        ze_fabric_vertex_exp_properties_t* pVertexProperties///< [in,out] query result for fabric vertex properties
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<ze_fabric_vertex_object_t*>( hVertex )->dditable;
+        auto pfnGetPropertiesExp = dditable->ze.FabricVertexExp.pfnGetPropertiesExp;
+        if( nullptr == pfnGetPropertiesExp )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hVertex = reinterpret_cast<ze_fabric_vertex_object_t*>( hVertex )->handle;
+
+        // forward to device-driver
+        result = pfnGetPropertiesExp( hVertex, pVertexProperties );
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeFabricVertexGetDeviceExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zeFabricVertexGetDeviceExp(
+        ze_fabric_vertex_handle_t hVertex,              ///< [in] handle of the fabric vertex
+        ze_device_handle_t* pDevice                     ///< [out] device handle corresponding to fabric vertex
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<ze_fabric_vertex_object_t*>( hVertex )->dditable;
+        auto pfnGetDeviceExp = dditable->ze.FabricVertexExp.pfnGetDeviceExp;
+        if( nullptr == pfnGetDeviceExp )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hVertex = reinterpret_cast<ze_fabric_vertex_object_t*>( hVertex )->handle;
+
+        // forward to device-driver
+        result = pfnGetDeviceExp( hVertex, pDevice );
+
+        if( ZE_RESULT_SUCCESS != result )
+            return result;
+
+        try
+        {
+            // convert driver handle to loader handle
+            *pDevice = reinterpret_cast<ze_device_handle_t>(
+                ze_device_factory.getInstance( *pDevice, dditable ) );
+        }
+        catch( std::bad_alloc& )
+        {
+            result = ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY;
+        }
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeDeviceGetFabricVertexExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zeDeviceGetFabricVertexExp(
+        ze_device_handle_t hVertex,                     ///< [in] handle of the device
+        ze_fabric_vertex_handle_t* pVertex              ///< [out] fabric vertex handle corresponding to device
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<ze_device_object_t*>( hVertex )->dditable;
+        auto pfnGetFabricVertexExp = dditable->ze.DeviceExp.pfnGetFabricVertexExp;
+        if( nullptr == pfnGetFabricVertexExp )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hVertex = reinterpret_cast<ze_device_object_t*>( hVertex )->handle;
+
+        // forward to device-driver
+        result = pfnGetFabricVertexExp( hVertex, pVertex );
+
+        if( ZE_RESULT_SUCCESS != result )
+            return result;
+
+        try
+        {
+            // convert driver handle to loader handle
+            *pVertex = reinterpret_cast<ze_fabric_vertex_handle_t>(
+                ze_fabric_vertex_factory.getInstance( *pVertex, dditable ) );
+        }
+        catch( std::bad_alloc& )
+        {
+            result = ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY;
+        }
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeFabricEdgeGetExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zeFabricEdgeGetExp(
+        ze_fabric_vertex_handle_t hVertexA,             ///< [in] handle of first fabric vertex instance
+        ze_fabric_vertex_handle_t hVertexB,             ///< [in] handle of second fabric vertex instance
+        uint32_t* pCount,                               ///< [in,out] pointer to the number of fabric edges.
+                                                        ///< if count is zero, then the driver shall update the value with the
+                                                        ///< total number of fabric edges available.
+                                                        ///< if count is greater than the number of fabric edges available, then
+                                                        ///< the driver shall update the value with the correct number of fabric
+                                                        ///< edges available.
+        ze_fabric_edge_handle_t* phEdges                ///< [in,out][optional][range(0, *pCount)] array of handle of fabric edges.
+                                                        ///< if count is less than the number of fabric edges available, then
+                                                        ///< driver shall only retrieve that number of fabric edges.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<ze_fabric_vertex_object_t*>( hVertexA )->dditable;
+        auto pfnGetExp = dditable->ze.FabricEdgeExp.pfnGetExp;
+        if( nullptr == pfnGetExp )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hVertexA = reinterpret_cast<ze_fabric_vertex_object_t*>( hVertexA )->handle;
+
+        // convert loader handle to driver handle
+        hVertexB = reinterpret_cast<ze_fabric_vertex_object_t*>( hVertexB )->handle;
+
+        // forward to device-driver
+        result = pfnGetExp( hVertexA, hVertexB, pCount, phEdges );
+
+        if( ZE_RESULT_SUCCESS != result )
+            return result;
+
+        try
+        {
+            // convert driver handles to loader handles
+            for( size_t i = 0; ( nullptr != phEdges ) && ( i < *pCount ); ++i )
+                phEdges[ i ] = reinterpret_cast<ze_fabric_edge_handle_t>(
+                    ze_fabric_edge_factory.getInstance( phEdges[ i ], dditable ) );
+        }
+        catch( std::bad_alloc& )
+        {
+            result = ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY;
+        }
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeFabricEdgeGetVerticesExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zeFabricEdgeGetVerticesExp(
+        ze_fabric_edge_handle_t hEdge,                  ///< [in] handle of the fabric edge instance
+        ze_fabric_vertex_handle_t* phVertexA,           ///< [out] fabric vertex connected to one end of the given fabric edge.
+        ze_fabric_vertex_handle_t* phVertexB            ///< [out] fabric vertex connected to other end of the given fabric edge.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<ze_fabric_edge_object_t*>( hEdge )->dditable;
+        auto pfnGetVerticesExp = dditable->ze.FabricEdgeExp.pfnGetVerticesExp;
+        if( nullptr == pfnGetVerticesExp )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hEdge = reinterpret_cast<ze_fabric_edge_object_t*>( hEdge )->handle;
+
+        // forward to device-driver
+        result = pfnGetVerticesExp( hEdge, phVertexA, phVertexB );
+
+        if( ZE_RESULT_SUCCESS != result )
+            return result;
+
+        try
+        {
+            // convert driver handle to loader handle
+            *phVertexA = reinterpret_cast<ze_fabric_vertex_handle_t>(
+                ze_fabric_vertex_factory.getInstance( *phVertexA, dditable ) );
+        }
+        catch( std::bad_alloc& )
+        {
+            result = ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY;
+        }
+
+        try
+        {
+            // convert driver handle to loader handle
+            *phVertexB = reinterpret_cast<ze_fabric_vertex_handle_t>(
+                ze_fabric_vertex_factory.getInstance( *phVertexB, dditable ) );
+        }
+        catch( std::bad_alloc& )
+        {
+            result = ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY;
+        }
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeFabricEdgeGetPropertiesExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zeFabricEdgeGetPropertiesExp(
+        ze_fabric_edge_handle_t hEdge,                  ///< [in] handle of the fabric edge
+        ze_fabric_edge_exp_properties_t* pEdgeProperties///< [in,out] query result for fabric edge properties
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<ze_fabric_edge_object_t*>( hEdge )->dditable;
+        auto pfnGetPropertiesExp = dditable->ze.FabricEdgeExp.pfnGetPropertiesExp;
+        if( nullptr == pfnGetPropertiesExp )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hEdge = reinterpret_cast<ze_fabric_edge_object_t*>( hEdge )->handle;
+
+        // forward to device-driver
+        result = pfnGetPropertiesExp( hEdge, pEdgeProperties );
+
+        return result;
+    }
+
 } // namespace loader
 
 #if defined(__cplusplus)
@@ -4800,6 +5129,85 @@ zeGetDeviceProcAddrTable(
     {
         auto getTable = reinterpret_cast<ze_pfnGetDeviceProcAddrTable_t>(
             GET_FUNCTION_PTR(loader::context->tracingLayer, "zeGetDeviceProcAddrTable") );
+        if(!getTable)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        result = getTable( version, pDdiTable );
+    }
+
+    return result;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Exported function for filling application's DeviceExp table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+ZE_DLLEXPORT ze_result_t ZE_APICALL
+zeGetDeviceExpProcAddrTable(
+    ze_api_version_t version,                       ///< [in] API version requested
+    ze_device_exp_dditable_t* pDdiTable             ///< [in,out] pointer to table of DDI function pointers
+    )
+{
+    if( loader::context->drivers.size() < 1 )
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+
+    if( nullptr == pDdiTable )
+        return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+    if( loader::context->version < version )
+        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+
+    ze_result_t result = ZE_RESULT_SUCCESS;
+
+    bool atLeastOneDriverValid = false;
+    // Load the device-driver DDI tables
+    for( auto& drv : loader::context->drivers )
+    {
+        if(drv.initStatus != ZE_RESULT_SUCCESS)
+            continue;
+        auto getTable = reinterpret_cast<ze_pfnGetDeviceExpProcAddrTable_t>(
+            GET_FUNCTION_PTR( drv.handle, "zeGetDeviceExpProcAddrTable") );
+        if(!getTable) 
+            continue; 
+        auto getTableResult = getTable( version, &drv.dditable.ze.DeviceExp);
+        if(getTableResult == ZE_RESULT_SUCCESS) 
+            atLeastOneDriverValid = true;
+    }
+
+
+    if( ZE_RESULT_SUCCESS == result )
+    {
+        if( ( loader::context->drivers.size() > 1 ) || loader::context->forceIntercept )
+        {
+            // return pointers to loader's DDIs
+            pDdiTable->pfnGetFabricVertexExp                       = loader::zeDeviceGetFabricVertexExp;
+        }
+        else
+        {
+            // return pointers directly to driver's DDIs
+            *pDdiTable = loader::context->drivers.front().dditable.ze.DeviceExp;
+        }
+    }
+
+    // If the validation layer is enabled, then intercept the loader's DDIs
+    if(( ZE_RESULT_SUCCESS == result ) && ( nullptr != loader::context->validationLayer ))
+    {
+        auto getTable = reinterpret_cast<ze_pfnGetDeviceExpProcAddrTable_t>(
+            GET_FUNCTION_PTR(loader::context->validationLayer, "zeGetDeviceExpProcAddrTable") );
+        if(!getTable)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        result = getTable( version, pDdiTable );
+    }
+
+    // If the API tracing layer is enabled, then intercept the loader's DDIs
+    if(( ZE_RESULT_SUCCESS == result ) && ( nullptr != loader::context->tracingLayer ))
+    {
+        auto getTable = reinterpret_cast<ze_pfnGetDeviceExpProcAddrTable_t>(
+            GET_FUNCTION_PTR(loader::context->tracingLayer, "zeGetDeviceExpProcAddrTable") );
         if(!getTable)
             return ZE_RESULT_ERROR_UNINITIALIZED;
         result = getTable( version, pDdiTable );
@@ -6321,6 +6729,169 @@ zeGetVirtualMemProcAddrTable(
     {
         auto getTable = reinterpret_cast<ze_pfnGetVirtualMemProcAddrTable_t>(
             GET_FUNCTION_PTR(loader::context->tracingLayer, "zeGetVirtualMemProcAddrTable") );
+        if(!getTable)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        result = getTable( version, pDdiTable );
+    }
+
+    return result;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Exported function for filling application's FabricEdgeExp table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+ZE_DLLEXPORT ze_result_t ZE_APICALL
+zeGetFabricEdgeExpProcAddrTable(
+    ze_api_version_t version,                       ///< [in] API version requested
+    ze_fabric_edge_exp_dditable_t* pDdiTable        ///< [in,out] pointer to table of DDI function pointers
+    )
+{
+    if( loader::context->drivers.size() < 1 )
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+
+    if( nullptr == pDdiTable )
+        return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+    if( loader::context->version < version )
+        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+
+    ze_result_t result = ZE_RESULT_SUCCESS;
+
+    bool atLeastOneDriverValid = false;
+    // Load the device-driver DDI tables
+    for( auto& drv : loader::context->drivers )
+    {
+        if(drv.initStatus != ZE_RESULT_SUCCESS)
+            continue;
+        auto getTable = reinterpret_cast<ze_pfnGetFabricEdgeExpProcAddrTable_t>(
+            GET_FUNCTION_PTR( drv.handle, "zeGetFabricEdgeExpProcAddrTable") );
+        if(!getTable) 
+            continue; 
+        auto getTableResult = getTable( version, &drv.dditable.ze.FabricEdgeExp);
+        if(getTableResult == ZE_RESULT_SUCCESS) 
+            atLeastOneDriverValid = true;
+    }
+
+
+    if( ZE_RESULT_SUCCESS == result )
+    {
+        if( ( loader::context->drivers.size() > 1 ) || loader::context->forceIntercept )
+        {
+            // return pointers to loader's DDIs
+            pDdiTable->pfnGetExp                                   = loader::zeFabricEdgeGetExp;
+            pDdiTable->pfnGetVerticesExp                           = loader::zeFabricEdgeGetVerticesExp;
+            pDdiTable->pfnGetPropertiesExp                         = loader::zeFabricEdgeGetPropertiesExp;
+        }
+        else
+        {
+            // return pointers directly to driver's DDIs
+            *pDdiTable = loader::context->drivers.front().dditable.ze.FabricEdgeExp;
+        }
+    }
+
+    // If the validation layer is enabled, then intercept the loader's DDIs
+    if(( ZE_RESULT_SUCCESS == result ) && ( nullptr != loader::context->validationLayer ))
+    {
+        auto getTable = reinterpret_cast<ze_pfnGetFabricEdgeExpProcAddrTable_t>(
+            GET_FUNCTION_PTR(loader::context->validationLayer, "zeGetFabricEdgeExpProcAddrTable") );
+        if(!getTable)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        result = getTable( version, pDdiTable );
+    }
+
+    // If the API tracing layer is enabled, then intercept the loader's DDIs
+    if(( ZE_RESULT_SUCCESS == result ) && ( nullptr != loader::context->tracingLayer ))
+    {
+        auto getTable = reinterpret_cast<ze_pfnGetFabricEdgeExpProcAddrTable_t>(
+            GET_FUNCTION_PTR(loader::context->tracingLayer, "zeGetFabricEdgeExpProcAddrTable") );
+        if(!getTable)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        result = getTable( version, pDdiTable );
+    }
+
+    return result;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Exported function for filling application's FabricVertexExp table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+ZE_DLLEXPORT ze_result_t ZE_APICALL
+zeGetFabricVertexExpProcAddrTable(
+    ze_api_version_t version,                       ///< [in] API version requested
+    ze_fabric_vertex_exp_dditable_t* pDdiTable      ///< [in,out] pointer to table of DDI function pointers
+    )
+{
+    if( loader::context->drivers.size() < 1 )
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+
+    if( nullptr == pDdiTable )
+        return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+    if( loader::context->version < version )
+        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+
+    ze_result_t result = ZE_RESULT_SUCCESS;
+
+    bool atLeastOneDriverValid = false;
+    // Load the device-driver DDI tables
+    for( auto& drv : loader::context->drivers )
+    {
+        if(drv.initStatus != ZE_RESULT_SUCCESS)
+            continue;
+        auto getTable = reinterpret_cast<ze_pfnGetFabricVertexExpProcAddrTable_t>(
+            GET_FUNCTION_PTR( drv.handle, "zeGetFabricVertexExpProcAddrTable") );
+        if(!getTable) 
+            continue; 
+        auto getTableResult = getTable( version, &drv.dditable.ze.FabricVertexExp);
+        if(getTableResult == ZE_RESULT_SUCCESS) 
+            atLeastOneDriverValid = true;
+    }
+
+
+    if( ZE_RESULT_SUCCESS == result )
+    {
+        if( ( loader::context->drivers.size() > 1 ) || loader::context->forceIntercept )
+        {
+            // return pointers to loader's DDIs
+            pDdiTable->pfnGetExp                                   = loader::zeFabricVertexGetExp;
+            pDdiTable->pfnGetSubVerticesExp                        = loader::zeFabricVertexGetSubVerticesExp;
+            pDdiTable->pfnGetPropertiesExp                         = loader::zeFabricVertexGetPropertiesExp;
+            pDdiTable->pfnGetDeviceExp                             = loader::zeFabricVertexGetDeviceExp;
+        }
+        else
+        {
+            // return pointers directly to driver's DDIs
+            *pDdiTable = loader::context->drivers.front().dditable.ze.FabricVertexExp;
+        }
+    }
+
+    // If the validation layer is enabled, then intercept the loader's DDIs
+    if(( ZE_RESULT_SUCCESS == result ) && ( nullptr != loader::context->validationLayer ))
+    {
+        auto getTable = reinterpret_cast<ze_pfnGetFabricVertexExpProcAddrTable_t>(
+            GET_FUNCTION_PTR(loader::context->validationLayer, "zeGetFabricVertexExpProcAddrTable") );
+        if(!getTable)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        result = getTable( version, pDdiTable );
+    }
+
+    // If the API tracing layer is enabled, then intercept the loader's DDIs
+    if(( ZE_RESULT_SUCCESS == result ) && ( nullptr != loader::context->tracingLayer ))
+    {
+        auto getTable = reinterpret_cast<ze_pfnGetFabricVertexExpProcAddrTable_t>(
+            GET_FUNCTION_PTR(loader::context->tracingLayer, "zeGetFabricVertexExpProcAddrTable") );
         if(!getTable)
             return ZE_RESULT_ERROR_UNINITIALIZED;
         result = getTable( version, pDdiTable );

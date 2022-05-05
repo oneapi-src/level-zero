@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (C) 2019-2021 Intel Corporation
+ * Copyright (C) 2019-2022 Intel Corporation
  *
  * SPDX-License-Identifier: MIT
  *
@@ -53,5 +53,11 @@ namespace loader
 
     using ze_physical_mem_object_t            = object_t < ze_physical_mem_handle_t >;
     using ze_physical_mem_factory_t           = singleton_factory_t < ze_physical_mem_object_t, ze_physical_mem_handle_t >;
+
+    using ze_fabric_vertex_object_t           = object_t < ze_fabric_vertex_handle_t >;
+    using ze_fabric_vertex_factory_t          = singleton_factory_t < ze_fabric_vertex_object_t, ze_fabric_vertex_handle_t >;
+
+    using ze_fabric_edge_object_t             = object_t < ze_fabric_edge_handle_t >;
+    using ze_fabric_edge_factory_t            = singleton_factory_t < ze_fabric_edge_object_t, ze_fabric_edge_handle_t >;
 
 }

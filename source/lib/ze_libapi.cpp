@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (C) 2019-2021 Intel Corporation
+ * Copyright (C) 2019-2022 Intel Corporation
  *
  * SPDX-License-Identifier: MIT
  *
@@ -5315,6 +5315,274 @@ zeMemFreeExt(
         return ZE_RESULT_ERROR_UNINITIALIZED;
 
     return pfnFreeExt( hContext, pMemFreeDesc, ptr );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Retrieves fabric vertices within a driver
+/// 
+/// @details
+///     - A fabric vertex represents either a device or a switch connected to
+///       other fabric vertices.
+///     - The application may call this function from simultaneous threads.
+///     - The implementation of this function must be thread-safe.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hDriver`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == pCount`
+ze_result_t ZE_APICALL
+zeFabricVertexGetExp(
+    ze_driver_handle_t hDriver,                     ///< [in] handle of the driver instance
+    uint32_t* pCount,                               ///< [in,out] pointer to the number of fabric vertices.
+                                                    ///< if count is zero, then the driver shall update the value with the
+                                                    ///< total number of fabric vertices available.
+                                                    ///< if count is greater than the number of fabric vertices available, then
+                                                    ///< the driver shall update the value with the correct number of fabric
+                                                    ///< vertices available.
+    ze_fabric_vertex_handle_t* phVertices           ///< [in,out][optional][range(0, *pCount)] array of handle of fabric vertices.
+                                                    ///< if count is less than the number of fabric vertices available, then
+                                                    ///< driver shall only retrieve that number of fabric vertices.
+    )
+{
+    auto pfnGetExp = ze_lib::context->zeDdiTable.FabricVertexExp.pfnGetExp;
+    if( nullptr == pfnGetExp )
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+
+    return pfnGetExp( hDriver, pCount, phVertices );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Retrieves a fabric sub-vertex from a fabric vertex
+/// 
+/// @details
+///     - Multiple calls to this function will return identical fabric vertex
+///       handles, in the same order.
+///     - The number of handles returned from this function is affected by the
+///       ::ZE_AFFINITY_MASK environment variable.
+///     - The application may call this function from simultaneous threads.
+///     - The implementation of this function should be lock-free.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hVertex`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == pCount`
+ze_result_t ZE_APICALL
+zeFabricVertexGetSubVerticesExp(
+    ze_fabric_vertex_handle_t hVertex,              ///< [in] handle of the fabric vertex object
+    uint32_t* pCount,                               ///< [in,out] pointer to the number of sub-vertices.
+                                                    ///< if count is zero, then the driver shall update the value with the
+                                                    ///< total number of sub-vertices available.
+                                                    ///< if count is greater than the number of sub-vertices available, then
+                                                    ///< the driver shall update the value with the correct number of
+                                                    ///< sub-vertices available.
+    ze_fabric_vertex_handle_t* phSubvertices        ///< [in,out][optional][range(0, *pCount)] array of handle of sub-vertices.
+                                                    ///< if count is less than the number of sub-vertices available, then
+                                                    ///< driver shall only retrieve that number of sub-vertices.
+    )
+{
+    auto pfnGetSubVerticesExp = ze_lib::context->zeDdiTable.FabricVertexExp.pfnGetSubVerticesExp;
+    if( nullptr == pfnGetSubVerticesExp )
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+
+    return pfnGetSubVerticesExp( hVertex, pCount, phSubvertices );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Retrieves properties of the fabric vertex.
+/// 
+/// @details
+///     - The application may call this function from simultaneous threads.
+///     - The implementation of this function should be lock-free.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hVertex`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == pVertexProperties`
+ze_result_t ZE_APICALL
+zeFabricVertexGetPropertiesExp(
+    ze_fabric_vertex_handle_t hVertex,              ///< [in] handle of the fabric vertex
+    ze_fabric_vertex_exp_properties_t* pVertexProperties///< [in,out] query result for fabric vertex properties
+    )
+{
+    auto pfnGetPropertiesExp = ze_lib::context->zeDdiTable.FabricVertexExp.pfnGetPropertiesExp;
+    if( nullptr == pfnGetPropertiesExp )
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+
+    return pfnGetPropertiesExp( hVertex, pVertexProperties );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Returns device handle from fabric vertex handle.
+/// 
+/// @details
+///     - The application may call this function from simultaneous threads.
+///     - The implementation of this function should be lock-free.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hVertex`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == pDevice`
+///     - ::ZE_RESULT_EXP_ERROR_VERTEX_IS_NOT_DEVICE
+///         + Provided fabric vertex handle does not correspond to a device or subdevice.
+///     - ::ZE_RESULT_EXP_ERROR_REMOTE_DEVICE
+///         + Provided fabric vertex handle corresponds to remote device or subdevice.
+ze_result_t ZE_APICALL
+zeFabricVertexGetDeviceExp(
+    ze_fabric_vertex_handle_t hVertex,              ///< [in] handle of the fabric vertex
+    ze_device_handle_t* pDevice                     ///< [out] device handle corresponding to fabric vertex
+    )
+{
+    auto pfnGetDeviceExp = ze_lib::context->zeDdiTable.FabricVertexExp.pfnGetDeviceExp;
+    if( nullptr == pfnGetDeviceExp )
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+
+    return pfnGetDeviceExp( hVertex, pDevice );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Returns fabric vertex handle from device handle.
+/// 
+/// @details
+///     - The application may call this function from simultaneous threads.
+///     - The implementation of this function should be lock-free.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hVertex`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == pVertex`
+///     - ::ZE_RESULT_EXP_ERROR_DEVICE_IS_NOT_VERTEX
+///         + Provided device handle does not correspond to a fabric vertex.
+ze_result_t ZE_APICALL
+zeDeviceGetFabricVertexExp(
+    ze_device_handle_t hVertex,                     ///< [in] handle of the device
+    ze_fabric_vertex_handle_t* pVertex              ///< [out] fabric vertex handle corresponding to device
+    )
+{
+    auto pfnGetFabricVertexExp = ze_lib::context->zeDdiTable.DeviceExp.pfnGetFabricVertexExp;
+    if( nullptr == pfnGetFabricVertexExp )
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+
+    return pfnGetFabricVertexExp( hVertex, pVertex );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Retrieves all fabric edges between provided pair of fabric vertices
+/// 
+/// @details
+///     - A fabric edge represents one or more physical links between two fabric
+///       vertices.
+///     - The application may call this function from simultaneous threads.
+///     - The implementation of this function must be thread-safe.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hVertexA`
+///         + `nullptr == hVertexB`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == pCount`
+ze_result_t ZE_APICALL
+zeFabricEdgeGetExp(
+    ze_fabric_vertex_handle_t hVertexA,             ///< [in] handle of first fabric vertex instance
+    ze_fabric_vertex_handle_t hVertexB,             ///< [in] handle of second fabric vertex instance
+    uint32_t* pCount,                               ///< [in,out] pointer to the number of fabric edges.
+                                                    ///< if count is zero, then the driver shall update the value with the
+                                                    ///< total number of fabric edges available.
+                                                    ///< if count is greater than the number of fabric edges available, then
+                                                    ///< the driver shall update the value with the correct number of fabric
+                                                    ///< edges available.
+    ze_fabric_edge_handle_t* phEdges                ///< [in,out][optional][range(0, *pCount)] array of handle of fabric edges.
+                                                    ///< if count is less than the number of fabric edges available, then
+                                                    ///< driver shall only retrieve that number of fabric edges.
+    )
+{
+    auto pfnGetExp = ze_lib::context->zeDdiTable.FabricEdgeExp.pfnGetExp;
+    if( nullptr == pfnGetExp )
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+
+    return pfnGetExp( hVertexA, hVertexB, pCount, phEdges );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Retrieves fabric vertices connected by a fabric edge
+/// 
+/// @details
+///     - A fabric vertex represents either a device or a switch connected to
+///       other fabric vertices via a fabric edge.
+///     - The application may call this function from simultaneous threads.
+///     - The implementation of this function must be thread-safe.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hEdge`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == phVertexA`
+///         + `nullptr == phVertexB`
+ze_result_t ZE_APICALL
+zeFabricEdgeGetVerticesExp(
+    ze_fabric_edge_handle_t hEdge,                  ///< [in] handle of the fabric edge instance
+    ze_fabric_vertex_handle_t* phVertexA,           ///< [out] fabric vertex connected to one end of the given fabric edge.
+    ze_fabric_vertex_handle_t* phVertexB            ///< [out] fabric vertex connected to other end of the given fabric edge.
+    )
+{
+    auto pfnGetVerticesExp = ze_lib::context->zeDdiTable.FabricEdgeExp.pfnGetVerticesExp;
+    if( nullptr == pfnGetVerticesExp )
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+
+    return pfnGetVerticesExp( hEdge, phVertexA, phVertexB );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Retrieves properties of the fabric edge.
+/// 
+/// @details
+///     - The application may call this function from simultaneous threads.
+///     - The implementation of this function should be lock-free.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hEdge`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == pEdgeProperties`
+ze_result_t ZE_APICALL
+zeFabricEdgeGetPropertiesExp(
+    ze_fabric_edge_handle_t hEdge,                  ///< [in] handle of the fabric edge
+    ze_fabric_edge_exp_properties_t* pEdgeProperties///< [in,out] query result for fabric edge properties
+    )
+{
+    auto pfnGetPropertiesExp = ze_lib::context->zeDdiTable.FabricEdgeExp.pfnGetPropertiesExp;
+    if( nullptr == pfnGetPropertiesExp )
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+
+    return pfnGetPropertiesExp( hEdge, pEdgeProperties );
 }
 
 } // extern "C"

@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (C) 2019-2021 Intel Corporation
+ * Copyright (C) 2019-2022 Intel Corporation
  *
  * SPDX-License-Identifier: MIT
  *
@@ -423,6 +423,126 @@ zesDiagnosticsRunTests(
         return ZE_RESULT_ERROR_UNINITIALIZED;
 
     return pfnRunTests( hDiagnostics, startIndex, endIndex, pResult );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Is ECC functionality available - true or false?
+/// 
+/// @details
+///     - The application may call this function from simultaneous threads.
+///     - The implementation of this function should be lock-free.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hDevice`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == pAvailable`
+ze_result_t ZE_APICALL
+zesDeviceEccAvailable(
+    zes_device_handle_t hDevice,                    ///< [in] Handle for the component.
+    ze_bool_t* pAvailable                           ///< [out] ECC functionality is available (true)/unavailable (false).
+    )
+{
+    auto pfnEccAvailable = ze_lib::context->zesDdiTable.Device.pfnEccAvailable;
+    if( nullptr == pfnEccAvailable )
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+
+    return pfnEccAvailable( hDevice, pAvailable );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Is ECC support configurable - true or false?
+/// 
+/// @details
+///     - The application may call this function from simultaneous threads.
+///     - The implementation of this function should be lock-free.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hDevice`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == pConfigurable`
+ze_result_t ZE_APICALL
+zesDeviceEccConfigurable(
+    zes_device_handle_t hDevice,                    ///< [in] Handle for the component.
+    ze_bool_t* pConfigurable                        ///< [out] ECC can be enabled/disabled (true)/enabled/disabled (false).
+    )
+{
+    auto pfnEccConfigurable = ze_lib::context->zesDdiTable.Device.pfnEccConfigurable;
+    if( nullptr == pfnEccConfigurable )
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+
+    return pfnEccConfigurable( hDevice, pConfigurable );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Get current ECC state, pending state, and pending action
+/// 
+/// @details
+///     - The application may call this function from simultaneous threads.
+///     - The implementation of this function should be lock-free.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hDevice`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == pState`
+ze_result_t ZE_APICALL
+zesDeviceGetEccState(
+    zes_device_handle_t hDevice,                    ///< [in] Handle for the component.
+    zes_device_ecc_properties_t* pState             ///< [out] ECC state, pending state, and pending action for state change.
+    )
+{
+    auto pfnGetEccState = ze_lib::context->zesDdiTable.Device.pfnGetEccState;
+    if( nullptr == pfnGetEccState )
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+
+    return pfnGetEccState( hDevice, pState );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Set new ECC state
+/// 
+/// @details
+///     - The application may call this function from simultaneous threads.
+///     - The implementation of this function should be lock-free.
+///     - ::zesDeviceGetState should be called to determine pending action
+///       required to implement state change.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hDevice`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == newState`
+///         + `nullptr == pState`
+///     - ::ZE_RESULT_ERROR_INVALID_ENUMERATION
+///         + `::ZES_DEVICE_ECC_STATE_DISABLED < newState->state`
+///     - ::ZE_RESULT_WARNING_ACTION_REQUIRED
+///         + User must look at the pendingAction attribute of pState & perform the action required to complete the ECC state change.
+ze_result_t ZE_APICALL
+zesDeviceSetEccState(
+    zes_device_handle_t hDevice,                    ///< [in] Handle for the component.
+    const zes_device_ecc_desc_t* newState,          ///< [in] Pointer to desired ECC state.
+    zes_device_ecc_properties_t* pState             ///< [out] ECC state, pending state, and pending action for state change.
+    )
+{
+    auto pfnSetEccState = ze_lib::context->zesDdiTable.Device.pfnSetEccState;
+    if( nullptr == pfnSetEccState )
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+
+    return pfnSetEccState( hDevice, newState, pState );
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -3387,6 +3507,85 @@ zesTemperatureGetState(
         return ZE_RESULT_ERROR_UNINITIALIZED;
 
     return pfnGetState( hTemperature, pTemperature );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Get power limits
+/// 
+/// @details
+///     - The application may call this function from simultaneous threads.
+///     - The implementation of this function should be lock-free.
+///     - This function returns all the power limits assocaited with the
+///       supplied power domain.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hPower`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == pCount`
+ze_result_t ZE_APICALL
+zesPowerGetLimitsExt(
+    zes_pwr_handle_t hPower,                        ///< [in] Power domain handle instance.
+    uint32_t* pCount,                               ///< [in,out] Pointer to the number of power limit descriptors. If count is
+                                                    ///< zero, then the driver shall update the value with the total number of
+                                                    ///< components of this type that are available. If count is greater than
+                                                    ///< the number of components of this type that are available, then the
+                                                    ///< driver shall update the value with the correct number of components.
+    zes_power_limit_ext_desc_t* pSustained          ///< [in,out][optional][range(0, *pCount)] Array of query results for power
+                                                    ///< limit descriptors. If count is less than the number of components of
+                                                    ///< this type that are available, then the driver shall only retrieve that
+                                                    ///< number of components.
+    )
+{
+    auto pfnGetLimitsExt = ze_lib::context->zesDdiTable.Power.pfnGetLimitsExt;
+    if( nullptr == pfnGetLimitsExt )
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+
+    return pfnGetLimitsExt( hPower, pCount, pSustained );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Set power limits
+/// 
+/// @details
+///     - The application can only modify unlocked members of the limit
+///       descriptors returned by ${s}PowerGetLimitsExt.
+///     - Not all the limits returned by ${s}PowerGetLimitsExt need to be
+///       supplied to this function.
+///     - Limits do not have to be supplied in the same order as returned by
+///       ${s}PowerGetLimitsExt.
+///     - The same limit can be supplied multiple times. Limits are applied in
+///       the order in which they are supplied.
+///     - The application may call this function from simultaneous threads.
+///     - The implementation of this function should be lock-free.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hPower`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == pCount`
+///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
+///         + User does not have permissions to make these modifications.
+///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
+///         + The device is in use, meaning that the GPU is under Over clocking, applying power limits under overclocking is not supported.
+ze_result_t ZE_APICALL
+zesPowerSetLimitsExt(
+    zes_pwr_handle_t hPower,                        ///< [in] Handle for the component.
+    uint32_t* pCount,                               ///< [in] Pointer to the number of power limit descriptors.
+    zes_power_limit_ext_desc_t* pSustained          ///< [in][optional][range(0, *pCount)] Array of power limit descriptors.
+    )
+{
+    auto pfnSetLimitsExt = ze_lib::context->zesDdiTable.Power.pfnSetLimitsExt;
+    if( nullptr == pfnSetLimitsExt )
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+
+    return pfnSetLimitsExt( hPower, pCount, pSustained );
 }
 
 } // extern "C"

@@ -5,7 +5,7 @@
  * SPDX-License-Identifier: MIT
  *
  * @file ze_api.h
- * @version v1.3-r1.3.7
+ * @version v1.4-r1.4.0
  *
  */
 #ifndef _ZE_API_H
@@ -151,6 +151,14 @@ typedef struct _ze_sampler_handle_t *ze_sampler_handle_t;
 typedef struct _ze_physical_mem_handle_t *ze_physical_mem_handle_t;
 
 ///////////////////////////////////////////////////////////////////////////////
+/// @brief Handle of driver's fabric vertex object
+typedef struct _ze_fabric_vertex_handle_t *ze_fabric_vertex_handle_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Handle of driver's fabric edge object
+typedef struct _ze_fabric_edge_handle_t *ze_fabric_edge_handle_t;
+
+///////////////////////////////////////////////////////////////////////////////
 #ifndef ZE_MAX_IPC_HANDLE_SIZE
 /// @brief Maximum IPC handle size
 #define ZE_MAX_IPC_HANDLE_SIZE  64
@@ -191,10 +199,15 @@ typedef enum _ze_result_t
     ZE_RESULT_ERROR_MODULE_LINK_FAILURE = 0x70000005,   ///< [Core] error occurred when linking modules, see build log for details
     ZE_RESULT_ERROR_DEVICE_REQUIRES_RESET = 0x70000006, ///< [Core] device requires a reset
     ZE_RESULT_ERROR_DEVICE_IN_LOW_POWER_STATE = 0x70000007, ///< [Core] device currently in low power state
+    ZE_RESULT_EXP_ERROR_DEVICE_IS_NOT_VERTEX = 0x7ff00001,  ///< [Core, Expoerimental] device is not represented by a fabric vertex
+    ZE_RESULT_EXP_ERROR_VERTEX_IS_NOT_DEVICE = 0x7ff00002,  ///< [Core, Experimental] fabric vertex does not represent a device
+    ZE_RESULT_EXP_ERROR_REMOTE_DEVICE = 0x7ff00003, ///< [Core, Expoerimental] fabric vertex represents a remote device or
+                                                    ///< subdevice
     ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS = 0x70010000,  ///< [Sysman] access denied due to permission level
     ZE_RESULT_ERROR_NOT_AVAILABLE = 0x70010001,     ///< [Sysman] resource already in use and simultaneous access not allowed
                                                     ///< or resource was removed
     ZE_RESULT_ERROR_DEPENDENCY_UNAVAILABLE = 0x70020000,///< [Tools] external required dependency is unavailable or missing
+    ZE_RESULT_WARNING_DROPPED_DATA = 0x70020001,    ///< [Tools] data may have been dropped
     ZE_RESULT_ERROR_UNINITIALIZED = 0x78000001,     ///< [Validation] driver is not initialized
     ZE_RESULT_ERROR_UNSUPPORTED_VERSION = 0x78000002,   ///< [Validation] generic error code for unsupported versions
     ZE_RESULT_ERROR_UNSUPPORTED_FEATURE = 0x78000003,   ///< [Validation] generic error code for unsupported features
@@ -228,6 +241,7 @@ typedef enum _ze_result_t
     ZE_RESULT_ERROR_INVALID_COMMAND_LIST_TYPE = 0x78000019, ///< [Validation] command list type does not match command queue type
     ZE_RESULT_ERROR_OVERLAPPING_REGIONS = 0x7800001a,   ///< [Validation] copy operations do not support overlapping regions of
                                                     ///< memory
+    ZE_RESULT_WARNING_ACTION_REQUIRED = 0x7800001b, ///< [Sysman] an action is required to complete the desired operation
     ZE_RESULT_ERROR_UNKNOWN = 0x7ffffffe,           ///< [Core] unknown or internal error
     ZE_RESULT_FORCE_UINT32 = 0x7fffffff
 
@@ -284,6 +298,8 @@ typedef enum _ze_structure_type_t
     ZE_STRUCTURE_TYPE_MEMORY_FREE_EXT_DESC = 0x1000a,   ///< ::ze_memory_free_ext_desc_t
     ZE_STRUCTURE_TYPE_MEMORY_COMPRESSION_HINTS_EXT_DESC = 0x1000b,  ///< ::ze_memory_compression_hints_ext_desc_t
     ZE_STRUCTURE_TYPE_IMAGE_ALLOCATION_EXT_PROPERTIES = 0x1000c,///< ::ze_image_allocation_ext_properties_t
+    ZE_STRUCTURE_TYPE_DEVICE_LUID_EXT_PROPERTIES = 0x1000d, ///< ::ze_device_luid_ext_properties_t
+    ZE_STRUCTURE_TYPE_DEVICE_MEMORY_EXT_PROPERTIES = 0x1000e,   ///< ::ze_device_memory_ext_properties_t
     ZE_STRUCTURE_TYPE_RELAXED_ALLOCATION_LIMITS_EXP_DESC = 0x00020001,  ///< ::ze_relaxed_allocation_limits_exp_desc_t
     ZE_STRUCTURE_TYPE_MODULE_PROGRAM_EXP_DESC = 0x00020002, ///< ::ze_module_program_exp_desc_t
     ZE_STRUCTURE_TYPE_SCHEDULING_HINT_EXP_PROPERTIES = 0x00020003,  ///< ::ze_scheduling_hint_exp_properties_t
@@ -292,6 +308,8 @@ typedef enum _ze_structure_type_t
     ZE_STRUCTURE_TYPE_DEVICE_PROPERTIES_1_2 = 0x00020006,   ///< ::ze_device_properties_t
     ZE_STRUCTURE_TYPE_IMAGE_MEMORY_EXP_PROPERTIES = 0x00020007, ///< ::ze_image_memory_properties_exp_t
     ZE_STRUCTURE_TYPE_POWER_SAVING_HINT_EXP_DESC = 0x00020008,  ///< ::ze_context_power_saving_hint_exp_desc_t
+    ZE_STRUCTURE_TYPE_COPY_BANDWIDTH_EXP_PROPERTIES = 0x00020009,   ///< ::ze_copy_bandwidth_exp_properties_t
+    ZE_STRUCTURE_TYPE_DEVICE_P2P_BANDWIDTH_EXP_PROPERTIES = 0x00020010, ///< ::ze_device_p2p_bandwidth_exp_properties_t
     ZE_STRUCTURE_TYPE_FORCE_UINT32 = 0x7fffffff
 
 } ze_structure_type_t;
@@ -313,6 +331,44 @@ typedef enum _ze_external_memory_type_flag_t
     ZE_EXTERNAL_MEMORY_TYPE_FLAG_FORCE_UINT32 = 0x7fffffff
 
 } ze_external_memory_type_flag_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Bandwidth unit
+typedef enum _ze_bandwidth_unit_t
+{
+    ZE_BANDWIDTH_UNIT_UNKNOWN = 0,                  ///< The unit used for bandwidth is unknown
+    ZE_BANDWIDTH_UNIT_BYTES_PER_NANOSEC = 1,        ///< Bandwidth is provided in bytes/nanosec
+    ZE_BANDWIDTH_UNIT_BYTES_PER_CLOCK = 2,          ///< Bandwidth is provided in bytes/clock
+    ZE_BANDWIDTH_UNIT_FORCE_UINT32 = 0x7fffffff
+
+} ze_bandwidth_unit_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Latency unit
+typedef enum _ze_latency_unit_t
+{
+    ZE_LATENCY_UNIT_UNKNOWN = 0,                    ///< The unit used for latency is unknown
+    ZE_LATENCY_UNIT_NANOSEC = 1,                    ///< Latency is provided in nanosecs
+    ZE_LATENCY_UNIT_CLOCK = 2,                      ///< Latency is provided in clocks
+    ZE_LATENCY_UNIT_HOP = 3,                        ///< Latency is provided in hops (normalized so that the lowest latency
+                                                    ///< link has a latency of 1 hop)
+    ZE_LATENCY_UNIT_FORCE_UINT32 = 0x7fffffff
+
+} ze_latency_unit_t;
+
+///////////////////////////////////////////////////////////////////////////////
+#ifndef ZE_MAX_UUID_SIZE
+/// @brief Maximum universal unique id (UUID) size in bytes
+#define ZE_MAX_UUID_SIZE  16
+#endif // ZE_MAX_UUID_SIZE
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Universal unique id (UUID)
+typedef struct _ze_uuid_t
+{
+    uint8_t id[ZE_MAX_UUID_SIZE];                   ///< [out] opaque data representing a UUID
+
+} ze_uuid_t;
 
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief Base for all properties types
@@ -351,6 +407,10 @@ typedef struct _ze_ipc_mem_handle_t ze_ipc_mem_handle_t;
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief Forward-declare ze_ipc_event_pool_handle_t
 typedef struct _ze_ipc_event_pool_handle_t ze_ipc_event_pool_handle_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Forward-declare ze_uuid_t
+typedef struct _ze_uuid_t ze_uuid_t;
 
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief Forward-declare ze_base_properties_t
@@ -636,6 +696,38 @@ typedef struct _ze_driver_memory_free_ext_properties_t ze_driver_memory_free_ext
 /// @brief Forward-declare ze_memory_free_ext_desc_t
 typedef struct _ze_memory_free_ext_desc_t ze_memory_free_ext_desc_t;
 
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Forward-declare ze_device_p2p_bandwidth_exp_properties_t
+typedef struct _ze_device_p2p_bandwidth_exp_properties_t ze_device_p2p_bandwidth_exp_properties_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Forward-declare ze_copy_bandwidth_exp_properties_t
+typedef struct _ze_copy_bandwidth_exp_properties_t ze_copy_bandwidth_exp_properties_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Forward-declare ze_device_luid_ext_t
+typedef struct _ze_device_luid_ext_t ze_device_luid_ext_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Forward-declare ze_device_luid_ext_properties_t
+typedef struct _ze_device_luid_ext_properties_t ze_device_luid_ext_properties_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Forward-declare ze_fabric_vertex_pci_exp_address_t
+typedef struct _ze_fabric_vertex_pci_exp_address_t ze_fabric_vertex_pci_exp_address_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Forward-declare ze_fabric_vertex_exp_properties_t
+typedef struct _ze_fabric_vertex_exp_properties_t ze_fabric_vertex_exp_properties_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Forward-declare ze_fabric_edge_exp_properties_t
+typedef struct _ze_fabric_edge_exp_properties_t ze_fabric_edge_exp_properties_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Forward-declare ze_device_memory_ext_properties_t
+typedef struct _ze_device_memory_ext_properties_t ze_device_memory_ext_properties_t;
+
 
 #if !defined(__GNUC__)
 #pragma endregion
@@ -731,7 +823,8 @@ typedef enum _ze_api_version_t
     ZE_API_VERSION_1_1 = ZE_MAKE_VERSION( 1, 1 ),   ///< version 1.1
     ZE_API_VERSION_1_2 = ZE_MAKE_VERSION( 1, 2 ),   ///< version 1.2
     ZE_API_VERSION_1_3 = ZE_MAKE_VERSION( 1, 3 ),   ///< version 1.3
-    ZE_API_VERSION_CURRENT = ZE_MAKE_VERSION( 1, 3 ),   ///< latest known version
+    ZE_API_VERSION_1_4 = ZE_MAKE_VERSION( 1, 4 ),   ///< version 1.4
+    ZE_API_VERSION_CURRENT = ZE_MAKE_VERSION( 1, 4 ),   ///< latest known version
     ZE_API_VERSION_FORCE_UINT32 = 0x7fffffff
 
 } ze_api_version_t;
@@ -7459,6 +7552,506 @@ zeMemFreeExt(
     const ze_memory_free_ext_desc_t* pMemFreeDesc,  ///< [in] pointer to memory free descriptor
     void* ptr                                       ///< [in][release] pointer to memory to free
     );
+
+#if !defined(__GNUC__)
+#pragma endregion
+#endif
+// Intel 'oneAPI' Level-Zero Extension APIs for Bandwidth
+#if !defined(__GNUC__)
+#pragma region bandwidth
+#endif
+///////////////////////////////////////////////////////////////////////////////
+#ifndef ZE_BANDWIDTH_PROPERTIES_EXP_NAME
+/// @brief Bandwidth Extension Name
+#define ZE_BANDWIDTH_PROPERTIES_EXP_NAME  "ZE_experimental_bandwidth_properties"
+#endif // ZE_BANDWIDTH_PROPERTIES_EXP_NAME
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief P2P Bandwidth Properties
+/// 
+/// @details
+///     - This structure may be passed to ::zeDeviceGetP2PProperties by having
+///       the pNext member of ::ze_device_p2p_properties_t point at this struct.
+typedef struct _ze_device_p2p_bandwidth_exp_properties_t
+{
+    ze_structure_type_t stype;                      ///< [in] type of this structure
+    void* pNext;                                    ///< [in,out][optional] must be null or a pointer to an extension-specific
+                                                    ///< structure (i.e. contains sType and pNext).
+    uint32_t logicalBandwidth;                      ///< [out] total logical design bandwidth for all links connecting the two
+                                                    ///< devices
+    uint32_t physicalBandwidth;                     ///< [out] total physical design bandwidth for all links connecting the two
+                                                    ///< devices
+    ze_bandwidth_unit_t bandwidthUnit;              ///< [out] bandwidth unit
+    uint32_t logicalLatency;                        ///< [out] average logical design latency for all links connecting the two
+                                                    ///< devices
+    uint32_t physicalLatency;                       ///< [out] average physical design latency for all links connecting the two
+                                                    ///< devices
+    ze_latency_unit_t latencyUnit;                  ///< [out] latency unit
+
+} ze_device_p2p_bandwidth_exp_properties_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Copy Bandwidth Properties
+/// 
+/// @details
+///     - This structure may be passed to
+///       ::zeDeviceGetCommandQueueGroupProperties by having the pNext member of
+///       ::ze_command_queue_group_properties_t point at this struct.
+typedef struct _ze_copy_bandwidth_exp_properties_t
+{
+    ze_structure_type_t stype;                      ///< [in] type of this structure
+    void* pNext;                                    ///< [in,out][optional] must be null or a pointer to an extension-specific
+                                                    ///< structure (i.e. contains sType and pNext).
+    uint32_t copyBandwidth;                         ///< [out] design bandwidth supported by this engine type for copy
+                                                    ///< operations
+    ze_bandwidth_unit_t copyBandwidthUnit;          ///< [out] copy bandwidth unit
+
+} ze_copy_bandwidth_exp_properties_t;
+
+#if !defined(__GNUC__)
+#pragma endregion
+#endif
+// Intel 'oneAPI' Level-Zero Extension APIs for Device Local Identifier (LUID)
+#if !defined(__GNUC__)
+#pragma region deviceLUID
+#endif
+///////////////////////////////////////////////////////////////////////////////
+#ifndef ZE_DEVICE_LUID_EXT_NAME
+/// @brief Device Local Identifier (LUID) Extension Name
+#define ZE_DEVICE_LUID_EXT_NAME  "ZE_extension_device_luid"
+#endif // ZE_DEVICE_LUID_EXT_NAME
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Device Local Identifier (LUID) Extension Version(s)
+typedef enum _ze_device_luid_ext_version_t
+{
+    ZE_DEVICE_LUID_EXT_VERSION_1_0 = ZE_MAKE_VERSION( 1, 0 ),   ///< version 1.0
+    ZE_DEVICE_LUID_EXT_VERSION_CURRENT = ZE_MAKE_VERSION( 1, 0 ),   ///< latest known version
+    ZE_DEVICE_LUID_EXT_VERSION_FORCE_UINT32 = 0x7fffffff
+
+} ze_device_luid_ext_version_t;
+
+///////////////////////////////////////////////////////////////////////////////
+#ifndef ZE_MAX_DEVICE_LUID_SIZE_EXT
+/// @brief Maximum device local identifier (LUID) size in bytes
+#define ZE_MAX_DEVICE_LUID_SIZE_EXT  8
+#endif // ZE_MAX_DEVICE_LUID_SIZE_EXT
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Device local identifier (LUID)
+typedef struct _ze_device_luid_ext_t
+{
+    uint8_t id[ZE_MAX_DEVICE_LUID_SIZE_EXT];        ///< [out] opaque data representing a device LUID
+
+} ze_device_luid_ext_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Device LUID properties queried using ::zeDeviceGetProperties
+/// 
+/// @details
+///     - This structure may be returned from ::zeDeviceGetProperties, via
+///       `pNext` member of ::ze_device_properties_t.
+typedef struct _ze_device_luid_ext_properties_t
+{
+    ze_structure_type_t stype;                      ///< [in] type of this structure
+    void* pNext;                                    ///< [in,out][optional] must be null or a pointer to an extension-specific
+                                                    ///< structure (i.e. contains sType and pNext).
+    ze_device_luid_ext_t luid;                      ///< [out] locally unique identifier (LUID).
+                                                    ///< The returned LUID can be cast to a LUID object and must be equal to
+                                                    ///< the locally
+                                                    ///< unique identifier of an IDXGIAdapter1 object that corresponds to the device.
+    uint32_t nodeMask;                              ///< [out] node mask.
+                                                    ///< The returned node mask must contain exactly one bit.
+                                                    ///< If the device is running on an operating system that supports the
+                                                    ///< Direct3D 12 API
+                                                    ///< and the device corresponds to an individual device in a linked device
+                                                    ///< adapter, the
+                                                    ///< returned node mask identifies the Direct3D 12 node corresponding to
+                                                    ///< the device.
+                                                    ///< Otherwise, the returned node mask must be 1.
+
+} ze_device_luid_ext_properties_t;
+
+#if !defined(__GNUC__)
+#pragma endregion
+#endif
+// Intel 'oneAPI' Level-Zero Extension APIs for Fabric Topology Discovery
+#if !defined(__GNUC__)
+#pragma region fabric
+#endif
+///////////////////////////////////////////////////////////////////////////////
+#ifndef ZE_FABRIC_EXP_NAME
+/// @brief Fabric Topology Discovery Extension Name
+#define ZE_FABRIC_EXP_NAME  "ZE_experimental_fabric"
+#endif // ZE_FABRIC_EXP_NAME
+
+///////////////////////////////////////////////////////////////////////////////
+#ifndef ZE_MAX_FABRIC_EDGE_MODEL_EXP_SIZE
+/// @brief Maximum fabric edge model string size
+#define ZE_MAX_FABRIC_EDGE_MODEL_EXP_SIZE  256
+#endif // ZE_MAX_FABRIC_EDGE_MODEL_EXP_SIZE
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Fabric Vertex types
+typedef enum _ze_fabric_vertex_exp_type_t
+{
+    ZE_FABRIC_VERTEX_EXP_TYPE_UNKNOWN = 0,          ///< Fabric vertex type is unknown
+    ZE_FABRIC_VERTEX_EXP_TYPE_DEVICE = 1,           ///< Fabric vertex represents a device
+    ZE_FABRIC_VERTEX_EXP_TYPE_SUBEVICE = 2,         ///< Fabric vertex represents a subdevice
+    ZE_FABRIC_VERTEX_EXP_TYPE_SWITCH = 3,           ///< Fabric vertex represents a switch
+    ZE_FABRIC_VERTEX_EXP_TYPE_FORCE_UINT32 = 0x7fffffff
+
+} ze_fabric_vertex_exp_type_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Fabric edge duplexity
+typedef enum _ze_fabric_edge_exp_duplexity_t
+{
+    ZE_FABRIC_EDGE_EXP_DUPLEXITY_UNKNOWN = 0,       ///< Fabric edge duplexity is unknown
+    ZE_FABRIC_EDGE_EXP_DUPLEXITY_HALF_DUPLEX = 1,   ///< Fabric edge is half duplex, i.e. stated bandwidth is obtained in only
+                                                    ///< one direction at time
+    ZE_FABRIC_EDGE_EXP_DUPLEXITY_FULL_DUPLEX = 2,   ///< Fabric edge is full duplex, i.e. stated bandwidth is supported in both
+                                                    ///< directions simultaneously
+    ZE_FABRIC_EDGE_EXP_DUPLEXITY_FORCE_UINT32 = 0x7fffffff
+
+} ze_fabric_edge_exp_duplexity_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief PCI address
+/// 
+/// @details
+///     - A PCI BDF address is the bus:device:function address of the device and
+///       is useful for locating the device in the PCI switch fabric.
+typedef struct _ze_fabric_vertex_pci_exp_address_t
+{
+    uint32_t domain;                                ///< [out] PCI domain number
+    uint32_t bus;                                   ///< [out] PCI BDF bus number
+    uint32_t device;                                ///< [out] PCI BDF device number
+    uint32_t function;                              ///< [out] PCI BDF function number
+
+} ze_fabric_vertex_pci_exp_address_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Fabric Vertex properties
+typedef struct _ze_fabric_vertex_exp_properties_t
+{
+    ze_structure_type_t stype;                      ///< [in] type of this structure
+    void* pNext;                                    ///< [in,out][optional] must be null or a pointer to an extension-specific
+                                                    ///< structure (i.e. contains sType and pNext).
+    ze_uuid_t uuid;                                 ///< [out] universal unique identifier. If the vertex is co-located with a
+                                                    ///< device/subdevice, then this uuid will match that of the corresponding
+                                                    ///< device/subdevice
+    ze_fabric_vertex_exp_type_t type;               ///< [out] does the fabric vertex represent a device, subdevice, or switch?
+    ze_bool_t remote;                               ///< [out] does the fabric vertex live on the local node or on a remote
+                                                    ///< node?
+    ze_fabric_vertex_pci_exp_address_t address;     ///< [out] B/D/F address of fabric vertex & associated device/subdevice if
+                                                    ///< available
+
+} ze_fabric_vertex_exp_properties_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Fabric Edge properties
+typedef struct _ze_fabric_edge_exp_properties_t
+{
+    ze_structure_type_t stype;                      ///< [in] type of this structure
+    void* pNext;                                    ///< [in,out][optional] must be null or a pointer to an extension-specific
+                                                    ///< structure (i.e. contains sType and pNext).
+    ze_uuid_t uuid;                                 ///< [out] universal unique identifier.
+    char model[ZE_MAX_FABRIC_EDGE_MODEL_EXP_SIZE];  ///< [out] Description of fabric edge technology. Will be set to the string
+                                                    ///< "unkown" if this cannot be determined for this edge
+    uint32_t bandwidth;                             ///< [out] design bandwidth
+    ze_bandwidth_unit_t bandwidthUnit;              ///< [out] bandwidth unit
+    uint32_t latency;                               ///< [out] design latency
+    ze_latency_unit_t latencyUnit;                  ///< [out] latency unit
+    ze_fabric_edge_exp_duplexity_t duplexity;       ///< [out] Duplexity of the fabric edge
+
+} ze_fabric_edge_exp_properties_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Retrieves fabric vertices within a driver
+/// 
+/// @details
+///     - A fabric vertex represents either a device or a switch connected to
+///       other fabric vertices.
+///     - The application may call this function from simultaneous threads.
+///     - The implementation of this function must be thread-safe.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hDriver`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == pCount`
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zeFabricVertexGetExp(
+    ze_driver_handle_t hDriver,                     ///< [in] handle of the driver instance
+    uint32_t* pCount,                               ///< [in,out] pointer to the number of fabric vertices.
+                                                    ///< if count is zero, then the driver shall update the value with the
+                                                    ///< total number of fabric vertices available.
+                                                    ///< if count is greater than the number of fabric vertices available, then
+                                                    ///< the driver shall update the value with the correct number of fabric
+                                                    ///< vertices available.
+    ze_fabric_vertex_handle_t* phVertices           ///< [in,out][optional][range(0, *pCount)] array of handle of fabric vertices.
+                                                    ///< if count is less than the number of fabric vertices available, then
+                                                    ///< driver shall only retrieve that number of fabric vertices.
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Retrieves a fabric sub-vertex from a fabric vertex
+/// 
+/// @details
+///     - Multiple calls to this function will return identical fabric vertex
+///       handles, in the same order.
+///     - The number of handles returned from this function is affected by the
+///       ::ZE_AFFINITY_MASK environment variable.
+///     - The application may call this function from simultaneous threads.
+///     - The implementation of this function should be lock-free.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hVertex`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == pCount`
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zeFabricVertexGetSubVerticesExp(
+    ze_fabric_vertex_handle_t hVertex,              ///< [in] handle of the fabric vertex object
+    uint32_t* pCount,                               ///< [in,out] pointer to the number of sub-vertices.
+                                                    ///< if count is zero, then the driver shall update the value with the
+                                                    ///< total number of sub-vertices available.
+                                                    ///< if count is greater than the number of sub-vertices available, then
+                                                    ///< the driver shall update the value with the correct number of
+                                                    ///< sub-vertices available.
+    ze_fabric_vertex_handle_t* phSubvertices        ///< [in,out][optional][range(0, *pCount)] array of handle of sub-vertices.
+                                                    ///< if count is less than the number of sub-vertices available, then
+                                                    ///< driver shall only retrieve that number of sub-vertices.
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Retrieves properties of the fabric vertex.
+/// 
+/// @details
+///     - The application may call this function from simultaneous threads.
+///     - The implementation of this function should be lock-free.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hVertex`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == pVertexProperties`
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zeFabricVertexGetPropertiesExp(
+    ze_fabric_vertex_handle_t hVertex,              ///< [in] handle of the fabric vertex
+    ze_fabric_vertex_exp_properties_t* pVertexProperties///< [in,out] query result for fabric vertex properties
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Returns device handle from fabric vertex handle.
+/// 
+/// @details
+///     - The application may call this function from simultaneous threads.
+///     - The implementation of this function should be lock-free.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hVertex`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == pDevice`
+///     - ::ZE_RESULT_EXP_ERROR_VERTEX_IS_NOT_DEVICE
+///         + Provided fabric vertex handle does not correspond to a device or subdevice.
+///     - ::ZE_RESULT_EXP_ERROR_REMOTE_DEVICE
+///         + Provided fabric vertex handle corresponds to remote device or subdevice.
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zeFabricVertexGetDeviceExp(
+    ze_fabric_vertex_handle_t hVertex,              ///< [in] handle of the fabric vertex
+    ze_device_handle_t* pDevice                     ///< [out] device handle corresponding to fabric vertex
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Returns fabric vertex handle from device handle.
+/// 
+/// @details
+///     - The application may call this function from simultaneous threads.
+///     - The implementation of this function should be lock-free.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hVertex`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == pVertex`
+///     - ::ZE_RESULT_EXP_ERROR_DEVICE_IS_NOT_VERTEX
+///         + Provided device handle does not correspond to a fabric vertex.
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zeDeviceGetFabricVertexExp(
+    ze_device_handle_t hVertex,                     ///< [in] handle of the device
+    ze_fabric_vertex_handle_t* pVertex              ///< [out] fabric vertex handle corresponding to device
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Retrieves all fabric edges between provided pair of fabric vertices
+/// 
+/// @details
+///     - A fabric edge represents one or more physical links between two fabric
+///       vertices.
+///     - The application may call this function from simultaneous threads.
+///     - The implementation of this function must be thread-safe.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hVertexA`
+///         + `nullptr == hVertexB`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == pCount`
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zeFabricEdgeGetExp(
+    ze_fabric_vertex_handle_t hVertexA,             ///< [in] handle of first fabric vertex instance
+    ze_fabric_vertex_handle_t hVertexB,             ///< [in] handle of second fabric vertex instance
+    uint32_t* pCount,                               ///< [in,out] pointer to the number of fabric edges.
+                                                    ///< if count is zero, then the driver shall update the value with the
+                                                    ///< total number of fabric edges available.
+                                                    ///< if count is greater than the number of fabric edges available, then
+                                                    ///< the driver shall update the value with the correct number of fabric
+                                                    ///< edges available.
+    ze_fabric_edge_handle_t* phEdges                ///< [in,out][optional][range(0, *pCount)] array of handle of fabric edges.
+                                                    ///< if count is less than the number of fabric edges available, then
+                                                    ///< driver shall only retrieve that number of fabric edges.
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Retrieves fabric vertices connected by a fabric edge
+/// 
+/// @details
+///     - A fabric vertex represents either a device or a switch connected to
+///       other fabric vertices via a fabric edge.
+///     - The application may call this function from simultaneous threads.
+///     - The implementation of this function must be thread-safe.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hEdge`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == phVertexA`
+///         + `nullptr == phVertexB`
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zeFabricEdgeGetVerticesExp(
+    ze_fabric_edge_handle_t hEdge,                  ///< [in] handle of the fabric edge instance
+    ze_fabric_vertex_handle_t* phVertexA,           ///< [out] fabric vertex connected to one end of the given fabric edge.
+    ze_fabric_vertex_handle_t* phVertexB            ///< [out] fabric vertex connected to other end of the given fabric edge.
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Retrieves properties of the fabric edge.
+/// 
+/// @details
+///     - The application may call this function from simultaneous threads.
+///     - The implementation of this function should be lock-free.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hEdge`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == pEdgeProperties`
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zeFabricEdgeGetPropertiesExp(
+    ze_fabric_edge_handle_t hEdge,                  ///< [in] handle of the fabric edge
+    ze_fabric_edge_exp_properties_t* pEdgeProperties///< [in,out] query result for fabric edge properties
+    );
+
+#if !defined(__GNUC__)
+#pragma endregion
+#endif
+// Intel 'oneAPI' Level-Zero Extension APIs for Device Memory Properties
+#if !defined(__GNUC__)
+#pragma region memoryProperties
+#endif
+///////////////////////////////////////////////////////////////////////////////
+#ifndef ZE_DEVICE_MEMORY_PROPERTIES_EXT_NAME
+/// @brief Device Memory Properties Extension Name
+#define ZE_DEVICE_MEMORY_PROPERTIES_EXT_NAME  "ZE_extension_device_memory_properties"
+#endif // ZE_DEVICE_MEMORY_PROPERTIES_EXT_NAME
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Device Memory Properties Extension Version(s)
+typedef enum _ze_device_memory_properties_ext_version_t
+{
+    ZE_DEVICE_MEMORY_PROPERTIES_EXT_VERSION_1_0 = ZE_MAKE_VERSION( 1, 0 ),  ///< version 1.0
+    ZE_DEVICE_MEMORY_PROPERTIES_EXT_VERSION_CURRENT = ZE_MAKE_VERSION( 1, 0 ),  ///< latest known version
+    ZE_DEVICE_MEMORY_PROPERTIES_EXT_VERSION_FORCE_UINT32 = 0x7fffffff
+
+} ze_device_memory_properties_ext_version_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Memory module types
+typedef enum _ze_device_memory_ext_type_t
+{
+    ZE_DEVICE_MEMORY_EXT_TYPE_HBM = 0,              ///< HBM memory
+    ZE_DEVICE_MEMORY_EXT_TYPE_HBM2 = 1,             ///< HBM2 memory
+    ZE_DEVICE_MEMORY_EXT_TYPE_DDR = 2,              ///< DDR memory
+    ZE_DEVICE_MEMORY_EXT_TYPE_DDR2 = 3,             ///< DDR2 memory
+    ZE_DEVICE_MEMORY_EXT_TYPE_DDR3 = 4,             ///< DDR3 memory
+    ZE_DEVICE_MEMORY_EXT_TYPE_DDR4 = 5,             ///< DDR4 memory
+    ZE_DEVICE_MEMORY_EXT_TYPE_DDR5 = 6,             ///< DDR5 memory
+    ZE_DEVICE_MEMORY_EXT_TYPE_LPDDR = 7,            ///< LPDDR memory
+    ZE_DEVICE_MEMORY_EXT_TYPE_LPDDR3 = 8,           ///< LPDDR3 memory
+    ZE_DEVICE_MEMORY_EXT_TYPE_LPDDR4 = 9,           ///< LPDDR4 memory
+    ZE_DEVICE_MEMORY_EXT_TYPE_LPDDR5 = 10,          ///< LPDDR5 memory
+    ZE_DEVICE_MEMORY_EXT_TYPE_SRAM = 11,            ///< SRAM memory
+    ZE_DEVICE_MEMORY_EXT_TYPE_L1 = 12,              ///< L1 cache
+    ZE_DEVICE_MEMORY_EXT_TYPE_L3 = 13,              ///< L3 cache
+    ZE_DEVICE_MEMORY_EXT_TYPE_GRF = 14,             ///< Execution unit register file
+    ZE_DEVICE_MEMORY_EXT_TYPE_SLM = 15,             ///< Execution unit shared local memory
+    ZE_DEVICE_MEMORY_EXT_TYPE_GDDR4 = 16,           ///< GDDR4 memory
+    ZE_DEVICE_MEMORY_EXT_TYPE_GDDR5 = 17,           ///< GDDR5 memory
+    ZE_DEVICE_MEMORY_EXT_TYPE_GDDR5X = 18,          ///< GDDR5X memory
+    ZE_DEVICE_MEMORY_EXT_TYPE_GDDR6 = 19,           ///< GDDR6 memory
+    ZE_DEVICE_MEMORY_EXT_TYPE_GDDR6X = 20,          ///< GDDR6X memory
+    ZE_DEVICE_MEMORY_EXT_TYPE_GDDR7 = 21,           ///< GDDR7 memory
+    ZE_DEVICE_MEMORY_EXT_TYPE_FORCE_UINT32 = 0x7fffffff
+
+} ze_device_memory_ext_type_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Memory properties
+/// 
+/// @details
+///     - This structure may be returned from ::zeDeviceGetMemoryProperties via
+///       the `pNext` member of ::ze_device_memory_properties_t
+typedef struct _ze_device_memory_ext_properties_t
+{
+    ze_structure_type_t stype;                      ///< [in] type of this structure
+    void* pNext;                                    ///< [in,out][optional] must be null or a pointer to an extension-specific
+                                                    ///< structure (i.e. contains sType and pNext).
+    ze_device_memory_ext_type_t type;               ///< [out] The memory type
+    uint64_t physicalSize;                          ///< [out] Physical memory size in bytes. A value of 0 indicates that this
+                                                    ///< property is not known. However, a call to $sMemoryGetState() will
+                                                    ///< correctly return the total size of usable memory.
+    uint32_t readBandwidth;                         ///< [out] Design bandwidth for reads
+    uint32_t writeBandwidth;                        ///< [out] Design bandwidth for writes
+    ze_bandwidth_unit_t bandwidthUnit;              ///< [out] bandwidth unit
+
+} ze_device_memory_ext_properties_t;
 
 #if !defined(__GNUC__)
 #pragma endregion

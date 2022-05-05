@@ -5,7 +5,7 @@
  * SPDX-License-Identifier: MIT
  *
  * @file zet_api.h
- * @version v1.3-r1.3.7
+ * @version v1.4-r1.4.0
  *
  */
 #ifndef _ZET_API_H
@@ -1144,6 +1144,7 @@ zetMetricStreamerClose(
 ///         + `nullptr == hMetricStreamer`
 ///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
 ///         + `nullptr == pRawDataSize`
+///     - ::ZE_RESULT_WARNING_DROPPED_DATA - "Metric streamer data may have been dropped. Reduce sampling period."
 ZE_APIEXPORT ze_result_t ZE_APICALL
 zetMetricStreamerReadData(
     zet_metric_streamer_handle_t hMetricStreamer,   ///< [in] handle of the metric streamer

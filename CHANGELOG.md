@@ -1,5 +1,15 @@
 # Level zero loader changelog
 
+
+## v1.8.0
+* Add Support for L0 Spec v1.4 which includes
+  * Core Fabric Topology API
+  * Core Extension for memory BW
+  * Core Extension for LUID query
+  * Sysman ECC 
+  * Sysman Power Limits Extension
+
+   
 ## v1.7.15
 * Fix bug during multiple calls to zeInit with no driver present
 * Add option to support build with sccache

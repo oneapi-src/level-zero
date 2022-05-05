@@ -4,7 +4,7 @@
  SPDX-License-Identifier: MIT
 
  @file ze.py
- @version v1.3-r1.3.7
+ @version v1.4-r1.4.0
 
  """
 import platform
@@ -125,6 +125,16 @@ class ze_physical_mem_handle_t(c_void_p):
     pass
 
 ###############################################################################
+## @brief Handle of driver's fabric vertex object
+class ze_fabric_vertex_handle_t(c_void_p):
+    pass
+
+###############################################################################
+## @brief Handle of driver's fabric edge object
+class ze_fabric_edge_handle_t(c_void_p):
+    pass
+
+###############################################################################
 ## @brief Maximum IPC handle size
 ZE_MAX_IPC_HANDLE_SIZE = 64
 
@@ -159,10 +169,15 @@ class ze_result_v(IntEnum):
     ERROR_MODULE_LINK_FAILURE = 0x70000005          ## [Core] error occurred when linking modules, see build log for details
     ERROR_DEVICE_REQUIRES_RESET = 0x70000006        ## [Core] device requires a reset
     ERROR_DEVICE_IN_LOW_POWER_STATE = 0x70000007    ## [Core] device currently in low power state
+    EXP_ERROR_DEVICE_IS_NOT_VERTEX = 0x7ff00001     ## [Core, Expoerimental] device is not represented by a fabric vertex
+    EXP_ERROR_VERTEX_IS_NOT_DEVICE = 0x7ff00002     ## [Core, Experimental] fabric vertex does not represent a device
+    EXP_ERROR_REMOTE_DEVICE = 0x7ff00003            ## [Core, Expoerimental] fabric vertex represents a remote device or
+                                                    ## subdevice
     ERROR_INSUFFICIENT_PERMISSIONS = 0x70010000     ## [Sysman] access denied due to permission level
     ERROR_NOT_AVAILABLE = 0x70010001                ## [Sysman] resource already in use and simultaneous access not allowed
                                                     ## or resource was removed
     ERROR_DEPENDENCY_UNAVAILABLE = 0x70020000       ## [Tools] external required dependency is unavailable or missing
+    WARNING_DROPPED_DATA = 0x70020001               ## [Tools] data may have been dropped
     ERROR_UNINITIALIZED = 0x78000001                ## [Validation] driver is not initialized
     ERROR_UNSUPPORTED_VERSION = 0x78000002          ## [Validation] generic error code for unsupported versions
     ERROR_UNSUPPORTED_FEATURE = 0x78000003          ## [Validation] generic error code for unsupported features
@@ -196,6 +211,7 @@ class ze_result_v(IntEnum):
     ERROR_INVALID_COMMAND_LIST_TYPE = 0x78000019    ## [Validation] command list type does not match command queue type
     ERROR_OVERLAPPING_REGIONS = 0x7800001a          ## [Validation] copy operations do not support overlapping regions of
                                                     ## memory
+    WARNING_ACTION_REQUIRED = 0x7800001b            ## [Sysman] an action is required to complete the desired operation
     ERROR_UNKNOWN = 0x7ffffffe                      ## [Core] unknown or internal error
 
 class ze_result_t(c_int):
@@ -253,6 +269,8 @@ class ze_structure_type_v(IntEnum):
     MEMORY_FREE_EXT_DESC = 0x1000a                  ## ::ze_memory_free_ext_desc_t
     MEMORY_COMPRESSION_HINTS_EXT_DESC = 0x1000b     ## ::ze_memory_compression_hints_ext_desc_t
     IMAGE_ALLOCATION_EXT_PROPERTIES = 0x1000c       ## ::ze_image_allocation_ext_properties_t
+    DEVICE_LUID_EXT_PROPERTIES = 0x1000d            ## ::ze_device_luid_ext_properties_t
+    DEVICE_MEMORY_EXT_PROPERTIES = 0x1000e          ## ::ze_device_memory_ext_properties_t
     RELAXED_ALLOCATION_LIMITS_EXP_DESC = 0x00020001 ## ::ze_relaxed_allocation_limits_exp_desc_t
     MODULE_PROGRAM_EXP_DESC = 0x00020002            ## ::ze_module_program_exp_desc_t
     SCHEDULING_HINT_EXP_PROPERTIES = 0x00020003     ## ::ze_scheduling_hint_exp_properties_t
@@ -261,6 +279,8 @@ class ze_structure_type_v(IntEnum):
     DEVICE_PROPERTIES_1_2 = 0x00020006              ## ::ze_device_properties_t
     IMAGE_MEMORY_EXP_PROPERTIES = 0x00020007        ## ::ze_image_memory_properties_exp_t
     POWER_SAVING_HINT_EXP_DESC = 0x00020008         ## ::ze_context_power_saving_hint_exp_desc_t
+    COPY_BANDWIDTH_EXP_PROPERTIES = 0x00020009      ## ::ze_copy_bandwidth_exp_properties_t
+    DEVICE_P2P_BANDWIDTH_EXP_PROPERTIES = 0x00020010## ::ze_device_p2p_bandwidth_exp_properties_t
 
 class ze_structure_type_t(c_int):
     def __str__(self):
@@ -284,6 +304,43 @@ class ze_external_memory_type_flags_t(c_int):
     def __str__(self):
         return hex(self.value)
 
+
+###############################################################################
+## @brief Bandwidth unit
+class ze_bandwidth_unit_v(IntEnum):
+    UNKNOWN = 0                                     ## The unit used for bandwidth is unknown
+    BYTES_PER_NANOSEC = 1                           ## Bandwidth is provided in bytes/nanosec
+    BYTES_PER_CLOCK = 2                             ## Bandwidth is provided in bytes/clock
+
+class ze_bandwidth_unit_t(c_int):
+    def __str__(self):
+        return str(ze_bandwidth_unit_v(self.value))
+
+
+###############################################################################
+## @brief Latency unit
+class ze_latency_unit_v(IntEnum):
+    UNKNOWN = 0                                     ## The unit used for latency is unknown
+    NANOSEC = 1                                     ## Latency is provided in nanosecs
+    CLOCK = 2                                       ## Latency is provided in clocks
+    HOP = 3                                         ## Latency is provided in hops (normalized so that the lowest latency
+                                                    ## link has a latency of 1 hop)
+
+class ze_latency_unit_t(c_int):
+    def __str__(self):
+        return str(ze_latency_unit_v(self.value))
+
+
+###############################################################################
+## @brief Maximum universal unique id (UUID) size in bytes
+ZE_MAX_UUID_SIZE = 16
+
+###############################################################################
+## @brief Universal unique id (UUID)
+class ze_uuid_t(Structure):
+    _fields_ = [
+        ("id", c_ubyte * ZE_MAX_UUID_SIZE)                              ## [out] opaque data representing a UUID
+    ]
 
 ###############################################################################
 ## @brief Base for all properties types
@@ -335,7 +392,8 @@ class ze_api_version_v(IntEnum):
     _1_1 = ZE_MAKE_VERSION( 1, 1 )                  ## version 1.1
     _1_2 = ZE_MAKE_VERSION( 1, 2 )                  ## version 1.2
     _1_3 = ZE_MAKE_VERSION( 1, 3 )                  ## version 1.3
-    CURRENT = ZE_MAKE_VERSION( 1, 3 )               ## latest known version
+    _1_4 = ZE_MAKE_VERSION( 1, 4 )                  ## version 1.4
+    CURRENT = ZE_MAKE_VERSION( 1, 4 )               ## latest known version
 
 class ze_api_version_t(c_int):
     def __str__(self):
@@ -2443,6 +2501,251 @@ class ze_memory_free_ext_desc_t(Structure):
     ]
 
 ###############################################################################
+## @brief Bandwidth Extension Name
+ZE_BANDWIDTH_PROPERTIES_EXP_NAME = "ZE_experimental_bandwidth_properties"
+
+###############################################################################
+## @brief P2P Bandwidth Properties
+## 
+## @details
+##     - This structure may be passed to ::zeDeviceGetP2PProperties by having
+##       the pNext member of ::ze_device_p2p_properties_t point at this struct.
+class ze_device_p2p_bandwidth_exp_properties_t(Structure):
+    _fields_ = [
+        ("stype", ze_structure_type_t),                                 ## [in] type of this structure
+        ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains sType and pNext).
+        ("logicalBandwidth", c_ulong),                                  ## [out] total logical design bandwidth for all links connecting the two
+                                                                        ## devices
+        ("physicalBandwidth", c_ulong),                                 ## [out] total physical design bandwidth for all links connecting the two
+                                                                        ## devices
+        ("bandwidthUnit", ze_bandwidth_unit_t),                         ## [out] bandwidth unit
+        ("logicalLatency", c_ulong),                                    ## [out] average logical design latency for all links connecting the two
+                                                                        ## devices
+        ("physicalLatency", c_ulong),                                   ## [out] average physical design latency for all links connecting the two
+                                                                        ## devices
+        ("latencyUnit", ze_latency_unit_t)                              ## [out] latency unit
+    ]
+
+###############################################################################
+## @brief Copy Bandwidth Properties
+## 
+## @details
+##     - This structure may be passed to
+##       ::zeDeviceGetCommandQueueGroupProperties by having the pNext member of
+##       ::ze_command_queue_group_properties_t point at this struct.
+class ze_copy_bandwidth_exp_properties_t(Structure):
+    _fields_ = [
+        ("stype", ze_structure_type_t),                                 ## [in] type of this structure
+        ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains sType and pNext).
+        ("copyBandwidth", c_ulong),                                     ## [out] design bandwidth supported by this engine type for copy
+                                                                        ## operations
+        ("copyBandwidthUnit", ze_bandwidth_unit_t)                      ## [out] copy bandwidth unit
+    ]
+
+###############################################################################
+## @brief Device Local Identifier (LUID) Extension Name
+ZE_DEVICE_LUID_EXT_NAME = "ZE_extension_device_luid"
+
+###############################################################################
+## @brief Device Local Identifier (LUID) Extension Version(s)
+class ze_device_luid_ext_version_v(IntEnum):
+    _1_0 = ZE_MAKE_VERSION( 1, 0 )                  ## version 1.0
+    CURRENT = ZE_MAKE_VERSION( 1, 0 )               ## latest known version
+
+class ze_device_luid_ext_version_t(c_int):
+    def __str__(self):
+        return str(ze_device_luid_ext_version_v(self.value))
+
+
+###############################################################################
+## @brief Maximum device local identifier (LUID) size in bytes
+ZE_MAX_DEVICE_LUID_SIZE_EXT = 8
+
+###############################################################################
+## @brief Device local identifier (LUID)
+class ze_device_luid_ext_t(Structure):
+    _fields_ = [
+        ("id", c_ubyte * ZE_MAX_DEVICE_LUID_SIZE_EXT)                   ## [out] opaque data representing a device LUID
+    ]
+
+###############################################################################
+## @brief Device LUID properties queried using ::zeDeviceGetProperties
+## 
+## @details
+##     - This structure may be returned from ::zeDeviceGetProperties, via
+##       `pNext` member of ::ze_device_properties_t.
+class ze_device_luid_ext_properties_t(Structure):
+    _fields_ = [
+        ("stype", ze_structure_type_t),                                 ## [in] type of this structure
+        ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains sType and pNext).
+        ("luid", ze_device_luid_ext_t),                                 ## [out] locally unique identifier (LUID).
+                                                                        ## The returned LUID can be cast to a LUID object and must be equal to
+                                                                        ## the locally
+                                                                        ## unique identifier of an IDXGIAdapter1 object that corresponds to the device.
+        ("nodeMask", c_ulong)                                           ## [out] node mask.
+                                                                        ## The returned node mask must contain exactly one bit.
+                                                                        ## If the device is running on an operating system that supports the
+                                                                        ## Direct3D 12 API
+                                                                        ## and the device corresponds to an individual device in a linked device
+                                                                        ## adapter, the
+                                                                        ## returned node mask identifies the Direct3D 12 node corresponding to
+                                                                        ## the device.
+                                                                        ## Otherwise, the returned node mask must be 1.
+    ]
+
+###############################################################################
+## @brief Fabric Topology Discovery Extension Name
+ZE_FABRIC_EXP_NAME = "ZE_experimental_fabric"
+
+###############################################################################
+## @brief Maximum fabric edge model string size
+ZE_MAX_FABRIC_EDGE_MODEL_EXP_SIZE = 256
+
+###############################################################################
+## @brief Fabric Vertex types
+class ze_fabric_vertex_exp_type_v(IntEnum):
+    UNKNOWN = 0                                     ## Fabric vertex type is unknown
+    DEVICE = 1                                      ## Fabric vertex represents a device
+    SUBEVICE = 2                                    ## Fabric vertex represents a subdevice
+    SWITCH = 3                                      ## Fabric vertex represents a switch
+
+class ze_fabric_vertex_exp_type_t(c_int):
+    def __str__(self):
+        return str(ze_fabric_vertex_exp_type_v(self.value))
+
+
+###############################################################################
+## @brief Fabric edge duplexity
+class ze_fabric_edge_exp_duplexity_v(IntEnum):
+    UNKNOWN = 0                                     ## Fabric edge duplexity is unknown
+    HALF_DUPLEX = 1                                 ## Fabric edge is half duplex, i.e. stated bandwidth is obtained in only
+                                                    ## one direction at time
+    FULL_DUPLEX = 2                                 ## Fabric edge is full duplex, i.e. stated bandwidth is supported in both
+                                                    ## directions simultaneously
+
+class ze_fabric_edge_exp_duplexity_t(c_int):
+    def __str__(self):
+        return str(ze_fabric_edge_exp_duplexity_v(self.value))
+
+
+###############################################################################
+## @brief PCI address
+## 
+## @details
+##     - A PCI BDF address is the bus:device:function address of the device and
+##       is useful for locating the device in the PCI switch fabric.
+class ze_fabric_vertex_pci_exp_address_t(Structure):
+    _fields_ = [
+        ("domain", c_ulong),                                            ## [out] PCI domain number
+        ("bus", c_ulong),                                               ## [out] PCI BDF bus number
+        ("device", c_ulong),                                            ## [out] PCI BDF device number
+        ("function", c_ulong)                                           ## [out] PCI BDF function number
+    ]
+
+###############################################################################
+## @brief Fabric Vertex properties
+class ze_fabric_vertex_exp_properties_t(Structure):
+    _fields_ = [
+        ("stype", ze_structure_type_t),                                 ## [in] type of this structure
+        ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains sType and pNext).
+        ("uuid", ze_uuid_t),                                            ## [out] universal unique identifier. If the vertex is co-located with a
+                                                                        ## device/subdevice, then this uuid will match that of the corresponding
+                                                                        ## device/subdevice
+        ("type", ze_fabric_vertex_exp_type_t),                          ## [out] does the fabric vertex represent a device, subdevice, or switch?
+        ("remote", ze_bool_t),                                          ## [out] does the fabric vertex live on the local node or on a remote
+                                                                        ## node?
+        ("address", ze_fabric_vertex_pci_exp_address_t)                 ## [out] B/D/F address of fabric vertex & associated device/subdevice if
+                                                                        ## available
+    ]
+
+###############################################################################
+## @brief Fabric Edge properties
+class ze_fabric_edge_exp_properties_t(Structure):
+    _fields_ = [
+        ("stype", ze_structure_type_t),                                 ## [in] type of this structure
+        ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains sType and pNext).
+        ("uuid", ze_uuid_t),                                            ## [out] universal unique identifier.
+        ("model", c_char * ZE_MAX_FABRIC_EDGE_MODEL_EXP_SIZE),          ## [out] Description of fabric edge technology. Will be set to the string
+                                                                        ## "unkown" if this cannot be determined for this edge
+        ("bandwidth", c_ulong),                                         ## [out] design bandwidth
+        ("bandwidthUnit", ze_bandwidth_unit_t),                         ## [out] bandwidth unit
+        ("latency", c_ulong),                                           ## [out] design latency
+        ("latencyUnit", ze_latency_unit_t),                             ## [out] latency unit
+        ("duplexity", ze_fabric_edge_exp_duplexity_t)                   ## [out] Duplexity of the fabric edge
+    ]
+
+###############################################################################
+## @brief Device Memory Properties Extension Name
+ZE_DEVICE_MEMORY_PROPERTIES_EXT_NAME = "ZE_extension_device_memory_properties"
+
+###############################################################################
+## @brief Device Memory Properties Extension Version(s)
+class ze_device_memory_properties_ext_version_v(IntEnum):
+    _1_0 = ZE_MAKE_VERSION( 1, 0 )                  ## version 1.0
+    CURRENT = ZE_MAKE_VERSION( 1, 0 )               ## latest known version
+
+class ze_device_memory_properties_ext_version_t(c_int):
+    def __str__(self):
+        return str(ze_device_memory_properties_ext_version_v(self.value))
+
+
+###############################################################################
+## @brief Memory module types
+class ze_device_memory_ext_type_v(IntEnum):
+    HBM = 0                                         ## HBM memory
+    HBM2 = 1                                        ## HBM2 memory
+    DDR = 2                                         ## DDR memory
+    DDR2 = 3                                        ## DDR2 memory
+    DDR3 = 4                                        ## DDR3 memory
+    DDR4 = 5                                        ## DDR4 memory
+    DDR5 = 6                                        ## DDR5 memory
+    LPDDR = 7                                       ## LPDDR memory
+    LPDDR3 = 8                                      ## LPDDR3 memory
+    LPDDR4 = 9                                      ## LPDDR4 memory
+    LPDDR5 = 10                                     ## LPDDR5 memory
+    SRAM = 11                                       ## SRAM memory
+    L1 = 12                                         ## L1 cache
+    L3 = 13                                         ## L3 cache
+    GRF = 14                                        ## Execution unit register file
+    SLM = 15                                        ## Execution unit shared local memory
+    GDDR4 = 16                                      ## GDDR4 memory
+    GDDR5 = 17                                      ## GDDR5 memory
+    GDDR5X = 18                                     ## GDDR5X memory
+    GDDR6 = 19                                      ## GDDR6 memory
+    GDDR6X = 20                                     ## GDDR6X memory
+    GDDR7 = 21                                      ## GDDR7 memory
+
+class ze_device_memory_ext_type_t(c_int):
+    def __str__(self):
+        return str(ze_device_memory_ext_type_v(self.value))
+
+
+###############################################################################
+## @brief Memory properties
+## 
+## @details
+##     - This structure may be returned from ::zeDeviceGetMemoryProperties via
+##       the `pNext` member of ::ze_device_memory_properties_t
+class ze_device_memory_ext_properties_t(Structure):
+    _fields_ = [
+        ("stype", ze_structure_type_t),                                 ## [in] type of this structure
+        ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains sType and pNext).
+        ("type", ze_device_memory_ext_type_t),                          ## [out] The memory type
+        ("physicalSize", c_ulonglong),                                  ## [out] Physical memory size in bytes. A value of 0 indicates that this
+                                                                        ## property is not known. However, a call to $sMemoryGetState() will
+                                                                        ## correctly return the total size of usable memory.
+        ("readBandwidth", c_ulong),                                     ## [out] Design bandwidth for reads
+        ("writeBandwidth", c_ulong),                                    ## [out] Design bandwidth for writes
+        ("bandwidthUnit", ze_bandwidth_unit_t)                          ## [out] bandwidth unit
+    ]
+
+###############################################################################
 __use_win_types = "Windows" == platform.uname()[0]
 
 ###############################################################################
@@ -2664,6 +2967,21 @@ class _ze_device_dditable_t(Structure):
         ("pfnReserveCacheExt", c_void_p),                               ## _zeDeviceReserveCacheExt_t
         ("pfnSetCacheAdviceExt", c_void_p),                             ## _zeDeviceSetCacheAdviceExt_t
         ("pfnPciGetPropertiesExt", c_void_p)                            ## _zeDevicePciGetPropertiesExt_t
+    ]
+
+###############################################################################
+## @brief Function-pointer for zeDeviceGetFabricVertexExp
+if __use_win_types:
+    _zeDeviceGetFabricVertexExp_t = WINFUNCTYPE( ze_result_t, ze_device_handle_t, POINTER(ze_fabric_vertex_handle_t) )
+else:
+    _zeDeviceGetFabricVertexExp_t = CFUNCTYPE( ze_result_t, ze_device_handle_t, POINTER(ze_fabric_vertex_handle_t) )
+
+
+###############################################################################
+## @brief Table of DeviceExp functions pointers
+class _ze_device_exp_dditable_t(Structure):
+    _fields_ = [
+        ("pfnGetFabricVertexExp", c_void_p)                             ## _zeDeviceGetFabricVertexExp_t
     ]
 
 ###############################################################################
@@ -3674,11 +3992,82 @@ class _ze_virtual_mem_dditable_t(Structure):
     ]
 
 ###############################################################################
+## @brief Function-pointer for zeFabricVertexGetExp
+if __use_win_types:
+    _zeFabricVertexGetExp_t = WINFUNCTYPE( ze_result_t, ze_driver_handle_t, POINTER(c_ulong), POINTER(ze_fabric_vertex_handle_t) )
+else:
+    _zeFabricVertexGetExp_t = CFUNCTYPE( ze_result_t, ze_driver_handle_t, POINTER(c_ulong), POINTER(ze_fabric_vertex_handle_t) )
+
+###############################################################################
+## @brief Function-pointer for zeFabricVertexGetSubVerticesExp
+if __use_win_types:
+    _zeFabricVertexGetSubVerticesExp_t = WINFUNCTYPE( ze_result_t, ze_fabric_vertex_handle_t, POINTER(c_ulong), POINTER(ze_fabric_vertex_handle_t) )
+else:
+    _zeFabricVertexGetSubVerticesExp_t = CFUNCTYPE( ze_result_t, ze_fabric_vertex_handle_t, POINTER(c_ulong), POINTER(ze_fabric_vertex_handle_t) )
+
+###############################################################################
+## @brief Function-pointer for zeFabricVertexGetPropertiesExp
+if __use_win_types:
+    _zeFabricVertexGetPropertiesExp_t = WINFUNCTYPE( ze_result_t, ze_fabric_vertex_handle_t, POINTER(ze_fabric_vertex_exp_properties_t) )
+else:
+    _zeFabricVertexGetPropertiesExp_t = CFUNCTYPE( ze_result_t, ze_fabric_vertex_handle_t, POINTER(ze_fabric_vertex_exp_properties_t) )
+
+###############################################################################
+## @brief Function-pointer for zeFabricVertexGetDeviceExp
+if __use_win_types:
+    _zeFabricVertexGetDeviceExp_t = WINFUNCTYPE( ze_result_t, ze_fabric_vertex_handle_t, POINTER(ze_device_handle_t) )
+else:
+    _zeFabricVertexGetDeviceExp_t = CFUNCTYPE( ze_result_t, ze_fabric_vertex_handle_t, POINTER(ze_device_handle_t) )
+
+
+###############################################################################
+## @brief Table of FabricVertexExp functions pointers
+class _ze_fabric_vertex_exp_dditable_t(Structure):
+    _fields_ = [
+        ("pfnGetExp", c_void_p),                                        ## _zeFabricVertexGetExp_t
+        ("pfnGetSubVerticesExp", c_void_p),                             ## _zeFabricVertexGetSubVerticesExp_t
+        ("pfnGetPropertiesExp", c_void_p),                              ## _zeFabricVertexGetPropertiesExp_t
+        ("pfnGetDeviceExp", c_void_p)                                   ## _zeFabricVertexGetDeviceExp_t
+    ]
+
+###############################################################################
+## @brief Function-pointer for zeFabricEdgeGetExp
+if __use_win_types:
+    _zeFabricEdgeGetExp_t = WINFUNCTYPE( ze_result_t, ze_fabric_vertex_handle_t, ze_fabric_vertex_handle_t, POINTER(c_ulong), POINTER(ze_fabric_edge_handle_t) )
+else:
+    _zeFabricEdgeGetExp_t = CFUNCTYPE( ze_result_t, ze_fabric_vertex_handle_t, ze_fabric_vertex_handle_t, POINTER(c_ulong), POINTER(ze_fabric_edge_handle_t) )
+
+###############################################################################
+## @brief Function-pointer for zeFabricEdgeGetVerticesExp
+if __use_win_types:
+    _zeFabricEdgeGetVerticesExp_t = WINFUNCTYPE( ze_result_t, ze_fabric_edge_handle_t, POINTER(ze_fabric_vertex_handle_t), POINTER(ze_fabric_vertex_handle_t) )
+else:
+    _zeFabricEdgeGetVerticesExp_t = CFUNCTYPE( ze_result_t, ze_fabric_edge_handle_t, POINTER(ze_fabric_vertex_handle_t), POINTER(ze_fabric_vertex_handle_t) )
+
+###############################################################################
+## @brief Function-pointer for zeFabricEdgeGetPropertiesExp
+if __use_win_types:
+    _zeFabricEdgeGetPropertiesExp_t = WINFUNCTYPE( ze_result_t, ze_fabric_edge_handle_t, POINTER(ze_fabric_edge_exp_properties_t) )
+else:
+    _zeFabricEdgeGetPropertiesExp_t = CFUNCTYPE( ze_result_t, ze_fabric_edge_handle_t, POINTER(ze_fabric_edge_exp_properties_t) )
+
+
+###############################################################################
+## @brief Table of FabricEdgeExp functions pointers
+class _ze_fabric_edge_exp_dditable_t(Structure):
+    _fields_ = [
+        ("pfnGetExp", c_void_p),                                        ## _zeFabricEdgeGetExp_t
+        ("pfnGetVerticesExp", c_void_p),                                ## _zeFabricEdgeGetVerticesExp_t
+        ("pfnGetPropertiesExp", c_void_p)                               ## _zeFabricEdgeGetPropertiesExp_t
+    ]
+
+###############################################################################
 class _ze_dditable_t(Structure):
     _fields_ = [
         ("Global", _ze_global_dditable_t),
         ("Driver", _ze_driver_dditable_t),
         ("Device", _ze_device_dditable_t),
+        ("DeviceExp", _ze_device_exp_dditable_t),
         ("Context", _ze_context_dditable_t),
         ("CommandQueue", _ze_command_queue_dditable_t),
         ("CommandList", _ze_command_list_dditable_t),
@@ -3695,7 +4084,9 @@ class _ze_dditable_t(Structure):
         ("Sampler", _ze_sampler_dditable_t),
         ("PhysicalMem", _ze_physical_mem_dditable_t),
         ("Mem", _ze_mem_dditable_t),
-        ("VirtualMem", _ze_virtual_mem_dditable_t)
+        ("VirtualMem", _ze_virtual_mem_dditable_t),
+        ("FabricVertexExp", _ze_fabric_vertex_exp_dditable_t),
+        ("FabricEdgeExp", _ze_fabric_edge_exp_dditable_t)
     ]
 
 ###############################################################################
@@ -3762,6 +4153,16 @@ class ZE_DDI:
         self.zeDeviceReserveCacheExt = _zeDeviceReserveCacheExt_t(self.__dditable.Device.pfnReserveCacheExt)
         self.zeDeviceSetCacheAdviceExt = _zeDeviceSetCacheAdviceExt_t(self.__dditable.Device.pfnSetCacheAdviceExt)
         self.zeDevicePciGetPropertiesExt = _zeDevicePciGetPropertiesExt_t(self.__dditable.Device.pfnPciGetPropertiesExt)
+
+        # call driver to get function pointers
+        _DeviceExp = _ze_device_exp_dditable_t()
+        r = ze_result_v(self.__dll.zeGetDeviceExpProcAddrTable(version, byref(_DeviceExp)))
+        if r != ze_result_v.SUCCESS:
+            raise Exception(r)
+        self.__dditable.DeviceExp = _DeviceExp
+
+        # attach function interface to function address
+        self.zeDeviceGetFabricVertexExp = _zeDeviceGetFabricVertexExp_t(self.__dditable.DeviceExp.pfnGetFabricVertexExp)
 
         # call driver to get function pointers
         _Context = _ze_context_dditable_t()
@@ -4026,5 +4427,30 @@ class ZE_DDI:
         self.zeVirtualMemUnmap = _zeVirtualMemUnmap_t(self.__dditable.VirtualMem.pfnUnmap)
         self.zeVirtualMemSetAccessAttribute = _zeVirtualMemSetAccessAttribute_t(self.__dditable.VirtualMem.pfnSetAccessAttribute)
         self.zeVirtualMemGetAccessAttribute = _zeVirtualMemGetAccessAttribute_t(self.__dditable.VirtualMem.pfnGetAccessAttribute)
+
+        # call driver to get function pointers
+        _FabricVertexExp = _ze_fabric_vertex_exp_dditable_t()
+        r = ze_result_v(self.__dll.zeGetFabricVertexExpProcAddrTable(version, byref(_FabricVertexExp)))
+        if r != ze_result_v.SUCCESS:
+            raise Exception(r)
+        self.__dditable.FabricVertexExp = _FabricVertexExp
+
+        # attach function interface to function address
+        self.zeFabricVertexGetExp = _zeFabricVertexGetExp_t(self.__dditable.FabricVertexExp.pfnGetExp)
+        self.zeFabricVertexGetSubVerticesExp = _zeFabricVertexGetSubVerticesExp_t(self.__dditable.FabricVertexExp.pfnGetSubVerticesExp)
+        self.zeFabricVertexGetPropertiesExp = _zeFabricVertexGetPropertiesExp_t(self.__dditable.FabricVertexExp.pfnGetPropertiesExp)
+        self.zeFabricVertexGetDeviceExp = _zeFabricVertexGetDeviceExp_t(self.__dditable.FabricVertexExp.pfnGetDeviceExp)
+
+        # call driver to get function pointers
+        _FabricEdgeExp = _ze_fabric_edge_exp_dditable_t()
+        r = ze_result_v(self.__dll.zeGetFabricEdgeExpProcAddrTable(version, byref(_FabricEdgeExp)))
+        if r != ze_result_v.SUCCESS:
+            raise Exception(r)
+        self.__dditable.FabricEdgeExp = _FabricEdgeExp
+
+        # attach function interface to function address
+        self.zeFabricEdgeGetExp = _zeFabricEdgeGetExp_t(self.__dditable.FabricEdgeExp.pfnGetExp)
+        self.zeFabricEdgeGetVerticesExp = _zeFabricEdgeGetVerticesExp_t(self.__dditable.FabricEdgeExp.pfnGetVerticesExp)
+        self.zeFabricEdgeGetPropertiesExp = _zeFabricEdgeGetPropertiesExp_t(self.__dditable.FabricEdgeExp.pfnGetPropertiesExp)
 
         # success!

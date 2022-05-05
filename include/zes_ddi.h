@@ -5,7 +5,7 @@
  * SPDX-License-Identifier: MIT
  *
  * @file zes_ddi.h
- * @version v1.3-r1.3.7
+ * @version v1.4-r1.4.0
  *
  */
 #ifndef _ZES_DDI_H
@@ -264,6 +264,35 @@ typedef ze_result_t (ZE_APICALL *zes_pfnDeviceEnumTemperatureSensors_t)(
     );
 
 ///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zesDeviceEccAvailable 
+typedef ze_result_t (ZE_APICALL *zes_pfnDeviceEccAvailable_t)(
+    zes_device_handle_t,
+    ze_bool_t*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zesDeviceEccConfigurable 
+typedef ze_result_t (ZE_APICALL *zes_pfnDeviceEccConfigurable_t)(
+    zes_device_handle_t,
+    ze_bool_t*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zesDeviceGetEccState 
+typedef ze_result_t (ZE_APICALL *zes_pfnDeviceGetEccState_t)(
+    zes_device_handle_t,
+    zes_device_ecc_properties_t*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zesDeviceSetEccState 
+typedef ze_result_t (ZE_APICALL *zes_pfnDeviceSetEccState_t)(
+    zes_device_handle_t,
+    const zes_device_ecc_desc_t*,
+    zes_device_ecc_properties_t*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
 /// @brief Table of Device functions pointers
 typedef struct _zes_device_dditable_t
 {
@@ -292,6 +321,10 @@ typedef struct _zes_device_dditable_t
     zes_pfnDeviceEnumSchedulers_t                               pfnEnumSchedulers;
     zes_pfnDeviceEnumStandbyDomains_t                           pfnEnumStandbyDomains;
     zes_pfnDeviceEnumTemperatureSensors_t                       pfnEnumTemperatureSensors;
+    zes_pfnDeviceEccAvailable_t                                 pfnEccAvailable;
+    zes_pfnDeviceEccConfigurable_t                              pfnEccConfigurable;
+    zes_pfnDeviceGetEccState_t                                  pfnGetEccState;
+    zes_pfnDeviceSetEccState_t                                  pfnSetEccState;
 } zes_device_dditable_t;
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -511,6 +544,22 @@ typedef ze_result_t (ZE_APICALL *zes_pfnPowerSetEnergyThreshold_t)(
     );
 
 ///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zesPowerGetLimitsExt 
+typedef ze_result_t (ZE_APICALL *zes_pfnPowerGetLimitsExt_t)(
+    zes_pwr_handle_t,
+    uint32_t*,
+    zes_power_limit_ext_desc_t*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zesPowerSetLimitsExt 
+typedef ze_result_t (ZE_APICALL *zes_pfnPowerSetLimitsExt_t)(
+    zes_pwr_handle_t,
+    uint32_t*,
+    zes_power_limit_ext_desc_t*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
 /// @brief Table of Power functions pointers
 typedef struct _zes_power_dditable_t
 {
@@ -520,6 +569,8 @@ typedef struct _zes_power_dditable_t
     zes_pfnPowerSetLimits_t                                     pfnSetLimits;
     zes_pfnPowerGetEnergyThreshold_t                            pfnGetEnergyThreshold;
     zes_pfnPowerSetEnergyThreshold_t                            pfnSetEnergyThreshold;
+    zes_pfnPowerGetLimitsExt_t                                  pfnGetLimitsExt;
+    zes_pfnPowerSetLimitsExt_t                                  pfnSetLimitsExt;
 } zes_power_dditable_t;
 
 ///////////////////////////////////////////////////////////////////////////////

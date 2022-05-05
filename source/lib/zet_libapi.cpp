@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (C) 2019-2021 Intel Corporation
+ * Copyright (C) 2019-2022 Intel Corporation
  *
  * SPDX-License-Identifier: MIT
  *
@@ -726,6 +726,7 @@ zetMetricStreamerClose(
 ///         + `nullptr == hMetricStreamer`
 ///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
 ///         + `nullptr == pRawDataSize`
+///     - ::ZE_RESULT_WARNING_DROPPED_DATA - "Metric streamer data may have been dropped. Reduce sampling period."
 ze_result_t ZE_APICALL
 zetMetricStreamerReadData(
     zet_metric_streamer_handle_t hMetricStreamer,   ///< [in] handle of the metric streamer

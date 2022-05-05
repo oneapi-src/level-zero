@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (C) 2019-2021 Intel Corporation
+ * Copyright (C) 2019-2022 Intel Corporation
  *
  * SPDX-License-Identifier: MIT
  *
@@ -359,6 +359,117 @@ namespace validation_layer
         }
 
         return pfnRunTests( hDiagnostics, startIndex, endIndex, pResult );
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesDeviceEccAvailable
+    __zedlllocal ze_result_t ZE_APICALL
+    zesDeviceEccAvailable(
+        zes_device_handle_t hDevice,                    ///< [in] Handle for the component.
+        ze_bool_t* pAvailable                           ///< [out] ECC functionality is available (true)/unavailable (false).
+        )
+    {
+        auto pfnEccAvailable = context.zesDdiTable.Device.pfnEccAvailable;
+
+        if( nullptr == pfnEccAvailable )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        if( context.enableParameterValidation )
+        {
+            if( nullptr == hDevice )
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+            if( nullptr == pAvailable )
+                return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+        }
+
+        return pfnEccAvailable( hDevice, pAvailable );
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesDeviceEccConfigurable
+    __zedlllocal ze_result_t ZE_APICALL
+    zesDeviceEccConfigurable(
+        zes_device_handle_t hDevice,                    ///< [in] Handle for the component.
+        ze_bool_t* pConfigurable                        ///< [out] ECC can be enabled/disabled (true)/enabled/disabled (false).
+        )
+    {
+        auto pfnEccConfigurable = context.zesDdiTable.Device.pfnEccConfigurable;
+
+        if( nullptr == pfnEccConfigurable )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        if( context.enableParameterValidation )
+        {
+            if( nullptr == hDevice )
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+            if( nullptr == pConfigurable )
+                return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+        }
+
+        return pfnEccConfigurable( hDevice, pConfigurable );
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesDeviceGetEccState
+    __zedlllocal ze_result_t ZE_APICALL
+    zesDeviceGetEccState(
+        zes_device_handle_t hDevice,                    ///< [in] Handle for the component.
+        zes_device_ecc_properties_t* pState             ///< [out] ECC state, pending state, and pending action for state change.
+        )
+    {
+        auto pfnGetEccState = context.zesDdiTable.Device.pfnGetEccState;
+
+        if( nullptr == pfnGetEccState )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        if( context.enableParameterValidation )
+        {
+            if( nullptr == hDevice )
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+            if( nullptr == pState )
+                return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+        }
+
+        return pfnGetEccState( hDevice, pState );
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesDeviceSetEccState
+    __zedlllocal ze_result_t ZE_APICALL
+    zesDeviceSetEccState(
+        zes_device_handle_t hDevice,                    ///< [in] Handle for the component.
+        const zes_device_ecc_desc_t* newState,          ///< [in] Pointer to desired ECC state.
+        zes_device_ecc_properties_t* pState             ///< [out] ECC state, pending state, and pending action for state change.
+        )
+    {
+        auto pfnSetEccState = context.zesDdiTable.Device.pfnSetEccState;
+
+        if( nullptr == pfnSetEccState )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        if( context.enableParameterValidation )
+        {
+            if( nullptr == hDevice )
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+            if( nullptr == newState )
+                return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+            if( nullptr == pState )
+                return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+            if( ZES_DEVICE_ECC_STATE_DISABLED < newState->state )
+                return ZE_RESULT_ERROR_INVALID_ENUMERATION;
+
+        }
+
+        return pfnSetEccState( hDevice, newState, pState );
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -2877,6 +2988,67 @@ namespace validation_layer
         return pfnGetState( hTemperature, pTemperature );
     }
 
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesPowerGetLimitsExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zesPowerGetLimitsExt(
+        zes_pwr_handle_t hPower,                        ///< [in] Power domain handle instance.
+        uint32_t* pCount,                               ///< [in,out] Pointer to the number of power limit descriptors. If count is
+                                                        ///< zero, then the driver shall update the value with the total number of
+                                                        ///< components of this type that are available. If count is greater than
+                                                        ///< the number of components of this type that are available, then the
+                                                        ///< driver shall update the value with the correct number of components.
+        zes_power_limit_ext_desc_t* pSustained          ///< [in,out][optional][range(0, *pCount)] Array of query results for power
+                                                        ///< limit descriptors. If count is less than the number of components of
+                                                        ///< this type that are available, then the driver shall only retrieve that
+                                                        ///< number of components.
+        )
+    {
+        auto pfnGetLimitsExt = context.zesDdiTable.Power.pfnGetLimitsExt;
+
+        if( nullptr == pfnGetLimitsExt )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        if( context.enableParameterValidation )
+        {
+            if( nullptr == hPower )
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+            if( nullptr == pCount )
+                return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+        }
+
+        return pfnGetLimitsExt( hPower, pCount, pSustained );
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesPowerSetLimitsExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zesPowerSetLimitsExt(
+        zes_pwr_handle_t hPower,                        ///< [in] Handle for the component.
+        uint32_t* pCount,                               ///< [in] Pointer to the number of power limit descriptors.
+        zes_power_limit_ext_desc_t* pSustained          ///< [in][optional][range(0, *pCount)] Array of power limit descriptors.
+        )
+    {
+        auto pfnSetLimitsExt = context.zesDdiTable.Power.pfnSetLimitsExt;
+
+        if( nullptr == pfnSetLimitsExt )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        if( context.enableParameterValidation )
+        {
+            if( nullptr == hPower )
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+            if( nullptr == pCount )
+                return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+        }
+
+        return pfnSetLimitsExt( hPower, pCount, pSustained );
+    }
+
 } // namespace validation_layer
 
 #if defined(__cplusplus)
@@ -2982,6 +3154,18 @@ zesGetDeviceProcAddrTable(
 
     dditable.pfnEnumTemperatureSensors                   = pDdiTable->pfnEnumTemperatureSensors;
     pDdiTable->pfnEnumTemperatureSensors                 = validation_layer::zesDeviceEnumTemperatureSensors;
+
+    dditable.pfnEccAvailable                             = pDdiTable->pfnEccAvailable;
+    pDdiTable->pfnEccAvailable                           = validation_layer::zesDeviceEccAvailable;
+
+    dditable.pfnEccConfigurable                          = pDdiTable->pfnEccConfigurable;
+    pDdiTable->pfnEccConfigurable                        = validation_layer::zesDeviceEccConfigurable;
+
+    dditable.pfnGetEccState                              = pDdiTable->pfnGetEccState;
+    pDdiTable->pfnGetEccState                            = validation_layer::zesDeviceGetEccState;
+
+    dditable.pfnSetEccState                              = pDdiTable->pfnSetEccState;
+    pDdiTable->pfnSetEccState                            = validation_layer::zesDeviceSetEccState;
 
     return result;
 }
@@ -3452,6 +3636,12 @@ zesGetPowerProcAddrTable(
 
     dditable.pfnSetEnergyThreshold                       = pDdiTable->pfnSetEnergyThreshold;
     pDdiTable->pfnSetEnergyThreshold                     = validation_layer::zesPowerSetEnergyThreshold;
+
+    dditable.pfnGetLimitsExt                             = pDdiTable->pfnGetLimitsExt;
+    pDdiTable->pfnGetLimitsExt                           = validation_layer::zesPowerGetLimitsExt;
+
+    dditable.pfnSetLimitsExt                             = pDdiTable->pfnSetLimitsExt;
+    pDdiTable->pfnSetLimitsExt                           = validation_layer::zesPowerSetLimitsExt;
 
     return result;
 }

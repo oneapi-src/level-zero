@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (C) 2020 Intel Corporation
+ * Copyright (C) 2020-2022 Intel Corporation
  *
  * SPDX-License-Identifier: MIT
  *
@@ -5515,6 +5515,322 @@ namespace tracing_layer
                                                   *tracerParams.pptr);
     }
 
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeFabricVertexGetExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zeFabricVertexGetExp(
+        ze_driver_handle_t hDriver,                     ///< [in] handle of the driver instance
+        uint32_t* pCount,                               ///< [in,out] pointer to the number of fabric vertices.
+                                                        ///< if count is zero, then the driver shall update the value with the
+                                                        ///< total number of fabric vertices available.
+                                                        ///< if count is greater than the number of fabric vertices available, then
+                                                        ///< the driver shall update the value with the correct number of fabric
+                                                        ///< vertices available.
+        ze_fabric_vertex_handle_t* phVertices           ///< [in,out][optional][range(0, *pCount)] array of handle of fabric vertices.
+                                                        ///< if count is less than the number of fabric vertices available, then
+                                                        ///< driver shall only retrieve that number of fabric vertices.
+        )
+    {
+        auto pfnGetExp = context.zeDdiTable.FabricVertexExp.pfnGetExp;
+
+        if( nullptr == pfnGetExp)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.FabricVertexExp.pfnGetExp, hDriver, pCount, phVertices);
+
+        // capture parameters
+        ze_fabric_vertex_get_exp_params_t tracerParams = {
+            &hDriver,
+            &pCount,
+            &phVertices
+        };
+
+        tracing_layer::APITracerCallbackDataImp<ze_pfnFabricVertexGetExpCb_t> apiCallbackData;
+
+        ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnFabricVertexGetExpCb_t, FabricVertex, pfnGetExpCb);
+
+
+        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.FabricVertexExp.pfnGetExp,
+                                                  &tracerParams,
+                                                  apiCallbackData.apiOrdinal,
+                                                  apiCallbackData.prologCallbacks,
+                                                  apiCallbackData.epilogCallbacks,
+                                                  *tracerParams.phDriver,
+                                                  *tracerParams.ppCount,
+                                                  *tracerParams.pphVertices);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeFabricVertexGetSubVerticesExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zeFabricVertexGetSubVerticesExp(
+        ze_fabric_vertex_handle_t hVertex,              ///< [in] handle of the fabric vertex object
+        uint32_t* pCount,                               ///< [in,out] pointer to the number of sub-vertices.
+                                                        ///< if count is zero, then the driver shall update the value with the
+                                                        ///< total number of sub-vertices available.
+                                                        ///< if count is greater than the number of sub-vertices available, then
+                                                        ///< the driver shall update the value with the correct number of
+                                                        ///< sub-vertices available.
+        ze_fabric_vertex_handle_t* phSubvertices        ///< [in,out][optional][range(0, *pCount)] array of handle of sub-vertices.
+                                                        ///< if count is less than the number of sub-vertices available, then
+                                                        ///< driver shall only retrieve that number of sub-vertices.
+        )
+    {
+        auto pfnGetSubVerticesExp = context.zeDdiTable.FabricVertexExp.pfnGetSubVerticesExp;
+
+        if( nullptr == pfnGetSubVerticesExp)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.FabricVertexExp.pfnGetSubVerticesExp, hVertex, pCount, phSubvertices);
+
+        // capture parameters
+        ze_fabric_vertex_get_sub_vertices_exp_params_t tracerParams = {
+            &hVertex,
+            &pCount,
+            &phSubvertices
+        };
+
+        tracing_layer::APITracerCallbackDataImp<ze_pfnFabricVertexGetSubVerticesExpCb_t> apiCallbackData;
+
+        ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnFabricVertexGetSubVerticesExpCb_t, FabricVertex, pfnGetSubVerticesExpCb);
+
+
+        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.FabricVertexExp.pfnGetSubVerticesExp,
+                                                  &tracerParams,
+                                                  apiCallbackData.apiOrdinal,
+                                                  apiCallbackData.prologCallbacks,
+                                                  apiCallbackData.epilogCallbacks,
+                                                  *tracerParams.phVertex,
+                                                  *tracerParams.ppCount,
+                                                  *tracerParams.pphSubvertices);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeFabricVertexGetPropertiesExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zeFabricVertexGetPropertiesExp(
+        ze_fabric_vertex_handle_t hVertex,              ///< [in] handle of the fabric vertex
+        ze_fabric_vertex_exp_properties_t* pVertexProperties///< [in,out] query result for fabric vertex properties
+        )
+    {
+        auto pfnGetPropertiesExp = context.zeDdiTable.FabricVertexExp.pfnGetPropertiesExp;
+
+        if( nullptr == pfnGetPropertiesExp)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.FabricVertexExp.pfnGetPropertiesExp, hVertex, pVertexProperties);
+
+        // capture parameters
+        ze_fabric_vertex_get_properties_exp_params_t tracerParams = {
+            &hVertex,
+            &pVertexProperties
+        };
+
+        tracing_layer::APITracerCallbackDataImp<ze_pfnFabricVertexGetPropertiesExpCb_t> apiCallbackData;
+
+        ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnFabricVertexGetPropertiesExpCb_t, FabricVertex, pfnGetPropertiesExpCb);
+
+
+        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.FabricVertexExp.pfnGetPropertiesExp,
+                                                  &tracerParams,
+                                                  apiCallbackData.apiOrdinal,
+                                                  apiCallbackData.prologCallbacks,
+                                                  apiCallbackData.epilogCallbacks,
+                                                  *tracerParams.phVertex,
+                                                  *tracerParams.ppVertexProperties);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeFabricVertexGetDeviceExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zeFabricVertexGetDeviceExp(
+        ze_fabric_vertex_handle_t hVertex,              ///< [in] handle of the fabric vertex
+        ze_device_handle_t* pDevice                     ///< [out] device handle corresponding to fabric vertex
+        )
+    {
+        auto pfnGetDeviceExp = context.zeDdiTable.FabricVertexExp.pfnGetDeviceExp;
+
+        if( nullptr == pfnGetDeviceExp)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.FabricVertexExp.pfnGetDeviceExp, hVertex, pDevice);
+
+        // capture parameters
+        ze_fabric_vertex_get_device_exp_params_t tracerParams = {
+            &hVertex,
+            &pDevice
+        };
+
+        tracing_layer::APITracerCallbackDataImp<ze_pfnFabricVertexGetDeviceExpCb_t> apiCallbackData;
+
+        ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnFabricVertexGetDeviceExpCb_t, FabricVertex, pfnGetDeviceExpCb);
+
+
+        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.FabricVertexExp.pfnGetDeviceExp,
+                                                  &tracerParams,
+                                                  apiCallbackData.apiOrdinal,
+                                                  apiCallbackData.prologCallbacks,
+                                                  apiCallbackData.epilogCallbacks,
+                                                  *tracerParams.phVertex,
+                                                  *tracerParams.ppDevice);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeDeviceGetFabricVertexExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zeDeviceGetFabricVertexExp(
+        ze_device_handle_t hVertex,                     ///< [in] handle of the device
+        ze_fabric_vertex_handle_t* pVertex              ///< [out] fabric vertex handle corresponding to device
+        )
+    {
+        auto pfnGetFabricVertexExp = context.zeDdiTable.DeviceExp.pfnGetFabricVertexExp;
+
+        if( nullptr == pfnGetFabricVertexExp)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.DeviceExp.pfnGetFabricVertexExp, hVertex, pVertex);
+
+        // capture parameters
+        ze_device_get_fabric_vertex_exp_params_t tracerParams = {
+            &hVertex,
+            &pVertex
+        };
+
+        tracing_layer::APITracerCallbackDataImp<ze_pfnDeviceGetFabricVertexExpCb_t> apiCallbackData;
+
+        ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnDeviceGetFabricVertexExpCb_t, Device, pfnGetFabricVertexExpCb);
+
+
+        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.DeviceExp.pfnGetFabricVertexExp,
+                                                  &tracerParams,
+                                                  apiCallbackData.apiOrdinal,
+                                                  apiCallbackData.prologCallbacks,
+                                                  apiCallbackData.epilogCallbacks,
+                                                  *tracerParams.phVertex,
+                                                  *tracerParams.ppVertex);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeFabricEdgeGetExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zeFabricEdgeGetExp(
+        ze_fabric_vertex_handle_t hVertexA,             ///< [in] handle of first fabric vertex instance
+        ze_fabric_vertex_handle_t hVertexB,             ///< [in] handle of second fabric vertex instance
+        uint32_t* pCount,                               ///< [in,out] pointer to the number of fabric edges.
+                                                        ///< if count is zero, then the driver shall update the value with the
+                                                        ///< total number of fabric edges available.
+                                                        ///< if count is greater than the number of fabric edges available, then
+                                                        ///< the driver shall update the value with the correct number of fabric
+                                                        ///< edges available.
+        ze_fabric_edge_handle_t* phEdges                ///< [in,out][optional][range(0, *pCount)] array of handle of fabric edges.
+                                                        ///< if count is less than the number of fabric edges available, then
+                                                        ///< driver shall only retrieve that number of fabric edges.
+        )
+    {
+        auto pfnGetExp = context.zeDdiTable.FabricEdgeExp.pfnGetExp;
+
+        if( nullptr == pfnGetExp)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.FabricEdgeExp.pfnGetExp, hVertexA, hVertexB, pCount, phEdges);
+
+        // capture parameters
+        ze_fabric_edge_get_exp_params_t tracerParams = {
+            &hVertexA,
+            &hVertexB,
+            &pCount,
+            &phEdges
+        };
+
+        tracing_layer::APITracerCallbackDataImp<ze_pfnFabricEdgeGetExpCb_t> apiCallbackData;
+
+        ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnFabricEdgeGetExpCb_t, FabricEdge, pfnGetExpCb);
+
+
+        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.FabricEdgeExp.pfnGetExp,
+                                                  &tracerParams,
+                                                  apiCallbackData.apiOrdinal,
+                                                  apiCallbackData.prologCallbacks,
+                                                  apiCallbackData.epilogCallbacks,
+                                                  *tracerParams.phVertexA,
+                                                  *tracerParams.phVertexB,
+                                                  *tracerParams.ppCount,
+                                                  *tracerParams.pphEdges);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeFabricEdgeGetVerticesExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zeFabricEdgeGetVerticesExp(
+        ze_fabric_edge_handle_t hEdge,                  ///< [in] handle of the fabric edge instance
+        ze_fabric_vertex_handle_t* phVertexA,           ///< [out] fabric vertex connected to one end of the given fabric edge.
+        ze_fabric_vertex_handle_t* phVertexB            ///< [out] fabric vertex connected to other end of the given fabric edge.
+        )
+    {
+        auto pfnGetVerticesExp = context.zeDdiTable.FabricEdgeExp.pfnGetVerticesExp;
+
+        if( nullptr == pfnGetVerticesExp)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.FabricEdgeExp.pfnGetVerticesExp, hEdge, phVertexA, phVertexB);
+
+        // capture parameters
+        ze_fabric_edge_get_vertices_exp_params_t tracerParams = {
+            &hEdge,
+            &phVertexA,
+            &phVertexB
+        };
+
+        tracing_layer::APITracerCallbackDataImp<ze_pfnFabricEdgeGetVerticesExpCb_t> apiCallbackData;
+
+        ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnFabricEdgeGetVerticesExpCb_t, FabricEdge, pfnGetVerticesExpCb);
+
+
+        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.FabricEdgeExp.pfnGetVerticesExp,
+                                                  &tracerParams,
+                                                  apiCallbackData.apiOrdinal,
+                                                  apiCallbackData.prologCallbacks,
+                                                  apiCallbackData.epilogCallbacks,
+                                                  *tracerParams.phEdge,
+                                                  *tracerParams.pphVertexA,
+                                                  *tracerParams.pphVertexB);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeFabricEdgeGetPropertiesExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zeFabricEdgeGetPropertiesExp(
+        ze_fabric_edge_handle_t hEdge,                  ///< [in] handle of the fabric edge
+        ze_fabric_edge_exp_properties_t* pEdgeProperties///< [in,out] query result for fabric edge properties
+        )
+    {
+        auto pfnGetPropertiesExp = context.zeDdiTable.FabricEdgeExp.pfnGetPropertiesExp;
+
+        if( nullptr == pfnGetPropertiesExp)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.FabricEdgeExp.pfnGetPropertiesExp, hEdge, pEdgeProperties);
+
+        // capture parameters
+        ze_fabric_edge_get_properties_exp_params_t tracerParams = {
+            &hEdge,
+            &pEdgeProperties
+        };
+
+        tracing_layer::APITracerCallbackDataImp<ze_pfnFabricEdgeGetPropertiesExpCb_t> apiCallbackData;
+
+        ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnFabricEdgeGetPropertiesExpCb_t, FabricEdge, pfnGetPropertiesExpCb);
+
+
+        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.FabricEdgeExp.pfnGetPropertiesExp,
+                                                  &tracerParams,
+                                                  apiCallbackData.apiOrdinal,
+                                                  apiCallbackData.prologCallbacks,
+                                                  apiCallbackData.epilogCallbacks,
+                                                  *tracerParams.phEdge,
+                                                  *tracerParams.ppEdgeProperties);
+    }
+
 } // namespace tracing_layer
 
 #if defined(__cplusplus)
@@ -5676,6 +5992,37 @@ zeGetDeviceProcAddrTable(
 
     dditable.pfnPciGetPropertiesExt                      = pDdiTable->pfnPciGetPropertiesExt;
     pDdiTable->pfnPciGetPropertiesExt                    = tracing_layer::zeDevicePciGetPropertiesExt;
+
+    return result;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Exported function for filling application's DeviceExp table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+ZE_DLLEXPORT ze_result_t ZE_APICALL
+zeGetDeviceExpProcAddrTable(
+    ze_api_version_t version,                       ///< [in] API version requested
+    ze_device_exp_dditable_t* pDdiTable             ///< [in,out] pointer to table of DDI function pointers
+    )
+{
+    auto& dditable = tracing_layer::context.zeDdiTable.DeviceExp;
+
+    if( nullptr == pDdiTable )
+        return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+    if (ZE_MAJOR_VERSION(tracing_layer::context.version) != ZE_MAJOR_VERSION(version) ||
+        ZE_MINOR_VERSION(tracing_layer::context.version) > ZE_MINOR_VERSION(version))
+        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+
+    ze_result_t result = ZE_RESULT_SUCCESS;
+
+    dditable.pfnGetFabricVertexExp                       = pDdiTable->pfnGetFabricVertexExp;
+    pDdiTable->pfnGetFabricVertexExp                     = tracing_layer::zeDeviceGetFabricVertexExp;
 
     return result;
 }
@@ -6485,6 +6832,83 @@ zeGetVirtualMemProcAddrTable(
 
     dditable.pfnGetAccessAttribute                       = pDdiTable->pfnGetAccessAttribute;
     pDdiTable->pfnGetAccessAttribute                     = tracing_layer::zeVirtualMemGetAccessAttribute;
+
+    return result;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Exported function for filling application's FabricEdgeExp table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+ZE_DLLEXPORT ze_result_t ZE_APICALL
+zeGetFabricEdgeExpProcAddrTable(
+    ze_api_version_t version,                       ///< [in] API version requested
+    ze_fabric_edge_exp_dditable_t* pDdiTable        ///< [in,out] pointer to table of DDI function pointers
+    )
+{
+    auto& dditable = tracing_layer::context.zeDdiTable.FabricEdgeExp;
+
+    if( nullptr == pDdiTable )
+        return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+    if (ZE_MAJOR_VERSION(tracing_layer::context.version) != ZE_MAJOR_VERSION(version) ||
+        ZE_MINOR_VERSION(tracing_layer::context.version) > ZE_MINOR_VERSION(version))
+        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+
+    ze_result_t result = ZE_RESULT_SUCCESS;
+
+    dditable.pfnGetExp                                   = pDdiTable->pfnGetExp;
+    pDdiTable->pfnGetExp                                 = tracing_layer::zeFabricEdgeGetExp;
+
+    dditable.pfnGetVerticesExp                           = pDdiTable->pfnGetVerticesExp;
+    pDdiTable->pfnGetVerticesExp                         = tracing_layer::zeFabricEdgeGetVerticesExp;
+
+    dditable.pfnGetPropertiesExp                         = pDdiTable->pfnGetPropertiesExp;
+    pDdiTable->pfnGetPropertiesExp                       = tracing_layer::zeFabricEdgeGetPropertiesExp;
+
+    return result;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Exported function for filling application's FabricVertexExp table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+ZE_DLLEXPORT ze_result_t ZE_APICALL
+zeGetFabricVertexExpProcAddrTable(
+    ze_api_version_t version,                       ///< [in] API version requested
+    ze_fabric_vertex_exp_dditable_t* pDdiTable      ///< [in,out] pointer to table of DDI function pointers
+    )
+{
+    auto& dditable = tracing_layer::context.zeDdiTable.FabricVertexExp;
+
+    if( nullptr == pDdiTable )
+        return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+    if (ZE_MAJOR_VERSION(tracing_layer::context.version) != ZE_MAJOR_VERSION(version) ||
+        ZE_MINOR_VERSION(tracing_layer::context.version) > ZE_MINOR_VERSION(version))
+        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+
+    ze_result_t result = ZE_RESULT_SUCCESS;
+
+    dditable.pfnGetExp                                   = pDdiTable->pfnGetExp;
+    pDdiTable->pfnGetExp                                 = tracing_layer::zeFabricVertexGetExp;
+
+    dditable.pfnGetSubVerticesExp                        = pDdiTable->pfnGetSubVerticesExp;
+    pDdiTable->pfnGetSubVerticesExp                      = tracing_layer::zeFabricVertexGetSubVerticesExp;
+
+    dditable.pfnGetPropertiesExp                         = pDdiTable->pfnGetPropertiesExp;
+    pDdiTable->pfnGetPropertiesExp                       = tracing_layer::zeFabricVertexGetPropertiesExp;
+
+    dditable.pfnGetDeviceExp                             = pDdiTable->pfnGetDeviceExp;
+    pDdiTable->pfnGetDeviceExp                           = tracing_layer::zeFabricVertexGetDeviceExp;
 
     return result;
 }

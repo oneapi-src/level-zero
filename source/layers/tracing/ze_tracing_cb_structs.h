@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (C) 2021 Intel Corporation
+ * Copyright (C) 2021-2022 Intel Corporation
  *
  * SPDX-License-Identifier: MIT
  *
@@ -59,6 +59,7 @@ typedef struct _zel_device_callbacks_t
     ze_pfnDeviceReserveCacheExtCb_t                                 pfnReserveCacheExtCb;
     ze_pfnDeviceSetCacheAdviceExtCb_t                               pfnSetCacheAdviceExtCb;
     ze_pfnDevicePciGetPropertiesExtCb_t                             pfnPciGetPropertiesExtCb;
+    ze_pfnDeviceGetFabricVertexExpCb_t                              pfnGetFabricVertexExpCb;
 } zel_device_callbacks_t;
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -257,6 +258,25 @@ typedef struct _zel_virtual_mem_callbacks_t
 } zel_virtual_mem_callbacks_t;
 
 ///////////////////////////////////////////////////////////////////////////////
+/// @brief Table of FabricEdge callback functions pointers
+typedef struct _zel_fabric_edge_callbacks_t
+{
+    ze_pfnFabricEdgeGetExpCb_t                                      pfnGetExpCb;
+    ze_pfnFabricEdgeGetVerticesExpCb_t                              pfnGetVerticesExpCb;
+    ze_pfnFabricEdgeGetPropertiesExpCb_t                            pfnGetPropertiesExpCb;
+} zel_fabric_edge_callbacks_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Table of FabricVertex callback functions pointers
+typedef struct _zel_fabric_vertex_callbacks_t
+{
+    ze_pfnFabricVertexGetExpCb_t                                    pfnGetExpCb;
+    ze_pfnFabricVertexGetSubVerticesExpCb_t                         pfnGetSubVerticesExpCb;
+    ze_pfnFabricVertexGetPropertiesExpCb_t                          pfnGetPropertiesExpCb;
+    ze_pfnFabricVertexGetDeviceExpCb_t                              pfnGetDeviceExpCb;
+} zel_fabric_vertex_callbacks_t;
+
+///////////////////////////////////////////////////////////////////////////////
 /// @brief Container for all callbacks
 typedef struct _zel_all_core_callbacks_t
 {
@@ -277,6 +297,8 @@ typedef struct _zel_all_core_callbacks_t
     zel_physical_mem_callbacks_t        PhysicalMem;
     zel_sampler_callbacks_t             Sampler;
     zel_virtual_mem_callbacks_t         VirtualMem;
+    zel_fabric_edge_callbacks_t         FabricEdge;
+    zel_fabric_vertex_callbacks_t       FabricVertex;
 } zel_all_core_callbacks_t;
 
 

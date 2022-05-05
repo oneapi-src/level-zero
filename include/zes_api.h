@@ -5,7 +5,7 @@
  * SPDX-License-Identifier: MIT
  *
  * @file zes_api.h
- * @version v1.3-r1.3.7
+ * @version v1.4-r1.4.0
  *
  */
 #ifndef _ZES_API_H
@@ -251,6 +251,14 @@ typedef struct _zes_diag_test_t zes_diag_test_t;
 typedef struct _zes_diag_properties_t zes_diag_properties_t;
 
 ///////////////////////////////////////////////////////////////////////////////
+/// @brief Forward-declare zes_device_ecc_desc_t
+typedef struct _zes_device_ecc_desc_t zes_device_ecc_desc_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Forward-declare zes_device_ecc_properties_t
+typedef struct _zes_device_ecc_properties_t zes_device_ecc_properties_t;
+
+///////////////////////////////////////////////////////////////////////////////
 /// @brief Forward-declare zes_engine_properties_t
 typedef struct _zes_engine_properties_t zes_engine_properties_t;
 
@@ -429,6 +437,14 @@ typedef struct _zes_temp_threshold_t zes_temp_threshold_t;
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief Forward-declare zes_temp_config_t
 typedef struct _zes_temp_config_t zes_temp_config_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Forward-declare zes_power_limit_ext_desc_t
+typedef struct _zes_power_limit_ext_desc_t zes_power_limit_ext_desc_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Forward-declare zes_power_ext_properties_t
+typedef struct _zes_power_ext_properties_t zes_power_ext_properties_t;
 
 
 #if !defined(__GNUC__)
@@ -1105,6 +1121,150 @@ zesDiagnosticsRunTests(
 #if !defined(__GNUC__)
 #pragma endregion
 #endif
+// Intel 'oneAPI' Level-Zero Tool APIs for System Resource Management (Sysman) - ECC management
+#if !defined(__GNUC__)
+#pragma region ecc
+#endif
+///////////////////////////////////////////////////////////////////////////////
+/// @brief ECC State
+typedef enum _zes_device_ecc_state_t
+{
+    ZES_DEVICE_ECC_STATE_UNAVAILABLE = 0,           ///< None
+    ZES_DEVICE_ECC_STATE_ENABLED = 1,               ///< ECC enabled.
+    ZES_DEVICE_ECC_STATE_DISABLED = 2,              ///< ECC disabled.
+    ZES_DEVICE_ECC_STATE_FORCE_UINT32 = 0x7fffffff
+
+} zes_device_ecc_state_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief State Change Requirements
+typedef enum _zes_device_action_t
+{
+    ZES_DEVICE_ACTION_NONE = 0,                     ///< No action.
+    ZES_DEVICE_ACTION_WARM_CARD_RESET = 1,          ///< Warm reset of the card.
+    ZES_DEVICE_ACTION_COLD_CARD_RESET = 2,          ///< Cold reset of the card.
+    ZES_DEVICE_ACTION_COLD_SYSTEM_REBOOT = 3,       ///< Cold reboot of the system.
+    ZES_DEVICE_ACTION_FORCE_UINT32 = 0x7fffffff
+
+} zes_device_action_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief ECC State Descriptor
+typedef struct _zes_device_ecc_desc_t
+{
+    zes_structure_type_t stype;                     ///< [in] type of this structure
+    const void* pNext;                              ///< [in][optional] pointer to extension-specific structure
+    zes_device_ecc_state_t state;                   ///< [out] ECC state
+
+} zes_device_ecc_desc_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief ECC State
+typedef struct _zes_device_ecc_properties_t
+{
+    zes_structure_type_t stype;                     ///< [in] type of this structure
+    void* pNext;                                    ///< [in,out][optional] pointer to extension-specific structure
+    zes_device_ecc_state_t currentState;            ///< [out] Current ECC state
+    zes_device_ecc_state_t pendingState;            ///< [out] Pending ECC state
+    zes_device_action_t pendingAction;              ///< [out] Pending action
+
+} zes_device_ecc_properties_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Is ECC functionality available - true or false?
+/// 
+/// @details
+///     - The application may call this function from simultaneous threads.
+///     - The implementation of this function should be lock-free.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hDevice`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == pAvailable`
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zesDeviceEccAvailable(
+    zes_device_handle_t hDevice,                    ///< [in] Handle for the component.
+    ze_bool_t* pAvailable                           ///< [out] ECC functionality is available (true)/unavailable (false).
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Is ECC support configurable - true or false?
+/// 
+/// @details
+///     - The application may call this function from simultaneous threads.
+///     - The implementation of this function should be lock-free.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hDevice`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == pConfigurable`
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zesDeviceEccConfigurable(
+    zes_device_handle_t hDevice,                    ///< [in] Handle for the component.
+    ze_bool_t* pConfigurable                        ///< [out] ECC can be enabled/disabled (true)/enabled/disabled (false).
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Get current ECC state, pending state, and pending action
+/// 
+/// @details
+///     - The application may call this function from simultaneous threads.
+///     - The implementation of this function should be lock-free.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hDevice`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == pState`
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zesDeviceGetEccState(
+    zes_device_handle_t hDevice,                    ///< [in] Handle for the component.
+    zes_device_ecc_properties_t* pState             ///< [out] ECC state, pending state, and pending action for state change.
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Set new ECC state
+/// 
+/// @details
+///     - The application may call this function from simultaneous threads.
+///     - The implementation of this function should be lock-free.
+///     - ::zesDeviceGetState should be called to determine pending action
+///       required to implement state change.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hDevice`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == newState`
+///         + `nullptr == pState`
+///     - ::ZE_RESULT_ERROR_INVALID_ENUMERATION
+///         + `::ZES_DEVICE_ECC_STATE_DISABLED < newState->state`
+///     - ::ZE_RESULT_WARNING_ACTION_REQUIRED
+///         + User must look at the pendingAction attribute of pState & perform the action required to complete the ECC state change.
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zesDeviceSetEccState(
+    zes_device_handle_t hDevice,                    ///< [in] Handle for the component.
+    const zes_device_ecc_desc_t* newState,          ///< [in] Pointer to desired ECC state.
+    zes_device_ecc_properties_t* pState             ///< [out] ECC state, pending state, and pending action for state change.
+    );
+
+#if !defined(__GNUC__)
+#pragma endregion
+#endif
 // Intel 'oneAPI' Level-Zero Tool APIs for System Resource Management (Sysman) - Engine groups
 #if !defined(__GNUC__)
 #pragma region engine
@@ -1541,9 +1701,8 @@ typedef struct _zes_fabric_port_properties_t
 /// @brief Provides information about the fabric link attached to a port
 typedef struct _zes_fabric_link_type_t
 {
-    char desc[ZES_MAX_FABRIC_LINK_TYPE_SIZE];       ///< [out] This provides a static textural description of the physic
-                                                    ///< attachment type. Will be set to the string "unkown" if this cannot be
-                                                    ///< determined for this port.
+    char desc[ZES_MAX_FABRIC_LINK_TYPE_SIZE];       ///< [out] Description of link technology. Will be set to the string
+                                                    ///< "unkown" if this cannot be determined for this link.
 
 } zes_fabric_link_type_t;
 
@@ -1565,7 +1724,7 @@ typedef struct _zes_fabric_port_state_t
     zes_structure_type_t stype;                     ///< [in] type of this structure
     const void* pNext;                              ///< [in][optional] pointer to extension-specific structure
     zes_fabric_port_status_t status;                ///< [out] The current status of the port
-    zes_fabric_port_qual_issue_flags_t qualityIssues;   ///< [out] If status is ::ZES_FABRIC_PORT_STATUS_DEGRADED, 
+    zes_fabric_port_qual_issue_flags_t qualityIssues;   ///< [out] If status is ::ZES_FABRIC_PORT_STATUS_DEGRADED,
                                                     ///< then this gives a combination of ::zes_fabric_port_qual_issue_flag_t
                                                     ///< for quality issues that have been detected;
                                                     ///< otherwise, 0 indicates there are no quality issues with the link at
@@ -2194,21 +2353,29 @@ typedef struct _zes_freq_properties_t
 } zes_freq_properties_t;
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Frequency range between which the hardware can operate. The limits can
-///        be above or below the hardware limits - the hardware will clamp
-///        appropriately.
+/// @brief Frequency range between which the hardware can operate.
+/// 
+/// @details
+///     - When setting limits, they will be clamped to the hardware limits.
+///     - When setting limits, ensure that the max frequency is greater than or
+///       equal to the min frequency specified.
+///     - When setting limits to return to factory settings, specify -1 for both
+///       the min and max limit.
 typedef struct _zes_freq_range_t
 {
     double min;                                     ///< [in,out] The min frequency in MHz below which hardware frequency
                                                     ///< management will not request frequencies. On input, setting to 0 will
-                                                    ///< permit the frequency to go down to the hardware minimum. On output, a
-                                                    ///< negative value indicates that no external minimum frequency limit is
-                                                    ///< in effect.
+                                                    ///< permit the frequency to go down to the hardware minimum while setting
+                                                    ///< to -1 will return the min frequency limit to the factory value (can be
+                                                    ///< larger than the hardware min). On output, a negative value indicates
+                                                    ///< that no external minimum frequency limit is in effect.
     double max;                                     ///< [in,out] The max frequency in MHz above which hardware frequency
                                                     ///< management will not request frequencies. On input, setting to 0 or a
                                                     ///< very big number will permit the frequency to go all the way up to the
-                                                    ///< hardware maximum. On output, a negative number indicates that no
-                                                    ///< external maximum frequency limit is in effect.
+                                                    ///< hardware maximum while setting to -1 will return the max frequency to
+                                                    ///< the factory value (which can be less than the hardware max). On
+                                                    ///< output, a negative number indicates that no external maximum frequency
+                                                    ///< limit is in effect.
 
 } zes_freq_range_t;
 
@@ -3337,6 +3504,61 @@ zesPerformanceFactorSetConfig(
 #pragma region power
 #endif
 ///////////////////////////////////////////////////////////////////////////////
+/// @brief Power Domain
+typedef enum _zes_power_domain_t
+{
+    ZES_POWER_DOMAIN_UNKNOWN = 0,                   ///< The PUnit power domain level cannot be determined.
+    ZES_POWER_DOMAIN_CARD = 1,                      ///< The PUnit power domain is a card-level power domain.
+    ZES_POWER_DOMAIN_PACKAGE = 2,                   ///< The PUnit power domain is a package-level power domain.
+    ZES_POWER_DOMAIN_STACK = 3,                     ///< The PUnit power domain is a stack-level power domain.
+    ZES_POWER_DOMAIN_FORCE_UINT32 = 0x7fffffff
+
+} zes_power_domain_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Power Level Type
+typedef enum _zes_power_level_t
+{
+    ZES_POWER_LEVEL_UNKNOWN = 0,                    ///< The PUnit power monitoring duration cannot be determined.
+    ZES_POWER_LEVEL_SUSTAINED = 1,                  ///< The PUnit determines effective power draw by computing a moving
+                                                    ///< average of the actual power draw over a time interval (longer than
+                                                    ///< BURST).
+    ZES_POWER_LEVEL_BURST = 2,                      ///< The PUnit determines effective power draw by computing a moving
+                                                    ///< average of the actual power draw over a time interval (longer than
+                                                    ///< PEAK).
+    ZES_POWER_LEVEL_PEAK = 3,                       ///< The PUnit determines effective power draw by computing a moving
+                                                    ///< average of the actual power draw over a very short time interval.
+    ZES_POWER_LEVEL_INSTANTANEOUS = 4,              ///< The PUnit predicts effective power draw using the current device
+                                                    ///< configuration (frequency, voltage, etc...) & throttles proactively to
+                                                    ///< stay within the specified limit.
+    ZES_POWER_LEVEL_FORCE_UINT32 = 0x7fffffff
+
+} zes_power_level_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Power Source Type
+typedef enum _zes_power_source_t
+{
+    ZES_POWER_SOURCE_ANY = 0,                       ///< Limit active no matter whether the power source is mains powered or
+                                                    ///< battery powered.
+    ZES_POWER_SOURCE_MAINS = 1,                     ///< Limit active only when the device is mains powered.
+    ZES_POWER_SOURCE_BATTERY = 2,                   ///< Limit active only when the device is battery powered.
+    ZES_POWER_SOURCE_FORCE_UINT32 = 0x7fffffff
+
+} zes_power_source_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Limit Unit
+typedef enum _zes_limit_unit_t
+{
+    ZES_LIMIT_UNIT_UNKNOWN = 0,                     ///< The PUnit power monitoring unit cannot be determined.
+    ZES_LIMIT_UNIT_CURRENT = 1,                     ///< The limit is specified in milliamperes of current drawn.
+    ZES_LIMIT_UNIT_POWER = 2,                       ///< The limit is specified in milliwatts of power generated.
+    ZES_LIMIT_UNIT_FORCE_UINT32 = 0x7fffffff
+
+} zes_limit_unit_t;
+
+///////////////////////////////////////////////////////////////////////////////
 /// @brief Properties related to device power settings
 typedef struct _zes_power_properties_t
 {
@@ -3349,10 +3571,12 @@ typedef struct _zes_power_properties_t
                                                     ///< user has permissions.
     ze_bool_t isEnergyThresholdSupported;           ///< [out] Indicates if this power domain supports the energy threshold
                                                     ///< event (::ZES_EVENT_TYPE_FLAG_ENERGY_THRESHOLD_CROSSED).
-    int32_t defaultLimit;                           ///< [out] The factory default TDP power limit of the part in milliwatts. A
-                                                    ///< value of -1 means that this is not known.
-    int32_t minLimit;                               ///< [out] The minimum power limit in milliwatts that can be requested.
-    int32_t maxLimit;                               ///< [out] The maximum power limit in milliwatts that can be requested.
+    int32_t defaultLimit;                           ///< [out] (Deprecated) The factory default TDP power limit of the part in
+                                                    ///< milliwatts. A value of -1 means that this is not known.
+    int32_t minLimit;                               ///< [out] (Deprecated) The minimum power limit in milliwatts that can be
+                                                    ///< requested. A value of -1 means that this is not known.
+    int32_t maxLimit;                               ///< [out] (Deprecated) The maximum power limit in milliwatts that can be
+                                                    ///< requested. A value of -1 means that this is not known.
 
 } zes_power_properties_t;
 
@@ -4728,6 +4952,141 @@ zesTemperatureGetState(
     zes_temp_handle_t hTemperature,                 ///< [in] Handle for the component.
     double* pTemperature                            ///< [in,out] Will contain the temperature read from the specified sensor
                                                     ///< in degrees Celsius.
+    );
+
+#if !defined(__GNUC__)
+#pragma endregion
+#endif
+// Intel 'oneAPI' Level-Zero Sysman Extension APIs for Power Limits
+#if !defined(__GNUC__)
+#pragma region powerLimits
+#endif
+///////////////////////////////////////////////////////////////////////////////
+#ifndef ZES_POWER_LIMITS_EXT_NAME
+/// @brief Power Limits Extension Name
+#define ZES_POWER_LIMITS_EXT_NAME  "ZES_extension_power_limits"
+#endif // ZES_POWER_LIMITS_EXT_NAME
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Power Limits Extension Version(s)
+typedef enum _zes_power_limits_ext_version_t
+{
+    ZES_POWER_LIMITS_EXT_VERSION_1_0 = ZE_MAKE_VERSION( 1, 0 ), ///< version 1.0
+    ZES_POWER_LIMITS_EXT_VERSION_CURRENT = ZE_MAKE_VERSION( 1, 0 ), ///< latest known version
+    ZES_POWER_LIMITS_EXT_VERSION_FORCE_UINT32 = 0x7fffffff
+
+} zes_power_limits_ext_version_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Device power/current limit descriptor.
+typedef struct _zes_power_limit_ext_desc_t
+{
+    ze_structure_type_t stype;                      ///< [in] type of this structure
+    const void* pNext;                              ///< [in][optional] must be null or a pointer to an extension-specific
+                                                    ///< structure (i.e. contains sType and pNext).
+    zes_power_level_t const level;                  ///< [out] duration type over which the power draw is measured, i.e.
+                                                    ///< sustained, burst, peak, or critical.
+    zes_power_source_t const source;                ///< [out] source of power used by the system, i.e. AC or DC.
+    zes_limit_unit_t const limitUnit;               ///< [out] unit used for specifying limit, i.e. current units (milliamps)
+                                                    ///< or power units (milliwatts).
+    ze_bool_t const enabledStateLocked;             ///< [out] indicates if the power limit state (enabled/ignored) can be set
+                                                    ///< (false) or is locked (true).
+    ze_bool_t enabled;                              ///< [in,out] indicates if the limit is enabled (true) or ignored (false).
+                                                    ///< If enabledStateIsLocked is True, this value is ignored.
+    ze_bool_t const intervalValueLocked;            ///< [out] indicates if the interval can be modified (false) or is fixed
+                                                    ///< (true).
+    int32_t interval;                               ///< [in,out] power averaging window in milliseconds. If
+                                                    ///< intervalValueLocked is true, this value is ignored.
+    ze_bool_t const limitValueLocked;               ///< [out] indicates if the limit can be set (false) or if the limit is
+                                                    ///< fixed (true).
+    int32_t limit;                                  ///< [in,out] limit value. If limitValueLocked is true, this value is
+                                                    ///< ignored. The value should be provided in the unit specified by
+                                                    ///< limitUnit.
+
+} zes_power_limit_ext_desc_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Extension properties related to device power settings
+/// 
+/// @details
+///     - This structure may be returned from ::zesPowerGetProperties via the
+///       `pNext` member of ::zes_power_properties_t.
+///     - This structure may also be returned from ::zesPowerGetProperties via
+///       the `pNext` member of ::zes_power_ext_properties_t
+///     - Used for determining the power domain level, i.e. card-level v/s
+///       package-level v/s stack-level & the factory default power limits.
+typedef struct _zes_power_ext_properties_t
+{
+    zes_structure_type_t stype;                     ///< [in] type of this structure
+    void* pNext;                                    ///< [in,out][optional] pointer to extension-specific structure
+    zes_power_domain_t const domain;                ///< [out] domain that the power limit belongs to.
+    zes_power_limit_ext_desc_t* defaultLimit;       ///< [out] the factory default limit of the part.
+
+} zes_power_ext_properties_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Get power limits
+/// 
+/// @details
+///     - The application may call this function from simultaneous threads.
+///     - The implementation of this function should be lock-free.
+///     - This function returns all the power limits assocaited with the
+///       supplied power domain.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hPower`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == pCount`
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zesPowerGetLimitsExt(
+    zes_pwr_handle_t hPower,                        ///< [in] Power domain handle instance.
+    uint32_t* pCount,                               ///< [in,out] Pointer to the number of power limit descriptors. If count is
+                                                    ///< zero, then the driver shall update the value with the total number of
+                                                    ///< components of this type that are available. If count is greater than
+                                                    ///< the number of components of this type that are available, then the
+                                                    ///< driver shall update the value with the correct number of components.
+    zes_power_limit_ext_desc_t* pSustained          ///< [in,out][optional][range(0, *pCount)] Array of query results for power
+                                                    ///< limit descriptors. If count is less than the number of components of
+                                                    ///< this type that are available, then the driver shall only retrieve that
+                                                    ///< number of components.
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Set power limits
+/// 
+/// @details
+///     - The application can only modify unlocked members of the limit
+///       descriptors returned by ${s}PowerGetLimitsExt.
+///     - Not all the limits returned by ${s}PowerGetLimitsExt need to be
+///       supplied to this function.
+///     - Limits do not have to be supplied in the same order as returned by
+///       ${s}PowerGetLimitsExt.
+///     - The same limit can be supplied multiple times. Limits are applied in
+///       the order in which they are supplied.
+///     - The application may call this function from simultaneous threads.
+///     - The implementation of this function should be lock-free.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hPower`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == pCount`
+///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
+///         + User does not have permissions to make these modifications.
+///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
+///         + The device is in use, meaning that the GPU is under Over clocking, applying power limits under overclocking is not supported.
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zesPowerSetLimitsExt(
+    zes_pwr_handle_t hPower,                        ///< [in] Handle for the component.
+    uint32_t* pCount,                               ///< [in] Pointer to the number of power limit descriptors.
+    zes_power_limit_ext_desc_t* pSustained          ///< [in][optional][range(0, *pCount)] Array of power limit descriptors.
     );
 
 #if !defined(__GNUC__)

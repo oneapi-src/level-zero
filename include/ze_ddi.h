@@ -5,7 +5,7 @@
  * SPDX-License-Identifier: MIT
  *
  * @file ze_ddi.h
- * @version v1.3-r1.3.7
+ * @version v1.4-r1.4.0
  *
  */
 #ifndef _ZE_DDI_H
@@ -312,6 +312,42 @@ zeGetDeviceProcAddrTable(
 typedef ze_result_t (ZE_APICALL *ze_pfnGetDeviceProcAddrTable_t)(
     ze_api_version_t,
     ze_device_dditable_t*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zeDeviceGetFabricVertexExp 
+typedef ze_result_t (ZE_APICALL *ze_pfnDeviceGetFabricVertexExp_t)(
+    ze_device_handle_t,
+    ze_fabric_vertex_handle_t*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Table of DeviceExp functions pointers
+typedef struct _ze_device_exp_dditable_t
+{
+    ze_pfnDeviceGetFabricVertexExp_t                            pfnGetFabricVertexExp;
+} ze_device_exp_dditable_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Exported function for filling application's DeviceExp table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+ZE_DLLEXPORT ze_result_t ZE_APICALL
+zeGetDeviceExpProcAddrTable(
+    ze_api_version_t version,                       ///< [in] API version requested
+    ze_device_exp_dditable_t* pDdiTable             ///< [in,out] pointer to table of DDI function pointers
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zeGetDeviceExpProcAddrTable
+typedef ze_result_t (ZE_APICALL *ze_pfnGetDeviceExpProcAddrTable_t)(
+    ze_api_version_t,
+    ze_device_exp_dditable_t*
     );
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1858,12 +1894,130 @@ typedef ze_result_t (ZE_APICALL *ze_pfnGetVirtualMemProcAddrTable_t)(
     );
 
 ///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zeFabricVertexGetExp 
+typedef ze_result_t (ZE_APICALL *ze_pfnFabricVertexGetExp_t)(
+    ze_driver_handle_t,
+    uint32_t*,
+    ze_fabric_vertex_handle_t*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zeFabricVertexGetSubVerticesExp 
+typedef ze_result_t (ZE_APICALL *ze_pfnFabricVertexGetSubVerticesExp_t)(
+    ze_fabric_vertex_handle_t,
+    uint32_t*,
+    ze_fabric_vertex_handle_t*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zeFabricVertexGetPropertiesExp 
+typedef ze_result_t (ZE_APICALL *ze_pfnFabricVertexGetPropertiesExp_t)(
+    ze_fabric_vertex_handle_t,
+    ze_fabric_vertex_exp_properties_t*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zeFabricVertexGetDeviceExp 
+typedef ze_result_t (ZE_APICALL *ze_pfnFabricVertexGetDeviceExp_t)(
+    ze_fabric_vertex_handle_t,
+    ze_device_handle_t*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Table of FabricVertexExp functions pointers
+typedef struct _ze_fabric_vertex_exp_dditable_t
+{
+    ze_pfnFabricVertexGetExp_t                                  pfnGetExp;
+    ze_pfnFabricVertexGetSubVerticesExp_t                       pfnGetSubVerticesExp;
+    ze_pfnFabricVertexGetPropertiesExp_t                        pfnGetPropertiesExp;
+    ze_pfnFabricVertexGetDeviceExp_t                            pfnGetDeviceExp;
+} ze_fabric_vertex_exp_dditable_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Exported function for filling application's FabricVertexExp table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+ZE_DLLEXPORT ze_result_t ZE_APICALL
+zeGetFabricVertexExpProcAddrTable(
+    ze_api_version_t version,                       ///< [in] API version requested
+    ze_fabric_vertex_exp_dditable_t* pDdiTable      ///< [in,out] pointer to table of DDI function pointers
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zeGetFabricVertexExpProcAddrTable
+typedef ze_result_t (ZE_APICALL *ze_pfnGetFabricVertexExpProcAddrTable_t)(
+    ze_api_version_t,
+    ze_fabric_vertex_exp_dditable_t*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zeFabricEdgeGetExp 
+typedef ze_result_t (ZE_APICALL *ze_pfnFabricEdgeGetExp_t)(
+    ze_fabric_vertex_handle_t,
+    ze_fabric_vertex_handle_t,
+    uint32_t*,
+    ze_fabric_edge_handle_t*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zeFabricEdgeGetVerticesExp 
+typedef ze_result_t (ZE_APICALL *ze_pfnFabricEdgeGetVerticesExp_t)(
+    ze_fabric_edge_handle_t,
+    ze_fabric_vertex_handle_t*,
+    ze_fabric_vertex_handle_t*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zeFabricEdgeGetPropertiesExp 
+typedef ze_result_t (ZE_APICALL *ze_pfnFabricEdgeGetPropertiesExp_t)(
+    ze_fabric_edge_handle_t,
+    ze_fabric_edge_exp_properties_t*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Table of FabricEdgeExp functions pointers
+typedef struct _ze_fabric_edge_exp_dditable_t
+{
+    ze_pfnFabricEdgeGetExp_t                                    pfnGetExp;
+    ze_pfnFabricEdgeGetVerticesExp_t                            pfnGetVerticesExp;
+    ze_pfnFabricEdgeGetPropertiesExp_t                          pfnGetPropertiesExp;
+} ze_fabric_edge_exp_dditable_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Exported function for filling application's FabricEdgeExp table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+ZE_DLLEXPORT ze_result_t ZE_APICALL
+zeGetFabricEdgeExpProcAddrTable(
+    ze_api_version_t version,                       ///< [in] API version requested
+    ze_fabric_edge_exp_dditable_t* pDdiTable        ///< [in,out] pointer to table of DDI function pointers
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zeGetFabricEdgeExpProcAddrTable
+typedef ze_result_t (ZE_APICALL *ze_pfnGetFabricEdgeExpProcAddrTable_t)(
+    ze_api_version_t,
+    ze_fabric_edge_exp_dditable_t*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
 /// @brief Container for all DDI tables
 typedef struct _ze_dditable_t
 {
     ze_global_dditable_t                Global;
     ze_driver_dditable_t                Driver;
     ze_device_dditable_t                Device;
+    ze_device_exp_dditable_t            DeviceExp;
     ze_context_dditable_t               Context;
     ze_command_queue_dditable_t         CommandQueue;
     ze_command_list_dditable_t          CommandList;
@@ -1881,6 +2035,8 @@ typedef struct _ze_dditable_t
     ze_physical_mem_dditable_t          PhysicalMem;
     ze_mem_dditable_t                   Mem;
     ze_virtual_mem_dditable_t           VirtualMem;
+    ze_fabric_vertex_exp_dditable_t     FabricVertexExp;
+    ze_fabric_edge_exp_dditable_t       FabricEdgeExp;
 } ze_dditable_t;
 
 #if defined(__cplusplus)

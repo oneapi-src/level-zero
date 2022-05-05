@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (C) 2019-2021 Intel Corporation
+ * Copyright (C) 2019-2022 Intel Corporation
  *
  * SPDX-License-Identifier: MIT
  *
@@ -4260,6 +4260,246 @@ namespace validation_layer
         return pfnFreeExt( hContext, pMemFreeDesc, ptr );
     }
 
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeFabricVertexGetExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zeFabricVertexGetExp(
+        ze_driver_handle_t hDriver,                     ///< [in] handle of the driver instance
+        uint32_t* pCount,                               ///< [in,out] pointer to the number of fabric vertices.
+                                                        ///< if count is zero, then the driver shall update the value with the
+                                                        ///< total number of fabric vertices available.
+                                                        ///< if count is greater than the number of fabric vertices available, then
+                                                        ///< the driver shall update the value with the correct number of fabric
+                                                        ///< vertices available.
+        ze_fabric_vertex_handle_t* phVertices           ///< [in,out][optional][range(0, *pCount)] array of handle of fabric vertices.
+                                                        ///< if count is less than the number of fabric vertices available, then
+                                                        ///< driver shall only retrieve that number of fabric vertices.
+        )
+    {
+        auto pfnGetExp = context.zeDdiTable.FabricVertexExp.pfnGetExp;
+
+        if( nullptr == pfnGetExp )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        if( context.enableParameterValidation )
+        {
+            if( nullptr == hDriver )
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+            if( nullptr == pCount )
+                return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+        }
+
+        return pfnGetExp( hDriver, pCount, phVertices );
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeFabricVertexGetSubVerticesExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zeFabricVertexGetSubVerticesExp(
+        ze_fabric_vertex_handle_t hVertex,              ///< [in] handle of the fabric vertex object
+        uint32_t* pCount,                               ///< [in,out] pointer to the number of sub-vertices.
+                                                        ///< if count is zero, then the driver shall update the value with the
+                                                        ///< total number of sub-vertices available.
+                                                        ///< if count is greater than the number of sub-vertices available, then
+                                                        ///< the driver shall update the value with the correct number of
+                                                        ///< sub-vertices available.
+        ze_fabric_vertex_handle_t* phSubvertices        ///< [in,out][optional][range(0, *pCount)] array of handle of sub-vertices.
+                                                        ///< if count is less than the number of sub-vertices available, then
+                                                        ///< driver shall only retrieve that number of sub-vertices.
+        )
+    {
+        auto pfnGetSubVerticesExp = context.zeDdiTable.FabricVertexExp.pfnGetSubVerticesExp;
+
+        if( nullptr == pfnGetSubVerticesExp )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        if( context.enableParameterValidation )
+        {
+            if( nullptr == hVertex )
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+            if( nullptr == pCount )
+                return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+        }
+
+        return pfnGetSubVerticesExp( hVertex, pCount, phSubvertices );
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeFabricVertexGetPropertiesExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zeFabricVertexGetPropertiesExp(
+        ze_fabric_vertex_handle_t hVertex,              ///< [in] handle of the fabric vertex
+        ze_fabric_vertex_exp_properties_t* pVertexProperties///< [in,out] query result for fabric vertex properties
+        )
+    {
+        auto pfnGetPropertiesExp = context.zeDdiTable.FabricVertexExp.pfnGetPropertiesExp;
+
+        if( nullptr == pfnGetPropertiesExp )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        if( context.enableParameterValidation )
+        {
+            if( nullptr == hVertex )
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+            if( nullptr == pVertexProperties )
+                return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+        }
+
+        return pfnGetPropertiesExp( hVertex, pVertexProperties );
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeFabricVertexGetDeviceExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zeFabricVertexGetDeviceExp(
+        ze_fabric_vertex_handle_t hVertex,              ///< [in] handle of the fabric vertex
+        ze_device_handle_t* pDevice                     ///< [out] device handle corresponding to fabric vertex
+        )
+    {
+        auto pfnGetDeviceExp = context.zeDdiTable.FabricVertexExp.pfnGetDeviceExp;
+
+        if( nullptr == pfnGetDeviceExp )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        if( context.enableParameterValidation )
+        {
+            if( nullptr == hVertex )
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+            if( nullptr == pDevice )
+                return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+        }
+
+        return pfnGetDeviceExp( hVertex, pDevice );
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeDeviceGetFabricVertexExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zeDeviceGetFabricVertexExp(
+        ze_device_handle_t hVertex,                     ///< [in] handle of the device
+        ze_fabric_vertex_handle_t* pVertex              ///< [out] fabric vertex handle corresponding to device
+        )
+    {
+        auto pfnGetFabricVertexExp = context.zeDdiTable.DeviceExp.pfnGetFabricVertexExp;
+
+        if( nullptr == pfnGetFabricVertexExp )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        if( context.enableParameterValidation )
+        {
+            if( nullptr == hVertex )
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+            if( nullptr == pVertex )
+                return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+        }
+
+        return pfnGetFabricVertexExp( hVertex, pVertex );
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeFabricEdgeGetExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zeFabricEdgeGetExp(
+        ze_fabric_vertex_handle_t hVertexA,             ///< [in] handle of first fabric vertex instance
+        ze_fabric_vertex_handle_t hVertexB,             ///< [in] handle of second fabric vertex instance
+        uint32_t* pCount,                               ///< [in,out] pointer to the number of fabric edges.
+                                                        ///< if count is zero, then the driver shall update the value with the
+                                                        ///< total number of fabric edges available.
+                                                        ///< if count is greater than the number of fabric edges available, then
+                                                        ///< the driver shall update the value with the correct number of fabric
+                                                        ///< edges available.
+        ze_fabric_edge_handle_t* phEdges                ///< [in,out][optional][range(0, *pCount)] array of handle of fabric edges.
+                                                        ///< if count is less than the number of fabric edges available, then
+                                                        ///< driver shall only retrieve that number of fabric edges.
+        )
+    {
+        auto pfnGetExp = context.zeDdiTable.FabricEdgeExp.pfnGetExp;
+
+        if( nullptr == pfnGetExp )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        if( context.enableParameterValidation )
+        {
+            if( nullptr == hVertexA )
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+            if( nullptr == hVertexB )
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+            if( nullptr == pCount )
+                return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+        }
+
+        return pfnGetExp( hVertexA, hVertexB, pCount, phEdges );
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeFabricEdgeGetVerticesExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zeFabricEdgeGetVerticesExp(
+        ze_fabric_edge_handle_t hEdge,                  ///< [in] handle of the fabric edge instance
+        ze_fabric_vertex_handle_t* phVertexA,           ///< [out] fabric vertex connected to one end of the given fabric edge.
+        ze_fabric_vertex_handle_t* phVertexB            ///< [out] fabric vertex connected to other end of the given fabric edge.
+        )
+    {
+        auto pfnGetVerticesExp = context.zeDdiTable.FabricEdgeExp.pfnGetVerticesExp;
+
+        if( nullptr == pfnGetVerticesExp )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        if( context.enableParameterValidation )
+        {
+            if( nullptr == hEdge )
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+            if( nullptr == phVertexA )
+                return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+            if( nullptr == phVertexB )
+                return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+        }
+
+        return pfnGetVerticesExp( hEdge, phVertexA, phVertexB );
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeFabricEdgeGetPropertiesExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zeFabricEdgeGetPropertiesExp(
+        ze_fabric_edge_handle_t hEdge,                  ///< [in] handle of the fabric edge
+        ze_fabric_edge_exp_properties_t* pEdgeProperties///< [in,out] query result for fabric edge properties
+        )
+    {
+        auto pfnGetPropertiesExp = context.zeDdiTable.FabricEdgeExp.pfnGetPropertiesExp;
+
+        if( nullptr == pfnGetPropertiesExp )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        if( context.enableParameterValidation )
+        {
+            if( nullptr == hEdge )
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+            if( nullptr == pEdgeProperties )
+                return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+        }
+
+        return pfnGetPropertiesExp( hEdge, pEdgeProperties );
+    }
+
 } // namespace validation_layer
 
 #if defined(__cplusplus)
@@ -4421,6 +4661,37 @@ zeGetDeviceProcAddrTable(
 
     dditable.pfnPciGetPropertiesExt                      = pDdiTable->pfnPciGetPropertiesExt;
     pDdiTable->pfnPciGetPropertiesExt                    = validation_layer::zeDevicePciGetPropertiesExt;
+
+    return result;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Exported function for filling application's DeviceExp table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+ZE_DLLEXPORT ze_result_t ZE_APICALL
+zeGetDeviceExpProcAddrTable(
+    ze_api_version_t version,                       ///< [in] API version requested
+    ze_device_exp_dditable_t* pDdiTable             ///< [in,out] pointer to table of DDI function pointers
+    )
+{
+    auto& dditable = validation_layer::context.zeDdiTable.DeviceExp;
+
+    if( nullptr == pDdiTable )
+        return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+    if (ZE_MAJOR_VERSION(validation_layer::context.version) != ZE_MAJOR_VERSION(version) ||
+        ZE_MINOR_VERSION(validation_layer::context.version) > ZE_MINOR_VERSION(version))
+        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+
+    ze_result_t result = ZE_RESULT_SUCCESS;
+
+    dditable.pfnGetFabricVertexExp                       = pDdiTable->pfnGetFabricVertexExp;
+    pDdiTable->pfnGetFabricVertexExp                     = validation_layer::zeDeviceGetFabricVertexExp;
 
     return result;
 }
@@ -5230,6 +5501,83 @@ zeGetVirtualMemProcAddrTable(
 
     dditable.pfnGetAccessAttribute                       = pDdiTable->pfnGetAccessAttribute;
     pDdiTable->pfnGetAccessAttribute                     = validation_layer::zeVirtualMemGetAccessAttribute;
+
+    return result;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Exported function for filling application's FabricEdgeExp table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+ZE_DLLEXPORT ze_result_t ZE_APICALL
+zeGetFabricEdgeExpProcAddrTable(
+    ze_api_version_t version,                       ///< [in] API version requested
+    ze_fabric_edge_exp_dditable_t* pDdiTable        ///< [in,out] pointer to table of DDI function pointers
+    )
+{
+    auto& dditable = validation_layer::context.zeDdiTable.FabricEdgeExp;
+
+    if( nullptr == pDdiTable )
+        return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+    if (ZE_MAJOR_VERSION(validation_layer::context.version) != ZE_MAJOR_VERSION(version) ||
+        ZE_MINOR_VERSION(validation_layer::context.version) > ZE_MINOR_VERSION(version))
+        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+
+    ze_result_t result = ZE_RESULT_SUCCESS;
+
+    dditable.pfnGetExp                                   = pDdiTable->pfnGetExp;
+    pDdiTable->pfnGetExp                                 = validation_layer::zeFabricEdgeGetExp;
+
+    dditable.pfnGetVerticesExp                           = pDdiTable->pfnGetVerticesExp;
+    pDdiTable->pfnGetVerticesExp                         = validation_layer::zeFabricEdgeGetVerticesExp;
+
+    dditable.pfnGetPropertiesExp                         = pDdiTable->pfnGetPropertiesExp;
+    pDdiTable->pfnGetPropertiesExp                       = validation_layer::zeFabricEdgeGetPropertiesExp;
+
+    return result;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Exported function for filling application's FabricVertexExp table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+ZE_DLLEXPORT ze_result_t ZE_APICALL
+zeGetFabricVertexExpProcAddrTable(
+    ze_api_version_t version,                       ///< [in] API version requested
+    ze_fabric_vertex_exp_dditable_t* pDdiTable      ///< [in,out] pointer to table of DDI function pointers
+    )
+{
+    auto& dditable = validation_layer::context.zeDdiTable.FabricVertexExp;
+
+    if( nullptr == pDdiTable )
+        return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+    if (ZE_MAJOR_VERSION(validation_layer::context.version) != ZE_MAJOR_VERSION(version) ||
+        ZE_MINOR_VERSION(validation_layer::context.version) > ZE_MINOR_VERSION(version))
+        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+
+    ze_result_t result = ZE_RESULT_SUCCESS;
+
+    dditable.pfnGetExp                                   = pDdiTable->pfnGetExp;
+    pDdiTable->pfnGetExp                                 = validation_layer::zeFabricVertexGetExp;
+
+    dditable.pfnGetSubVerticesExp                        = pDdiTable->pfnGetSubVerticesExp;
+    pDdiTable->pfnGetSubVerticesExp                      = validation_layer::zeFabricVertexGetSubVerticesExp;
+
+    dditable.pfnGetPropertiesExp                         = pDdiTable->pfnGetPropertiesExp;
+    pDdiTable->pfnGetPropertiesExp                       = validation_layer::zeFabricVertexGetPropertiesExp;
+
+    dditable.pfnGetDeviceExp                             = pDdiTable->pfnGetDeviceExp;
+    pDdiTable->pfnGetDeviceExp                           = validation_layer::zeFabricVertexGetDeviceExp;
 
     return result;
 }
