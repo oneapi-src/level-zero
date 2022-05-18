@@ -5,7 +5,7 @@
  * SPDX-License-Identifier: MIT
  *
  * @file ze_api.h
- * @version v1.4-r1.4.0
+ * @version v1.4-r1.4.1
  *
  */
 #ifndef _ZE_API_H
@@ -309,7 +309,9 @@ typedef enum _ze_structure_type_t
     ZE_STRUCTURE_TYPE_IMAGE_MEMORY_EXP_PROPERTIES = 0x00020007, ///< ::ze_image_memory_properties_exp_t
     ZE_STRUCTURE_TYPE_POWER_SAVING_HINT_EXP_DESC = 0x00020008,  ///< ::ze_context_power_saving_hint_exp_desc_t
     ZE_STRUCTURE_TYPE_COPY_BANDWIDTH_EXP_PROPERTIES = 0x00020009,   ///< ::ze_copy_bandwidth_exp_properties_t
-    ZE_STRUCTURE_TYPE_DEVICE_P2P_BANDWIDTH_EXP_PROPERTIES = 0x00020010, ///< ::ze_device_p2p_bandwidth_exp_properties_t
+    ZE_STRUCTURE_TYPE_DEVICE_P2P_BANDWIDTH_EXP_PROPERTIES = 0x0002000A, ///< ::ze_device_p2p_bandwidth_exp_properties_t
+    ZE_STRUCTURE_TYPE_FABRIC_VERTEX_EXP_PROPERTIES = 0x0002000B,///< ::ze_fabric_vertex_exp_properties_t
+    ZE_STRUCTURE_TYPE_FABRIC_EDGE_EXP_PROPERTIES = 0x0002000C,  ///< ::ze_fabric_edge_exp_properties_t
     ZE_STRUCTURE_TYPE_FORCE_UINT32 = 0x7fffffff
 
 } ze_structure_type_t;
@@ -7866,7 +7868,7 @@ zeFabricVertexGetPropertiesExp(
 ///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
 ///         + `nullptr == hVertex`
 ///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
-///         + `nullptr == pDevice`
+///         + `nullptr == phDevice`
 ///     - ::ZE_RESULT_EXP_ERROR_VERTEX_IS_NOT_DEVICE
 ///         + Provided fabric vertex handle does not correspond to a device or subdevice.
 ///     - ::ZE_RESULT_EXP_ERROR_REMOTE_DEVICE
@@ -7874,7 +7876,7 @@ zeFabricVertexGetPropertiesExp(
 ZE_APIEXPORT ze_result_t ZE_APICALL
 zeFabricVertexGetDeviceExp(
     ze_fabric_vertex_handle_t hVertex,              ///< [in] handle of the fabric vertex
-    ze_device_handle_t* pDevice                     ///< [out] device handle corresponding to fabric vertex
+    ze_device_handle_t* phDevice                    ///< [out] device handle corresponding to fabric vertex
     );
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -7889,15 +7891,15 @@ zeFabricVertexGetDeviceExp(
 ///     - ::ZE_RESULT_ERROR_UNINITIALIZED
 ///     - ::ZE_RESULT_ERROR_DEVICE_LOST
 ///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
-///         + `nullptr == hVertex`
+///         + `nullptr == hDevice`
 ///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
-///         + `nullptr == pVertex`
+///         + `nullptr == phVertex`
 ///     - ::ZE_RESULT_EXP_ERROR_DEVICE_IS_NOT_VERTEX
 ///         + Provided device handle does not correspond to a fabric vertex.
 ZE_APIEXPORT ze_result_t ZE_APICALL
 zeDeviceGetFabricVertexExp(
-    ze_device_handle_t hVertex,                     ///< [in] handle of the device
-    ze_fabric_vertex_handle_t* pVertex              ///< [out] fabric vertex handle corresponding to device
+    ze_device_handle_t hDevice,                     ///< [in] handle of the device
+    ze_fabric_vertex_handle_t* phVertex             ///< [out] fabric vertex handle corresponding to device
     );
 
 ///////////////////////////////////////////////////////////////////////////////

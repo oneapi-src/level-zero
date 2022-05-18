@@ -4,7 +4,7 @@
  SPDX-License-Identifier: MIT
 
  @file zet.py
- @version v1.4-r1.4.0
+ @version v1.4-r1.4.1
 
  """
 import platform

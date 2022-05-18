@@ -5,7 +5,7 @@
  * SPDX-License-Identifier: MIT
  *
  * @file zes_api.h
- * @version v1.4-r1.4.0
+ * @version v1.4-r1.4.1
  *
  */
 #ifndef _ZES_API_H
@@ -133,6 +133,10 @@ typedef enum _zes_structure_type_t
     ZES_STRUCTURE_TYPE_RAS_STATE = 0x22,            ///< ::zes_ras_state_t
     ZES_STRUCTURE_TYPE_TEMP_CONFIG = 0x23,          ///< ::zes_temp_config_t
     ZES_STRUCTURE_TYPE_PCI_BAR_PROPERTIES_1_2 = 0x24,   ///< ::zes_pci_bar_properties_1_2_t
+    ZES_STRUCTURE_TYPE_DEVICE_ECC_DESC = 0x25,      ///< ::zes_device_ecc_desc_t
+    ZES_STRUCTURE_TYPE_DEVICE_ECC_PROPERTIES = 0x26,///< ::zes_device_ecc_properties_t
+    ZES_STRUCTURE_TYPE_POWER_LIMIT_EXT_DESC = 0x27, ///< ::zes_power_limit_ext_desc_t
+    ZES_STRUCTURE_TYPE_POWER_EXT_PROPERTIES = 0x28, ///< ::zes_power_ext_properties_t
     ZES_STRUCTURE_TYPE_FORCE_UINT32 = 0x7fffffff
 
 } zes_structure_type_t;

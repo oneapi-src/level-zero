@@ -3796,7 +3796,7 @@ namespace driver
     __zedlllocal ze_result_t ZE_APICALL
     zeFabricVertexGetDeviceExp(
         ze_fabric_vertex_handle_t hVertex,              ///< [in] handle of the fabric vertex
-        ze_device_handle_t* pDevice                     ///< [out] device handle corresponding to fabric vertex
+        ze_device_handle_t* phDevice                    ///< [out] device handle corresponding to fabric vertex
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
@@ -3805,12 +3805,12 @@ namespace driver
         auto pfnGetDeviceExp = context.zeDdiTable.FabricVertexExp.pfnGetDeviceExp;
         if( nullptr != pfnGetDeviceExp )
         {
-            result = pfnGetDeviceExp( hVertex, pDevice );
+            result = pfnGetDeviceExp( hVertex, phDevice );
         }
         else
         {
             // generic implementation
-            *pDevice = reinterpret_cast<ze_device_handle_t>( context.get() );
+            *phDevice = reinterpret_cast<ze_device_handle_t>( context.get() );
 
         }
 
@@ -3821,8 +3821,8 @@ namespace driver
     /// @brief Intercept function for zeDeviceGetFabricVertexExp
     __zedlllocal ze_result_t ZE_APICALL
     zeDeviceGetFabricVertexExp(
-        ze_device_handle_t hVertex,                     ///< [in] handle of the device
-        ze_fabric_vertex_handle_t* pVertex              ///< [out] fabric vertex handle corresponding to device
+        ze_device_handle_t hDevice,                     ///< [in] handle of the device
+        ze_fabric_vertex_handle_t* phVertex             ///< [out] fabric vertex handle corresponding to device
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
@@ -3831,12 +3831,12 @@ namespace driver
         auto pfnGetFabricVertexExp = context.zeDdiTable.DeviceExp.pfnGetFabricVertexExp;
         if( nullptr != pfnGetFabricVertexExp )
         {
-            result = pfnGetFabricVertexExp( hVertex, pVertex );
+            result = pfnGetFabricVertexExp( hDevice, phVertex );
         }
         else
         {
             // generic implementation
-            *pVertex = reinterpret_cast<ze_fabric_vertex_handle_t>( context.get() );
+            *phVertex = reinterpret_cast<ze_fabric_vertex_handle_t>( context.get() );
 
         }
 

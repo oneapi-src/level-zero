@@ -4359,7 +4359,7 @@ namespace validation_layer
     __zedlllocal ze_result_t ZE_APICALL
     zeFabricVertexGetDeviceExp(
         ze_fabric_vertex_handle_t hVertex,              ///< [in] handle of the fabric vertex
-        ze_device_handle_t* pDevice                     ///< [out] device handle corresponding to fabric vertex
+        ze_device_handle_t* phDevice                    ///< [out] device handle corresponding to fabric vertex
         )
     {
         auto pfnGetDeviceExp = context.zeDdiTable.FabricVertexExp.pfnGetDeviceExp;
@@ -4372,20 +4372,20 @@ namespace validation_layer
             if( nullptr == hVertex )
                 return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
 
-            if( nullptr == pDevice )
+            if( nullptr == phDevice )
                 return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
         }
 
-        return pfnGetDeviceExp( hVertex, pDevice );
+        return pfnGetDeviceExp( hVertex, phDevice );
     }
 
     ///////////////////////////////////////////////////////////////////////////////
     /// @brief Intercept function for zeDeviceGetFabricVertexExp
     __zedlllocal ze_result_t ZE_APICALL
     zeDeviceGetFabricVertexExp(
-        ze_device_handle_t hVertex,                     ///< [in] handle of the device
-        ze_fabric_vertex_handle_t* pVertex              ///< [out] fabric vertex handle corresponding to device
+        ze_device_handle_t hDevice,                     ///< [in] handle of the device
+        ze_fabric_vertex_handle_t* phVertex             ///< [out] fabric vertex handle corresponding to device
         )
     {
         auto pfnGetFabricVertexExp = context.zeDdiTable.DeviceExp.pfnGetFabricVertexExp;
@@ -4395,15 +4395,15 @@ namespace validation_layer
 
         if( context.enableParameterValidation )
         {
-            if( nullptr == hVertex )
+            if( nullptr == hDevice )
                 return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
 
-            if( nullptr == pVertex )
+            if( nullptr == phVertex )
                 return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
         }
 
-        return pfnGetFabricVertexExp( hVertex, pVertex );
+        return pfnGetFabricVertexExp( hDevice, phVertex );
     }
 
     ///////////////////////////////////////////////////////////////////////////////

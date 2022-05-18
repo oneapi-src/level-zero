@@ -1,6 +1,10 @@
 # Level zero loader changelog
 
 
+## v1.8.1 
+*Add missing sTypes
+*Fix argument names in some exp APIs
+
 ## v1.8.0
 * Add Support for L0 Spec v1.4 which includes
   * Core Fabric Topology API

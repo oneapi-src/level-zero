@@ -4,7 +4,7 @@
  SPDX-License-Identifier: MIT
 
  @file zes.py
- @version v1.4-r1.4.0
+ @version v1.4-r1.4.1
 
  """
 import platform
@@ -138,6 +138,10 @@ class zes_structure_type_v(IntEnum):
     RAS_STATE = 0x22                                ## ::zes_ras_state_t
     TEMP_CONFIG = 0x23                              ## ::zes_temp_config_t
     PCI_BAR_PROPERTIES_1_2 = 0x24                   ## ::zes_pci_bar_properties_1_2_t
+    DEVICE_ECC_DESC = 0x25                          ## ::zes_device_ecc_desc_t
+    DEVICE_ECC_PROPERTIES = 0x26                    ## ::zes_device_ecc_properties_t
+    POWER_LIMIT_EXT_DESC = 0x27                     ## ::zes_power_limit_ext_desc_t
+    POWER_EXT_PROPERTIES = 0x28                     ## ::zes_power_ext_properties_t
 
 class zes_structure_type_t(c_int):
     def __str__(self):

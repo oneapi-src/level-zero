@@ -5437,7 +5437,7 @@ zeFabricVertexGetPropertiesExp(
 ///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
 ///         + `nullptr == hVertex`
 ///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
-///         + `nullptr == pDevice`
+///         + `nullptr == phDevice`
 ///     - ::ZE_RESULT_EXP_ERROR_VERTEX_IS_NOT_DEVICE
 ///         + Provided fabric vertex handle does not correspond to a device or subdevice.
 ///     - ::ZE_RESULT_EXP_ERROR_REMOTE_DEVICE
@@ -5445,14 +5445,14 @@ zeFabricVertexGetPropertiesExp(
 ze_result_t ZE_APICALL
 zeFabricVertexGetDeviceExp(
     ze_fabric_vertex_handle_t hVertex,              ///< [in] handle of the fabric vertex
-    ze_device_handle_t* pDevice                     ///< [out] device handle corresponding to fabric vertex
+    ze_device_handle_t* phDevice                    ///< [out] device handle corresponding to fabric vertex
     )
 {
     auto pfnGetDeviceExp = ze_lib::context->zeDdiTable.FabricVertexExp.pfnGetDeviceExp;
     if( nullptr == pfnGetDeviceExp )
         return ZE_RESULT_ERROR_UNINITIALIZED;
 
-    return pfnGetDeviceExp( hVertex, pDevice );
+    return pfnGetDeviceExp( hVertex, phDevice );
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -5467,22 +5467,22 @@ zeFabricVertexGetDeviceExp(
 ///     - ::ZE_RESULT_ERROR_UNINITIALIZED
 ///     - ::ZE_RESULT_ERROR_DEVICE_LOST
 ///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
-///         + `nullptr == hVertex`
+///         + `nullptr == hDevice`
 ///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
-///         + `nullptr == pVertex`
+///         + `nullptr == phVertex`
 ///     - ::ZE_RESULT_EXP_ERROR_DEVICE_IS_NOT_VERTEX
 ///         + Provided device handle does not correspond to a fabric vertex.
 ze_result_t ZE_APICALL
 zeDeviceGetFabricVertexExp(
-    ze_device_handle_t hVertex,                     ///< [in] handle of the device
-    ze_fabric_vertex_handle_t* pVertex              ///< [out] fabric vertex handle corresponding to device
+    ze_device_handle_t hDevice,                     ///< [in] handle of the device
+    ze_fabric_vertex_handle_t* phVertex             ///< [out] fabric vertex handle corresponding to device
     )
 {
     auto pfnGetFabricVertexExp = ze_lib::context->zeDdiTable.DeviceExp.pfnGetFabricVertexExp;
     if( nullptr == pfnGetFabricVertexExp )
         return ZE_RESULT_ERROR_UNINITIALIZED;
 
-    return pfnGetFabricVertexExp( hVertex, pVertex );
+    return pfnGetFabricVertexExp( hDevice, phVertex );
 }
 
 ///////////////////////////////////////////////////////////////////////////////

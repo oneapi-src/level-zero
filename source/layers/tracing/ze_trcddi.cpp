@@ -5645,7 +5645,7 @@ namespace tracing_layer
     __zedlllocal ze_result_t ZE_APICALL
     zeFabricVertexGetDeviceExp(
         ze_fabric_vertex_handle_t hVertex,              ///< [in] handle of the fabric vertex
-        ze_device_handle_t* pDevice                     ///< [out] device handle corresponding to fabric vertex
+        ze_device_handle_t* phDevice                    ///< [out] device handle corresponding to fabric vertex
         )
     {
         auto pfnGetDeviceExp = context.zeDdiTable.FabricVertexExp.pfnGetDeviceExp;
@@ -5653,12 +5653,12 @@ namespace tracing_layer
         if( nullptr == pfnGetDeviceExp)
             return ZE_RESULT_ERROR_UNINITIALIZED;
 
-        ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.FabricVertexExp.pfnGetDeviceExp, hVertex, pDevice);
+        ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.FabricVertexExp.pfnGetDeviceExp, hVertex, phDevice);
 
         // capture parameters
         ze_fabric_vertex_get_device_exp_params_t tracerParams = {
             &hVertex,
-            &pDevice
+            &phDevice
         };
 
         tracing_layer::APITracerCallbackDataImp<ze_pfnFabricVertexGetDeviceExpCb_t> apiCallbackData;
@@ -5672,15 +5672,15 @@ namespace tracing_layer
                                                   apiCallbackData.prologCallbacks,
                                                   apiCallbackData.epilogCallbacks,
                                                   *tracerParams.phVertex,
-                                                  *tracerParams.ppDevice);
+                                                  *tracerParams.pphDevice);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
     /// @brief Intercept function for zeDeviceGetFabricVertexExp
     __zedlllocal ze_result_t ZE_APICALL
     zeDeviceGetFabricVertexExp(
-        ze_device_handle_t hVertex,                     ///< [in] handle of the device
-        ze_fabric_vertex_handle_t* pVertex              ///< [out] fabric vertex handle corresponding to device
+        ze_device_handle_t hDevice,                     ///< [in] handle of the device
+        ze_fabric_vertex_handle_t* phVertex             ///< [out] fabric vertex handle corresponding to device
         )
     {
         auto pfnGetFabricVertexExp = context.zeDdiTable.DeviceExp.pfnGetFabricVertexExp;
@@ -5688,12 +5688,12 @@ namespace tracing_layer
         if( nullptr == pfnGetFabricVertexExp)
             return ZE_RESULT_ERROR_UNINITIALIZED;
 
-        ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.DeviceExp.pfnGetFabricVertexExp, hVertex, pVertex);
+        ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.DeviceExp.pfnGetFabricVertexExp, hDevice, phVertex);
 
         // capture parameters
         ze_device_get_fabric_vertex_exp_params_t tracerParams = {
-            &hVertex,
-            &pVertex
+            &hDevice,
+            &phVertex
         };
 
         tracing_layer::APITracerCallbackDataImp<ze_pfnDeviceGetFabricVertexExpCb_t> apiCallbackData;
@@ -5706,8 +5706,8 @@ namespace tracing_layer
                                                   apiCallbackData.apiOrdinal,
                                                   apiCallbackData.prologCallbacks,
                                                   apiCallbackData.epilogCallbacks,
-                                                  *tracerParams.phVertex,
-                                                  *tracerParams.ppVertex);
+                                                  *tracerParams.phDevice,
+                                                  *tracerParams.pphVertex);
     }
 
     ///////////////////////////////////////////////////////////////////////////////

@@ -169,8 +169,8 @@ typedef void (ZE_APICALL *ze_pfnDevicePciGetPropertiesExtCb_t)(
 
 typedef struct _ze_device_get_fabric_vertex_exp_params_t
 {
-    ze_device_handle_t* phVertex;
-    ze_fabric_vertex_handle_t** ppVertex;
+    ze_device_handle_t* phDevice;
+    ze_fabric_vertex_handle_t** pphVertex;
 } ze_device_get_fabric_vertex_exp_params_t;
 
 
@@ -671,7 +671,7 @@ typedef void (ZE_APICALL *ze_pfnFabricVertexGetPropertiesExpCb_t)(
 typedef struct _ze_fabric_vertex_get_device_exp_params_t
 {
     ze_fabric_vertex_handle_t* phVertex;
-    ze_device_handle_t** ppDevice;
+    ze_device_handle_t** pphDevice;
 } ze_fabric_vertex_get_device_exp_params_t;
 
 

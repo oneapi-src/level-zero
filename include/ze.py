@@ -4,7 +4,7 @@
  SPDX-License-Identifier: MIT
 
  @file ze.py
- @version v1.4-r1.4.0
+ @version v1.4-r1.4.1
 
  """
 import platform
@@ -280,7 +280,9 @@ class ze_structure_type_v(IntEnum):
     IMAGE_MEMORY_EXP_PROPERTIES = 0x00020007        ## ::ze_image_memory_properties_exp_t
     POWER_SAVING_HINT_EXP_DESC = 0x00020008         ## ::ze_context_power_saving_hint_exp_desc_t
     COPY_BANDWIDTH_EXP_PROPERTIES = 0x00020009      ## ::ze_copy_bandwidth_exp_properties_t
-    DEVICE_P2P_BANDWIDTH_EXP_PROPERTIES = 0x00020010## ::ze_device_p2p_bandwidth_exp_properties_t
+    DEVICE_P2P_BANDWIDTH_EXP_PROPERTIES = 0x0002000A## ::ze_device_p2p_bandwidth_exp_properties_t
+    FABRIC_VERTEX_EXP_PROPERTIES = 0x0002000B       ## ::ze_fabric_vertex_exp_properties_t
+    FABRIC_EDGE_EXP_PROPERTIES = 0x0002000C         ## ::ze_fabric_edge_exp_properties_t
 
 class ze_structure_type_t(c_int):
     def __str__(self):

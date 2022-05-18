@@ -4653,7 +4653,7 @@ namespace loader
     __zedlllocal ze_result_t ZE_APICALL
     zeFabricVertexGetDeviceExp(
         ze_fabric_vertex_handle_t hVertex,              ///< [in] handle of the fabric vertex
-        ze_device_handle_t* pDevice                     ///< [out] device handle corresponding to fabric vertex
+        ze_device_handle_t* phDevice                    ///< [out] device handle corresponding to fabric vertex
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
@@ -4668,7 +4668,7 @@ namespace loader
         hVertex = reinterpret_cast<ze_fabric_vertex_object_t*>( hVertex )->handle;
 
         // forward to device-driver
-        result = pfnGetDeviceExp( hVertex, pDevice );
+        result = pfnGetDeviceExp( hVertex, phDevice );
 
         if( ZE_RESULT_SUCCESS != result )
             return result;
@@ -4676,8 +4676,8 @@ namespace loader
         try
         {
             // convert driver handle to loader handle
-            *pDevice = reinterpret_cast<ze_device_handle_t>(
-                ze_device_factory.getInstance( *pDevice, dditable ) );
+            *phDevice = reinterpret_cast<ze_device_handle_t>(
+                ze_device_factory.getInstance( *phDevice, dditable ) );
         }
         catch( std::bad_alloc& )
         {
@@ -4691,23 +4691,23 @@ namespace loader
     /// @brief Intercept function for zeDeviceGetFabricVertexExp
     __zedlllocal ze_result_t ZE_APICALL
     zeDeviceGetFabricVertexExp(
-        ze_device_handle_t hVertex,                     ///< [in] handle of the device
-        ze_fabric_vertex_handle_t* pVertex              ///< [out] fabric vertex handle corresponding to device
+        ze_device_handle_t hDevice,                     ///< [in] handle of the device
+        ze_fabric_vertex_handle_t* phVertex             ///< [out] fabric vertex handle corresponding to device
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
 
         // extract driver's function pointer table
-        auto dditable = reinterpret_cast<ze_device_object_t*>( hVertex )->dditable;
+        auto dditable = reinterpret_cast<ze_device_object_t*>( hDevice )->dditable;
         auto pfnGetFabricVertexExp = dditable->ze.DeviceExp.pfnGetFabricVertexExp;
         if( nullptr == pfnGetFabricVertexExp )
             return ZE_RESULT_ERROR_UNINITIALIZED;
 
         // convert loader handle to driver handle
-        hVertex = reinterpret_cast<ze_device_object_t*>( hVertex )->handle;
+        hDevice = reinterpret_cast<ze_device_object_t*>( hDevice )->handle;
 
         // forward to device-driver
-        result = pfnGetFabricVertexExp( hVertex, pVertex );
+        result = pfnGetFabricVertexExp( hDevice, phVertex );
 
         if( ZE_RESULT_SUCCESS != result )
             return result;
@@ -4715,8 +4715,8 @@ namespace loader
         try
         {
             // convert driver handle to loader handle
-            *pVertex = reinterpret_cast<ze_fabric_vertex_handle_t>(
-                ze_fabric_vertex_factory.getInstance( *pVertex, dditable ) );
+            *phVertex = reinterpret_cast<ze_fabric_vertex_handle_t>(
+                ze_fabric_vertex_factory.getInstance( *phVertex, dditable ) );
         }
         catch( std::bad_alloc& )
         {
