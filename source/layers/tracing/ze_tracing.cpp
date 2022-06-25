@@ -11,6 +11,7 @@
 #include "layers/zel_tracing_ddi.h"
 #include "loader/ze_loader.h"
 
+namespace tracing {
 ZE_APIEXPORT ze_result_t ZE_APICALL
 zelTracerCreate(
     const zel_tracer_desc_t *desc,
@@ -45,6 +46,7 @@ zelTracerSetEnabled(
     return tracing_layer::APITracer::fromHandle(hTracer)->enableTracer(enable);
 }
 
+}
 #if defined(__cplusplus)
 extern "C" {
 #endif
@@ -71,15 +73,15 @@ zelGetTracerApiProcAddrTable(
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
-    pDdiTable->pfnCreate                                 = zelTracerCreate;
+    pDdiTable->pfnCreate                                 = tracing::zelTracerCreate;
 
-    pDdiTable->pfnDestroy                                = zelTracerDestroy;
+    pDdiTable->pfnDestroy                                = tracing::zelTracerDestroy;
 
-    pDdiTable->pfnSetPrologues                           = zelTracerSetPrologues;
+    pDdiTable->pfnSetPrologues                           = tracing::zelTracerSetPrologues;
 
-    pDdiTable->pfnSetEpilogues                           = zelTracerSetEpilogues;
+    pDdiTable->pfnSetEpilogues                           = tracing::zelTracerSetEpilogues;
 
-    pDdiTable->pfnSetEnabled                             = zelTracerSetEnabled;
+    pDdiTable->pfnSetEnabled                             = tracing::zelTracerSetEnabled;
 
     return result;
 }
