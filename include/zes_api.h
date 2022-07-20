@@ -5,7 +5,7 @@
  * SPDX-License-Identifier: MIT
  *
  * @file zes_api.h
- * @version v1.4-r1.4.1
+ * @version v1.4-r1.4.8
  *
  */
 #ifndef _ZES_API_H
@@ -4985,23 +4985,22 @@ typedef enum _zes_power_limits_ext_version_t
 /// @brief Device power/current limit descriptor.
 typedef struct _zes_power_limit_ext_desc_t
 {
-    ze_structure_type_t stype;                      ///< [in] type of this structure
-    const void* pNext;                              ///< [in][optional] must be null or a pointer to an extension-specific
-                                                    ///< structure (i.e. contains sType and pNext).
-    zes_power_level_t const level;                  ///< [out] duration type over which the power draw is measured, i.e.
+    zes_structure_type_t stype;                     ///< [in] type of this structure
+    const void* pNext;                              ///< [in][optional] pointer to extension-specific structure
+    zes_power_level_t level;                        ///< [in,out] duration type over which the power draw is measured, i.e.
                                                     ///< sustained, burst, peak, or critical.
-    zes_power_source_t const source;                ///< [out] source of power used by the system, i.e. AC or DC.
-    zes_limit_unit_t const limitUnit;               ///< [out] unit used for specifying limit, i.e. current units (milliamps)
+    zes_power_source_t source;                      ///< [out] source of power used by the system, i.e. AC or DC.
+    zes_limit_unit_t limitUnit;                     ///< [out] unit used for specifying limit, i.e. current units (milliamps)
                                                     ///< or power units (milliwatts).
-    ze_bool_t const enabledStateLocked;             ///< [out] indicates if the power limit state (enabled/ignored) can be set
+    ze_bool_t enabledStateLocked;                   ///< [out] indicates if the power limit state (enabled/ignored) can be set
                                                     ///< (false) or is locked (true).
     ze_bool_t enabled;                              ///< [in,out] indicates if the limit is enabled (true) or ignored (false).
                                                     ///< If enabledStateIsLocked is True, this value is ignored.
-    ze_bool_t const intervalValueLocked;            ///< [out] indicates if the interval can be modified (false) or is fixed
+    ze_bool_t intervalValueLocked;                  ///< [out] indicates if the interval can be modified (false) or is fixed
                                                     ///< (true).
     int32_t interval;                               ///< [in,out] power averaging window in milliseconds. If
                                                     ///< intervalValueLocked is true, this value is ignored.
-    ze_bool_t const limitValueLocked;               ///< [out] indicates if the limit can be set (false) or if the limit is
+    ze_bool_t limitValueLocked;                     ///< [out] indicates if the limit can be set (false) or if the limit is
                                                     ///< fixed (true).
     int32_t limit;                                  ///< [in,out] limit value. If limitValueLocked is true, this value is
                                                     ///< ignored. The value should be provided in the unit specified by
@@ -5023,7 +5022,7 @@ typedef struct _zes_power_ext_properties_t
 {
     zes_structure_type_t stype;                     ///< [in] type of this structure
     void* pNext;                                    ///< [in,out][optional] pointer to extension-specific structure
-    zes_power_domain_t const domain;                ///< [out] domain that the power limit belongs to.
+    zes_power_domain_t domain;                      ///< [out] domain that the power limit belongs to.
     zes_power_limit_ext_desc_t* defaultLimit;       ///< [out] the factory default limit of the part.
 
 } zes_power_ext_properties_t;

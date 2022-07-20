@@ -4,7 +4,7 @@
  SPDX-License-Identifier: MIT
 
  @file zes.py
- @version v1.4-r1.4.1
+ @version v1.4-r1.4.8
 
  """
 import platform
@@ -1771,23 +1771,22 @@ class zes_power_limits_ext_version_t(c_int):
 ## @brief Device power/current limit descriptor.
 class zes_power_limit_ext_desc_t(Structure):
     _fields_ = [
-        ("stype", ze_structure_type_t),                                 ## [in] type of this structure
-        ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
-                                                                        ## structure (i.e. contains sType and pNext).
-        ("level", const),                                               ## [out] duration type over which the power draw is measured, i.e.
+        ("stype", zes_structure_type_t),                                ## [in] type of this structure
+        ("pNext", c_void_p),                                            ## [in][optional] pointer to extension-specific structure
+        ("level", zes_power_level_t),                                   ## [in,out] duration type over which the power draw is measured, i.e.
                                                                         ## sustained, burst, peak, or critical.
-        ("source", const),                                              ## [out] source of power used by the system, i.e. AC or DC.
-        ("limitUnit", const),                                           ## [out] unit used for specifying limit, i.e. current units (milliamps)
+        ("source", zes_power_source_t),                                 ## [out] source of power used by the system, i.e. AC or DC.
+        ("limitUnit", zes_limit_unit_t),                                ## [out] unit used for specifying limit, i.e. current units (milliamps)
                                                                         ## or power units (milliwatts).
-        ("enabledStateLocked", const),                                  ## [out] indicates if the power limit state (enabled/ignored) can be set
+        ("enabledStateLocked", ze_bool_t),                              ## [out] indicates if the power limit state (enabled/ignored) can be set
                                                                         ## (false) or is locked (true).
         ("enabled", ze_bool_t),                                         ## [in,out] indicates if the limit is enabled (true) or ignored (false).
                                                                         ## If enabledStateIsLocked is True, this value is ignored.
-        ("intervalValueLocked", const),                                 ## [out] indicates if the interval can be modified (false) or is fixed
+        ("intervalValueLocked", ze_bool_t),                             ## [out] indicates if the interval can be modified (false) or is fixed
                                                                         ## (true).
         ("interval", c_int32_t),                                        ## [in,out] power averaging window in milliseconds. If
                                                                         ## intervalValueLocked is true, this value is ignored.
-        ("limitValueLocked", const),                                    ## [out] indicates if the limit can be set (false) or if the limit is
+        ("limitValueLocked", ze_bool_t),                                ## [out] indicates if the limit can be set (false) or if the limit is
                                                                         ## fixed (true).
         ("limit", c_int32_t)                                            ## [in,out] limit value. If limitValueLocked is true, this value is
                                                                         ## ignored. The value should be provided in the unit specified by
@@ -1808,7 +1807,7 @@ class zes_power_ext_properties_t(Structure):
     _fields_ = [
         ("stype", zes_structure_type_t),                                ## [in] type of this structure
         ("pNext", c_void_p),                                            ## [in,out][optional] pointer to extension-specific structure
-        ("domain", const),                                              ## [out] domain that the power limit belongs to.
+        ("domain", zes_power_domain_t),                                 ## [out] domain that the power limit belongs to.
         ("defaultLimit", POINTER(zes_power_limit_ext_desc_t))           ## [out] the factory default limit of the part.
     ]
 
