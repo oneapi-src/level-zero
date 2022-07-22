@@ -1,9 +1,13 @@
 # Level zero loader changelog
 
+## v1.8.5
+* Remove RTLD_DEEPBIND from driver dlopen calls
+* Add loader code generation scripts 
+* Update to spec 1.4.8 which includes fixes to zes_power_limit_ext_desc_t
 
 ## v1.8.1 
-*Add missing sTypes
-*Fix argument names in some exp APIs
+* Add missing sTypes
+* Fix argument names in some exp APIs
 
 ## v1.8.0
 * Add Support for L0 Spec v1.4 which includes
