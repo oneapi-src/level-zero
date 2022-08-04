@@ -6357,7 +6357,7 @@ typedef enum _ze_global_offset_exp_version_t
 /// 
 /// @details
 ///     - The global work offset will be used when
-///       a ::zeCommandListAppendLaunchKernel() variant is called.
+///       a ::zeCommandListAppendLaunchKernel() variant is called.
 ///     - The application must **not** call this function from simultaneous
 ///       threads with the same kernel handle.
 ///     - The implementation of this function should be lock-free.
@@ -7160,14 +7160,14 @@ typedef enum _ze_image_copy_ext_version_t
 ///       image is a single-planar format.
 ///     - The application must ensure that the rowPitch is set to 0 if image is
 ///       a 1D image. Otherwise the rowPitch must be greater than or equal to
-///       the element size in bytes × width.
+///       the element size in bytes x width.
 ///     - If rowPitch is set to 0, the appropriate row pitch is calculated based
 ///       on the size of each element in bytes multiplied by width
 ///     - The application must ensure that the slicePitch is set to 0 if image
 ///       is a 1D or 2D image. Otherwise this value must be greater than or
-///       equal to rowPitch × height.
+///       equal to rowPitch x height.
 ///     - If slicePitch is set to 0, the appropriate slice pitch is calculated
-///       based on the rowPitch × height.
+///       based on the rowPitch x height.
 ///     - The application must ensure the command list, image and events were
 ///       created, and the memory was allocated, on the same context.
 ///     - The application must **not** call this function from simultaneous
@@ -7222,14 +7222,14 @@ zeCommandListAppendImageCopyToMemoryExt(
 ///       destination image is a single-planar format.
 ///     - The application must ensure that the rowPitch is set to 0 if image is
 ///       a 1D image. Otherwise the rowPitch must be greater than or equal to
-///       the element size in bytes × width.
+///       the element size in bytes x width.
 ///     - If rowPitch is set to 0, the appropriate row pitch is calculated based
 ///       on the size of each element in bytes multiplied by width
 ///     - The application must ensure that the slicePitch is set to 0 if image
 ///       is a 1D or 2D image. Otherwise this value must be greater than or
-///       equal to rowPitch × height.
+///       equal to rowPitch x height.
 ///     - If slicePitch is set to 0, the appropriate slice pitch is calculated
-///       based on the rowPitch × height.
+///       based on the rowPitch x height.
 ///     - The application must ensure the command list, image and events were
 ///       created, and the memory was allocated, on the same context.
 ///     - The application must **not** call this function from simultaneous
