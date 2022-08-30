@@ -43,8 +43,12 @@ zetModuleGetDebugInfo(
     )
 {
     auto pfnGetDebugInfo = ze_lib::context->zetDdiTable.Module.pfnGetDebugInfo;
-    if( nullptr == pfnGetDebugInfo )
-        return ZE_RESULT_ERROR_UNINITIALIZED;
+    if( nullptr == pfnGetDebugInfo ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
 
     return pfnGetDebugInfo( hModule, format, pSize, pDebugInfo );
 }
@@ -67,8 +71,12 @@ zetDeviceGetDebugProperties(
     )
 {
     auto pfnGetDebugProperties = ze_lib::context->zetDdiTable.Device.pfnGetDebugProperties;
-    if( nullptr == pfnGetDebugProperties )
-        return ZE_RESULT_ERROR_UNINITIALIZED;
+    if( nullptr == pfnGetDebugProperties ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
 
     return pfnGetDebugProperties( hDevice, pDebugProperties );
 }
@@ -103,8 +111,12 @@ zetDebugAttach(
     )
 {
     auto pfnAttach = ze_lib::context->zetDdiTable.Debug.pfnAttach;
-    if( nullptr == pfnAttach )
-        return ZE_RESULT_ERROR_UNINITIALIZED;
+    if( nullptr == pfnAttach ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
 
     return pfnAttach( hDevice, config, phDebug );
 }
@@ -124,8 +136,12 @@ zetDebugDetach(
     )
 {
     auto pfnDetach = ze_lib::context->zetDdiTable.Debug.pfnDetach;
-    if( nullptr == pfnDetach )
-        return ZE_RESULT_ERROR_UNINITIALIZED;
+    if( nullptr == pfnDetach ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
 
     return pfnDetach( hDebug );
 }
@@ -157,8 +173,12 @@ zetDebugReadEvent(
     )
 {
     auto pfnReadEvent = ze_lib::context->zetDdiTable.Debug.pfnReadEvent;
-    if( nullptr == pfnReadEvent )
-        return ZE_RESULT_ERROR_UNINITIALIZED;
+    if( nullptr == pfnReadEvent ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
 
     return pfnReadEvent( hDebug, timeout, event );
 }
@@ -181,8 +201,12 @@ zetDebugAcknowledgeEvent(
     )
 {
     auto pfnAcknowledgeEvent = ze_lib::context->zetDdiTable.Debug.pfnAcknowledgeEvent;
-    if( nullptr == pfnAcknowledgeEvent )
-        return ZE_RESULT_ERROR_UNINITIALIZED;
+    if( nullptr == pfnAcknowledgeEvent ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
 
     return pfnAcknowledgeEvent( hDebug, event );
 }
@@ -205,8 +229,12 @@ zetDebugInterrupt(
     )
 {
     auto pfnInterrupt = ze_lib::context->zetDdiTable.Debug.pfnInterrupt;
-    if( nullptr == pfnInterrupt )
-        return ZE_RESULT_ERROR_UNINITIALIZED;
+    if( nullptr == pfnInterrupt ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
 
     return pfnInterrupt( hDebug, thread );
 }
@@ -229,8 +257,12 @@ zetDebugResume(
     )
 {
     auto pfnResume = ze_lib::context->zetDdiTable.Debug.pfnResume;
-    if( nullptr == pfnResume )
-        return ZE_RESULT_ERROR_UNINITIALIZED;
+    if( nullptr == pfnResume ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
 
     return pfnResume( hDebug, thread );
 }
@@ -266,8 +298,12 @@ zetDebugReadMemory(
     )
 {
     auto pfnReadMemory = ze_lib::context->zetDdiTable.Debug.pfnReadMemory;
-    if( nullptr == pfnReadMemory )
-        return ZE_RESULT_ERROR_UNINITIALIZED;
+    if( nullptr == pfnReadMemory ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
 
     return pfnReadMemory( hDebug, thread, desc, size, buffer );
 }
@@ -303,8 +339,12 @@ zetDebugWriteMemory(
     )
 {
     auto pfnWriteMemory = ze_lib::context->zetDdiTable.Debug.pfnWriteMemory;
-    if( nullptr == pfnWriteMemory )
-        return ZE_RESULT_ERROR_UNINITIALIZED;
+    if( nullptr == pfnWriteMemory ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
 
     return pfnWriteMemory( hDebug, thread, desc, size, buffer );
 }
@@ -336,8 +376,12 @@ zetDebugGetRegisterSetProperties(
     )
 {
     auto pfnGetRegisterSetProperties = ze_lib::context->zetDdiTable.Debug.pfnGetRegisterSetProperties;
-    if( nullptr == pfnGetRegisterSetProperties )
-        return ZE_RESULT_ERROR_UNINITIALIZED;
+    if( nullptr == pfnGetRegisterSetProperties ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
 
     return pfnGetRegisterSetProperties( hDevice, pCount, pRegisterSetProperties );
 }
@@ -366,8 +410,12 @@ zetDebugReadRegisters(
     )
 {
     auto pfnReadRegisters = ze_lib::context->zetDdiTable.Debug.pfnReadRegisters;
-    if( nullptr == pfnReadRegisters )
-        return ZE_RESULT_ERROR_UNINITIALIZED;
+    if( nullptr == pfnReadRegisters ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
 
     return pfnReadRegisters( hDebug, thread, type, start, count, pRegisterValues );
 }
@@ -396,8 +444,12 @@ zetDebugWriteRegisters(
     )
 {
     auto pfnWriteRegisters = ze_lib::context->zetDdiTable.Debug.pfnWriteRegisters;
-    if( nullptr == pfnWriteRegisters )
-        return ZE_RESULT_ERROR_UNINITIALIZED;
+    if( nullptr == pfnWriteRegisters ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
 
     return pfnWriteRegisters( hDebug, thread, type, start, count, pRegisterValues );
 }
@@ -431,8 +483,12 @@ zetMetricGroupGet(
     )
 {
     auto pfnGet = ze_lib::context->zetDdiTable.MetricGroup.pfnGet;
-    if( nullptr == pfnGet )
-        return ZE_RESULT_ERROR_UNINITIALIZED;
+    if( nullptr == pfnGet ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
 
     return pfnGet( hDevice, pCount, phMetricGroups );
 }
@@ -458,8 +514,12 @@ zetMetricGroupGetProperties(
     )
 {
     auto pfnGetProperties = ze_lib::context->zetDdiTable.MetricGroup.pfnGetProperties;
-    if( nullptr == pfnGetProperties )
-        return ZE_RESULT_ERROR_UNINITIALIZED;
+    if( nullptr == pfnGetProperties ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
 
     return pfnGetProperties( hMetricGroup, pProperties );
 }
@@ -499,8 +559,12 @@ zetMetricGroupCalculateMetricValues(
     )
 {
     auto pfnCalculateMetricValues = ze_lib::context->zetDdiTable.MetricGroup.pfnCalculateMetricValues;
-    if( nullptr == pfnCalculateMetricValues )
-        return ZE_RESULT_ERROR_UNINITIALIZED;
+    if( nullptr == pfnCalculateMetricValues ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
 
     return pfnCalculateMetricValues( hMetricGroup, type, rawDataSize, pRawData, pMetricValueCount, pMetricValues );
 }
@@ -533,8 +597,12 @@ zetMetricGet(
     )
 {
     auto pfnGet = ze_lib::context->zetDdiTable.Metric.pfnGet;
-    if( nullptr == pfnGet )
-        return ZE_RESULT_ERROR_UNINITIALIZED;
+    if( nullptr == pfnGet ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
 
     return pfnGet( hMetricGroup, pCount, phMetrics );
 }
@@ -560,8 +628,12 @@ zetMetricGetProperties(
     )
 {
     auto pfnGetProperties = ze_lib::context->zetDdiTable.Metric.pfnGetProperties;
-    if( nullptr == pfnGetProperties )
-        return ZE_RESULT_ERROR_UNINITIALIZED;
+    if( nullptr == pfnGetProperties ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
 
     return pfnGetProperties( hMetric, pProperties );
 }
@@ -605,8 +677,12 @@ zetContextActivateMetricGroups(
     )
 {
     auto pfnActivateMetricGroups = ze_lib::context->zetDdiTable.Context.pfnActivateMetricGroups;
-    if( nullptr == pfnActivateMetricGroups )
-        return ZE_RESULT_ERROR_UNINITIALIZED;
+    if( nullptr == pfnActivateMetricGroups ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
 
     return pfnActivateMetricGroups( hContext, hDevice, count, phMetricGroups );
 }
@@ -647,8 +723,12 @@ zetMetricStreamerOpen(
     )
 {
     auto pfnOpen = ze_lib::context->zetDdiTable.MetricStreamer.pfnOpen;
-    if( nullptr == pfnOpen )
-        return ZE_RESULT_ERROR_UNINITIALIZED;
+    if( nullptr == pfnOpen ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
 
     return pfnOpen( hContext, hDevice, hMetricGroup, desc, hNotificationEvent, phMetricStreamer );
 }
@@ -681,8 +761,12 @@ zetCommandListAppendMetricStreamerMarker(
     )
 {
     auto pfnAppendMetricStreamerMarker = ze_lib::context->zetDdiTable.CommandList.pfnAppendMetricStreamerMarker;
-    if( nullptr == pfnAppendMetricStreamerMarker )
-        return ZE_RESULT_ERROR_UNINITIALIZED;
+    if( nullptr == pfnAppendMetricStreamerMarker ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
 
     return pfnAppendMetricStreamerMarker( hCommandList, hMetricStreamer, value );
 }
@@ -706,8 +790,12 @@ zetMetricStreamerClose(
     )
 {
     auto pfnClose = ze_lib::context->zetDdiTable.MetricStreamer.pfnClose;
-    if( nullptr == pfnClose )
-        return ZE_RESULT_ERROR_UNINITIALIZED;
+    if( nullptr == pfnClose ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
 
     return pfnClose( hMetricStreamer );
 }
@@ -744,8 +832,12 @@ zetMetricStreamerReadData(
     )
 {
     auto pfnReadData = ze_lib::context->zetDdiTable.MetricStreamer.pfnReadData;
-    if( nullptr == pfnReadData )
-        return ZE_RESULT_ERROR_UNINITIALIZED;
+    if( nullptr == pfnReadData ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
 
     return pfnReadData( hMetricStreamer, maxReportCount, pRawDataSize, pRawData );
 }
@@ -780,8 +872,12 @@ zetMetricQueryPoolCreate(
     )
 {
     auto pfnCreate = ze_lib::context->zetDdiTable.MetricQueryPool.pfnCreate;
-    if( nullptr == pfnCreate )
-        return ZE_RESULT_ERROR_UNINITIALIZED;
+    if( nullptr == pfnCreate ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
 
     return pfnCreate( hContext, hDevice, hMetricGroup, desc, phMetricQueryPool );
 }
@@ -811,8 +907,12 @@ zetMetricQueryPoolDestroy(
     )
 {
     auto pfnDestroy = ze_lib::context->zetDdiTable.MetricQueryPool.pfnDestroy;
-    if( nullptr == pfnDestroy )
-        return ZE_RESULT_ERROR_UNINITIALIZED;
+    if( nullptr == pfnDestroy ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
 
     return pfnDestroy( hMetricQueryPool );
 }
@@ -840,8 +940,12 @@ zetMetricQueryCreate(
     )
 {
     auto pfnCreate = ze_lib::context->zetDdiTable.MetricQuery.pfnCreate;
-    if( nullptr == pfnCreate )
-        return ZE_RESULT_ERROR_UNINITIALIZED;
+    if( nullptr == pfnCreate ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
 
     return pfnCreate( hMetricQueryPool, index, phMetricQuery );
 }
@@ -869,8 +973,12 @@ zetMetricQueryDestroy(
     )
 {
     auto pfnDestroy = ze_lib::context->zetDdiTable.MetricQuery.pfnDestroy;
-    if( nullptr == pfnDestroy )
-        return ZE_RESULT_ERROR_UNINITIALIZED;
+    if( nullptr == pfnDestroy ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
 
     return pfnDestroy( hMetricQuery );
 }
@@ -896,8 +1004,12 @@ zetMetricQueryReset(
     )
 {
     auto pfnReset = ze_lib::context->zetDdiTable.MetricQuery.pfnReset;
-    if( nullptr == pfnReset )
-        return ZE_RESULT_ERROR_UNINITIALIZED;
+    if( nullptr == pfnReset ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
 
     return pfnReset( hMetricQuery );
 }
@@ -929,8 +1041,12 @@ zetCommandListAppendMetricQueryBegin(
     )
 {
     auto pfnAppendMetricQueryBegin = ze_lib::context->zetDdiTable.CommandList.pfnAppendMetricQueryBegin;
-    if( nullptr == pfnAppendMetricQueryBegin )
-        return ZE_RESULT_ERROR_UNINITIALIZED;
+    if( nullptr == pfnAppendMetricQueryBegin ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
 
     return pfnAppendMetricQueryBegin( hCommandList, hMetricQuery );
 }
@@ -978,8 +1094,12 @@ zetCommandListAppendMetricQueryEnd(
     )
 {
     auto pfnAppendMetricQueryEnd = ze_lib::context->zetDdiTable.CommandList.pfnAppendMetricQueryEnd;
-    if( nullptr == pfnAppendMetricQueryEnd )
-        return ZE_RESULT_ERROR_UNINITIALIZED;
+    if( nullptr == pfnAppendMetricQueryEnd ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
 
     return pfnAppendMetricQueryEnd( hCommandList, hMetricQuery, hSignalEvent, numWaitEvents, phWaitEvents );
 }
@@ -1003,8 +1123,12 @@ zetCommandListAppendMetricMemoryBarrier(
     )
 {
     auto pfnAppendMetricMemoryBarrier = ze_lib::context->zetDdiTable.CommandList.pfnAppendMetricMemoryBarrier;
-    if( nullptr == pfnAppendMetricMemoryBarrier )
-        return ZE_RESULT_ERROR_UNINITIALIZED;
+    if( nullptr == pfnAppendMetricMemoryBarrier ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
 
     return pfnAppendMetricMemoryBarrier( hCommandList );
 }
@@ -1038,8 +1162,12 @@ zetMetricQueryGetData(
     )
 {
     auto pfnGetData = ze_lib::context->zetDdiTable.MetricQuery.pfnGetData;
-    if( nullptr == pfnGetData )
-        return ZE_RESULT_ERROR_UNINITIALIZED;
+    if( nullptr == pfnGetData ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
 
     return pfnGetData( hMetricQuery, pRawDataSize, pRawData );
 }
@@ -1070,8 +1198,12 @@ zetKernelGetProfileInfo(
     )
 {
     auto pfnGetProfileInfo = ze_lib::context->zetDdiTable.Kernel.pfnGetProfileInfo;
-    if( nullptr == pfnGetProfileInfo )
-        return ZE_RESULT_ERROR_UNINITIALIZED;
+    if( nullptr == pfnGetProfileInfo ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
 
     return pfnGetProfileInfo( hKernel, pProfileProperties );
 }
@@ -1105,8 +1237,12 @@ zetTracerExpCreate(
     )
 {
     auto pfnCreate = ze_lib::context->zetDdiTable.TracerExp.pfnCreate;
-    if( nullptr == pfnCreate )
-        return ZE_RESULT_ERROR_UNINITIALIZED;
+    if( nullptr == pfnCreate ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
 
     return pfnCreate( hContext, desc, phTracer );
 }
@@ -1135,8 +1271,12 @@ zetTracerExpDestroy(
     )
 {
     auto pfnDestroy = ze_lib::context->zetDdiTable.TracerExp.pfnDestroy;
-    if( nullptr == pfnDestroy )
-        return ZE_RESULT_ERROR_UNINITIALIZED;
+    if( nullptr == pfnDestroy ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
 
     return pfnDestroy( hTracer );
 }
@@ -1168,8 +1308,12 @@ zetTracerExpSetPrologues(
     )
 {
     auto pfnSetPrologues = ze_lib::context->zetDdiTable.TracerExp.pfnSetPrologues;
-    if( nullptr == pfnSetPrologues )
-        return ZE_RESULT_ERROR_UNINITIALIZED;
+    if( nullptr == pfnSetPrologues ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
 
     return pfnSetPrologues( hTracer, pCoreCbs );
 }
@@ -1201,8 +1345,12 @@ zetTracerExpSetEpilogues(
     )
 {
     auto pfnSetEpilogues = ze_lib::context->zetDdiTable.TracerExp.pfnSetEpilogues;
-    if( nullptr == pfnSetEpilogues )
-        return ZE_RESULT_ERROR_UNINITIALIZED;
+    if( nullptr == pfnSetEpilogues ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
 
     return pfnSetEpilogues( hTracer, pCoreCbs );
 }
@@ -1227,8 +1375,12 @@ zetTracerExpSetEnabled(
     )
 {
     auto pfnSetEnabled = ze_lib::context->zetDdiTable.TracerExp.pfnSetEnabled;
-    if( nullptr == pfnSetEnabled )
-        return ZE_RESULT_ERROR_UNINITIALIZED;
+    if( nullptr == pfnSetEnabled ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
 
     return pfnSetEnabled( hTracer, enable );
 }
@@ -1287,8 +1439,12 @@ zetMetricGroupCalculateMultipleMetricValuesExp(
     )
 {
     auto pfnCalculateMultipleMetricValuesExp = ze_lib::context->zetDdiTable.MetricGroupExp.pfnCalculateMultipleMetricValuesExp;
-    if( nullptr == pfnCalculateMultipleMetricValuesExp )
-        return ZE_RESULT_ERROR_UNINITIALIZED;
+    if( nullptr == pfnCalculateMultipleMetricValuesExp ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
 
     return pfnCalculateMultipleMetricValuesExp( hMetricGroup, type, rawDataSize, pRawData, pSetCount, pTotalMetricValueCount, pMetricCounts, pMetricValues );
 }

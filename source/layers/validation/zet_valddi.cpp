@@ -24,7 +24,7 @@ namespace validation_layer
         auto pfnGetDebugInfo = context.zetDdiTable.Module.pfnGetDebugInfo;
 
         if( nullptr == pfnGetDebugInfo )
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
         if( context.enableParameterValidation )
         {
@@ -53,7 +53,7 @@ namespace validation_layer
         auto pfnGetDebugProperties = context.zetDdiTable.Device.pfnGetDebugProperties;
 
         if( nullptr == pfnGetDebugProperties )
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
         if( context.enableParameterValidation )
         {
@@ -80,7 +80,7 @@ namespace validation_layer
         auto pfnAttach = context.zetDdiTable.Debug.pfnAttach;
 
         if( nullptr == pfnAttach )
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
         if( context.enableParameterValidation )
         {
@@ -108,7 +108,7 @@ namespace validation_layer
         auto pfnDetach = context.zetDdiTable.Debug.pfnDetach;
 
         if( nullptr == pfnDetach )
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
         if( context.enableParameterValidation )
         {
@@ -138,7 +138,7 @@ namespace validation_layer
         auto pfnReadEvent = context.zetDdiTable.Debug.pfnReadEvent;
 
         if( nullptr == pfnReadEvent )
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
         if( context.enableParameterValidation )
         {
@@ -164,7 +164,7 @@ namespace validation_layer
         auto pfnAcknowledgeEvent = context.zetDdiTable.Debug.pfnAcknowledgeEvent;
 
         if( nullptr == pfnAcknowledgeEvent )
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
         if( context.enableParameterValidation )
         {
@@ -190,7 +190,7 @@ namespace validation_layer
         auto pfnInterrupt = context.zetDdiTable.Debug.pfnInterrupt;
 
         if( nullptr == pfnInterrupt )
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
         if( context.enableParameterValidation )
         {
@@ -213,7 +213,7 @@ namespace validation_layer
         auto pfnResume = context.zetDdiTable.Debug.pfnResume;
 
         if( nullptr == pfnResume )
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
         if( context.enableParameterValidation )
         {
@@ -239,7 +239,7 @@ namespace validation_layer
         auto pfnReadMemory = context.zetDdiTable.Debug.pfnReadMemory;
 
         if( nullptr == pfnReadMemory )
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
         if( context.enableParameterValidation )
         {
@@ -274,7 +274,7 @@ namespace validation_layer
         auto pfnWriteMemory = context.zetDdiTable.Debug.pfnWriteMemory;
 
         if( nullptr == pfnWriteMemory )
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
         if( context.enableParameterValidation )
         {
@@ -315,7 +315,7 @@ namespace validation_layer
         auto pfnGetRegisterSetProperties = context.zetDdiTable.Debug.pfnGetRegisterSetProperties;
 
         if( nullptr == pfnGetRegisterSetProperties )
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
         if( context.enableParameterValidation )
         {
@@ -347,7 +347,7 @@ namespace validation_layer
         auto pfnReadRegisters = context.zetDdiTable.Debug.pfnReadRegisters;
 
         if( nullptr == pfnReadRegisters )
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
         if( context.enableParameterValidation )
         {
@@ -376,7 +376,7 @@ namespace validation_layer
         auto pfnWriteRegisters = context.zetDdiTable.Debug.pfnWriteRegisters;
 
         if( nullptr == pfnWriteRegisters )
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
         if( context.enableParameterValidation )
         {
@@ -407,7 +407,7 @@ namespace validation_layer
         auto pfnGet = context.zetDdiTable.MetricGroup.pfnGet;
 
         if( nullptr == pfnGet )
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
         if( context.enableParameterValidation )
         {
@@ -433,7 +433,7 @@ namespace validation_layer
         auto pfnGetProperties = context.zetDdiTable.MetricGroup.pfnGetProperties;
 
         if( nullptr == pfnGetProperties )
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
         if( context.enableParameterValidation )
         {
@@ -470,7 +470,7 @@ namespace validation_layer
         auto pfnCalculateMetricValues = context.zetDdiTable.MetricGroup.pfnCalculateMetricValues;
 
         if( nullptr == pfnCalculateMetricValues )
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
         if( context.enableParameterValidation )
         {
@@ -509,7 +509,7 @@ namespace validation_layer
         auto pfnGet = context.zetDdiTable.Metric.pfnGet;
 
         if( nullptr == pfnGet )
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
         if( context.enableParameterValidation )
         {
@@ -535,7 +535,7 @@ namespace validation_layer
         auto pfnGetProperties = context.zetDdiTable.Metric.pfnGetProperties;
 
         if( nullptr == pfnGetProperties )
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
         if( context.enableParameterValidation )
         {
@@ -567,7 +567,7 @@ namespace validation_layer
         auto pfnActivateMetricGroups = context.zetDdiTable.Context.pfnActivateMetricGroups;
 
         if( nullptr == pfnActivateMetricGroups )
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
         if( context.enableParameterValidation )
         {
@@ -600,7 +600,7 @@ namespace validation_layer
         auto pfnOpen = context.zetDdiTable.MetricStreamer.pfnOpen;
 
         if( nullptr == pfnOpen )
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
         if( context.enableParameterValidation )
         {
@@ -636,7 +636,7 @@ namespace validation_layer
         auto pfnAppendMetricStreamerMarker = context.zetDdiTable.CommandList.pfnAppendMetricStreamerMarker;
 
         if( nullptr == pfnAppendMetricStreamerMarker )
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
         if( context.enableParameterValidation )
         {
@@ -661,7 +661,7 @@ namespace validation_layer
         auto pfnClose = context.zetDdiTable.MetricStreamer.pfnClose;
 
         if( nullptr == pfnClose )
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
         if( context.enableParameterValidation )
         {
@@ -694,7 +694,7 @@ namespace validation_layer
         auto pfnReadData = context.zetDdiTable.MetricStreamer.pfnReadData;
 
         if( nullptr == pfnReadData )
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
         if( context.enableParameterValidation )
         {
@@ -723,7 +723,7 @@ namespace validation_layer
         auto pfnCreate = context.zetDdiTable.MetricQueryPool.pfnCreate;
 
         if( nullptr == pfnCreate )
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
         if( context.enableParameterValidation )
         {
@@ -760,7 +760,7 @@ namespace validation_layer
         auto pfnDestroy = context.zetDdiTable.MetricQueryPool.pfnDestroy;
 
         if( nullptr == pfnDestroy )
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
         if( context.enableParameterValidation )
         {
@@ -784,7 +784,7 @@ namespace validation_layer
         auto pfnCreate = context.zetDdiTable.MetricQuery.pfnCreate;
 
         if( nullptr == pfnCreate )
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
         if( context.enableParameterValidation )
         {
@@ -809,7 +809,7 @@ namespace validation_layer
         auto pfnDestroy = context.zetDdiTable.MetricQuery.pfnDestroy;
 
         if( nullptr == pfnDestroy )
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
         if( context.enableParameterValidation )
         {
@@ -831,7 +831,7 @@ namespace validation_layer
         auto pfnReset = context.zetDdiTable.MetricQuery.pfnReset;
 
         if( nullptr == pfnReset )
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
         if( context.enableParameterValidation )
         {
@@ -854,7 +854,7 @@ namespace validation_layer
         auto pfnAppendMetricQueryBegin = context.zetDdiTable.CommandList.pfnAppendMetricQueryBegin;
 
         if( nullptr == pfnAppendMetricQueryBegin )
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
         if( context.enableParameterValidation )
         {
@@ -883,7 +883,7 @@ namespace validation_layer
         auto pfnAppendMetricQueryEnd = context.zetDdiTable.CommandList.pfnAppendMetricQueryEnd;
 
         if( nullptr == pfnAppendMetricQueryEnd )
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
         if( context.enableParameterValidation )
         {
@@ -914,7 +914,7 @@ namespace validation_layer
         auto pfnAppendMetricMemoryBarrier = context.zetDdiTable.CommandList.pfnAppendMetricMemoryBarrier;
 
         if( nullptr == pfnAppendMetricMemoryBarrier )
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
         if( context.enableParameterValidation )
         {
@@ -945,7 +945,7 @@ namespace validation_layer
         auto pfnGetData = context.zetDdiTable.MetricQuery.pfnGetData;
 
         if( nullptr == pfnGetData )
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
         if( context.enableParameterValidation )
         {
@@ -971,7 +971,7 @@ namespace validation_layer
         auto pfnGetProfileInfo = context.zetDdiTable.Kernel.pfnGetProfileInfo;
 
         if( nullptr == pfnGetProfileInfo )
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
         if( context.enableParameterValidation )
         {
@@ -998,7 +998,7 @@ namespace validation_layer
         auto pfnCreate = context.zetDdiTable.TracerExp.pfnCreate;
 
         if( nullptr == pfnCreate )
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
         if( context.enableParameterValidation )
         {
@@ -1029,7 +1029,7 @@ namespace validation_layer
         auto pfnDestroy = context.zetDdiTable.TracerExp.pfnDestroy;
 
         if( nullptr == pfnDestroy )
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
         if( context.enableParameterValidation )
         {
@@ -1052,7 +1052,7 @@ namespace validation_layer
         auto pfnSetPrologues = context.zetDdiTable.TracerExp.pfnSetPrologues;
 
         if( nullptr == pfnSetPrologues )
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
         if( context.enableParameterValidation )
         {
@@ -1078,7 +1078,7 @@ namespace validation_layer
         auto pfnSetEpilogues = context.zetDdiTable.TracerExp.pfnSetEpilogues;
 
         if( nullptr == pfnSetEpilogues )
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
         if( context.enableParameterValidation )
         {
@@ -1104,7 +1104,7 @@ namespace validation_layer
         auto pfnSetEnabled = context.zetDdiTable.TracerExp.pfnSetEnabled;
 
         if( nullptr == pfnSetEnabled )
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
         if( context.enableParameterValidation )
         {
@@ -1148,7 +1148,7 @@ namespace validation_layer
         auto pfnCalculateMultipleMetricValuesExp = context.zetDdiTable.MetricGroupExp.pfnCalculateMultipleMetricValuesExp;
 
         if( nullptr == pfnCalculateMultipleMetricValuesExp )
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
         if( context.enableParameterValidation )
         {

@@ -36,7 +36,7 @@ namespace validation_layer
         auto ${th.make_pfn_name(n, tags, obj)} = context.${n}DdiTable.${th.get_table_name(n, tags, obj)}.${th.make_pfn_name(n, tags, obj)};
 
         if( nullptr == ${th.make_pfn_name(n, tags, obj)} )
-            return ${X}_RESULT_ERROR_UNINITIALIZED;
+            return ${X}_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
         if( context.enableParameterValidation )
         {

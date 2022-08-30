@@ -88,6 +88,11 @@ namespace ze_lib
             result = zelLoaderDriverCheck(flags);
         }
 
+        if( ZE_RESULT_SUCCESS == result )
+        {
+            isInitialized = true;
+        }
+
         return result;
     }
 

@@ -65,8 +65,12 @@ ${th.make_func_name(n, tags, obj)}(
 
 %endif
     auto ${th.make_pfn_name(n, tags, obj)} = ${x}_lib::context->${n}DdiTable.${th.get_table_name(n, tags, obj)}.${th.make_pfn_name(n, tags, obj)};
-    if( nullptr == ${th.make_pfn_name(n, tags, obj)} )
-        return ${X}_RESULT_ERROR_UNINITIALIZED;
+    if( nullptr == ${th.make_pfn_name(n, tags, obj)} ) {
+        if(!ze_lib::context->isInitialized)
+            return ${X}_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ${X}_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
 
     return ${th.make_pfn_name(n, tags, obj)}( ${", ".join(th.make_param_lines(n, tags, obj, format=["name"]))} );
 }

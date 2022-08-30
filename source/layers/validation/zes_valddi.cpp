@@ -22,7 +22,7 @@ namespace validation_layer
         auto pfnGetProperties = context.zesDdiTable.Device.pfnGetProperties;
 
         if( nullptr == pfnGetProperties )
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
         if( context.enableParameterValidation )
         {
@@ -48,7 +48,7 @@ namespace validation_layer
         auto pfnGetState = context.zesDdiTable.Device.pfnGetState;
 
         if( nullptr == pfnGetState )
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
         if( context.enableParameterValidation )
         {
@@ -75,7 +75,7 @@ namespace validation_layer
         auto pfnReset = context.zesDdiTable.Device.pfnReset;
 
         if( nullptr == pfnReset )
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
         if( context.enableParameterValidation )
         {
@@ -107,7 +107,7 @@ namespace validation_layer
         auto pfnProcessesGetState = context.zesDdiTable.Device.pfnProcessesGetState;
 
         if( nullptr == pfnProcessesGetState )
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
         if( context.enableParameterValidation )
         {
@@ -133,7 +133,7 @@ namespace validation_layer
         auto pfnPciGetProperties = context.zesDdiTable.Device.pfnPciGetProperties;
 
         if( nullptr == pfnPciGetProperties )
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
         if( context.enableParameterValidation )
         {
@@ -159,7 +159,7 @@ namespace validation_layer
         auto pfnPciGetState = context.zesDdiTable.Device.pfnPciGetState;
 
         if( nullptr == pfnPciGetState )
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
         if( context.enableParameterValidation )
         {
@@ -193,7 +193,7 @@ namespace validation_layer
         auto pfnPciGetBars = context.zesDdiTable.Device.pfnPciGetBars;
 
         if( nullptr == pfnPciGetBars )
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
         if( context.enableParameterValidation )
         {
@@ -219,7 +219,7 @@ namespace validation_layer
         auto pfnPciGetStats = context.zesDdiTable.Device.pfnPciGetStats;
 
         if( nullptr == pfnPciGetStats )
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
         if( context.enableParameterValidation )
         {
@@ -255,7 +255,7 @@ namespace validation_layer
         auto pfnEnumDiagnosticTestSuites = context.zesDdiTable.Device.pfnEnumDiagnosticTestSuites;
 
         if( nullptr == pfnEnumDiagnosticTestSuites )
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
         if( context.enableParameterValidation )
         {
@@ -282,7 +282,7 @@ namespace validation_layer
         auto pfnGetProperties = context.zesDdiTable.Diagnostics.pfnGetProperties;
 
         if( nullptr == pfnGetProperties )
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
         if( context.enableParameterValidation )
         {
@@ -316,7 +316,7 @@ namespace validation_layer
         auto pfnGetTests = context.zesDdiTable.Diagnostics.pfnGetTests;
 
         if( nullptr == pfnGetTests )
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
         if( context.enableParameterValidation )
         {
@@ -346,7 +346,7 @@ namespace validation_layer
         auto pfnRunTests = context.zesDdiTable.Diagnostics.pfnRunTests;
 
         if( nullptr == pfnRunTests )
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
         if( context.enableParameterValidation )
         {
@@ -372,7 +372,7 @@ namespace validation_layer
         auto pfnEccAvailable = context.zesDdiTable.Device.pfnEccAvailable;
 
         if( nullptr == pfnEccAvailable )
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
         if( context.enableParameterValidation )
         {
@@ -398,7 +398,7 @@ namespace validation_layer
         auto pfnEccConfigurable = context.zesDdiTable.Device.pfnEccConfigurable;
 
         if( nullptr == pfnEccConfigurable )
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
         if( context.enableParameterValidation )
         {
@@ -424,7 +424,7 @@ namespace validation_layer
         auto pfnGetEccState = context.zesDdiTable.Device.pfnGetEccState;
 
         if( nullptr == pfnGetEccState )
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
         if( context.enableParameterValidation )
         {
@@ -451,7 +451,7 @@ namespace validation_layer
         auto pfnSetEccState = context.zesDdiTable.Device.pfnSetEccState;
 
         if( nullptr == pfnSetEccState )
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
         if( context.enableParameterValidation )
         {
@@ -493,7 +493,7 @@ namespace validation_layer
         auto pfnEnumEngineGroups = context.zesDdiTable.Device.pfnEnumEngineGroups;
 
         if( nullptr == pfnEnumEngineGroups )
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
         if( context.enableParameterValidation )
         {
@@ -519,7 +519,7 @@ namespace validation_layer
         auto pfnGetProperties = context.zesDdiTable.Engine.pfnGetProperties;
 
         if( nullptr == pfnGetProperties )
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
         if( context.enableParameterValidation )
         {
@@ -546,7 +546,7 @@ namespace validation_layer
         auto pfnGetActivity = context.zesDdiTable.Engine.pfnGetActivity;
 
         if( nullptr == pfnGetActivity )
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
         if( context.enableParameterValidation )
         {
@@ -572,7 +572,7 @@ namespace validation_layer
         auto pfnEventRegister = context.zesDdiTable.Device.pfnEventRegister;
 
         if( nullptr == pfnEventRegister )
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
         if( context.enableParameterValidation )
         {
@@ -614,7 +614,7 @@ namespace validation_layer
         auto pfnEventListen = context.zesDdiTable.Driver.pfnEventListen;
 
         if( nullptr == pfnEventListen )
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
         if( context.enableParameterValidation )
         {
@@ -662,7 +662,7 @@ namespace validation_layer
         auto pfnEventListenEx = context.zesDdiTable.Driver.pfnEventListenEx;
 
         if( nullptr == pfnEventListenEx )
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
         if( context.enableParameterValidation )
         {
@@ -704,7 +704,7 @@ namespace validation_layer
         auto pfnEnumFabricPorts = context.zesDdiTable.Device.pfnEnumFabricPorts;
 
         if( nullptr == pfnEnumFabricPorts )
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
         if( context.enableParameterValidation )
         {
@@ -730,7 +730,7 @@ namespace validation_layer
         auto pfnGetProperties = context.zesDdiTable.FabricPort.pfnGetProperties;
 
         if( nullptr == pfnGetProperties )
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
         if( context.enableParameterValidation )
         {
@@ -757,7 +757,7 @@ namespace validation_layer
         auto pfnGetLinkType = context.zesDdiTable.FabricPort.pfnGetLinkType;
 
         if( nullptr == pfnGetLinkType )
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
         if( context.enableParameterValidation )
         {
@@ -783,7 +783,7 @@ namespace validation_layer
         auto pfnGetConfig = context.zesDdiTable.FabricPort.pfnGetConfig;
 
         if( nullptr == pfnGetConfig )
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
         if( context.enableParameterValidation )
         {
@@ -809,7 +809,7 @@ namespace validation_layer
         auto pfnSetConfig = context.zesDdiTable.FabricPort.pfnSetConfig;
 
         if( nullptr == pfnSetConfig )
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
         if( context.enableParameterValidation )
         {
@@ -835,7 +835,7 @@ namespace validation_layer
         auto pfnGetState = context.zesDdiTable.FabricPort.pfnGetState;
 
         if( nullptr == pfnGetState )
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
         if( context.enableParameterValidation )
         {
@@ -861,7 +861,7 @@ namespace validation_layer
         auto pfnGetThroughput = context.zesDdiTable.FabricPort.pfnGetThroughput;
 
         if( nullptr == pfnGetThroughput )
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
         if( context.enableParameterValidation )
         {
@@ -897,7 +897,7 @@ namespace validation_layer
         auto pfnEnumFans = context.zesDdiTable.Device.pfnEnumFans;
 
         if( nullptr == pfnEnumFans )
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
         if( context.enableParameterValidation )
         {
@@ -923,7 +923,7 @@ namespace validation_layer
         auto pfnGetProperties = context.zesDdiTable.Fan.pfnGetProperties;
 
         if( nullptr == pfnGetProperties )
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
         if( context.enableParameterValidation )
         {
@@ -949,7 +949,7 @@ namespace validation_layer
         auto pfnGetConfig = context.zesDdiTable.Fan.pfnGetConfig;
 
         if( nullptr == pfnGetConfig )
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
         if( context.enableParameterValidation )
         {
@@ -974,7 +974,7 @@ namespace validation_layer
         auto pfnSetDefaultMode = context.zesDdiTable.Fan.pfnSetDefaultMode;
 
         if( nullptr == pfnSetDefaultMode )
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
         if( context.enableParameterValidation )
         {
@@ -997,7 +997,7 @@ namespace validation_layer
         auto pfnSetFixedSpeedMode = context.zesDdiTable.Fan.pfnSetFixedSpeedMode;
 
         if( nullptr == pfnSetFixedSpeedMode )
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
         if( context.enableParameterValidation )
         {
@@ -1023,7 +1023,7 @@ namespace validation_layer
         auto pfnSetSpeedTableMode = context.zesDdiTable.Fan.pfnSetSpeedTableMode;
 
         if( nullptr == pfnSetSpeedTableMode )
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
         if( context.enableParameterValidation )
         {
@@ -1052,7 +1052,7 @@ namespace validation_layer
         auto pfnGetState = context.zesDdiTable.Fan.pfnGetState;
 
         if( nullptr == pfnGetState )
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
         if( context.enableParameterValidation )
         {
@@ -1091,7 +1091,7 @@ namespace validation_layer
         auto pfnEnumFirmwares = context.zesDdiTable.Device.pfnEnumFirmwares;
 
         if( nullptr == pfnEnumFirmwares )
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
         if( context.enableParameterValidation )
         {
@@ -1118,7 +1118,7 @@ namespace validation_layer
         auto pfnGetProperties = context.zesDdiTable.Firmware.pfnGetProperties;
 
         if( nullptr == pfnGetProperties )
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
         if( context.enableParameterValidation )
         {
@@ -1145,7 +1145,7 @@ namespace validation_layer
         auto pfnFlash = context.zesDdiTable.Firmware.pfnFlash;
 
         if( nullptr == pfnFlash )
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
         if( context.enableParameterValidation )
         {
@@ -1181,7 +1181,7 @@ namespace validation_layer
         auto pfnEnumFrequencyDomains = context.zesDdiTable.Device.pfnEnumFrequencyDomains;
 
         if( nullptr == pfnEnumFrequencyDomains )
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
         if( context.enableParameterValidation )
         {
@@ -1207,7 +1207,7 @@ namespace validation_layer
         auto pfnGetProperties = context.zesDdiTable.Frequency.pfnGetProperties;
 
         if( nullptr == pfnGetProperties )
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
         if( context.enableParameterValidation )
         {
@@ -1241,7 +1241,7 @@ namespace validation_layer
         auto pfnGetAvailableClocks = context.zesDdiTable.Frequency.pfnGetAvailableClocks;
 
         if( nullptr == pfnGetAvailableClocks )
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
         if( context.enableParameterValidation )
         {
@@ -1268,7 +1268,7 @@ namespace validation_layer
         auto pfnGetRange = context.zesDdiTable.Frequency.pfnGetRange;
 
         if( nullptr == pfnGetRange )
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
         if( context.enableParameterValidation )
         {
@@ -1295,7 +1295,7 @@ namespace validation_layer
         auto pfnSetRange = context.zesDdiTable.Frequency.pfnSetRange;
 
         if( nullptr == pfnSetRange )
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
         if( context.enableParameterValidation )
         {
@@ -1321,7 +1321,7 @@ namespace validation_layer
         auto pfnGetState = context.zesDdiTable.Frequency.pfnGetState;
 
         if( nullptr == pfnGetState )
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
         if( context.enableParameterValidation )
         {
@@ -1348,7 +1348,7 @@ namespace validation_layer
         auto pfnGetThrottleTime = context.zesDdiTable.Frequency.pfnGetThrottleTime;
 
         if( nullptr == pfnGetThrottleTime )
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
         if( context.enableParameterValidation )
         {
@@ -1375,7 +1375,7 @@ namespace validation_layer
         auto pfnOcGetCapabilities = context.zesDdiTable.Frequency.pfnOcGetCapabilities;
 
         if( nullptr == pfnOcGetCapabilities )
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
         if( context.enableParameterValidation )
         {
@@ -1403,7 +1403,7 @@ namespace validation_layer
         auto pfnOcGetFrequencyTarget = context.zesDdiTable.Frequency.pfnOcGetFrequencyTarget;
 
         if( nullptr == pfnOcGetFrequencyTarget )
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
         if( context.enableParameterValidation )
         {
@@ -1431,7 +1431,7 @@ namespace validation_layer
         auto pfnOcSetFrequencyTarget = context.zesDdiTable.Frequency.pfnOcSetFrequencyTarget;
 
         if( nullptr == pfnOcSetFrequencyTarget )
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
         if( context.enableParameterValidation )
         {
@@ -1459,7 +1459,7 @@ namespace validation_layer
         auto pfnOcGetVoltageTarget = context.zesDdiTable.Frequency.pfnOcGetVoltageTarget;
 
         if( nullptr == pfnOcGetVoltageTarget )
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
         if( context.enableParameterValidation )
         {
@@ -1493,7 +1493,7 @@ namespace validation_layer
         auto pfnOcSetVoltageTarget = context.zesDdiTable.Frequency.pfnOcSetVoltageTarget;
 
         if( nullptr == pfnOcSetVoltageTarget )
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
         if( context.enableParameterValidation )
         {
@@ -1516,7 +1516,7 @@ namespace validation_layer
         auto pfnOcSetMode = context.zesDdiTable.Frequency.pfnOcSetMode;
 
         if( nullptr == pfnOcSetMode )
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
         if( context.enableParameterValidation )
         {
@@ -1542,7 +1542,7 @@ namespace validation_layer
         auto pfnOcGetMode = context.zesDdiTable.Frequency.pfnOcGetMode;
 
         if( nullptr == pfnOcGetMode )
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
         if( context.enableParameterValidation )
         {
@@ -1569,7 +1569,7 @@ namespace validation_layer
         auto pfnOcGetIccMax = context.zesDdiTable.Frequency.pfnOcGetIccMax;
 
         if( nullptr == pfnOcGetIccMax )
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
         if( context.enableParameterValidation )
         {
@@ -1595,7 +1595,7 @@ namespace validation_layer
         auto pfnOcSetIccMax = context.zesDdiTable.Frequency.pfnOcSetIccMax;
 
         if( nullptr == pfnOcSetIccMax )
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
         if( context.enableParameterValidation )
         {
@@ -1619,7 +1619,7 @@ namespace validation_layer
         auto pfnOcGetTjMax = context.zesDdiTable.Frequency.pfnOcGetTjMax;
 
         if( nullptr == pfnOcGetTjMax )
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
         if( context.enableParameterValidation )
         {
@@ -1645,7 +1645,7 @@ namespace validation_layer
         auto pfnOcSetTjMax = context.zesDdiTable.Frequency.pfnOcSetTjMax;
 
         if( nullptr == pfnOcSetTjMax )
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
         if( context.enableParameterValidation )
         {
@@ -1678,7 +1678,7 @@ namespace validation_layer
         auto pfnEnumLeds = context.zesDdiTable.Device.pfnEnumLeds;
 
         if( nullptr == pfnEnumLeds )
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
         if( context.enableParameterValidation )
         {
@@ -1704,7 +1704,7 @@ namespace validation_layer
         auto pfnGetProperties = context.zesDdiTable.Led.pfnGetProperties;
 
         if( nullptr == pfnGetProperties )
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
         if( context.enableParameterValidation )
         {
@@ -1730,7 +1730,7 @@ namespace validation_layer
         auto pfnGetState = context.zesDdiTable.Led.pfnGetState;
 
         if( nullptr == pfnGetState )
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
         if( context.enableParameterValidation )
         {
@@ -1756,7 +1756,7 @@ namespace validation_layer
         auto pfnSetState = context.zesDdiTable.Led.pfnSetState;
 
         if( nullptr == pfnSetState )
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
         if( context.enableParameterValidation )
         {
@@ -1779,7 +1779,7 @@ namespace validation_layer
         auto pfnSetColor = context.zesDdiTable.Led.pfnSetColor;
 
         if( nullptr == pfnSetColor )
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
         if( context.enableParameterValidation )
         {
@@ -1815,7 +1815,7 @@ namespace validation_layer
         auto pfnEnumMemoryModules = context.zesDdiTable.Device.pfnEnumMemoryModules;
 
         if( nullptr == pfnEnumMemoryModules )
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
         if( context.enableParameterValidation )
         {
@@ -1841,7 +1841,7 @@ namespace validation_layer
         auto pfnGetProperties = context.zesDdiTable.Memory.pfnGetProperties;
 
         if( nullptr == pfnGetProperties )
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
         if( context.enableParameterValidation )
         {
@@ -1867,7 +1867,7 @@ namespace validation_layer
         auto pfnGetState = context.zesDdiTable.Memory.pfnGetState;
 
         if( nullptr == pfnGetState )
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
         if( context.enableParameterValidation )
         {
@@ -1894,7 +1894,7 @@ namespace validation_layer
         auto pfnGetBandwidth = context.zesDdiTable.Memory.pfnGetBandwidth;
 
         if( nullptr == pfnGetBandwidth )
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
         if( context.enableParameterValidation )
         {
@@ -1930,7 +1930,7 @@ namespace validation_layer
         auto pfnEnumPerformanceFactorDomains = context.zesDdiTable.Device.pfnEnumPerformanceFactorDomains;
 
         if( nullptr == pfnEnumPerformanceFactorDomains )
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
         if( context.enableParameterValidation )
         {
@@ -1957,7 +1957,7 @@ namespace validation_layer
         auto pfnGetProperties = context.zesDdiTable.PerformanceFactor.pfnGetProperties;
 
         if( nullptr == pfnGetProperties )
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
         if( context.enableParameterValidation )
         {
@@ -1984,7 +1984,7 @@ namespace validation_layer
         auto pfnGetConfig = context.zesDdiTable.PerformanceFactor.pfnGetConfig;
 
         if( nullptr == pfnGetConfig )
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
         if( context.enableParameterValidation )
         {
@@ -2010,7 +2010,7 @@ namespace validation_layer
         auto pfnSetConfig = context.zesDdiTable.PerformanceFactor.pfnSetConfig;
 
         if( nullptr == pfnSetConfig )
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
         if( context.enableParameterValidation )
         {
@@ -2043,7 +2043,7 @@ namespace validation_layer
         auto pfnEnumPowerDomains = context.zesDdiTable.Device.pfnEnumPowerDomains;
 
         if( nullptr == pfnEnumPowerDomains )
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
         if( context.enableParameterValidation )
         {
@@ -2069,7 +2069,7 @@ namespace validation_layer
         auto pfnGetCardPowerDomain = context.zesDdiTable.Device.pfnGetCardPowerDomain;
 
         if( nullptr == pfnGetCardPowerDomain )
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
         if( context.enableParameterValidation )
         {
@@ -2095,7 +2095,7 @@ namespace validation_layer
         auto pfnGetProperties = context.zesDdiTable.Power.pfnGetProperties;
 
         if( nullptr == pfnGetProperties )
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
         if( context.enableParameterValidation )
         {
@@ -2122,7 +2122,7 @@ namespace validation_layer
         auto pfnGetEnergyCounter = context.zesDdiTable.Power.pfnGetEnergyCounter;
 
         if( nullptr == pfnGetEnergyCounter )
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
         if( context.enableParameterValidation )
         {
@@ -2153,7 +2153,7 @@ namespace validation_layer
         auto pfnGetLimits = context.zesDdiTable.Power.pfnGetLimits;
 
         if( nullptr == pfnGetLimits )
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
         if( context.enableParameterValidation )
         {
@@ -2181,7 +2181,7 @@ namespace validation_layer
         auto pfnSetLimits = context.zesDdiTable.Power.pfnSetLimits;
 
         if( nullptr == pfnSetLimits )
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
         if( context.enableParameterValidation )
         {
@@ -2205,7 +2205,7 @@ namespace validation_layer
         auto pfnGetEnergyThreshold = context.zesDdiTable.Power.pfnGetEnergyThreshold;
 
         if( nullptr == pfnGetEnergyThreshold )
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
         if( context.enableParameterValidation )
         {
@@ -2231,7 +2231,7 @@ namespace validation_layer
         auto pfnSetEnergyThreshold = context.zesDdiTable.Power.pfnSetEnergyThreshold;
 
         if( nullptr == pfnSetEnergyThreshold )
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
         if( context.enableParameterValidation )
         {
@@ -2264,7 +2264,7 @@ namespace validation_layer
         auto pfnEnumPsus = context.zesDdiTable.Device.pfnEnumPsus;
 
         if( nullptr == pfnEnumPsus )
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
         if( context.enableParameterValidation )
         {
@@ -2290,7 +2290,7 @@ namespace validation_layer
         auto pfnGetProperties = context.zesDdiTable.Psu.pfnGetProperties;
 
         if( nullptr == pfnGetProperties )
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
         if( context.enableParameterValidation )
         {
@@ -2316,7 +2316,7 @@ namespace validation_layer
         auto pfnGetState = context.zesDdiTable.Psu.pfnGetState;
 
         if( nullptr == pfnGetState )
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
         if( context.enableParameterValidation )
         {
@@ -2352,7 +2352,7 @@ namespace validation_layer
         auto pfnEnumRasErrorSets = context.zesDdiTable.Device.pfnEnumRasErrorSets;
 
         if( nullptr == pfnEnumRasErrorSets )
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
         if( context.enableParameterValidation )
         {
@@ -2378,7 +2378,7 @@ namespace validation_layer
         auto pfnGetProperties = context.zesDdiTable.Ras.pfnGetProperties;
 
         if( nullptr == pfnGetProperties )
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
         if( context.enableParameterValidation )
         {
@@ -2405,7 +2405,7 @@ namespace validation_layer
         auto pfnGetConfig = context.zesDdiTable.Ras.pfnGetConfig;
 
         if( nullptr == pfnGetConfig )
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
         if( context.enableParameterValidation )
         {
@@ -2431,7 +2431,7 @@ namespace validation_layer
         auto pfnSetConfig = context.zesDdiTable.Ras.pfnSetConfig;
 
         if( nullptr == pfnSetConfig )
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
         if( context.enableParameterValidation )
         {
@@ -2458,7 +2458,7 @@ namespace validation_layer
         auto pfnGetState = context.zesDdiTable.Ras.pfnGetState;
 
         if( nullptr == pfnGetState )
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
         if( context.enableParameterValidation )
         {
@@ -2494,7 +2494,7 @@ namespace validation_layer
         auto pfnEnumSchedulers = context.zesDdiTable.Device.pfnEnumSchedulers;
 
         if( nullptr == pfnEnumSchedulers )
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
         if( context.enableParameterValidation )
         {
@@ -2520,7 +2520,7 @@ namespace validation_layer
         auto pfnGetProperties = context.zesDdiTable.Scheduler.pfnGetProperties;
 
         if( nullptr == pfnGetProperties )
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
         if( context.enableParameterValidation )
         {
@@ -2546,7 +2546,7 @@ namespace validation_layer
         auto pfnGetCurrentMode = context.zesDdiTable.Scheduler.pfnGetCurrentMode;
 
         if( nullptr == pfnGetCurrentMode )
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
         if( context.enableParameterValidation )
         {
@@ -2574,7 +2574,7 @@ namespace validation_layer
         auto pfnGetTimeoutModeProperties = context.zesDdiTable.Scheduler.pfnGetTimeoutModeProperties;
 
         if( nullptr == pfnGetTimeoutModeProperties )
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
         if( context.enableParameterValidation )
         {
@@ -2602,7 +2602,7 @@ namespace validation_layer
         auto pfnGetTimesliceModeProperties = context.zesDdiTable.Scheduler.pfnGetTimesliceModeProperties;
 
         if( nullptr == pfnGetTimesliceModeProperties )
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
         if( context.enableParameterValidation )
         {
@@ -2630,7 +2630,7 @@ namespace validation_layer
         auto pfnSetTimeoutMode = context.zesDdiTable.Scheduler.pfnSetTimeoutMode;
 
         if( nullptr == pfnSetTimeoutMode )
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
         if( context.enableParameterValidation )
         {
@@ -2661,7 +2661,7 @@ namespace validation_layer
         auto pfnSetTimesliceMode = context.zesDdiTable.Scheduler.pfnSetTimesliceMode;
 
         if( nullptr == pfnSetTimesliceMode )
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
         if( context.enableParameterValidation )
         {
@@ -2691,7 +2691,7 @@ namespace validation_layer
         auto pfnSetExclusiveMode = context.zesDdiTable.Scheduler.pfnSetExclusiveMode;
 
         if( nullptr == pfnSetExclusiveMode )
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
         if( context.enableParameterValidation )
         {
@@ -2718,7 +2718,7 @@ namespace validation_layer
         auto pfnSetComputeUnitDebugMode = context.zesDdiTable.Scheduler.pfnSetComputeUnitDebugMode;
 
         if( nullptr == pfnSetComputeUnitDebugMode )
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
         if( context.enableParameterValidation )
         {
@@ -2754,7 +2754,7 @@ namespace validation_layer
         auto pfnEnumStandbyDomains = context.zesDdiTable.Device.pfnEnumStandbyDomains;
 
         if( nullptr == pfnEnumStandbyDomains )
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
         if( context.enableParameterValidation )
         {
@@ -2780,7 +2780,7 @@ namespace validation_layer
         auto pfnGetProperties = context.zesDdiTable.Standby.pfnGetProperties;
 
         if( nullptr == pfnGetProperties )
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
         if( context.enableParameterValidation )
         {
@@ -2806,7 +2806,7 @@ namespace validation_layer
         auto pfnGetMode = context.zesDdiTable.Standby.pfnGetMode;
 
         if( nullptr == pfnGetMode )
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
         if( context.enableParameterValidation )
         {
@@ -2832,7 +2832,7 @@ namespace validation_layer
         auto pfnSetMode = context.zesDdiTable.Standby.pfnSetMode;
 
         if( nullptr == pfnSetMode )
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
         if( context.enableParameterValidation )
         {
@@ -2868,7 +2868,7 @@ namespace validation_layer
         auto pfnEnumTemperatureSensors = context.zesDdiTable.Device.pfnEnumTemperatureSensors;
 
         if( nullptr == pfnEnumTemperatureSensors )
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
         if( context.enableParameterValidation )
         {
@@ -2894,7 +2894,7 @@ namespace validation_layer
         auto pfnGetProperties = context.zesDdiTable.Temperature.pfnGetProperties;
 
         if( nullptr == pfnGetProperties )
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
         if( context.enableParameterValidation )
         {
@@ -2920,7 +2920,7 @@ namespace validation_layer
         auto pfnGetConfig = context.zesDdiTable.Temperature.pfnGetConfig;
 
         if( nullptr == pfnGetConfig )
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
         if( context.enableParameterValidation )
         {
@@ -2946,7 +2946,7 @@ namespace validation_layer
         auto pfnSetConfig = context.zesDdiTable.Temperature.pfnSetConfig;
 
         if( nullptr == pfnSetConfig )
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
         if( context.enableParameterValidation )
         {
@@ -2973,7 +2973,7 @@ namespace validation_layer
         auto pfnGetState = context.zesDdiTable.Temperature.pfnGetState;
 
         if( nullptr == pfnGetState )
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
         if( context.enableParameterValidation )
         {
@@ -3007,7 +3007,7 @@ namespace validation_layer
         auto pfnGetLimitsExt = context.zesDdiTable.Power.pfnGetLimitsExt;
 
         if( nullptr == pfnGetLimitsExt )
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
         if( context.enableParameterValidation )
         {
@@ -3034,7 +3034,7 @@ namespace validation_layer
         auto pfnSetLimitsExt = context.zesDdiTable.Power.pfnSetLimitsExt;
 
         if( nullptr == pfnSetLimitsExt )
-            return ZE_RESULT_ERROR_UNINITIALIZED;
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
         if( context.enableParameterValidation )
         {
