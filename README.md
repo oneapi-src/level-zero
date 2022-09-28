@@ -12,6 +12,8 @@ See the [oneAPI specification](https://spec.oneapi.com/versions/latest/introduct
 
 See the [Level Zero specification](https://spec.oneapi.com/level-zero/latest/index.html) for more information about Level Zero.
 
+See the [Level Zero specification repo](https://github.com/oneapi-src/level-zero-spec) for contributing to the specification.
+
 Level Zero API versions are listed in the `ze_api_version_t` enumeration, located in the
 [ze_api.h](./include/ze_api.h) file.
 
