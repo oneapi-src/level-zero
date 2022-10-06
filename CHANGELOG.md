@@ -1,5 +1,8 @@
 # Level zero loader changelog
 
+## v1.8.8
+* Update Extension and Experimental Features to return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE instead of ZE_RESULT_ERROR_UNINITIALIZED when not found.
+
 ## v1.8.5
 * Remove RTLD_DEEPBIND from driver dlopen calls
 * Add loader code generation scripts 
