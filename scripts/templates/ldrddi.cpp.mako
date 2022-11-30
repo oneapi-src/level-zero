@@ -30,6 +30,11 @@ namespace loader
     %>${th.append_ws(_factory_t, 35)} ${_factory};
     %endif
     %endfor
+    %if re.match(r"ze_ldrddi", name):
+    ///////////////////////////////////////////////////////////////////////////////
+    std::unordered_map<ze_image_object_t *, ze_image_handle_t>            image_handle_map;
+    std::unordered_map<ze_sampler_object_t *, ze_sampler_handle_t>        sampler_handle_map;
+    %endif
 
     %for obj in th.extract_objs(specs, r"function"):
     ///////////////////////////////////////////////////////////////////////////////
@@ -126,15 +131,38 @@ namespace loader
         %>for( size_t i = ${item['range'][0]}; ( nullptr != ${item['name']} ) && ( i < ${item['range'][1]} ); ++i )
             ${item['name']}Local[ i ] = reinterpret_cast<${item['obj']}*>( ${item['name']}[ i ] )->handle;
         %else:
-        // convert loader handle to driver handle
         %if item['optional']:
+        // convert loader handle to driver handle
         ${item['name']} = ( ${item['name']} ) ? reinterpret_cast<${item['obj']}*>( ${item['name']} )->handle : nullptr;
         %else:
+        %if re.match(r"\w+ImageDestroy$", th.make_func_name(n, tags, obj)):
+        // remove the handle from the kernel arugment map
+        image_handle_map.erase(reinterpret_cast<ze_image_object_t*>(hImage));
+        %endif
+        %if re.match(r"\w+SamplerDestroy$", th.make_func_name(n, tags, obj)):
+        // remove the handle from the kernel arugment map
+        sampler_handle_map.erase(reinterpret_cast<ze_sampler_object_t*>(hSampler));
+        %endif
+        // convert loader handle to driver handle
         ${item['name']} = reinterpret_cast<${item['obj']}*>( ${item['name']} )->handle;
         %endif
         %endif
 
         %endfor
+        %if re.match(r"\w+KernelSetArgumentValue$", th.make_func_name(n, tags, obj)):
+        // convert pArgValue to correct handle if applicable
+        void *internalArgValue = const_cast<void *>(pArgValue);
+        if (pArgValue) {
+            // check if the arg value is a translated handle
+            ze_image_object_t **imageHandle = static_cast<ze_image_object_t **>(internalArgValue);
+            ze_sampler_object_t **samplerHandle = static_cast<ze_sampler_object_t **>(internalArgValue);
+            if( image_handle_map.find(*imageHandle) != image_handle_map.end() ) {
+                internalArgValue = &image_handle_map[*imageHandle];
+            } else if( sampler_handle_map.find(*samplerHandle) != sampler_handle_map.end() ) {
+                internalArgValue = &sampler_handle_map[*samplerHandle];
+            }
+        }
+        %endif
         // forward to device-driver
         %if add_local:
         result = ${th.make_pfn_name(n, tags, obj)}( ${", ".join(th.make_param_lines(n, tags, obj, format=["name", "local"]))} );
@@ -142,7 +170,11 @@ namespace loader
         delete []${array_name};
         %endfor
         %else:
+        %if re.match(r"\w+KernelSetArgumentValue$", th.make_func_name(n, tags, obj)):
+        result = pfnSetArgumentValue( hKernel, argIndex, argSize, const_cast<const void *>(internalArgValue) );
+        %else:
         result = ${th.make_pfn_name(n, tags, obj)}( ${", ".join(th.make_param_lines(n, tags, obj, format=["name"]))} );
+        %endif
         %endif
 <%
         del arrays_to_delete
@@ -171,8 +203,19 @@ namespace loader
                 *${item['name']} = reinterpret_cast<${item['type']}>(
                     ${item['factory']}.getInstance( *${item['name']}, dditable ) );
             %else:
+            %if re.match(r"\w+ImageCreate$", th.make_func_name(n, tags, obj)) or re.match(r"\w+SamplerCreate$", th.make_func_name(n, tags, obj)):
+            ${item['type']} internalHandlePtr = *${item['name']};
+            %endif
             *${item['name']} = reinterpret_cast<${item['type']}>(
                 ${item['factory']}.getInstance( *${item['name']}, dditable ) );
+            %if re.match(r"\w+ImageCreate$", th.make_func_name(n, tags, obj)):
+            // convert loader handle to driver handle and store in map
+            image_handle_map.insert({ze_image_factory.getInstance( internalHandlePtr, dditable ), internalHandlePtr});
+            %endif
+            %if re.match(r"\w+SamplerCreate$", th.make_func_name(n, tags, obj)):
+            // convert loader handle to driver handle and store in map
+            sampler_handle_map.insert({ze_sampler_factory.getInstance( internalHandlePtr, dditable ), internalHandlePtr});
+            %endif
             %endif
             %endif
         }

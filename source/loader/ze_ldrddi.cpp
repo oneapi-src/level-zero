@@ -28,6 +28,9 @@ namespace loader
     ze_physical_mem_factory_t           ze_physical_mem_factory;
     ze_fabric_vertex_factory_t          ze_fabric_vertex_factory;
     ze_fabric_edge_factory_t            ze_fabric_edge_factory;
+    ///////////////////////////////////////////////////////////////////////////////
+    std::unordered_map<ze_image_object_t *, ze_image_handle_t>            image_handle_map;
+    std::unordered_map<ze_sampler_object_t *, ze_sampler_handle_t>        sampler_handle_map;
 
     ///////////////////////////////////////////////////////////////////////////////
     /// @brief Intercept function for zeInit
@@ -2451,8 +2454,11 @@ namespace loader
         try
         {
             // convert driver handle to loader handle
+            ze_image_handle_t internalHandlePtr = *phImage;
             *phImage = reinterpret_cast<ze_image_handle_t>(
                 ze_image_factory.getInstance( *phImage, dditable ) );
+            // convert loader handle to driver handle and store in map
+            image_handle_map.insert({ze_image_factory.getInstance( internalHandlePtr, dditable ), internalHandlePtr});
         }
         catch( std::bad_alloc& )
         {
@@ -2477,6 +2483,8 @@ namespace loader
         if( nullptr == pfnDestroy )
             return ZE_RESULT_ERROR_UNINITIALIZED;
 
+        // remove the handle from the kernel arugment map
+        image_handle_map.erase(reinterpret_cast<ze_image_object_t*>(hImage));
         // convert loader handle to driver handle
         hImage = reinterpret_cast<ze_image_object_t*>( hImage )->handle;
 
@@ -3266,8 +3274,20 @@ namespace loader
         // convert loader handle to driver handle
         hKernel = reinterpret_cast<ze_kernel_object_t*>( hKernel )->handle;
 
+        // convert pArgValue to correct handle if applicable
+        void *internalArgValue = const_cast<void *>(pArgValue);
+        if (pArgValue) {
+            // check if the arg value is a translated handle
+            ze_image_object_t **imageHandle = static_cast<ze_image_object_t **>(internalArgValue);
+            ze_sampler_object_t **samplerHandle = static_cast<ze_sampler_object_t **>(internalArgValue);
+            if( image_handle_map.find(*imageHandle) != image_handle_map.end() ) {
+                internalArgValue = &image_handle_map[*imageHandle];
+            } else if( sampler_handle_map.find(*samplerHandle) != sampler_handle_map.end() ) {
+                internalArgValue = &sampler_handle_map[*samplerHandle];
+            }
+        }
         // forward to device-driver
-        result = pfnSetArgumentValue( hKernel, argIndex, argSize, pArgValue );
+        result = pfnSetArgumentValue( hKernel, argIndex, argSize, const_cast<const void *>(internalArgValue) );
 
         return result;
     }
@@ -3766,8 +3786,11 @@ namespace loader
         try
         {
             // convert driver handle to loader handle
+            ze_sampler_handle_t internalHandlePtr = *phSampler;
             *phSampler = reinterpret_cast<ze_sampler_handle_t>(
                 ze_sampler_factory.getInstance( *phSampler, dditable ) );
+            // convert loader handle to driver handle and store in map
+            sampler_handle_map.insert({ze_sampler_factory.getInstance( internalHandlePtr, dditable ), internalHandlePtr});
         }
         catch( std::bad_alloc& )
         {
@@ -3792,6 +3815,8 @@ namespace loader
         if( nullptr == pfnDestroy )
             return ZE_RESULT_ERROR_UNINITIALIZED;
 
+        // remove the handle from the kernel arugment map
+        sampler_handle_map.erase(reinterpret_cast<ze_sampler_object_t*>(hSampler));
         // convert loader handle to driver handle
         hSampler = reinterpret_cast<ze_sampler_object_t*>( hSampler )->handle;
 
