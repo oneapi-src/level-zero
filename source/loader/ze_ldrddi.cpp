@@ -4294,8 +4294,11 @@ namespace loader
         try
         {
             // convert driver handle to loader handle
+            ze_image_handle_t internalHandlePtr = *phImageView;
             *phImageView = reinterpret_cast<ze_image_handle_t>(
                 ze_image_factory.getInstance( *phImageView, dditable ) );
+            // convert loader handle to driver handle and store in map
+            image_handle_map.insert({ze_image_factory.getInstance( internalHandlePtr, dditable ), internalHandlePtr});
         }
         catch( std::bad_alloc& )
         {

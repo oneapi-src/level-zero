@@ -203,12 +203,12 @@ namespace loader
                 *${item['name']} = reinterpret_cast<${item['type']}>(
                     ${item['factory']}.getInstance( *${item['name']}, dditable ) );
             %else:
-            %if re.match(r"\w+ImageCreate$", th.make_func_name(n, tags, obj)) or re.match(r"\w+SamplerCreate$", th.make_func_name(n, tags, obj)):
+            %if re.match(r"\w+ImageCreate$", th.make_func_name(n, tags, obj)) or re.match(r"\w+SamplerCreate$", th.make_func_name(n, tags, obj)) or re.match(r"\w+ImageViewCreateExp$", th.make_func_name(n, tags, obj)):
             ${item['type']} internalHandlePtr = *${item['name']};
             %endif
             *${item['name']} = reinterpret_cast<${item['type']}>(
                 ${item['factory']}.getInstance( *${item['name']}, dditable ) );
-            %if re.match(r"\w+ImageCreate$", th.make_func_name(n, tags, obj)):
+            %if re.match(r"\w+ImageCreate$", th.make_func_name(n, tags, obj)) or re.match(r"\w+ImageViewCreateExp$", th.make_func_name(n, tags, obj)):
             // convert loader handle to driver handle and store in map
             image_handle_map.insert({ze_image_factory.getInstance( internalHandlePtr, dditable ), internalHandlePtr});
             %endif
