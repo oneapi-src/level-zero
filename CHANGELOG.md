@@ -1,5 +1,9 @@
 # Level zero loader changelog
 
+## v1.8.12
+* Add Image View Handle to image map for SetArgument
+* Support for translating images/samplers for multi drivers
+
 ## v1.8.8
 * Update Extension and Experimental Features to return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE instead of ZE_RESULT_ERROR_UNINITIALIZED when not found.
 
