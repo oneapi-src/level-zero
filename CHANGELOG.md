@@ -1,7 +1,7 @@
 # Level zero loader changelog
 
 ## v1.8.12
-* Add Image View Handle to image map for SetArgument
+* Add Image View Handle to image map for SetArgument for translating image handles for multi drivers
 * Support for translating images/samplers for multi drivers
 
 ## v1.8.8
