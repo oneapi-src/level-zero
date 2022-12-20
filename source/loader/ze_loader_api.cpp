@@ -8,7 +8,7 @@
  *
  */
 
-#include "ze_loader.h"
+#include "ze_loader_internal.h"
 
 #if defined(__cplusplus)
 extern "C" {

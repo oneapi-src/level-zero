@@ -8,7 +8,7 @@
 
 #include "../ze_lib.h"
 #ifndef DYNAMIC_LOAD_LOADER
-#include "../loader/ze_loader.h"
+#include "../loader/ze_loader_internal.h"
 #endif
 
 namespace ze_lib

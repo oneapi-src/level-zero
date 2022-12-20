@@ -7,7 +7,7 @@
  * @file zet_ldrddi.cpp
  *
  */
-#include "ze_loader.h"
+#include "ze_loader_internal.h"
 
 namespace loader
 {

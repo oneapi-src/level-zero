@@ -8,7 +8,7 @@
  *
  */
 
-#include "ze_loader.h"
+#include "ze_loader_internal.h"
 #include "loader/ze_loader.h"
 
 #define TRACING_COMP_NAME "loader"

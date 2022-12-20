@@ -6,7 +6,7 @@
  * @file zel_tracing_ldrddi.cpp
  *
  */
-#include "ze_loader.h"
+#include "ze_loader_internal.h"
 #include "layers/zel_tracing_ddi.h"
 
 namespace loader

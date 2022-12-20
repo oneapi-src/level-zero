@@ -5,7 +5,7 @@
 target_sources(${TARGET_LOADER_NAME}
     PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}/ze_object.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/ze_loader.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/ze_loader_internal.h
         ${CMAKE_CURRENT_SOURCE_DIR}/ze_loader.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/ze_loader_api.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/ze_ldrddi.h

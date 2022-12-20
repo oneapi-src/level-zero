@@ -5,7 +5,7 @@
  * SPDX-License-Identifier: MIT
  *
  */
-#include "ze_loader.h"
+#include "ze_loader_internal.h"
 
 #include "driver_discovery.h"
 
