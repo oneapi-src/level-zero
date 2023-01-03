@@ -4,7 +4,7 @@
  SPDX-License-Identifier: MIT
 
  @file ze.py
- @version v1.4-r1.4.8
+ @version v1.5-r1.5.4
 
  """
 import platform
@@ -271,6 +271,8 @@ class ze_structure_type_v(IntEnum):
     IMAGE_ALLOCATION_EXT_PROPERTIES = 0x1000c       ## ::ze_image_allocation_ext_properties_t
     DEVICE_LUID_EXT_PROPERTIES = 0x1000d            ## ::ze_device_luid_ext_properties_t
     DEVICE_MEMORY_EXT_PROPERTIES = 0x1000e          ## ::ze_device_memory_ext_properties_t
+    DEVICE_IP_VERSION_EXT = 0x1000f                 ## ::ze_device_ip_version_ext_t
+    IMAGE_VIEW_PLANAR_EXT_DESC = 0x10010            ## ::ze_image_view_planar_ext_desc_t
     RELAXED_ALLOCATION_LIMITS_EXP_DESC = 0x00020001 ## ::ze_relaxed_allocation_limits_exp_desc_t
     MODULE_PROGRAM_EXP_DESC = 0x00020002            ## ::ze_module_program_exp_desc_t
     SCHEDULING_HINT_EXP_PROPERTIES = 0x00020003     ## ::ze_scheduling_hint_exp_properties_t
@@ -283,6 +285,7 @@ class ze_structure_type_v(IntEnum):
     DEVICE_P2P_BANDWIDTH_EXP_PROPERTIES = 0x0002000A## ::ze_device_p2p_bandwidth_exp_properties_t
     FABRIC_VERTEX_EXP_PROPERTIES = 0x0002000B       ## ::ze_fabric_vertex_exp_properties_t
     FABRIC_EDGE_EXP_PROPERTIES = 0x0002000C         ## ::ze_fabric_edge_exp_properties_t
+    MEMORY_SUB_ALLOCATIONS_EXP_PROPERTIES = 0x0002000D  ## ::ze_memory_sub_allocations_exp_properties_t
 
 class ze_structure_type_t(c_int):
     def __str__(self):
@@ -395,7 +398,8 @@ class ze_api_version_v(IntEnum):
     _1_2 = ZE_MAKE_VERSION( 1, 2 )                  ## version 1.2
     _1_3 = ZE_MAKE_VERSION( 1, 3 )                  ## version 1.3
     _1_4 = ZE_MAKE_VERSION( 1, 4 )                  ## version 1.4
-    CURRENT = ZE_MAKE_VERSION( 1, 4 )               ## latest known version
+    _1_5 = ZE_MAKE_VERSION( 1, 5 )                  ## version 1.5
+    CURRENT = ZE_MAKE_VERSION( 1, 5 )               ## latest known version
 
 class ze_api_version_t(c_int):
     def __str__(self):
@@ -992,8 +996,7 @@ class ze_memory_advice_t(c_int):
 class ze_event_pool_flags_v(IntEnum):
     HOST_VISIBLE = ZE_BIT(0)                        ## signals and waits are also visible to host
     IPC = ZE_BIT(1)                                 ## signals and waits may be shared across processes
-    KERNEL_TIMESTAMP = ZE_BIT(2)                    ## Indicates all events in pool will contain kernel timestamps; cannot be
-                                                    ## combined with ::ZE_EVENT_POOL_FLAG_IPC
+    KERNEL_TIMESTAMP = ZE_BIT(2)                    ## Indicates all events in pool will contain kernel timestamps
 
 class ze_event_pool_flags_t(c_int):
     def __str__(self):
@@ -1036,7 +1039,7 @@ class ze_event_desc_t(Structure):
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
         ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
                                                                         ## structure (i.e. contains sType and pNext).
-        ("index", c_ulong),                                             ## [in] index of the event within the pool; must be less-than the count
+        ("index", c_ulong),                                             ## [in] index of the event within the pool; must be less than the count
                                                                         ## specified during pool creation
         ("signal", ze_event_scope_flags_t),                             ## [in] defines the scope of relevant cache hierarchies to flush on a
                                                                         ## signal action before the event is triggered.
@@ -1366,9 +1369,10 @@ class ze_ipc_memory_flags_t(c_int):
 ## @brief Additional allocation descriptor for exporting external memory
 ## 
 ## @details
-##     - This structure may be passed to ::zeMemAllocDevice, via the `pNext`
-##       member of ::ze_device_mem_alloc_desc_t, to indicate an exportable
-##       memory allocation.
+##     - This structure may be passed to ::zeMemAllocDevice and
+##       ::zeMemAllocHost, via the `pNext` member of
+##       ::ze_device_mem_alloc_desc_t or ::ze_host_mem_alloc_desc_t,
+##       respectively, to indicate an exportable memory allocation.
 ##     - This structure may be passed to ::zeImageCreate, via the `pNext`
 ##       member of ::ze_image_desc_t, to indicate an exportable image.
 class ze_external_memory_export_desc_t(Structure):
@@ -1385,9 +1389,10 @@ class ze_external_memory_export_desc_t(Structure):
 ##        file descriptor
 ## 
 ## @details
-##     - This structure may be passed to ::zeMemAllocDevice, via the `pNext`
-##       member of ::ze_device_mem_alloc_desc_t, to import memory from a file
-##       descriptor.
+##     - This structure may be passed to ::zeMemAllocDevice or
+##       ::zeMemAllocHost, via the `pNext` member of
+##       ::ze_device_mem_alloc_desc_t or of ::ze_host_mem_alloc_desc_t,
+##       respectively, to import memory from a file descriptor.
 ##     - This structure may be passed to ::zeImageCreate, via the `pNext`
 ##       member of ::ze_image_desc_t, to import memory from a file descriptor.
 class ze_external_memory_import_fd_t(Structure):
@@ -1431,9 +1436,10 @@ class ze_external_memory_export_fd_t(Structure):
 ##     - When `name` is `nullptr`, `handle` must not be `nullptr`.
 ##     - When `flags` is ::ZE_EXTERNAL_MEMORY_TYPE_FLAG_OPAQUE_WIN32_KMT,
 ##       `name` must be `nullptr`.
-##     - This structure may be passed to ::zeMemAllocDevice, via the `pNext`
-##       member of ::ze_device_mem_alloc_desc_t, to import memory from a Win32
-##       handle.
+##     - This structure may be passed to ::zeMemAllocDevice or
+##       ::zeMemAllocHost, via the `pNext` member of
+##       ::ze_device_mem_alloc_desc_t or of ::ze_host_mem_alloc_desc_t,
+##       respectively, to import memory from a Win32 handle.
 ##     - This structure may be passed to ::zeImageCreate, via the `pNext`
 ##       member of ::ze_image_desc_t, to import memory from a Win32 handle.
 class ze_external_memory_import_win32_handle_t(Structure):
@@ -2040,6 +2046,21 @@ class ze_image_memory_properties_exp_t(Structure):
 
 ###############################################################################
 ## @brief Image View Extension Name
+ZE_IMAGE_VIEW_EXT_NAME = "ZE_extension_image_view"
+
+###############################################################################
+## @brief Image View Extension Version(s)
+class ze_image_view_ext_version_v(IntEnum):
+    _1_0 = ZE_MAKE_VERSION( 1, 0 )                  ## version 1.0
+    CURRENT = ZE_MAKE_VERSION( 1, 0 )               ## latest known version
+
+class ze_image_view_ext_version_t(c_int):
+    def __str__(self):
+        return str(ze_image_view_ext_version_v(self.value))
+
+
+###############################################################################
+## @brief Image View Extension Name
 ZE_IMAGE_VIEW_EXP_NAME = "ZE_experimental_image_view"
 
 ###############################################################################
@@ -2052,6 +2073,31 @@ class ze_image_view_exp_version_t(c_int):
     def __str__(self):
         return str(ze_image_view_exp_version_v(self.value))
 
+
+###############################################################################
+## @brief Image View Planar Extension Name
+ZE_IMAGE_VIEW_PLANAR_EXT_NAME = "ZE_extension_image_view_planar"
+
+###############################################################################
+## @brief Image View Planar Extension Version(s)
+class ze_image_view_planar_ext_version_v(IntEnum):
+    _1_0 = ZE_MAKE_VERSION( 1, 0 )                  ## version 1.0
+    CURRENT = ZE_MAKE_VERSION( 1, 0 )               ## latest known version
+
+class ze_image_view_planar_ext_version_t(c_int):
+    def __str__(self):
+        return str(ze_image_view_planar_ext_version_v(self.value))
+
+
+###############################################################################
+## @brief Image view planar descriptor
+class ze_image_view_planar_ext_desc_t(Structure):
+    _fields_ = [
+        ("stype", ze_structure_type_t),                                 ## [in] type of this structure
+        ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains sType and pNext).
+        ("planeIndex", c_ulong)                                         ## [in] the 0-based plane index (e.g. NV12 is 0 = Y plane, 1 UV plane)
+    ]
 
 ###############################################################################
 ## @brief Image View Planar Extension Name
@@ -2611,7 +2657,7 @@ ZE_MAX_FABRIC_EDGE_MODEL_EXP_SIZE = 256
 class ze_fabric_vertex_exp_type_v(IntEnum):
     UNKNOWN = 0                                     ## Fabric vertex type is unknown
     DEVICE = 1                                      ## Fabric vertex represents a device
-    SUBEVICE = 2                                    ## Fabric vertex represents a subdevice
+    SUBDEVICE = 2                                   ## Fabric vertex represents a subdevice
     SWITCH = 3                                      ## Fabric vertex represents a switch
 
 class ze_fabric_vertex_exp_type_t(c_int):
@@ -2745,6 +2791,96 @@ class ze_device_memory_ext_properties_t(Structure):
         ("readBandwidth", c_ulong),                                     ## [out] Design bandwidth for reads
         ("writeBandwidth", c_ulong),                                    ## [out] Design bandwidth for writes
         ("bandwidthUnit", ze_bandwidth_unit_t)                          ## [out] bandwidth unit
+    ]
+
+###############################################################################
+## @brief Bfloat16 Conversions Extension Name
+ZE_BFLOAT16_CONVERSIONS_EXT_NAME = "ZE_extension_bfloat16_conversions"
+
+###############################################################################
+## @brief Bfloat16 Conversions Extension Version(s)
+class ze_bfloat16_conversions_ext_version_v(IntEnum):
+    _1_0 = ZE_MAKE_VERSION( 1, 0 )                  ## version 1.0
+    CURRENT = ZE_MAKE_VERSION( 1, 0 )               ## latest known version
+
+class ze_bfloat16_conversions_ext_version_t(c_int):
+    def __str__(self):
+        return str(ze_bfloat16_conversions_ext_version_v(self.value))
+
+
+###############################################################################
+## @brief Device IP Version Extension Name
+ZE_DEVICE_IP_VERSION_EXT_NAME = "ZE_extension_device_ip_version"
+
+###############################################################################
+## @brief Device IP Version Extension Version(s)
+class ze_device_ip_version_version_v(IntEnum):
+    _1_0 = ZE_MAKE_VERSION( 1, 0 )                  ## version 1.0
+    CURRENT = ZE_MAKE_VERSION( 1, 0 )               ## latest known version
+
+class ze_device_ip_version_version_t(c_int):
+    def __str__(self):
+        return str(ze_device_ip_version_version_v(self.value))
+
+
+###############################################################################
+## @brief Device IP version queried using ::zeDeviceGetProperties
+## 
+## @details
+##     - This structure may be returned from ::zeDeviceGetProperties via
+##       `pNext` member of ::ze_device_properties_t
+class ze_device_ip_version_ext_t(Structure):
+    _fields_ = [
+        ("stype", ze_structure_type_t),                                 ## [in] type of this structure
+        ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains sType and pNext).
+        ("ipVersion", c_ulong)                                          ## [out] Device IP version. The meaning of the device IP version is
+                                                                        ## implementation-defined, but newer devices should have a higher
+                                                                        ## version than older devices.
+    ]
+
+###############################################################################
+## @brief Sub-Allocations Properties Extension Name
+ZE_SUB_ALLOCATIONS_EXP_NAME = "ZE_experimental_sub_allocations"
+
+###############################################################################
+## @brief Sub-Allocations Properties Extension Version(s)
+class ze_sub_allocations_exp_version_v(IntEnum):
+    _1_0 = ZE_MAKE_VERSION( 1, 0 )                  ## version 1.0
+    CURRENT = ZE_MAKE_VERSION( 1, 0 )               ## latest known version
+
+class ze_sub_allocations_exp_version_t(c_int):
+    def __str__(self):
+        return str(ze_sub_allocations_exp_version_v(self.value))
+
+
+###############################################################################
+## @brief Properties returned for a sub-allocation
+class ze_sub_allocation_t(Structure):
+    _fields_ = [
+        ("base", c_void_p),                                             ## [in,out][optional] base address of the sub-allocation
+        ("size", c_size_t)                                              ## [in,out][optional] size of the allocation
+    ]
+
+###############################################################################
+## @brief Sub-Allocations Properties
+## 
+## @details
+##     - This structure may be passed to ::zeMemGetAllocProperties, via `pNext`
+##       member of ::ze_memory_allocation_properties_t.
+class ze_memory_sub_allocations_exp_properties_t(Structure):
+    _fields_ = [
+        ("stype", ze_structure_type_t),                                 ## [in] type of this structure
+        ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains sType and pNext).
+        ("pCount", POINTER(c_ulong)),                                   ## [in,out] pointer to the number of sub-allocations.
+                                                                        ## if count is zero, then the driver shall update the value with the
+                                                                        ## total number of sub-allocations on which the allocation has been divided.
+                                                                        ## if count is greater than the number of sub-allocations, then the
+                                                                        ## driver shall update the value with the correct number of sub-allocations.
+        ("pSubAllocations", POINTER(ze_sub_allocation_t))               ## [in,out][optional][range(0, *pCount)] array of properties for sub-allocations.
+                                                                        ## if count is less than the number of sub-allocations available, then
+                                                                        ## driver shall only retrieve properties for that number of sub-allocations.
     ]
 
 ###############################################################################
@@ -3363,6 +3499,13 @@ if __use_win_types:
 else:
     _zeImageGetAllocPropertiesExt_t = CFUNCTYPE( ze_result_t, ze_context_handle_t, ze_image_handle_t, POINTER(ze_image_allocation_ext_properties_t) )
 
+###############################################################################
+## @brief Function-pointer for zeImageViewCreateExt
+if __use_win_types:
+    _zeImageViewCreateExt_t = WINFUNCTYPE( ze_result_t, ze_context_handle_t, ze_device_handle_t, POINTER(ze_image_desc_t), ze_image_handle_t, POINTER(ze_image_handle_t) )
+else:
+    _zeImageViewCreateExt_t = CFUNCTYPE( ze_result_t, ze_context_handle_t, ze_device_handle_t, POINTER(ze_image_desc_t), ze_image_handle_t, POINTER(ze_image_handle_t) )
+
 
 ###############################################################################
 ## @brief Table of Image functions pointers
@@ -3371,7 +3514,8 @@ class _ze_image_dditable_t(Structure):
         ("pfnGetProperties", c_void_p),                                 ## _zeImageGetProperties_t
         ("pfnCreate", c_void_p),                                        ## _zeImageCreate_t
         ("pfnDestroy", c_void_p),                                       ## _zeImageDestroy_t
-        ("pfnGetAllocPropertiesExt", c_void_p)                          ## _zeImageGetAllocPropertiesExt_t
+        ("pfnGetAllocPropertiesExt", c_void_p),                         ## _zeImageGetAllocPropertiesExt_t
+        ("pfnViewCreateExt", c_void_p)                                  ## _zeImageViewCreateExt_t
     ]
 
 ###############################################################################
@@ -4246,6 +4390,7 @@ class ZE_DDI:
         self.zeImageCreate = _zeImageCreate_t(self.__dditable.Image.pfnCreate)
         self.zeImageDestroy = _zeImageDestroy_t(self.__dditable.Image.pfnDestroy)
         self.zeImageGetAllocPropertiesExt = _zeImageGetAllocPropertiesExt_t(self.__dditable.Image.pfnGetAllocPropertiesExt)
+        self.zeImageViewCreateExt = _zeImageViewCreateExt_t(self.__dditable.Image.pfnViewCreateExt)
 
         # call driver to get function pointers
         _ImageExp = _ze_image_exp_dditable_t()

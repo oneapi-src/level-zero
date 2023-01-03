@@ -63,4 +63,7 @@ namespace loader
     using zes_diag_object_t                   = object_t < zes_diag_handle_t >;
     using zes_diag_factory_t                  = singleton_factory_t < zes_diag_object_t, zes_diag_handle_t >;
 
+    using zes_overclock_object_t              = object_t < zes_overclock_handle_t >;
+    using zes_overclock_factory_t             = singleton_factory_t < zes_overclock_object_t, zes_overclock_handle_t >;
+
 }

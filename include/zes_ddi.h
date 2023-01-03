@@ -5,7 +5,7 @@
  * SPDX-License-Identifier: MIT
  *
  * @file zes_ddi.h
- * @version v1.4-r1.4.8
+ * @version v1.5-r1.5.4
  *
  */
 #ifndef _ZES_DDI_H
@@ -20,37 +20,20 @@ extern "C" {
 #endif
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Function-pointer for zesDriverEventListen 
-typedef ze_result_t (ZE_APICALL *zes_pfnDriverEventListen_t)(
-    ze_driver_handle_t,
-    uint32_t,
-    uint32_t,
-    zes_device_handle_t*,
-    uint32_t*,
-    zes_event_type_flags_t*
+/// @brief Function-pointer for zesInit 
+typedef ze_result_t (ZE_APICALL *zes_pfnInit_t)(
+    zes_init_flags_t
     );
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Function-pointer for zesDriverEventListenEx 
-typedef ze_result_t (ZE_APICALL *zes_pfnDriverEventListenEx_t)(
-    ze_driver_handle_t,
-    uint64_t,
-    uint32_t,
-    zes_device_handle_t*,
-    uint32_t*,
-    zes_event_type_flags_t*
-    );
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Table of Driver functions pointers
-typedef struct _zes_driver_dditable_t
+/// @brief Table of Global functions pointers
+typedef struct _zes_global_dditable_t
 {
-    zes_pfnDriverEventListen_t                                  pfnEventListen;
-    zes_pfnDriverEventListenEx_t                                pfnEventListenEx;
-} zes_driver_dditable_t;
+    zes_pfnInit_t                                               pfnInit;
+} zes_global_dditable_t;
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Exported function for filling application's Driver table
+/// @brief Exported function for filling application's Global table
 ///        with current process' addresses
 ///
 /// @returns
@@ -59,16 +42,16 @@ typedef struct _zes_driver_dditable_t
 ///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
 ///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
 ZE_DLLEXPORT ze_result_t ZE_APICALL
-zesGetDriverProcAddrTable(
+zesGetGlobalProcAddrTable(
     ze_api_version_t version,                       ///< [in] API version requested
-    zes_driver_dditable_t* pDdiTable                ///< [in,out] pointer to table of DDI function pointers
+    zes_global_dditable_t* pDdiTable                ///< [in,out] pointer to table of DDI function pointers
     );
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Function-pointer for zesGetDriverProcAddrTable
-typedef ze_result_t (ZE_APICALL *zes_pfnGetDriverProcAddrTable_t)(
+/// @brief Function-pointer for zesGetGlobalProcAddrTable
+typedef ze_result_t (ZE_APICALL *zes_pfnGetGlobalProcAddrTable_t)(
     ze_api_version_t,
-    zes_driver_dditable_t*
+    zes_global_dditable_t*
     );
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -293,6 +276,61 @@ typedef ze_result_t (ZE_APICALL *zes_pfnDeviceSetEccState_t)(
     );
 
 ///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zesDeviceGet 
+typedef ze_result_t (ZE_APICALL *zes_pfnDeviceGet_t)(
+    zes_driver_handle_t,
+    uint32_t*,
+    zes_device_handle_t*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zesDeviceSetOverclockWaiver 
+typedef ze_result_t (ZE_APICALL *zes_pfnDeviceSetOverclockWaiver_t)(
+    zes_device_handle_t
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zesDeviceGetOverclockDomains 
+typedef ze_result_t (ZE_APICALL *zes_pfnDeviceGetOverclockDomains_t)(
+    zes_device_handle_t,
+    uint32_t*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zesDeviceGetOverclockControls 
+typedef ze_result_t (ZE_APICALL *zes_pfnDeviceGetOverclockControls_t)(
+    zes_device_handle_t,
+    zes_overclock_domain_t,
+    uint32_t*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zesDeviceResetOverclockSettings 
+typedef ze_result_t (ZE_APICALL *zes_pfnDeviceResetOverclockSettings_t)(
+    zes_device_handle_t,
+    ze_bool_t
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zesDeviceReadOverclockState 
+typedef ze_result_t (ZE_APICALL *zes_pfnDeviceReadOverclockState_t)(
+    zes_device_handle_t,
+    zes_overclock_mode_t*,
+    ze_bool_t*,
+    ze_bool_t*,
+    zes_pending_action_t*,
+    ze_bool_t*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zesDeviceEnumOverclockDomains 
+typedef ze_result_t (ZE_APICALL *zes_pfnDeviceEnumOverclockDomains_t)(
+    zes_device_handle_t,
+    uint32_t*,
+    zes_overclock_handle_t*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
 /// @brief Table of Device functions pointers
 typedef struct _zes_device_dditable_t
 {
@@ -325,6 +363,13 @@ typedef struct _zes_device_dditable_t
     zes_pfnDeviceEccConfigurable_t                              pfnEccConfigurable;
     zes_pfnDeviceGetEccState_t                                  pfnGetEccState;
     zes_pfnDeviceSetEccState_t                                  pfnSetEccState;
+    zes_pfnDeviceGet_t                                          pfnGet;
+    zes_pfnDeviceSetOverclockWaiver_t                           pfnSetOverclockWaiver;
+    zes_pfnDeviceGetOverclockDomains_t                          pfnGetOverclockDomains;
+    zes_pfnDeviceGetOverclockControls_t                         pfnGetOverclockControls;
+    zes_pfnDeviceResetOverclockSettings_t                       pfnResetOverclockSettings;
+    zes_pfnDeviceReadOverclockState_t                           pfnReadOverclockState;
+    zes_pfnDeviceEnumOverclockDomains_t                         pfnEnumOverclockDomains;
 } zes_device_dditable_t;
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -347,6 +392,178 @@ zesGetDeviceProcAddrTable(
 typedef ze_result_t (ZE_APICALL *zes_pfnGetDeviceProcAddrTable_t)(
     ze_api_version_t,
     zes_device_dditable_t*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zesDriverEventListen 
+typedef ze_result_t (ZE_APICALL *zes_pfnDriverEventListen_t)(
+    ze_driver_handle_t,
+    uint32_t,
+    uint32_t,
+    zes_device_handle_t*,
+    uint32_t*,
+    zes_event_type_flags_t*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zesDriverEventListenEx 
+typedef ze_result_t (ZE_APICALL *zes_pfnDriverEventListenEx_t)(
+    ze_driver_handle_t,
+    uint64_t,
+    uint32_t,
+    zes_device_handle_t*,
+    uint32_t*,
+    zes_event_type_flags_t*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zesDriverGet 
+typedef ze_result_t (ZE_APICALL *zes_pfnDriverGet_t)(
+    uint32_t*,
+    zes_driver_handle_t*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Table of Driver functions pointers
+typedef struct _zes_driver_dditable_t
+{
+    zes_pfnDriverEventListen_t                                  pfnEventListen;
+    zes_pfnDriverEventListenEx_t                                pfnEventListenEx;
+    zes_pfnDriverGet_t                                          pfnGet;
+} zes_driver_dditable_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Exported function for filling application's Driver table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+ZE_DLLEXPORT ze_result_t ZE_APICALL
+zesGetDriverProcAddrTable(
+    ze_api_version_t version,                       ///< [in] API version requested
+    zes_driver_dditable_t* pDdiTable                ///< [in,out] pointer to table of DDI function pointers
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zesGetDriverProcAddrTable
+typedef ze_result_t (ZE_APICALL *zes_pfnGetDriverProcAddrTable_t)(
+    ze_api_version_t,
+    zes_driver_dditable_t*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zesOverclockGetDomainProperties 
+typedef ze_result_t (ZE_APICALL *zes_pfnOverclockGetDomainProperties_t)(
+    zes_overclock_handle_t,
+    zes_overclock_properties_t*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zesOverclockGetDomainVFProperties 
+typedef ze_result_t (ZE_APICALL *zes_pfnOverclockGetDomainVFProperties_t)(
+    zes_overclock_handle_t,
+    zes_vf_property_t*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zesOverclockGetDomainControlProperties 
+typedef ze_result_t (ZE_APICALL *zes_pfnOverclockGetDomainControlProperties_t)(
+    zes_overclock_handle_t,
+    zes_overclock_control_t,
+    zes_control_property_t*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zesOverclockGetControlCurrentValue 
+typedef ze_result_t (ZE_APICALL *zes_pfnOverclockGetControlCurrentValue_t)(
+    zes_overclock_handle_t,
+    zes_overclock_control_t,
+    double*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zesOverclockGetControlPendingValue 
+typedef ze_result_t (ZE_APICALL *zes_pfnOverclockGetControlPendingValue_t)(
+    zes_overclock_handle_t,
+    zes_overclock_control_t,
+    double*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zesOverclockSetControlUserValue 
+typedef ze_result_t (ZE_APICALL *zes_pfnOverclockSetControlUserValue_t)(
+    zes_overclock_handle_t,
+    zes_overclock_control_t,
+    double,
+    zes_pending_action_t*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zesOverclockGetControlState 
+typedef ze_result_t (ZE_APICALL *zes_pfnOverclockGetControlState_t)(
+    zes_overclock_handle_t,
+    zes_overclock_control_t,
+    zes_control_state_t*,
+    zes_pending_action_t*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zesOverclockGetVFPointValues 
+typedef ze_result_t (ZE_APICALL *zes_pfnOverclockGetVFPointValues_t)(
+    zes_overclock_handle_t,
+    zes_vf_type_t,
+    zes_vf_array_type_t,
+    uint32_t,
+    uint32_t*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zesOverclockSetVFPointValues 
+typedef ze_result_t (ZE_APICALL *zes_pfnOverclockSetVFPointValues_t)(
+    zes_overclock_handle_t,
+    zes_vf_type_t,
+    uint32_t,
+    uint32_t
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Table of Overclock functions pointers
+typedef struct _zes_overclock_dditable_t
+{
+    zes_pfnOverclockGetDomainProperties_t                       pfnGetDomainProperties;
+    zes_pfnOverclockGetDomainVFProperties_t                     pfnGetDomainVFProperties;
+    zes_pfnOverclockGetDomainControlProperties_t                pfnGetDomainControlProperties;
+    zes_pfnOverclockGetControlCurrentValue_t                    pfnGetControlCurrentValue;
+    zes_pfnOverclockGetControlPendingValue_t                    pfnGetControlPendingValue;
+    zes_pfnOverclockSetControlUserValue_t                       pfnSetControlUserValue;
+    zes_pfnOverclockGetControlState_t                           pfnGetControlState;
+    zes_pfnOverclockGetVFPointValues_t                          pfnGetVFPointValues;
+    zes_pfnOverclockSetVFPointValues_t                          pfnSetVFPointValues;
+} zes_overclock_dditable_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Exported function for filling application's Overclock table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+ZE_DLLEXPORT ze_result_t ZE_APICALL
+zesGetOverclockProcAddrTable(
+    ze_api_version_t version,                       ///< [in] API version requested
+    zes_overclock_dditable_t* pDdiTable             ///< [in,out] pointer to table of DDI function pointers
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zesGetOverclockProcAddrTable
+typedef ze_result_t (ZE_APICALL *zes_pfnGetOverclockProcAddrTable_t)(
+    ze_api_version_t,
+    zes_overclock_dditable_t*
     );
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -998,6 +1215,13 @@ typedef ze_result_t (ZE_APICALL *zes_pfnFabricPortGetThroughput_t)(
     );
 
 ///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zesFabricPortGetFabricErrorCounters 
+typedef ze_result_t (ZE_APICALL *zes_pfnFabricPortGetFabricErrorCounters_t)(
+    zes_fabric_port_handle_t,
+    zes_fabric_port_error_counters_t*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
 /// @brief Table of FabricPort functions pointers
 typedef struct _zes_fabric_port_dditable_t
 {
@@ -1007,6 +1231,7 @@ typedef struct _zes_fabric_port_dditable_t
     zes_pfnFabricPortSetConfig_t                                pfnSetConfig;
     zes_pfnFabricPortGetState_t                                 pfnGetState;
     zes_pfnFabricPortGetThroughput_t                            pfnGetThroughput;
+    zes_pfnFabricPortGetFabricErrorCounters_t                   pfnGetFabricErrorCounters;
 } zes_fabric_port_dditable_t;
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1391,8 +1616,10 @@ typedef ze_result_t (ZE_APICALL *zes_pfnGetDiagnosticsProcAddrTable_t)(
 /// @brief Container for all DDI tables
 typedef struct _zes_dditable_t
 {
-    zes_driver_dditable_t               Driver;
+    zes_global_dditable_t               Global;
     zes_device_dditable_t               Device;
+    zes_driver_dditable_t               Driver;
+    zes_overclock_dditable_t            Overclock;
     zes_scheduler_dditable_t            Scheduler;
     zes_performance_factor_dditable_t   PerformanceFactor;
     zes_power_dditable_t                Power;

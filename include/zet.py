@@ -4,7 +4,7 @@
  SPDX-License-Identifier: MIT
 
  @file zet.py
- @version v1.4-r1.4.8
+ @version v1.5-r1.5.4
 
  """
 import platform
@@ -145,6 +145,16 @@ class zet_typed_value_t(Structure):
         ("type", zet_value_type_t),                                     ## [out] type of value
         ("value", zet_value_t)                                          ## [out] value
     ]
+
+###############################################################################
+## @brief Enables driver instrumentation and dependencies for device metrics
+
+###############################################################################
+## @brief Enables driver instrumentation and dependencies for program
+##        instrumentation
+
+###############################################################################
+## @brief Enables driver instrumentation and dependencies for program debugging
 
 ###############################################################################
 ## @brief Supported module debug info formats.
@@ -951,6 +961,13 @@ if __use_win_types:
 else:
     _zetDebugWriteRegisters_t = CFUNCTYPE( ze_result_t, zet_debug_session_handle_t, ze_device_thread_t, c_ulong, c_ulong, c_ulong, c_void_p )
 
+###############################################################################
+## @brief Function-pointer for zetDebugGetThreadRegisterSetProperties
+if __use_win_types:
+    _zetDebugGetThreadRegisterSetProperties_t = WINFUNCTYPE( ze_result_t, zet_debug_session_handle_t, ze_device_thread_t, POINTER(c_ulong), POINTER(zet_debug_regset_properties_t) )
+else:
+    _zetDebugGetThreadRegisterSetProperties_t = CFUNCTYPE( ze_result_t, zet_debug_session_handle_t, ze_device_thread_t, POINTER(c_ulong), POINTER(zet_debug_regset_properties_t) )
+
 
 ###############################################################################
 ## @brief Table of Debug functions pointers
@@ -966,7 +983,8 @@ class _zet_debug_dditable_t(Structure):
         ("pfnWriteMemory", c_void_p),                                   ## _zetDebugWriteMemory_t
         ("pfnGetRegisterSetProperties", c_void_p),                      ## _zetDebugGetRegisterSetProperties_t
         ("pfnReadRegisters", c_void_p),                                 ## _zetDebugReadRegisters_t
-        ("pfnWriteRegisters", c_void_p)                                 ## _zetDebugWriteRegisters_t
+        ("pfnWriteRegisters", c_void_p),                                ## _zetDebugWriteRegisters_t
+        ("pfnGetThreadRegisterSetProperties", c_void_p)                 ## _zetDebugGetThreadRegisterSetProperties_t
     ]
 
 ###############################################################################
@@ -1155,5 +1173,6 @@ class ZET_DDI:
         self.zetDebugGetRegisterSetProperties = _zetDebugGetRegisterSetProperties_t(self.__dditable.Debug.pfnGetRegisterSetProperties)
         self.zetDebugReadRegisters = _zetDebugReadRegisters_t(self.__dditable.Debug.pfnReadRegisters)
         self.zetDebugWriteRegisters = _zetDebugWriteRegisters_t(self.__dditable.Debug.pfnWriteRegisters)
+        self.zetDebugGetThreadRegisterSetProperties = _zetDebugGetThreadRegisterSetProperties_t(self.__dditable.Debug.pfnGetThreadRegisterSetProperties)
 
         # success!

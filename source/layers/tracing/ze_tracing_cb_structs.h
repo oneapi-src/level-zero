@@ -167,6 +167,7 @@ typedef struct _zel_image_callbacks_t
     ze_pfnImageGetMemoryPropertiesExpCb_t                           pfnGetMemoryPropertiesExpCb;
     ze_pfnImageViewCreateExpCb_t                                    pfnViewCreateExpCb;
     ze_pfnImageGetAllocPropertiesExtCb_t                            pfnGetAllocPropertiesExtCb;
+    ze_pfnImageViewCreateExtCb_t                                    pfnViewCreateExtCb;
 } zel_image_callbacks_t;
 
 ///////////////////////////////////////////////////////////////////////////////

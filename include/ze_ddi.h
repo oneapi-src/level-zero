@@ -5,7 +5,7 @@
  * SPDX-License-Identifier: MIT
  *
  * @file ze_ddi.h
- * @version v1.4-r1.4.8
+ * @version v1.5-r1.5.4
  *
  */
 #ifndef _ZE_DDI_H
@@ -906,6 +906,16 @@ typedef ze_result_t (ZE_APICALL *ze_pfnImageGetAllocPropertiesExt_t)(
     );
 
 ///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zeImageViewCreateExt 
+typedef ze_result_t (ZE_APICALL *ze_pfnImageViewCreateExt_t)(
+    ze_context_handle_t,
+    ze_device_handle_t,
+    const ze_image_desc_t*,
+    ze_image_handle_t,
+    ze_image_handle_t*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
 /// @brief Table of Image functions pointers
 typedef struct _ze_image_dditable_t
 {
@@ -913,6 +923,7 @@ typedef struct _ze_image_dditable_t
     ze_pfnImageCreate_t                                         pfnCreate;
     ze_pfnImageDestroy_t                                        pfnDestroy;
     ze_pfnImageGetAllocPropertiesExt_t                          pfnGetAllocPropertiesExt;
+    ze_pfnImageViewCreateExt_t                                  pfnViewCreateExt;
 } ze_image_dditable_t;
 
 ///////////////////////////////////////////////////////////////////////////////

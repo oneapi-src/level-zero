@@ -17,7 +17,7 @@ namespace tracing_layer
     class __zedlllocal context_t
     {
     public:
-        ze_api_version_t version = ZE_API_VERSION_1_4;
+        ze_api_version_t version = ZE_API_VERSION_1_5;
 
         ze_dditable_t   zeDdiTable = {};
 

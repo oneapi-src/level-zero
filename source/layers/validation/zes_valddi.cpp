@@ -12,6 +12,93 @@
 namespace validation_layer
 {
     ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesInit
+    __zedlllocal ze_result_t ZE_APICALL
+    zesInit(
+        zes_init_flags_t flags                          ///< [in] initialization flags.
+                                                        ///< currently unused, must be 0 (default).
+        )
+    {
+        auto pfnInit = context.zesDdiTable.Global.pfnInit;
+
+        if( nullptr == pfnInit )
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        if( context.enableParameterValidation )
+        {
+            if( 0x1 < flags )
+                return ZE_RESULT_ERROR_INVALID_ENUMERATION;
+
+        }
+
+        return pfnInit( flags );
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesDriverGet
+    __zedlllocal ze_result_t ZE_APICALL
+    zesDriverGet(
+        uint32_t* pCount,                               ///< [in,out] pointer to the number of sysman driver instances.
+                                                        ///< if count is zero, then the loader shall update the value with the
+                                                        ///< total number of sysman drivers available.
+                                                        ///< if count is greater than the number of sysman drivers available, then
+                                                        ///< the loader shall update the value with the correct number of sysman
+                                                        ///< drivers available.
+        zes_driver_handle_t* phDrivers                  ///< [in,out][optional][range(0, *pCount)] array of sysman driver instance handles.
+                                                        ///< if count is less than the number of sysman drivers available, then the
+                                                        ///< loader shall only retrieve that number of sysman drivers.
+        )
+    {
+        auto pfnGet = context.zesDdiTable.Driver.pfnGet;
+
+        if( nullptr == pfnGet )
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        if( context.enableParameterValidation )
+        {
+            if( nullptr == pCount )
+                return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+        }
+
+        return pfnGet( pCount, phDrivers );
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesDeviceGet
+    __zedlllocal ze_result_t ZE_APICALL
+    zesDeviceGet(
+        zes_driver_handle_t hDriver,                    ///< [in] handle of the sysman driver instance
+        uint32_t* pCount,                               ///< [in,out] pointer to the number of sysman devices.
+                                                        ///< if count is zero, then the driver shall update the value with the
+                                                        ///< total number of sysman devices available.
+                                                        ///< if count is greater than the number of sysman devices available, then
+                                                        ///< the driver shall update the value with the correct number of sysman
+                                                        ///< devices available.
+        zes_device_handle_t* phDevices                  ///< [in,out][optional][range(0, *pCount)] array of handle of sysman devices.
+                                                        ///< if count is less than the number of sysman devices available, then
+                                                        ///< driver shall only retrieve that number of sysman devices.
+        )
+    {
+        auto pfnGet = context.zesDdiTable.Device.pfnGet;
+
+        if( nullptr == pfnGet )
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        if( context.enableParameterValidation )
+        {
+            if( nullptr == hDriver )
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+            if( nullptr == pCount )
+                return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+        }
+
+        return pfnGet( hDriver, pCount, phDevices );
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
     /// @brief Intercept function for zesDeviceGetProperties
     __zedlllocal ze_result_t ZE_APICALL
     zesDeviceGetProperties(
@@ -232,6 +319,465 @@ namespace validation_layer
         }
 
         return pfnPciGetStats( hDevice, pStats );
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesDeviceSetOverclockWaiver
+    __zedlllocal ze_result_t ZE_APICALL
+    zesDeviceSetOverclockWaiver(
+        zes_device_handle_t hDevice                     ///< [in] Sysman handle of the device.
+        )
+    {
+        auto pfnSetOverclockWaiver = context.zesDdiTable.Device.pfnSetOverclockWaiver;
+
+        if( nullptr == pfnSetOverclockWaiver )
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        if( context.enableParameterValidation )
+        {
+            if( nullptr == hDevice )
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+        }
+
+        return pfnSetOverclockWaiver( hDevice );
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesDeviceGetOverclockDomains
+    __zedlllocal ze_result_t ZE_APICALL
+    zesDeviceGetOverclockDomains(
+        zes_device_handle_t hDevice,                    ///< [in] Sysman handle of the device.
+        uint32_t* pOverclockDomains                     ///< [in,out] Returns the overclock domains that are supported (a bit for
+                                                        ///< each of enum ::zes_overclock_domain_t). If no bits are set, the device
+                                                        ///< doesn't support overclocking.
+        )
+    {
+        auto pfnGetOverclockDomains = context.zesDdiTable.Device.pfnGetOverclockDomains;
+
+        if( nullptr == pfnGetOverclockDomains )
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        if( context.enableParameterValidation )
+        {
+            if( nullptr == hDevice )
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+            if( nullptr == pOverclockDomains )
+                return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+        }
+
+        return pfnGetOverclockDomains( hDevice, pOverclockDomains );
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesDeviceGetOverclockControls
+    __zedlllocal ze_result_t ZE_APICALL
+    zesDeviceGetOverclockControls(
+        zes_device_handle_t hDevice,                    ///< [in] Sysman handle of the device.
+        zes_overclock_domain_t domainType,              ///< [in] Domain type.
+        uint32_t* pAvailableControls                    ///< [in,out] Returns the overclock controls that are supported for the
+                                                        ///< specified overclock domain (a bit for each of enum
+                                                        ///< ::zes_overclock_control_t).
+        )
+    {
+        auto pfnGetOverclockControls = context.zesDdiTable.Device.pfnGetOverclockControls;
+
+        if( nullptr == pfnGetOverclockControls )
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        if( context.enableParameterValidation )
+        {
+            if( nullptr == hDevice )
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+            if( ZES_OVERCLOCK_DOMAIN_ADM < domainType )
+                return ZE_RESULT_ERROR_INVALID_ENUMERATION;
+
+            if( nullptr == pAvailableControls )
+                return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+        }
+
+        return pfnGetOverclockControls( hDevice, domainType, pAvailableControls );
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesDeviceResetOverclockSettings
+    __zedlllocal ze_result_t ZE_APICALL
+    zesDeviceResetOverclockSettings(
+        zes_device_handle_t hDevice,                    ///< [in] Sysman handle of the device.
+        ze_bool_t onShippedState                        ///< [in] True will reset to shipped state; false will reset to
+                                                        ///< manufacturing state
+        )
+    {
+        auto pfnResetOverclockSettings = context.zesDdiTable.Device.pfnResetOverclockSettings;
+
+        if( nullptr == pfnResetOverclockSettings )
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        if( context.enableParameterValidation )
+        {
+            if( nullptr == hDevice )
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+        }
+
+        return pfnResetOverclockSettings( hDevice, onShippedState );
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesDeviceReadOverclockState
+    __zedlllocal ze_result_t ZE_APICALL
+    zesDeviceReadOverclockState(
+        zes_device_handle_t hDevice,                    ///< [in] Sysman handle of the device.
+        zes_overclock_mode_t* pOverclockMode,           ///< [out] One of overclock mode.
+        ze_bool_t* pWaiverSetting,                      ///< [out] Waiver setting: 0 = Waiver not set, 1 = waiver has been set.
+        ze_bool_t* pOverclockState,                     ///< [out] Current settings 0 =manufacturing state, 1= shipped state)..
+        zes_pending_action_t* pPendingAction,           ///< [out] This enum is returned when the driver attempts to set an
+                                                        ///< overclock control or reset overclock settings.
+        ze_bool_t* pPendingReset                        ///< [out] Pending reset 0 =manufacturing state, 1= shipped state)..
+        )
+    {
+        auto pfnReadOverclockState = context.zesDdiTable.Device.pfnReadOverclockState;
+
+        if( nullptr == pfnReadOverclockState )
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        if( context.enableParameterValidation )
+        {
+            if( nullptr == hDevice )
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+            if( nullptr == pOverclockMode )
+                return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+            if( nullptr == pWaiverSetting )
+                return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+            if( nullptr == pOverclockState )
+                return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+            if( nullptr == pPendingAction )
+                return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+            if( nullptr == pPendingReset )
+                return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+        }
+
+        return pfnReadOverclockState( hDevice, pOverclockMode, pWaiverSetting, pOverclockState, pPendingAction, pPendingReset );
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesDeviceEnumOverclockDomains
+    __zedlllocal ze_result_t ZE_APICALL
+    zesDeviceEnumOverclockDomains(
+        zes_device_handle_t hDevice,                    ///< [in] Sysman handle of the device.
+        uint32_t* pCount,                               ///< [in,out] pointer to the number of components of this type.
+                                                        ///< if count is zero, then the driver shall update the value with the
+                                                        ///< total number of components of this type that are available.
+                                                        ///< if count is greater than the number of components of this type that
+                                                        ///< are available, then the driver shall update the value with the correct
+                                                        ///< number of components.
+        zes_overclock_handle_t* phDomainHandle          ///< [in,out][optional][range(0, *pCount)] array of handle of components of
+                                                        ///< this type.
+                                                        ///< if count is less than the number of components of this type that are
+                                                        ///< available, then the driver shall only retrieve that number of
+                                                        ///< component handles.
+        )
+    {
+        auto pfnEnumOverclockDomains = context.zesDdiTable.Device.pfnEnumOverclockDomains;
+
+        if( nullptr == pfnEnumOverclockDomains )
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        if( context.enableParameterValidation )
+        {
+            if( nullptr == hDevice )
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+            if( nullptr == pCount )
+                return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+        }
+
+        return pfnEnumOverclockDomains( hDevice, pCount, phDomainHandle );
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesOverclockGetDomainProperties
+    __zedlllocal ze_result_t ZE_APICALL
+    zesOverclockGetDomainProperties(
+        zes_overclock_handle_t hDomainHandle,           ///< [in] Handle for the component domain.
+        zes_overclock_properties_t* pDomainProperties   ///< [in,out] The overclock properties for the specified domain.
+        )
+    {
+        auto pfnGetDomainProperties = context.zesDdiTable.Overclock.pfnGetDomainProperties;
+
+        if( nullptr == pfnGetDomainProperties )
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        if( context.enableParameterValidation )
+        {
+            if( nullptr == hDomainHandle )
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+            if( nullptr == pDomainProperties )
+                return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+        }
+
+        return pfnGetDomainProperties( hDomainHandle, pDomainProperties );
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesOverclockGetDomainVFProperties
+    __zedlllocal ze_result_t ZE_APICALL
+    zesOverclockGetDomainVFProperties(
+        zes_overclock_handle_t hDomainHandle,           ///< [in] Handle for the component domain.
+        zes_vf_property_t* pVFProperties                ///< [in,out] The VF min,max,step for a specified domain.
+        )
+    {
+        auto pfnGetDomainVFProperties = context.zesDdiTable.Overclock.pfnGetDomainVFProperties;
+
+        if( nullptr == pfnGetDomainVFProperties )
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        if( context.enableParameterValidation )
+        {
+            if( nullptr == hDomainHandle )
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+            if( nullptr == pVFProperties )
+                return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+        }
+
+        return pfnGetDomainVFProperties( hDomainHandle, pVFProperties );
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesOverclockGetDomainControlProperties
+    __zedlllocal ze_result_t ZE_APICALL
+    zesOverclockGetDomainControlProperties(
+        zes_overclock_handle_t hDomainHandle,           ///< [in] Handle for the component domain.
+        zes_overclock_control_t DomainControl,          ///< [in] Handle for the component.
+        zes_control_property_t* pControlProperties      ///< [in,out] overclock control values.
+        )
+    {
+        auto pfnGetDomainControlProperties = context.zesDdiTable.Overclock.pfnGetDomainControlProperties;
+
+        if( nullptr == pfnGetDomainControlProperties )
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        if( context.enableParameterValidation )
+        {
+            if( nullptr == hDomainHandle )
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+            if( ZES_OVERCLOCK_CONTROL_ACM_DISABLE < DomainControl )
+                return ZE_RESULT_ERROR_INVALID_ENUMERATION;
+
+            if( nullptr == pControlProperties )
+                return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+        }
+
+        return pfnGetDomainControlProperties( hDomainHandle, DomainControl, pControlProperties );
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesOverclockGetControlCurrentValue
+    __zedlllocal ze_result_t ZE_APICALL
+    zesOverclockGetControlCurrentValue(
+        zes_overclock_handle_t hDomainHandle,           ///< [in] Handle for the component.
+        zes_overclock_control_t DomainControl,          ///< [in] Overclock Control.
+        double* pValue                                  ///< [in,out] Getting overclock control value for the specified control.
+        )
+    {
+        auto pfnGetControlCurrentValue = context.zesDdiTable.Overclock.pfnGetControlCurrentValue;
+
+        if( nullptr == pfnGetControlCurrentValue )
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        if( context.enableParameterValidation )
+        {
+            if( nullptr == hDomainHandle )
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+            if( ZES_OVERCLOCK_CONTROL_ACM_DISABLE < DomainControl )
+                return ZE_RESULT_ERROR_INVALID_ENUMERATION;
+
+            if( nullptr == pValue )
+                return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+        }
+
+        return pfnGetControlCurrentValue( hDomainHandle, DomainControl, pValue );
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesOverclockGetControlPendingValue
+    __zedlllocal ze_result_t ZE_APICALL
+    zesOverclockGetControlPendingValue(
+        zes_overclock_handle_t hDomainHandle,           ///< [in] Handle for the component domain.
+        zes_overclock_control_t DomainControl,          ///< [in] Overclock Control.
+        double* pValue                                  ///< [out] Returns the pending value for a given control. The units and
+                                                        ///< format of the value depend on the control type.
+        )
+    {
+        auto pfnGetControlPendingValue = context.zesDdiTable.Overclock.pfnGetControlPendingValue;
+
+        if( nullptr == pfnGetControlPendingValue )
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        if( context.enableParameterValidation )
+        {
+            if( nullptr == hDomainHandle )
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+            if( ZES_OVERCLOCK_CONTROL_ACM_DISABLE < DomainControl )
+                return ZE_RESULT_ERROR_INVALID_ENUMERATION;
+
+            if( nullptr == pValue )
+                return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+        }
+
+        return pfnGetControlPendingValue( hDomainHandle, DomainControl, pValue );
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesOverclockSetControlUserValue
+    __zedlllocal ze_result_t ZE_APICALL
+    zesOverclockSetControlUserValue(
+        zes_overclock_handle_t hDomainHandle,           ///< [in] Handle for the component domain.
+        zes_overclock_control_t DomainControl,          ///< [in] Domain Control.
+        double pValue,                                  ///< [in] The new value of the control. The units and format of the value
+                                                        ///< depend on the control type.
+        zes_pending_action_t* pPendingAction            ///< [out] Pending overclock setting.
+        )
+    {
+        auto pfnSetControlUserValue = context.zesDdiTable.Overclock.pfnSetControlUserValue;
+
+        if( nullptr == pfnSetControlUserValue )
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        if( context.enableParameterValidation )
+        {
+            if( nullptr == hDomainHandle )
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+            if( ZES_OVERCLOCK_CONTROL_ACM_DISABLE < DomainControl )
+                return ZE_RESULT_ERROR_INVALID_ENUMERATION;
+
+            if( nullptr == pPendingAction )
+                return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+        }
+
+        return pfnSetControlUserValue( hDomainHandle, DomainControl, pValue, pPendingAction );
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesOverclockGetControlState
+    __zedlllocal ze_result_t ZE_APICALL
+    zesOverclockGetControlState(
+        zes_overclock_handle_t hDomainHandle,           ///< [in] Handle for the component domain.
+        zes_overclock_control_t DomainControl,          ///< [in] Domain Control.
+        zes_control_state_t* pControlState,             ///< [out] Current overclock control state.
+        zes_pending_action_t* pPendingAction            ///< [out] Pending overclock setting.
+        )
+    {
+        auto pfnGetControlState = context.zesDdiTable.Overclock.pfnGetControlState;
+
+        if( nullptr == pfnGetControlState )
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        if( context.enableParameterValidation )
+        {
+            if( nullptr == hDomainHandle )
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+            if( ZES_OVERCLOCK_CONTROL_ACM_DISABLE < DomainControl )
+                return ZE_RESULT_ERROR_INVALID_ENUMERATION;
+
+            if( nullptr == pControlState )
+                return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+            if( nullptr == pPendingAction )
+                return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+        }
+
+        return pfnGetControlState( hDomainHandle, DomainControl, pControlState, pPendingAction );
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesOverclockGetVFPointValues
+    __zedlllocal ze_result_t ZE_APICALL
+    zesOverclockGetVFPointValues(
+        zes_overclock_handle_t hDomainHandle,           ///< [in] Handle for the component domain.
+        zes_vf_type_t VFType,                           ///< [in] Voltage or Freqency point to read.
+        zes_vf_array_type_t VFArrayType,                ///< [in] User,Default or Live VF array to read from
+        uint32_t PointIndex,                            ///< [in] Point index - number between (0, max_num_points - 1).
+        uint32_t* PointValue                            ///< [out] Returns the frequency in 1kHz units or voltage in millivolt
+                                                        ///< units from the custom V-F curve at the specified zero-based index 
+        )
+    {
+        auto pfnGetVFPointValues = context.zesDdiTable.Overclock.pfnGetVFPointValues;
+
+        if( nullptr == pfnGetVFPointValues )
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        if( context.enableParameterValidation )
+        {
+            if( nullptr == hDomainHandle )
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+            if( ZES_VF_TYPE_FREQ < VFType )
+                return ZE_RESULT_ERROR_INVALID_ENUMERATION;
+
+            if( ZES_VF_ARRAY_TYPE_LIVE_VF_ARRAY < VFArrayType )
+                return ZE_RESULT_ERROR_INVALID_ENUMERATION;
+
+            if( nullptr == PointValue )
+                return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+        }
+
+        return pfnGetVFPointValues( hDomainHandle, VFType, VFArrayType, PointIndex, PointValue );
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesOverclockSetVFPointValues
+    __zedlllocal ze_result_t ZE_APICALL
+    zesOverclockSetVFPointValues(
+        zes_overclock_handle_t hDomainHandle,           ///< [in] Handle for the component domain.
+        zes_vf_type_t VFType,                           ///< [in] Voltage or Freqency point to read.
+        uint32_t PointIndex,                            ///< [in] Point index - number between (0, max_num_points - 1).
+        uint32_t PointValue                             ///< [in] Writes frequency in 1kHz units or voltage in millivolt units to
+                                                        ///< custom V-F curve at the specified zero-based index 
+        )
+    {
+        auto pfnSetVFPointValues = context.zesDdiTable.Overclock.pfnSetVFPointValues;
+
+        if( nullptr == pfnSetVFPointValues )
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        if( context.enableParameterValidation )
+        {
+            if( nullptr == hDomainHandle )
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+            if( ZES_VF_TYPE_FREQ < VFType )
+                return ZE_RESULT_ERROR_INVALID_ENUMERATION;
+
+        }
+
+        return pfnSetVFPointValues( hDomainHandle, VFType, PointIndex, PointValue );
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -874,6 +1420,32 @@ namespace validation_layer
         }
 
         return pfnGetThroughput( hPort, pThroughput );
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesFabricPortGetFabricErrorCounters
+    __zedlllocal ze_result_t ZE_APICALL
+    zesFabricPortGetFabricErrorCounters(
+        zes_fabric_port_handle_t hPort,                 ///< [in] Handle for the component.
+        zes_fabric_port_error_counters_t* pErrors       ///< [in,out] Will contain the Fabric port Error counters.
+        )
+    {
+        auto pfnGetFabricErrorCounters = context.zesDdiTable.FabricPort.pfnGetFabricErrorCounters;
+
+        if( nullptr == pfnGetFabricErrorCounters )
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        if( context.enableParameterValidation )
+        {
+            if( nullptr == hPort )
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+            if( nullptr == pErrors )
+                return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+        }
+
+        return pfnGetFabricErrorCounters( hPort, pErrors );
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -1887,8 +2459,8 @@ namespace validation_layer
     __zedlllocal ze_result_t ZE_APICALL
     zesMemoryGetBandwidth(
         zes_mem_handle_t hMemory,                       ///< [in] Handle for the component.
-        zes_mem_bandwidth_t* pBandwidth                 ///< [in,out] Will contain the current health, free memory, total memory
-                                                        ///< size.
+        zes_mem_bandwidth_t* pBandwidth                 ///< [in,out] Will contain the total number of bytes read from and written
+                                                        ///< to memory, as well as the current maximum bandwidth.
         )
     {
         auto pfnGetBandwidth = context.zesDdiTable.Memory.pfnGetBandwidth;
@@ -3056,6 +3628,37 @@ extern "C" {
 #endif
 
 ///////////////////////////////////////////////////////////////////////////////
+/// @brief Exported function for filling application's Global table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+ZE_DLLEXPORT ze_result_t ZE_APICALL
+zesGetGlobalProcAddrTable(
+    ze_api_version_t version,                       ///< [in] API version requested
+    zes_global_dditable_t* pDdiTable                ///< [in,out] pointer to table of DDI function pointers
+    )
+{
+    auto& dditable = validation_layer::context.zesDdiTable.Global;
+
+    if( nullptr == pDdiTable )
+        return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+    if (ZE_MAJOR_VERSION(validation_layer::context.version) != ZE_MAJOR_VERSION(version) ||
+        ZE_MINOR_VERSION(validation_layer::context.version) > ZE_MINOR_VERSION(version))
+        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+
+    ze_result_t result = ZE_RESULT_SUCCESS;
+
+    dditable.pfnInit                                     = pDdiTable->pfnInit;
+    pDdiTable->pfnInit                                   = validation_layer::zesInit;
+
+    return result;
+}
+
+///////////////////////////////////////////////////////////////////////////////
 /// @brief Exported function for filling application's Device table
 ///        with current process' addresses
 ///
@@ -3167,6 +3770,27 @@ zesGetDeviceProcAddrTable(
     dditable.pfnSetEccState                              = pDdiTable->pfnSetEccState;
     pDdiTable->pfnSetEccState                            = validation_layer::zesDeviceSetEccState;
 
+    dditable.pfnGet                                      = pDdiTable->pfnGet;
+    pDdiTable->pfnGet                                    = validation_layer::zesDeviceGet;
+
+    dditable.pfnSetOverclockWaiver                       = pDdiTable->pfnSetOverclockWaiver;
+    pDdiTable->pfnSetOverclockWaiver                     = validation_layer::zesDeviceSetOverclockWaiver;
+
+    dditable.pfnGetOverclockDomains                      = pDdiTable->pfnGetOverclockDomains;
+    pDdiTable->pfnGetOverclockDomains                    = validation_layer::zesDeviceGetOverclockDomains;
+
+    dditable.pfnGetOverclockControls                     = pDdiTable->pfnGetOverclockControls;
+    pDdiTable->pfnGetOverclockControls                   = validation_layer::zesDeviceGetOverclockControls;
+
+    dditable.pfnResetOverclockSettings                   = pDdiTable->pfnResetOverclockSettings;
+    pDdiTable->pfnResetOverclockSettings                 = validation_layer::zesDeviceResetOverclockSettings;
+
+    dditable.pfnReadOverclockState                       = pDdiTable->pfnReadOverclockState;
+    pDdiTable->pfnReadOverclockState                     = validation_layer::zesDeviceReadOverclockState;
+
+    dditable.pfnEnumOverclockDomains                     = pDdiTable->pfnEnumOverclockDomains;
+    pDdiTable->pfnEnumOverclockDomains                   = validation_layer::zesDeviceEnumOverclockDomains;
+
     return result;
 }
 
@@ -3200,6 +3824,9 @@ zesGetDriverProcAddrTable(
 
     dditable.pfnEventListenEx                            = pDdiTable->pfnEventListenEx;
     pDdiTable->pfnEventListenEx                          = validation_layer::zesDriverEventListenEx;
+
+    dditable.pfnGet                                      = pDdiTable->pfnGet;
+    pDdiTable->pfnGet                                    = validation_layer::zesDriverGet;
 
     return result;
 }
@@ -3317,6 +3944,9 @@ zesGetFabricPortProcAddrTable(
 
     dditable.pfnGetThroughput                            = pDdiTable->pfnGetThroughput;
     pDdiTable->pfnGetThroughput                          = validation_layer::zesFabricPortGetThroughput;
+
+    dditable.pfnGetFabricErrorCounters                   = pDdiTable->pfnGetFabricErrorCounters;
+    pDdiTable->pfnGetFabricErrorCounters                 = validation_layer::zesFabricPortGetFabricErrorCounters;
 
     return result;
 }
@@ -3553,6 +4183,61 @@ zesGetMemoryProcAddrTable(
 
     dditable.pfnGetBandwidth                             = pDdiTable->pfnGetBandwidth;
     pDdiTable->pfnGetBandwidth                           = validation_layer::zesMemoryGetBandwidth;
+
+    return result;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Exported function for filling application's Overclock table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+ZE_DLLEXPORT ze_result_t ZE_APICALL
+zesGetOverclockProcAddrTable(
+    ze_api_version_t version,                       ///< [in] API version requested
+    zes_overclock_dditable_t* pDdiTable             ///< [in,out] pointer to table of DDI function pointers
+    )
+{
+    auto& dditable = validation_layer::context.zesDdiTable.Overclock;
+
+    if( nullptr == pDdiTable )
+        return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+    if (ZE_MAJOR_VERSION(validation_layer::context.version) != ZE_MAJOR_VERSION(version) ||
+        ZE_MINOR_VERSION(validation_layer::context.version) > ZE_MINOR_VERSION(version))
+        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+
+    ze_result_t result = ZE_RESULT_SUCCESS;
+
+    dditable.pfnGetDomainProperties                      = pDdiTable->pfnGetDomainProperties;
+    pDdiTable->pfnGetDomainProperties                    = validation_layer::zesOverclockGetDomainProperties;
+
+    dditable.pfnGetDomainVFProperties                    = pDdiTable->pfnGetDomainVFProperties;
+    pDdiTable->pfnGetDomainVFProperties                  = validation_layer::zesOverclockGetDomainVFProperties;
+
+    dditable.pfnGetDomainControlProperties               = pDdiTable->pfnGetDomainControlProperties;
+    pDdiTable->pfnGetDomainControlProperties             = validation_layer::zesOverclockGetDomainControlProperties;
+
+    dditable.pfnGetControlCurrentValue                   = pDdiTable->pfnGetControlCurrentValue;
+    pDdiTable->pfnGetControlCurrentValue                 = validation_layer::zesOverclockGetControlCurrentValue;
+
+    dditable.pfnGetControlPendingValue                   = pDdiTable->pfnGetControlPendingValue;
+    pDdiTable->pfnGetControlPendingValue                 = validation_layer::zesOverclockGetControlPendingValue;
+
+    dditable.pfnSetControlUserValue                      = pDdiTable->pfnSetControlUserValue;
+    pDdiTable->pfnSetControlUserValue                    = validation_layer::zesOverclockSetControlUserValue;
+
+    dditable.pfnGetControlState                          = pDdiTable->pfnGetControlState;
+    pDdiTable->pfnGetControlState                        = validation_layer::zesOverclockGetControlState;
+
+    dditable.pfnGetVFPointValues                         = pDdiTable->pfnGetVFPointValues;
+    pDdiTable->pfnGetVFPointValues                       = validation_layer::zesOverclockGetVFPointValues;
+
+    dditable.pfnSetVFPointValues                         = pDdiTable->pfnSetVFPointValues;
+    pDdiTable->pfnSetVFPointValues                       = validation_layer::zesOverclockSetVFPointValues;
 
     return result;
 }

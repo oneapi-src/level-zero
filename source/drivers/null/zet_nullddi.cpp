@@ -303,6 +303,40 @@ namespace driver
     }
 
     ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zetDebugGetThreadRegisterSetProperties
+    __zedlllocal ze_result_t ZE_APICALL
+    zetDebugGetThreadRegisterSetProperties(
+        zet_debug_session_handle_t hDebug,              ///< [in] debug session handle
+        ze_device_thread_t thread,                      ///< [in] the thread identifier specifying a single stopped thread
+        uint32_t* pCount,                               ///< [in,out] pointer to the number of register set properties.
+                                                        ///< if count is zero, then the driver shall update the value with the
+                                                        ///< total number of register set properties available.
+                                                        ///< if count is greater than the number of register set properties
+                                                        ///< available, then the driver shall update the value with the correct
+                                                        ///< number of registry set properties available.
+        zet_debug_regset_properties_t* pRegisterSetProperties   ///< [in,out][optional][range(0, *pCount)] array of query results for
+                                                        ///< register set properties.
+                                                        ///< if count is less than the number of register set properties available,
+                                                        ///< then driver shall only retrieve that number of register set properties.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnGetThreadRegisterSetProperties = context.zetDdiTable.Debug.pfnGetThreadRegisterSetProperties;
+        if( nullptr != pfnGetThreadRegisterSetProperties )
+        {
+            result = pfnGetThreadRegisterSetProperties( hDebug, thread, pCount, pRegisterSetProperties );
+        }
+        else
+        {
+            // generic implementation
+        }
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
     /// @brief Intercept function for zetDebugReadRegisters
     __zedlllocal ze_result_t ZE_APICALL
     zetDebugReadRegisters(
@@ -1272,6 +1306,8 @@ zetGetDebugProcAddrTable(
     pDdiTable->pfnReadRegisters                          = driver::zetDebugReadRegisters;
 
     pDdiTable->pfnWriteRegisters                         = driver::zetDebugWriteRegisters;
+
+    pDdiTable->pfnGetThreadRegisterSetProperties         = driver::zetDebugGetThreadRegisterSetProperties;
 
     return result;
 }

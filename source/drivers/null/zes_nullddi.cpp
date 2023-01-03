@@ -12,6 +12,99 @@
 namespace driver
 {
     ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesInit
+    __zedlllocal ze_result_t ZE_APICALL
+    zesInit(
+        zes_init_flags_t flags                          ///< [in] initialization flags.
+                                                        ///< currently unused, must be 0 (default).
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnInit = context.zesDdiTable.Global.pfnInit;
+        if( nullptr != pfnInit )
+        {
+            result = pfnInit( flags );
+        }
+        else
+        {
+            // generic implementation
+        }
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesDriverGet
+    __zedlllocal ze_result_t ZE_APICALL
+    zesDriverGet(
+        uint32_t* pCount,                               ///< [in,out] pointer to the number of sysman driver instances.
+                                                        ///< if count is zero, then the loader shall update the value with the
+                                                        ///< total number of sysman drivers available.
+                                                        ///< if count is greater than the number of sysman drivers available, then
+                                                        ///< the loader shall update the value with the correct number of sysman
+                                                        ///< drivers available.
+        zes_driver_handle_t* phDrivers                  ///< [in,out][optional][range(0, *pCount)] array of sysman driver instance handles.
+                                                        ///< if count is less than the number of sysman drivers available, then the
+                                                        ///< loader shall only retrieve that number of sysman drivers.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnGet = context.zesDdiTable.Driver.pfnGet;
+        if( nullptr != pfnGet )
+        {
+            result = pfnGet( pCount, phDrivers );
+        }
+        else
+        {
+            // generic implementation
+            for( size_t i = 0; ( nullptr != phDrivers ) && ( i < *pCount ); ++i )
+                phDrivers[ i ] = reinterpret_cast<zes_driver_handle_t>( context.get() );
+
+        }
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesDeviceGet
+    __zedlllocal ze_result_t ZE_APICALL
+    zesDeviceGet(
+        zes_driver_handle_t hDriver,                    ///< [in] handle of the sysman driver instance
+        uint32_t* pCount,                               ///< [in,out] pointer to the number of sysman devices.
+                                                        ///< if count is zero, then the driver shall update the value with the
+                                                        ///< total number of sysman devices available.
+                                                        ///< if count is greater than the number of sysman devices available, then
+                                                        ///< the driver shall update the value with the correct number of sysman
+                                                        ///< devices available.
+        zes_device_handle_t* phDevices                  ///< [in,out][optional][range(0, *pCount)] array of handle of sysman devices.
+                                                        ///< if count is less than the number of sysman devices available, then
+                                                        ///< driver shall only retrieve that number of sysman devices.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnGet = context.zesDdiTable.Device.pfnGet;
+        if( nullptr != pfnGet )
+        {
+            result = pfnGet( hDriver, pCount, phDevices );
+        }
+        else
+        {
+            // generic implementation
+            for( size_t i = 0; ( nullptr != phDevices ) && ( i < *pCount ); ++i )
+                phDevices[ i ] = reinterpret_cast<zes_device_handle_t>( context.get() );
+
+        }
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
     /// @brief Intercept function for zesDeviceGetProperties
     __zedlllocal ze_result_t ZE_APICALL
     zesDeviceGetProperties(
@@ -212,6 +305,405 @@ namespace driver
         if( nullptr != pfnPciGetStats )
         {
             result = pfnPciGetStats( hDevice, pStats );
+        }
+        else
+        {
+            // generic implementation
+        }
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesDeviceSetOverclockWaiver
+    __zedlllocal ze_result_t ZE_APICALL
+    zesDeviceSetOverclockWaiver(
+        zes_device_handle_t hDevice                     ///< [in] Sysman handle of the device.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnSetOverclockWaiver = context.zesDdiTable.Device.pfnSetOverclockWaiver;
+        if( nullptr != pfnSetOverclockWaiver )
+        {
+            result = pfnSetOverclockWaiver( hDevice );
+        }
+        else
+        {
+            // generic implementation
+        }
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesDeviceGetOverclockDomains
+    __zedlllocal ze_result_t ZE_APICALL
+    zesDeviceGetOverclockDomains(
+        zes_device_handle_t hDevice,                    ///< [in] Sysman handle of the device.
+        uint32_t* pOverclockDomains                     ///< [in,out] Returns the overclock domains that are supported (a bit for
+                                                        ///< each of enum ::zes_overclock_domain_t). If no bits are set, the device
+                                                        ///< doesn't support overclocking.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnGetOverclockDomains = context.zesDdiTable.Device.pfnGetOverclockDomains;
+        if( nullptr != pfnGetOverclockDomains )
+        {
+            result = pfnGetOverclockDomains( hDevice, pOverclockDomains );
+        }
+        else
+        {
+            // generic implementation
+        }
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesDeviceGetOverclockControls
+    __zedlllocal ze_result_t ZE_APICALL
+    zesDeviceGetOverclockControls(
+        zes_device_handle_t hDevice,                    ///< [in] Sysman handle of the device.
+        zes_overclock_domain_t domainType,              ///< [in] Domain type.
+        uint32_t* pAvailableControls                    ///< [in,out] Returns the overclock controls that are supported for the
+                                                        ///< specified overclock domain (a bit for each of enum
+                                                        ///< ::zes_overclock_control_t).
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnGetOverclockControls = context.zesDdiTable.Device.pfnGetOverclockControls;
+        if( nullptr != pfnGetOverclockControls )
+        {
+            result = pfnGetOverclockControls( hDevice, domainType, pAvailableControls );
+        }
+        else
+        {
+            // generic implementation
+        }
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesDeviceResetOverclockSettings
+    __zedlllocal ze_result_t ZE_APICALL
+    zesDeviceResetOverclockSettings(
+        zes_device_handle_t hDevice,                    ///< [in] Sysman handle of the device.
+        ze_bool_t onShippedState                        ///< [in] True will reset to shipped state; false will reset to
+                                                        ///< manufacturing state
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnResetOverclockSettings = context.zesDdiTable.Device.pfnResetOverclockSettings;
+        if( nullptr != pfnResetOverclockSettings )
+        {
+            result = pfnResetOverclockSettings( hDevice, onShippedState );
+        }
+        else
+        {
+            // generic implementation
+        }
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesDeviceReadOverclockState
+    __zedlllocal ze_result_t ZE_APICALL
+    zesDeviceReadOverclockState(
+        zes_device_handle_t hDevice,                    ///< [in] Sysman handle of the device.
+        zes_overclock_mode_t* pOverclockMode,           ///< [out] One of overclock mode.
+        ze_bool_t* pWaiverSetting,                      ///< [out] Waiver setting: 0 = Waiver not set, 1 = waiver has been set.
+        ze_bool_t* pOverclockState,                     ///< [out] Current settings 0 =manufacturing state, 1= shipped state)..
+        zes_pending_action_t* pPendingAction,           ///< [out] This enum is returned when the driver attempts to set an
+                                                        ///< overclock control or reset overclock settings.
+        ze_bool_t* pPendingReset                        ///< [out] Pending reset 0 =manufacturing state, 1= shipped state)..
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnReadOverclockState = context.zesDdiTable.Device.pfnReadOverclockState;
+        if( nullptr != pfnReadOverclockState )
+        {
+            result = pfnReadOverclockState( hDevice, pOverclockMode, pWaiverSetting, pOverclockState, pPendingAction, pPendingReset );
+        }
+        else
+        {
+            // generic implementation
+        }
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesDeviceEnumOverclockDomains
+    __zedlllocal ze_result_t ZE_APICALL
+    zesDeviceEnumOverclockDomains(
+        zes_device_handle_t hDevice,                    ///< [in] Sysman handle of the device.
+        uint32_t* pCount,                               ///< [in,out] pointer to the number of components of this type.
+                                                        ///< if count is zero, then the driver shall update the value with the
+                                                        ///< total number of components of this type that are available.
+                                                        ///< if count is greater than the number of components of this type that
+                                                        ///< are available, then the driver shall update the value with the correct
+                                                        ///< number of components.
+        zes_overclock_handle_t* phDomainHandle          ///< [in,out][optional][range(0, *pCount)] array of handle of components of
+                                                        ///< this type.
+                                                        ///< if count is less than the number of components of this type that are
+                                                        ///< available, then the driver shall only retrieve that number of
+                                                        ///< component handles.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnEnumOverclockDomains = context.zesDdiTable.Device.pfnEnumOverclockDomains;
+        if( nullptr != pfnEnumOverclockDomains )
+        {
+            result = pfnEnumOverclockDomains( hDevice, pCount, phDomainHandle );
+        }
+        else
+        {
+            // generic implementation
+            for( size_t i = 0; ( nullptr != phDomainHandle ) && ( i < *pCount ); ++i )
+                phDomainHandle[ i ] = reinterpret_cast<zes_overclock_handle_t>( context.get() );
+
+        }
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesOverclockGetDomainProperties
+    __zedlllocal ze_result_t ZE_APICALL
+    zesOverclockGetDomainProperties(
+        zes_overclock_handle_t hDomainHandle,           ///< [in] Handle for the component domain.
+        zes_overclock_properties_t* pDomainProperties   ///< [in,out] The overclock properties for the specified domain.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnGetDomainProperties = context.zesDdiTable.Overclock.pfnGetDomainProperties;
+        if( nullptr != pfnGetDomainProperties )
+        {
+            result = pfnGetDomainProperties( hDomainHandle, pDomainProperties );
+        }
+        else
+        {
+            // generic implementation
+        }
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesOverclockGetDomainVFProperties
+    __zedlllocal ze_result_t ZE_APICALL
+    zesOverclockGetDomainVFProperties(
+        zes_overclock_handle_t hDomainHandle,           ///< [in] Handle for the component domain.
+        zes_vf_property_t* pVFProperties                ///< [in,out] The VF min,max,step for a specified domain.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnGetDomainVFProperties = context.zesDdiTable.Overclock.pfnGetDomainVFProperties;
+        if( nullptr != pfnGetDomainVFProperties )
+        {
+            result = pfnGetDomainVFProperties( hDomainHandle, pVFProperties );
+        }
+        else
+        {
+            // generic implementation
+        }
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesOverclockGetDomainControlProperties
+    __zedlllocal ze_result_t ZE_APICALL
+    zesOverclockGetDomainControlProperties(
+        zes_overclock_handle_t hDomainHandle,           ///< [in] Handle for the component domain.
+        zes_overclock_control_t DomainControl,          ///< [in] Handle for the component.
+        zes_control_property_t* pControlProperties      ///< [in,out] overclock control values.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnGetDomainControlProperties = context.zesDdiTable.Overclock.pfnGetDomainControlProperties;
+        if( nullptr != pfnGetDomainControlProperties )
+        {
+            result = pfnGetDomainControlProperties( hDomainHandle, DomainControl, pControlProperties );
+        }
+        else
+        {
+            // generic implementation
+        }
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesOverclockGetControlCurrentValue
+    __zedlllocal ze_result_t ZE_APICALL
+    zesOverclockGetControlCurrentValue(
+        zes_overclock_handle_t hDomainHandle,           ///< [in] Handle for the component.
+        zes_overclock_control_t DomainControl,          ///< [in] Overclock Control.
+        double* pValue                                  ///< [in,out] Getting overclock control value for the specified control.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnGetControlCurrentValue = context.zesDdiTable.Overclock.pfnGetControlCurrentValue;
+        if( nullptr != pfnGetControlCurrentValue )
+        {
+            result = pfnGetControlCurrentValue( hDomainHandle, DomainControl, pValue );
+        }
+        else
+        {
+            // generic implementation
+        }
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesOverclockGetControlPendingValue
+    __zedlllocal ze_result_t ZE_APICALL
+    zesOverclockGetControlPendingValue(
+        zes_overclock_handle_t hDomainHandle,           ///< [in] Handle for the component domain.
+        zes_overclock_control_t DomainControl,          ///< [in] Overclock Control.
+        double* pValue                                  ///< [out] Returns the pending value for a given control. The units and
+                                                        ///< format of the value depend on the control type.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnGetControlPendingValue = context.zesDdiTable.Overclock.pfnGetControlPendingValue;
+        if( nullptr != pfnGetControlPendingValue )
+        {
+            result = pfnGetControlPendingValue( hDomainHandle, DomainControl, pValue );
+        }
+        else
+        {
+            // generic implementation
+        }
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesOverclockSetControlUserValue
+    __zedlllocal ze_result_t ZE_APICALL
+    zesOverclockSetControlUserValue(
+        zes_overclock_handle_t hDomainHandle,           ///< [in] Handle for the component domain.
+        zes_overclock_control_t DomainControl,          ///< [in] Domain Control.
+        double pValue,                                  ///< [in] The new value of the control. The units and format of the value
+                                                        ///< depend on the control type.
+        zes_pending_action_t* pPendingAction            ///< [out] Pending overclock setting.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnSetControlUserValue = context.zesDdiTable.Overclock.pfnSetControlUserValue;
+        if( nullptr != pfnSetControlUserValue )
+        {
+            result = pfnSetControlUserValue( hDomainHandle, DomainControl, pValue, pPendingAction );
+        }
+        else
+        {
+            // generic implementation
+        }
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesOverclockGetControlState
+    __zedlllocal ze_result_t ZE_APICALL
+    zesOverclockGetControlState(
+        zes_overclock_handle_t hDomainHandle,           ///< [in] Handle for the component domain.
+        zes_overclock_control_t DomainControl,          ///< [in] Domain Control.
+        zes_control_state_t* pControlState,             ///< [out] Current overclock control state.
+        zes_pending_action_t* pPendingAction            ///< [out] Pending overclock setting.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnGetControlState = context.zesDdiTable.Overclock.pfnGetControlState;
+        if( nullptr != pfnGetControlState )
+        {
+            result = pfnGetControlState( hDomainHandle, DomainControl, pControlState, pPendingAction );
+        }
+        else
+        {
+            // generic implementation
+        }
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesOverclockGetVFPointValues
+    __zedlllocal ze_result_t ZE_APICALL
+    zesOverclockGetVFPointValues(
+        zes_overclock_handle_t hDomainHandle,           ///< [in] Handle for the component domain.
+        zes_vf_type_t VFType,                           ///< [in] Voltage or Freqency point to read.
+        zes_vf_array_type_t VFArrayType,                ///< [in] User,Default or Live VF array to read from
+        uint32_t PointIndex,                            ///< [in] Point index - number between (0, max_num_points - 1).
+        uint32_t* PointValue                            ///< [out] Returns the frequency in 1kHz units or voltage in millivolt
+                                                        ///< units from the custom V-F curve at the specified zero-based index 
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnGetVFPointValues = context.zesDdiTable.Overclock.pfnGetVFPointValues;
+        if( nullptr != pfnGetVFPointValues )
+        {
+            result = pfnGetVFPointValues( hDomainHandle, VFType, VFArrayType, PointIndex, PointValue );
+        }
+        else
+        {
+            // generic implementation
+        }
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesOverclockSetVFPointValues
+    __zedlllocal ze_result_t ZE_APICALL
+    zesOverclockSetVFPointValues(
+        zes_overclock_handle_t hDomainHandle,           ///< [in] Handle for the component domain.
+        zes_vf_type_t VFType,                           ///< [in] Voltage or Freqency point to read.
+        uint32_t PointIndex,                            ///< [in] Point index - number between (0, max_num_points - 1).
+        uint32_t PointValue                             ///< [in] Writes frequency in 1kHz units or voltage in millivolt units to
+                                                        ///< custom V-F curve at the specified zero-based index 
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnSetVFPointValues = context.zesDdiTable.Overclock.pfnSetVFPointValues;
+        if( nullptr != pfnSetVFPointValues )
+        {
+            result = pfnSetVFPointValues( hDomainHandle, VFType, PointIndex, PointValue );
         }
         else
         {
@@ -803,6 +1295,30 @@ namespace driver
         if( nullptr != pfnGetThroughput )
         {
             result = pfnGetThroughput( hPort, pThroughput );
+        }
+        else
+        {
+            // generic implementation
+        }
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesFabricPortGetFabricErrorCounters
+    __zedlllocal ze_result_t ZE_APICALL
+    zesFabricPortGetFabricErrorCounters(
+        zes_fabric_port_handle_t hPort,                 ///< [in] Handle for the component.
+        zes_fabric_port_error_counters_t* pErrors       ///< [in,out] Will contain the Fabric port Error counters.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnGetFabricErrorCounters = context.zesDdiTable.FabricPort.pfnGetFabricErrorCounters;
+        if( nullptr != pfnGetFabricErrorCounters )
+        {
+            result = pfnGetFabricErrorCounters( hPort, pErrors );
         }
         else
         {
@@ -1778,8 +2294,8 @@ namespace driver
     __zedlllocal ze_result_t ZE_APICALL
     zesMemoryGetBandwidth(
         zes_mem_handle_t hMemory,                       ///< [in] Handle for the component.
-        zes_mem_bandwidth_t* pBandwidth                 ///< [in,out] Will contain the current health, free memory, total memory
-                                                        ///< size.
+        zes_mem_bandwidth_t* pBandwidth                 ///< [in,out] Will contain the total number of bytes read from and written
+                                                        ///< to memory, as well as the current maximum bandwidth.
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
@@ -2894,6 +3410,33 @@ extern "C" {
 #endif
 
 ///////////////////////////////////////////////////////////////////////////////
+/// @brief Exported function for filling application's Global table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+ZE_DLLEXPORT ze_result_t ZE_APICALL
+zesGetGlobalProcAddrTable(
+    ze_api_version_t version,                       ///< [in] API version requested
+    zes_global_dditable_t* pDdiTable                ///< [in,out] pointer to table of DDI function pointers
+    )
+{
+    if( nullptr == pDdiTable )
+        return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+    if( driver::context.version < version )
+        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+
+    ze_result_t result = ZE_RESULT_SUCCESS;
+
+    pDdiTable->pfnInit                                   = driver::zesInit;
+
+    return result;
+}
+
+///////////////////////////////////////////////////////////////////////////////
 /// @brief Exported function for filling application's Device table
 ///        with current process' addresses
 ///
@@ -2973,6 +3516,20 @@ zesGetDeviceProcAddrTable(
 
     pDdiTable->pfnSetEccState                            = driver::zesDeviceSetEccState;
 
+    pDdiTable->pfnGet                                    = driver::zesDeviceGet;
+
+    pDdiTable->pfnSetOverclockWaiver                     = driver::zesDeviceSetOverclockWaiver;
+
+    pDdiTable->pfnGetOverclockDomains                    = driver::zesDeviceGetOverclockDomains;
+
+    pDdiTable->pfnGetOverclockControls                   = driver::zesDeviceGetOverclockControls;
+
+    pDdiTable->pfnResetOverclockSettings                 = driver::zesDeviceResetOverclockSettings;
+
+    pDdiTable->pfnReadOverclockState                     = driver::zesDeviceReadOverclockState;
+
+    pDdiTable->pfnEnumOverclockDomains                   = driver::zesDeviceEnumOverclockDomains;
+
     return result;
 }
 
@@ -3001,6 +3558,8 @@ zesGetDriverProcAddrTable(
     pDdiTable->pfnEventListen                            = driver::zesDriverEventListen;
 
     pDdiTable->pfnEventListenEx                          = driver::zesDriverEventListenEx;
+
+    pDdiTable->pfnGet                                    = driver::zesDriverGet;
 
     return result;
 }
@@ -3098,6 +3657,8 @@ zesGetFabricPortProcAddrTable(
     pDdiTable->pfnGetState                               = driver::zesFabricPortGetState;
 
     pDdiTable->pfnGetThroughput                          = driver::zesFabricPortGetThroughput;
+
+    pDdiTable->pfnGetFabricErrorCounters                 = driver::zesFabricPortGetFabricErrorCounters;
 
     return result;
 }
@@ -3287,6 +3848,49 @@ zesGetMemoryProcAddrTable(
     pDdiTable->pfnGetState                               = driver::zesMemoryGetState;
 
     pDdiTable->pfnGetBandwidth                           = driver::zesMemoryGetBandwidth;
+
+    return result;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Exported function for filling application's Overclock table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+ZE_DLLEXPORT ze_result_t ZE_APICALL
+zesGetOverclockProcAddrTable(
+    ze_api_version_t version,                       ///< [in] API version requested
+    zes_overclock_dditable_t* pDdiTable             ///< [in,out] pointer to table of DDI function pointers
+    )
+{
+    if( nullptr == pDdiTable )
+        return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+    if( driver::context.version < version )
+        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+
+    ze_result_t result = ZE_RESULT_SUCCESS;
+
+    pDdiTable->pfnGetDomainProperties                    = driver::zesOverclockGetDomainProperties;
+
+    pDdiTable->pfnGetDomainVFProperties                  = driver::zesOverclockGetDomainVFProperties;
+
+    pDdiTable->pfnGetDomainControlProperties             = driver::zesOverclockGetDomainControlProperties;
+
+    pDdiTable->pfnGetControlCurrentValue                 = driver::zesOverclockGetControlCurrentValue;
+
+    pDdiTable->pfnGetControlPendingValue                 = driver::zesOverclockGetControlPendingValue;
+
+    pDdiTable->pfnSetControlUserValue                    = driver::zesOverclockSetControlUserValue;
+
+    pDdiTable->pfnGetControlState                        = driver::zesOverclockGetControlState;
+
+    pDdiTable->pfnGetVFPointValues                       = driver::zesOverclockGetVFPointValues;
+
+    pDdiTable->pfnSetVFPointValues                       = driver::zesOverclockSetVFPointValues;
 
     return result;
 }

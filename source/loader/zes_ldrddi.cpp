@@ -29,6 +29,144 @@ namespace loader
     zes_led_factory_t                   zes_led_factory;
     zes_ras_factory_t                   zes_ras_factory;
     zes_diag_factory_t                  zes_diag_factory;
+    zes_overclock_factory_t             zes_overclock_factory;
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesInit
+    __zedlllocal ze_result_t ZE_APICALL
+    zesInit(
+        zes_init_flags_t flags                          ///< [in] initialization flags.
+                                                        ///< currently unused, must be 0 (default).
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        bool atLeastOneDriverValid = false;
+        for( auto& drv : context->drivers )
+        {
+            if(drv.initStatus != ZE_RESULT_SUCCESS)
+                continue;
+            drv.initStatus = drv.dditable.zes.Global.pfnInit( flags );
+            if(drv.initStatus == ZE_RESULT_SUCCESS)
+                atLeastOneDriverValid = true;
+        }
+
+        if(!atLeastOneDriverValid)
+            result=ZE_RESULT_ERROR_UNINITIALIZED;
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesDriverGet
+    __zedlllocal ze_result_t ZE_APICALL
+    zesDriverGet(
+        uint32_t* pCount,                               ///< [in,out] pointer to the number of sysman driver instances.
+                                                        ///< if count is zero, then the loader shall update the value with the
+                                                        ///< total number of sysman drivers available.
+                                                        ///< if count is greater than the number of sysman drivers available, then
+                                                        ///< the loader shall update the value with the correct number of sysman
+                                                        ///< drivers available.
+        zes_driver_handle_t* phDrivers                  ///< [in,out][optional][range(0, *pCount)] array of sysman driver instance handles.
+                                                        ///< if count is less than the number of sysman drivers available, then the
+                                                        ///< loader shall only retrieve that number of sysman drivers.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        uint32_t total_driver_handle_count = 0;
+
+        for( auto& drv : context->drivers )
+        {
+            if(drv.initStatus != ZE_RESULT_SUCCESS)
+                continue;
+
+            if( ( 0 < *pCount ) && ( *pCount == total_driver_handle_count))
+                break;
+
+            uint32_t library_driver_handle_count = 0;
+
+            result = drv.dditable.zes.Driver.pfnGet( &library_driver_handle_count, nullptr );
+            if( ZE_RESULT_SUCCESS != result ) break;
+
+            if( nullptr != phDrivers && *pCount !=0)
+            {
+                if( total_driver_handle_count + library_driver_handle_count > *pCount) {
+                    library_driver_handle_count = *pCount - total_driver_handle_count;
+                }
+                result = drv.dditable.zes.Driver.pfnGet( &library_driver_handle_count, &phDrivers[ total_driver_handle_count ] );
+                if( ZE_RESULT_SUCCESS != result ) break;
+
+                try
+                {
+                    for( uint32_t i = 0; i < library_driver_handle_count; ++i ) {
+                        uint32_t driver_index = total_driver_handle_count + i;
+                        phDrivers[ driver_index ] = reinterpret_cast<zes_driver_handle_t>(
+                            zes_driver_factory.getInstance( phDrivers[ driver_index ], &drv.dditable ) );
+                    }
+                }
+                catch( std::bad_alloc& )
+                {
+                    result = ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY;
+                }
+            }
+
+            total_driver_handle_count += library_driver_handle_count;
+        }
+
+        if( ZE_RESULT_SUCCESS == result )
+            *pCount = total_driver_handle_count;
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesDeviceGet
+    __zedlllocal ze_result_t ZE_APICALL
+    zesDeviceGet(
+        zes_driver_handle_t hDriver,                    ///< [in] handle of the sysman driver instance
+        uint32_t* pCount,                               ///< [in,out] pointer to the number of sysman devices.
+                                                        ///< if count is zero, then the driver shall update the value with the
+                                                        ///< total number of sysman devices available.
+                                                        ///< if count is greater than the number of sysman devices available, then
+                                                        ///< the driver shall update the value with the correct number of sysman
+                                                        ///< devices available.
+        zes_device_handle_t* phDevices                  ///< [in,out][optional][range(0, *pCount)] array of handle of sysman devices.
+                                                        ///< if count is less than the number of sysman devices available, then
+                                                        ///< driver shall only retrieve that number of sysman devices.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_driver_object_t*>( hDriver )->dditable;
+        auto pfnGet = dditable->zes.Device.pfnGet;
+        if( nullptr == pfnGet )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hDriver = reinterpret_cast<zes_driver_object_t*>( hDriver )->handle;
+
+        // forward to device-driver
+        result = pfnGet( hDriver, pCount, phDevices );
+
+        if( ZE_RESULT_SUCCESS != result )
+            return result;
+
+        try
+        {
+            // convert driver handles to loader handles
+            for( size_t i = 0; ( nullptr != phDevices ) && ( i < *pCount ); ++i )
+                phDevices[ i ] = reinterpret_cast<zes_device_handle_t>(
+                    zes_device_factory.getInstance( phDevices[ i ], dditable ) );
+        }
+        catch( std::bad_alloc& )
+        {
+            result = ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY;
+        }
+
+        return result;
+    }
 
     ///////////////////////////////////////////////////////////////////////////////
     /// @brief Intercept function for zesDeviceGetProperties
@@ -244,6 +382,432 @@ namespace loader
 
         // forward to device-driver
         result = pfnPciGetStats( hDevice, pStats );
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesDeviceSetOverclockWaiver
+    __zedlllocal ze_result_t ZE_APICALL
+    zesDeviceSetOverclockWaiver(
+        zes_device_handle_t hDevice                     ///< [in] Sysman handle of the device.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_device_object_t*>( hDevice )->dditable;
+        auto pfnSetOverclockWaiver = dditable->zes.Device.pfnSetOverclockWaiver;
+        if( nullptr == pfnSetOverclockWaiver )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hDevice = reinterpret_cast<zes_device_object_t*>( hDevice )->handle;
+
+        // forward to device-driver
+        result = pfnSetOverclockWaiver( hDevice );
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesDeviceGetOverclockDomains
+    __zedlllocal ze_result_t ZE_APICALL
+    zesDeviceGetOverclockDomains(
+        zes_device_handle_t hDevice,                    ///< [in] Sysman handle of the device.
+        uint32_t* pOverclockDomains                     ///< [in,out] Returns the overclock domains that are supported (a bit for
+                                                        ///< each of enum ::zes_overclock_domain_t). If no bits are set, the device
+                                                        ///< doesn't support overclocking.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_device_object_t*>( hDevice )->dditable;
+        auto pfnGetOverclockDomains = dditable->zes.Device.pfnGetOverclockDomains;
+        if( nullptr == pfnGetOverclockDomains )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hDevice = reinterpret_cast<zes_device_object_t*>( hDevice )->handle;
+
+        // forward to device-driver
+        result = pfnGetOverclockDomains( hDevice, pOverclockDomains );
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesDeviceGetOverclockControls
+    __zedlllocal ze_result_t ZE_APICALL
+    zesDeviceGetOverclockControls(
+        zes_device_handle_t hDevice,                    ///< [in] Sysman handle of the device.
+        zes_overclock_domain_t domainType,              ///< [in] Domain type.
+        uint32_t* pAvailableControls                    ///< [in,out] Returns the overclock controls that are supported for the
+                                                        ///< specified overclock domain (a bit for each of enum
+                                                        ///< ::zes_overclock_control_t).
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_device_object_t*>( hDevice )->dditable;
+        auto pfnGetOverclockControls = dditable->zes.Device.pfnGetOverclockControls;
+        if( nullptr == pfnGetOverclockControls )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hDevice = reinterpret_cast<zes_device_object_t*>( hDevice )->handle;
+
+        // forward to device-driver
+        result = pfnGetOverclockControls( hDevice, domainType, pAvailableControls );
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesDeviceResetOverclockSettings
+    __zedlllocal ze_result_t ZE_APICALL
+    zesDeviceResetOverclockSettings(
+        zes_device_handle_t hDevice,                    ///< [in] Sysman handle of the device.
+        ze_bool_t onShippedState                        ///< [in] True will reset to shipped state; false will reset to
+                                                        ///< manufacturing state
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_device_object_t*>( hDevice )->dditable;
+        auto pfnResetOverclockSettings = dditable->zes.Device.pfnResetOverclockSettings;
+        if( nullptr == pfnResetOverclockSettings )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hDevice = reinterpret_cast<zes_device_object_t*>( hDevice )->handle;
+
+        // forward to device-driver
+        result = pfnResetOverclockSettings( hDevice, onShippedState );
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesDeviceReadOverclockState
+    __zedlllocal ze_result_t ZE_APICALL
+    zesDeviceReadOverclockState(
+        zes_device_handle_t hDevice,                    ///< [in] Sysman handle of the device.
+        zes_overclock_mode_t* pOverclockMode,           ///< [out] One of overclock mode.
+        ze_bool_t* pWaiverSetting,                      ///< [out] Waiver setting: 0 = Waiver not set, 1 = waiver has been set.
+        ze_bool_t* pOverclockState,                     ///< [out] Current settings 0 =manufacturing state, 1= shipped state)..
+        zes_pending_action_t* pPendingAction,           ///< [out] This enum is returned when the driver attempts to set an
+                                                        ///< overclock control or reset overclock settings.
+        ze_bool_t* pPendingReset                        ///< [out] Pending reset 0 =manufacturing state, 1= shipped state)..
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_device_object_t*>( hDevice )->dditable;
+        auto pfnReadOverclockState = dditable->zes.Device.pfnReadOverclockState;
+        if( nullptr == pfnReadOverclockState )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hDevice = reinterpret_cast<zes_device_object_t*>( hDevice )->handle;
+
+        // forward to device-driver
+        result = pfnReadOverclockState( hDevice, pOverclockMode, pWaiverSetting, pOverclockState, pPendingAction, pPendingReset );
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesDeviceEnumOverclockDomains
+    __zedlllocal ze_result_t ZE_APICALL
+    zesDeviceEnumOverclockDomains(
+        zes_device_handle_t hDevice,                    ///< [in] Sysman handle of the device.
+        uint32_t* pCount,                               ///< [in,out] pointer to the number of components of this type.
+                                                        ///< if count is zero, then the driver shall update the value with the
+                                                        ///< total number of components of this type that are available.
+                                                        ///< if count is greater than the number of components of this type that
+                                                        ///< are available, then the driver shall update the value with the correct
+                                                        ///< number of components.
+        zes_overclock_handle_t* phDomainHandle          ///< [in,out][optional][range(0, *pCount)] array of handle of components of
+                                                        ///< this type.
+                                                        ///< if count is less than the number of components of this type that are
+                                                        ///< available, then the driver shall only retrieve that number of
+                                                        ///< component handles.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_device_object_t*>( hDevice )->dditable;
+        auto pfnEnumOverclockDomains = dditable->zes.Device.pfnEnumOverclockDomains;
+        if( nullptr == pfnEnumOverclockDomains )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hDevice = reinterpret_cast<zes_device_object_t*>( hDevice )->handle;
+
+        // forward to device-driver
+        result = pfnEnumOverclockDomains( hDevice, pCount, phDomainHandle );
+
+        if( ZE_RESULT_SUCCESS != result )
+            return result;
+
+        try
+        {
+            // convert driver handles to loader handles
+            for( size_t i = 0; ( nullptr != phDomainHandle ) && ( i < *pCount ); ++i )
+                phDomainHandle[ i ] = reinterpret_cast<zes_overclock_handle_t>(
+                    zes_overclock_factory.getInstance( phDomainHandle[ i ], dditable ) );
+        }
+        catch( std::bad_alloc& )
+        {
+            result = ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY;
+        }
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesOverclockGetDomainProperties
+    __zedlllocal ze_result_t ZE_APICALL
+    zesOverclockGetDomainProperties(
+        zes_overclock_handle_t hDomainHandle,           ///< [in] Handle for the component domain.
+        zes_overclock_properties_t* pDomainProperties   ///< [in,out] The overclock properties for the specified domain.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_overclock_object_t*>( hDomainHandle )->dditable;
+        auto pfnGetDomainProperties = dditable->zes.Overclock.pfnGetDomainProperties;
+        if( nullptr == pfnGetDomainProperties )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hDomainHandle = reinterpret_cast<zes_overclock_object_t*>( hDomainHandle )->handle;
+
+        // forward to device-driver
+        result = pfnGetDomainProperties( hDomainHandle, pDomainProperties );
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesOverclockGetDomainVFProperties
+    __zedlllocal ze_result_t ZE_APICALL
+    zesOverclockGetDomainVFProperties(
+        zes_overclock_handle_t hDomainHandle,           ///< [in] Handle for the component domain.
+        zes_vf_property_t* pVFProperties                ///< [in,out] The VF min,max,step for a specified domain.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_overclock_object_t*>( hDomainHandle )->dditable;
+        auto pfnGetDomainVFProperties = dditable->zes.Overclock.pfnGetDomainVFProperties;
+        if( nullptr == pfnGetDomainVFProperties )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hDomainHandle = reinterpret_cast<zes_overclock_object_t*>( hDomainHandle )->handle;
+
+        // forward to device-driver
+        result = pfnGetDomainVFProperties( hDomainHandle, pVFProperties );
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesOverclockGetDomainControlProperties
+    __zedlllocal ze_result_t ZE_APICALL
+    zesOverclockGetDomainControlProperties(
+        zes_overclock_handle_t hDomainHandle,           ///< [in] Handle for the component domain.
+        zes_overclock_control_t DomainControl,          ///< [in] Handle for the component.
+        zes_control_property_t* pControlProperties      ///< [in,out] overclock control values.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_overclock_object_t*>( hDomainHandle )->dditable;
+        auto pfnGetDomainControlProperties = dditable->zes.Overclock.pfnGetDomainControlProperties;
+        if( nullptr == pfnGetDomainControlProperties )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hDomainHandle = reinterpret_cast<zes_overclock_object_t*>( hDomainHandle )->handle;
+
+        // forward to device-driver
+        result = pfnGetDomainControlProperties( hDomainHandle, DomainControl, pControlProperties );
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesOverclockGetControlCurrentValue
+    __zedlllocal ze_result_t ZE_APICALL
+    zesOverclockGetControlCurrentValue(
+        zes_overclock_handle_t hDomainHandle,           ///< [in] Handle for the component.
+        zes_overclock_control_t DomainControl,          ///< [in] Overclock Control.
+        double* pValue                                  ///< [in,out] Getting overclock control value for the specified control.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_overclock_object_t*>( hDomainHandle )->dditable;
+        auto pfnGetControlCurrentValue = dditable->zes.Overclock.pfnGetControlCurrentValue;
+        if( nullptr == pfnGetControlCurrentValue )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hDomainHandle = reinterpret_cast<zes_overclock_object_t*>( hDomainHandle )->handle;
+
+        // forward to device-driver
+        result = pfnGetControlCurrentValue( hDomainHandle, DomainControl, pValue );
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesOverclockGetControlPendingValue
+    __zedlllocal ze_result_t ZE_APICALL
+    zesOverclockGetControlPendingValue(
+        zes_overclock_handle_t hDomainHandle,           ///< [in] Handle for the component domain.
+        zes_overclock_control_t DomainControl,          ///< [in] Overclock Control.
+        double* pValue                                  ///< [out] Returns the pending value for a given control. The units and
+                                                        ///< format of the value depend on the control type.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_overclock_object_t*>( hDomainHandle )->dditable;
+        auto pfnGetControlPendingValue = dditable->zes.Overclock.pfnGetControlPendingValue;
+        if( nullptr == pfnGetControlPendingValue )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hDomainHandle = reinterpret_cast<zes_overclock_object_t*>( hDomainHandle )->handle;
+
+        // forward to device-driver
+        result = pfnGetControlPendingValue( hDomainHandle, DomainControl, pValue );
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesOverclockSetControlUserValue
+    __zedlllocal ze_result_t ZE_APICALL
+    zesOverclockSetControlUserValue(
+        zes_overclock_handle_t hDomainHandle,           ///< [in] Handle for the component domain.
+        zes_overclock_control_t DomainControl,          ///< [in] Domain Control.
+        double pValue,                                  ///< [in] The new value of the control. The units and format of the value
+                                                        ///< depend on the control type.
+        zes_pending_action_t* pPendingAction            ///< [out] Pending overclock setting.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_overclock_object_t*>( hDomainHandle )->dditable;
+        auto pfnSetControlUserValue = dditable->zes.Overclock.pfnSetControlUserValue;
+        if( nullptr == pfnSetControlUserValue )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hDomainHandle = reinterpret_cast<zes_overclock_object_t*>( hDomainHandle )->handle;
+
+        // forward to device-driver
+        result = pfnSetControlUserValue( hDomainHandle, DomainControl, pValue, pPendingAction );
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesOverclockGetControlState
+    __zedlllocal ze_result_t ZE_APICALL
+    zesOverclockGetControlState(
+        zes_overclock_handle_t hDomainHandle,           ///< [in] Handle for the component domain.
+        zes_overclock_control_t DomainControl,          ///< [in] Domain Control.
+        zes_control_state_t* pControlState,             ///< [out] Current overclock control state.
+        zes_pending_action_t* pPendingAction            ///< [out] Pending overclock setting.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_overclock_object_t*>( hDomainHandle )->dditable;
+        auto pfnGetControlState = dditable->zes.Overclock.pfnGetControlState;
+        if( nullptr == pfnGetControlState )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hDomainHandle = reinterpret_cast<zes_overclock_object_t*>( hDomainHandle )->handle;
+
+        // forward to device-driver
+        result = pfnGetControlState( hDomainHandle, DomainControl, pControlState, pPendingAction );
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesOverclockGetVFPointValues
+    __zedlllocal ze_result_t ZE_APICALL
+    zesOverclockGetVFPointValues(
+        zes_overclock_handle_t hDomainHandle,           ///< [in] Handle for the component domain.
+        zes_vf_type_t VFType,                           ///< [in] Voltage or Freqency point to read.
+        zes_vf_array_type_t VFArrayType,                ///< [in] User,Default or Live VF array to read from
+        uint32_t PointIndex,                            ///< [in] Point index - number between (0, max_num_points - 1).
+        uint32_t* PointValue                            ///< [out] Returns the frequency in 1kHz units or voltage in millivolt
+                                                        ///< units from the custom V-F curve at the specified zero-based index 
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_overclock_object_t*>( hDomainHandle )->dditable;
+        auto pfnGetVFPointValues = dditable->zes.Overclock.pfnGetVFPointValues;
+        if( nullptr == pfnGetVFPointValues )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hDomainHandle = reinterpret_cast<zes_overclock_object_t*>( hDomainHandle )->handle;
+
+        // forward to device-driver
+        result = pfnGetVFPointValues( hDomainHandle, VFType, VFArrayType, PointIndex, PointValue );
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesOverclockSetVFPointValues
+    __zedlllocal ze_result_t ZE_APICALL
+    zesOverclockSetVFPointValues(
+        zes_overclock_handle_t hDomainHandle,           ///< [in] Handle for the component domain.
+        zes_vf_type_t VFType,                           ///< [in] Voltage or Freqency point to read.
+        uint32_t PointIndex,                            ///< [in] Point index - number between (0, max_num_points - 1).
+        uint32_t PointValue                             ///< [in] Writes frequency in 1kHz units or voltage in millivolt units to
+                                                        ///< custom V-F curve at the specified zero-based index 
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_overclock_object_t*>( hDomainHandle )->dditable;
+        auto pfnSetVFPointValues = dditable->zes.Overclock.pfnSetVFPointValues;
+        if( nullptr == pfnSetVFPointValues )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hDomainHandle = reinterpret_cast<zes_overclock_object_t*>( hDomainHandle )->handle;
+
+        // forward to device-driver
+        result = pfnSetVFPointValues( hDomainHandle, VFType, PointIndex, PointValue );
 
         return result;
     }
@@ -904,6 +1468,31 @@ namespace loader
 
         // forward to device-driver
         result = pfnGetThroughput( hPort, pThroughput );
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesFabricPortGetFabricErrorCounters
+    __zedlllocal ze_result_t ZE_APICALL
+    zesFabricPortGetFabricErrorCounters(
+        zes_fabric_port_handle_t hPort,                 ///< [in] Handle for the component.
+        zes_fabric_port_error_counters_t* pErrors       ///< [in,out] Will contain the Fabric port Error counters.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_fabric_port_object_t*>( hPort )->dditable;
+        auto pfnGetFabricErrorCounters = dditable->zes.FabricPort.pfnGetFabricErrorCounters;
+        if( nullptr == pfnGetFabricErrorCounters )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hPort = reinterpret_cast<zes_fabric_port_object_t*>( hPort )->handle;
+
+        // forward to device-driver
+        result = pfnGetFabricErrorCounters( hPort, pErrors );
 
         return result;
     }
@@ -1970,8 +2559,8 @@ namespace loader
     __zedlllocal ze_result_t ZE_APICALL
     zesMemoryGetBandwidth(
         zes_mem_handle_t hMemory,                       ///< [in] Handle for the component.
-        zes_mem_bandwidth_t* pBandwidth                 ///< [in,out] Will contain the current health, free memory, total memory
-                                                        ///< size.
+        zes_mem_bandwidth_t* pBandwidth                 ///< [in,out] Will contain the total number of bytes read from and written
+                                                        ///< to memory, as well as the current maximum bandwidth.
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
@@ -3223,6 +3812,81 @@ extern "C" {
 #endif
 
 ///////////////////////////////////////////////////////////////////////////////
+/// @brief Exported function for filling application's Global table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+ZE_DLLEXPORT ze_result_t ZE_APICALL
+zesGetGlobalProcAddrTable(
+    ze_api_version_t version,                       ///< [in] API version requested
+    zes_global_dditable_t* pDdiTable                ///< [in,out] pointer to table of DDI function pointers
+    )
+{
+    if( loader::context->drivers.size() < 1 )
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+
+    if( nullptr == pDdiTable )
+        return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+    if( loader::context->version < version )
+        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+
+    ze_result_t result = ZE_RESULT_SUCCESS;
+
+    bool atLeastOneDriverValid = false;
+    // Load the device-driver DDI tables
+    for( auto& drv : loader::context->drivers )
+    {
+        if(drv.initStatus != ZE_RESULT_SUCCESS)
+            continue;
+        auto getTable = reinterpret_cast<zes_pfnGetGlobalProcAddrTable_t>(
+            GET_FUNCTION_PTR( drv.handle, "zesGetGlobalProcAddrTable") );
+        if(!getTable) 
+            continue; 
+        auto getTableResult = getTable( version, &drv.dditable.zes.Global);
+        if(getTableResult == ZE_RESULT_SUCCESS) 
+            atLeastOneDriverValid = true;
+        else
+            drv.initStatus = getTableResult;
+    }
+
+    if(!atLeastOneDriverValid)
+        result = ZE_RESULT_ERROR_UNINITIALIZED;
+    else
+        result = ZE_RESULT_SUCCESS;
+
+    if( ZE_RESULT_SUCCESS == result )
+    {
+        if( ( loader::context->drivers.size() > 1 ) || loader::context->forceIntercept )
+        {
+            // return pointers to loader's DDIs
+            pDdiTable->pfnInit                                     = loader::zesInit;
+        }
+        else
+        {
+            // return pointers directly to driver's DDIs
+            *pDdiTable = loader::context->drivers.front().dditable.zes.Global;
+        }
+    }
+
+    // If the validation layer is enabled, then intercept the loader's DDIs
+    if(( ZE_RESULT_SUCCESS == result ) && ( nullptr != loader::context->validationLayer ))
+    {
+        auto getTable = reinterpret_cast<zes_pfnGetGlobalProcAddrTable_t>(
+            GET_FUNCTION_PTR(loader::context->validationLayer, "zesGetGlobalProcAddrTable") );
+        if(!getTable)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        result = getTable( version, pDdiTable );
+    }
+
+    return result;
+}
+
+///////////////////////////////////////////////////////////////////////////////
 /// @brief Exported function for filling application's Device table
 ///        with current process' addresses
 ///
@@ -3304,6 +3968,13 @@ zesGetDeviceProcAddrTable(
             pDdiTable->pfnEccConfigurable                          = loader::zesDeviceEccConfigurable;
             pDdiTable->pfnGetEccState                              = loader::zesDeviceGetEccState;
             pDdiTable->pfnSetEccState                              = loader::zesDeviceSetEccState;
+            pDdiTable->pfnGet                                      = loader::zesDeviceGet;
+            pDdiTable->pfnSetOverclockWaiver                       = loader::zesDeviceSetOverclockWaiver;
+            pDdiTable->pfnGetOverclockDomains                      = loader::zesDeviceGetOverclockDomains;
+            pDdiTable->pfnGetOverclockControls                     = loader::zesDeviceGetOverclockControls;
+            pDdiTable->pfnResetOverclockSettings                   = loader::zesDeviceResetOverclockSettings;
+            pDdiTable->pfnReadOverclockState                       = loader::zesDeviceReadOverclockState;
+            pDdiTable->pfnEnumOverclockDomains                     = loader::zesDeviceEnumOverclockDomains;
         }
         else
         {
@@ -3380,6 +4051,7 @@ zesGetDriverProcAddrTable(
             // return pointers to loader's DDIs
             pDdiTable->pfnEventListen                              = loader::zesDriverEventListen;
             pDdiTable->pfnEventListenEx                            = loader::zesDriverEventListenEx;
+            pDdiTable->pfnGet                                      = loader::zesDriverGet;
         }
         else
         {
@@ -3613,6 +4285,7 @@ zesGetFabricPortProcAddrTable(
             pDdiTable->pfnSetConfig                                = loader::zesFabricPortSetConfig;
             pDdiTable->pfnGetState                                 = loader::zesFabricPortGetState;
             pDdiTable->pfnGetThroughput                            = loader::zesFabricPortGetThroughput;
+            pDdiTable->pfnGetFabricErrorCounters                   = loader::zesFabricPortGetFabricErrorCounters;
         }
         else
         {
@@ -4028,6 +4701,89 @@ zesGetMemoryProcAddrTable(
     {
         auto getTable = reinterpret_cast<zes_pfnGetMemoryProcAddrTable_t>(
             GET_FUNCTION_PTR(loader::context->validationLayer, "zesGetMemoryProcAddrTable") );
+        if(!getTable)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        result = getTable( version, pDdiTable );
+    }
+
+    return result;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Exported function for filling application's Overclock table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+ZE_DLLEXPORT ze_result_t ZE_APICALL
+zesGetOverclockProcAddrTable(
+    ze_api_version_t version,                       ///< [in] API version requested
+    zes_overclock_dditable_t* pDdiTable             ///< [in,out] pointer to table of DDI function pointers
+    )
+{
+    if( loader::context->drivers.size() < 1 )
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+
+    if( nullptr == pDdiTable )
+        return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+    if( loader::context->version < version )
+        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+
+    ze_result_t result = ZE_RESULT_SUCCESS;
+
+    bool atLeastOneDriverValid = false;
+    // Load the device-driver DDI tables
+    for( auto& drv : loader::context->drivers )
+    {
+        if(drv.initStatus != ZE_RESULT_SUCCESS)
+            continue;
+        auto getTable = reinterpret_cast<zes_pfnGetOverclockProcAddrTable_t>(
+            GET_FUNCTION_PTR( drv.handle, "zesGetOverclockProcAddrTable") );
+        if(!getTable) 
+            continue; 
+        auto getTableResult = getTable( version, &drv.dditable.zes.Overclock);
+        if(getTableResult == ZE_RESULT_SUCCESS) 
+            atLeastOneDriverValid = true;
+        else
+            drv.initStatus = getTableResult;
+    }
+
+    if(!atLeastOneDriverValid)
+        result = ZE_RESULT_ERROR_UNINITIALIZED;
+    else
+        result = ZE_RESULT_SUCCESS;
+
+    if( ZE_RESULT_SUCCESS == result )
+    {
+        if( ( loader::context->drivers.size() > 1 ) || loader::context->forceIntercept )
+        {
+            // return pointers to loader's DDIs
+            pDdiTable->pfnGetDomainProperties                      = loader::zesOverclockGetDomainProperties;
+            pDdiTable->pfnGetDomainVFProperties                    = loader::zesOverclockGetDomainVFProperties;
+            pDdiTable->pfnGetDomainControlProperties               = loader::zesOverclockGetDomainControlProperties;
+            pDdiTable->pfnGetControlCurrentValue                   = loader::zesOverclockGetControlCurrentValue;
+            pDdiTable->pfnGetControlPendingValue                   = loader::zesOverclockGetControlPendingValue;
+            pDdiTable->pfnSetControlUserValue                      = loader::zesOverclockSetControlUserValue;
+            pDdiTable->pfnGetControlState                          = loader::zesOverclockGetControlState;
+            pDdiTable->pfnGetVFPointValues                         = loader::zesOverclockGetVFPointValues;
+            pDdiTable->pfnSetVFPointValues                         = loader::zesOverclockSetVFPointValues;
+        }
+        else
+        {
+            // return pointers directly to driver's DDIs
+            *pDdiTable = loader::context->drivers.front().dditable.zes.Overclock;
+        }
+    }
+
+    // If the validation layer is enabled, then intercept the loader's DDIs
+    if(( ZE_RESULT_SUCCESS == result ) && ( nullptr != loader::context->validationLayer ))
+    {
+        auto getTable = reinterpret_cast<zes_pfnGetOverclockProcAddrTable_t>(
+            GET_FUNCTION_PTR(loader::context->validationLayer, "zesGetOverclockProcAddrTable") );
         if(!getTable)
             return ZE_RESULT_ERROR_UNINITIALIZED;
         result = getTable( version, pDdiTable );

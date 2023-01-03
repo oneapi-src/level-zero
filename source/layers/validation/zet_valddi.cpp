@@ -331,6 +331,42 @@ namespace validation_layer
     }
 
     ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zetDebugGetThreadRegisterSetProperties
+    __zedlllocal ze_result_t ZE_APICALL
+    zetDebugGetThreadRegisterSetProperties(
+        zet_debug_session_handle_t hDebug,              ///< [in] debug session handle
+        ze_device_thread_t thread,                      ///< [in] the thread identifier specifying a single stopped thread
+        uint32_t* pCount,                               ///< [in,out] pointer to the number of register set properties.
+                                                        ///< if count is zero, then the driver shall update the value with the
+                                                        ///< total number of register set properties available.
+                                                        ///< if count is greater than the number of register set properties
+                                                        ///< available, then the driver shall update the value with the correct
+                                                        ///< number of registry set properties available.
+        zet_debug_regset_properties_t* pRegisterSetProperties   ///< [in,out][optional][range(0, *pCount)] array of query results for
+                                                        ///< register set properties.
+                                                        ///< if count is less than the number of register set properties available,
+                                                        ///< then driver shall only retrieve that number of register set properties.
+        )
+    {
+        auto pfnGetThreadRegisterSetProperties = context.zetDdiTable.Debug.pfnGetThreadRegisterSetProperties;
+
+        if( nullptr == pfnGetThreadRegisterSetProperties )
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        if( context.enableParameterValidation )
+        {
+            if( nullptr == hDebug )
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+            if( nullptr == pCount )
+                return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+        }
+
+        return pfnGetThreadRegisterSetProperties( hDebug, thread, pCount, pRegisterSetProperties );
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
     /// @brief Intercept function for zetDebugReadRegisters
     __zedlllocal ze_result_t ZE_APICALL
     zetDebugReadRegisters(
@@ -893,9 +929,6 @@ namespace validation_layer
             if( nullptr == hMetricQuery )
                 return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
 
-            if( nullptr == phWaitEvents )
-                return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
-
             if( (nullptr == phWaitEvents) && (0 < numWaitEvents) )
                 return ZE_RESULT_ERROR_INVALID_SIZE;
 
@@ -1399,6 +1432,9 @@ zetGetDebugProcAddrTable(
 
     dditable.pfnWriteRegisters                           = pDdiTable->pfnWriteRegisters;
     pDdiTable->pfnWriteRegisters                         = validation_layer::zetDebugWriteRegisters;
+
+    dditable.pfnGetThreadRegisterSetProperties           = pDdiTable->pfnGetThreadRegisterSetProperties;
+    pDdiTable->pfnGetThreadRegisterSetProperties         = validation_layer::zetDebugGetThreadRegisterSetProperties;
 
     return result;
 }

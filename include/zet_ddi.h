@@ -5,7 +5,7 @@
  * SPDX-License-Identifier: MIT
  *
  * @file zet_ddi.h
- * @version v1.4-r1.4.8
+ * @version v1.5-r1.5.4
  *
  */
 #ifndef _ZET_DDI_H
@@ -699,6 +699,15 @@ typedef ze_result_t (ZE_APICALL *zet_pfnDebugWriteRegisters_t)(
     );
 
 ///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zetDebugGetThreadRegisterSetProperties 
+typedef ze_result_t (ZE_APICALL *zet_pfnDebugGetThreadRegisterSetProperties_t)(
+    zet_debug_session_handle_t,
+    ze_device_thread_t,
+    uint32_t*,
+    zet_debug_regset_properties_t*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
 /// @brief Table of Debug functions pointers
 typedef struct _zet_debug_dditable_t
 {
@@ -713,6 +722,7 @@ typedef struct _zet_debug_dditable_t
     zet_pfnDebugGetRegisterSetProperties_t                      pfnGetRegisterSetProperties;
     zet_pfnDebugReadRegisters_t                                 pfnReadRegisters;
     zet_pfnDebugWriteRegisters_t                                pfnWriteRegisters;
+    zet_pfnDebugGetThreadRegisterSetProperties_t                pfnGetThreadRegisterSetProperties;
 } zet_debug_dditable_t;
 
 ///////////////////////////////////////////////////////////////////////////////

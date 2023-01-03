@@ -690,9 +690,12 @@ namespace validation_layer
                                                         ///< phDevices`
         ze_device_handle_t* phDevices,                  ///< [in][optional][range(0, numDevices)] array of device handles which
                                                         ///< context has visibility.
-                                                        ///< if nullptr, then all devices supported by the driver instance are
+                                                        ///< if nullptr, then all devices and any sub-devices supported by the
+                                                        ///< driver instance are
                                                         ///< visible to the context.
-                                                        ///< otherwise, context only has visibility to devices in this array.
+                                                        ///< otherwise, the context only has visibility to the devices and any
+                                                        ///< sub-devices of the
+                                                        ///< devices in this array.
         ze_context_handle_t* phContext                  ///< [out] pointer to handle of context object created
         )
     {
@@ -2241,7 +2244,7 @@ namespace validation_layer
         ze_context_handle_t hContext,                   ///< [in] handle of the context object
         const ze_device_mem_alloc_desc_t* device_desc,  ///< [in] pointer to device memory allocation descriptor
         const ze_host_mem_alloc_desc_t* host_desc,      ///< [in] pointer to host memory allocation descriptor
-        size_t size,                                    ///< [in] size in bytes to allocate; must be less-than
+        size_t size,                                    ///< [in] size in bytes to allocate; must be less than or equal to
                                                         ///< ::ze_device_properties_t.maxMemAllocSize.
         size_t alignment,                               ///< [in] minimum alignment in bytes for the allocation; must be a power of
                                                         ///< two.
@@ -2291,7 +2294,7 @@ namespace validation_layer
     zeMemAllocDevice(
         ze_context_handle_t hContext,                   ///< [in] handle of the context object
         const ze_device_mem_alloc_desc_t* device_desc,  ///< [in] pointer to device memory allocation descriptor
-        size_t size,                                    ///< [in] size in bytes to allocate; must be less-than
+        size_t size,                                    ///< [in] size in bytes to allocate; must be less than or equal to
                                                         ///< ::ze_device_properties_t.maxMemAllocSize.
         size_t alignment,                               ///< [in] minimum alignment in bytes for the allocation; must be a power of
                                                         ///< two.
@@ -2338,7 +2341,7 @@ namespace validation_layer
     zeMemAllocHost(
         ze_context_handle_t hContext,                   ///< [in] handle of the context object
         const ze_host_mem_alloc_desc_t* host_desc,      ///< [in] pointer to host memory allocation descriptor
-        size_t size,                                    ///< [in] size in bytes to allocate; must be less-than
+        size_t size,                                    ///< [in] size in bytes to allocate; must be less than or equal to
                                                         ///< ::ze_device_properties_t.maxMemAllocSize.
         size_t alignment,                               ///< [in] minimum alignment in bytes for the allocation; must be a power of
                                                         ///< two.
@@ -3296,7 +3299,7 @@ namespace validation_layer
         uint32_t numKernels,                            ///< [in] maximum number of kernels to launch
         ze_kernel_handle_t* phKernels,                  ///< [in][range(0, numKernels)] handles of the kernel objects
         const uint32_t* pCountBuffer,                   ///< [in] pointer to device memory location that will contain the actual
-                                                        ///< number of kernels to launch; value must be less-than or equal-to
+                                                        ///< number of kernels to launch; value must be less than or equal to
                                                         ///< numKernels
         const ze_group_count_t* pLaunchArgumentsBuffer, ///< [in][range(0, numKernels)] pointer to device buffer that will contain
                                                         ///< a contiguous array of thread group launch arguments
@@ -3523,7 +3526,7 @@ namespace validation_layer
     __zedlllocal ze_result_t ZE_APICALL
     zeVirtualMemReserve(
         ze_context_handle_t hContext,                   ///< [in] handle of the context object
-        const void* pStart,                             ///< [in] pointer to start of region to reserve. If nullptr then
+        const void* pStart,                             ///< [in][optional] pointer to start of region to reserve. If nullptr then
                                                         ///< implementation will choose a start address.
         size_t size,                                    ///< [in] size in bytes to reserve; must be page aligned.
         void** pptr                                     ///< [out] pointer to virtual reservation.
@@ -3538,9 +3541,6 @@ namespace validation_layer
         {
             if( nullptr == hContext )
                 return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
-
-            if( nullptr == pStart )
-                return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
             if( nullptr == pptr )
                 return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
@@ -3974,6 +3974,50 @@ namespace validation_layer
         }
 
         return pfnGetMemoryPropertiesExp( hImage, pMemoryProperties );
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeImageViewCreateExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeImageViewCreateExt(
+        ze_context_handle_t hContext,                   ///< [in] handle of the context object
+        ze_device_handle_t hDevice,                     ///< [in] handle of the device
+        const ze_image_desc_t* desc,                    ///< [in] pointer to image descriptor
+        ze_image_handle_t hImage,                       ///< [in] handle of image object to create view from
+        ze_image_handle_t* phImageView                  ///< [out] pointer to handle of image object created for view
+        )
+    {
+        auto pfnViewCreateExt = context.zeDdiTable.Image.pfnViewCreateExt;
+
+        if( nullptr == pfnViewCreateExt )
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        if( context.enableParameterValidation )
+        {
+            if( nullptr == hContext )
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+            if( nullptr == hDevice )
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+            if( nullptr == hImage )
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+            if( nullptr == desc )
+                return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+            if( nullptr == phImageView )
+                return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+            if( 0x3 < desc->flags )
+                return ZE_RESULT_ERROR_INVALID_ENUMERATION;
+
+            if( ZE_IMAGE_TYPE_BUFFER < desc->type )
+                return ZE_RESULT_ERROR_INVALID_ENUMERATION;
+
+        }
+
+        return pfnViewCreateExt( hContext, hDevice, desc, hImage, phImageView );
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -5105,6 +5149,9 @@ zeGetImageProcAddrTable(
 
     dditable.pfnGetAllocPropertiesExt                    = pDdiTable->pfnGetAllocPropertiesExt;
     pDdiTable->pfnGetAllocPropertiesExt                  = validation_layer::zeImageGetAllocPropertiesExt;
+
+    dditable.pfnViewCreateExt                            = pDdiTable->pfnViewCreateExt;
+    pDdiTable->pfnViewCreateExt                          = validation_layer::zeImageViewCreateExt;
 
     return result;
 }
