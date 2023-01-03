@@ -16,7 +16,7 @@ from templates import helper as th
  * @file ${name}.cpp
  *
  */
-#include "${x}_loader.h"
+#include "${x}_loader_internal.h"
 
 namespace loader
 {
