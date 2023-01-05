@@ -277,7 +277,15 @@ ${tbl['export']['name']}(
         auto getTable = reinterpret_cast<${tbl['pfn']}>(
             GET_FUNCTION_PTR( drv.handle, "${tbl['export']['name']}") );
         if(!getTable) 
+        %if th.isNewProcTable(tbl['export']['name']) is True:
+        {
+            atLeastOneDriverValid = true;
+            //It is valid to not have this proc addr table
             continue; 
+        }
+        %else:
+            continue; 
+        %endif
         auto getTableResult = getTable( version, &drv.dditable.${n}.${tbl['name']});
         if(getTableResult == ZE_RESULT_SUCCESS) 
             atLeastOneDriverValid = true;

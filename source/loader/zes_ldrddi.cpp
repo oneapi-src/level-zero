@@ -3846,7 +3846,11 @@ zesGetGlobalProcAddrTable(
         auto getTable = reinterpret_cast<zes_pfnGetGlobalProcAddrTable_t>(
             GET_FUNCTION_PTR( drv.handle, "zesGetGlobalProcAddrTable") );
         if(!getTable) 
+        {
+            atLeastOneDriverValid = true;
+            //It is valid to not have this proc addr table
             continue; 
+        }
         auto getTableResult = getTable( version, &drv.dditable.zes.Global);
         if(getTableResult == ZE_RESULT_SUCCESS) 
             atLeastOneDriverValid = true;
@@ -4744,7 +4748,11 @@ zesGetOverclockProcAddrTable(
         auto getTable = reinterpret_cast<zes_pfnGetOverclockProcAddrTable_t>(
             GET_FUNCTION_PTR( drv.handle, "zesGetOverclockProcAddrTable") );
         if(!getTable) 
+        {
+            atLeastOneDriverValid = true;
+            //It is valid to not have this proc addr table
             continue; 
+        }
         auto getTableResult = getTable( version, &drv.dditable.zes.Overclock);
         if(getTableResult == ZE_RESULT_SUCCESS) 
             atLeastOneDriverValid = true;

@@ -1763,3 +1763,11 @@ def get_loader_epilogue(namespace, tags, obj, meta):
                     })
 
     return epilogue
+
+"""
+Public:
+    returns true if proc table is added after 1.0
+"""
+def isNewProcTable(tableName):
+
+    return tableName in ["zesGetGlobalProcAddrTable","zesGetOverclockProcAddrTable"]
