@@ -17,6 +17,14 @@ namespace driver
     //////////////////////////////////////////////////////////////////////////
     context_t::context_t()
     {
+        zesDdiTable.Driver.pfnGet = [](
+            uint32_t* pCount,
+            ze_driver_handle_t* phDrivers )
+        {
+            *pCount = 1;
+            if( nullptr != phDrivers ) *reinterpret_cast<void**>( phDrivers ) = context.get();
+            return ZE_RESULT_SUCCESS;
+        };
         //////////////////////////////////////////////////////////////////////////
         zeDdiTable.Driver.pfnGet = [](
             uint32_t* pCount,
