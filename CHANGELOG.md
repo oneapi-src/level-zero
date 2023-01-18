@@ -1,5 +1,10 @@
 # Level zero loader changelog
 
+## v1.9.3
+* Add support for Level Zero spec v1.5
+* Fix some compilation issues with windows non-vc compiler
+* Fix building when included in another cmake project. 
+
 ## v1.8.12
 * Add Image View Handle to image map for SetArgument for translating image handles for multi drivers
 * Support for translating images/samplers for multi drivers
