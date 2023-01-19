@@ -1,6 +1,6 @@
 # Level zero loader changelog
 
-## v1.9.3
+## v1.9.4
 * Add support for Level Zero spec v1.5
 * Fix some compilation issues with windows non-vc compiler
 * Fix building when included in another cmake project. 
