@@ -18,7 +18,6 @@ namespace validation_layer
     {
         enableParameterValidation = getenv_tobool( "ZE_ENABLE_PARAMETER_VALIDATION" );
         enableHandleLifetime = getenv_tobool( "ZE_ENABLE_HANDLE_LIFETIME" );
-        enableMemoryTracker = getenv_tobool( "ZE_ENABLE_MEMORY_TRACKER" );
         enableThreadingValidation = getenv_tobool( "ZE_ENABLE_THREADING_VALIDATION" );
     }
 
