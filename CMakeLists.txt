@@ -1,5 +1,5 @@
-# Copyright (C) 2020-2021 Intel Corporation
-# SPDX-License-Identifier: MIT
+# Copyright (C) 2023 Intel Corporation
+# SPDX-License-Identifier: Apache 2.0
 
 cmake_minimum_required(VERSION 3.2.0 FATAL_ERROR)
 set(CMAKE_CXX_STANDARD 14)

@@ -1,7 +1,8 @@
 /*
- * Copyright (C) 2020 Intel Corporation
  *
- * SPDX-License-Identifier: MIT
+ * Copyright (C) 2023 Intel Corporation
+ *
+ * SPDX-License-Identifier: Apache 2.0
  *
  * @file zel_tracing_libapi.cpp
  *

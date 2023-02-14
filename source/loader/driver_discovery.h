@@ -1,8 +1,8 @@
 /*
  *
- * Copyright (C) 2020 Intel Corporation
+ * Copyright (C) 2023 Intel Corporation
  *
- * SPDX-License-Identifier: MIT
+ * SPDX-License-Identifier: Apache 2.0
  *
  */
 

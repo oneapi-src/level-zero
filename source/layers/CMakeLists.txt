@@ -1,4 +1,4 @@
-# Copyright (C) 2020 Intel Corporation
-# SPDX-License-Identifier: MIT
+# Copyright (C) 2023 Intel Corporation
+# SPDX-License-Identifier: Apache 2.0
 add_subdirectory(validation)
 add_subdirectory(tracing)

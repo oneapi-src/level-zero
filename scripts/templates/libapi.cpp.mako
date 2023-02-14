@@ -17,9 +17,9 @@ def define_dbg(obj, tags):
     X=x.upper()
 %>/*
  *
- * Copyright (C) 2019-2022 Intel Corporation
+ * Copyright (C) 2023 Intel Corporation
  *
- * SPDX-License-Identifier: MIT
+ * SPDX-License-Identifier: Apache 2.0
  *
  * @file ${name}.cpp
  *

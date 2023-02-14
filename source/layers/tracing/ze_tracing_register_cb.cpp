@@ -1,8 +1,8 @@
 /*
  *
- * Copyright (C) 2021-2022 Intel Corporation
+ * Copyright (C) 2023 Intel Corporation
  *
- * SPDX-License-Identifier: MIT
+ * SPDX-License-Identifier: Apache 2.0
  *
  * @file ze_tracing_register_cb.h
  *

@@ -1,5 +1,7 @@
-# Copyright (C) 2020 Intel Corporation
-# SPDX-License-Identifier: MIT
+#
+# Copyright (C) 2023 Intel Corporation
+# SPDX-License-Identifier: Apache 2.0
+#
 
 ARG IMAGE_VERSION=eoan-20200114
 FROM ubuntu:$IMAGE_VERSION

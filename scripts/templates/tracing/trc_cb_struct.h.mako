@@ -9,9 +9,9 @@ from templates import helper as th
     X=x.upper()
 %>/*
  *
- * Copyright (C) 2021-2022 Intel Corporation
+ * Copyright (C) 2023 Intel Corporation
  *
- * SPDX-License-Identifier: MIT
+ * SPDX-License-Identifier: Apache 2.0
  *
  * @file ${name}.h
  *

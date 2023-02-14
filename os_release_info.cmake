@@ -1,6 +1,5 @@
-# Copyright (C) 2020 Intel Corporation
-# SPDX-License-Identifier: MIT
-#
+# Copyright (C) 2023 Intel Corporation
+# SPDX-License-Identifier: Apache 2.0
 
 if(NOT DEFINED _os_release_info)
 set(_os_release_info TRUE)

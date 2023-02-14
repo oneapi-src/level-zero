@@ -1,5 +1,5 @@
-# Copyright (C) 2020 Intel Corporation
-# SPDX-License-Identifier: MIT
+# Copyright (C) 2023 Intel Corporation
+# SPDX-License-Identifier: Apache 2.0
 
 add_definitions(-DL0_LOADER_VERSION="${PROJECT_VERSION_MAJOR}")
 add_definitions(-DL0_VALIDATION_LAYER_SUPPORTED_VERSION="${PROJECT_VERSION_MAJOR}")
