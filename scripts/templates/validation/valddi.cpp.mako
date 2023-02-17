@@ -8,12 +8,14 @@ from templates import helper as th
     x=tags['$x']
     X=x.upper()
 %>/*
+ * ***THIS FILE IS GENERATED. ***
+ * See valddi.cpp.mako for modifications
  *
- * Copyright (C) 2019-2022 Intel Corporation
+ * Copyright (C) 2019-2023 Intel Corporation
  *
  * SPDX-License-Identifier: MIT
  *
- * @file ${name}.cpp
+ * @file ${name}
  *
  */
 #include "${x}_validation_layer.h"
@@ -40,13 +42,20 @@ namespace validation_layer
 
         if( context.enableParameterValidation )
         {
-            %for key, values in th.make_param_checks(n, tags, obj, meta=meta).items():
-            %for val in values:
-            if( ${val} )
-                return ${key};
+            auto result = context.paramValidation->${n}ParamValidation.${th.make_func_name(n, tags, obj)}( \
+% for line in th.make_param_lines(n, tags, obj, format=['name','delim']):
+${line} \
+%endfor
+);
+            if(result!=${X}_RESULT_SUCCESS) return result;
+        }
 
-            %endfor
-            %endfor
+        if( context.enableHandleLifetime ){ 
+            //Unimplemented
+        }
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
         }
 
         return ${th.make_pfn_name(n, tags, obj)}( ${", ".join(th.make_param_lines(n, tags, obj, format=["name"]))} );

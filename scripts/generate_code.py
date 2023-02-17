@@ -10,6 +10,7 @@ import util
 
 templates_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)), "templates")
 tracing_templates_dir = os.path.join(templates_dir, "tracing")
+validation_templates_dir = os.path.join(templates_dir, "validation")
 
 """
     generates c/c++ files from the specification documents
@@ -137,26 +138,40 @@ def _mako_loader_cpp(path, namespace, tags, version, specs, meta):
 """
     generates c/c++ files from the specification documents
 """
+
+# 'input_file_name' : (output_dir, output_filename)
+validation_files = {
+    'valddi.cpp.mako': ('','valddi.cpp'),
+    'entry_points.h.mako' : ('common', 'entry_points.h'),
+    'param.cpp.mako' : ('parameter_validation', 'parameter_validation.cpp'),
+    'param.h.mako' : ('parameter_validation', 'parameter_validation.h')
+}
+
 def _mako_validation_layer_cpp(path, namespace, tags, version, specs, meta):
-    dstpath = os.path.join(path, "validation")
-    os.makedirs(dstpath, exist_ok=True)
+    loc = 0
+    
+    for input_file in validation_files:
+        dstpath = os.path.join(path, "validation")
+        os.makedirs(dstpath, exist_ok=True)
 
-    template = "valddi.cpp.mako"
-    fin = os.path.join(templates_dir, template)
+        template = input_file
+        fin = os.path.join(validation_templates_dir, template)
 
-    name = "%s_valddi"%(namespace)
-    filename = "%s.cpp"%(name)
-    fout = os.path.join(dstpath, filename)
+        filename = "%s_%s"%(namespace, validation_files[input_file][1])
+        dstpath = os.path.join(dstpath, validation_files[input_file][0])
+        fout = os.path.join(dstpath, filename)
 
-    print("Generating %s..."%fout)
-    return util.makoWrite(
-        fin, fout,
-        name=name,
-        ver=version,
-        namespace=namespace,
-        tags=tags,
-        specs=specs,
-        meta=meta)
+        print("Generating %s..."%fout)
+        loc += util.makoWrite(
+            fin, fout,
+            name=filename,
+            ver=version,
+            namespace=namespace,
+            tags=tags,
+            specs=specs,
+            meta=meta)
+
+    return loc
 
 
 """

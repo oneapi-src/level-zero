@@ -1,6 +1,8 @@
 /*
+ * ***THIS FILE IS GENERATED. ***
+ * See valddi.cpp.mako for modifications
  *
- * Copyright (C) 2019-2022 Intel Corporation
+ * Copyright (C) 2019-2023 Intel Corporation
  *
  * SPDX-License-Identifier: MIT
  *
@@ -28,15 +30,16 @@ namespace validation_layer
 
         if( context.enableParameterValidation )
         {
-            if( nullptr == hModule )
-                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+            auto result = context.paramValidation->zetParamValidation.zetModuleGetDebugInfo( hModule, format, pSize, pDebugInfo );
+            if(result!=ZE_RESULT_SUCCESS) return result;
+        }
 
-            if( ZET_MODULE_DEBUG_INFO_FORMAT_ELF_DWARF < format )
-                return ZE_RESULT_ERROR_INVALID_ENUMERATION;
+        if( context.enableHandleLifetime ){ 
+            //Unimplemented
+        }
 
-            if( nullptr == pSize )
-                return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
-
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
         }
 
         return pfnGetDebugInfo( hModule, format, pSize, pDebugInfo );
@@ -57,12 +60,16 @@ namespace validation_layer
 
         if( context.enableParameterValidation )
         {
-            if( nullptr == hDevice )
-                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+            auto result = context.paramValidation->zetParamValidation.zetDeviceGetDebugProperties( hDevice, pDebugProperties );
+            if(result!=ZE_RESULT_SUCCESS) return result;
+        }
 
-            if( nullptr == pDebugProperties )
-                return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+        if( context.enableHandleLifetime ){ 
+            //Unimplemented
+        }
 
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
         }
 
         return pfnGetDebugProperties( hDevice, pDebugProperties );
@@ -84,15 +91,16 @@ namespace validation_layer
 
         if( context.enableParameterValidation )
         {
-            if( nullptr == hDevice )
-                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+            auto result = context.paramValidation->zetParamValidation.zetDebugAttach( hDevice, config, phDebug );
+            if(result!=ZE_RESULT_SUCCESS) return result;
+        }
 
-            if( nullptr == config )
-                return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+        if( context.enableHandleLifetime ){ 
+            //Unimplemented
+        }
 
-            if( nullptr == phDebug )
-                return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
-
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
         }
 
         return pfnAttach( hDevice, config, phDebug );
@@ -112,9 +120,16 @@ namespace validation_layer
 
         if( context.enableParameterValidation )
         {
-            if( nullptr == hDebug )
-                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+            auto result = context.paramValidation->zetParamValidation.zetDebugDetach( hDebug );
+            if(result!=ZE_RESULT_SUCCESS) return result;
+        }
 
+        if( context.enableHandleLifetime ){ 
+            //Unimplemented
+        }
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
         }
 
         return pfnDetach( hDebug );
@@ -142,12 +157,16 @@ namespace validation_layer
 
         if( context.enableParameterValidation )
         {
-            if( nullptr == hDebug )
-                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+            auto result = context.paramValidation->zetParamValidation.zetDebugReadEvent( hDebug, timeout, event );
+            if(result!=ZE_RESULT_SUCCESS) return result;
+        }
 
-            if( nullptr == event )
-                return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+        if( context.enableHandleLifetime ){ 
+            //Unimplemented
+        }
 
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
         }
 
         return pfnReadEvent( hDebug, timeout, event );
@@ -168,12 +187,16 @@ namespace validation_layer
 
         if( context.enableParameterValidation )
         {
-            if( nullptr == hDebug )
-                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+            auto result = context.paramValidation->zetParamValidation.zetDebugAcknowledgeEvent( hDebug, event );
+            if(result!=ZE_RESULT_SUCCESS) return result;
+        }
 
-            if( nullptr == event )
-                return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+        if( context.enableHandleLifetime ){ 
+            //Unimplemented
+        }
 
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
         }
 
         return pfnAcknowledgeEvent( hDebug, event );
@@ -194,9 +217,16 @@ namespace validation_layer
 
         if( context.enableParameterValidation )
         {
-            if( nullptr == hDebug )
-                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+            auto result = context.paramValidation->zetParamValidation.zetDebugInterrupt( hDebug, thread );
+            if(result!=ZE_RESULT_SUCCESS) return result;
+        }
 
+        if( context.enableHandleLifetime ){ 
+            //Unimplemented
+        }
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
         }
 
         return pfnInterrupt( hDebug, thread );
@@ -217,9 +247,16 @@ namespace validation_layer
 
         if( context.enableParameterValidation )
         {
-            if( nullptr == hDebug )
-                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+            auto result = context.paramValidation->zetParamValidation.zetDebugResume( hDebug, thread );
+            if(result!=ZE_RESULT_SUCCESS) return result;
+        }
 
+        if( context.enableHandleLifetime ){ 
+            //Unimplemented
+        }
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
         }
 
         return pfnResume( hDebug, thread );
@@ -243,18 +280,16 @@ namespace validation_layer
 
         if( context.enableParameterValidation )
         {
-            if( nullptr == hDebug )
-                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+            auto result = context.paramValidation->zetParamValidation.zetDebugReadMemory( hDebug, thread, desc, size, buffer );
+            if(result!=ZE_RESULT_SUCCESS) return result;
+        }
 
-            if( nullptr == desc )
-                return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+        if( context.enableHandleLifetime ){ 
+            //Unimplemented
+        }
 
-            if( nullptr == buffer )
-                return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
-
-            if( ZET_DEBUG_MEMORY_SPACE_TYPE_SLM < desc->type )
-                return ZE_RESULT_ERROR_INVALID_ENUMERATION;
-
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
         }
 
         return pfnReadMemory( hDebug, thread, desc, size, buffer );
@@ -278,18 +313,16 @@ namespace validation_layer
 
         if( context.enableParameterValidation )
         {
-            if( nullptr == hDebug )
-                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+            auto result = context.paramValidation->zetParamValidation.zetDebugWriteMemory( hDebug, thread, desc, size, buffer );
+            if(result!=ZE_RESULT_SUCCESS) return result;
+        }
 
-            if( nullptr == desc )
-                return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+        if( context.enableHandleLifetime ){ 
+            //Unimplemented
+        }
 
-            if( nullptr == buffer )
-                return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
-
-            if( ZET_DEBUG_MEMORY_SPACE_TYPE_SLM < desc->type )
-                return ZE_RESULT_ERROR_INVALID_ENUMERATION;
-
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
         }
 
         return pfnWriteMemory( hDebug, thread, desc, size, buffer );
@@ -319,12 +352,16 @@ namespace validation_layer
 
         if( context.enableParameterValidation )
         {
-            if( nullptr == hDevice )
-                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+            auto result = context.paramValidation->zetParamValidation.zetDebugGetRegisterSetProperties( hDevice, pCount, pRegisterSetProperties );
+            if(result!=ZE_RESULT_SUCCESS) return result;
+        }
 
-            if( nullptr == pCount )
-                return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+        if( context.enableHandleLifetime ){ 
+            //Unimplemented
+        }
 
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
         }
 
         return pfnGetRegisterSetProperties( hDevice, pCount, pRegisterSetProperties );
@@ -355,12 +392,16 @@ namespace validation_layer
 
         if( context.enableParameterValidation )
         {
-            if( nullptr == hDebug )
-                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+            auto result = context.paramValidation->zetParamValidation.zetDebugGetThreadRegisterSetProperties( hDebug, thread, pCount, pRegisterSetProperties );
+            if(result!=ZE_RESULT_SUCCESS) return result;
+        }
 
-            if( nullptr == pCount )
-                return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+        if( context.enableHandleLifetime ){ 
+            //Unimplemented
+        }
 
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
         }
 
         return pfnGetThreadRegisterSetProperties( hDebug, thread, pCount, pRegisterSetProperties );
@@ -387,9 +428,16 @@ namespace validation_layer
 
         if( context.enableParameterValidation )
         {
-            if( nullptr == hDebug )
-                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+            auto result = context.paramValidation->zetParamValidation.zetDebugReadRegisters( hDebug, thread, type, start, count, pRegisterValues );
+            if(result!=ZE_RESULT_SUCCESS) return result;
+        }
 
+        if( context.enableHandleLifetime ){ 
+            //Unimplemented
+        }
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
         }
 
         return pfnReadRegisters( hDebug, thread, type, start, count, pRegisterValues );
@@ -416,9 +464,16 @@ namespace validation_layer
 
         if( context.enableParameterValidation )
         {
-            if( nullptr == hDebug )
-                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+            auto result = context.paramValidation->zetParamValidation.zetDebugWriteRegisters( hDebug, thread, type, start, count, pRegisterValues );
+            if(result!=ZE_RESULT_SUCCESS) return result;
+        }
 
+        if( context.enableHandleLifetime ){ 
+            //Unimplemented
+        }
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
         }
 
         return pfnWriteRegisters( hDebug, thread, type, start, count, pRegisterValues );
@@ -447,12 +502,16 @@ namespace validation_layer
 
         if( context.enableParameterValidation )
         {
-            if( nullptr == hDevice )
-                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+            auto result = context.paramValidation->zetParamValidation.zetMetricGroupGet( hDevice, pCount, phMetricGroups );
+            if(result!=ZE_RESULT_SUCCESS) return result;
+        }
 
-            if( nullptr == pCount )
-                return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+        if( context.enableHandleLifetime ){ 
+            //Unimplemented
+        }
 
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
         }
 
         return pfnGet( hDevice, pCount, phMetricGroups );
@@ -473,12 +532,16 @@ namespace validation_layer
 
         if( context.enableParameterValidation )
         {
-            if( nullptr == hMetricGroup )
-                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+            auto result = context.paramValidation->zetParamValidation.zetMetricGroupGetProperties( hMetricGroup, pProperties );
+            if(result!=ZE_RESULT_SUCCESS) return result;
+        }
 
-            if( nullptr == pProperties )
-                return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+        if( context.enableHandleLifetime ){ 
+            //Unimplemented
+        }
 
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
         }
 
         return pfnGetProperties( hMetricGroup, pProperties );
@@ -510,18 +573,16 @@ namespace validation_layer
 
         if( context.enableParameterValidation )
         {
-            if( nullptr == hMetricGroup )
-                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+            auto result = context.paramValidation->zetParamValidation.zetMetricGroupCalculateMetricValues( hMetricGroup, type, rawDataSize, pRawData, pMetricValueCount, pMetricValues );
+            if(result!=ZE_RESULT_SUCCESS) return result;
+        }
 
-            if( ZET_METRIC_GROUP_CALCULATION_TYPE_MAX_METRIC_VALUES < type )
-                return ZE_RESULT_ERROR_INVALID_ENUMERATION;
+        if( context.enableHandleLifetime ){ 
+            //Unimplemented
+        }
 
-            if( nullptr == pRawData )
-                return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
-
-            if( nullptr == pMetricValueCount )
-                return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
-
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
         }
 
         return pfnCalculateMetricValues( hMetricGroup, type, rawDataSize, pRawData, pMetricValueCount, pMetricValues );
@@ -549,12 +610,16 @@ namespace validation_layer
 
         if( context.enableParameterValidation )
         {
-            if( nullptr == hMetricGroup )
-                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+            auto result = context.paramValidation->zetParamValidation.zetMetricGet( hMetricGroup, pCount, phMetrics );
+            if(result!=ZE_RESULT_SUCCESS) return result;
+        }
 
-            if( nullptr == pCount )
-                return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+        if( context.enableHandleLifetime ){ 
+            //Unimplemented
+        }
 
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
         }
 
         return pfnGet( hMetricGroup, pCount, phMetrics );
@@ -575,12 +640,16 @@ namespace validation_layer
 
         if( context.enableParameterValidation )
         {
-            if( nullptr == hMetric )
-                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+            auto result = context.paramValidation->zetParamValidation.zetMetricGetProperties( hMetric, pProperties );
+            if(result!=ZE_RESULT_SUCCESS) return result;
+        }
 
-            if( nullptr == pProperties )
-                return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+        if( context.enableHandleLifetime ){ 
+            //Unimplemented
+        }
 
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
         }
 
         return pfnGetProperties( hMetric, pProperties );
@@ -607,15 +676,16 @@ namespace validation_layer
 
         if( context.enableParameterValidation )
         {
-            if( nullptr == hContext )
-                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+            auto result = context.paramValidation->zetParamValidation.zetContextActivateMetricGroups( hContext, hDevice, count, phMetricGroups );
+            if(result!=ZE_RESULT_SUCCESS) return result;
+        }
 
-            if( nullptr == hDevice )
-                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        if( context.enableHandleLifetime ){ 
+            //Unimplemented
+        }
 
-            if( (nullptr == phMetricGroups) && (0 < count) )
-                return ZE_RESULT_ERROR_INVALID_SIZE;
-
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
         }
 
         return pfnActivateMetricGroups( hContext, hDevice, count, phMetricGroups );
@@ -640,21 +710,16 @@ namespace validation_layer
 
         if( context.enableParameterValidation )
         {
-            if( nullptr == hContext )
-                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+            auto result = context.paramValidation->zetParamValidation.zetMetricStreamerOpen( hContext, hDevice, hMetricGroup, desc, hNotificationEvent, phMetricStreamer );
+            if(result!=ZE_RESULT_SUCCESS) return result;
+        }
 
-            if( nullptr == hDevice )
-                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        if( context.enableHandleLifetime ){ 
+            //Unimplemented
+        }
 
-            if( nullptr == hMetricGroup )
-                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
-
-            if( nullptr == desc )
-                return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
-
-            if( nullptr == phMetricStreamer )
-                return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
-
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
         }
 
         return pfnOpen( hContext, hDevice, hMetricGroup, desc, hNotificationEvent, phMetricStreamer );
@@ -676,12 +741,16 @@ namespace validation_layer
 
         if( context.enableParameterValidation )
         {
-            if( nullptr == hCommandList )
-                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+            auto result = context.paramValidation->zetParamValidation.zetCommandListAppendMetricStreamerMarker( hCommandList, hMetricStreamer, value );
+            if(result!=ZE_RESULT_SUCCESS) return result;
+        }
 
-            if( nullptr == hMetricStreamer )
-                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        if( context.enableHandleLifetime ){ 
+            //Unimplemented
+        }
 
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
         }
 
         return pfnAppendMetricStreamerMarker( hCommandList, hMetricStreamer, value );
@@ -701,9 +770,16 @@ namespace validation_layer
 
         if( context.enableParameterValidation )
         {
-            if( nullptr == hMetricStreamer )
-                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+            auto result = context.paramValidation->zetParamValidation.zetMetricStreamerClose( hMetricStreamer );
+            if(result!=ZE_RESULT_SUCCESS) return result;
+        }
 
+        if( context.enableHandleLifetime ){ 
+            //Unimplemented
+        }
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
         }
 
         return pfnClose( hMetricStreamer );
@@ -734,12 +810,16 @@ namespace validation_layer
 
         if( context.enableParameterValidation )
         {
-            if( nullptr == hMetricStreamer )
-                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+            auto result = context.paramValidation->zetParamValidation.zetMetricStreamerReadData( hMetricStreamer, maxReportCount, pRawDataSize, pRawData );
+            if(result!=ZE_RESULT_SUCCESS) return result;
+        }
 
-            if( nullptr == pRawDataSize )
-                return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+        if( context.enableHandleLifetime ){ 
+            //Unimplemented
+        }
 
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
         }
 
         return pfnReadData( hMetricStreamer, maxReportCount, pRawDataSize, pRawData );
@@ -763,24 +843,16 @@ namespace validation_layer
 
         if( context.enableParameterValidation )
         {
-            if( nullptr == hContext )
-                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+            auto result = context.paramValidation->zetParamValidation.zetMetricQueryPoolCreate( hContext, hDevice, hMetricGroup, desc, phMetricQueryPool );
+            if(result!=ZE_RESULT_SUCCESS) return result;
+        }
 
-            if( nullptr == hDevice )
-                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        if( context.enableHandleLifetime ){ 
+            //Unimplemented
+        }
 
-            if( nullptr == hMetricGroup )
-                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
-
-            if( nullptr == desc )
-                return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
-
-            if( nullptr == phMetricQueryPool )
-                return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
-
-            if( ZET_METRIC_QUERY_POOL_TYPE_EXECUTION < desc->type )
-                return ZE_RESULT_ERROR_INVALID_ENUMERATION;
-
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
         }
 
         return pfnCreate( hContext, hDevice, hMetricGroup, desc, phMetricQueryPool );
@@ -800,9 +872,16 @@ namespace validation_layer
 
         if( context.enableParameterValidation )
         {
-            if( nullptr == hMetricQueryPool )
-                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+            auto result = context.paramValidation->zetParamValidation.zetMetricQueryPoolDestroy( hMetricQueryPool );
+            if(result!=ZE_RESULT_SUCCESS) return result;
+        }
 
+        if( context.enableHandleLifetime ){ 
+            //Unimplemented
+        }
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
         }
 
         return pfnDestroy( hMetricQueryPool );
@@ -824,12 +903,16 @@ namespace validation_layer
 
         if( context.enableParameterValidation )
         {
-            if( nullptr == hMetricQueryPool )
-                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+            auto result = context.paramValidation->zetParamValidation.zetMetricQueryCreate( hMetricQueryPool, index, phMetricQuery );
+            if(result!=ZE_RESULT_SUCCESS) return result;
+        }
 
-            if( nullptr == phMetricQuery )
-                return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+        if( context.enableHandleLifetime ){ 
+            //Unimplemented
+        }
 
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
         }
 
         return pfnCreate( hMetricQueryPool, index, phMetricQuery );
@@ -849,9 +932,16 @@ namespace validation_layer
 
         if( context.enableParameterValidation )
         {
-            if( nullptr == hMetricQuery )
-                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+            auto result = context.paramValidation->zetParamValidation.zetMetricQueryDestroy( hMetricQuery );
+            if(result!=ZE_RESULT_SUCCESS) return result;
+        }
 
+        if( context.enableHandleLifetime ){ 
+            //Unimplemented
+        }
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
         }
 
         return pfnDestroy( hMetricQuery );
@@ -871,9 +961,16 @@ namespace validation_layer
 
         if( context.enableParameterValidation )
         {
-            if( nullptr == hMetricQuery )
-                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+            auto result = context.paramValidation->zetParamValidation.zetMetricQueryReset( hMetricQuery );
+            if(result!=ZE_RESULT_SUCCESS) return result;
+        }
 
+        if( context.enableHandleLifetime ){ 
+            //Unimplemented
+        }
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
         }
 
         return pfnReset( hMetricQuery );
@@ -894,12 +991,16 @@ namespace validation_layer
 
         if( context.enableParameterValidation )
         {
-            if( nullptr == hCommandList )
-                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+            auto result = context.paramValidation->zetParamValidation.zetCommandListAppendMetricQueryBegin( hCommandList, hMetricQuery );
+            if(result!=ZE_RESULT_SUCCESS) return result;
+        }
 
-            if( nullptr == hMetricQuery )
-                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        if( context.enableHandleLifetime ){ 
+            //Unimplemented
+        }
 
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
         }
 
         return pfnAppendMetricQueryBegin( hCommandList, hMetricQuery );
@@ -923,15 +1024,16 @@ namespace validation_layer
 
         if( context.enableParameterValidation )
         {
-            if( nullptr == hCommandList )
-                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+            auto result = context.paramValidation->zetParamValidation.zetCommandListAppendMetricQueryEnd( hCommandList, hMetricQuery, hSignalEvent, numWaitEvents, phWaitEvents );
+            if(result!=ZE_RESULT_SUCCESS) return result;
+        }
 
-            if( nullptr == hMetricQuery )
-                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        if( context.enableHandleLifetime ){ 
+            //Unimplemented
+        }
 
-            if( (nullptr == phWaitEvents) && (0 < numWaitEvents) )
-                return ZE_RESULT_ERROR_INVALID_SIZE;
-
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
         }
 
         return pfnAppendMetricQueryEnd( hCommandList, hMetricQuery, hSignalEvent, numWaitEvents, phWaitEvents );
@@ -951,9 +1053,16 @@ namespace validation_layer
 
         if( context.enableParameterValidation )
         {
-            if( nullptr == hCommandList )
-                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+            auto result = context.paramValidation->zetParamValidation.zetCommandListAppendMetricMemoryBarrier( hCommandList );
+            if(result!=ZE_RESULT_SUCCESS) return result;
+        }
 
+        if( context.enableHandleLifetime ){ 
+            //Unimplemented
+        }
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
         }
 
         return pfnAppendMetricMemoryBarrier( hCommandList );
@@ -982,12 +1091,16 @@ namespace validation_layer
 
         if( context.enableParameterValidation )
         {
-            if( nullptr == hMetricQuery )
-                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+            auto result = context.paramValidation->zetParamValidation.zetMetricQueryGetData( hMetricQuery, pRawDataSize, pRawData );
+            if(result!=ZE_RESULT_SUCCESS) return result;
+        }
 
-            if( nullptr == pRawDataSize )
-                return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+        if( context.enableHandleLifetime ){ 
+            //Unimplemented
+        }
 
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
         }
 
         return pfnGetData( hMetricQuery, pRawDataSize, pRawData );
@@ -1008,12 +1121,16 @@ namespace validation_layer
 
         if( context.enableParameterValidation )
         {
-            if( nullptr == hKernel )
-                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+            auto result = context.paramValidation->zetParamValidation.zetKernelGetProfileInfo( hKernel, pProfileProperties );
+            if(result!=ZE_RESULT_SUCCESS) return result;
+        }
 
-            if( nullptr == pProfileProperties )
-                return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+        if( context.enableHandleLifetime ){ 
+            //Unimplemented
+        }
 
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
         }
 
         return pfnGetProfileInfo( hKernel, pProfileProperties );
@@ -1035,18 +1152,16 @@ namespace validation_layer
 
         if( context.enableParameterValidation )
         {
-            if( nullptr == hContext )
-                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+            auto result = context.paramValidation->zetParamValidation.zetTracerExpCreate( hContext, desc, phTracer );
+            if(result!=ZE_RESULT_SUCCESS) return result;
+        }
 
-            if( nullptr == desc )
-                return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+        if( context.enableHandleLifetime ){ 
+            //Unimplemented
+        }
 
-            if( nullptr == desc->pUserData )
-                return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
-
-            if( nullptr == phTracer )
-                return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
-
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
         }
 
         return pfnCreate( hContext, desc, phTracer );
@@ -1066,9 +1181,16 @@ namespace validation_layer
 
         if( context.enableParameterValidation )
         {
-            if( nullptr == hTracer )
-                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+            auto result = context.paramValidation->zetParamValidation.zetTracerExpDestroy( hTracer );
+            if(result!=ZE_RESULT_SUCCESS) return result;
+        }
 
+        if( context.enableHandleLifetime ){ 
+            //Unimplemented
+        }
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
         }
 
         return pfnDestroy( hTracer );
@@ -1089,12 +1211,16 @@ namespace validation_layer
 
         if( context.enableParameterValidation )
         {
-            if( nullptr == hTracer )
-                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+            auto result = context.paramValidation->zetParamValidation.zetTracerExpSetPrologues( hTracer, pCoreCbs );
+            if(result!=ZE_RESULT_SUCCESS) return result;
+        }
 
-            if( nullptr == pCoreCbs )
-                return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+        if( context.enableHandleLifetime ){ 
+            //Unimplemented
+        }
 
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
         }
 
         return pfnSetPrologues( hTracer, pCoreCbs );
@@ -1115,12 +1241,16 @@ namespace validation_layer
 
         if( context.enableParameterValidation )
         {
-            if( nullptr == hTracer )
-                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+            auto result = context.paramValidation->zetParamValidation.zetTracerExpSetEpilogues( hTracer, pCoreCbs );
+            if(result!=ZE_RESULT_SUCCESS) return result;
+        }
 
-            if( nullptr == pCoreCbs )
-                return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+        if( context.enableHandleLifetime ){ 
+            //Unimplemented
+        }
 
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
         }
 
         return pfnSetEpilogues( hTracer, pCoreCbs );
@@ -1141,9 +1271,16 @@ namespace validation_layer
 
         if( context.enableParameterValidation )
         {
-            if( nullptr == hTracer )
-                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+            auto result = context.paramValidation->zetParamValidation.zetTracerExpSetEnabled( hTracer, enable );
+            if(result!=ZE_RESULT_SUCCESS) return result;
+        }
 
+        if( context.enableHandleLifetime ){ 
+            //Unimplemented
+        }
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
         }
 
         return pfnSetEnabled( hTracer, enable );
@@ -1185,21 +1322,16 @@ namespace validation_layer
 
         if( context.enableParameterValidation )
         {
-            if( nullptr == hMetricGroup )
-                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+            auto result = context.paramValidation->zetParamValidation.zetMetricGroupCalculateMultipleMetricValuesExp( hMetricGroup, type, rawDataSize, pRawData, pSetCount, pTotalMetricValueCount, pMetricCounts, pMetricValues );
+            if(result!=ZE_RESULT_SUCCESS) return result;
+        }
 
-            if( ZET_METRIC_GROUP_CALCULATION_TYPE_MAX_METRIC_VALUES < type )
-                return ZE_RESULT_ERROR_INVALID_ENUMERATION;
+        if( context.enableHandleLifetime ){ 
+            //Unimplemented
+        }
 
-            if( nullptr == pRawData )
-                return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
-
-            if( nullptr == pSetCount )
-                return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
-
-            if( nullptr == pTotalMetricValueCount )
-                return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
-
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
         }
 
         return pfnCalculateMultipleMetricValuesExp( hMetricGroup, type, rawDataSize, pRawData, pSetCount, pTotalMetricValueCount, pMetricCounts, pMetricValues );

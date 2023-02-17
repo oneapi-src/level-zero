@@ -13,6 +13,8 @@
 #include "zes_ddi.h"
 #include "ze_util.h"
 #include "loader/ze_loader.h"
+#include "param_validation.h"
+#include <memory>
 
 #define VALIDATION_COMP_NAME "validation layer"
 
@@ -26,12 +28,13 @@ namespace validation_layer
 
         bool enableParameterValidation = false;
         bool enableHandleLifetime = false;
-        bool enableMemoryTracker = false;
         bool enableThreadingValidation = false;
 
         ze_dditable_t   zeDdiTable = {};
         zet_dditable_t  zetDdiTable = {};
         zes_dditable_t  zesDdiTable = {};
+
+        std::unique_ptr<ParameterValidation> paramValidation;
 
         context_t();
         ~context_t();

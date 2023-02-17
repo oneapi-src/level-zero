@@ -1,4 +1,4 @@
-# Copyright (C) 2020 Intel Corporation
+# Copyright (C) 2020-2023 Intel Corporation
 # SPDX-License-Identifier: MIT
 set(TARGET_NAME ze_validation_layer)
 
@@ -20,6 +20,8 @@ add_library(${TARGET_NAME}
 target_include_directories(${TARGET_NAME}
     PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}
+        ${CMAKE_CURRENT_SOURCE_DIR}/common
+        ${CMAKE_CURRENT_SOURCE_DIR}/parameter_validation
 )
 
 if(UNIX)
@@ -48,3 +50,4 @@ install(TARGETS ze_validation_layer
         NAMELINK_ONLY
 )
 
+add_subdirectory(parameter_validation)

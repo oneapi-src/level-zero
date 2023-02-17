@@ -8,6 +8,8 @@
  *
  */
 #include "ze_validation_layer.h"
+#include "param_validation.h"
+#include <memory>
 
 namespace validation_layer
 {
@@ -17,6 +19,9 @@ namespace validation_layer
     context_t::context_t()
     {
         enableParameterValidation = getenv_tobool( "ZE_ENABLE_PARAMETER_VALIDATION" );
+        if(enableParameterValidation) {
+            paramValidation = std::make_unique<ParameterValidation>();
+        }
         enableHandleLifetime = getenv_tobool( "ZE_ENABLE_HANDLE_LIFETIME" );
         enableThreadingValidation = getenv_tobool( "ZE_ENABLE_THREADING_VALIDATION" );
     }
