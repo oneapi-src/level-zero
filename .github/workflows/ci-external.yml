@@ -10,15 +10,29 @@ jobs:
     if: github.repository_owner == 'oneapi-src'
     runs-on: [ubuntu-latest]
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: hendrikmuhs/ccache-action@v1
-      - name: Build Loader
+      - name: Build Loader on Latest Ubuntu
         run: |
           mkdir build
           cd build
           cmake \
             -D CMAKE_C_COMPILER_LAUNCHER=ccache \
             -D CMAKE_CXX_COMPILER_LAUNCHER=ccache \
+            -D CMAKE_BUILD_TYPE=Release \
+            ..
+          make -j$(nproc)
+  build-windows:
+    # if: github.repository_owner == 'oneapi-src'
+    runs-on: [windows-latest]
+    steps:
+      - uses: actions/checkout@v3
+      - name: Build Loader on Latest Windows
+        shell: bash
+        run: |
+          mkdir build
+          cd build
+          cmake \
             -D CMAKE_BUILD_TYPE=Release \
             ..
           make -j$(nproc)
