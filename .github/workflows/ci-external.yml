@@ -28,11 +28,11 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Build Loader on Latest Windows
-        shell: bash
+        shell: pwsh
         run: |
           mkdir build
           cd build
           cmake \
             -D CMAKE_BUILD_TYPE=Release \
             ..
-          make -j$(nproc)
+          cmake build . --config Release
