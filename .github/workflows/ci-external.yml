@@ -23,7 +23,7 @@ jobs:
             ..
           make -j$(nproc)
   build-windows:
-    # if: github.repository_owner == 'oneapi-src'
+    if: github.repository_owner == 'oneapi-src'
     runs-on: [windows-latest]
     steps:
       - uses: actions/checkout@v3
