@@ -35,4 +35,4 @@ jobs:
           cmake \
             -D CMAKE_BUILD_TYPE=Release \
             ..
-          cmake build . --config Release
+          cmake --build . --config Release
