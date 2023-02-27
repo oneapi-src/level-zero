@@ -6,9 +6,63 @@ We encourage anyone who wants to contribute to submit
 review these for proper alignment with the
 [Level Zero Specification](https://spec.oneapi.com/level-zero/latest/index.html).
 
+## C++ Coding Standards
 
-Specific coding conventions and standards guidelines are a work-in-progress, and
-we will post them here soon.
+* C++14 maximum support
+* Avoid C Arrays, replace with `std::array<>` / `std::vector<>`
+* Avoid "magic numbers"
+* Avoid C-style memory allocations in favor of C++
+* Use `nullptr` instead of `NULL`
+* Don't add `void` to empty argument lists
+* Use `std::unique_ptr` in place of `std::auto_ptr`
+
+## Naming Conventions
+
+* The functionality in the Level Zero Loader and layers which follow the Level Zero spec must follow these naming conventions:
+
+  * https://spec.oneapi.io/level-zero/latest/core/INTRO.html#naming-convention
+
+* If the contributions are adding new functionality unique to the Level Zero Loader (ie not Level Zero Spec related):
+  * Level Zero Loader specific APIs must have the prefix: `zel`
+    * see here for examples: [Loader API Documentation](doc/loader_api.md)
+
+## Generating Level Zero Loader and Layer files from scripts
+
+As part of each Level Zero specification update, .mako scripts are updated which generate the code for the Level Zero Loader and layers.
+When one contributes updates to the Level Zero Loader or Layers, one must update the code in [Level Zero Loader Mako Scripts](scripts/templates) to ensure that the new code is not lost in the next specification update.
+
+To generate the code from the scripts, run the following commands:
+
+* Clone the specification repo: `git clone https://github.com/oneapi-src/level-zero-spec.git level-zero-spec`
+* Checkout the specification version in the specification repo, for example:
+  * `cd level-zero-spec`
+  * `git checkout v1.5`
+* Generate the specification JSON file:
+  * `cd ./scripts`
+  * `python3 ./run.py --debug '--!html' '--!rst' '--!build' --ver 1.5`
+* Execute the json2src script in the level-zero repo with the input.json in the specification repo with the corresponding spec version, for example:
+  * `./scripts/json2src.py --ver 1.5 --api-json <path to level-zero-spec checkout>/scripts/input.json .`
+
+These scripts update the code with what would be generated in the next specification update.
+
+
+## Code Review
+
+Quality Code Review of the oneAPI Level Zero Loader & Layers is important for all Maintainers and Contributors to ensure that quality updates are added to the Loader and Layers for customers of oneAPI Level Zero.
+
+### Review Checklist
+
+When performing a code review please refer to this checklist to guide your comments:
+
+* Does the code follow C++ Coding Standards? [C++ Coding Standards](#c-coding-standards).
+* Does the code follow the Level Zero naming conventions? [Naming Conventions](#naming-conventions).
+* Does the code follow the Level Zero specification? See here for the latest spec: https://spec.oneapi.io/level-zero/latest/index.html.
+* Is the code for the Validation Layer? Please review the following: [Validation Layer README](source/layers/validation/README.md).
+* Is the code for the Tracing Layer? Please review the following: [Tracing Layer README](source/layers/tracing/README.md).
+* Is the code "Vendor & Platform agnostic"? ie Are the changes in the loader or in the layers ignorant of the implementation in the L0 drivers?
+* Is the Code Modular or can the code be Modular? ie Can the code be added to common functions used in loader or layer common functions or is it for a specific usecase?
+* Can the code handle Multiple Driver or Device environments? Verify that the changes work within the [Intercept Layer](source/loader/ze_ldrddi.cpp) which is used when multiple drivers are present and that support works across devices.
+* Has the code updated the templates? see here [Generating Level Zero Loader and Layer files from scripts](#generating-level-zero-loader-and-layer-files-from-scripts)
 
 ## Sign Your Work
 
