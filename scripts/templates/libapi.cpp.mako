@@ -57,7 +57,12 @@ ${th.make_func_name(n, tags, obj)}(
 %if re.match("Init", obj['name']):
     static ${x}_result_t result = ${X}_RESULT_SUCCESS;
     std::call_once(${x}_lib::context->initOnce, [flags]() {
-        result = ${x}_lib::context->Init(flags);
+%if re.match("zes", n): 
+        result = ${x}_lib::context->Init(flags, true);
+%else:
+        result = ${x}_lib::context->Init(flags, false);
+%endif
+
     });
 
     if( ${X}_RESULT_SUCCESS != result )

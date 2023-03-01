@@ -31,7 +31,7 @@ namespace ze_lib
     };
 
     //////////////////////////////////////////////////////////////////////////
-    __zedlllocal ze_result_t context_t::Init(ze_init_flags_t flags)
+    __zedlllocal ze_result_t context_t::Init(ze_init_flags_t flags, bool sysmanOnly)
     {
         ze_result_t result;
 #ifdef DYNAMIC_LOAD_LOADER
@@ -83,8 +83,10 @@ namespace ze_lib
             result = zelTracingInit();
         }
 
-        if( ZE_RESULT_SUCCESS == result )
+        if( ZE_RESULT_SUCCESS == result && !sysmanOnly)
         {
+            //Check which drivers support the ze_driver_flag_t specified
+            //No need to check if only initializing sysman  
             result = zelLoaderDriverCheck(flags);
         }
 
