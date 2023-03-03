@@ -4,7 +4,7 @@
  SPDX-License-Identifier: MIT
 
  @file zet.py
- @version v1.5-r1.5.8
+ @version v1.5-r1.5.17
 
  """
 import platform
@@ -90,6 +90,7 @@ class zet_structure_type_v(IntEnum):
     DEVICE_DEBUG_PROPERTIES = 0x6                   ## ::zet_device_debug_properties_t
     DEBUG_MEMORY_SPACE_DESC = 0x7                   ## ::zet_debug_memory_space_desc_t
     DEBUG_REGSET_PROPERTIES = 0x8                   ## ::zet_debug_regset_properties_t
+    GLOBAL_METRICS_TIMESTAMPS_EXP_PROPERTIES = 0x9  ## ::zet_metric_global_timestamps_resolution_exp_t
     TRACER_EXP_DESC = 0x00010001                    ## ::zet_tracer_exp_desc_t
 
 class zet_structure_type_t(c_int):
@@ -574,6 +575,38 @@ class ze_calculate_multiple_metrics_exp_version_t(c_int):
 
 
 ###############################################################################
+## @brief Global Metric Timestamps Experimental Extension Name
+ZET_GLOBAL_METRICS_TIMESTAMPS_EXP_NAME = "ZET_experimental_global_metric_timestamps"
+
+###############################################################################
+## @brief Global Metric Timestamps Experimental Extension Version(s)
+class ze_metric_global_timestamps_exp_version_v(IntEnum):
+    _1_0 = ZE_MAKE_VERSION( 1, 0 )                  ## version 1.0
+    CURRENT = ZE_MAKE_VERSION( 1, 0 )               ## latest known version
+
+class ze_metric_global_timestamps_exp_version_t(c_int):
+    def __str__(self):
+        return str(ze_metric_global_timestamps_exp_version_v(self.value))
+
+
+###############################################################################
+## @brief Metric timestamps resolution
+## 
+## @details
+##     - This structure may be returned from ::zetMetricGroupGetProperties via
+##       `pNext` member of ::zet_metric_group_properties_t
+##     - Used for mapping metric timestamps to other timers.
+class zet_metric_global_timestamps_resolution_exp_t(Structure):
+    _fields_ = [
+        ("stype", ze_structure_type_t),                                 ## [in] type of this structure
+        ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains sType and pNext).
+        ("timerResolution", c_ulonglong),                               ## [out] Returns the resolution of device timer in nanoseconds used for
+                                                                        ## timestamps.
+        ("timestampValidBits", c_ulonglong)                             ## [out] Returns the number of valid bits in the timestamp value.
+    ]
+
+###############################################################################
 __use_win_types = "Windows" == platform.uname()[0]
 
 ###############################################################################
@@ -676,6 +709,29 @@ class _zet_kernel_dditable_t(Structure):
     ]
 
 ###############################################################################
+## @brief Function-pointer for zetMetricGet
+if __use_win_types:
+    _zetMetricGet_t = WINFUNCTYPE( ze_result_t, zet_metric_group_handle_t, POINTER(c_ulong), POINTER(zet_metric_handle_t) )
+else:
+    _zetMetricGet_t = CFUNCTYPE( ze_result_t, zet_metric_group_handle_t, POINTER(c_ulong), POINTER(zet_metric_handle_t) )
+
+###############################################################################
+## @brief Function-pointer for zetMetricGetProperties
+if __use_win_types:
+    _zetMetricGetProperties_t = WINFUNCTYPE( ze_result_t, zet_metric_handle_t, POINTER(zet_metric_properties_t) )
+else:
+    _zetMetricGetProperties_t = CFUNCTYPE( ze_result_t, zet_metric_handle_t, POINTER(zet_metric_properties_t) )
+
+
+###############################################################################
+## @brief Table of Metric functions pointers
+class _zet_metric_dditable_t(Structure):
+    _fields_ = [
+        ("pfnGet", c_void_p),                                           ## _zetMetricGet_t
+        ("pfnGetProperties", c_void_p)                                  ## _zetMetricGetProperties_t
+    ]
+
+###############################################################################
 ## @brief Function-pointer for zetMetricGroupGet
 if __use_win_types:
     _zetMetricGroupGet_t = WINFUNCTYPE( ze_result_t, zet_device_handle_t, POINTER(c_ulong), POINTER(zet_metric_group_handle_t) )
@@ -713,35 +769,20 @@ if __use_win_types:
 else:
     _zetMetricGroupCalculateMultipleMetricValuesExp_t = CFUNCTYPE( ze_result_t, zet_metric_group_handle_t, zet_metric_group_calculation_type_t, c_size_t, POINTER(c_ubyte), POINTER(c_ulong), POINTER(c_ulong), POINTER(c_ulong), POINTER(zet_typed_value_t) )
 
+###############################################################################
+## @brief Function-pointer for zetMetricGroupGetGlobalTimestampsExp
+if __use_win_types:
+    _zetMetricGroupGetGlobalTimestampsExp_t = WINFUNCTYPE( ze_result_t, zet_metric_group_handle_t, ze_bool_t, POINTER(c_ulonglong), POINTER(c_ulonglong) )
+else:
+    _zetMetricGroupGetGlobalTimestampsExp_t = CFUNCTYPE( ze_result_t, zet_metric_group_handle_t, ze_bool_t, POINTER(c_ulonglong), POINTER(c_ulonglong) )
+
 
 ###############################################################################
 ## @brief Table of MetricGroupExp functions pointers
 class _zet_metric_group_exp_dditable_t(Structure):
     _fields_ = [
-        ("pfnCalculateMultipleMetricValuesExp", c_void_p)               ## _zetMetricGroupCalculateMultipleMetricValuesExp_t
-    ]
-
-###############################################################################
-## @brief Function-pointer for zetMetricGet
-if __use_win_types:
-    _zetMetricGet_t = WINFUNCTYPE( ze_result_t, zet_metric_group_handle_t, POINTER(c_ulong), POINTER(zet_metric_handle_t) )
-else:
-    _zetMetricGet_t = CFUNCTYPE( ze_result_t, zet_metric_group_handle_t, POINTER(c_ulong), POINTER(zet_metric_handle_t) )
-
-###############################################################################
-## @brief Function-pointer for zetMetricGetProperties
-if __use_win_types:
-    _zetMetricGetProperties_t = WINFUNCTYPE( ze_result_t, zet_metric_handle_t, POINTER(zet_metric_properties_t) )
-else:
-    _zetMetricGetProperties_t = CFUNCTYPE( ze_result_t, zet_metric_handle_t, POINTER(zet_metric_properties_t) )
-
-
-###############################################################################
-## @brief Table of Metric functions pointers
-class _zet_metric_dditable_t(Structure):
-    _fields_ = [
-        ("pfnGet", c_void_p),                                           ## _zetMetricGet_t
-        ("pfnGetProperties", c_void_p)                                  ## _zetMetricGetProperties_t
+        ("pfnCalculateMultipleMetricValuesExp", c_void_p),              ## _zetMetricGroupCalculateMultipleMetricValuesExp_t
+        ("pfnGetGlobalTimestampsExp", c_void_p)                         ## _zetMetricGroupGetGlobalTimestampsExp_t
     ]
 
 ###############################################################################
@@ -995,9 +1036,9 @@ class _zet_dditable_t(Structure):
         ("CommandList", _zet_command_list_dditable_t),
         ("Module", _zet_module_dditable_t),
         ("Kernel", _zet_kernel_dditable_t),
+        ("Metric", _zet_metric_dditable_t),
         ("MetricGroup", _zet_metric_group_dditable_t),
         ("MetricGroupExp", _zet_metric_group_exp_dditable_t),
-        ("Metric", _zet_metric_dditable_t),
         ("MetricStreamer", _zet_metric_streamer_dditable_t),
         ("MetricQueryPool", _zet_metric_query_pool_dditable_t),
         ("MetricQuery", _zet_metric_query_dditable_t),
@@ -1072,6 +1113,17 @@ class ZET_DDI:
         self.zetKernelGetProfileInfo = _zetKernelGetProfileInfo_t(self.__dditable.Kernel.pfnGetProfileInfo)
 
         # call driver to get function pointers
+        _Metric = _zet_metric_dditable_t()
+        r = ze_result_v(self.__dll.zetGetMetricProcAddrTable(version, byref(_Metric)))
+        if r != ze_result_v.SUCCESS:
+            raise Exception(r)
+        self.__dditable.Metric = _Metric
+
+        # attach function interface to function address
+        self.zetMetricGet = _zetMetricGet_t(self.__dditable.Metric.pfnGet)
+        self.zetMetricGetProperties = _zetMetricGetProperties_t(self.__dditable.Metric.pfnGetProperties)
+
+        # call driver to get function pointers
         _MetricGroup = _zet_metric_group_dditable_t()
         r = ze_result_v(self.__dll.zetGetMetricGroupProcAddrTable(version, byref(_MetricGroup)))
         if r != ze_result_v.SUCCESS:
@@ -1092,17 +1144,7 @@ class ZET_DDI:
 
         # attach function interface to function address
         self.zetMetricGroupCalculateMultipleMetricValuesExp = _zetMetricGroupCalculateMultipleMetricValuesExp_t(self.__dditable.MetricGroupExp.pfnCalculateMultipleMetricValuesExp)
-
-        # call driver to get function pointers
-        _Metric = _zet_metric_dditable_t()
-        r = ze_result_v(self.__dll.zetGetMetricProcAddrTable(version, byref(_Metric)))
-        if r != ze_result_v.SUCCESS:
-            raise Exception(r)
-        self.__dditable.Metric = _Metric
-
-        # attach function interface to function address
-        self.zetMetricGet = _zetMetricGet_t(self.__dditable.Metric.pfnGet)
-        self.zetMetricGetProperties = _zetMetricGetProperties_t(self.__dditable.Metric.pfnGetProperties)
+        self.zetMetricGroupGetGlobalTimestampsExp = _zetMetricGroupGetGlobalTimestampsExp_t(self.__dditable.MetricGroupExp.pfnGetGlobalTimestampsExp)
 
         # call driver to get function pointers
         _MetricStreamer = _zet_metric_streamer_dditable_t()

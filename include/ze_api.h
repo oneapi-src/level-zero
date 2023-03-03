@@ -5,7 +5,7 @@
  * SPDX-License-Identifier: MIT
  *
  * @file ze_api.h
- * @version v1.5-r1.5.8
+ * @version v1.5-r1.5.17
  *
  */
 #ifndef _ZE_API_H
@@ -742,6 +742,10 @@ typedef struct _ze_device_memory_ext_properties_t ze_device_memory_ext_propertie
 typedef struct _ze_device_ip_version_ext_t ze_device_ip_version_ext_t;
 
 ///////////////////////////////////////////////////////////////////////////////
+/// @brief Forward-declare ze_kernel_max_group_size_properties_ext_t
+typedef struct _ze_kernel_max_group_size_properties_ext_t ze_kernel_max_group_size_properties_ext_t;
+
+///////////////////////////////////////////////////////////////////////////////
 /// @brief Forward-declare ze_sub_allocation_t
 typedef struct _ze_sub_allocation_t ze_sub_allocation_t;
 
@@ -1192,6 +1196,7 @@ typedef struct _ze_device_properties_t
     ze_device_type_t type;                          ///< [out] generic device type
     uint32_t vendorId;                              ///< [out] vendor id from PCI configuration
     uint32_t deviceId;                              ///< [out] device id from PCI configuration
+                                                    ///< Note, the device id uses little-endian format.
     ze_device_property_flags_t flags;               ///< [out] 0 (none) or a valid combination of ::ze_device_property_flag_t
     uint32_t subdeviceId;                           ///< [out] sub-device id. Only valid if ::ZE_DEVICE_PROPERTY_FLAG_SUBDEVICE
                                                     ///< is set.
@@ -5449,14 +5454,18 @@ zeKernelGetIndirectAccess(
 ///         + `nullptr == hKernel`
 ///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
 ///         + `nullptr == pSize`
-///         + `nullptr == pString`
 ZE_APIEXPORT ze_result_t ZE_APICALL
 zeKernelGetSourceAttributes(
     ze_kernel_handle_t hKernel,                     ///< [in] handle of the kernel object
-    uint32_t* pSize,                                ///< [in,out] pointer to size of string in bytes.
-    char** pString                                  ///< [in,out] pointer to null-terminated string, whose lifetime is tied to
-                                                    ///< the kernel object, where kernel source attributes are separated by
-                                                    ///< space.
+    uint32_t* pSize,                                ///< [in,out] pointer to size of string in bytes, including
+                                                    ///< null-terminating character.
+    char** pString                                  ///< [in,out][optional] pointer to application-managed character array
+                                                    ///< (string data).
+                                                    ///< If NULL, the string length of the kernel source attributes, including
+                                                    ///< a null-terminating character, is returned in pSize.
+                                                    ///< Otherwise, pString must point to valid application memory that is
+                                                    ///< greater than or equal to *pSize bytes in length, and on return the
+                                                    ///< pointed-to string will contain a space-separated list of kernel source attributes.
     );
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -8481,6 +8490,47 @@ typedef struct _ze_device_ip_version_ext_t
                                                     ///< version than older devices.
 
 } ze_device_ip_version_ext_t;
+
+#if !defined(__GNUC__)
+#pragma endregion
+#endif
+// Intel 'oneAPI' Level-Zero Extension for querying kernel max group size properties.
+#if !defined(__GNUC__)
+#pragma region kernelMaxGroupSizeProperties
+#endif
+///////////////////////////////////////////////////////////////////////////////
+#ifndef ZE_KERNEL_MAX_GROUP_SIZE_PROPERTIES_EXT_NAME
+/// @brief Kernel Max Group Size Properties Extension Name
+#define ZE_KERNEL_MAX_GROUP_SIZE_PROPERTIES_EXT_NAME  "ZE_extension_kernel_max_group_size_properties"
+#endif // ZE_KERNEL_MAX_GROUP_SIZE_PROPERTIES_EXT_NAME
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Kernel Max Group Size Properties Extension Version(s)
+typedef enum _ze_kernel_max_group_size_properties_ext_version_t
+{
+    ZE_KERNEL_MAX_GROUP_SIZE_PROPERTIES_EXT_VERSION_1_0 = ZE_MAKE_VERSION( 1, 0 ),  ///< version 1.0
+    ZE_KERNEL_MAX_GROUP_SIZE_PROPERTIES_EXT_VERSION_CURRENT = ZE_MAKE_VERSION( 1, 0 ),  ///< latest known version
+    ZE_KERNEL_MAX_GROUP_SIZE_PROPERTIES_EXT_VERSION_FORCE_UINT32 = 0x7fffffff
+
+} ze_kernel_max_group_size_properties_ext_version_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Additional kernel max group size properties
+/// 
+/// @details
+///     - This structure may be passed to ::zeKernelGetProperties, via the
+///       `pNext` member of ::ze_kernel_properties_t, to query additional kernel
+///       max group size properties.
+typedef struct _ze_kernel_max_group_size_properties_ext_t
+{
+    ze_structure_type_t stype;                      ///< [in] type of this structure
+    void* pNext;                                    ///< [in,out][optional] must be null or a pointer to an extension-specific
+                                                    ///< structure (i.e. contains sType and pNext).
+    uint32_t maxGroupSize;                          ///< [out] maximum group size that can be used to execute the kernel. This
+                                                    ///< value may be less than or equal to the `maxTotalGroupSize` member of
+                                                    ///< ::ze_device_compute_properties_t.
+
+} ze_kernel_max_group_size_properties_ext_t;
 
 #if !defined(__GNUC__)
 #pragma endregion

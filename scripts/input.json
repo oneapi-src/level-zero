@@ -711,6 +711,7 @@
                 "ordinal": 1000,
                 "owner": "$tMetricGroup",
                 "struct": [
+                    "$t_metric_global_timestamps_resolution_exp_t",
                     "$t_metric_properties_t"
                 ]
             },
@@ -720,6 +721,7 @@
                     "$t_metric_group_calculation_type_t"
                 ],
                 "function": [
+                    "GetGlobalTimestampsExp",
                     "Get",
                     "GetProperties",
                     "CalculateMetricValues",
@@ -1300,6 +1302,7 @@
                 "ordinal": 1000,
                 "owner": "$xModule",
                 "struct": [
+                    "$x_kernel_max_group_size_properties_ext_t",
                     "$x_scheduling_hint_exp_desc_t",
                     "$x_kernel_desc_t",
                     "$x_kernel_properties_t",
@@ -2125,6 +2128,7 @@
                     "$T_STRUCTURE_TYPE_DEVICE_DEBUG_PROPERTIES",
                     "$T_STRUCTURE_TYPE_DEBUG_MEMORY_SPACE_DESC",
                     "$T_STRUCTURE_TYPE_DEBUG_REGSET_PROPERTIES",
+                    "$T_STRUCTURE_TYPE_GLOBAL_METRICS_TIMESTAMPS_EXP_PROPERTIES",
                     "$T_STRUCTURE_TYPE_TRACER_EXP_DESC"
                 ],
                 "max": "$T_STRUCTURE_TYPE_TRACER_EXP_DESC"
@@ -2707,6 +2711,14 @@
                 ],
                 "max": "0x7"
             },
+            "$x_kernel_max_group_size_properties_ext_version_t": {
+                "class": "",
+                "etors": [
+                    "$X_KERNEL_MAX_GROUP_SIZE_PROPERTIES_EXT_VERSION_1_0",
+                    "$X_KERNEL_MAX_GROUP_SIZE_PROPERTIES_EXT_VERSION_CURRENT"
+                ],
+                "max": "$X_KERNEL_MAX_GROUP_SIZE_PROPERTIES_EXT_VERSION_CURRENT"
+            },
             "$x_latency_unit_t": {
                 "class": "",
                 "etors": [
@@ -2808,6 +2820,14 @@
                     "$X_MEMORY_TYPE_SHARED"
                 ],
                 "max": "$X_MEMORY_TYPE_SHARED"
+            },
+            "$x_metric_global_timestamps_exp_version_t": {
+                "class": "",
+                "etors": [
+                    "$X_METRIC_GLOBAL_TIMESTAMPS_EXP_VERSION_1_0",
+                    "$X_METRIC_GLOBAL_TIMESTAMPS_EXP_VERSION_CURRENT"
+                ],
+                "max": "$X_METRIC_GLOBAL_TIMESTAMPS_EXP_VERSION_CURRENT"
             },
             "$x_module_format_t": {
                 "class": "$xModule",
@@ -5019,6 +5039,23 @@
                     },
                     {
                         "type": "$t_metric_group_handle_t*"
+                    }
+                ]
+            },
+            "$tMetricGroupGetGlobalTimestampsExp": {
+                "class": "$tMetricGroup",
+                "params": [
+                    {
+                        "type": "$t_metric_group_handle_t"
+                    },
+                    {
+                        "type": "$x_bool_t"
+                    },
+                    {
+                        "type": "uint64_t*"
+                    },
+                    {
+                        "type": "uint64_t*"
                     }
                 ]
             },
@@ -7592,7 +7629,7 @@
             "$S_MAX_RAS_ERROR_CATEGORY_COUNT": {
                 "class": "",
                 "values": [
-                    "7"
+                    "10"
                 ]
             },
             "$S_POWER_LIMITS_EXT_NAME": {
@@ -7617,6 +7654,12 @@
                 "class": "",
                 "values": [
                     "\"$XT_experimental_api_tracing\""
+                ]
+            },
+            "$T_GLOBAL_METRICS_TIMESTAMPS_EXP_NAME": {
+                "class": "",
+                "values": [
+                    "\"$XT_experimental_global_metric_timestamps\""
                 ]
             },
             "$T_MAX_METRIC_COMPONENT": {
@@ -7800,6 +7843,12 @@
                 "class": "",
                 "values": [
                     "\"$X_extension_image_view_planar\""
+                ]
+            },
+            "$X_KERNEL_MAX_GROUP_SIZE_PROPERTIES_EXT_NAME": {
+                "class": "",
+                "values": [
+                    "\"$X_extension_kernel_max_group_size_properties\""
                 ]
             },
             "$X_KERNEL_SCHEDULING_HINTS_EXP_NAME": {
@@ -8870,7 +8919,7 @@
                         "type": "uint64_t"
                     },
                     {
-                        "desc": "[out] The timestamp when these measurements were sampled.\nThis timestamp should only be used to calculate delta time between snapshots of this structure.\nNever take the delta of this timestamp with the timestamp from a different structure since they are not guaranteed to have the same base.\nThe absolute value of the timestamp is only valid during within the application and may be different on the next execution.\n",
+                        "desc": "[out] The timestamp in microseconds when these measurements were sampled.\nThis timestamp should only be used to calculate delta time between snapshots of this structure.\nNever take the delta of this timestamp with the timestamp from a different structure since they are not guaranteed to have the same base.\nThe absolute value of the timestamp is only valid during within the application and may be different on the next execution.\n",
                         "init": null,
                         "name": "timestamp",
                         "type": "uint64_t"
@@ -10081,6 +10130,23 @@
                     }
                 ]
             },
+            "$t_metric_global_timestamps_resolution_exp_t": {
+                "class": "$tMetric",
+                "members": [
+                    {
+                        "desc": "[out] Returns the resolution of device timer in nanoseconds used for timestamps.",
+                        "init": null,
+                        "name": "timerResolution",
+                        "type": "uint64_t"
+                    },
+                    {
+                        "desc": "[out] Returns the number of valid bits in the timestamp value.",
+                        "init": null,
+                        "name": "timestampValidBits",
+                        "type": "uint64_t"
+                    }
+                ]
+            },
             "$t_metric_group_properties_t": {
                 "class": "$tMetricGroup",
                 "members": [
@@ -10928,7 +10994,7 @@
                         "type": "uint32_t"
                     },
                     {
-                        "desc": "[out] device id from PCI configuration",
+                        "desc": "[out] device id from PCI configuration\nNote, the device id uses little-endian format.\n",
                         "init": null,
                         "name": "deviceId",
                         "type": "uint32_t"
@@ -11702,6 +11768,17 @@
                         "init": "nullptr",
                         "name": "pKernelName",
                         "type": "const char*"
+                    }
+                ]
+            },
+            "$x_kernel_max_group_size_properties_ext_t": {
+                "class": "$xKernel",
+                "members": [
+                    {
+                        "desc": "[out] maximum group size that can be used to execute the kernel. This value may be less than or equal to the `maxTotalGroupSize` member of $x_device_compute_properties_t.",
+                        "init": null,
+                        "name": "maxGroupSize",
+                        "type": "uint32_t"
                     }
                 ]
             },
@@ -14756,6 +14833,24 @@
                 "name": "ze_kernel_indirect_access_flags_t",
                 "type": "enum"
             },
+            "ze_kernel_max_group_size_properties_ext_version_t": {
+                "desc": "Kernel Max Group Size Properties Extension Version(s)",
+                "etors": [
+                    {
+                        "desc": "version 1.0",
+                        "name": "ZE_KERNEL_MAX_GROUP_SIZE_PROPERTIES_EXT_VERSION_1_0",
+                        "value": "ZE_MAKE_VERSION( 1, 0 )"
+                    },
+                    {
+                        "desc": "latest known version",
+                        "name": "ZE_KERNEL_MAX_GROUP_SIZE_PROPERTIES_EXT_VERSION_CURRENT",
+                        "value": "ZE_MAKE_VERSION( 1, 0 )"
+                    }
+                ],
+                "name": "ze_kernel_max_group_size_properties_ext_version_t",
+                "type": "enum",
+                "version": "1.5"
+            },
             "ze_latency_unit_t": {
                 "desc": "Latency unit",
                 "etors": [
@@ -15028,6 +15123,24 @@
                 ],
                 "name": "ze_memory_type_t",
                 "type": "enum"
+            },
+            "ze_metric_global_timestamps_exp_version_t": {
+                "desc": "Global Metric Timestamps Experimental Extension Version(s)",
+                "etors": [
+                    {
+                        "desc": "version 1.0",
+                        "name": "ZE_METRIC_GLOBAL_TIMESTAMPS_EXP_VERSION_1_0",
+                        "value": "ZE_MAKE_VERSION( 1, 0 )"
+                    },
+                    {
+                        "desc": "latest known version",
+                        "name": "ZE_METRIC_GLOBAL_TIMESTAMPS_EXP_VERSION_CURRENT",
+                        "value": "ZE_MAKE_VERSION( 1, 0 )"
+                    }
+                ],
+                "name": "ze_metric_global_timestamps_exp_version_t",
+                "type": "enum",
+                "version": "1.5"
             },
             "ze_module_format_t": {
                 "class": "zeModule",
@@ -17931,6 +18044,12 @@
                         "desc": "zet_debug_regset_properties_t",
                         "name": "ZET_STRUCTURE_TYPE_DEBUG_REGSET_PROPERTIES",
                         "value": "0x8"
+                    },
+                    {
+                        "desc": "zet_metric_global_timestamps_resolution_exp_t",
+                        "name": "ZET_STRUCTURE_TYPE_GLOBAL_METRICS_TIMESTAMPS_EXP_PROPERTIES",
+                        "value": "0x9",
+                        "version": "1.5"
                     },
                     {
                         "desc": "zet_tracer_exp_desc_t",
@@ -25126,6 +25245,70 @@
                 "type": "function",
                 "version": "1.1"
             },
+            "GetGlobalTimestampsExp": {
+                "class": "zetMetricGroup",
+                "decl": "static",
+                "desc": "Returns metric timestamps synchronized with global device timestamps, optionally synchronized with host",
+                "details": [
+                    "The application may call this function from simultaneous threads.",
+                    "By default, the global and metrics timestamps are synchronized to the device."
+                ],
+                "hash": "223592fae768685fbaf678e7be2615d9d155a4f4c8d4e984da32b75707c71394",
+                "name": "GetGlobalTimestampsExp",
+                "params": [
+                    {
+                        "desc": "[in] handle of the metric group",
+                        "name": "hMetricGroup",
+                        "type": "zet_metric_group_handle_t"
+                    },
+                    {
+                        "desc": "[in] Returns the timestamps synchronized to the host or the device.",
+                        "init": "false",
+                        "name": "synchronizedWithHost",
+                        "type": "ze_bool_t"
+                    },
+                    {
+                        "desc": "[out] Device timestamp.\n",
+                        "name": "globalTimestamp",
+                        "type": "uint64_t*"
+                    },
+                    {
+                        "desc": "[out] Metric timestamp.",
+                        "name": "metricTimestamp",
+                        "type": "uint64_t*"
+                    }
+                ],
+                "returns": [
+                    {
+                        "ZE_RESULT_SUCCESS": []
+                    },
+                    {
+                        "ZE_RESULT_ERROR_UNINITIALIZED": []
+                    },
+                    {
+                        "ZE_RESULT_ERROR_DEVICE_LOST": []
+                    },
+                    {
+                        "ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY": []
+                    },
+                    {
+                        "ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY": []
+                    },
+                    {
+                        "ZE_RESULT_ERROR_INVALID_NULL_HANDLE": [
+                            "`nullptr == hMetricGroup`"
+                        ]
+                    },
+                    {
+                        "ZE_RESULT_ERROR_INVALID_NULL_POINTER": [
+                            "`nullptr == globalTimestamp`",
+                            "`nullptr == metricTimestamp`"
+                        ]
+                    }
+                ],
+                "type": "function",
+                "version": "1.5"
+            },
             "GetImageProperties": {
                 "class": "zeDevice",
                 "desc": "Retrieves image properties of the device",
@@ -26400,12 +26583,12 @@
                         "type": "ze_kernel_handle_t"
                     },
                     {
-                        "desc": "[in,out] pointer to size of string in bytes.",
+                        "desc": "[in,out] pointer to size of string in bytes, including null-terminating character.",
                         "name": "pSize",
                         "type": "uint32_t*"
                     },
                     {
-                        "desc": "[in,out] pointer to null-terminated string, whose lifetime is tied to the kernel object, where kernel source attributes are separated by space.",
+                        "desc": "[in,out][optional] pointer to application-managed character array (string data).\nIf NULL, the string length of the kernel source attributes, including a null-terminating character, is returned in pSize.\nOtherwise, pString must point to valid application memory that is greater than or equal to *pSize bytes in length, and on return the pointed-to string will contain a space-separated list of kernel source attributes.\n",
                         "name": "pString",
                         "type": "char**"
                     }
@@ -26433,8 +26616,7 @@
                     },
                     {
                         "ZE_RESULT_ERROR_INVALID_NULL_POINTER": [
-                            "`nullptr == pSize`",
-                            "`nullptr == pString`"
+                            "`nullptr == pSize`"
                         ]
                     }
                 ],
@@ -32588,7 +32770,7 @@
                 "desc": "The maximum number of categories",
                 "name": "ZES_MAX_RAS_ERROR_CATEGORY_COUNT",
                 "type": "macro",
-                "value": "7"
+                "value": "10"
             },
             "ZES_POWER_LIMITS_EXT_NAME": {
                 "desc": "Power Limits Extension Name",
@@ -32614,6 +32796,13 @@
                 "name": "ZET_API_TRACING_EXP_NAME",
                 "type": "macro",
                 "value": "\"ZET_experimental_api_tracing\""
+            },
+            "ZET_GLOBAL_METRICS_TIMESTAMPS_EXP_NAME": {
+                "desc": "Global Metric Timestamps Experimental Extension Name",
+                "name": "ZET_GLOBAL_METRICS_TIMESTAMPS_EXP_NAME",
+                "type": "macro",
+                "value": "\"ZET_experimental_global_metric_timestamps\"",
+                "version": "1.5"
             },
             "ZET_MAX_METRIC_COMPONENT": {
                 "desc": "Maximum metric component string size",
@@ -32819,6 +33008,13 @@
                 "name": "ZE_IMAGE_VIEW_PLANAR_EXT_NAME",
                 "type": "macro",
                 "value": "\"ZE_extension_image_view_planar\"",
+                "version": "1.5"
+            },
+            "ZE_KERNEL_MAX_GROUP_SIZE_PROPERTIES_EXT_NAME": {
+                "desc": "Kernel Max Group Size Properties Extension Name",
+                "name": "ZE_KERNEL_MAX_GROUP_SIZE_PROPERTIES_EXT_NAME",
+                "type": "macro",
+                "value": "\"ZE_extension_kernel_max_group_size_properties\"",
                 "version": "1.5"
             },
             "ZE_KERNEL_SCHEDULING_HINTS_EXP_NAME": {
@@ -33937,7 +34133,7 @@
                         "type": "uint32_t"
                     },
                     {
-                        "desc": "[out] device id from PCI configuration",
+                        "desc": "[out] device id from PCI configuration\nNote, the device id uses little-endian format.\n",
                         "name": "deviceId",
                         "type": "uint32_t"
                     },
@@ -35098,6 +35294,36 @@
                 ],
                 "name": "ze_kernel_desc_t",
                 "type": "struct"
+            },
+            "ze_kernel_max_group_size_properties_ext_t": {
+                "base": "ze_base_properties_t",
+                "class": "zeKernel",
+                "desc": "Additional kernel max group size properties",
+                "details": [
+                    "This structure may be passed to zeKernelGetProperties, via the `pNext` member of ze_kernel_properties_t, to query additional kernel max group size properties."
+                ],
+                "members": [
+                    {
+                        "desc": "[in] type of this structure",
+                        "init": "ZE_STRUCTURE_TYPE_KERNEL_MAX_GROUP_SIZE_PROPERTIES_EXT",
+                        "name": "stype",
+                        "type": "ze_structure_type_t"
+                    },
+                    {
+                        "desc": "[in,out][optional] must be null or a pointer to an extension-specific structure (i.e. contains sType and pNext).",
+                        "init": "nullptr",
+                        "name": "pNext",
+                        "type": "void*"
+                    },
+                    {
+                        "desc": "[out] maximum group size that can be used to execute the kernel. This value may be less than or equal to the `maxTotalGroupSize` member of ze_device_compute_properties_t.",
+                        "name": "maxGroupSize",
+                        "type": "uint32_t"
+                    }
+                ],
+                "name": "ze_kernel_max_group_size_properties_ext_t",
+                "type": "struct",
+                "version": "1.5"
             },
             "ze_kernel_preferred_group_size_properties_t": {
                 "base": "ze_base_properties_t",
@@ -37089,7 +37315,7 @@
                         "type": "uint64_t"
                     },
                     {
-                        "desc": "[out] The timestamp when these measurements were sampled.\nThis timestamp should only be used to calculate delta time between snapshots of this structure.\nNever take the delta of this timestamp with the timestamp from a different structure since they are not guaranteed to have the same base.\nThe absolute value of the timestamp is only valid during within the application and may be different on the next execution.\n",
+                        "desc": "[out] The timestamp in microseconds when these measurements were sampled.\nThis timestamp should only be used to calculate delta time between snapshots of this structure.\nNever take the delta of this timestamp with the timestamp from a different structure since they are not guaranteed to have the same base.\nThe absolute value of the timestamp is only valid during within the application and may be different on the next execution.\n",
                         "name": "timestamp",
                         "type": "uint64_t"
                     }
@@ -38667,6 +38893,42 @@
                 ],
                 "name": "zet_device_debug_properties_t",
                 "type": "struct"
+            },
+            "zet_metric_global_timestamps_resolution_exp_t": {
+                "base": "ze_base_desc_t",
+                "class": "zetMetric",
+                "desc": "Metric timestamps resolution",
+                "details": [
+                    "This structure may be returned from zetMetricGroupGetProperties via `pNext` member of zet_metric_group_properties_t",
+                    "Used for mapping metric timestamps to other timers."
+                ],
+                "members": [
+                    {
+                        "desc": "[in] type of this structure",
+                        "init": "ZET_STRUCTURE_TYPE_METRIC_GLOBAL_TIMESTAMPS_RESOLUTION_EXP",
+                        "name": "stype",
+                        "type": "ze_structure_type_t"
+                    },
+                    {
+                        "desc": "[in][optional] must be null or a pointer to an extension-specific structure (i.e. contains sType and pNext).",
+                        "init": "nullptr",
+                        "name": "pNext",
+                        "type": "const void*"
+                    },
+                    {
+                        "desc": "[out] Returns the resolution of device timer in nanoseconds used for timestamps.",
+                        "name": "timerResolution",
+                        "type": "uint64_t"
+                    },
+                    {
+                        "desc": "[out] Returns the number of valid bits in the timestamp value.",
+                        "name": "timestampValidBits",
+                        "type": "uint64_t"
+                    }
+                ],
+                "name": "zet_metric_global_timestamps_resolution_exp_t",
+                "type": "struct",
+                "version": "1.5"
             },
             "zet_metric_group_properties_t": {
                 "base": "zet_base_properties_t",
@@ -40833,7 +41095,7 @@
                                 "type": "uint32_t"
                             },
                             {
-                                "desc": "[out] device id from PCI configuration",
+                                "desc": "[out] device id from PCI configuration\nNote, the device id uses little-endian format.\n",
                                 "name": "deviceId",
                                 "type": "uint32_t"
                             },
@@ -49276,12 +49538,12 @@
                                 "type": "$x_kernel_handle_t"
                             },
                             {
-                                "desc": "[in,out] pointer to size of string in bytes.",
+                                "desc": "[in,out] pointer to size of string in bytes, including null-terminating character.",
                                 "name": "pSize",
                                 "type": "uint32_t*"
                             },
                             {
-                                "desc": "[in,out] pointer to null-terminated string, whose lifetime is tied to the kernel object, where kernel source attributes are separated by space.",
+                                "desc": "[in,out][optional] pointer to application-managed character array (string data).\nIf NULL, the string length of the kernel source attributes, including a null-terminating character, is returned in pSize.\nOtherwise, pString must point to valid application memory that is greater than or equal to *pSize bytes in length, and on return the pointed-to string will contain a space-separated list of kernel source attributes.\n",
                                 "name": "pString",
                                 "type": "char**"
                             }
@@ -49309,8 +49571,7 @@
                             },
                             {
                                 "$X_RESULT_ERROR_INVALID_NULL_POINTER": [
-                                    "`nullptr == pSize`",
-                                    "`nullptr == pString`"
+                                    "`nullptr == pSize`"
                                 ]
                             }
                         ],
@@ -55281,6 +55542,72 @@
             },
             {
                 "header": {
+                    "desc": "Intel $OneApi Level-Zero Extension for querying kernel max group size properties.",
+                    "ordinal": 1500,
+                    "type": "header",
+                    "version": "1.5"
+                },
+                "name": "kernelMaxGroupSizeProperties",
+                "objects": [
+                    {
+                        "desc": "Kernel Max Group Size Properties Extension Name",
+                        "name": "$X_KERNEL_MAX_GROUP_SIZE_PROPERTIES_EXT_NAME",
+                        "type": "macro",
+                        "value": "\"$X_extension_kernel_max_group_size_properties\"",
+                        "version": "1.5"
+                    },
+                    {
+                        "desc": "Kernel Max Group Size Properties Extension Version(s)",
+                        "etors": [
+                            {
+                                "desc": "version 1.0",
+                                "name": "$X_KERNEL_MAX_GROUP_SIZE_PROPERTIES_EXT_VERSION_1_0",
+                                "value": "$X_MAKE_VERSION( 1, 0 )"
+                            },
+                            {
+                                "desc": "latest known version",
+                                "name": "$X_KERNEL_MAX_GROUP_SIZE_PROPERTIES_EXT_VERSION_CURRENT",
+                                "value": "$X_MAKE_VERSION( 1, 0 )"
+                            }
+                        ],
+                        "name": "$x_kernel_max_group_size_properties_ext_version_t",
+                        "type": "enum",
+                        "version": "1.5"
+                    },
+                    {
+                        "base": "$x_base_properties_t",
+                        "class": "$xKernel",
+                        "desc": "Additional kernel max group size properties",
+                        "details": [
+                            "This structure may be passed to $xKernelGetProperties, via the `pNext` member of $x_kernel_properties_t, to query additional kernel max group size properties."
+                        ],
+                        "members": [
+                            {
+                                "desc": "[in] type of this structure",
+                                "init": "$X_STRUCTURE_TYPE_KERNEL_MAX_GROUP_SIZE_PROPERTIES_EXT",
+                                "name": "stype",
+                                "type": "$x_structure_type_t"
+                            },
+                            {
+                                "desc": "[in,out][optional] must be null or a pointer to an extension-specific structure (i.e. contains sType and pNext).",
+                                "init": "nullptr",
+                                "name": "pNext",
+                                "type": "void*"
+                            },
+                            {
+                                "desc": "[out] maximum group size that can be used to execute the kernel. This value may be less than or equal to the `maxTotalGroupSize` member of $x_device_compute_properties_t.",
+                                "name": "maxGroupSize",
+                                "type": "uint32_t"
+                            }
+                        ],
+                        "name": "$x_kernel_max_group_size_properties_ext_t",
+                        "type": "struct",
+                        "version": "1.5"
+                    }
+                ]
+            },
+            {
+                "header": {
                     "desc": "Intel $OneApi Level-Zero Extension for querying sub-allocations properties.",
                     "ordinal": 1500,
                     "type": "header",
@@ -55505,6 +55832,12 @@
                                 "desc": "$t_debug_regset_properties_t",
                                 "name": "$T_STRUCTURE_TYPE_DEBUG_REGSET_PROPERTIES",
                                 "value": "0x8"
+                            },
+                            {
+                                "desc": "$t_metric_global_timestamps_resolution_exp_t",
+                                "name": "$T_STRUCTURE_TYPE_GLOBAL_METRICS_TIMESTAMPS_EXP_PROPERTIES",
+                                "value": "0x9",
+                                "version": "1.5"
                             },
                             {
                                 "desc": "$t_tracer_exp_desc_t",
@@ -59121,6 +59454,142 @@
                         ],
                         "type": "function",
                         "version": "1.2"
+                    }
+                ]
+            },
+            {
+                "header": {
+                    "desc": "Intel $OneApi Level-Zero Tool Experimental Extension for Global Metric Timestamps",
+                    "ordinal": 1500,
+                    "type": "header",
+                    "version": "1.5"
+                },
+                "name": "GlobalTimestamps",
+                "objects": [
+                    {
+                        "desc": "Global Metric Timestamps Experimental Extension Name",
+                        "name": "$T_GLOBAL_METRICS_TIMESTAMPS_EXP_NAME",
+                        "type": "macro",
+                        "value": "\"$XT_experimental_global_metric_timestamps\"",
+                        "version": "1.5"
+                    },
+                    {
+                        "desc": "Global Metric Timestamps Experimental Extension Version(s)",
+                        "etors": [
+                            {
+                                "desc": "version 1.0",
+                                "name": "$X_METRIC_GLOBAL_TIMESTAMPS_EXP_VERSION_1_0",
+                                "value": "$X_MAKE_VERSION( 1, 0 )"
+                            },
+                            {
+                                "desc": "latest known version",
+                                "name": "$X_METRIC_GLOBAL_TIMESTAMPS_EXP_VERSION_CURRENT",
+                                "value": "$X_MAKE_VERSION( 1, 0 )"
+                            }
+                        ],
+                        "name": "$x_metric_global_timestamps_exp_version_t",
+                        "type": "enum",
+                        "version": "1.5"
+                    },
+                    {
+                        "base": "$x_base_desc_t",
+                        "class": "$tMetric",
+                        "desc": "Metric timestamps resolution",
+                        "details": [
+                            "This structure may be returned from $tMetricGroupGetProperties via `pNext` member of $t_metric_group_properties_t",
+                            "Used for mapping metric timestamps to other timers."
+                        ],
+                        "members": [
+                            {
+                                "desc": "[in] type of this structure",
+                                "init": "$T_STRUCTURE_TYPE_METRIC_GLOBAL_TIMESTAMPS_RESOLUTION_EXP",
+                                "name": "stype",
+                                "type": "$x_structure_type_t"
+                            },
+                            {
+                                "desc": "[in][optional] must be null or a pointer to an extension-specific structure (i.e. contains sType and pNext).",
+                                "init": "nullptr",
+                                "name": "pNext",
+                                "type": "const void*"
+                            },
+                            {
+                                "desc": "[out] Returns the resolution of device timer in nanoseconds used for timestamps.",
+                                "name": "timerResolution",
+                                "type": "uint64_t"
+                            },
+                            {
+                                "desc": "[out] Returns the number of valid bits in the timestamp value.",
+                                "name": "timestampValidBits",
+                                "type": "uint64_t"
+                            }
+                        ],
+                        "name": "$t_metric_global_timestamps_resolution_exp_t",
+                        "type": "struct",
+                        "version": "1.5"
+                    },
+                    {
+                        "class": "$tMetricGroup",
+                        "decl": "static",
+                        "desc": "Returns metric timestamps synchronized with global device timestamps, optionally synchronized with host",
+                        "details": [
+                            "The application may call this function from simultaneous threads.",
+                            "By default, the global and metrics timestamps are synchronized to the device."
+                        ],
+                        "hash": "223592fae768685fbaf678e7be2615d9d155a4f4c8d4e984da32b75707c71394",
+                        "name": "GetGlobalTimestampsExp",
+                        "params": [
+                            {
+                                "desc": "[in] handle of the metric group",
+                                "name": "hMetricGroup",
+                                "type": "$t_metric_group_handle_t"
+                            },
+                            {
+                                "desc": "[in] Returns the timestamps synchronized to the host or the device.",
+                                "init": "false",
+                                "name": "synchronizedWithHost",
+                                "type": "$x_bool_t"
+                            },
+                            {
+                                "desc": "[out] Device timestamp.\n",
+                                "name": "globalTimestamp",
+                                "type": "uint64_t*"
+                            },
+                            {
+                                "desc": "[out] Metric timestamp.",
+                                "name": "metricTimestamp",
+                                "type": "uint64_t*"
+                            }
+                        ],
+                        "returns": [
+                            {
+                                "$X_RESULT_SUCCESS": []
+                            },
+                            {
+                                "$X_RESULT_ERROR_UNINITIALIZED": []
+                            },
+                            {
+                                "$X_RESULT_ERROR_DEVICE_LOST": []
+                            },
+                            {
+                                "$X_RESULT_ERROR_OUT_OF_HOST_MEMORY": []
+                            },
+                            {
+                                "$X_RESULT_ERROR_OUT_OF_DEVICE_MEMORY": []
+                            },
+                            {
+                                "$X_RESULT_ERROR_INVALID_NULL_HANDLE": [
+                                    "`nullptr == hMetricGroup`"
+                                ]
+                            },
+                            {
+                                "$X_RESULT_ERROR_INVALID_NULL_POINTER": [
+                                    "`nullptr == globalTimestamp`",
+                                    "`nullptr == metricTimestamp`"
+                                ]
+                            }
+                        ],
+                        "type": "function",
+                        "version": "1.5"
                     }
                 ]
             }
@@ -67238,7 +67707,7 @@
                                 "type": "uint64_t"
                             },
                             {
-                                "desc": "[out] The timestamp when these measurements were sampled.\nThis timestamp should only be used to calculate delta time between snapshots of this structure.\nNever take the delta of this timestamp with the timestamp from a different structure since they are not guaranteed to have the same base.\nThe absolute value of the timestamp is only valid during within the application and may be different on the next execution.\n",
+                                "desc": "[out] The timestamp in microseconds when these measurements were sampled.\nThis timestamp should only be used to calculate delta time between snapshots of this structure.\nNever take the delta of this timestamp with the timestamp from a different structure since they are not guaranteed to have the same base.\nThe absolute value of the timestamp is only valid during within the application and may be different on the next execution.\n",
                                 "name": "timestamp",
                                 "type": "uint64_t"
                             }
@@ -68898,7 +69367,7 @@
                         "desc": "The maximum number of categories",
                         "name": "$S_MAX_RAS_ERROR_CATEGORY_COUNT",
                         "type": "macro",
-                        "value": "7"
+                        "value": "10"
                     },
                     {
                         "base": "$s_base_properties_t",

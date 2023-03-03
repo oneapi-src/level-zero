@@ -808,4 +808,25 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
 
+
+    ze_result_t
+    ZETParameterValidation::zetMetricGroupGetGlobalTimestampsExp(
+        zet_metric_group_handle_t hMetricGroup,         ///< [in] handle of the metric group
+        ze_bool_t synchronizedWithHost,                 ///< [in] Returns the timestamps synchronized to the host or the device.
+        uint64_t* globalTimestamp,                      ///< [out] Device timestamp.
+        uint64_t* metricTimestamp                       ///< [out] Metric timestamp.
+        )
+    {
+        if( nullptr == hMetricGroup )
+            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+        if( nullptr == globalTimestamp )
+            return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+        if( nullptr == metricTimestamp )
+            return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+        return ZE_RESULT_SUCCESS;
+    }
+
 }

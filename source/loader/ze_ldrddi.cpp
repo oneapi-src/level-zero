@@ -3350,10 +3350,15 @@ namespace loader
     __zedlllocal ze_result_t ZE_APICALL
     zeKernelGetSourceAttributes(
         ze_kernel_handle_t hKernel,                     ///< [in] handle of the kernel object
-        uint32_t* pSize,                                ///< [in,out] pointer to size of string in bytes.
-        char** pString                                  ///< [in,out] pointer to null-terminated string, whose lifetime is tied to
-                                                        ///< the kernel object, where kernel source attributes are separated by
-                                                        ///< space.
+        uint32_t* pSize,                                ///< [in,out] pointer to size of string in bytes, including
+                                                        ///< null-terminating character.
+        char** pString                                  ///< [in,out][optional] pointer to application-managed character array
+                                                        ///< (string data).
+                                                        ///< If NULL, the string length of the kernel source attributes, including
+                                                        ///< a null-terminating character, is returned in pSize.
+                                                        ///< Otherwise, pString must point to valid application memory that is
+                                                        ///< greater than or equal to *pSize bytes in length, and on return the
+                                                        ///< pointed-to string will contain a space-separated list of kernel source attributes.
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;

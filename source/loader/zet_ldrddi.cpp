@@ -1316,6 +1316,33 @@ namespace loader
         return result;
     }
 
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zetMetricGroupGetGlobalTimestampsExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zetMetricGroupGetGlobalTimestampsExp(
+        zet_metric_group_handle_t hMetricGroup,         ///< [in] handle of the metric group
+        ze_bool_t synchronizedWithHost,                 ///< [in] Returns the timestamps synchronized to the host or the device.
+        uint64_t* globalTimestamp,                      ///< [out] Device timestamp.
+        uint64_t* metricTimestamp                       ///< [out] Metric timestamp.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zet_metric_group_object_t*>( hMetricGroup )->dditable;
+        auto pfnGetGlobalTimestampsExp = dditable->zet.MetricGroupExp.pfnGetGlobalTimestampsExp;
+        if( nullptr == pfnGetGlobalTimestampsExp )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hMetricGroup = reinterpret_cast<zet_metric_group_object_t*>( hMetricGroup )->handle;
+
+        // forward to device-driver
+        result = pfnGetGlobalTimestampsExp( hMetricGroup, synchronizedWithHost, globalTimestamp, metricTimestamp );
+
+        return result;
+    }
+
 } // namespace loader
 
 #if defined(__cplusplus)
@@ -1987,6 +2014,7 @@ zetGetMetricGroupExpProcAddrTable(
         {
             // return pointers to loader's DDIs
             pDdiTable->pfnCalculateMultipleMetricValuesExp         = loader::zetMetricGroupCalculateMultipleMetricValuesExp;
+            pDdiTable->pfnGetGlobalTimestampsExp                   = loader::zetMetricGroupGetGlobalTimestampsExp;
         }
         else
         {

@@ -5,7 +5,7 @@
  * SPDX-License-Identifier: MIT
  *
  * @file zet_api.h
- * @version v1.5-r1.5.8
+ * @version v1.5-r1.5.17
  *
  */
 #ifndef _ZET_API_H
@@ -89,6 +89,7 @@ typedef enum _zet_structure_type_t
     ZET_STRUCTURE_TYPE_DEVICE_DEBUG_PROPERTIES = 0x6,   ///< ::zet_device_debug_properties_t
     ZET_STRUCTURE_TYPE_DEBUG_MEMORY_SPACE_DESC = 0x7,   ///< ::zet_debug_memory_space_desc_t
     ZET_STRUCTURE_TYPE_DEBUG_REGSET_PROPERTIES = 0x8,   ///< ::zet_debug_regset_properties_t
+    ZET_STRUCTURE_TYPE_GLOBAL_METRICS_TIMESTAMPS_EXP_PROPERTIES = 0x9,  ///< ::zet_metric_global_timestamps_resolution_exp_t
     ZET_STRUCTURE_TYPE_TRACER_EXP_DESC = 0x00010001,///< ::zet_tracer_exp_desc_t
     ZET_STRUCTURE_TYPE_FORCE_UINT32 = 0x7fffffff
 
@@ -235,6 +236,10 @@ typedef struct _zet_profile_register_sequence_t zet_profile_register_sequence_t;
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief Forward-declare zet_tracer_exp_desc_t
 typedef struct _zet_tracer_exp_desc_t zet_tracer_exp_desc_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Forward-declare zet_metric_global_timestamps_resolution_exp_t
+typedef struct _zet_metric_global_timestamps_resolution_exp_t zet_metric_global_timestamps_resolution_exp_t;
 
 
 #if !defined(__GNUC__)
@@ -1852,6 +1857,75 @@ zetMetricGroupCalculateMultipleMetricValuesExp(
                                                     ///< calculated metrics.
                                                     ///< if count is less than the number available in the raw data buffer,
                                                     ///< then driver shall only calculate that number of metric values.
+    );
+
+#if !defined(__GNUC__)
+#pragma endregion
+#endif
+// Intel 'oneAPI' Level-Zero Tool Experimental Extension for Global Metric Timestamps
+#if !defined(__GNUC__)
+#pragma region GlobalTimestamps
+#endif
+///////////////////////////////////////////////////////////////////////////////
+#ifndef ZET_GLOBAL_METRICS_TIMESTAMPS_EXP_NAME
+/// @brief Global Metric Timestamps Experimental Extension Name
+#define ZET_GLOBAL_METRICS_TIMESTAMPS_EXP_NAME  "ZET_experimental_global_metric_timestamps"
+#endif // ZET_GLOBAL_METRICS_TIMESTAMPS_EXP_NAME
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Global Metric Timestamps Experimental Extension Version(s)
+typedef enum _ze_metric_global_timestamps_exp_version_t
+{
+    ZE_METRIC_GLOBAL_TIMESTAMPS_EXP_VERSION_1_0 = ZE_MAKE_VERSION( 1, 0 ),  ///< version 1.0
+    ZE_METRIC_GLOBAL_TIMESTAMPS_EXP_VERSION_CURRENT = ZE_MAKE_VERSION( 1, 0 ),  ///< latest known version
+    ZE_METRIC_GLOBAL_TIMESTAMPS_EXP_VERSION_FORCE_UINT32 = 0x7fffffff
+
+} ze_metric_global_timestamps_exp_version_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Metric timestamps resolution
+/// 
+/// @details
+///     - This structure may be returned from ::zetMetricGroupGetProperties via
+///       `pNext` member of ::zet_metric_group_properties_t
+///     - Used for mapping metric timestamps to other timers.
+typedef struct _zet_metric_global_timestamps_resolution_exp_t
+{
+    ze_structure_type_t stype;                      ///< [in] type of this structure
+    const void* pNext;                              ///< [in][optional] must be null or a pointer to an extension-specific
+                                                    ///< structure (i.e. contains sType and pNext).
+    uint64_t timerResolution;                       ///< [out] Returns the resolution of device timer in nanoseconds used for
+                                                    ///< timestamps.
+    uint64_t timestampValidBits;                    ///< [out] Returns the number of valid bits in the timestamp value.
+
+} zet_metric_global_timestamps_resolution_exp_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Returns metric timestamps synchronized with global device timestamps,
+///        optionally synchronized with host
+/// 
+/// @details
+///     - The application may call this function from simultaneous threads.
+///     - By default, the global and metrics timestamps are synchronized to the
+///       device.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hMetricGroup`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == globalTimestamp`
+///         + `nullptr == metricTimestamp`
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zetMetricGroupGetGlobalTimestampsExp(
+    zet_metric_group_handle_t hMetricGroup,         ///< [in] handle of the metric group
+    ze_bool_t synchronizedWithHost,                 ///< [in] Returns the timestamps synchronized to the host or the device.
+    uint64_t* globalTimestamp,                      ///< [out] Device timestamp.
+    uint64_t* metricTimestamp                       ///< [out] Metric timestamp.
     );
 
 #if !defined(__GNUC__)

@@ -1337,6 +1337,38 @@ namespace validation_layer
         return pfnCalculateMultipleMetricValuesExp( hMetricGroup, type, rawDataSize, pRawData, pSetCount, pTotalMetricValueCount, pMetricCounts, pMetricValues );
     }
 
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zetMetricGroupGetGlobalTimestampsExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zetMetricGroupGetGlobalTimestampsExp(
+        zet_metric_group_handle_t hMetricGroup,         ///< [in] handle of the metric group
+        ze_bool_t synchronizedWithHost,                 ///< [in] Returns the timestamps synchronized to the host or the device.
+        uint64_t* globalTimestamp,                      ///< [out] Device timestamp.
+        uint64_t* metricTimestamp                       ///< [out] Metric timestamp.
+        )
+    {
+        auto pfnGetGlobalTimestampsExp = context.zetDdiTable.MetricGroupExp.pfnGetGlobalTimestampsExp;
+
+        if( nullptr == pfnGetGlobalTimestampsExp )
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        if( context.enableParameterValidation )
+        {
+            auto result = context.paramValidation->zetParamValidation.zetMetricGroupGetGlobalTimestampsExp( hMetricGroup, synchronizedWithHost, globalTimestamp, metricTimestamp );
+            if(result!=ZE_RESULT_SUCCESS) return result;
+        }
+
+        if( context.enableHandleLifetime ){ 
+            //Unimplemented
+        }
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        return pfnGetGlobalTimestampsExp( hMetricGroup, synchronizedWithHost, globalTimestamp, metricTimestamp );
+    }
+
 } // namespace validation_layer
 
 #if defined(__cplusplus)
@@ -1669,6 +1701,9 @@ zetGetMetricGroupExpProcAddrTable(
 
     dditable.pfnCalculateMultipleMetricValuesExp         = pDdiTable->pfnCalculateMultipleMetricValuesExp;
     pDdiTable->pfnCalculateMultipleMetricValuesExp       = validation_layer::zetMetricGroupCalculateMultipleMetricValuesExp;
+
+    dditable.pfnGetGlobalTimestampsExp                   = pDdiTable->pfnGetGlobalTimestampsExp;
+    pDdiTable->pfnGetGlobalTimestampsExp                 = validation_layer::zetMetricGroupGetGlobalTimestampsExp;
 
     return result;
 }

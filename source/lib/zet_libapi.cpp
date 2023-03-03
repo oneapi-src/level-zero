@@ -1568,4 +1568,43 @@ zetMetricGroupCalculateMultipleMetricValuesExp(
     return pfnCalculateMultipleMetricValuesExp( hMetricGroup, type, rawDataSize, pRawData, pSetCount, pTotalMetricValueCount, pMetricCounts, pMetricValues );
 }
 
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Returns metric timestamps synchronized with global device timestamps,
+///        optionally synchronized with host
+/// 
+/// @details
+///     - The application may call this function from simultaneous threads.
+///     - By default, the global and metrics timestamps are synchronized to the
+///       device.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hMetricGroup`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == globalTimestamp`
+///         + `nullptr == metricTimestamp`
+ze_result_t ZE_APICALL
+zetMetricGroupGetGlobalTimestampsExp(
+    zet_metric_group_handle_t hMetricGroup,         ///< [in] handle of the metric group
+    ze_bool_t synchronizedWithHost,                 ///< [in] Returns the timestamps synchronized to the host or the device.
+    uint64_t* globalTimestamp,                      ///< [out] Device timestamp.
+    uint64_t* metricTimestamp                       ///< [out] Metric timestamp.
+    )
+{
+    auto pfnGetGlobalTimestampsExp = ze_lib::context->zetDdiTable.MetricGroupExp.pfnGetGlobalTimestampsExp;
+    if( nullptr == pfnGetGlobalTimestampsExp ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    return pfnGetGlobalTimestampsExp( hMetricGroup, synchronizedWithHost, globalTimestamp, metricTimestamp );
+}
+
 } // extern "C"

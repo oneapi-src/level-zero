@@ -4,7 +4,7 @@
  SPDX-License-Identifier: MIT
 
  @file ze.py
- @version v1.5-r1.5.8
+ @version v1.5-r1.5.17
 
  """
 import platform
@@ -517,6 +517,7 @@ class ze_device_properties_t(Structure):
         ("type", ze_device_type_t),                                     ## [out] generic device type
         ("vendorId", c_ulong),                                          ## [out] vendor id from PCI configuration
         ("deviceId", c_ulong),                                          ## [out] device id from PCI configuration
+                                                                        ## Note, the device id uses little-endian format.
         ("flags", ze_device_property_flags_t),                          ## [out] 0 (none) or a valid combination of ::ze_device_property_flag_t
         ("subdeviceId", c_ulong),                                       ## [out] sub-device id. Only valid if ::ZE_DEVICE_PROPERTY_FLAG_SUBDEVICE
                                                                         ## is set.
@@ -2837,6 +2838,38 @@ class ze_device_ip_version_ext_t(Structure):
         ("ipVersion", c_ulong)                                          ## [out] Device IP version. The meaning of the device IP version is
                                                                         ## implementation-defined, but newer devices should have a higher
                                                                         ## version than older devices.
+    ]
+
+###############################################################################
+## @brief Kernel Max Group Size Properties Extension Name
+ZE_KERNEL_MAX_GROUP_SIZE_PROPERTIES_EXT_NAME = "ZE_extension_kernel_max_group_size_properties"
+
+###############################################################################
+## @brief Kernel Max Group Size Properties Extension Version(s)
+class ze_kernel_max_group_size_properties_ext_version_v(IntEnum):
+    _1_0 = ZE_MAKE_VERSION( 1, 0 )                  ## version 1.0
+    CURRENT = ZE_MAKE_VERSION( 1, 0 )               ## latest known version
+
+class ze_kernel_max_group_size_properties_ext_version_t(c_int):
+    def __str__(self):
+        return str(ze_kernel_max_group_size_properties_ext_version_v(self.value))
+
+
+###############################################################################
+## @brief Additional kernel max group size properties
+## 
+## @details
+##     - This structure may be passed to ::zeKernelGetProperties, via the
+##       `pNext` member of ::ze_kernel_properties_t, to query additional kernel
+##       max group size properties.
+class ze_kernel_max_group_size_properties_ext_t(Structure):
+    _fields_ = [
+        ("stype", ze_structure_type_t),                                 ## [in] type of this structure
+        ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains sType and pNext).
+        ("maxGroupSize", c_ulong)                                       ## [out] maximum group size that can be used to execute the kernel. This
+                                                                        ## value may be less than or equal to the `maxTotalGroupSize` member of
+                                                                        ## ::ze_device_compute_properties_t.
     ]
 
 ###############################################################################

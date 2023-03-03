@@ -4,7 +4,7 @@
  SPDX-License-Identifier: MIT
 
  @file zes.py
- @version v1.5-r1.5.8
+ @version v1.5-r1.5.17
 
  """
 import platform
@@ -1513,7 +1513,7 @@ class zes_mem_bandwidth_t(Structure):
         ("readCounter", c_ulonglong),                                   ## [out] Total bytes read from memory
         ("writeCounter", c_ulonglong),                                  ## [out] Total bytes written to memory
         ("maxBandwidth", c_ulonglong),                                  ## [out] Current maximum bandwidth in units of bytes/sec
-        ("timestamp", c_ulonglong)                                      ## [out] The timestamp when these measurements were sampled.
+        ("timestamp", c_ulonglong)                                      ## [out] The timestamp in microseconds when these measurements were sampled.
                                                                         ## This timestamp should only be used to calculate delta time between
                                                                         ## snapshots of this structure.
                                                                         ## Never take the delta of this timestamp with the timestamp from a
@@ -1781,7 +1781,7 @@ class zes_ras_error_cat_t(c_int):
 
 ###############################################################################
 ## @brief The maximum number of categories
-ZES_MAX_RAS_ERROR_CATEGORY_COUNT = 7
+ZES_MAX_RAS_ERROR_CATEGORY_COUNT = 10
 
 ###############################################################################
 ## @brief RAS properties

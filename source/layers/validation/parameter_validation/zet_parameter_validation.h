@@ -59,6 +59,7 @@ namespace validation_layer
         ze_result_t zetTracerExpSetEpilogues ( zet_tracer_exp_handle_t hTracer, zet_core_callbacks_t* pCoreCbs ) override;
         ze_result_t zetTracerExpSetEnabled ( zet_tracer_exp_handle_t hTracer, ze_bool_t enable ) override;
         ze_result_t zetMetricGroupCalculateMultipleMetricValuesExp ( zet_metric_group_handle_t hMetricGroup, zet_metric_group_calculation_type_t type, size_t rawDataSize, const uint8_t* pRawData, uint32_t* pSetCount, uint32_t* pTotalMetricValueCount, uint32_t* pMetricCounts, zet_typed_value_t* pMetricValues ) override;
+        ze_result_t zetMetricGroupGetGlobalTimestampsExp ( zet_metric_group_handle_t hMetricGroup, ze_bool_t synchronizedWithHost, uint64_t* globalTimestamp, uint64_t* metricTimestamp ) override;
     };
 
 }

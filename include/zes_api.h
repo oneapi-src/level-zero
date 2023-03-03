@@ -5,7 +5,7 @@
  * SPDX-License-Identifier: MIT
  *
  * @file zes_api.h
- * @version v1.5-r1.5.8
+ * @version v1.5-r1.5.17
  *
  */
 #ifndef _ZES_API_H
@@ -4223,7 +4223,7 @@ typedef struct _zes_mem_bandwidth_t
     uint64_t readCounter;                           ///< [out] Total bytes read from memory
     uint64_t writeCounter;                          ///< [out] Total bytes written to memory
     uint64_t maxBandwidth;                          ///< [out] Current maximum bandwidth in units of bytes/sec
-    uint64_t timestamp;                             ///< [out] The timestamp when these measurements were sampled.
+    uint64_t timestamp;                             ///< [out] The timestamp in microseconds when these measurements were sampled.
                                                     ///< This timestamp should only be used to calculate delta time between
                                                     ///< snapshots of this structure.
                                                     ///< Never take the delta of this timestamp with the timestamp from a
@@ -5050,7 +5050,7 @@ typedef enum _zes_ras_error_cat_t
 ///////////////////////////////////////////////////////////////////////////////
 #ifndef ZES_MAX_RAS_ERROR_CATEGORY_COUNT
 /// @brief The maximum number of categories
-#define ZES_MAX_RAS_ERROR_CATEGORY_COUNT  7
+#define ZES_MAX_RAS_ERROR_CATEGORY_COUNT  10
 #endif // ZES_MAX_RAS_ERROR_CATEGORY_COUNT
 
 ///////////////////////////////////////////////////////////////////////////////

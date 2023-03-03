@@ -1,5 +1,12 @@
 # Level zero loader changelog
 
+## v1.9.9
+* Update to spec 1.5.17
+* Fix for calling zeInit in zesInit path
+* Added readme for validation layer
+* Refactor of validation layer to prepare for future enhancements
+* Updated Contributing Document with more guidance
+
 ## v1.9.4
 * Add support for Level Zero spec v1.5
 * Fix some compilation issues with windows non-vc compiler

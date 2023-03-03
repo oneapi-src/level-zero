@@ -1116,6 +1116,32 @@ namespace driver
         return result;
     }
 
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zetMetricGroupGetGlobalTimestampsExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zetMetricGroupGetGlobalTimestampsExp(
+        zet_metric_group_handle_t hMetricGroup,         ///< [in] handle of the metric group
+        ze_bool_t synchronizedWithHost,                 ///< [in] Returns the timestamps synchronized to the host or the device.
+        uint64_t* globalTimestamp,                      ///< [out] Device timestamp.
+        uint64_t* metricTimestamp                       ///< [out] Metric timestamp.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnGetGlobalTimestampsExp = context.zetDdiTable.MetricGroupExp.pfnGetGlobalTimestampsExp;
+        if( nullptr != pfnGetGlobalTimestampsExp )
+        {
+            result = pfnGetGlobalTimestampsExp( hMetricGroup, synchronizedWithHost, globalTimestamp, metricTimestamp );
+        }
+        else
+        {
+            // generic implementation
+        }
+
+        return result;
+    }
+
 } // namespace driver
 
 #if defined(__cplusplus)
@@ -1395,6 +1421,8 @@ zetGetMetricGroupExpProcAddrTable(
     ze_result_t result = ZE_RESULT_SUCCESS;
 
     pDdiTable->pfnCalculateMultipleMetricValuesExp       = driver::zetMetricGroupCalculateMultipleMetricValuesExp;
+
+    pDdiTable->pfnGetGlobalTimestampsExp                 = driver::zetMetricGroupGetGlobalTimestampsExp;
 
     return result;
 }
