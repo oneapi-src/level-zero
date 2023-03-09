@@ -48,7 +48,7 @@ namespace validation_layer
         if( nullptr == pDebugProperties )
             return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-        return ZE_RESULT_SUCCESS;
+        return ParameterValidation::validateExtensions(pDebugProperties);
     }
 
 
@@ -170,7 +170,7 @@ namespace validation_layer
         if( ZET_DEBUG_MEMORY_SPACE_TYPE_SLM < desc->type )
             return ZE_RESULT_ERROR_INVALID_ENUMERATION;
 
-        return ZE_RESULT_SUCCESS;
+        return ParameterValidation::validateExtensions(desc);
     }
 
 
@@ -195,7 +195,7 @@ namespace validation_layer
         if( ZET_DEBUG_MEMORY_SPACE_TYPE_SLM < desc->type )
             return ZE_RESULT_ERROR_INVALID_ENUMERATION;
 
-        return ZE_RESULT_SUCCESS;
+        return ParameterValidation::validateExtensions(desc);
     }
 
 
@@ -220,7 +220,7 @@ namespace validation_layer
         if( nullptr == pCount )
             return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-        return ZE_RESULT_SUCCESS;
+        return ParameterValidation::validateExtensions(pRegisterSetProperties);
     }
 
 
@@ -246,7 +246,7 @@ namespace validation_layer
         if( nullptr == pCount )
             return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-        return ZE_RESULT_SUCCESS;
+        return ParameterValidation::validateExtensions(pRegisterSetProperties);
     }
 
 
@@ -324,7 +324,7 @@ namespace validation_layer
         if( nullptr == pProperties )
             return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-        return ZE_RESULT_SUCCESS;
+        return ParameterValidation::validateExtensions(pProperties);
     }
 
 
@@ -396,7 +396,7 @@ namespace validation_layer
         if( nullptr == pProperties )
             return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-        return ZE_RESULT_SUCCESS;
+        return ParameterValidation::validateExtensions(pProperties);
     }
 
 
@@ -450,7 +450,7 @@ namespace validation_layer
         if( nullptr == phMetricStreamer )
             return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-        return ZE_RESULT_SUCCESS;
+        return ParameterValidation::validateExtensions(desc);
     }
 
 
@@ -536,7 +536,7 @@ namespace validation_layer
         if( ZET_METRIC_QUERY_POOL_TYPE_EXECUTION < desc->type )
             return ZE_RESULT_ERROR_INVALID_ENUMERATION;
 
-        return ZE_RESULT_SUCCESS;
+        return ParameterValidation::validateExtensions(desc);
     }
 
 
@@ -679,7 +679,7 @@ namespace validation_layer
         if( nullptr == pProfileProperties )
             return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-        return ZE_RESULT_SUCCESS;
+        return ParameterValidation::validateExtensions(pProfileProperties);
     }
 
 
@@ -702,7 +702,7 @@ namespace validation_layer
         if( nullptr == phTracer )
             return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-        return ZE_RESULT_SUCCESS;
+        return ParameterValidation::validateExtensions(desc);
     }
 
 

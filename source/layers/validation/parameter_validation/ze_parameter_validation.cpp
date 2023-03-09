@@ -75,7 +75,7 @@ namespace validation_layer
         if( nullptr == pDriverProperties )
             return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-        return ZE_RESULT_SUCCESS;
+        return ParameterValidation::validateExtensions(pDriverProperties);
     }
 
 
@@ -91,7 +91,7 @@ namespace validation_layer
         if( nullptr == pIpcProperties )
             return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-        return ZE_RESULT_SUCCESS;
+        return ParameterValidation::validateExtensions(pIpcProperties);
     }
 
 
@@ -116,7 +116,7 @@ namespace validation_layer
         if( nullptr == pCount )
             return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-        return ZE_RESULT_SUCCESS;
+        return ParameterValidation::validateExtensions(pExtensionProperties);
     }
 
 
@@ -198,7 +198,7 @@ namespace validation_layer
         if( nullptr == pDeviceProperties )
             return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-        return ZE_RESULT_SUCCESS;
+        return ParameterValidation::validateExtensions(pDeviceProperties);
     }
 
 
@@ -214,7 +214,7 @@ namespace validation_layer
         if( nullptr == pComputeProperties )
             return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-        return ZE_RESULT_SUCCESS;
+        return ParameterValidation::validateExtensions(pComputeProperties);
     }
 
 
@@ -230,7 +230,7 @@ namespace validation_layer
         if( nullptr == pModuleProperties )
             return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-        return ZE_RESULT_SUCCESS;
+        return ParameterValidation::validateExtensions(pModuleProperties);
     }
 
 
@@ -256,7 +256,7 @@ namespace validation_layer
         if( nullptr == pCount )
             return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-        return ZE_RESULT_SUCCESS;
+        return ParameterValidation::validateExtensions(pCommandQueueGroupProperties);
     }
 
 
@@ -281,7 +281,7 @@ namespace validation_layer
         if( nullptr == pCount )
             return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-        return ZE_RESULT_SUCCESS;
+        return ParameterValidation::validateExtensions(pMemProperties);
     }
 
 
@@ -297,7 +297,7 @@ namespace validation_layer
         if( nullptr == pMemAccessProperties )
             return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-        return ZE_RESULT_SUCCESS;
+        return ParameterValidation::validateExtensions(pMemAccessProperties);
     }
 
 
@@ -321,7 +321,7 @@ namespace validation_layer
         if( nullptr == pCount )
             return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-        return ZE_RESULT_SUCCESS;
+        return ParameterValidation::validateExtensions(pCacheProperties);
     }
 
 
@@ -337,7 +337,7 @@ namespace validation_layer
         if( nullptr == pImageProperties )
             return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-        return ZE_RESULT_SUCCESS;
+        return ParameterValidation::validateExtensions(pImageProperties);
     }
 
 
@@ -353,7 +353,7 @@ namespace validation_layer
         if( nullptr == pExternalMemoryProperties )
             return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-        return ZE_RESULT_SUCCESS;
+        return ParameterValidation::validateExtensions(pExternalMemoryProperties);
     }
 
 
@@ -373,7 +373,7 @@ namespace validation_layer
         if( nullptr == pP2PProperties )
             return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-        return ZE_RESULT_SUCCESS;
+        return ParameterValidation::validateExtensions(pP2PProperties);
     }
 
 
@@ -450,7 +450,7 @@ namespace validation_layer
         if( 0x1 < desc->flags )
             return ZE_RESULT_ERROR_INVALID_ENUMERATION;
 
-        return ZE_RESULT_SUCCESS;
+        return ParameterValidation::validateExtensions(desc);
     }
 
 
@@ -486,7 +486,7 @@ namespace validation_layer
         if( (nullptr == phDevices) && (0 < numDevices) )
             return ZE_RESULT_ERROR_INVALID_SIZE;
 
-        return ZE_RESULT_SUCCESS;
+        return ParameterValidation::validateExtensions(desc);
     }
 
 
@@ -543,7 +543,7 @@ namespace validation_layer
         if( ZE_COMMAND_QUEUE_PRIORITY_PRIORITY_HIGH < desc->priority )
             return ZE_RESULT_ERROR_INVALID_ENUMERATION;
 
-        return ZE_RESULT_SUCCESS;
+        return ParameterValidation::validateExtensions(desc);
     }
 
 
@@ -623,7 +623,7 @@ namespace validation_layer
         if( 0x7 < desc->flags )
             return ZE_RESULT_ERROR_INVALID_ENUMERATION;
 
-        return ZE_RESULT_SUCCESS;
+        return ParameterValidation::validateExtensions(desc);
     }
 
 
@@ -656,7 +656,7 @@ namespace validation_layer
         if( ZE_COMMAND_QUEUE_PRIORITY_PRIORITY_HIGH < altdesc->priority )
             return ZE_RESULT_ERROR_INVALID_ENUMERATION;
 
-        return ZE_RESULT_SUCCESS;
+        return ParameterValidation::validateExtensions(altdesc);
     }
 
 
@@ -1111,7 +1111,7 @@ namespace validation_layer
         if( (nullptr == phDevices) && (0 < numDevices) )
             return ZE_RESULT_ERROR_INVALID_SIZE;
 
-        return ZE_RESULT_SUCCESS;
+        return ParameterValidation::validateExtensions(desc);
     }
 
 
@@ -1149,7 +1149,7 @@ namespace validation_layer
         if( 0x7 < desc->wait )
             return ZE_RESULT_ERROR_INVALID_ENUMERATION;
 
-        return ZE_RESULT_SUCCESS;
+        return ParameterValidation::validateExtensions(desc);
     }
 
 
@@ -1384,7 +1384,7 @@ namespace validation_layer
         if( 0x1 < desc->flags )
             return ZE_RESULT_ERROR_INVALID_ENUMERATION;
 
-        return ZE_RESULT_SUCCESS;
+        return ParameterValidation::validateExtensions(desc);
     }
 
 
@@ -1465,7 +1465,12 @@ namespace validation_layer
         if( ZE_IMAGE_TYPE_BUFFER < desc->type )
             return ZE_RESULT_ERROR_INVALID_ENUMERATION;
 
-        return ZE_RESULT_SUCCESS;
+        auto retVal = ZE_RESULT_SUCCESS;
+        retVal = ParameterValidation::validateExtensions(desc);
+        if(retVal)
+            return retVal;
+        retVal = ParameterValidation::validateExtensions(pImageProperties);
+        return retVal;
     }
 
 
@@ -1495,7 +1500,7 @@ namespace validation_layer
         if( ZE_IMAGE_TYPE_BUFFER < desc->type )
             return ZE_RESULT_ERROR_INVALID_ENUMERATION;
 
-        return ZE_RESULT_SUCCESS;
+        return ParameterValidation::validateExtensions(desc);
     }
 
 
@@ -1548,7 +1553,12 @@ namespace validation_layer
         if( 0 != (alignment & (alignment - 1)) )
             return ZE_RESULT_ERROR_UNSUPPORTED_ALIGNMENT;
 
-        return ZE_RESULT_SUCCESS;
+        auto retVal = ZE_RESULT_SUCCESS;
+        retVal = ParameterValidation::validateExtensions(device_desc);
+        if(retVal)
+            return retVal;
+        retVal = ParameterValidation::validateExtensions(host_desc);
+        return retVal;
     }
 
 
@@ -1585,7 +1595,7 @@ namespace validation_layer
         if( 0 != (alignment & (alignment - 1)) )
             return ZE_RESULT_ERROR_UNSUPPORTED_ALIGNMENT;
 
-        return ZE_RESULT_SUCCESS;
+        return ParameterValidation::validateExtensions(device_desc);
     }
 
 
@@ -1618,7 +1628,7 @@ namespace validation_layer
         if( 0 != (alignment & (alignment - 1)) )
             return ZE_RESULT_ERROR_UNSUPPORTED_ALIGNMENT;
 
-        return ZE_RESULT_SUCCESS;
+        return ParameterValidation::validateExtensions(host_desc);
     }
 
 
@@ -1655,7 +1665,7 @@ namespace validation_layer
         if( nullptr == pMemAllocProperties )
             return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-        return ZE_RESULT_SUCCESS;
+        return ParameterValidation::validateExtensions(pMemAllocProperties);
     }
 
 
@@ -1769,7 +1779,7 @@ namespace validation_layer
         if( 0 == desc->inputSize )
             return ZE_RESULT_ERROR_INVALID_SIZE;
 
-        return ZE_RESULT_SUCCESS;
+        return ParameterValidation::validateExtensions(desc);
     }
 
 
@@ -1899,7 +1909,7 @@ namespace validation_layer
         if( nullptr == pModuleProperties )
             return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-        return ZE_RESULT_SUCCESS;
+        return ParameterValidation::validateExtensions(pModuleProperties);
     }
 
 
@@ -1925,7 +1935,7 @@ namespace validation_layer
         if( 0x3 < desc->flags )
             return ZE_RESULT_ERROR_INVALID_ENUMERATION;
 
-        return ZE_RESULT_SUCCESS;
+        return ParameterValidation::validateExtensions(desc);
     }
 
 
@@ -2120,7 +2130,7 @@ namespace validation_layer
         if( nullptr == pKernelProperties )
             return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-        return ZE_RESULT_SUCCESS;
+        return ParameterValidation::validateExtensions(pKernelProperties);
     }
 
 
@@ -2371,7 +2381,7 @@ namespace validation_layer
         if( ZE_SAMPLER_FILTER_MODE_LINEAR < desc->filterMode )
             return ZE_RESULT_ERROR_INVALID_ENUMERATION;
 
-        return ZE_RESULT_SUCCESS;
+        return ParameterValidation::validateExtensions(desc);
     }
 
 
@@ -2480,7 +2490,7 @@ namespace validation_layer
         if( 0 == desc->size )
             return ZE_RESULT_ERROR_UNSUPPORTED_SIZE;
 
-        return ZE_RESULT_SUCCESS;
+        return ParameterValidation::validateExtensions(desc);
     }
 
 
@@ -2732,7 +2742,7 @@ namespace validation_layer
         if( ZE_IMAGE_TYPE_BUFFER < desc->type )
             return ZE_RESULT_ERROR_INVALID_ENUMERATION;
 
-        return ZE_RESULT_SUCCESS;
+        return ParameterValidation::validateExtensions(desc);
     }
 
 
@@ -2766,7 +2776,7 @@ namespace validation_layer
         if( ZE_IMAGE_TYPE_BUFFER < desc->type )
             return ZE_RESULT_ERROR_INVALID_ENUMERATION;
 
-        return ZE_RESULT_SUCCESS;
+        return ParameterValidation::validateExtensions(desc);
     }
 
 
@@ -2785,7 +2795,7 @@ namespace validation_layer
         if( 0x7 < pHint->flags )
             return ZE_RESULT_ERROR_INVALID_ENUMERATION;
 
-        return ZE_RESULT_SUCCESS;
+        return ParameterValidation::validateExtensions(pHint);
     }
 
 
@@ -2801,7 +2811,7 @@ namespace validation_layer
         if( nullptr == pPciProperties )
             return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-        return ZE_RESULT_SUCCESS;
+        return ParameterValidation::validateExtensions(pPciProperties);
     }
 
 
@@ -2887,7 +2897,7 @@ namespace validation_layer
         if( nullptr == pImageAllocProperties )
             return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-        return ZE_RESULT_SUCCESS;
+        return ParameterValidation::validateExtensions(pImageAllocProperties);
     }
 
 
@@ -2913,7 +2923,7 @@ namespace validation_layer
         if( 0x7 < pInspectDesc->flags )
             return ZE_RESULT_ERROR_INVALID_ENUMERATION;
 
-        return ZE_RESULT_SUCCESS;
+        return ParameterValidation::validateExtensions(pInspectDesc);
     }
 
 
@@ -2936,7 +2946,7 @@ namespace validation_layer
         if( 0x3 < pMemFreeDesc->freePolicy )
             return ZE_RESULT_ERROR_INVALID_ENUMERATION;
 
-        return ZE_RESULT_SUCCESS;
+        return ParameterValidation::validateExtensions(pMemFreeDesc);
     }
 
 
@@ -3000,7 +3010,7 @@ namespace validation_layer
         if( nullptr == pVertexProperties )
             return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-        return ZE_RESULT_SUCCESS;
+        return ParameterValidation::validateExtensions(pVertexProperties);
     }
 
 
@@ -3096,7 +3106,7 @@ namespace validation_layer
         if( nullptr == pEdgeProperties )
             return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-        return ZE_RESULT_SUCCESS;
+        return ParameterValidation::validateExtensions(pEdgeProperties);
     }
 
 }

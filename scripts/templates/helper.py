@@ -858,6 +858,17 @@ def _get_param_name(namespace, tags, item, cpp):
             name = re.sub(r"p(p[A-Z]\w+)", r"\1", name) #change ppName to pName
     return name
 
+
+
+def get_func_descs(namespace, tags, obj):
+    descs = []
+    for item in obj['params']:
+        if type_traits.is_descriptor(item['type']) or type_traits.is_properties(item['type']):
+            name = _get_param_name(namespace, tags, item, False)
+            descs.append(name)
+
+    return descs
+
 """
 Public:
     returns a list of c++ strings for each parameter of a function

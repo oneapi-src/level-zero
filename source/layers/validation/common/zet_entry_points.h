@@ -10,7 +10,7 @@
  *
  */
 #pragma once
-#include "ze_validation_layer.h"
+#include "zet_api.h"
 
 namespace validation_layer
 {

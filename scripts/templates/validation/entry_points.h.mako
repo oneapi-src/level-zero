@@ -19,7 +19,7 @@ from templates import helper as th
  *
  */
 #pragma once
-#include "${x}_validation_layer.h"
+#include "${n}_api.h"
 
 namespace validation_layer
 {
