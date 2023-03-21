@@ -5,6 +5,7 @@
 #include "ze_parameter_validation.h"
 #include "zet_parameter_validation.h"
 #include "zes_parameter_validation.h"
+#include <vector>
 
 
 namespace validation_layer
