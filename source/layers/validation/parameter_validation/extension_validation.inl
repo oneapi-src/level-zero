@@ -518,3 +518,367 @@ inline ze_result_t ParameterValidation::validateExtensions(zet_tracer_exp_desc_t
 
     return validateStructureTypes<zet_structure_type_t, zet_base_properties_t>(descriptor, baseTypes, types);
 }
+
+/* Begin zes_api entries */
+
+template <>
+inline ze_result_t ParameterValidation::validateExtensions(zes_device_properties_t *descriptor) {
+
+    std::vector<zes_structure_type_t> baseTypes = {ZES_STRUCTURE_TYPE_DEVICE_PROPERTIES};
+    std::vector<zes_structure_type_t> types = {};
+
+    return validateStructureTypes<zes_structure_type_t, zes_base_properties_t>(descriptor, baseTypes, types);
+}
+
+template <>
+inline ze_result_t ParameterValidation::validateExtensions(zes_pci_properties_t *descriptor) {
+
+    std::vector<zes_structure_type_t> baseTypes = {ZES_STRUCTURE_TYPE_PCI_PROPERTIES};
+    std::vector<zes_structure_type_t> types = {};
+
+    return validateStructureTypes<zes_structure_type_t, zes_base_properties_t>(descriptor, baseTypes, types);
+}
+
+template <>
+inline ze_result_t ParameterValidation::validateExtensions(zes_pci_bar_properties_t *descriptor) {
+
+    std::vector<zes_structure_type_t> baseTypes = {ZES_STRUCTURE_TYPE_PCI_BAR_PROPERTIES};
+    std::vector<zes_structure_type_t> types = {ZES_STRUCTURE_TYPE_PCI_BAR_PROPERTIES_1_2};
+
+    return validateStructureTypes<zes_structure_type_t, zes_base_properties_t>(descriptor, baseTypes, types);
+}
+
+template <>
+inline ze_result_t ParameterValidation::validateExtensions(zes_diag_properties_t *descriptor) {
+
+    std::vector<zes_structure_type_t> baseTypes = {ZES_STRUCTURE_TYPE_DIAG_PROPERTIES};
+    std::vector<zes_structure_type_t> types = {};
+
+    return validateStructureTypes<zes_structure_type_t, zes_base_properties_t>(descriptor, baseTypes, types);
+}
+
+template <>
+inline ze_result_t ParameterValidation::validateExtensions(zes_engine_properties_t *descriptor) {
+
+    std::vector<zes_structure_type_t> baseTypes = {ZES_STRUCTURE_TYPE_ENGINE_PROPERTIES};
+    std::vector<zes_structure_type_t> types = {};
+
+    return validateStructureTypes<zes_structure_type_t, zes_base_properties_t>(descriptor, baseTypes, types);
+}
+
+template <>
+inline ze_result_t ParameterValidation::validateExtensions(zes_fabric_port_properties_t *descriptor) {
+
+    std::vector<zes_structure_type_t> baseTypes = {ZES_STRUCTURE_TYPE_FABRIC_PORT_PROPERTIES};
+    std::vector<zes_structure_type_t> types = {};
+
+    return validateStructureTypes<zes_structure_type_t, zes_base_properties_t>(descriptor, baseTypes, types);
+}
+
+template <>
+inline ze_result_t ParameterValidation::validateExtensions(zes_fan_properties_t *descriptor) {
+
+    std::vector<zes_structure_type_t> baseTypes = {ZES_STRUCTURE_TYPE_FAN_PROPERTIES};
+    std::vector<zes_structure_type_t> types = {};
+
+    return validateStructureTypes<zes_structure_type_t, zes_base_properties_t>(descriptor, baseTypes, types);
+}
+
+template <>
+inline ze_result_t ParameterValidation::validateExtensions(zes_firmware_properties_t *descriptor) {
+
+    std::vector<zes_structure_type_t> baseTypes = {ZES_STRUCTURE_TYPE_FIRMWARE_PROPERTIES};
+    std::vector<zes_structure_type_t> types = {};
+
+    return validateStructureTypes<zes_structure_type_t, zes_base_properties_t>(descriptor, baseTypes, types);
+}
+
+template <>
+inline ze_result_t ParameterValidation::validateExtensions(zes_freq_properties_t *descriptor) {
+
+    std::vector<zes_structure_type_t> baseTypes = {ZES_STRUCTURE_TYPE_FREQ_PROPERTIES};
+    std::vector<zes_structure_type_t> types = {};
+
+    return validateStructureTypes<zes_structure_type_t, zes_base_properties_t>(descriptor, baseTypes, types);
+}
+
+template <>
+inline ze_result_t ParameterValidation::validateExtensions(zes_led_properties_t *descriptor) {
+
+    std::vector<zes_structure_type_t> baseTypes = {ZES_STRUCTURE_TYPE_LED_PROPERTIES};
+    std::vector<zes_structure_type_t> types = {};
+
+    return validateStructureTypes<zes_structure_type_t, zes_base_properties_t>(descriptor, baseTypes, types);
+}
+
+template <>
+inline ze_result_t ParameterValidation::validateExtensions(zes_mem_properties_t *descriptor) {
+
+    std::vector<zes_structure_type_t> baseTypes = {ZES_STRUCTURE_TYPE_MEM_PROPERTIES};
+    std::vector<zes_structure_type_t> types = {};
+
+    return validateStructureTypes<zes_structure_type_t, zes_base_properties_t>(descriptor, baseTypes, types);
+}
+
+template <>
+inline ze_result_t ParameterValidation::validateExtensions(zes_perf_properties_t *descriptor) {
+
+    std::vector<zes_structure_type_t> baseTypes = {ZES_STRUCTURE_TYPE_PERF_PROPERTIES};
+    std::vector<zes_structure_type_t> types = {};
+
+    return validateStructureTypes<zes_structure_type_t, zes_base_properties_t>(descriptor, baseTypes, types);
+}
+
+template <>
+inline ze_result_t ParameterValidation::validateExtensions(zes_power_properties_t *descriptor) {
+
+    std::vector<zes_structure_type_t> baseTypes = {ZES_STRUCTURE_TYPE_POWER_PROPERTIES};
+    std::vector<zes_structure_type_t> types = {ZES_STRUCTURE_TYPE_POWER_LIMIT_EXT_DESC,
+                                               ZES_STRUCTURE_TYPE_POWER_EXT_PROPERTIES};
+
+    return validateStructureTypes<zes_structure_type_t, zes_base_properties_t>(descriptor, baseTypes, types);
+}
+
+template <>
+inline ze_result_t ParameterValidation::validateExtensions(zes_psu_properties_t *descriptor) {
+
+    std::vector<zes_structure_type_t> baseTypes = {ZES_STRUCTURE_TYPE_PSU_PROPERTIES};
+    std::vector<zes_structure_type_t> types = {};
+
+    return validateStructureTypes<zes_structure_type_t, zes_base_properties_t>(descriptor, baseTypes, types);
+}
+
+template <>
+inline ze_result_t ParameterValidation::validateExtensions(zes_ras_properties_t *descriptor) {
+
+    std::vector<zes_structure_type_t> baseTypes = {ZES_STRUCTURE_TYPE_RAS_PROPERTIES};
+    std::vector<zes_structure_type_t> types = {};
+
+    return validateStructureTypes<zes_structure_type_t, zes_base_properties_t>(descriptor, baseTypes, types);
+}
+
+template <>
+inline ze_result_t ParameterValidation::validateExtensions(zes_sched_properties_t *descriptor) {
+
+    std::vector<zes_structure_type_t> baseTypes = {ZES_STRUCTURE_TYPE_SCHED_PROPERTIES};
+    std::vector<zes_structure_type_t> types = {};
+
+    return validateStructureTypes<zes_structure_type_t, zes_base_properties_t>(descriptor, baseTypes, types);
+}
+
+template <>
+inline ze_result_t ParameterValidation::validateExtensions(zes_sched_timeout_properties_t *descriptor) {
+
+    std::vector<zes_structure_type_t> baseTypes = {ZES_STRUCTURE_TYPE_SCHED_TIMEOUT_PROPERTIES};
+    std::vector<zes_structure_type_t> types = {};
+
+    return validateStructureTypes<zes_structure_type_t, zes_base_properties_t>(descriptor, baseTypes, types);
+}
+
+template <>
+inline ze_result_t ParameterValidation::validateExtensions(zes_sched_timeslice_properties_t *descriptor) {
+
+    std::vector<zes_structure_type_t> baseTypes = {ZES_STRUCTURE_TYPE_SCHED_TIMESLICE_PROPERTIES};
+    std::vector<zes_structure_type_t> types = {};
+
+    return validateStructureTypes<zes_structure_type_t, zes_base_properties_t>(descriptor, baseTypes, types);
+}
+
+template <>
+inline ze_result_t ParameterValidation::validateExtensions(zes_standby_properties_t *descriptor) {
+
+    std::vector<zes_structure_type_t> baseTypes = {ZES_STRUCTURE_TYPE_STANDBY_PROPERTIES};
+    std::vector<zes_structure_type_t> types = {};
+
+    return validateStructureTypes<zes_structure_type_t, zes_base_properties_t>(descriptor, baseTypes, types);
+}
+
+template <>
+inline ze_result_t ParameterValidation::validateExtensions(zes_temp_properties_t *descriptor) {
+
+    std::vector<zes_structure_type_t> baseTypes = {ZES_STRUCTURE_TYPE_TEMP_PROPERTIES};
+    std::vector<zes_structure_type_t> types = {};
+
+    return validateStructureTypes<zes_structure_type_t, zes_base_properties_t>(descriptor, baseTypes, types);
+}
+
+template <>
+inline ze_result_t ParameterValidation::validateExtensions(zes_device_state_t *descriptor) {
+
+    std::vector<zes_structure_type_t> baseTypes = {ZES_STRUCTURE_TYPE_DEVICE_STATE};
+    std::vector<zes_structure_type_t> types = {};
+
+    return validateStructureTypes<zes_structure_type_t, zes_base_properties_t>(descriptor, baseTypes, types);
+}
+
+template <>
+inline ze_result_t ParameterValidation::validateExtensions(zes_process_state_t *descriptor) {
+
+    std::vector<zes_structure_type_t> baseTypes = {ZES_STRUCTURE_TYPE_PROCESS_STATE};
+    std::vector<zes_structure_type_t> types = {};
+
+    return validateStructureTypes<zes_structure_type_t, zes_base_properties_t>(descriptor, baseTypes, types);
+}
+
+template <>
+inline ze_result_t ParameterValidation::validateExtensions(zes_pci_state_t *descriptor) {
+
+    std::vector<zes_structure_type_t> baseTypes = {ZES_STRUCTURE_TYPE_PCI_STATE};
+    std::vector<zes_structure_type_t> types = {};
+
+    return validateStructureTypes<zes_structure_type_t, zes_base_properties_t>(descriptor, baseTypes, types);
+}
+
+template <>
+inline ze_result_t ParameterValidation::validateExtensions(zes_fabric_port_config_t *descriptor) {
+
+    std::vector<zes_structure_type_t> baseTypes = {ZES_STRUCTURE_TYPE_FABRIC_PORT_CONFIG};
+    std::vector<zes_structure_type_t> types = {};
+
+    return validateStructureTypes<zes_structure_type_t, zes_base_properties_t>(descriptor, baseTypes, types);
+}
+
+template <>
+inline ze_result_t ParameterValidation::validateExtensions(zes_fabric_port_state_t *descriptor) {
+
+    std::vector<zes_structure_type_t> baseTypes = {ZES_STRUCTURE_TYPE_FABRIC_PORT_STATE};
+    std::vector<zes_structure_type_t> types = {};
+
+    return validateStructureTypes<zes_structure_type_t, zes_base_properties_t>(descriptor, baseTypes, types);
+}
+
+template <>
+inline ze_result_t ParameterValidation::validateExtensions(zes_fan_config_t *descriptor) {
+
+    std::vector<zes_structure_type_t> baseTypes = {ZES_STRUCTURE_TYPE_FAN_CONFIG};
+    std::vector<zes_structure_type_t> types = {};
+
+    return validateStructureTypes<zes_structure_type_t, zes_base_properties_t>(descriptor, baseTypes, types);
+}
+
+template <>
+inline ze_result_t ParameterValidation::validateExtensions(zes_freq_state_t *descriptor) {
+
+    std::vector<zes_structure_type_t> baseTypes = {ZES_STRUCTURE_TYPE_FREQ_STATE};
+    std::vector<zes_structure_type_t> types = {};
+
+    return validateStructureTypes<zes_structure_type_t, zes_base_properties_t>(descriptor, baseTypes, types);
+}
+
+template <>
+inline ze_result_t ParameterValidation::validateExtensions(zes_oc_capabilities_t *descriptor) {
+
+    std::vector<zes_structure_type_t> baseTypes = {ZES_STRUCTURE_TYPE_OC_CAPABILITIES};
+    std::vector<zes_structure_type_t> types = {};
+
+    return validateStructureTypes<zes_structure_type_t, zes_base_properties_t>(descriptor, baseTypes, types);
+}
+
+template <>
+inline ze_result_t ParameterValidation::validateExtensions(zes_led_state_t *descriptor) {
+
+    std::vector<zes_structure_type_t> baseTypes = {ZES_STRUCTURE_TYPE_LED_STATE};
+    std::vector<zes_structure_type_t> types = {};
+
+    return validateStructureTypes<zes_structure_type_t, zes_base_properties_t>(descriptor, baseTypes, types);
+}
+
+template <>
+inline ze_result_t ParameterValidation::validateExtensions(zes_mem_state_t *descriptor) {
+
+    std::vector<zes_structure_type_t> baseTypes = {ZES_STRUCTURE_TYPE_MEM_STATE};
+    std::vector<zes_structure_type_t> types = {};
+
+    return validateStructureTypes<zes_structure_type_t, zes_base_properties_t>(descriptor, baseTypes, types);
+}
+
+template <>
+inline ze_result_t ParameterValidation::validateExtensions(zes_psu_state_t *descriptor) {
+
+    std::vector<zes_structure_type_t> baseTypes = {ZES_STRUCTURE_TYPE_PSU_STATE};
+    std::vector<zes_structure_type_t> types = {};
+
+    return validateStructureTypes<zes_structure_type_t, zes_base_properties_t>(descriptor, baseTypes, types);
+}
+
+// This one is odd.  I don't find any actual uses of this one.
+template <>
+inline ze_result_t ParameterValidation::validateExtensions(zes_base_state_t *descriptor) {
+
+    std::vector<zes_structure_type_t> baseTypes = {ZES_STRUCTURE_TYPE_BASE_STATE};
+    std::vector<zes_structure_type_t> types = {};
+
+    return validateStructureTypes<zes_structure_type_t, zes_base_properties_t>(descriptor, baseTypes, types);
+}
+
+template <>
+inline ze_result_t ParameterValidation::validateExtensions(zes_ras_config_t *descriptor) {
+
+    std::vector<zes_structure_type_t> baseTypes = {ZES_STRUCTURE_TYPE_RAS_CONFIG};
+    std::vector<zes_structure_type_t> types = {};
+
+    return validateStructureTypes<zes_structure_type_t, zes_base_properties_t>(descriptor, baseTypes, types);
+}
+
+template <>
+inline ze_result_t ParameterValidation::validateExtensions(zes_ras_state_t *descriptor) {
+
+    std::vector<zes_structure_type_t> baseTypes = {ZES_STRUCTURE_TYPE_RAS_STATE};
+    std::vector<zes_structure_type_t> types = {};
+
+    return validateStructureTypes<zes_structure_type_t, zes_base_properties_t>(descriptor, baseTypes, types);
+}
+
+template <>
+inline ze_result_t ParameterValidation::validateExtensions(zes_temp_config_t *descriptor) {
+
+    std::vector<zes_structure_type_t> baseTypes = {ZES_STRUCTURE_TYPE_TEMP_CONFIG};
+    std::vector<zes_structure_type_t> types = {};
+
+    return validateStructureTypes<zes_structure_type_t, zes_base_properties_t>(descriptor, baseTypes, types);
+}
+
+template <>
+inline ze_result_t ParameterValidation::validateExtensions(zes_device_ecc_desc_t *descriptor) {
+
+    std::vector<zes_structure_type_t> baseTypes = {ZES_STRUCTURE_TYPE_DEVICE_ECC_DESC};
+    std::vector<zes_structure_type_t> types = {};
+
+    return validateStructureTypes<zes_structure_type_t, zes_base_properties_t>(descriptor, baseTypes, types);
+}
+
+template <>
+inline ze_result_t ParameterValidation::validateExtensions(zes_device_ecc_properties_t *descriptor) {
+
+    std::vector<zes_structure_type_t> baseTypes = {ZES_STRUCTURE_TYPE_DEVICE_ECC_PROPERTIES};
+    std::vector<zes_structure_type_t> types = {};
+
+    return validateStructureTypes<zes_structure_type_t, zes_base_properties_t>(descriptor, baseTypes, types);
+}
+
+template <>
+inline ze_result_t ParameterValidation::validateExtensions(zes_power_limit_ext_desc_t *descriptor) {
+
+    std::vector<zes_structure_type_t> baseTypes = {ZES_STRUCTURE_TYPE_POWER_LIMIT_EXT_DESC};
+    std::vector<zes_structure_type_t> types = {};
+
+    return validateStructureTypes<zes_structure_type_t, zes_base_properties_t>(descriptor, baseTypes, types);
+}
+
+template <>
+inline ze_result_t ParameterValidation::validateExtensions(zes_overclock_properties_t *descriptor) {
+
+    std::vector<zes_structure_type_t> baseTypes = {ZES_STRUCTURE_TYPE_OVERCLOCK_PROPERTIES};
+    std::vector<zes_structure_type_t> types = {};
+
+    return validateStructureTypes<zes_structure_type_t, zes_base_properties_t>(descriptor, baseTypes, types);
+}
+
+template <>
+inline ze_result_t ParameterValidation::validateExtensions(zes_fabric_port_error_counters_t *descriptor) {
+
+    std::vector<zes_structure_type_t> baseTypes = {ZES_STRUCTURE_TYPE_FABRIC_PORT_ERROR_COUNTERS};
+    std::vector<zes_structure_type_t> types = {};
+
+    return validateStructureTypes<zes_structure_type_t, zes_base_properties_t>(descriptor, baseTypes, types);
+}

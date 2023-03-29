@@ -2708,7 +2708,7 @@ namespace validation_layer
         if( nullptr == pMemoryProperties )
             return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-        return ZE_RESULT_SUCCESS;
+        return ParameterValidation::validateExtensions(pMemoryProperties);
     }
 
 

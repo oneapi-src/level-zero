@@ -100,7 +100,7 @@ namespace validation_layer
         if( nullptr == pState )
             return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-        return ZE_RESULT_SUCCESS;
+        return ParameterValidation::validateExtensions(pState);
     }
 
 
@@ -139,7 +139,7 @@ namespace validation_layer
         if( nullptr == pCount )
             return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-        return ZE_RESULT_SUCCESS;
+        return ParameterValidation::validateExtensions(pProcesses);
     }
 
 
@@ -171,7 +171,7 @@ namespace validation_layer
         if( nullptr == pState )
             return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-        return ZE_RESULT_SUCCESS;
+        return ParameterValidation::validateExtensions(pState);
     }
 
 
@@ -909,7 +909,7 @@ namespace validation_layer
         if( nullptr == pConfig )
             return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-        return ZE_RESULT_SUCCESS;
+        return ParameterValidation::validateExtensions(pConfig);
     }
 
 
@@ -925,7 +925,7 @@ namespace validation_layer
         if( nullptr == pConfig )
             return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-        return ZE_RESULT_SUCCESS;
+        return ParameterValidation::validateExtensions(pConfig);
     }
 
 
@@ -941,7 +941,7 @@ namespace validation_layer
         if( nullptr == pState )
             return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-        return ZE_RESULT_SUCCESS;
+        return ParameterValidation::validateExtensions(pState);
     }
 
 
@@ -973,7 +973,7 @@ namespace validation_layer
         if( nullptr == pErrors )
             return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-        return ZE_RESULT_SUCCESS;
+        return ParameterValidation::validateExtensions(pErrors);
     }
 
 
@@ -1031,7 +1031,7 @@ namespace validation_layer
         if( nullptr == pConfig )
             return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-        return ZE_RESULT_SUCCESS;
+        return ParameterValidation::validateExtensions(pConfig);
     }
 
 
@@ -1273,7 +1273,7 @@ namespace validation_layer
         if( nullptr == pState )
             return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-        return ZE_RESULT_SUCCESS;
+        return ParameterValidation::validateExtensions(pState);
     }
 
 
@@ -1307,7 +1307,7 @@ namespace validation_layer
         if( nullptr == pOcCapabilities )
             return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-        return ZE_RESULT_SUCCESS;
+        return ParameterValidation::validateExtensions(pOcCapabilities);
     }
 
 
@@ -1532,7 +1532,7 @@ namespace validation_layer
         if( nullptr == pState )
             return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-        return ZE_RESULT_SUCCESS;
+        return ParameterValidation::validateExtensions(pState);
     }
 
 
@@ -1619,7 +1619,7 @@ namespace validation_layer
         if( nullptr == pState )
             return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-        return ZE_RESULT_SUCCESS;
+        return ParameterValidation::validateExtensions(pState);
     }
 
 
@@ -1908,7 +1908,7 @@ namespace validation_layer
         if( nullptr == pState )
             return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-        return ZE_RESULT_SUCCESS;
+        return ParameterValidation::validateExtensions(pState);
     }
 
 
@@ -1967,7 +1967,7 @@ namespace validation_layer
         if( nullptr == pConfig )
             return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-        return ZE_RESULT_SUCCESS;
+        return ParameterValidation::validateExtensions(pConfig);
     }
 
 
@@ -1983,7 +1983,7 @@ namespace validation_layer
         if( nullptr == pConfig )
             return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-        return ZE_RESULT_SUCCESS;
+        return ParameterValidation::validateExtensions(pConfig);
     }
 
 
@@ -2000,7 +2000,7 @@ namespace validation_layer
         if( nullptr == pState )
             return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-        return ZE_RESULT_SUCCESS;
+        return ParameterValidation::validateExtensions(pState);
     }
 
 
@@ -2302,7 +2302,7 @@ namespace validation_layer
         if( nullptr == pConfig )
             return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-        return ZE_RESULT_SUCCESS;
+        return ParameterValidation::validateExtensions(pConfig);
     }
 
 
@@ -2318,7 +2318,7 @@ namespace validation_layer
         if( nullptr == pConfig )
             return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-        return ZE_RESULT_SUCCESS;
+        return ParameterValidation::validateExtensions(pConfig);
     }
 
 

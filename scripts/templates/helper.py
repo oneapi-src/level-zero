@@ -76,12 +76,28 @@ class class_traits:
     Extracts traits from a type name
 """
 class type_traits:
-    RE_HANDLE   = r"(.*)handle_t"
-    RE_IPC      = r"(.*)ipc(.*)handle_t"
-    RE_POINTER  = r"(.*\w+)\*+"
-    RE_DESC     = r"(.*)desc_t.*"
-    RE_PROPS    = r"(.*)properties_t.*"
-    RE_FLAGS    = r"(.*)flags_t"
+    RE_HANDLE            = r"(.*)handle_t"
+    RE_IPC               = r"(.*)ipc(.*)handle_t"
+    RE_POINTER           = r"(.*\w+)\*+"
+    RE_DESC              = r"(.*)desc_t.*"
+    RE_PROPS             = r"(.*)properties_t.*"
+    RE_FLAGS             = r"(.*)flags_t"
+    RE_COUNTERS          = r"(.*)counters_t"
+    RE_PORT_CONFIG       = r"(.*)port_config_t"
+    RE_FAN_CONFIG        = r"(.*)fan_config_t"
+    RE_RAS_CONFIG        = r"(.*)ras_config_t"
+    RE_TEMP_CONFIG       = r"(.*)temp_config_t"
+    RE_DEVICE_STATE      = r"(.*)device_state_t"
+    RE_PROCESS_STATE     = r"(.*)process_state_t"
+    RE_PCI_STATE         = r"(.*)pci_state_t"
+    RE_FABRIC_PORT_STATE = r"(.*)fabric_port_state_t"
+    RE_FREQ_STATE        = r"(.*)freq_state_t"
+    RE_LED_STATE         = r"(.*)led_state_t"
+    RE_MEM_STATE         = r"(.*)mem_state_t"
+    RE_PSU_STATE         = r"(.*)psu_state_t"
+    RE_RAS_STATE         = r"(.*)ras_state_t"
+    RE_CAPABILITIES      = r"(.*)capabilities_t"
+    RE_PROPS_EXP         = r"(.*)properties_exp_t"
 
     @staticmethod
     def base(name):
@@ -127,6 +143,118 @@ class type_traits:
     def is_properties(cls, name):
         try:
             return True if re.match(cls.RE_PROPS, name) else False
+        except:
+            return False
+
+    @classmethod
+    def is_counters(cls, name):
+        try:
+            return True if re.match(cls.RE_COUNTERS, name) else False
+        except:
+            return False
+
+    @classmethod
+    def is_port_config(cls, name):
+        try:
+            return True if re.match(cls.RE_PORT_CONFIG, name) else False
+        except:
+            return False
+
+    @classmethod
+    def is_fan_config(cls, name):
+        try:
+            return True if re.match(cls.RE_FAN_CONFIG, name) else False
+        except:
+            return False
+
+    @classmethod
+    def is_ras_config(cls, name):
+        try:
+            return True if re.match(cls.RE_RAS_CONFIG, name) else False
+        except:
+            return False
+
+    @classmethod
+    def is_temp_config(cls, name):
+        try:
+            return True if re.match(cls.RE_TEMP_CONFIG, name) else False
+        except:
+            return False
+
+    @classmethod
+    def is_device_state(cls, name):
+        try:
+            return True if re.match(cls.RE_DEVICE_STATE, name) else False
+        except:
+            return False
+
+    @classmethod
+    def is_process_state(cls, name):
+        try:
+            return True if re.match(cls.RE_PROCESS_STATE, name) else False
+        except:
+            return False
+
+    @classmethod
+    def is_pci_state(cls, name):
+        try:
+            return True if re.match(cls.RE_PCI_STATE, name) else False
+        except:
+            return False
+
+    @classmethod
+    def is_fabric_port_state(cls, name):
+        try:
+            return True if re.match(cls.RE_FABRIC_PORT_STATE, name) else False
+        except:
+            return False
+
+    @classmethod
+    def is_freq_state(cls, name):
+        try:
+            return True if re.match(cls.RE_FREQ_STATE, name) else False
+        except:
+            return False
+
+    @classmethod
+    def is_led_state(cls, name):
+        try:
+            return True if re.match(cls.RE_LED_STATE, name) else False
+        except:
+            return False
+
+    @classmethod
+    def is_mem_state(cls, name):
+        try:
+            return True if re.match(cls.RE_MEM_STATE, name) else False
+        except:
+            return False
+
+    @classmethod
+    def is_psu_state(cls, name):
+        try:
+            return True if re.match(cls.RE_PSU_STATE, name) else False
+        except:
+            return False
+
+    @classmethod
+    def is_ras_state(cls, name):
+        try:
+            return True if re.match(cls.RE_RAS_STATE, name) else False
+        except:
+            return False
+
+    @classmethod
+    def is_properties_exp(cls, name):
+        try:
+            return True if re.match(cls.RE_PROPS_EXP, name) else False
+        except:
+            return False
+
+    @classmethod
+    def is_capabilities(cls, name):
+        try:
+            return True if re.match(cls.RE_CAPABILITIES, name) else False
         except:
             return False
 
@@ -863,7 +991,24 @@ def _get_param_name(namespace, tags, item, cpp):
 def get_func_descs(namespace, tags, obj):
     descs = []
     for item in obj['params']:
-        if type_traits.is_descriptor(item['type']) or type_traits.is_properties(item['type']):
+        if (    type_traits.is_descriptor(item['type']) or
+                type_traits.is_properties(item['type']) or
+                type_traits.is_counters(item['type']) or
+                type_traits.is_port_config(item['type']) or
+                type_traits.is_fan_config(item['type']) or
+                type_traits.is_ras_config(item['type']) or
+                type_traits.is_temp_config(item['type']) or
+                type_traits.is_device_state(item['type']) or
+                type_traits.is_process_state(item['type']) or
+                type_traits.is_pci_state(item['type']) or
+                type_traits.is_fabric_port_state(item['type']) or
+                type_traits.is_freq_state(item['type']) or
+                type_traits.is_led_state(item['type']) or
+                type_traits.is_mem_state(item['type']) or
+                type_traits.is_psu_state(item['type']) or
+                type_traits.is_ras_state(item['type']) or
+                type_traits.is_capabilities(item['type']) or
+                type_traits.is_properties_exp(item['type'])):
             name = _get_param_name(namespace, tags, item, False)
             descs.append(name)
 
