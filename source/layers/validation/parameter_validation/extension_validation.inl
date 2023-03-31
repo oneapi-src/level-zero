@@ -15,6 +15,10 @@ inline ze_result_t validateStructureTypes(void *descriptorPtr,
 
     const B *pBase = reinterpret_cast<const B*> (descriptorPtr);
 
+    if (pBase == nullptr) {
+         return ZE_RESULT_ERROR_INVALID_ARGUMENT;
+    }
+
      bool validBaseTypeFound = false;
      for (auto t : (baseTypesVector)) {
          if (pBase->stype == t) {
@@ -74,6 +78,10 @@ inline ze_result_t ParameterValidation::validateExtensions(ze_pci_ext_properties
 template <>
 inline ze_result_t ParameterValidation::validateExtensions(ze_device_memory_properties_t *descriptor) {
 
+     if (descriptor == nullptr) {
+       return ZE_RESULT_SUCCESS;
+     }
+
     std::vector<ze_structure_type_t> baseTypes = {ZE_STRUCTURE_TYPE_DEVICE_MEMORY_PROPERTIES};
     std::vector<ze_structure_type_t> types = {ZE_STRUCTURE_TYPE_DEVICE_MEMORY_EXT_PROPERTIES};
 
@@ -116,6 +124,10 @@ inline ze_result_t ParameterValidation::validateExtensions(ze_device_properties_
 template <>
 inline ze_result_t ParameterValidation::validateExtensions(ze_device_cache_properties_t *descriptor) {
 
+    if (descriptor == nullptr) {
+        return ZE_RESULT_SUCCESS;
+    }
+
     std::vector<ze_structure_type_t> baseTypes = {ZE_STRUCTURE_TYPE_DEVICE_CACHE_PROPERTIES};
     std::vector<ze_structure_type_t> types = {ZE_STRUCTURE_TYPE_CACHE_RESERVATION_EXT_DESC};
 
@@ -151,7 +163,11 @@ inline ze_result_t ParameterValidation::validateExtensions(ze_device_module_prop
 
 template <>
 inline ze_result_t ParameterValidation::validateExtensions(ze_command_queue_group_properties_t *descriptor) {
-    
+
+     if (descriptor == nullptr) {
+       return ZE_RESULT_SUCCESS;
+     }
+
     std::vector<ze_structure_type_t> baseTypes = {ZE_STRUCTURE_TYPE_COMMAND_QUEUE_GROUP_PROPERTIES};
     std::vector<ze_structure_type_t> types = {ZE_STRUCTURE_TYPE_COMMAND_QUEUE_GROUP_PROPERTIES,
                                               ZE_STRUCTURE_TYPE_COPY_BANDWIDTH_EXP_PROPERTIES};
@@ -504,6 +520,10 @@ inline ze_result_t ParameterValidation::validateExtensions(zet_debug_memory_spac
 template <>
 inline ze_result_t ParameterValidation::validateExtensions(zet_debug_regset_properties_t *descriptor) {
 
+     if (descriptor == nullptr) {
+       return ZE_RESULT_SUCCESS;
+     }
+
     std::vector<zet_structure_type_t> baseTypes = {ZET_STRUCTURE_TYPE_DEBUG_REGSET_PROPERTIES};
     std::vector<zet_structure_type_t> types = {};
 
@@ -541,6 +561,10 @@ inline ze_result_t ParameterValidation::validateExtensions(zes_pci_properties_t 
 
 template <>
 inline ze_result_t ParameterValidation::validateExtensions(zes_pci_bar_properties_t *descriptor) {
+
+     if (descriptor == nullptr) {
+       return ZE_RESULT_SUCCESS;
+     }
 
     std::vector<zes_structure_type_t> baseTypes = {ZES_STRUCTURE_TYPE_PCI_BAR_PROPERTIES};
     std::vector<zes_structure_type_t> types = {ZES_STRUCTURE_TYPE_PCI_BAR_PROPERTIES_1_2};
@@ -714,6 +738,10 @@ inline ze_result_t ParameterValidation::validateExtensions(zes_device_state_t *d
 template <>
 inline ze_result_t ParameterValidation::validateExtensions(zes_process_state_t *descriptor) {
 
+     if (descriptor == nullptr) {
+       return ZE_RESULT_SUCCESS;
+     }
+
     std::vector<zes_structure_type_t> baseTypes = {ZES_STRUCTURE_TYPE_PROCESS_STATE};
     std::vector<zes_structure_type_t> types = {};
 
@@ -858,6 +886,10 @@ inline ze_result_t ParameterValidation::validateExtensions(zes_device_ecc_proper
 
 template <>
 inline ze_result_t ParameterValidation::validateExtensions(zes_power_limit_ext_desc_t *descriptor) {
+
+     if (descriptor == nullptr) {
+       return ZE_RESULT_SUCCESS;
+     }
 
     std::vector<zes_structure_type_t> baseTypes = {ZES_STRUCTURE_TYPE_POWER_LIMIT_EXT_DESC};
     std::vector<zes_structure_type_t> types = {};
