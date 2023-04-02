@@ -6,7 +6,7 @@
  *
  */
 #include "../tracing_imp.h"
-#include <Windows.h>
+#include <windows.h>
 
 namespace tracing_layer {
 extern "C" BOOL APIENTRY DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved) {

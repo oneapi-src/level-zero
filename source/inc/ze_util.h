@@ -15,7 +15,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 #if defined(_WIN32)
-#  include <Windows.h>
+#  include <windows.h>
 #  define MAKE_LIBRARY_NAME(NAME, VERSION)    NAME".dll"
 #  define MAKE_LAYER_NAME(NAME)    NAME".dll"
 #  define LOAD_DRIVER_LIBRARY(NAME) LoadLibraryExA(NAME, nullptr, LOAD_LIBRARY_SEARCH_SYSTEM32)

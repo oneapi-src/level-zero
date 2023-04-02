@@ -8,7 +8,7 @@
 
 #include "source/loader/driver_discovery.h"
 
-#include <Windows.h>
+#include <windows.h>
 
 #include <cassert>
 #include <cfgmgr32.h>
