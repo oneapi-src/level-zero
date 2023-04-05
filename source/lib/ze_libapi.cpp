@@ -302,6 +302,47 @@ zeDriverGetExtensionFunctionAddress(
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+/// @brief Retrieves a string describing the last error code returned by the
+///        driver in the current thread.
+/// 
+/// @details
+///     - String returned is thread local.
+///     - String is only updated on calls returning an error, i.e., not on calls
+///       returning ::ZE_RESULT_SUCCESS.
+///     - String may be empty if driver considers error code is already explicit
+///       enough to describe cause.
+///     - Memory pointed to by ppString is owned by the driver.
+///     - String returned is null-terminated.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hDriver`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == ppString`
+ze_result_t ZE_APICALL
+zeDriverGetLastErrorDescription(
+    ze_driver_handle_t hDriver,                     ///< [in] handle of the driver instance
+    const char** ppString                           ///< [in,out] pointer to a null-terminated array of characters describing
+                                                    ///< cause of error.
+    )
+{
+    auto pfnGetLastErrorDescription = ze_lib::context->zeDdiTable.Driver.pfnGetLastErrorDescription;
+    if( nullptr == pfnGetLastErrorDescription ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    return pfnGetLastErrorDescription( hDriver, ppString );
+}
+
+///////////////////////////////////////////////////////////////////////////////
 /// @brief Retrieves devices within a driver
 /// 
 /// @details
@@ -1542,6 +1583,55 @@ zeCommandListAppendWriteGlobalTimestamp(
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+/// @brief Synchronizes an immediate command list by waiting on the host for the
+///        completion of all commands previously submitted to it.
+/// 
+/// @details
+///     - The application must call this function only with command lists
+///       created with ::zeCommandListCreateImmediate.
+///     - Waiting on one immediate command list shall not block the concurrent
+///       execution of commands appended to other
+///       immediate command lists created with either a different ordinal or
+///       different index.
+///     - The application may call this function from simultaneous threads.
+///     - The implementation of this function should be lock-free.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hCommandList`
+///     - ::ZE_RESULT_NOT_READY
+///         + timeout expired
+///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
+///         + handle does not correspond to an immediate command list
+ze_result_t ZE_APICALL
+zeCommandListHostSynchronize(
+    ze_command_list_handle_t hCommandList,          ///< [in] handle of the immediate command list
+    uint64_t timeout                                ///< [in] if non-zero, then indicates the maximum time (in nanoseconds) to
+                                                    ///< yield before returning ::ZE_RESULT_SUCCESS or ::ZE_RESULT_NOT_READY;
+                                                    ///< if zero, then immediately returns the status of the immediate command list;
+                                                    ///< if UINT64_MAX, then function will not return until complete or device
+                                                    ///< is lost.
+                                                    ///< Due to external dependencies, timeout may be rounded to the closest
+                                                    ///< value allowed by the accuracy of those dependencies.
+    )
+{
+    auto pfnHostSynchronize = ze_lib::context->zeDdiTable.CommandList.pfnHostSynchronize;
+    if( nullptr == pfnHostSynchronize ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    return pfnHostSynchronize( hCommandList, timeout );
+}
+
+///////////////////////////////////////////////////////////////////////////////
 /// @brief Appends an execution and global memory barrier into a command list.
 /// 
 /// @details
@@ -2311,7 +2401,7 @@ zeCommandListAppendMemAdvise(
 ///         + `nullptr == desc`
 ///         + `nullptr == phEventPool`
 ///     - ::ZE_RESULT_ERROR_INVALID_ENUMERATION
-///         + `0x7 < desc->flags`
+///         + `0xf < desc->flags`
 ///     - ::ZE_RESULT_ERROR_INVALID_SIZE
 ///         + `0 == desc->count`
 ///         + `(nullptr == phDevices) && (0 < numDevices)`
@@ -2506,6 +2596,48 @@ zeEventPoolGetIpcHandle(
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+/// @brief Returns an IPC event pool handle to the driver
+/// 
+/// @details
+///     - This call must be used for IPC handles previously obtained with
+///       ::zeEventPoolGetIpcHandle.
+///     - Upon call, driver may release any underlying resources associated with
+///       the IPC handle.
+///       For instance, it may close the file descriptor contained in the IPC
+///       handle, if such type of handle is being used by the driver.
+///     - This call does not destroy the original event pool for which the IPC
+///       handle was created.
+///     - This function may **not** be called from simultaneous threads with the
+///       same IPC handle.
+///     - The implementation of this function should be lock-free.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hContext`
+ze_result_t ZE_APICALL
+zeEventPoolPutIpcHandle(
+    ze_context_handle_t hContext,                   ///< [in] handle of the context object associated with the IPC event pool
+                                                    ///< handle
+    ze_ipc_event_pool_handle_t hIpc                 ///< [in] IPC event pool handle
+    )
+{
+    auto pfnPutIpcHandle = ze_lib::context->zeDdiTable.EventPool.pfnPutIpcHandle;
+    if( nullptr == pfnPutIpcHandle ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    return pfnPutIpcHandle( hContext, hIpc );
+}
+
+///////////////////////////////////////////////////////////////////////////////
 /// @brief Opens an IPC event pool handle to retrieve an event pool handle from
 ///        another process.
 /// 
@@ -2585,7 +2717,8 @@ zeEventPoolCloseIpcHandle(
 ///     - The application must ensure the events are accessible by the device on
 ///       which the command list was created.
 ///     - The duration of an event created from an event pool that was created
-///       using ::ZE_EVENT_POOL_FLAG_KERNEL_TIMESTAMP flag is undefined.
+///       using ::ZE_EVENT_POOL_FLAG_KERNEL_TIMESTAMP or
+///       ::ZE_EVENT_POOL_FLAG_KERNEL_MAPPED_TIMESTAMP flags is undefined.
 ///       However, for consistency and orthogonality the event will report
 ///       correctly as signaled when used by other event API functionality.
 ///     - The application must ensure the command list and events were created
@@ -2673,7 +2806,8 @@ zeCommandListAppendWaitOnEvents(
 /// 
 /// @details
 ///     - The duration of an event created from an event pool that was created
-///       using ::ZE_EVENT_POOL_FLAG_KERNEL_TIMESTAMP flag is undefined.
+///       using ::ZE_EVENT_POOL_FLAG_KERNEL_TIMESTAMP or
+///       ::ZE_EVENT_POOL_FLAG_KERNEL_MAPPED_TIMESTAMP flags is undefined.
 ///       However, for consistency and orthogonality the event will report
 ///       correctly as signaled when used by other event API functionality.
 ///     - The application may call this function from simultaneous threads.
@@ -2877,7 +3011,8 @@ zeEventHostReset(
 /// 
 /// @details
 ///     - The application must ensure the event was created from an event pool
-///       that was created using ::ZE_EVENT_POOL_FLAG_KERNEL_TIMESTAMP flag.
+///       that was created using ::ZE_EVENT_POOL_FLAG_KERNEL_TIMESTAMP or
+///       ::ZE_EVENT_POOL_FLAG_KERNEL_MAPPED_TIMESTAMP flag.
 ///     - The destination memory will be unmodified if the event has not been
 ///       signaled.
 ///     - The application may call this function from simultaneous threads.
@@ -3634,6 +3769,123 @@ zeMemGetIpcHandle(
     }
 
     return pfnGetIpcHandle( hContext, ptr, pIpcHandle );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Creates an IPC memory handle out of a file descriptor
+/// 
+/// @details
+///     - Handle passed must be a valid file descriptor obtained with
+///       ::ze_external_memory_export_fd_t via ::zeMemGetAllocProperties.
+///     - Returned IPC handle may contain metadata in addition to the file
+///       descriptor.
+///     - The application may call this function from simultaneous threads.
+///     - The implementation of this function must be thread-safe.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hContext`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == pIpcHandle`
+ze_result_t ZE_APICALL
+zeMemGetIpcHandleFromFileDescriptorExp(
+    ze_context_handle_t hContext,                   ///< [in] handle of the context object
+    uint64_t handle,                                ///< [in] file descriptor
+    ze_ipc_mem_handle_t* pIpcHandle                 ///< [out] Returned IPC memory handle
+    )
+{
+    auto pfnGetIpcHandleFromFileDescriptorExp = ze_lib::context->zeDdiTable.MemExp.pfnGetIpcHandleFromFileDescriptorExp;
+    if( nullptr == pfnGetIpcHandleFromFileDescriptorExp ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    return pfnGetIpcHandleFromFileDescriptorExp( hContext, handle, pIpcHandle );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Gets the file descriptor contained in an IPC memory handle
+/// 
+/// @details
+///     - IPC memory handle must be a valid handle obtained with
+///       ::zeMemGetIpcHandle.
+///     - The application may call this function from simultaneous threads.
+///     - The implementation of this function must be thread-safe.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hContext`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == pHandle`
+ze_result_t ZE_APICALL
+zeMemGetFileDescriptorFromIpcHandleExp(
+    ze_context_handle_t hContext,                   ///< [in] handle of the context object
+    ze_ipc_mem_handle_t ipcHandle,                  ///< [in] IPC memory handle
+    uint64_t* pHandle                               ///< [out] Returned file descriptor
+    )
+{
+    auto pfnGetFileDescriptorFromIpcHandleExp = ze_lib::context->zeDdiTable.MemExp.pfnGetFileDescriptorFromIpcHandleExp;
+    if( nullptr == pfnGetFileDescriptorFromIpcHandleExp ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    return pfnGetFileDescriptorFromIpcHandleExp( hContext, ipcHandle, pHandle );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Returns an IPC memory handle to the driver
+/// 
+/// @details
+///     - This call may be used for IPC handles previously obtained with either
+///       ::zeMemGetIpcHandle or with ::ze_external_memory_export_fd_t via ::zeMemGetAllocProperties.
+///     - Upon call, driver may release any underlying resources associated with
+///       the IPC handle.
+///       For instance, it may close the file descriptor contained in the IPC
+///       handle, if such type of handle is being used by the driver.
+///     - This call does not free the original allocation for which the IPC
+///       handle was created.
+///     - This function may **not** be called from simultaneous threads with the
+///       same IPC handle.
+///     - The implementation of this function should be lock-free.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hContext`
+ze_result_t ZE_APICALL
+zeMemPutIpcHandle(
+    ze_context_handle_t hContext,                   ///< [in] handle of the context object
+    ze_ipc_mem_handle_t handle                      ///< [in] IPC memory handle
+    )
+{
+    auto pfnPutIpcHandle = ze_lib::context->zeDdiTable.Mem.pfnPutIpcHandle;
+    if( nullptr == pfnPutIpcHandle ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    return pfnPutIpcHandle( hContext, handle );
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -6474,6 +6726,73 @@ zeFabricEdgeGetPropertiesExp(
     }
 
     return pfnGetPropertiesExp( hEdge, pEdgeProperties );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Query an event's timestamp value on the host, with domain preference.
+/// 
+/// @details
+///     - For collecting *only* kernel timestamps, the application must ensure
+///       the event was created from an event pool that was created using
+///       ::ZE_EVENT_POOL_FLAG_KERNEL_TIMESTAMP flag.
+///     - For collecting synchronized timestamps, the application must ensure
+///       the event was created from an event pool that was created using
+///       ::ZE_EVENT_POOL_FLAG_KERNEL_MAPPED_TIMESTAMP flag. Kernel timestamps
+///       are also available from this type of event pool, but there is a
+///       performance cost.
+///     - The destination memory will be unmodified if the event has not been
+///       signaled.
+///     - The application may call this function from simultaneous threads.
+///     - The implementation of this function must be thread-safe.
+///     - The implementation must support
+///       ::ZE_extension_event_query_kernel_timestamps.
+///     - The implementation must return all timestamps for the specified event
+///       and device pair.
+///     - The implementation must return all timestamps for all sub-devices when
+///       device handle is parent device.
+///     - The implementation may return all timestamps for sub-devices when
+///       device handle is sub-device or may return 0 for count.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hEvent`
+///         + `nullptr == hDevice`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == pCount`
+ze_result_t ZE_APICALL
+zeEventQueryKernelTimestampsExt(
+    ze_event_handle_t hEvent,                       ///< [in] handle of the event
+    ze_device_handle_t hDevice,                     ///< [in] handle of the device to query
+    uint32_t* pCount,                               ///< [in,out] pointer to the number of event packets available.
+                                                    ///<    - This value is implementation specific.
+                                                    ///<    - if `*pCount` is zero, then the driver shall update the value with
+                                                    ///< the total number of event packets available.
+                                                    ///<    - if `*pCount` is greater than the number of event packets
+                                                    ///< available, the driver shall update the value with the correct value.
+                                                    ///<    - Buffer(s) for query results must be sized by the application to
+                                                    ///< accommodate a minimum of `*pCount` elements.
+    ze_event_query_kernel_timestamps_results_ext_properties_t* pResults ///< [in][optional] pointer to event query properties structure(s).
+                                                    ///<    - This parameter may be null when `*pCount` is zero.
+                                                    ///<    - if `*pCount` is less than the number of event packets available,
+                                                    ///< the driver may only update `*pCount` elements, starting at element zero.
+                                                    ///<    - if `*pCount` is greater than the number of event packets
+                                                    ///< available, the driver may only update the valid elements.
+    )
+{
+    auto pfnQueryKernelTimestampsExt = ze_lib::context->zeDdiTable.Event.pfnQueryKernelTimestampsExt;
+    if( nullptr == pfnQueryKernelTimestampsExt ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    return pfnQueryKernelTimestampsExt( hEvent, hDevice, pCount, pResults );
 }
 
 } // extern "C"

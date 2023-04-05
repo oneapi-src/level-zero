@@ -38,7 +38,7 @@ namespace loader
     class context_t
     {
     public:
-        ze_api_version_t version = ZE_API_VERSION_1_5;
+        ze_api_version_t version = ZE_API_VERSION_CURRENT;
 
         driver_vector_t drivers;
 

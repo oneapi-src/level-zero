@@ -240,6 +240,37 @@ namespace validation_layer
     }
 
     ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeDriverGetLastErrorDescription
+    __zedlllocal ze_result_t ZE_APICALL
+    zeDriverGetLastErrorDescription(
+        ze_driver_handle_t hDriver,                     ///< [in] handle of the driver instance
+        const char** ppString                           ///< [in,out] pointer to a null-terminated array of characters describing
+                                                        ///< cause of error.
+        )
+    {
+        auto pfnGetLastErrorDescription = context.zeDdiTable.Driver.pfnGetLastErrorDescription;
+
+        if( nullptr == pfnGetLastErrorDescription )
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        if( context.enableParameterValidation )
+        {
+            auto result = context.paramValidation->zeParamValidation.zeDriverGetLastErrorDescription( hDriver, ppString );
+            if(result!=ZE_RESULT_SUCCESS) return result;
+        }
+
+        if( context.enableHandleLifetime ){ 
+            //Unimplemented
+        }
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        return pfnGetLastErrorDescription( hDriver, ppString );
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
     /// @brief Intercept function for zeDeviceGet
     __zedlllocal ze_result_t ZE_APICALL
     zeDeviceGet(
@@ -1182,6 +1213,42 @@ namespace validation_layer
     }
 
     ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeCommandListHostSynchronize
+    __zedlllocal ze_result_t ZE_APICALL
+    zeCommandListHostSynchronize(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of the immediate command list
+        uint64_t timeout                                ///< [in] if non-zero, then indicates the maximum time (in nanoseconds) to
+                                                        ///< yield before returning ::ZE_RESULT_SUCCESS or ::ZE_RESULT_NOT_READY;
+                                                        ///< if zero, then immediately returns the status of the immediate command list;
+                                                        ///< if UINT64_MAX, then function will not return until complete or device
+                                                        ///< is lost.
+                                                        ///< Due to external dependencies, timeout may be rounded to the closest
+                                                        ///< value allowed by the accuracy of those dependencies.
+        )
+    {
+        auto pfnHostSynchronize = context.zeDdiTable.CommandList.pfnHostSynchronize;
+
+        if( nullptr == pfnHostSynchronize )
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        if( context.enableParameterValidation )
+        {
+            auto result = context.paramValidation->zeParamValidation.zeCommandListHostSynchronize( hCommandList, timeout );
+            if(result!=ZE_RESULT_SUCCESS) return result;
+        }
+
+        if( context.enableHandleLifetime ){ 
+            //Unimplemented
+        }
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        return pfnHostSynchronize( hCommandList, timeout );
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
     /// @brief Intercept function for zeCommandListAppendBarrier
     __zedlllocal ze_result_t ZE_APICALL
     zeCommandListAppendBarrier(
@@ -1807,6 +1874,37 @@ namespace validation_layer
         }
 
         return pfnGetIpcHandle( hEventPool, phIpc );
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeEventPoolPutIpcHandle
+    __zedlllocal ze_result_t ZE_APICALL
+    zeEventPoolPutIpcHandle(
+        ze_context_handle_t hContext,                   ///< [in] handle of the context object associated with the IPC event pool
+                                                        ///< handle
+        ze_ipc_event_pool_handle_t hIpc                 ///< [in] IPC event pool handle
+        )
+    {
+        auto pfnPutIpcHandle = context.zeDdiTable.EventPool.pfnPutIpcHandle;
+
+        if( nullptr == pfnPutIpcHandle )
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        if( context.enableParameterValidation )
+        {
+            auto result = context.paramValidation->zeParamValidation.zeEventPoolPutIpcHandle( hContext, hIpc );
+            if(result!=ZE_RESULT_SUCCESS) return result;
+        }
+
+        if( context.enableHandleLifetime ){ 
+            //Unimplemented
+        }
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        return pfnPutIpcHandle( hContext, hIpc );
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -2633,6 +2731,98 @@ namespace validation_layer
         }
 
         return pfnGetIpcHandle( hContext, ptr, pIpcHandle );
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeMemGetIpcHandleFromFileDescriptorExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zeMemGetIpcHandleFromFileDescriptorExp(
+        ze_context_handle_t hContext,                   ///< [in] handle of the context object
+        uint64_t handle,                                ///< [in] file descriptor
+        ze_ipc_mem_handle_t* pIpcHandle                 ///< [out] Returned IPC memory handle
+        )
+    {
+        auto pfnGetIpcHandleFromFileDescriptorExp = context.zeDdiTable.MemExp.pfnGetIpcHandleFromFileDescriptorExp;
+
+        if( nullptr == pfnGetIpcHandleFromFileDescriptorExp )
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        if( context.enableParameterValidation )
+        {
+            auto result = context.paramValidation->zeParamValidation.zeMemGetIpcHandleFromFileDescriptorExp( hContext, handle, pIpcHandle );
+            if(result!=ZE_RESULT_SUCCESS) return result;
+        }
+
+        if( context.enableHandleLifetime ){ 
+            //Unimplemented
+        }
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        return pfnGetIpcHandleFromFileDescriptorExp( hContext, handle, pIpcHandle );
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeMemGetFileDescriptorFromIpcHandleExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zeMemGetFileDescriptorFromIpcHandleExp(
+        ze_context_handle_t hContext,                   ///< [in] handle of the context object
+        ze_ipc_mem_handle_t ipcHandle,                  ///< [in] IPC memory handle
+        uint64_t* pHandle                               ///< [out] Returned file descriptor
+        )
+    {
+        auto pfnGetFileDescriptorFromIpcHandleExp = context.zeDdiTable.MemExp.pfnGetFileDescriptorFromIpcHandleExp;
+
+        if( nullptr == pfnGetFileDescriptorFromIpcHandleExp )
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        if( context.enableParameterValidation )
+        {
+            auto result = context.paramValidation->zeParamValidation.zeMemGetFileDescriptorFromIpcHandleExp( hContext, ipcHandle, pHandle );
+            if(result!=ZE_RESULT_SUCCESS) return result;
+        }
+
+        if( context.enableHandleLifetime ){ 
+            //Unimplemented
+        }
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        return pfnGetFileDescriptorFromIpcHandleExp( hContext, ipcHandle, pHandle );
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeMemPutIpcHandle
+    __zedlllocal ze_result_t ZE_APICALL
+    zeMemPutIpcHandle(
+        ze_context_handle_t hContext,                   ///< [in] handle of the context object
+        ze_ipc_mem_handle_t handle                      ///< [in] IPC memory handle
+        )
+    {
+        auto pfnPutIpcHandle = context.zeDdiTable.Mem.pfnPutIpcHandle;
+
+        if( nullptr == pfnPutIpcHandle )
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        if( context.enableParameterValidation )
+        {
+            auto result = context.paramValidation->zeParamValidation.zeMemPutIpcHandle( hContext, handle );
+            if(result!=ZE_RESULT_SUCCESS) return result;
+        }
+
+        if( context.enableHandleLifetime ){ 
+            //Unimplemented
+        }
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        return pfnPutIpcHandle( hContext, handle );
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -4762,6 +4952,50 @@ namespace validation_layer
         return pfnGetPropertiesExp( hEdge, pEdgeProperties );
     }
 
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeEventQueryKernelTimestampsExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeEventQueryKernelTimestampsExt(
+        ze_event_handle_t hEvent,                       ///< [in] handle of the event
+        ze_device_handle_t hDevice,                     ///< [in] handle of the device to query
+        uint32_t* pCount,                               ///< [in,out] pointer to the number of event packets available.
+                                                        ///<    - This value is implementation specific.
+                                                        ///<    - if `*pCount` is zero, then the driver shall update the value with
+                                                        ///< the total number of event packets available.
+                                                        ///<    - if `*pCount` is greater than the number of event packets
+                                                        ///< available, the driver shall update the value with the correct value.
+                                                        ///<    - Buffer(s) for query results must be sized by the application to
+                                                        ///< accommodate a minimum of `*pCount` elements.
+        ze_event_query_kernel_timestamps_results_ext_properties_t* pResults ///< [in][optional] pointer to event query properties structure(s).
+                                                        ///<    - This parameter may be null when `*pCount` is zero.
+                                                        ///<    - if `*pCount` is less than the number of event packets available,
+                                                        ///< the driver may only update `*pCount` elements, starting at element zero.
+                                                        ///<    - if `*pCount` is greater than the number of event packets
+                                                        ///< available, the driver may only update the valid elements.
+        )
+    {
+        auto pfnQueryKernelTimestampsExt = context.zeDdiTable.Event.pfnQueryKernelTimestampsExt;
+
+        if( nullptr == pfnQueryKernelTimestampsExt )
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        if( context.enableParameterValidation )
+        {
+            auto result = context.paramValidation->zeParamValidation.zeEventQueryKernelTimestampsExt( hEvent, hDevice, pCount, pResults );
+            if(result!=ZE_RESULT_SUCCESS) return result;
+        }
+
+        if( context.enableHandleLifetime ){ 
+            //Unimplemented
+        }
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        return pfnQueryKernelTimestampsExt( hEvent, hDevice, pCount, pResults );
+    }
+
 } // namespace validation_layer
 
 #if defined(__cplusplus)
@@ -4841,6 +5075,9 @@ zeGetDriverProcAddrTable(
 
     dditable.pfnGetExtensionFunctionAddress              = pDdiTable->pfnGetExtensionFunctionAddress;
     pDdiTable->pfnGetExtensionFunctionAddress            = validation_layer::zeDriverGetExtensionFunctionAddress;
+
+    dditable.pfnGetLastErrorDescription                  = pDdiTable->pfnGetLastErrorDescription;
+    pDdiTable->pfnGetLastErrorDescription                = validation_layer::zeDriverGetLastErrorDescription;
 
     return result;
 }
@@ -5162,6 +5399,9 @@ zeGetCommandListProcAddrTable(
     dditable.pfnAppendImageCopyFromMemoryExt             = pDdiTable->pfnAppendImageCopyFromMemoryExt;
     pDdiTable->pfnAppendImageCopyFromMemoryExt           = validation_layer::zeCommandListAppendImageCopyFromMemoryExt;
 
+    dditable.pfnHostSynchronize                          = pDdiTable->pfnHostSynchronize;
+    pDdiTable->pfnHostSynchronize                        = validation_layer::zeCommandListHostSynchronize;
+
     return result;
 }
 
@@ -5210,6 +5450,9 @@ zeGetEventProcAddrTable(
 
     dditable.pfnQueryKernelTimestamp                     = pDdiTable->pfnQueryKernelTimestamp;
     pDdiTable->pfnQueryKernelTimestamp                   = validation_layer::zeEventQueryKernelTimestamp;
+
+    dditable.pfnQueryKernelTimestampsExt                 = pDdiTable->pfnQueryKernelTimestampsExt;
+    pDdiTable->pfnQueryKernelTimestampsExt               = validation_layer::zeEventQueryKernelTimestampsExt;
 
     return result;
 }
@@ -5284,6 +5527,9 @@ zeGetEventPoolProcAddrTable(
 
     dditable.pfnCloseIpcHandle                           = pDdiTable->pfnCloseIpcHandle;
     pDdiTable->pfnCloseIpcHandle                         = validation_layer::zeEventPoolCloseIpcHandle;
+
+    dditable.pfnPutIpcHandle                             = pDdiTable->pfnPutIpcHandle;
+    pDdiTable->pfnPutIpcHandle                           = validation_layer::zeEventPoolPutIpcHandle;
 
     return result;
 }
@@ -5560,6 +5806,43 @@ zeGetMemProcAddrTable(
 
     dditable.pfnFreeExt                                  = pDdiTable->pfnFreeExt;
     pDdiTable->pfnFreeExt                                = validation_layer::zeMemFreeExt;
+
+    dditable.pfnPutIpcHandle                             = pDdiTable->pfnPutIpcHandle;
+    pDdiTable->pfnPutIpcHandle                           = validation_layer::zeMemPutIpcHandle;
+
+    return result;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Exported function for filling application's MemExp table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+ZE_DLLEXPORT ze_result_t ZE_APICALL
+zeGetMemExpProcAddrTable(
+    ze_api_version_t version,                       ///< [in] API version requested
+    ze_mem_exp_dditable_t* pDdiTable                ///< [in,out] pointer to table of DDI function pointers
+    )
+{
+    auto& dditable = validation_layer::context.zeDdiTable.MemExp;
+
+    if( nullptr == pDdiTable )
+        return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+    if (ZE_MAJOR_VERSION(validation_layer::context.version) != ZE_MAJOR_VERSION(version) ||
+        ZE_MINOR_VERSION(validation_layer::context.version) > ZE_MINOR_VERSION(version))
+        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+
+    ze_result_t result = ZE_RESULT_SUCCESS;
+
+    dditable.pfnGetIpcHandleFromFileDescriptorExp        = pDdiTable->pfnGetIpcHandleFromFileDescriptorExp;
+    pDdiTable->pfnGetIpcHandleFromFileDescriptorExp      = validation_layer::zeMemGetIpcHandleFromFileDescriptorExp;
+
+    dditable.pfnGetFileDescriptorFromIpcHandleExp        = pDdiTable->pfnGetFileDescriptorFromIpcHandleExp;
+    pDdiTable->pfnGetFileDescriptorFromIpcHandleExp      = validation_layer::zeMemGetFileDescriptorFromIpcHandleExp;
 
     return result;
 }

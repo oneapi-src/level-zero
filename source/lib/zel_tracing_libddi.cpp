@@ -23,7 +23,7 @@ namespace ze_lib
         {
             auto getTable = reinterpret_cast<zel_pfnGetTracerApiProcAddrTable_t>(
                 GET_FUNCTION_PTR(loader, "zelGetTracerApiProcAddrTable") );
-            result = getTable( ZE_API_VERSION_1_5, &zelTracingDdiTable.Tracer);
+            result = getTable( ZE_API_VERSION_CURRENT, &zelTracingDdiTable.Tracer);
         }
 
         return result;
@@ -32,7 +32,7 @@ namespace ze_lib
     __zedlllocal ze_result_t context_t::zelTracingInit()
     {
         ze_result_t result;
-        result = zelGetTracerApiProcAddrTable( ZE_API_VERSION_1_5, &zelTracingDdiTable.Tracer);
+        result = zelGetTracerApiProcAddrTable( ZE_API_VERSION_CURRENT, &zelTracingDdiTable.Tracer);
         return result;
     }
 #endif

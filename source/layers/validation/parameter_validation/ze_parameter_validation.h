@@ -26,6 +26,7 @@ namespace validation_layer
         ze_result_t zeDriverGetIpcProperties ( ze_driver_handle_t hDriver, ze_driver_ipc_properties_t* pIpcProperties ) override;
         ze_result_t zeDriverGetExtensionProperties ( ze_driver_handle_t hDriver, uint32_t* pCount, ze_driver_extension_properties_t* pExtensionProperties ) override;
         ze_result_t zeDriverGetExtensionFunctionAddress ( ze_driver_handle_t hDriver, const char* name, void** ppFunctionAddress ) override;
+        ze_result_t zeDriverGetLastErrorDescription ( ze_driver_handle_t hDriver, const char** ppString ) override;
         ze_result_t zeDeviceGet ( ze_driver_handle_t hDriver, uint32_t* pCount, ze_device_handle_t* phDevices ) override;
         ze_result_t zeDeviceGetSubDevices ( ze_device_handle_t hDevice, uint32_t* pCount, ze_device_handle_t* phSubdevices ) override;
         ze_result_t zeDeviceGetProperties ( ze_device_handle_t hDevice, ze_device_properties_t* pDeviceProperties ) override;
@@ -55,6 +56,7 @@ namespace validation_layer
         ze_result_t zeCommandListClose ( ze_command_list_handle_t hCommandList ) override;
         ze_result_t zeCommandListReset ( ze_command_list_handle_t hCommandList ) override;
         ze_result_t zeCommandListAppendWriteGlobalTimestamp ( ze_command_list_handle_t hCommandList, uint64_t* dstptr, ze_event_handle_t hSignalEvent, uint32_t numWaitEvents, ze_event_handle_t* phWaitEvents ) override;
+        ze_result_t zeCommandListHostSynchronize ( ze_command_list_handle_t hCommandList, uint64_t timeout ) override;
         ze_result_t zeCommandListAppendBarrier ( ze_command_list_handle_t hCommandList, ze_event_handle_t hSignalEvent, uint32_t numWaitEvents, ze_event_handle_t* phWaitEvents ) override;
         ze_result_t zeCommandListAppendMemoryRangesBarrier ( ze_command_list_handle_t hCommandList, uint32_t numRanges, const size_t* pRangeSizes, const void** pRanges, ze_event_handle_t hSignalEvent, uint32_t numWaitEvents, ze_event_handle_t* phWaitEvents ) override;
         ze_result_t zeContextSystemBarrier ( ze_context_handle_t hContext, ze_device_handle_t hDevice ) override;
@@ -73,6 +75,7 @@ namespace validation_layer
         ze_result_t zeEventCreate ( ze_event_pool_handle_t hEventPool, const ze_event_desc_t* desc, ze_event_handle_t* phEvent ) override;
         ze_result_t zeEventDestroy ( ze_event_handle_t hEvent ) override;
         ze_result_t zeEventPoolGetIpcHandle ( ze_event_pool_handle_t hEventPool, ze_ipc_event_pool_handle_t* phIpc ) override;
+        ze_result_t zeEventPoolPutIpcHandle ( ze_context_handle_t hContext, ze_ipc_event_pool_handle_t hIpc ) override;
         ze_result_t zeEventPoolOpenIpcHandle ( ze_context_handle_t hContext, ze_ipc_event_pool_handle_t hIpc, ze_event_pool_handle_t* phEventPool ) override;
         ze_result_t zeEventPoolCloseIpcHandle ( ze_event_pool_handle_t hEventPool ) override;
         ze_result_t zeCommandListAppendSignalEvent ( ze_command_list_handle_t hCommandList, ze_event_handle_t hEvent ) override;
@@ -99,6 +102,9 @@ namespace validation_layer
         ze_result_t zeMemGetAllocProperties ( ze_context_handle_t hContext, const void* ptr, ze_memory_allocation_properties_t* pMemAllocProperties, ze_device_handle_t* phDevice ) override;
         ze_result_t zeMemGetAddressRange ( ze_context_handle_t hContext, const void* ptr, void** pBase, size_t* pSize ) override;
         ze_result_t zeMemGetIpcHandle ( ze_context_handle_t hContext, const void* ptr, ze_ipc_mem_handle_t* pIpcHandle ) override;
+        ze_result_t zeMemGetIpcHandleFromFileDescriptorExp ( ze_context_handle_t hContext, uint64_t handle, ze_ipc_mem_handle_t* pIpcHandle ) override;
+        ze_result_t zeMemGetFileDescriptorFromIpcHandleExp ( ze_context_handle_t hContext, ze_ipc_mem_handle_t ipcHandle, uint64_t* pHandle ) override;
+        ze_result_t zeMemPutIpcHandle ( ze_context_handle_t hContext, ze_ipc_mem_handle_t handle ) override;
         ze_result_t zeMemOpenIpcHandle ( ze_context_handle_t hContext, ze_device_handle_t hDevice, ze_ipc_mem_handle_t handle, ze_ipc_memory_flags_t flags, void** pptr ) override;
         ze_result_t zeMemCloseIpcHandle ( ze_context_handle_t hContext, const void* ptr ) override;
         ze_result_t zeModuleCreate ( ze_context_handle_t hContext, ze_device_handle_t hDevice, const ze_module_desc_t* desc, ze_module_handle_t* phModule, ze_module_build_log_handle_t* phBuildLog ) override;
@@ -164,6 +170,7 @@ namespace validation_layer
         ze_result_t zeFabricEdgeGetExp ( ze_fabric_vertex_handle_t hVertexA, ze_fabric_vertex_handle_t hVertexB, uint32_t* pCount, ze_fabric_edge_handle_t* phEdges ) override;
         ze_result_t zeFabricEdgeGetVerticesExp ( ze_fabric_edge_handle_t hEdge, ze_fabric_vertex_handle_t* phVertexA, ze_fabric_vertex_handle_t* phVertexB ) override;
         ze_result_t zeFabricEdgeGetPropertiesExp ( ze_fabric_edge_handle_t hEdge, ze_fabric_edge_exp_properties_t* pEdgeProperties ) override;
+        ze_result_t zeEventQueryKernelTimestampsExt ( ze_event_handle_t hEvent, ze_device_handle_t hDevice, uint32_t* pCount, ze_event_query_kernel_timestamps_results_ext_properties_t* pResults ) override;
     };
 
 }

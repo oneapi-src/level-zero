@@ -5,7 +5,7 @@
  * SPDX-License-Identifier: MIT
  *
  * @file ze_api.h
- * @version v1.5-r1.5.17
+ * @version v1.6-r1.6.0
  *
  */
 #ifndef _ZE_API_H
@@ -302,6 +302,8 @@ typedef enum _ze_structure_type_t
     ZE_STRUCTURE_TYPE_DEVICE_MEMORY_EXT_PROPERTIES = 0x1000e,   ///< ::ze_device_memory_ext_properties_t
     ZE_STRUCTURE_TYPE_DEVICE_IP_VERSION_EXT = 0x1000f,  ///< ::ze_device_ip_version_ext_t
     ZE_STRUCTURE_TYPE_IMAGE_VIEW_PLANAR_EXT_DESC = 0x10010, ///< ::ze_image_view_planar_ext_desc_t
+    ZE_STRUCTURE_TYPE_EVENT_QUERY_KERNEL_TIMESTAMPS_EXT_PROPERTIES = 0x10011,   ///< ::ze_event_query_kernel_timestamps_ext_properties_t
+    ZE_STRUCTURE_TYPE_EVENT_QUERY_KERNEL_TIMESTAMPS_RESULTS_EXT_PROPERTIES = 0x10012,   ///< ::ze_event_query_kernel_timestamps_results_ext_properties_t
     ZE_STRUCTURE_TYPE_RELAXED_ALLOCATION_LIMITS_EXP_DESC = 0x00020001,  ///< ::ze_relaxed_allocation_limits_exp_desc_t
     ZE_STRUCTURE_TYPE_MODULE_PROGRAM_EXP_DESC = 0x00020002, ///< ::ze_module_program_exp_desc_t
     ZE_STRUCTURE_TYPE_SCHEDULING_HINT_EXP_PROPERTIES = 0x00020003,  ///< ::ze_scheduling_hint_exp_properties_t
@@ -753,6 +755,22 @@ typedef struct _ze_sub_allocation_t ze_sub_allocation_t;
 /// @brief Forward-declare ze_memory_sub_allocations_exp_properties_t
 typedef struct _ze_memory_sub_allocations_exp_properties_t ze_memory_sub_allocations_exp_properties_t;
 
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Forward-declare ze_event_query_kernel_timestamps_ext_properties_t
+typedef struct _ze_event_query_kernel_timestamps_ext_properties_t ze_event_query_kernel_timestamps_ext_properties_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Forward-declare ze_synchronized_timestamp_data_ext_t
+typedef struct _ze_synchronized_timestamp_data_ext_t ze_synchronized_timestamp_data_ext_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Forward-declare ze_synchronized_timestamp_result_ext_t
+typedef struct _ze_synchronized_timestamp_result_ext_t ze_synchronized_timestamp_result_ext_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Forward-declare ze_event_query_kernel_timestamps_results_ext_properties_t
+typedef struct _ze_event_query_kernel_timestamps_results_ext_properties_t ze_event_query_kernel_timestamps_results_ext_properties_t;
+
 
 #if !defined(__GNUC__)
 #pragma endregion
@@ -853,7 +871,8 @@ typedef enum _ze_api_version_t
     ZE_API_VERSION_1_3 = ZE_MAKE_VERSION( 1, 3 ),   ///< version 1.3
     ZE_API_VERSION_1_4 = ZE_MAKE_VERSION( 1, 4 ),   ///< version 1.4
     ZE_API_VERSION_1_5 = ZE_MAKE_VERSION( 1, 5 ),   ///< version 1.5
-    ZE_API_VERSION_CURRENT = ZE_MAKE_VERSION( 1, 5 ),   ///< latest known version
+    ZE_API_VERSION_1_6 = ZE_MAKE_VERSION( 1, 6 ),   ///< version 1.6
+    ZE_API_VERSION_CURRENT = ZE_MAKE_VERSION( 1, 6 ),   ///< latest known version
     ZE_API_VERSION_FORCE_UINT32 = 0x7fffffff
 
 } ze_api_version_t;
@@ -1058,6 +1077,36 @@ zeDriverGetExtensionFunctionAddress(
     ze_driver_handle_t hDriver,                     ///< [in] handle of the driver instance
     const char* name,                               ///< [in] extension function name
     void** ppFunctionAddress                        ///< [out] pointer to function pointer
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Retrieves a string describing the last error code returned by the
+///        driver in the current thread.
+/// 
+/// @details
+///     - String returned is thread local.
+///     - String is only updated on calls returning an error, i.e., not on calls
+///       returning ::ZE_RESULT_SUCCESS.
+///     - String may be empty if driver considers error code is already explicit
+///       enough to describe cause.
+///     - Memory pointed to by ppString is owned by the driver.
+///     - String returned is null-terminated.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hDriver`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == ppString`
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zeDriverGetLastErrorDescription(
+    ze_driver_handle_t hDriver,                     ///< [in] handle of the driver instance
+    const char** ppString                           ///< [in,out] pointer to a null-terminated array of characters describing
+                                                    ///< cause of error.
     );
 
 #if !defined(__GNUC__)
@@ -2514,6 +2563,44 @@ zeCommandListAppendWriteGlobalTimestamp(
                                                     ///< on before executing query
     );
 
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Synchronizes an immediate command list by waiting on the host for the
+///        completion of all commands previously submitted to it.
+/// 
+/// @details
+///     - The application must call this function only with command lists
+///       created with ::zeCommandListCreateImmediate.
+///     - Waiting on one immediate command list shall not block the concurrent
+///       execution of commands appended to other
+///       immediate command lists created with either a different ordinal or
+///       different index.
+///     - The application may call this function from simultaneous threads.
+///     - The implementation of this function should be lock-free.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hCommandList`
+///     - ::ZE_RESULT_NOT_READY
+///         + timeout expired
+///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
+///         + handle does not correspond to an immediate command list
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zeCommandListHostSynchronize(
+    ze_command_list_handle_t hCommandList,          ///< [in] handle of the immediate command list
+    uint64_t timeout                                ///< [in] if non-zero, then indicates the maximum time (in nanoseconds) to
+                                                    ///< yield before returning ::ZE_RESULT_SUCCESS or ::ZE_RESULT_NOT_READY;
+                                                    ///< if zero, then immediately returns the status of the immediate command list;
+                                                    ///< if UINT64_MAX, then function will not return until complete or device
+                                                    ///< is lost.
+                                                    ///< Due to external dependencies, timeout may be rounded to the closest
+                                                    ///< value allowed by the accuracy of those dependencies.
+    );
+
 #if !defined(__GNUC__)
 #pragma endregion
 #endif
@@ -3193,6 +3280,9 @@ typedef enum _ze_event_pool_flag_t
     ZE_EVENT_POOL_FLAG_HOST_VISIBLE = ZE_BIT(0),    ///< signals and waits are also visible to host
     ZE_EVENT_POOL_FLAG_IPC = ZE_BIT(1),             ///< signals and waits may be shared across processes
     ZE_EVENT_POOL_FLAG_KERNEL_TIMESTAMP = ZE_BIT(2),///< Indicates all events in pool will contain kernel timestamps
+    ZE_EVENT_POOL_FLAG_KERNEL_MAPPED_TIMESTAMP = ZE_BIT(3), ///< Indicates all events in pool will contain kernel timestamps
+                                                    ///< synchronized to host time domain; cannot be combined with
+                                                    ///< ::ZE_EVENT_POOL_FLAG_KERNEL_TIMESTAMP
     ZE_EVENT_POOL_FLAG_FORCE_UINT32 = 0x7fffffff
 
 } ze_event_pool_flag_t;
@@ -3233,7 +3323,7 @@ typedef struct _ze_event_pool_desc_t
 ///         + `nullptr == desc`
 ///         + `nullptr == phEventPool`
 ///     - ::ZE_RESULT_ERROR_INVALID_ENUMERATION
-///         + `0x7 < desc->flags`
+///         + `0xf < desc->flags`
 ///     - ::ZE_RESULT_ERROR_INVALID_SIZE
 ///         + `0 == desc->count`
 ///         + `(nullptr == phDevices) && (0 < numDevices)`
@@ -3410,6 +3500,37 @@ zeEventPoolGetIpcHandle(
     );
 
 ///////////////////////////////////////////////////////////////////////////////
+/// @brief Returns an IPC event pool handle to the driver
+/// 
+/// @details
+///     - This call must be used for IPC handles previously obtained with
+///       ::zeEventPoolGetIpcHandle.
+///     - Upon call, driver may release any underlying resources associated with
+///       the IPC handle.
+///       For instance, it may close the file descriptor contained in the IPC
+///       handle, if such type of handle is being used by the driver.
+///     - This call does not destroy the original event pool for which the IPC
+///       handle was created.
+///     - This function may **not** be called from simultaneous threads with the
+///       same IPC handle.
+///     - The implementation of this function should be lock-free.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hContext`
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zeEventPoolPutIpcHandle(
+    ze_context_handle_t hContext,                   ///< [in] handle of the context object associated with the IPC event pool
+                                                    ///< handle
+    ze_ipc_event_pool_handle_t hIpc                 ///< [in] IPC event pool handle
+    );
+
+///////////////////////////////////////////////////////////////////////////////
 /// @brief Opens an IPC event pool handle to retrieve an event pool handle from
 ///        another process.
 /// 
@@ -3467,7 +3588,8 @@ zeEventPoolCloseIpcHandle(
 ///     - The application must ensure the events are accessible by the device on
 ///       which the command list was created.
 ///     - The duration of an event created from an event pool that was created
-///       using ::ZE_EVENT_POOL_FLAG_KERNEL_TIMESTAMP flag is undefined.
+///       using ::ZE_EVENT_POOL_FLAG_KERNEL_TIMESTAMP or
+///       ::ZE_EVENT_POOL_FLAG_KERNEL_MAPPED_TIMESTAMP flags is undefined.
 ///       However, for consistency and orthogonality the event will report
 ///       correctly as signaled when used by other event API functionality.
 ///     - The application must ensure the command list and events were created
@@ -3533,7 +3655,8 @@ zeCommandListAppendWaitOnEvents(
 /// 
 /// @details
 ///     - The duration of an event created from an event pool that was created
-///       using ::ZE_EVENT_POOL_FLAG_KERNEL_TIMESTAMP flag is undefined.
+///       using ::ZE_EVENT_POOL_FLAG_KERNEL_TIMESTAMP or
+///       ::ZE_EVENT_POOL_FLAG_KERNEL_MAPPED_TIMESTAMP flags is undefined.
 ///       However, for consistency and orthogonality the event will report
 ///       correctly as signaled when used by other event API functionality.
 ///     - The application may call this function from simultaneous threads.
@@ -3707,7 +3830,8 @@ typedef struct _ze_kernel_timestamp_result_t
 /// 
 /// @details
 ///     - The application must ensure the event was created from an event pool
-///       that was created using ::ZE_EVENT_POOL_FLAG_KERNEL_TIMESTAMP flag.
+///       that was created using ::ZE_EVENT_POOL_FLAG_KERNEL_TIMESTAMP or
+///       ::ZE_EVENT_POOL_FLAG_KERNEL_MAPPED_TIMESTAMP flag.
 ///     - The destination memory will be unmodified if the event has not been
 ///       signaled.
 ///     - The application may call this function from simultaneous threads.
@@ -4078,9 +4202,9 @@ typedef enum _ze_image_format_swizzle_t
 /// @brief Image format 
 typedef struct _ze_image_format_t
 {
-    ze_image_format_layout_t layout;                ///< [in] image format component layout
-    ze_image_format_type_t type;                    ///< [in] image format type. Media formats can't be used for
-                                                    ///< ::ZE_IMAGE_TYPE_BUFFER.
+    ze_image_format_layout_t layout;                ///< [in] image format component layout (e.g. N-component layouts and media
+                                                    ///< formats)
+    ze_image_format_type_t type;                    ///< [in] image format type
     ze_image_format_swizzle_t x;                    ///< [in] image component swizzle into channel x
     ze_image_format_swizzle_t y;                    ///< [in] image component swizzle into channel y
     ze_image_format_swizzle_t z;                    ///< [in] image component swizzle into channel z
@@ -4098,7 +4222,8 @@ typedef struct _ze_image_desc_t
     ze_image_flags_t flags;                         ///< [in] creation flags.
                                                     ///< must be 0 (default) or a valid combination of ::ze_image_flag_t;
                                                     ///< default is read-only, cached access.
-    ze_image_type_t type;                           ///< [in] image type
+    ze_image_type_t type;                           ///< [in] image type. Media format layouts are unsupported for
+                                                    ///< ::ZE_IMAGE_TYPE_BUFFER
     ze_image_format_t format;                       ///< [in] image format
     uint64_t width;                                 ///< [in] width dimension.
                                                     ///< ::ZE_IMAGE_TYPE_BUFFER: size in bytes; see
@@ -4581,6 +4706,90 @@ zeMemGetIpcHandle(
     );
 
 ///////////////////////////////////////////////////////////////////////////////
+/// @brief Creates an IPC memory handle out of a file descriptor
+/// 
+/// @details
+///     - Handle passed must be a valid file descriptor obtained with
+///       ::ze_external_memory_export_fd_t via ::zeMemGetAllocProperties.
+///     - Returned IPC handle may contain metadata in addition to the file
+///       descriptor.
+///     - The application may call this function from simultaneous threads.
+///     - The implementation of this function must be thread-safe.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hContext`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == pIpcHandle`
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zeMemGetIpcHandleFromFileDescriptorExp(
+    ze_context_handle_t hContext,                   ///< [in] handle of the context object
+    uint64_t handle,                                ///< [in] file descriptor
+    ze_ipc_mem_handle_t* pIpcHandle                 ///< [out] Returned IPC memory handle
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Gets the file descriptor contained in an IPC memory handle
+/// 
+/// @details
+///     - IPC memory handle must be a valid handle obtained with
+///       ::zeMemGetIpcHandle.
+///     - The application may call this function from simultaneous threads.
+///     - The implementation of this function must be thread-safe.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hContext`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == pHandle`
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zeMemGetFileDescriptorFromIpcHandleExp(
+    ze_context_handle_t hContext,                   ///< [in] handle of the context object
+    ze_ipc_mem_handle_t ipcHandle,                  ///< [in] IPC memory handle
+    uint64_t* pHandle                               ///< [out] Returned file descriptor
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Returns an IPC memory handle to the driver
+/// 
+/// @details
+///     - This call may be used for IPC handles previously obtained with either
+///       ::zeMemGetIpcHandle or with ::ze_external_memory_export_fd_t via ::zeMemGetAllocProperties.
+///     - Upon call, driver may release any underlying resources associated with
+///       the IPC handle.
+///       For instance, it may close the file descriptor contained in the IPC
+///       handle, if such type of handle is being used by the driver.
+///     - This call does not free the original allocation for which the IPC
+///       handle was created.
+///     - This function may **not** be called from simultaneous threads with the
+///       same IPC handle.
+///     - The implementation of this function should be lock-free.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hContext`
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zeMemPutIpcHandle(
+    ze_context_handle_t hContext,                   ///< [in] handle of the context object
+    ze_ipc_mem_handle_t handle                      ///< [in] IPC memory handle
+    );
+
+///////////////////////////////////////////////////////////////////////////////
 /// @brief Supported IPC memory flags
 typedef uint32_t ze_ipc_memory_flags_t;
 typedef enum _ze_ipc_memory_flag_t
@@ -4808,7 +5017,8 @@ typedef struct _ze_module_desc_t
     ze_module_format_t format;                      ///< [in] Module format passed in with pInputModule
     size_t inputSize;                               ///< [in] size of input IL or ISA from pInputModule.
     const uint8_t* pInputModule;                    ///< [in] pointer to IL or ISA
-    const char* pBuildFlags;                        ///< [in][optional] string containing compiler flags. Following options are supported.
+    const char* pBuildFlags;                        ///< [in][optional] string containing one or more (comma-separated)
+                                                    ///< compiler flags. If unsupported, flag is ignored with a warning.
                                                     ///<  - "-ze-opt-disable"
                                                     ///<       - Disable optimizations
                                                     ///<  - "-ze-opt-level"
@@ -8585,6 +8795,145 @@ typedef struct _ze_memory_sub_allocations_exp_properties_t
                                                     ///< driver shall only retrieve properties for that number of sub-allocations.
 
 } ze_memory_sub_allocations_exp_properties_t;
+
+#if !defined(__GNUC__)
+#pragma endregion
+#endif
+// Intel 'oneAPI' Level-Zero Extension for supporting the querying of synchronized event timestamps.
+#if !defined(__GNUC__)
+#pragma region eventQueryKernelTimestamps
+#endif
+///////////////////////////////////////////////////////////////////////////////
+#ifndef ZE_EVENT_QUERY_KERNEL_TIMESTAMPS_EXT_NAME
+/// @brief Event Query Kernel Timestamps Extension Name
+#define ZE_EVENT_QUERY_KERNEL_TIMESTAMPS_EXT_NAME  "ZE_extension_event_query_kernel_timestamps"
+#endif // ZE_EVENT_QUERY_KERNEL_TIMESTAMPS_EXT_NAME
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Event Query Kernel Timestamps Extension Version(s)
+typedef enum _ze_event_query_kernel_timestamps_ext_version_t
+{
+    ZE_EVENT_QUERY_KERNEL_TIMESTAMPS_EXT_VERSION_1_0 = ZE_MAKE_VERSION( 1, 0 ), ///< version 1.0
+    ZE_EVENT_QUERY_KERNEL_TIMESTAMPS_EXT_VERSION_CURRENT = ZE_MAKE_VERSION( 1, 0 ), ///< latest known version
+    ZE_EVENT_QUERY_KERNEL_TIMESTAMPS_EXT_VERSION_FORCE_UINT32 = 0x7fffffff
+
+} ze_event_query_kernel_timestamps_ext_version_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Event query kernel timestamps flags
+typedef uint32_t ze_event_query_kernel_timestamps_ext_flags_t;
+typedef enum _ze_event_query_kernel_timestamps_ext_flag_t
+{
+    ZE_EVENT_QUERY_KERNEL_TIMESTAMPS_EXT_FLAG_KERNEL = ZE_BIT(0),   ///< Kernel timestamp results
+    ZE_EVENT_QUERY_KERNEL_TIMESTAMPS_EXT_FLAG_SYNCHRONIZED = ZE_BIT(1), ///< Device event timestamps synchronized to the host time domain
+    ZE_EVENT_QUERY_KERNEL_TIMESTAMPS_EXT_FLAG_FORCE_UINT32 = 0x7fffffff
+
+} ze_event_query_kernel_timestamps_ext_flag_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Event query kernel timestamps properties
+/// 
+/// @details
+///     - This structure may be returned from ::zeDeviceGetProperties, via
+///       `pNext` member of ::ze_device_properties_t.
+typedef struct _ze_event_query_kernel_timestamps_ext_properties_t
+{
+    ze_structure_type_t stype;                      ///< [in] type of this structure
+    void* pNext;                                    ///< [in,out][optional] must be null or a pointer to an extension-specific
+                                                    ///< structure (i.e. contains sType and pNext).
+    ze_event_query_kernel_timestamps_ext_flags_t flags; ///< [out] 0 or some combination of
+                                                    ///< ::ze_event_query_kernel_timestamps_ext_flag_t flags
+
+} ze_event_query_kernel_timestamps_ext_properties_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Kernel timestamp clock data synchronized to the host time domain
+typedef struct _ze_synchronized_timestamp_data_ext_t
+{
+    uint64_t kernelStart;                           ///< [out] synchronized clock at start of kernel execution
+    uint64_t kernelEnd;                             ///< [out] synchronized clock at end of kernel execution
+
+} ze_synchronized_timestamp_data_ext_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Synchronized kernel timestamp result
+typedef struct _ze_synchronized_timestamp_result_ext_t
+{
+    ze_synchronized_timestamp_data_ext_t global;    ///< [out] wall-clock data
+    ze_synchronized_timestamp_data_ext_t context;   ///< [out] context-active data; only includes clocks while device context
+                                                    ///< was actively executing.
+
+} ze_synchronized_timestamp_result_ext_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Event query kernel timestamps results properties
+typedef struct _ze_event_query_kernel_timestamps_results_ext_properties_t
+{
+    ze_structure_type_t stype;                      ///< [in] type of this structure
+    void* pNext;                                    ///< [in,out][optional] must be null or a pointer to an extension-specific
+                                                    ///< structure (i.e. contains sType and pNext).
+    ze_kernel_timestamp_result_t* pKernelTimestampsBuffer;  ///< [in,out][optional][range(0, *pCount)] pointer to destination buffer of
+                                                    ///< kernel timestamp results
+    ze_synchronized_timestamp_result_ext_t* pSynchronizedTimestampsBuffer;  ///< [in,out][optional][range(0, *pCount)] pointer to destination buffer of
+                                                    ///< synchronized timestamp results
+
+} ze_event_query_kernel_timestamps_results_ext_properties_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Query an event's timestamp value on the host, with domain preference.
+/// 
+/// @details
+///     - For collecting *only* kernel timestamps, the application must ensure
+///       the event was created from an event pool that was created using
+///       ::ZE_EVENT_POOL_FLAG_KERNEL_TIMESTAMP flag.
+///     - For collecting synchronized timestamps, the application must ensure
+///       the event was created from an event pool that was created using
+///       ::ZE_EVENT_POOL_FLAG_KERNEL_MAPPED_TIMESTAMP flag. Kernel timestamps
+///       are also available from this type of event pool, but there is a
+///       performance cost.
+///     - The destination memory will be unmodified if the event has not been
+///       signaled.
+///     - The application may call this function from simultaneous threads.
+///     - The implementation of this function must be thread-safe.
+///     - The implementation must support
+///       ::ZE_extension_event_query_kernel_timestamps.
+///     - The implementation must return all timestamps for the specified event
+///       and device pair.
+///     - The implementation must return all timestamps for all sub-devices when
+///       device handle is parent device.
+///     - The implementation may return all timestamps for sub-devices when
+///       device handle is sub-device or may return 0 for count.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hEvent`
+///         + `nullptr == hDevice`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == pCount`
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zeEventQueryKernelTimestampsExt(
+    ze_event_handle_t hEvent,                       ///< [in] handle of the event
+    ze_device_handle_t hDevice,                     ///< [in] handle of the device to query
+    uint32_t* pCount,                               ///< [in,out] pointer to the number of event packets available.
+                                                    ///<    - This value is implementation specific.
+                                                    ///<    - if `*pCount` is zero, then the driver shall update the value with
+                                                    ///< the total number of event packets available.
+                                                    ///<    - if `*pCount` is greater than the number of event packets
+                                                    ///< available, the driver shall update the value with the correct value.
+                                                    ///<    - Buffer(s) for query results must be sized by the application to
+                                                    ///< accommodate a minimum of `*pCount` elements.
+    ze_event_query_kernel_timestamps_results_ext_properties_t* pResults ///< [in][optional] pointer to event query properties structure(s).
+                                                    ///<    - This parameter may be null when `*pCount` is zero.
+                                                    ///<    - if `*pCount` is less than the number of event packets available,
+                                                    ///< the driver may only update `*pCount` elements, starting at element zero.
+                                                    ///<    - if `*pCount` is greater than the number of event packets
+                                                    ///< available, the driver may only update the valid elements.
+    );
 
 #if !defined(__GNUC__)
 #pragma endregion

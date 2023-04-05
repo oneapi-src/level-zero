@@ -1,5 +1,10 @@
 # Level zero loader changelog
 
+## v1.10.0
+* Update to spec 1.6
+* Added validation for stype and pnext
+
+
 ## v1.9.9
 * Update to spec 1.5.17
 * Fix for calling zeInit in zesInit path

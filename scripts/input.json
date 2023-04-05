@@ -866,6 +866,7 @@
                     "Close",
                     "Reset",
                     "AppendWriteGlobalTimestamp",
+                    "HostSynchronize",
                     "AppendMemoryCopy",
                     "AppendMemoryFill",
                     "AppendMemoryCopyRegion",
@@ -1075,7 +1076,8 @@
                     "GetProperties",
                     "GetIpcProperties",
                     "GetExtensionProperties",
-                    "GetExtensionFunctionAddress"
+                    "GetExtensionFunctionAddress",
+                    "GetLastErrorDescription"
                 ],
                 "handle": [
                     "$x_driver_handle_t"
@@ -1099,7 +1101,8 @@
             },
             "$xEvent": {
                 "enum": [
-                    "$x_event_scope_flags_t"
+                    "$x_event_scope_flags_t",
+                    "$x_event_query_kernel_timestamps_ext_flags_t"
                 ],
                 "function": [
                     "Create",
@@ -1109,6 +1112,7 @@
                     "QueryStatus",
                     "HostReset",
                     "QueryKernelTimestamp",
+                    "QueryKernelTimestampsExt",
                     "QueryTimestampsExp"
                 ],
                 "handle": [
@@ -1124,7 +1128,9 @@
                 "struct": [
                     "$x_event_desc_t",
                     "$x_kernel_timestamp_data_t",
-                    "$x_kernel_timestamp_result_t"
+                    "$x_kernel_timestamp_result_t",
+                    "$x_synchronized_timestamp_data_ext_t",
+                    "$x_synchronized_timestamp_result_ext_t"
                 ]
             },
             "$xEventPool": {
@@ -1135,6 +1141,7 @@
                     "Create",
                     "Destroy",
                     "GetIpcHandle",
+                    "PutIpcHandle",
                     "OpenIpcHandle",
                     "CloseIpcHandle"
                 ],
@@ -1326,6 +1333,9 @@
                     "GetAllocProperties",
                     "GetAddressRange",
                     "GetIpcHandle",
+                    "GetIpcHandleFromFileDescriptorExp",
+                    "GetFileDescriptorFromIpcHandleExp",
+                    "PutIpcHandle",
                     "OpenIpcHandle",
                     "CloseIpcHandle",
                     "FreeExt"
@@ -1610,9 +1620,10 @@
                 "class": "$sDevice",
                 "etors": [
                     "$S_FREQ_DOMAIN_GPU",
-                    "$S_FREQ_DOMAIN_MEMORY"
+                    "$S_FREQ_DOMAIN_MEMORY",
+                    "$S_FREQ_DOMAIN_MEDIA"
                 ],
-                "max": "$S_FREQ_DOMAIN_MEMORY"
+                "max": "$S_FREQ_DOMAIN_MEDIA"
             },
             "$s_freq_throttle_reason_flags_t": {
                 "class": "$sFrequency",
@@ -2153,6 +2164,7 @@
                     "$X_API_VERSION_1_3",
                     "$X_API_VERSION_1_4",
                     "$X_API_VERSION_1_5",
+                    "$X_API_VERSION_1_6",
                     "$X_API_VERSION_CURRENT"
                 ],
                 "max": "$X_API_VERSION_CURRENT"
@@ -2426,9 +2438,26 @@
                 "etors": [
                     "$X_EVENT_POOL_FLAG_HOST_VISIBLE",
                     "$X_EVENT_POOL_FLAG_IPC",
-                    "$X_EVENT_POOL_FLAG_KERNEL_TIMESTAMP"
+                    "$X_EVENT_POOL_FLAG_KERNEL_TIMESTAMP",
+                    "$X_EVENT_POOL_FLAG_KERNEL_MAPPED_TIMESTAMP"
                 ],
-                "max": "0x7"
+                "max": "0xf"
+            },
+            "$x_event_query_kernel_timestamps_ext_flags_t": {
+                "class": "$xEvent",
+                "etors": [
+                    "$X_EVENT_QUERY_KERNEL_TIMESTAMPS_EXT_FLAG_KERNEL",
+                    "$X_EVENT_QUERY_KERNEL_TIMESTAMPS_EXT_FLAG_SYNCHRONIZED"
+                ],
+                "max": "0x3"
+            },
+            "$x_event_query_kernel_timestamps_ext_version_t": {
+                "class": "",
+                "etors": [
+                    "$X_EVENT_QUERY_KERNEL_TIMESTAMPS_EXT_VERSION_1_0",
+                    "$X_EVENT_QUERY_KERNEL_TIMESTAMPS_EXT_VERSION_CURRENT"
+                ],
+                "max": "$X_EVENT_QUERY_KERNEL_TIMESTAMPS_EXT_VERSION_CURRENT"
             },
             "$x_event_query_timestamps_exp_version_t": {
                 "class": "",
@@ -3061,6 +3090,8 @@
                     "$X_STRUCTURE_TYPE_DEVICE_MEMORY_EXT_PROPERTIES",
                     "$X_STRUCTURE_TYPE_DEVICE_IP_VERSION_EXT",
                     "$X_STRUCTURE_TYPE_IMAGE_VIEW_PLANAR_EXT_DESC",
+                    "$X_STRUCTURE_TYPE_EVENT_QUERY_KERNEL_TIMESTAMPS_EXT_PROPERTIES",
+                    "$X_STRUCTURE_TYPE_EVENT_QUERY_KERNEL_TIMESTAMPS_RESULTS_EXT_PROPERTIES",
                     "$X_STRUCTURE_TYPE_RELAXED_ALLOCATION_LIMITS_EXP_DESC",
                     "$X_STRUCTURE_TYPE_MODULE_PROGRAM_EXP_DESC",
                     "$X_STRUCTURE_TYPE_SCHEDULING_HINT_EXP_PROPERTIES",
@@ -5865,6 +5896,17 @@
                     }
                 ]
             },
+            "$xCommandListHostSynchronize": {
+                "class": "$xCommandList",
+                "params": [
+                    {
+                        "type": "$x_command_list_handle_t"
+                    },
+                    {
+                        "type": "uint64_t"
+                    }
+                ]
+            },
             "$xCommandListReset": {
                 "class": "$xCommandList",
                 "params": [
@@ -6349,6 +6391,17 @@
                     }
                 ]
             },
+            "$xDriverGetLastErrorDescription": {
+                "class": "$xDriver",
+                "params": [
+                    {
+                        "type": "$x_driver_handle_t"
+                    },
+                    {
+                        "type": "const char**"
+                    }
+                ]
+            },
             "$xDriverGetProperties": {
                 "class": "$xDriver",
                 "params": [
@@ -6470,6 +6523,17 @@
                     }
                 ]
             },
+            "$xEventPoolPutIpcHandle": {
+                "class": "$xEventPool",
+                "params": [
+                    {
+                        "type": "$x_context_handle_t"
+                    },
+                    {
+                        "type": "$x_ipc_event_pool_handle_t"
+                    }
+                ]
+            },
             "$xEventQueryKernelTimestamp": {
                 "class": "$xEvent",
                 "params": [
@@ -6478,6 +6542,23 @@
                     },
                     {
                         "type": "$x_kernel_timestamp_result_t*"
+                    }
+                ]
+            },
+            "$xEventQueryKernelTimestampsExt": {
+                "class": "$xEvent",
+                "params": [
+                    {
+                        "type": "$x_event_handle_t"
+                    },
+                    {
+                        "type": "$x_device_handle_t"
+                    },
+                    {
+                        "type": "uint32_t*"
+                    },
+                    {
+                        "type": "$x_event_query_kernel_timestamps_results_ext_properties_t*"
                     }
                 ]
             },
@@ -7091,6 +7172,20 @@
                     }
                 ]
             },
+            "$xMemGetFileDescriptorFromIpcHandleExp": {
+                "class": "$xMem",
+                "params": [
+                    {
+                        "type": "$x_context_handle_t"
+                    },
+                    {
+                        "type": "$x_ipc_mem_handle_t"
+                    },
+                    {
+                        "type": "uint64_t*"
+                    }
+                ]
+            },
             "$xMemGetIpcHandle": {
                 "class": "$xMem",
                 "params": [
@@ -7099,6 +7194,20 @@
                     },
                     {
                         "type": "const void*"
+                    },
+                    {
+                        "type": "$x_ipc_mem_handle_t*"
+                    }
+                ]
+            },
+            "$xMemGetIpcHandleFromFileDescriptorExp": {
+                "class": "$xMem",
+                "params": [
+                    {
+                        "type": "$x_context_handle_t"
+                    },
+                    {
+                        "type": "uint64_t"
                     },
                     {
                         "type": "$x_ipc_mem_handle_t*"
@@ -7122,6 +7231,17 @@
                     },
                     {
                         "type": "void**"
+                    }
+                ]
+            },
+            "$xMemPutIpcHandle": {
+                "class": "$xMem",
+                "params": [
+                    {
+                        "type": "$x_context_handle_t"
+                    },
+                    {
+                        "type": "$x_ipc_mem_handle_t"
                     }
                 ]
             },
@@ -7777,6 +7897,12 @@
                 "class": "",
                 "values": [
                     "\"$X_extension_eu_count\""
+                ]
+            },
+            "$X_EVENT_QUERY_KERNEL_TIMESTAMPS_EXT_NAME": {
+                "class": "",
+                "values": [
+                    "\"$X_extension_event_query_kernel_timestamps\""
                 ]
             },
             "$X_EVENT_QUERY_TIMESTAMPS_EXP_NAME": {
@@ -11272,6 +11398,34 @@
                     }
                 ]
             },
+            "$x_event_query_kernel_timestamps_ext_properties_t": {
+                "class": "",
+                "members": [
+                    {
+                        "desc": "[out] 0 or some combination of $x_event_query_kernel_timestamps_ext_flag_t flags",
+                        "init": null,
+                        "name": "flags",
+                        "type": "$x_event_query_kernel_timestamps_ext_flags_t"
+                    }
+                ]
+            },
+            "$x_event_query_kernel_timestamps_results_ext_properties_t": {
+                "class": "",
+                "members": [
+                    {
+                        "desc": "[in,out][optional][range(0, *pCount)] pointer to destination buffer of kernel timestamp results",
+                        "init": "nullptr",
+                        "name": "pKernelTimestampsBuffer",
+                        "type": "$x_kernel_timestamp_result_t*"
+                    },
+                    {
+                        "desc": "[in,out][optional][range(0, *pCount)] pointer to destination buffer of synchronized timestamp results",
+                        "init": "nullptr",
+                        "name": "pSynchronizedTimestampsBuffer",
+                        "type": "$x_synchronized_timestamp_result_ext_t*"
+                    }
+                ]
+            },
             "$x_external_memory_export_desc_t": {
                 "class": "$xMem",
                 "members": [
@@ -11551,7 +11705,7 @@
                         "type": "$x_image_flags_t"
                     },
                     {
-                        "desc": "[in] image type",
+                        "desc": "[in] image type. Media format layouts are unsupported for $X_IMAGE_TYPE_BUFFER",
                         "init": null,
                         "name": "type",
                         "type": "$x_image_type_t"
@@ -11598,13 +11752,13 @@
                 "class": "$xImage",
                 "members": [
                     {
-                        "desc": "[in] image format component layout",
+                        "desc": "[in] image format component layout (e.g. N-component layouts and media formats)",
                         "init": null,
                         "name": "layout",
                         "type": "$x_image_format_layout_t"
                     },
                     {
-                        "desc": "[in] image format type. Media formats can't be used for $X_IMAGE_TYPE_BUFFER.",
+                        "desc": "[in] image format type",
                         "init": null,
                         "name": "type",
                         "type": "$x_image_format_type_t"
@@ -12039,7 +12193,7 @@
                         "type": "const uint8_t*"
                     },
                     {
-                        "desc": "[in][optional] string containing compiler flags. Following options are supported.\n  - \"-$x-opt-disable\"\n       - Disable optimizations\n  - \"-$x-opt-level\"\n       - Specifies optimization level for compiler. Levels are implementation specific.\n           - 0 is no optimizations (equivalent to -$x-opt-disable)\n           - 1 is optimize minimally (may be the same as 2)\n           - 2 is optimize more (default)\n  - \"-$x-opt-greater-than-4GB-buffer-required\"\n       - Use 64-bit offset calculations for buffers.\n  - \"-$x-opt-large-register-file\"\n       - Increase number of registers available to threads.\n  - \"-$x-opt-has-buffer-offset-arg\"\n       - Extend stateless to stateful optimization to more\n         cases with the use of additional offset (e.g. 64-bit\n         pointer to binding table with 32-bit offset).\n  - \"-g\"\n       - Include debugging information.\n",
+                        "desc": "[in][optional] string containing one or more (comma-separated) compiler flags. If unsupported, flag is ignored with a warning.\n  - \"-$x-opt-disable\"\n       - Disable optimizations\n  - \"-$x-opt-level\"\n       - Specifies optimization level for compiler. Levels are implementation specific.\n           - 0 is no optimizations (equivalent to -$x-opt-disable)\n           - 1 is optimize minimally (may be the same as 2)\n           - 2 is optimize more (default)\n  - \"-$x-opt-greater-than-4GB-buffer-required\"\n       - Use 64-bit offset calculations for buffers.\n  - \"-$x-opt-large-register-file\"\n       - Increase number of registers available to threads.\n  - \"-$x-opt-has-buffer-offset-arg\"\n       - Extend stateless to stateful optimization to more\n         cases with the use of additional offset (e.g. 64-bit\n         pointer to binding table with 32-bit offset).\n  - \"-g\"\n       - Include debugging information.\n",
                         "init": "nullptr",
                         "name": "pBuildFlags",
                         "type": "const char*"
@@ -12287,6 +12441,40 @@
                         "init": null,
                         "name": "size",
                         "type": "size_t"
+                    }
+                ]
+            },
+            "$x_synchronized_timestamp_data_ext_t": {
+                "class": "$xEvent",
+                "members": [
+                    {
+                        "desc": "[out] synchronized clock at start of kernel execution",
+                        "init": null,
+                        "name": "kernelStart",
+                        "type": "uint64_t"
+                    },
+                    {
+                        "desc": "[out] synchronized clock at end of kernel execution",
+                        "init": null,
+                        "name": "kernelEnd",
+                        "type": "uint64_t"
+                    }
+                ]
+            },
+            "$x_synchronized_timestamp_result_ext_t": {
+                "class": "$xEvent",
+                "members": [
+                    {
+                        "desc": "[out] wall-clock data",
+                        "init": null,
+                        "name": "global",
+                        "type": "$x_synchronized_timestamp_data_ext_t"
+                    },
+                    {
+                        "desc": "[out] context-active data; only includes clocks while device context was actively executing.",
+                        "init": null,
+                        "name": "context",
+                        "type": "$x_synchronized_timestamp_data_ext_t"
                     }
                 ]
             },
@@ -13271,9 +13459,15 @@
                         "version": "1.5"
                     },
                     {
+                        "desc": "version 1.6",
+                        "name": "ZE_API_VERSION_1_6",
+                        "value": "ZE_MAKE_VERSION( 1, 6 )",
+                        "version": "1.6"
+                    },
+                    {
                         "desc": "latest known version",
                         "name": "ZE_API_VERSION_CURRENT",
-                        "value": "ZE_MAKE_VERSION( 1, 5 )"
+                        "value": "ZE_MAKE_VERSION( 1, 6 )"
                     }
                 ],
                 "name": "ze_api_version_t",
@@ -14007,10 +14201,53 @@
                         "desc": "Indicates all events in pool will contain kernel timestamps",
                         "name": "ZE_EVENT_POOL_FLAG_KERNEL_TIMESTAMP",
                         "value": "ZE_BIT(2)"
+                    },
+                    {
+                        "desc": "Indicates all events in pool will contain kernel timestamps synchronized to host time domain; cannot be combined with ZE_EVENT_POOL_FLAG_KERNEL_TIMESTAMP",
+                        "name": "ZE_EVENT_POOL_FLAG_KERNEL_MAPPED_TIMESTAMP",
+                        "value": "ZE_BIT(3)",
+                        "version": "1.6"
                     }
                 ],
                 "name": "ze_event_pool_flags_t",
                 "type": "enum"
+            },
+            "ze_event_query_kernel_timestamps_ext_flags_t": {
+                "class": "zeEvent",
+                "desc": "Event query kernel timestamps flags",
+                "etors": [
+                    {
+                        "desc": "Kernel timestamp results",
+                        "name": "ZE_EVENT_QUERY_KERNEL_TIMESTAMPS_EXT_FLAG_KERNEL",
+                        "value": "ZE_BIT(0)"
+                    },
+                    {
+                        "desc": "Device event timestamps synchronized to the host time domain",
+                        "name": "ZE_EVENT_QUERY_KERNEL_TIMESTAMPS_EXT_FLAG_SYNCHRONIZED",
+                        "value": "ZE_BIT(1)"
+                    }
+                ],
+                "name": "ze_event_query_kernel_timestamps_ext_flags_t",
+                "type": "enum",
+                "version": "1.6"
+            },
+            "ze_event_query_kernel_timestamps_ext_version_t": {
+                "desc": "Event Query Kernel Timestamps Extension Version(s)",
+                "etors": [
+                    {
+                        "desc": "version 1.0",
+                        "name": "ZE_EVENT_QUERY_KERNEL_TIMESTAMPS_EXT_VERSION_1_0",
+                        "value": "ZE_MAKE_VERSION( 1, 0 )"
+                    },
+                    {
+                        "desc": "latest known version",
+                        "name": "ZE_EVENT_QUERY_KERNEL_TIMESTAMPS_EXT_VERSION_CURRENT",
+                        "value": "ZE_MAKE_VERSION( 1, 0 )"
+                    }
+                ],
+                "name": "ze_event_query_kernel_timestamps_ext_version_t",
+                "type": "enum",
+                "version": "1.6"
             },
             "ze_event_query_timestamps_exp_version_t": {
                 "desc": "Event Query Timestamps Extension Version(s)",
@@ -15945,6 +16182,18 @@
                         "version": "1.5"
                     },
                     {
+                        "desc": "ze_event_query_kernel_timestamps_ext_properties_t",
+                        "name": "ZE_STRUCTURE_TYPE_EVENT_QUERY_KERNEL_TIMESTAMPS_EXT_PROPERTIES",
+                        "value": "0x10011",
+                        "version": "1.6"
+                    },
+                    {
+                        "desc": "ze_event_query_kernel_timestamps_results_ext_properties_t",
+                        "name": "ZE_STRUCTURE_TYPE_EVENT_QUERY_KERNEL_TIMESTAMPS_RESULTS_EXT_PROPERTIES",
+                        "value": "0x10012",
+                        "version": "1.6"
+                    },
+                    {
                         "desc": "ze_relaxed_allocation_limits_exp_desc_t",
                         "name": "ZE_STRUCTURE_TYPE_RELAXED_ALLOCATION_LIMITS_EXP_DESC",
                         "value": "0x00020001",
@@ -16494,6 +16743,12 @@
                         "desc": "Local Memory Domain.",
                         "name": "ZES_FREQ_DOMAIN_MEMORY",
                         "value": "1"
+                    },
+                    {
+                        "desc": "GPU Media Domain.",
+                        "name": "ZES_FREQ_DOMAIN_MEDIA",
+                        "value": "2",
+                        "version": "1.6"
                     }
                 ],
                 "name": "zes_freq_domain_t",
@@ -20531,7 +20786,7 @@
                 "desc": "Appends a signal of the event from the device into a command list.",
                 "details": [
                     "The application must ensure the events are accessible by the device on which the command list was created.",
-                    "The duration of an event created from an event pool that was created using ZE_EVENT_POOL_FLAG_KERNEL_TIMESTAMP flag is undefined. However, for consistency and orthogonality the event will report correctly as signaled when used by other event API functionality.",
+                    "The duration of an event created from an event pool that was created using ZE_EVENT_POOL_FLAG_KERNEL_TIMESTAMP or ZE_EVENT_POOL_FLAG_KERNEL_MAPPED_TIMESTAMP flags is undefined. However, for consistency and orthogonality the event will report correctly as signaled when used by other event API functionality.",
                     "The application must ensure the command list and events were created on the same context.",
                     "The application must **not** call this function from simultaneous threads with the same command list handle.",
                     "The implementation of this function should be lock-free."
@@ -25061,6 +25316,64 @@
                 "type": "function",
                 "version": "1.4"
             },
+            "GetFileDescriptorFromIpcHandleExp": {
+                "class": "zeMem",
+                "decl": "static",
+                "desc": "Gets the file descriptor contained in an IPC memory handle",
+                "details": [
+                    "IPC memory handle must be a valid handle obtained with zeMemGetIpcHandle.",
+                    "The application may call this function from simultaneous threads.",
+                    "The implementation of this function must be thread-safe."
+                ],
+                "hash": "4f0cd196b792fa6c5010f1779f899fc5252608ccded499cc460199f47343f4b6",
+                "name": "GetFileDescriptorFromIpcHandleExp",
+                "params": [
+                    {
+                        "desc": "[in] handle of the context object",
+                        "name": "hContext",
+                        "type": "ze_context_handle_t"
+                    },
+                    {
+                        "desc": "[in] IPC memory handle",
+                        "name": "ipcHandle",
+                        "type": "ze_ipc_mem_handle_t"
+                    },
+                    {
+                        "desc": "[out] Returned file descriptor",
+                        "name": "pHandle",
+                        "type": "uint64_t*"
+                    }
+                ],
+                "returns": [
+                    {
+                        "ZE_RESULT_SUCCESS": []
+                    },
+                    {
+                        "ZE_RESULT_ERROR_UNINITIALIZED": []
+                    },
+                    {
+                        "ZE_RESULT_ERROR_DEVICE_LOST": []
+                    },
+                    {
+                        "ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY": []
+                    },
+                    {
+                        "ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY": []
+                    },
+                    {
+                        "ZE_RESULT_ERROR_INVALID_NULL_HANDLE": [
+                            "`nullptr == hContext`"
+                        ]
+                    },
+                    {
+                        "ZE_RESULT_ERROR_INVALID_NULL_POINTER": [
+                            "`nullptr == pHandle`"
+                        ]
+                    }
+                ],
+                "type": "function",
+                "version": "1.6"
+            },
             "GetFunctionPointer": {
                 "class": "zeModule",
                 "desc": "Retrieve a function pointer from a module by name",
@@ -25470,6 +25783,65 @@
                 ],
                 "type": "function"
             },
+            "GetIpcHandleFromFileDescriptorExp": {
+                "class": "zeMem",
+                "decl": "static",
+                "desc": "Creates an IPC memory handle out of a file descriptor",
+                "details": [
+                    "Handle passed must be a valid file descriptor obtained with ze_external_memory_export_fd_t via zeMemGetAllocProperties.",
+                    "Returned IPC handle may contain metadata in addition to the file descriptor.",
+                    "The application may call this function from simultaneous threads.",
+                    "The implementation of this function must be thread-safe."
+                ],
+                "hash": "85dd8fd011ef561b945d46995f774fa76385cef8b350475fb4fa35684277399e",
+                "name": "GetIpcHandleFromFileDescriptorExp",
+                "params": [
+                    {
+                        "desc": "[in] handle of the context object",
+                        "name": "hContext",
+                        "type": "ze_context_handle_t"
+                    },
+                    {
+                        "desc": "[in] file descriptor",
+                        "name": "handle",
+                        "type": "uint64_t"
+                    },
+                    {
+                        "desc": "[out] Returned IPC memory handle",
+                        "name": "pIpcHandle",
+                        "type": "ze_ipc_mem_handle_t*"
+                    }
+                ],
+                "returns": [
+                    {
+                        "ZE_RESULT_SUCCESS": []
+                    },
+                    {
+                        "ZE_RESULT_ERROR_UNINITIALIZED": []
+                    },
+                    {
+                        "ZE_RESULT_ERROR_DEVICE_LOST": []
+                    },
+                    {
+                        "ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY": []
+                    },
+                    {
+                        "ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY": []
+                    },
+                    {
+                        "ZE_RESULT_ERROR_INVALID_NULL_HANDLE": [
+                            "`nullptr == hContext`"
+                        ]
+                    },
+                    {
+                        "ZE_RESULT_ERROR_INVALID_NULL_POINTER": [
+                            "`nullptr == pIpcHandle`"
+                        ]
+                    }
+                ],
+                "type": "function",
+                "version": "1.6"
+            },
             "GetIpcProperties": {
                 "class": "zeDriver",
                 "desc": "Retrieves IPC attributes of the driver",
@@ -25575,6 +25947,60 @@
                     }
                 ],
                 "type": "function"
+            },
+            "GetLastErrorDescription": {
+                "class": "zeDriver",
+                "desc": "Retrieves a string describing the last error code returned by the driver in the current thread.",
+                "details": [
+                    "String returned is thread local.",
+                    "String is only updated on calls returning an error, i.e., not on calls returning ZE_RESULT_SUCCESS.",
+                    "String may be empty if driver considers error code is already explicit enough to describe cause.",
+                    "Memory pointed to by ppString is owned by the driver.",
+                    "String returned is null-terminated."
+                ],
+                "hash": "a3ac6b1e67b0b263ef01af2319655f3a1efe1b2d8483fa6eb1ce4f0e80af0612",
+                "name": "GetLastErrorDescription",
+                "params": [
+                    {
+                        "desc": "[in] handle of the driver instance",
+                        "name": "hDriver",
+                        "type": "ze_driver_handle_t"
+                    },
+                    {
+                        "desc": "[in,out] pointer to a null-terminated array of characters describing cause of error.",
+                        "name": "ppString",
+                        "type": "const char**"
+                    }
+                ],
+                "returns": [
+                    {
+                        "ZE_RESULT_SUCCESS": []
+                    },
+                    {
+                        "ZE_RESULT_ERROR_UNINITIALIZED": []
+                    },
+                    {
+                        "ZE_RESULT_ERROR_DEVICE_LOST": []
+                    },
+                    {
+                        "ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY": []
+                    },
+                    {
+                        "ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY": []
+                    },
+                    {
+                        "ZE_RESULT_ERROR_INVALID_NULL_HANDLE": [
+                            "`nullptr == hDriver`"
+                        ]
+                    },
+                    {
+                        "ZE_RESULT_ERROR_INVALID_NULL_POINTER": [
+                            "`nullptr == ppString`"
+                        ]
+                    }
+                ],
+                "type": "function",
+                "version": "1.6"
             },
             "GetLimits": {
                 "class": "zesPower",
@@ -27438,7 +27864,7 @@
                 "class": "zeEvent",
                 "desc": "Signals a event from host.",
                 "details": [
-                    "The duration of an event created from an event pool that was created using ZE_EVENT_POOL_FLAG_KERNEL_TIMESTAMP flag is undefined. However, for consistency and orthogonality the event will report correctly as signaled when used by other event API functionality.",
+                    "The duration of an event created from an event pool that was created using ZE_EVENT_POOL_FLAG_KERNEL_TIMESTAMP or ZE_EVENT_POOL_FLAG_KERNEL_MAPPED_TIMESTAMP flags is undefined. However, for consistency and orthogonality the event will report correctly as signaled when used by other event API functionality.",
                     "The application may call this function from simultaneous threads.",
                     "The implementation of this function should be lock-free."
                 ],
@@ -29082,11 +29508,61 @@
                 ],
                 "type": "function"
             },
+            "PutIpcHandle": {
+                "class": "zeMem",
+                "decl": "static",
+                "desc": "Returns an IPC memory handle to the driver",
+                "details": [
+                    "This call may be used for IPC handles previously obtained with either zeMemGetIpcHandle or with ze_external_memory_export_fd_t via zeMemGetAllocProperties.\n",
+                    "Upon call, driver may release any underlying resources associated with the IPC handle.\nFor instance, it may close the file descriptor contained in the IPC handle, if such type of handle is being used by the driver.\n",
+                    "This call does not free the original allocation for which the IPC handle was created.",
+                    "This function may **not** be called from simultaneous threads with the same IPC handle.",
+                    "The implementation of this function should be lock-free."
+                ],
+                "hash": "34244e7493a2b2f9d15f3f02f77e55814209a257d38057e839b02653d59f6608",
+                "name": "PutIpcHandle",
+                "params": [
+                    {
+                        "desc": "[in] handle of the context object",
+                        "name": "hContext",
+                        "type": "ze_context_handle_t"
+                    },
+                    {
+                        "desc": "[in] IPC memory handle",
+                        "name": "handle",
+                        "type": "ze_ipc_mem_handle_t"
+                    }
+                ],
+                "returns": [
+                    {
+                        "ZE_RESULT_SUCCESS": []
+                    },
+                    {
+                        "ZE_RESULT_ERROR_UNINITIALIZED": []
+                    },
+                    {
+                        "ZE_RESULT_ERROR_DEVICE_LOST": []
+                    },
+                    {
+                        "ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY": []
+                    },
+                    {
+                        "ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY": []
+                    },
+                    {
+                        "ZE_RESULT_ERROR_INVALID_NULL_HANDLE": [
+                            "`nullptr == hContext`"
+                        ]
+                    }
+                ],
+                "type": "function",
+                "version": "1.6"
+            },
             "QueryKernelTimestamp": {
                 "class": "zeEvent",
                 "desc": "Queries an event's timestamp value on the host.",
                 "details": [
-                    "The application must ensure the event was created from an event pool that was created using ZE_EVENT_POOL_FLAG_KERNEL_TIMESTAMP flag.",
+                    "The application must ensure the event was created from an event pool that was created using ZE_EVENT_POOL_FLAG_KERNEL_TIMESTAMP or ZE_EVENT_POOL_FLAG_KERNEL_MAPPED_TIMESTAMP flag.",
                     "The destination memory will be unmodified if the event has not been signaled.",
                     "The application may call this function from simultaneous threads.",
                     "The implementation of this function should be lock-free."
@@ -29141,6 +29617,75 @@
                     }
                 ],
                 "type": "function"
+            },
+            "QueryKernelTimestampsExt": {
+                "class": "zeEvent",
+                "desc": "Query an event's timestamp value on the host, with domain preference.",
+                "details": [
+                    "For collecting *only* kernel timestamps, the application must ensure the event was created from an event pool that was created using ZE_EVENT_POOL_FLAG_KERNEL_TIMESTAMP flag.",
+                    "For collecting synchronized timestamps, the application must ensure the event was created from an event pool that was created using ZE_EVENT_POOL_FLAG_KERNEL_MAPPED_TIMESTAMP flag. Kernel timestamps are also available from this type of event pool, but there is a performance cost.",
+                    "The destination memory will be unmodified if the event has not been signaled.",
+                    "The application may call this function from simultaneous threads.",
+                    "The implementation of this function must be thread-safe.",
+                    "The implementation must support ZE_extension_event_query_kernel_timestamps.",
+                    "The implementation must return all timestamps for the specified event and device pair.",
+                    "The implementation must return all timestamps for all sub-devices when device handle is parent device.",
+                    "The implementation may return all timestamps for sub-devices when device handle is sub-device or may return 0 for count."
+                ],
+                "hash": "1fd7be75405b56820b9d681d430d712ad8c789c74a5cd4e3332d20245e9694c0",
+                "name": "QueryKernelTimestampsExt",
+                "params": [
+                    {
+                        "desc": "[in] handle of the event",
+                        "name": "hEvent",
+                        "type": "ze_event_handle_t"
+                    },
+                    {
+                        "desc": "[in] handle of the device to query",
+                        "name": "hDevice",
+                        "type": "ze_device_handle_t"
+                    },
+                    {
+                        "desc": "[in,out] pointer to the number of event packets available.\n    - This value is implementation specific.\n    - if `*pCount` is zero, then the driver shall update the value with the total number of event packets available.\n    - if `*pCount` is greater than the number of event packets available, the driver shall update the value with the correct value.\n    - Buffer(s) for query results must be sized by the application to accommodate a minimum of `*pCount` elements.\n",
+                        "name": "pCount",
+                        "type": "uint32_t*"
+                    },
+                    {
+                        "desc": "[in][optional] pointer to event query properties structure(s).\n    - This parameter may be null when `*pCount` is zero.\n    - if `*pCount` is less than the number of event packets available, the driver may only update `*pCount` elements, starting at element zero.\n    - if `*pCount` is greater than the number of event packets available, the driver may only update the valid elements.\n",
+                        "name": "pResults",
+                        "type": "ze_event_query_kernel_timestamps_results_ext_properties_t*"
+                    }
+                ],
+                "returns": [
+                    {
+                        "ZE_RESULT_SUCCESS": []
+                    },
+                    {
+                        "ZE_RESULT_ERROR_UNINITIALIZED": []
+                    },
+                    {
+                        "ZE_RESULT_ERROR_DEVICE_LOST": []
+                    },
+                    {
+                        "ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY": []
+                    },
+                    {
+                        "ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY": []
+                    },
+                    {
+                        "ZE_RESULT_ERROR_INVALID_NULL_HANDLE": [
+                            "`nullptr == hEvent`",
+                            "`nullptr == hDevice`"
+                        ]
+                    },
+                    {
+                        "ZE_RESULT_ERROR_INVALID_NULL_POINTER": [
+                            "`nullptr == pCount`"
+                        ]
+                    }
+                ],
+                "type": "function",
+                "version": "1.6"
             },
             "QueryPageSize": {
                 "class": "zeVirtualMem",
@@ -32933,6 +33478,13 @@
                 "value": "\"ZE_extension_eu_count\"",
                 "version": "1.3"
             },
+            "ZE_EVENT_QUERY_KERNEL_TIMESTAMPS_EXT_NAME": {
+                "desc": "Event Query Kernel Timestamps Extension Name",
+                "name": "ZE_EVENT_QUERY_KERNEL_TIMESTAMPS_EXT_NAME",
+                "type": "macro",
+                "value": "\"ZE_extension_event_query_kernel_timestamps\"",
+                "version": "1.6"
+            },
             "ZE_EVENT_QUERY_TIMESTAMPS_EXP_NAME": {
                 "desc": "Event Query Timestamps Extension Name",
                 "name": "ZE_EVENT_QUERY_TIMESTAMPS_EXP_NAME",
@@ -34515,6 +35067,68 @@
                 "name": "ze_event_pool_desc_t",
                 "type": "struct"
             },
+            "ze_event_query_kernel_timestamps_ext_properties_t": {
+                "base": "ze_base_properties_t",
+                "desc": "Event query kernel timestamps properties",
+                "details": [
+                    "This structure may be returned from zeDeviceGetProperties, via `pNext` member of ze_device_properties_t."
+                ],
+                "members": [
+                    {
+                        "desc": "[in] type of this structure",
+                        "init": "ZE_STRUCTURE_TYPE_EVENT_QUERY_KERNEL_TIMESTAMPS_EXT_PROPERTIES",
+                        "name": "stype",
+                        "type": "ze_structure_type_t"
+                    },
+                    {
+                        "desc": "[in,out][optional] must be null or a pointer to an extension-specific structure (i.e. contains sType and pNext).",
+                        "init": "nullptr",
+                        "name": "pNext",
+                        "type": "void*"
+                    },
+                    {
+                        "desc": "[out] 0 or some combination of ze_event_query_kernel_timestamps_ext_flag_t flags",
+                        "name": "flags",
+                        "type": "ze_event_query_kernel_timestamps_ext_flags_t"
+                    }
+                ],
+                "name": "ze_event_query_kernel_timestamps_ext_properties_t",
+                "type": "struct",
+                "version": "1.6"
+            },
+            "ze_event_query_kernel_timestamps_results_ext_properties_t": {
+                "base": "ze_base_properties_t",
+                "desc": "Event query kernel timestamps results properties",
+                "members": [
+                    {
+                        "desc": "[in] type of this structure",
+                        "init": "ZE_STRUCTURE_TYPE_EVENT_QUERY_KERNEL_TIMESTAMPS_RESULTS_EXT_PROPERTIES",
+                        "name": "stype",
+                        "type": "ze_structure_type_t"
+                    },
+                    {
+                        "desc": "[in,out][optional] must be null or a pointer to an extension-specific structure (i.e. contains sType and pNext).",
+                        "init": "nullptr",
+                        "name": "pNext",
+                        "type": "void*"
+                    },
+                    {
+                        "desc": "[in,out][optional][range(0, *pCount)] pointer to destination buffer of kernel timestamp results",
+                        "init": "nullptr",
+                        "name": "pKernelTimestampsBuffer",
+                        "type": "ze_kernel_timestamp_result_t*"
+                    },
+                    {
+                        "desc": "[in,out][optional][range(0, *pCount)] pointer to destination buffer of synchronized timestamp results",
+                        "init": "nullptr",
+                        "name": "pSynchronizedTimestampsBuffer",
+                        "type": "ze_synchronized_timestamp_result_ext_t*"
+                    }
+                ],
+                "name": "ze_event_query_kernel_timestamps_results_ext_properties_t",
+                "type": "struct",
+                "version": "1.6"
+            },
             "ze_external_memory_export_desc_t": {
                 "base": "ze_base_desc_t",
                 "class": "zeMem",
@@ -35002,7 +35616,7 @@
                         "type": "ze_image_flags_t"
                     },
                     {
-                        "desc": "[in] image type",
+                        "desc": "[in] image type. Media format layouts are unsupported for ZE_IMAGE_TYPE_BUFFER",
                         "name": "type",
                         "type": "ze_image_type_t"
                     },
@@ -35050,12 +35664,12 @@
                 "desc": "Image format ",
                 "members": [
                     {
-                        "desc": "[in] image format component layout",
+                        "desc": "[in] image format component layout (e.g. N-component layouts and media formats)",
                         "name": "layout",
                         "type": "ze_image_format_layout_t"
                     },
                     {
-                        "desc": "[in] image format type. Media formats can't be used for ZE_IMAGE_TYPE_BUFFER.",
+                        "desc": "[in] image format type",
                         "name": "type",
                         "type": "ze_image_format_type_t"
                     },
@@ -35713,7 +36327,7 @@
                         "type": "const uint8_t*"
                     },
                     {
-                        "desc": "[in][optional] string containing compiler flags. Following options are supported.\n  - \"-ze-opt-disable\"\n       - Disable optimizations\n  - \"-ze-opt-level\"\n       - Specifies optimization level for compiler. Levels are implementation specific.\n           - 0 is no optimizations (equivalent to -ze-opt-disable)\n           - 1 is optimize minimally (may be the same as 2)\n           - 2 is optimize more (default)\n  - \"-ze-opt-greater-than-4GB-buffer-required\"\n       - Use 64-bit offset calculations for buffers.\n  - \"-ze-opt-large-register-file\"\n       - Increase number of registers available to threads.\n  - \"-ze-opt-has-buffer-offset-arg\"\n       - Extend stateless to stateful optimization to more\n         cases with the use of additional offset (e.g. 64-bit\n         pointer to binding table with 32-bit offset).\n  - \"-g\"\n       - Include debugging information.\n",
+                        "desc": "[in][optional] string containing one or more (comma-separated) compiler flags. If unsupported, flag is ignored with a warning.\n  - \"-ze-opt-disable\"\n       - Disable optimizations\n  - \"-ze-opt-level\"\n       - Specifies optimization level for compiler. Levels are implementation specific.\n           - 0 is no optimizations (equivalent to -ze-opt-disable)\n           - 1 is optimize minimally (may be the same as 2)\n           - 2 is optimize more (default)\n  - \"-ze-opt-greater-than-4GB-buffer-required\"\n       - Use 64-bit offset calculations for buffers.\n  - \"-ze-opt-large-register-file\"\n       - Increase number of registers available to threads.\n  - \"-ze-opt-has-buffer-offset-arg\"\n       - Extend stateless to stateful optimization to more\n         cases with the use of additional offset (e.g. 64-bit\n         pointer to binding table with 32-bit offset).\n  - \"-g\"\n       - Include debugging information.\n",
                         "init": "nullptr",
                         "name": "pBuildFlags",
                         "type": "const char*"
@@ -36155,6 +36769,44 @@
                 "name": "ze_sub_allocation_t",
                 "type": "struct",
                 "version": "1.5"
+            },
+            "ze_synchronized_timestamp_data_ext_t": {
+                "class": "zeEvent",
+                "desc": "Kernel timestamp clock data synchronized to the host time domain",
+                "members": [
+                    {
+                        "desc": "[out] synchronized clock at start of kernel execution",
+                        "name": "kernelStart",
+                        "type": "uint64_t"
+                    },
+                    {
+                        "desc": "[out] synchronized clock at end of kernel execution",
+                        "name": "kernelEnd",
+                        "type": "uint64_t"
+                    }
+                ],
+                "name": "ze_synchronized_timestamp_data_ext_t",
+                "type": "struct",
+                "version": "1.6"
+            },
+            "ze_synchronized_timestamp_result_ext_t": {
+                "class": "zeEvent",
+                "desc": "Synchronized kernel timestamp result",
+                "members": [
+                    {
+                        "desc": "[out] wall-clock data",
+                        "name": "global",
+                        "type": "ze_synchronized_timestamp_data_ext_t"
+                    },
+                    {
+                        "desc": "[out] context-active data; only includes clocks while device context was actively executing.",
+                        "name": "context",
+                        "type": "ze_synchronized_timestamp_data_ext_t"
+                    }
+                ],
+                "name": "ze_synchronized_timestamp_result_ext_t",
+                "type": "struct",
+                "version": "1.6"
             },
             "ze_uuid_t": {
                 "desc": "Universal unique id (UUID)",
@@ -40007,6 +40659,18 @@
                                 "version": "1.5"
                             },
                             {
+                                "desc": "$x_event_query_kernel_timestamps_ext_properties_t",
+                                "name": "$X_STRUCTURE_TYPE_EVENT_QUERY_KERNEL_TIMESTAMPS_EXT_PROPERTIES",
+                                "value": "0x10011",
+                                "version": "1.6"
+                            },
+                            {
+                                "desc": "$x_event_query_kernel_timestamps_results_ext_properties_t",
+                                "name": "$X_STRUCTURE_TYPE_EVENT_QUERY_KERNEL_TIMESTAMPS_RESULTS_EXT_PROPERTIES",
+                                "value": "0x10012",
+                                "version": "1.6"
+                            },
+                            {
                                 "desc": "$x_relaxed_allocation_limits_exp_desc_t",
                                 "name": "$X_STRUCTURE_TYPE_RELAXED_ALLOCATION_LIMITS_EXP_DESC",
                                 "value": "0x00020001",
@@ -40443,9 +41107,15 @@
                                 "version": "1.5"
                             },
                             {
+                                "desc": "version 1.6",
+                                "name": "$X_API_VERSION_1_6",
+                                "value": "$X_MAKE_VERSION( 1, 6 )",
+                                "version": "1.6"
+                            },
+                            {
                                 "desc": "latest known version",
                                 "name": "$X_API_VERSION_CURRENT",
-                                "value": "$X_MAKE_VERSION( 1, 5 )"
+                                "value": "$X_MAKE_VERSION( 1, 6 )"
                             }
                         ],
                         "name": "$x_api_version_t",
@@ -40851,6 +41521,60 @@
                         ],
                         "name": "$xDriver",
                         "type": "class"
+                    },
+                    {
+                        "class": "$xDriver",
+                        "desc": "Retrieves a string describing the last error code returned by the driver in the current thread.",
+                        "details": [
+                            "String returned is thread local.",
+                            "String is only updated on calls returning an error, i.e., not on calls returning $X_RESULT_SUCCESS.",
+                            "String may be empty if driver considers error code is already explicit enough to describe cause.",
+                            "Memory pointed to by ppString is owned by the driver.",
+                            "String returned is null-terminated."
+                        ],
+                        "hash": "a3ac6b1e67b0b263ef01af2319655f3a1efe1b2d8483fa6eb1ce4f0e80af0612",
+                        "name": "GetLastErrorDescription",
+                        "params": [
+                            {
+                                "desc": "[in] handle of the driver instance",
+                                "name": "hDriver",
+                                "type": "$x_driver_handle_t"
+                            },
+                            {
+                                "desc": "[in,out] pointer to a null-terminated array of characters describing cause of error.",
+                                "name": "ppString",
+                                "type": "const char**"
+                            }
+                        ],
+                        "returns": [
+                            {
+                                "$X_RESULT_SUCCESS": []
+                            },
+                            {
+                                "$X_RESULT_ERROR_UNINITIALIZED": []
+                            },
+                            {
+                                "$X_RESULT_ERROR_DEVICE_LOST": []
+                            },
+                            {
+                                "$X_RESULT_ERROR_OUT_OF_HOST_MEMORY": []
+                            },
+                            {
+                                "$X_RESULT_ERROR_OUT_OF_DEVICE_MEMORY": []
+                            },
+                            {
+                                "$X_RESULT_ERROR_INVALID_NULL_HANDLE": [
+                                    "`nullptr == hDriver`"
+                                ]
+                            },
+                            {
+                                "$X_RESULT_ERROR_INVALID_NULL_POINTER": [
+                                    "`nullptr == ppString`"
+                                ]
+                            }
+                        ],
+                        "type": "function",
+                        "version": "1.6"
                     }
                 ]
             },
@@ -43715,6 +44439,64 @@
                         "type": "function"
                     },
                     {
+                        "class": "$xCommandList",
+                        "desc": "Synchronizes an immediate command list by waiting on the host for the completion of all commands previously submitted to it.",
+                        "details": [
+                            "The application must call this function only with command lists created with $xCommandListCreateImmediate.",
+                            "Waiting on one immediate command list shall not block the concurrent execution of commands appended to other\nimmediate command lists created with either a different ordinal or different index.\n",
+                            "The application may call this function from simultaneous threads.",
+                            "The implementation of this function should be lock-free."
+                        ],
+                        "hash": "676e5a921f37f7e6bd62bdf18bd9d693decf69aadc86ebc33cc12bd5184a7414",
+                        "name": "HostSynchronize",
+                        "params": [
+                            {
+                                "desc": "[in] handle of the immediate command list",
+                                "name": "hCommandList",
+                                "type": "$x_command_list_handle_t"
+                            },
+                            {
+                                "desc": "[in] if non-zero, then indicates the maximum time (in nanoseconds) to yield before returning $X_RESULT_SUCCESS or $X_RESULT_NOT_READY;\nif zero, then immediately returns the status of the immediate command list;\nif UINT64_MAX, then function will not return until complete or device is lost.\nDue to external dependencies, timeout may be rounded to the closest value allowed by the accuracy of those dependencies.\n",
+                                "name": "timeout",
+                                "type": "uint64_t"
+                            }
+                        ],
+                        "returns": [
+                            {
+                                "$X_RESULT_SUCCESS": []
+                            },
+                            {
+                                "$X_RESULT_ERROR_UNINITIALIZED": []
+                            },
+                            {
+                                "$X_RESULT_ERROR_DEVICE_LOST": []
+                            },
+                            {
+                                "$X_RESULT_ERROR_OUT_OF_HOST_MEMORY": []
+                            },
+                            {
+                                "$X_RESULT_ERROR_OUT_OF_DEVICE_MEMORY": []
+                            },
+                            {
+                                "$X_RESULT_ERROR_INVALID_NULL_HANDLE": [
+                                    "`nullptr == hCommandList`"
+                                ]
+                            },
+                            {
+                                "$X_RESULT_NOT_READY": [
+                                    "timeout expired"
+                                ]
+                            },
+                            {
+                                "$X_RESULT_ERROR_INVALID_ARGUMENT": [
+                                    "handle does not correspond to an immediate command list"
+                                ]
+                            }
+                        ],
+                        "type": "function",
+                        "version": "1.6"
+                    },
+                    {
                         "desc": "C++ wrapper for command list",
                         "members": [
                             {
@@ -45022,6 +45804,12 @@
                                 "desc": "Indicates all events in pool will contain kernel timestamps",
                                 "name": "$X_EVENT_POOL_FLAG_KERNEL_TIMESTAMP",
                                 "value": "$X_BIT(2)"
+                            },
+                            {
+                                "desc": "Indicates all events in pool will contain kernel timestamps synchronized to host time domain; cannot be combined with $X_EVENT_POOL_FLAG_KERNEL_TIMESTAMP",
+                                "name": "$X_EVENT_POOL_FLAG_KERNEL_MAPPED_TIMESTAMP",
+                                "value": "$X_BIT(3)",
+                                "version": "1.6"
                             }
                         ],
                         "name": "$x_event_pool_flags_t",
@@ -45127,7 +45915,7 @@
                             },
                             {
                                 "$X_RESULT_ERROR_INVALID_ENUMERATION": [
-                                    "`0x7 < desc->flags`"
+                                    "`0xf < desc->flags`"
                                 ]
                             },
                             {
@@ -45425,6 +46213,56 @@
                     {
                         "class": "$xEventPool",
                         "decl": "static",
+                        "desc": "Returns an IPC event pool handle to the driver",
+                        "details": [
+                            "This call must be used for IPC handles previously obtained with $xEventPoolGetIpcHandle.",
+                            "Upon call, driver may release any underlying resources associated with the IPC handle.\nFor instance, it may close the file descriptor contained in the IPC handle, if such type of handle is being used by the driver.\n",
+                            "This call does not destroy the original event pool for which the IPC handle was created.",
+                            "This function may **not** be called from simultaneous threads with the same IPC handle.",
+                            "The implementation of this function should be lock-free."
+                        ],
+                        "hash": "2b0ef05d5c246265c1815378f9139e736a46e5a4ee09f61371d1a37db17c579f",
+                        "name": "PutIpcHandle",
+                        "params": [
+                            {
+                                "desc": "[in] handle of the context object associated with the IPC event pool handle",
+                                "name": "hContext",
+                                "type": "$x_context_handle_t"
+                            },
+                            {
+                                "desc": "[in] IPC event pool handle",
+                                "name": "hIpc",
+                                "type": "$x_ipc_event_pool_handle_t"
+                            }
+                        ],
+                        "returns": [
+                            {
+                                "$X_RESULT_SUCCESS": []
+                            },
+                            {
+                                "$X_RESULT_ERROR_UNINITIALIZED": []
+                            },
+                            {
+                                "$X_RESULT_ERROR_DEVICE_LOST": []
+                            },
+                            {
+                                "$X_RESULT_ERROR_OUT_OF_HOST_MEMORY": []
+                            },
+                            {
+                                "$X_RESULT_ERROR_OUT_OF_DEVICE_MEMORY": []
+                            },
+                            {
+                                "$X_RESULT_ERROR_INVALID_NULL_HANDLE": [
+                                    "`nullptr == hContext`"
+                                ]
+                            }
+                        ],
+                        "type": "function",
+                        "version": "1.6"
+                    },
+                    {
+                        "class": "$xEventPool",
+                        "decl": "static",
                         "desc": "Opens an IPC event pool handle to retrieve an event pool handle from another process.",
                         "details": [
                             "Multiple calls to this function with the same IPC handle will return unique event pool handles.",
@@ -45528,7 +46366,7 @@
                         "desc": "Appends a signal of the event from the device into a command list.",
                         "details": [
                             "The application must ensure the events are accessible by the device on which the command list was created.",
-                            "The duration of an event created from an event pool that was created using $X_EVENT_POOL_FLAG_KERNEL_TIMESTAMP flag is undefined. However, for consistency and orthogonality the event will report correctly as signaled when used by other event API functionality.",
+                            "The duration of an event created from an event pool that was created using $X_EVENT_POOL_FLAG_KERNEL_TIMESTAMP or $X_EVENT_POOL_FLAG_KERNEL_MAPPED_TIMESTAMP flags is undefined. However, for consistency and orthogonality the event will report correctly as signaled when used by other event API functionality.",
                             "The application must ensure the command list and events were created on the same context.",
                             "The application must **not** call this function from simultaneous threads with the same command list handle.",
                             "The implementation of this function should be lock-free."
@@ -45642,7 +46480,7 @@
                         "class": "$xEvent",
                         "desc": "Signals a event from host.",
                         "details": [
-                            "The duration of an event created from an event pool that was created using $X_EVENT_POOL_FLAG_KERNEL_TIMESTAMP flag is undefined. However, for consistency and orthogonality the event will report correctly as signaled when used by other event API functionality.",
+                            "The duration of an event created from an event pool that was created using $X_EVENT_POOL_FLAG_KERNEL_TIMESTAMP or $X_EVENT_POOL_FLAG_KERNEL_MAPPED_TIMESTAMP flags is undefined. However, for consistency and orthogonality the event will report correctly as signaled when used by other event API functionality.",
                             "The application may call this function from simultaneous threads.",
                             "The implementation of this function should be lock-free."
                         ],
@@ -45934,7 +46772,7 @@
                         "class": "$xEvent",
                         "desc": "Queries an event's timestamp value on the host.",
                         "details": [
-                            "The application must ensure the event was created from an event pool that was created using $X_EVENT_POOL_FLAG_KERNEL_TIMESTAMP flag.",
+                            "The application must ensure the event was created from an event pool that was created using $X_EVENT_POOL_FLAG_KERNEL_TIMESTAMP or $X_EVENT_POOL_FLAG_KERNEL_MAPPED_TIMESTAMP flag.",
                             "The destination memory will be unmodified if the event has not been signaled.",
                             "The application may call this function from simultaneous threads.",
                             "The implementation of this function should be lock-free."
@@ -46842,12 +47680,12 @@
                         "desc": "Image format ",
                         "members": [
                             {
-                                "desc": "[in] image format component layout",
+                                "desc": "[in] image format component layout (e.g. N-component layouts and media formats)",
                                 "name": "layout",
                                 "type": "$x_image_format_layout_t"
                             },
                             {
-                                "desc": "[in] image format type. Media formats can't be used for $X_IMAGE_TYPE_BUFFER.",
+                                "desc": "[in] image format type",
                                 "name": "type",
                                 "type": "$x_image_format_type_t"
                             },
@@ -46898,7 +47736,7 @@
                                 "type": "$x_image_flags_t"
                             },
                             {
-                                "desc": "[in] image type",
+                                "desc": "[in] image type. Media format layouts are unsupported for $X_IMAGE_TYPE_BUFFER",
                                 "name": "type",
                                 "type": "$x_image_type_t"
                             },
@@ -47898,6 +48736,173 @@
                     },
                     {
                         "class": "$xMem",
+                        "decl": "static",
+                        "desc": "Creates an IPC memory handle out of a file descriptor",
+                        "details": [
+                            "Handle passed must be a valid file descriptor obtained with $x_external_memory_export_fd_t via $xMemGetAllocProperties.",
+                            "Returned IPC handle may contain metadata in addition to the file descriptor.",
+                            "The application may call this function from simultaneous threads.",
+                            "The implementation of this function must be thread-safe."
+                        ],
+                        "hash": "85dd8fd011ef561b945d46995f774fa76385cef8b350475fb4fa35684277399e",
+                        "name": "GetIpcHandleFromFileDescriptorExp",
+                        "params": [
+                            {
+                                "desc": "[in] handle of the context object",
+                                "name": "hContext",
+                                "type": "$x_context_handle_t"
+                            },
+                            {
+                                "desc": "[in] file descriptor",
+                                "name": "handle",
+                                "type": "uint64_t"
+                            },
+                            {
+                                "desc": "[out] Returned IPC memory handle",
+                                "name": "pIpcHandle",
+                                "type": "$x_ipc_mem_handle_t*"
+                            }
+                        ],
+                        "returns": [
+                            {
+                                "$X_RESULT_SUCCESS": []
+                            },
+                            {
+                                "$X_RESULT_ERROR_UNINITIALIZED": []
+                            },
+                            {
+                                "$X_RESULT_ERROR_DEVICE_LOST": []
+                            },
+                            {
+                                "$X_RESULT_ERROR_OUT_OF_HOST_MEMORY": []
+                            },
+                            {
+                                "$X_RESULT_ERROR_OUT_OF_DEVICE_MEMORY": []
+                            },
+                            {
+                                "$X_RESULT_ERROR_INVALID_NULL_HANDLE": [
+                                    "`nullptr == hContext`"
+                                ]
+                            },
+                            {
+                                "$X_RESULT_ERROR_INVALID_NULL_POINTER": [
+                                    "`nullptr == pIpcHandle`"
+                                ]
+                            }
+                        ],
+                        "type": "function",
+                        "version": "1.6"
+                    },
+                    {
+                        "class": "$xMem",
+                        "decl": "static",
+                        "desc": "Gets the file descriptor contained in an IPC memory handle",
+                        "details": [
+                            "IPC memory handle must be a valid handle obtained with $xMemGetIpcHandle.",
+                            "The application may call this function from simultaneous threads.",
+                            "The implementation of this function must be thread-safe."
+                        ],
+                        "hash": "4f0cd196b792fa6c5010f1779f899fc5252608ccded499cc460199f47343f4b6",
+                        "name": "GetFileDescriptorFromIpcHandleExp",
+                        "params": [
+                            {
+                                "desc": "[in] handle of the context object",
+                                "name": "hContext",
+                                "type": "$x_context_handle_t"
+                            },
+                            {
+                                "desc": "[in] IPC memory handle",
+                                "name": "ipcHandle",
+                                "type": "$x_ipc_mem_handle_t"
+                            },
+                            {
+                                "desc": "[out] Returned file descriptor",
+                                "name": "pHandle",
+                                "type": "uint64_t*"
+                            }
+                        ],
+                        "returns": [
+                            {
+                                "$X_RESULT_SUCCESS": []
+                            },
+                            {
+                                "$X_RESULT_ERROR_UNINITIALIZED": []
+                            },
+                            {
+                                "$X_RESULT_ERROR_DEVICE_LOST": []
+                            },
+                            {
+                                "$X_RESULT_ERROR_OUT_OF_HOST_MEMORY": []
+                            },
+                            {
+                                "$X_RESULT_ERROR_OUT_OF_DEVICE_MEMORY": []
+                            },
+                            {
+                                "$X_RESULT_ERROR_INVALID_NULL_HANDLE": [
+                                    "`nullptr == hContext`"
+                                ]
+                            },
+                            {
+                                "$X_RESULT_ERROR_INVALID_NULL_POINTER": [
+                                    "`nullptr == pHandle`"
+                                ]
+                            }
+                        ],
+                        "type": "function",
+                        "version": "1.6"
+                    },
+                    {
+                        "class": "$xMem",
+                        "decl": "static",
+                        "desc": "Returns an IPC memory handle to the driver",
+                        "details": [
+                            "This call may be used for IPC handles previously obtained with either $xMemGetIpcHandle or with $x_external_memory_export_fd_t via $xMemGetAllocProperties.\n",
+                            "Upon call, driver may release any underlying resources associated with the IPC handle.\nFor instance, it may close the file descriptor contained in the IPC handle, if such type of handle is being used by the driver.\n",
+                            "This call does not free the original allocation for which the IPC handle was created.",
+                            "This function may **not** be called from simultaneous threads with the same IPC handle.",
+                            "The implementation of this function should be lock-free."
+                        ],
+                        "hash": "34244e7493a2b2f9d15f3f02f77e55814209a257d38057e839b02653d59f6608",
+                        "name": "PutIpcHandle",
+                        "params": [
+                            {
+                                "desc": "[in] handle of the context object",
+                                "name": "hContext",
+                                "type": "$x_context_handle_t"
+                            },
+                            {
+                                "desc": "[in] IPC memory handle",
+                                "name": "handle",
+                                "type": "$x_ipc_mem_handle_t"
+                            }
+                        ],
+                        "returns": [
+                            {
+                                "$X_RESULT_SUCCESS": []
+                            },
+                            {
+                                "$X_RESULT_ERROR_UNINITIALIZED": []
+                            },
+                            {
+                                "$X_RESULT_ERROR_DEVICE_LOST": []
+                            },
+                            {
+                                "$X_RESULT_ERROR_OUT_OF_HOST_MEMORY": []
+                            },
+                            {
+                                "$X_RESULT_ERROR_OUT_OF_DEVICE_MEMORY": []
+                            },
+                            {
+                                "$X_RESULT_ERROR_INVALID_NULL_HANDLE": [
+                                    "`nullptr == hContext`"
+                                ]
+                            }
+                        ],
+                        "type": "function",
+                        "version": "1.6"
+                    },
+                    {
+                        "class": "$xMem",
                         "desc": "Supported IPC memory flags",
                         "etors": [
                             {
@@ -48324,7 +49329,7 @@
                                 "type": "const uint8_t*"
                             },
                             {
-                                "desc": "[in][optional] string containing compiler flags. Following options are supported.\n  - \"-$x-opt-disable\"\n       - Disable optimizations\n  - \"-$x-opt-level\"\n       - Specifies optimization level for compiler. Levels are implementation specific.\n           - 0 is no optimizations (equivalent to -$x-opt-disable)\n           - 1 is optimize minimally (may be the same as 2)\n           - 2 is optimize more (default)\n  - \"-$x-opt-greater-than-4GB-buffer-required\"\n       - Use 64-bit offset calculations for buffers.\n  - \"-$x-opt-large-register-file\"\n       - Increase number of registers available to threads.\n  - \"-$x-opt-has-buffer-offset-arg\"\n       - Extend stateless to stateful optimization to more\n         cases with the use of additional offset (e.g. 64-bit\n         pointer to binding table with 32-bit offset).\n  - \"-g\"\n       - Include debugging information.\n",
+                                "desc": "[in][optional] string containing one or more (comma-separated) compiler flags. If unsupported, flag is ignored with a warning.\n  - \"-$x-opt-disable\"\n       - Disable optimizations\n  - \"-$x-opt-level\"\n       - Specifies optimization level for compiler. Levels are implementation specific.\n           - 0 is no optimizations (equivalent to -$x-opt-disable)\n           - 1 is optimize minimally (may be the same as 2)\n           - 2 is optimize more (default)\n  - \"-$x-opt-greater-than-4GB-buffer-required\"\n       - Use 64-bit offset calculations for buffers.\n  - \"-$x-opt-large-register-file\"\n       - Increase number of registers available to threads.\n  - \"-$x-opt-has-buffer-offset-arg\"\n       - Extend stateless to stateful optimization to more\n         cases with the use of additional offset (e.g. 64-bit\n         pointer to binding table with 32-bit offset).\n  - \"-g\"\n       - Include debugging information.\n",
                                 "init": "nullptr",
                                 "name": "pBuildFlags",
                                 "type": "const char*"
@@ -55693,6 +56698,230 @@
                         "name": "$x_memory_sub_allocations_exp_properties_t",
                         "type": "struct",
                         "version": "1.5"
+                    }
+                ]
+            },
+            {
+                "header": {
+                    "desc": "Intel $OneApi Level-Zero Extension for supporting the querying of synchronized event timestamps.",
+                    "ordinal": 1600,
+                    "type": "header",
+                    "version": "1.6"
+                },
+                "name": "eventQueryKernelTimestamps",
+                "objects": [
+                    {
+                        "desc": "Event Query Kernel Timestamps Extension Name",
+                        "name": "$X_EVENT_QUERY_KERNEL_TIMESTAMPS_EXT_NAME",
+                        "type": "macro",
+                        "value": "\"$X_extension_event_query_kernel_timestamps\"",
+                        "version": "1.6"
+                    },
+                    {
+                        "desc": "Event Query Kernel Timestamps Extension Version(s)",
+                        "etors": [
+                            {
+                                "desc": "version 1.0",
+                                "name": "$X_EVENT_QUERY_KERNEL_TIMESTAMPS_EXT_VERSION_1_0",
+                                "value": "$X_MAKE_VERSION( 1, 0 )"
+                            },
+                            {
+                                "desc": "latest known version",
+                                "name": "$X_EVENT_QUERY_KERNEL_TIMESTAMPS_EXT_VERSION_CURRENT",
+                                "value": "$X_MAKE_VERSION( 1, 0 )"
+                            }
+                        ],
+                        "name": "$x_event_query_kernel_timestamps_ext_version_t",
+                        "type": "enum",
+                        "version": "1.6"
+                    },
+                    {
+                        "class": "$xEvent",
+                        "desc": "Event query kernel timestamps flags",
+                        "etors": [
+                            {
+                                "desc": "Kernel timestamp results",
+                                "name": "$X_EVENT_QUERY_KERNEL_TIMESTAMPS_EXT_FLAG_KERNEL",
+                                "value": "$X_BIT(0)"
+                            },
+                            {
+                                "desc": "Device event timestamps synchronized to the host time domain",
+                                "name": "$X_EVENT_QUERY_KERNEL_TIMESTAMPS_EXT_FLAG_SYNCHRONIZED",
+                                "value": "$X_BIT(1)"
+                            }
+                        ],
+                        "name": "$x_event_query_kernel_timestamps_ext_flags_t",
+                        "type": "enum",
+                        "version": "1.6"
+                    },
+                    {
+                        "base": "$x_base_properties_t",
+                        "desc": "Event query kernel timestamps properties",
+                        "details": [
+                            "This structure may be returned from $xDeviceGetProperties, via `pNext` member of $x_device_properties_t."
+                        ],
+                        "members": [
+                            {
+                                "desc": "[in] type of this structure",
+                                "init": "$X_STRUCTURE_TYPE_EVENT_QUERY_KERNEL_TIMESTAMPS_EXT_PROPERTIES",
+                                "name": "stype",
+                                "type": "$x_structure_type_t"
+                            },
+                            {
+                                "desc": "[in,out][optional] must be null or a pointer to an extension-specific structure (i.e. contains sType and pNext).",
+                                "init": "nullptr",
+                                "name": "pNext",
+                                "type": "void*"
+                            },
+                            {
+                                "desc": "[out] 0 or some combination of $x_event_query_kernel_timestamps_ext_flag_t flags",
+                                "name": "flags",
+                                "type": "$x_event_query_kernel_timestamps_ext_flags_t"
+                            }
+                        ],
+                        "name": "$x_event_query_kernel_timestamps_ext_properties_t",
+                        "type": "struct",
+                        "version": "1.6"
+                    },
+                    {
+                        "class": "$xEvent",
+                        "desc": "Kernel timestamp clock data synchronized to the host time domain",
+                        "members": [
+                            {
+                                "desc": "[out] synchronized clock at start of kernel execution",
+                                "name": "kernelStart",
+                                "type": "uint64_t"
+                            },
+                            {
+                                "desc": "[out] synchronized clock at end of kernel execution",
+                                "name": "kernelEnd",
+                                "type": "uint64_t"
+                            }
+                        ],
+                        "name": "$x_synchronized_timestamp_data_ext_t",
+                        "type": "struct",
+                        "version": "1.6"
+                    },
+                    {
+                        "class": "$xEvent",
+                        "desc": "Synchronized kernel timestamp result",
+                        "members": [
+                            {
+                                "desc": "[out] wall-clock data",
+                                "name": "global",
+                                "type": "$x_synchronized_timestamp_data_ext_t"
+                            },
+                            {
+                                "desc": "[out] context-active data; only includes clocks while device context was actively executing.",
+                                "name": "context",
+                                "type": "$x_synchronized_timestamp_data_ext_t"
+                            }
+                        ],
+                        "name": "$x_synchronized_timestamp_result_ext_t",
+                        "type": "struct",
+                        "version": "1.6"
+                    },
+                    {
+                        "base": "$x_base_properties_t",
+                        "desc": "Event query kernel timestamps results properties",
+                        "members": [
+                            {
+                                "desc": "[in] type of this structure",
+                                "init": "$X_STRUCTURE_TYPE_EVENT_QUERY_KERNEL_TIMESTAMPS_RESULTS_EXT_PROPERTIES",
+                                "name": "stype",
+                                "type": "$x_structure_type_t"
+                            },
+                            {
+                                "desc": "[in,out][optional] must be null or a pointer to an extension-specific structure (i.e. contains sType and pNext).",
+                                "init": "nullptr",
+                                "name": "pNext",
+                                "type": "void*"
+                            },
+                            {
+                                "desc": "[in,out][optional][range(0, *pCount)] pointer to destination buffer of kernel timestamp results",
+                                "init": "nullptr",
+                                "name": "pKernelTimestampsBuffer",
+                                "type": "$x_kernel_timestamp_result_t*"
+                            },
+                            {
+                                "desc": "[in,out][optional][range(0, *pCount)] pointer to destination buffer of synchronized timestamp results",
+                                "init": "nullptr",
+                                "name": "pSynchronizedTimestampsBuffer",
+                                "type": "$x_synchronized_timestamp_result_ext_t*"
+                            }
+                        ],
+                        "name": "$x_event_query_kernel_timestamps_results_ext_properties_t",
+                        "type": "struct",
+                        "version": "1.6"
+                    },
+                    {
+                        "class": "$xEvent",
+                        "desc": "Query an event's timestamp value on the host, with domain preference.",
+                        "details": [
+                            "For collecting *only* kernel timestamps, the application must ensure the event was created from an event pool that was created using $X_EVENT_POOL_FLAG_KERNEL_TIMESTAMP flag.",
+                            "For collecting synchronized timestamps, the application must ensure the event was created from an event pool that was created using $X_EVENT_POOL_FLAG_KERNEL_MAPPED_TIMESTAMP flag. Kernel timestamps are also available from this type of event pool, but there is a performance cost.",
+                            "The destination memory will be unmodified if the event has not been signaled.",
+                            "The application may call this function from simultaneous threads.",
+                            "The implementation of this function must be thread-safe.",
+                            "The implementation must support $X_extension_event_query_kernel_timestamps.",
+                            "The implementation must return all timestamps for the specified event and device pair.",
+                            "The implementation must return all timestamps for all sub-devices when device handle is parent device.",
+                            "The implementation may return all timestamps for sub-devices when device handle is sub-device or may return 0 for count."
+                        ],
+                        "hash": "1fd7be75405b56820b9d681d430d712ad8c789c74a5cd4e3332d20245e9694c0",
+                        "name": "QueryKernelTimestampsExt",
+                        "params": [
+                            {
+                                "desc": "[in] handle of the event",
+                                "name": "hEvent",
+                                "type": "$x_event_handle_t"
+                            },
+                            {
+                                "desc": "[in] handle of the device to query",
+                                "name": "hDevice",
+                                "type": "$x_device_handle_t"
+                            },
+                            {
+                                "desc": "[in,out] pointer to the number of event packets available.\n    - This value is implementation specific.\n    - if `*pCount` is zero, then the driver shall update the value with the total number of event packets available.\n    - if `*pCount` is greater than the number of event packets available, the driver shall update the value with the correct value.\n    - Buffer(s) for query results must be sized by the application to accommodate a minimum of `*pCount` elements.\n",
+                                "name": "pCount",
+                                "type": "uint32_t*"
+                            },
+                            {
+                                "desc": "[in][optional] pointer to event query properties structure(s).\n    - This parameter may be null when `*pCount` is zero.\n    - if `*pCount` is less than the number of event packets available, the driver may only update `*pCount` elements, starting at element zero.\n    - if `*pCount` is greater than the number of event packets available, the driver may only update the valid elements.\n",
+                                "name": "pResults",
+                                "type": "$x_event_query_kernel_timestamps_results_ext_properties_t*"
+                            }
+                        ],
+                        "returns": [
+                            {
+                                "$X_RESULT_SUCCESS": []
+                            },
+                            {
+                                "$X_RESULT_ERROR_UNINITIALIZED": []
+                            },
+                            {
+                                "$X_RESULT_ERROR_DEVICE_LOST": []
+                            },
+                            {
+                                "$X_RESULT_ERROR_OUT_OF_HOST_MEMORY": []
+                            },
+                            {
+                                "$X_RESULT_ERROR_OUT_OF_DEVICE_MEMORY": []
+                            },
+                            {
+                                "$X_RESULT_ERROR_INVALID_NULL_HANDLE": [
+                                    "`nullptr == hEvent`",
+                                    "`nullptr == hDevice`"
+                                ]
+                            },
+                            {
+                                "$X_RESULT_ERROR_INVALID_NULL_POINTER": [
+                                    "`nullptr == pCount`"
+                                ]
+                            }
+                        ],
+                        "type": "function",
+                        "version": "1.6"
                     }
                 ]
             }
@@ -65627,6 +66856,12 @@
                                 "desc": "Local Memory Domain.",
                                 "name": "$S_FREQ_DOMAIN_MEMORY",
                                 "value": "1"
+                            },
+                            {
+                                "desc": "GPU Media Domain.",
+                                "name": "$S_FREQ_DOMAIN_MEDIA",
+                                "value": "2",
+                                "version": "1.6"
                             }
                         ],
                         "name": "$s_freq_domain_t",

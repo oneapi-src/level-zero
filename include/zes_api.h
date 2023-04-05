@@ -5,7 +5,7 @@
  * SPDX-License-Identifier: MIT
  *
  * @file zes_api.h
- * @version v1.5-r1.5.17
+ * @version v1.6-r1.6.0
  *
  */
 #ifndef _ZES_API_H
@@ -3222,6 +3222,7 @@ typedef enum _zes_freq_domain_t
 {
     ZES_FREQ_DOMAIN_GPU = 0,                        ///< GPU Core Domain.
     ZES_FREQ_DOMAIN_MEMORY = 1,                     ///< Local Memory Domain.
+    ZES_FREQ_DOMAIN_MEDIA = 2,                      ///< GPU Media Domain.
     ZES_FREQ_DOMAIN_FORCE_UINT32 = 0x7fffffff
 
 } zes_freq_domain_t;

@@ -35,6 +35,7 @@ typedef struct _zel_driver_callbacks_t
     ze_pfnDriverGetIpcPropertiesCb_t                                pfnGetIpcPropertiesCb;
     ze_pfnDriverGetExtensionPropertiesCb_t                          pfnGetExtensionPropertiesCb;
     ze_pfnDriverGetExtensionFunctionAddressCb_t                     pfnGetExtensionFunctionAddressCb;
+    ze_pfnDriverGetLastErrorDescriptionCb_t                         pfnGetLastErrorDescriptionCb;
 } zel_driver_callbacks_t;
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -119,6 +120,7 @@ typedef struct _zel_command_list_callbacks_t
     ze_pfnCommandListAppendLaunchMultipleKernelsIndirectCb_t        pfnAppendLaunchMultipleKernelsIndirectCb;
     ze_pfnCommandListAppendImageCopyToMemoryExtCb_t                 pfnAppendImageCopyToMemoryExtCb;
     ze_pfnCommandListAppendImageCopyFromMemoryExtCb_t               pfnAppendImageCopyFromMemoryExtCb;
+    ze_pfnCommandListHostSynchronizeCb_t                            pfnHostSynchronizeCb;
 } zel_command_list_callbacks_t;
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -133,6 +135,7 @@ typedef struct _zel_event_callbacks_t
     ze_pfnEventHostResetCb_t                                        pfnHostResetCb;
     ze_pfnEventQueryKernelTimestampCb_t                             pfnQueryKernelTimestampCb;
     ze_pfnEventQueryTimestampsExpCb_t                               pfnQueryTimestampsExpCb;
+    ze_pfnEventQueryKernelTimestampsExtCb_t                         pfnQueryKernelTimestampsExtCb;
 } zel_event_callbacks_t;
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -144,6 +147,7 @@ typedef struct _zel_event_pool_callbacks_t
     ze_pfnEventPoolGetIpcHandleCb_t                                 pfnGetIpcHandleCb;
     ze_pfnEventPoolOpenIpcHandleCb_t                                pfnOpenIpcHandleCb;
     ze_pfnEventPoolCloseIpcHandleCb_t                               pfnCloseIpcHandleCb;
+    ze_pfnEventPoolPutIpcHandleCb_t                                 pfnPutIpcHandleCb;
 } zel_event_pool_callbacks_t;
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -204,6 +208,9 @@ typedef struct _zel_mem_callbacks_t
     ze_pfnMemOpenIpcHandleCb_t                                      pfnOpenIpcHandleCb;
     ze_pfnMemCloseIpcHandleCb_t                                     pfnCloseIpcHandleCb;
     ze_pfnMemFreeExtCb_t                                            pfnFreeExtCb;
+    ze_pfnMemGetIpcHandleFromFileDescriptorExpCb_t                  pfnGetIpcHandleFromFileDescriptorExpCb;
+    ze_pfnMemGetFileDescriptorFromIpcHandleExpCb_t                  pfnGetFileDescriptorFromIpcHandleExpCb;
+    ze_pfnMemPutIpcHandleCb_t                                       pfnPutIpcHandleCb;
 } zel_mem_callbacks_t;
 
 ///////////////////////////////////////////////////////////////////////////////

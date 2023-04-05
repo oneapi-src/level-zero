@@ -256,6 +256,32 @@ namespace loader
     }
 
     ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeDriverGetLastErrorDescription
+    __zedlllocal ze_result_t ZE_APICALL
+    zeDriverGetLastErrorDescription(
+        ze_driver_handle_t hDriver,                     ///< [in] handle of the driver instance
+        const char** ppString                           ///< [in,out] pointer to a null-terminated array of characters describing
+                                                        ///< cause of error.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<ze_driver_object_t*>( hDriver )->dditable;
+        auto pfnGetLastErrorDescription = dditable->ze.Driver.pfnGetLastErrorDescription;
+        if( nullptr == pfnGetLastErrorDescription )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hDriver = reinterpret_cast<ze_driver_object_t*>( hDriver )->handle;
+
+        // forward to device-driver
+        result = pfnGetLastErrorDescription( hDriver, ppString );
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
     /// @brief Intercept function for zeDeviceGet
     __zedlllocal ze_result_t ZE_APICALL
     zeDeviceGet(
@@ -1210,6 +1236,37 @@ namespace loader
     }
 
     ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeCommandListHostSynchronize
+    __zedlllocal ze_result_t ZE_APICALL
+    zeCommandListHostSynchronize(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of the immediate command list
+        uint64_t timeout                                ///< [in] if non-zero, then indicates the maximum time (in nanoseconds) to
+                                                        ///< yield before returning ::ZE_RESULT_SUCCESS or ::ZE_RESULT_NOT_READY;
+                                                        ///< if zero, then immediately returns the status of the immediate command list;
+                                                        ///< if UINT64_MAX, then function will not return until complete or device
+                                                        ///< is lost.
+                                                        ///< Due to external dependencies, timeout may be rounded to the closest
+                                                        ///< value allowed by the accuracy of those dependencies.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<ze_command_list_object_t*>( hCommandList )->dditable;
+        auto pfnHostSynchronize = dditable->ze.CommandList.pfnHostSynchronize;
+        if( nullptr == pfnHostSynchronize )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hCommandList = reinterpret_cast<ze_command_list_object_t*>( hCommandList )->handle;
+
+        // forward to device-driver
+        result = pfnHostSynchronize( hCommandList, timeout );
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
     /// @brief Intercept function for zeCommandListAppendBarrier
     __zedlllocal ze_result_t ZE_APICALL
     zeCommandListAppendBarrier(
@@ -1906,6 +1963,32 @@ namespace loader
 
         // forward to device-driver
         result = pfnGetIpcHandle( hEventPool, phIpc );
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeEventPoolPutIpcHandle
+    __zedlllocal ze_result_t ZE_APICALL
+    zeEventPoolPutIpcHandle(
+        ze_context_handle_t hContext,                   ///< [in] handle of the context object associated with the IPC event pool
+                                                        ///< handle
+        ze_ipc_event_pool_handle_t hIpc                 ///< [in] IPC event pool handle
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<ze_context_object_t*>( hContext )->dditable;
+        auto pfnPutIpcHandle = dditable->ze.EventPool.pfnPutIpcHandle;
+        if( nullptr == pfnPutIpcHandle )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hContext = reinterpret_cast<ze_context_object_t*>( hContext )->handle;
+
+        // forward to device-driver
+        result = pfnPutIpcHandle( hContext, hIpc );
 
         return result;
     }
@@ -2718,6 +2801,83 @@ namespace loader
 
         // forward to device-driver
         result = pfnGetIpcHandle( hContext, ptr, pIpcHandle );
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeMemGetIpcHandleFromFileDescriptorExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zeMemGetIpcHandleFromFileDescriptorExp(
+        ze_context_handle_t hContext,                   ///< [in] handle of the context object
+        uint64_t handle,                                ///< [in] file descriptor
+        ze_ipc_mem_handle_t* pIpcHandle                 ///< [out] Returned IPC memory handle
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<ze_context_object_t*>( hContext )->dditable;
+        auto pfnGetIpcHandleFromFileDescriptorExp = dditable->ze.MemExp.pfnGetIpcHandleFromFileDescriptorExp;
+        if( nullptr == pfnGetIpcHandleFromFileDescriptorExp )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hContext = reinterpret_cast<ze_context_object_t*>( hContext )->handle;
+
+        // forward to device-driver
+        result = pfnGetIpcHandleFromFileDescriptorExp( hContext, handle, pIpcHandle );
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeMemGetFileDescriptorFromIpcHandleExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zeMemGetFileDescriptorFromIpcHandleExp(
+        ze_context_handle_t hContext,                   ///< [in] handle of the context object
+        ze_ipc_mem_handle_t ipcHandle,                  ///< [in] IPC memory handle
+        uint64_t* pHandle                               ///< [out] Returned file descriptor
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<ze_context_object_t*>( hContext )->dditable;
+        auto pfnGetFileDescriptorFromIpcHandleExp = dditable->ze.MemExp.pfnGetFileDescriptorFromIpcHandleExp;
+        if( nullptr == pfnGetFileDescriptorFromIpcHandleExp )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hContext = reinterpret_cast<ze_context_object_t*>( hContext )->handle;
+
+        // forward to device-driver
+        result = pfnGetFileDescriptorFromIpcHandleExp( hContext, ipcHandle, pHandle );
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeMemPutIpcHandle
+    __zedlllocal ze_result_t ZE_APICALL
+    zeMemPutIpcHandle(
+        ze_context_handle_t hContext,                   ///< [in] handle of the context object
+        ze_ipc_mem_handle_t handle                      ///< [in] IPC memory handle
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<ze_context_object_t*>( hContext )->dditable;
+        auto pfnPutIpcHandle = dditable->ze.Mem.pfnPutIpcHandle;
+        if( nullptr == pfnPutIpcHandle )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hContext = reinterpret_cast<ze_context_object_t*>( hContext )->handle;
+
+        // forward to device-driver
+        result = pfnPutIpcHandle( hContext, handle );
 
         return result;
     }
@@ -4938,6 +5098,48 @@ namespace loader
         return result;
     }
 
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeEventQueryKernelTimestampsExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeEventQueryKernelTimestampsExt(
+        ze_event_handle_t hEvent,                       ///< [in] handle of the event
+        ze_device_handle_t hDevice,                     ///< [in] handle of the device to query
+        uint32_t* pCount,                               ///< [in,out] pointer to the number of event packets available.
+                                                        ///<    - This value is implementation specific.
+                                                        ///<    - if `*pCount` is zero, then the driver shall update the value with
+                                                        ///< the total number of event packets available.
+                                                        ///<    - if `*pCount` is greater than the number of event packets
+                                                        ///< available, the driver shall update the value with the correct value.
+                                                        ///<    - Buffer(s) for query results must be sized by the application to
+                                                        ///< accommodate a minimum of `*pCount` elements.
+        ze_event_query_kernel_timestamps_results_ext_properties_t* pResults ///< [in][optional] pointer to event query properties structure(s).
+                                                        ///<    - This parameter may be null when `*pCount` is zero.
+                                                        ///<    - if `*pCount` is less than the number of event packets available,
+                                                        ///< the driver may only update `*pCount` elements, starting at element zero.
+                                                        ///<    - if `*pCount` is greater than the number of event packets
+                                                        ///< available, the driver may only update the valid elements.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<ze_event_object_t*>( hEvent )->dditable;
+        auto pfnQueryKernelTimestampsExt = dditable->ze.Event.pfnQueryKernelTimestampsExt;
+        if( nullptr == pfnQueryKernelTimestampsExt )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hEvent = reinterpret_cast<ze_event_object_t*>( hEvent )->handle;
+
+        // convert loader handle to driver handle
+        hDevice = reinterpret_cast<ze_device_object_t*>( hDevice )->handle;
+
+        // forward to device-driver
+        result = pfnQueryKernelTimestampsExt( hEvent, hDevice, pCount, pResults );
+
+        return result;
+    }
+
 } // namespace loader
 
 #if defined(__cplusplus)
@@ -5088,6 +5290,7 @@ zeGetDriverProcAddrTable(
             pDdiTable->pfnGetIpcProperties                         = loader::zeDriverGetIpcProperties;
             pDdiTable->pfnGetExtensionProperties                   = loader::zeDriverGetExtensionProperties;
             pDdiTable->pfnGetExtensionFunctionAddress              = loader::zeDriverGetExtensionFunctionAddress;
+            pDdiTable->pfnGetLastErrorDescription                  = loader::zeDriverGetLastErrorDescription;
         }
         else
         {
@@ -5562,6 +5765,7 @@ zeGetCommandListProcAddrTable(
             pDdiTable->pfnAppendLaunchMultipleKernelsIndirect      = loader::zeCommandListAppendLaunchMultipleKernelsIndirect;
             pDdiTable->pfnAppendImageCopyToMemoryExt               = loader::zeCommandListAppendImageCopyToMemoryExt;
             pDdiTable->pfnAppendImageCopyFromMemoryExt             = loader::zeCommandListAppendImageCopyFromMemoryExt;
+            pDdiTable->pfnHostSynchronize                          = loader::zeCommandListHostSynchronize;
         }
         else
         {
@@ -5653,6 +5857,7 @@ zeGetEventProcAddrTable(
             pDdiTable->pfnQueryStatus                              = loader::zeEventQueryStatus;
             pDdiTable->pfnHostReset                                = loader::zeEventHostReset;
             pDdiTable->pfnQueryKernelTimestamp                     = loader::zeEventQueryKernelTimestamp;
+            pDdiTable->pfnQueryKernelTimestampsExt                 = loader::zeEventQueryKernelTimestampsExt;
         }
         else
         {
@@ -5821,6 +6026,7 @@ zeGetEventPoolProcAddrTable(
             pDdiTable->pfnGetIpcHandle                             = loader::zeEventPoolGetIpcHandle;
             pDdiTable->pfnOpenIpcHandle                            = loader::zeEventPoolOpenIpcHandle;
             pDdiTable->pfnCloseIpcHandle                           = loader::zeEventPoolCloseIpcHandle;
+            pDdiTable->pfnPutIpcHandle                             = loader::zeEventPoolPutIpcHandle;
         }
         else
         {
@@ -6349,6 +6555,7 @@ zeGetMemProcAddrTable(
             pDdiTable->pfnOpenIpcHandle                            = loader::zeMemOpenIpcHandle;
             pDdiTable->pfnCloseIpcHandle                           = loader::zeMemCloseIpcHandle;
             pDdiTable->pfnFreeExt                                  = loader::zeMemFreeExt;
+            pDdiTable->pfnPutIpcHandle                             = loader::zeMemPutIpcHandle;
         }
         else
         {
@@ -6372,6 +6579,86 @@ zeGetMemProcAddrTable(
     {
         auto getTable = reinterpret_cast<ze_pfnGetMemProcAddrTable_t>(
             GET_FUNCTION_PTR(loader::context->tracingLayer, "zeGetMemProcAddrTable") );
+        if(!getTable)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        result = getTable( version, pDdiTable );
+    }
+
+    return result;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Exported function for filling application's MemExp table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+ZE_DLLEXPORT ze_result_t ZE_APICALL
+zeGetMemExpProcAddrTable(
+    ze_api_version_t version,                       ///< [in] API version requested
+    ze_mem_exp_dditable_t* pDdiTable                ///< [in,out] pointer to table of DDI function pointers
+    )
+{
+    if( loader::context->drivers.size() < 1 )
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+
+    if( nullptr == pDdiTable )
+        return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+    if( loader::context->version < version )
+        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+
+    ze_result_t result = ZE_RESULT_SUCCESS;
+
+    bool atLeastOneDriverValid = false;
+    // Load the device-driver DDI tables
+    for( auto& drv : loader::context->drivers )
+    {
+        if(drv.initStatus != ZE_RESULT_SUCCESS)
+            continue;
+        auto getTable = reinterpret_cast<ze_pfnGetMemExpProcAddrTable_t>(
+            GET_FUNCTION_PTR( drv.handle, "zeGetMemExpProcAddrTable") );
+        if(!getTable) 
+            continue; 
+        auto getTableResult = getTable( version, &drv.dditable.ze.MemExp);
+        if(getTableResult == ZE_RESULT_SUCCESS) 
+            atLeastOneDriverValid = true;
+    }
+
+
+    if( ZE_RESULT_SUCCESS == result )
+    {
+        if( ( loader::context->drivers.size() > 1 ) || loader::context->forceIntercept )
+        {
+            // return pointers to loader's DDIs
+            pDdiTable->pfnGetIpcHandleFromFileDescriptorExp        = loader::zeMemGetIpcHandleFromFileDescriptorExp;
+            pDdiTable->pfnGetFileDescriptorFromIpcHandleExp        = loader::zeMemGetFileDescriptorFromIpcHandleExp;
+        }
+        else
+        {
+            // return pointers directly to driver's DDIs
+            *pDdiTable = loader::context->drivers.front().dditable.ze.MemExp;
+        }
+    }
+
+    // If the validation layer is enabled, then intercept the loader's DDIs
+    if(( ZE_RESULT_SUCCESS == result ) && ( nullptr != loader::context->validationLayer ))
+    {
+        auto getTable = reinterpret_cast<ze_pfnGetMemExpProcAddrTable_t>(
+            GET_FUNCTION_PTR(loader::context->validationLayer, "zeGetMemExpProcAddrTable") );
+        if(!getTable)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        result = getTable( version, pDdiTable );
+    }
+
+    // If the API tracing layer is enabled, then intercept the loader's DDIs
+    if(( ZE_RESULT_SUCCESS == result ) && ( nullptr != loader::context->tracingLayer ))
+    {
+        auto getTable = reinterpret_cast<ze_pfnGetMemExpProcAddrTable_t>(
+            GET_FUNCTION_PTR(loader::context->tracingLayer, "zeGetMemExpProcAddrTable") );
         if(!getTable)
             return ZE_RESULT_ERROR_UNINITIALIZED;
         result = getTable( version, pDdiTable );

@@ -4,7 +4,7 @@
  SPDX-License-Identifier: MIT
 
  @file zes.py
- @version v1.5-r1.5.17
+ @version v1.6-r1.6.0
 
  """
 import platform
@@ -1185,6 +1185,7 @@ class zes_firmware_properties_t(Structure):
 class zes_freq_domain_v(IntEnum):
     GPU = 0                                         ## GPU Core Domain.
     MEMORY = 1                                      ## Local Memory Domain.
+    MEDIA = 2                                       ## GPU Media Domain.
 
 class zes_freq_domain_t(c_int):
     def __str__(self):

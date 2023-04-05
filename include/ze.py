@@ -4,7 +4,7 @@
  SPDX-License-Identifier: MIT
 
  @file ze.py
- @version v1.5-r1.5.17
+ @version v1.6-r1.6.0
 
  """
 import platform
@@ -273,6 +273,8 @@ class ze_structure_type_v(IntEnum):
     DEVICE_MEMORY_EXT_PROPERTIES = 0x1000e          ## ::ze_device_memory_ext_properties_t
     DEVICE_IP_VERSION_EXT = 0x1000f                 ## ::ze_device_ip_version_ext_t
     IMAGE_VIEW_PLANAR_EXT_DESC = 0x10010            ## ::ze_image_view_planar_ext_desc_t
+    EVENT_QUERY_KERNEL_TIMESTAMPS_EXT_PROPERTIES = 0x10011  ## ::ze_event_query_kernel_timestamps_ext_properties_t
+    EVENT_QUERY_KERNEL_TIMESTAMPS_RESULTS_EXT_PROPERTIES = 0x10012  ## ::ze_event_query_kernel_timestamps_results_ext_properties_t
     RELAXED_ALLOCATION_LIMITS_EXP_DESC = 0x00020001 ## ::ze_relaxed_allocation_limits_exp_desc_t
     MODULE_PROGRAM_EXP_DESC = 0x00020002            ## ::ze_module_program_exp_desc_t
     SCHEDULING_HINT_EXP_PROPERTIES = 0x00020003     ## ::ze_scheduling_hint_exp_properties_t
@@ -399,7 +401,8 @@ class ze_api_version_v(IntEnum):
     _1_3 = ZE_MAKE_VERSION( 1, 3 )                  ## version 1.3
     _1_4 = ZE_MAKE_VERSION( 1, 4 )                  ## version 1.4
     _1_5 = ZE_MAKE_VERSION( 1, 5 )                  ## version 1.5
-    CURRENT = ZE_MAKE_VERSION( 1, 5 )               ## latest known version
+    _1_6 = ZE_MAKE_VERSION( 1, 6 )                  ## version 1.6
+    CURRENT = ZE_MAKE_VERSION( 1, 6 )               ## latest known version
 
 class ze_api_version_t(c_int):
     def __str__(self):
@@ -998,6 +1001,9 @@ class ze_event_pool_flags_v(IntEnum):
     HOST_VISIBLE = ZE_BIT(0)                        ## signals and waits are also visible to host
     IPC = ZE_BIT(1)                                 ## signals and waits may be shared across processes
     KERNEL_TIMESTAMP = ZE_BIT(2)                    ## Indicates all events in pool will contain kernel timestamps
+    KERNEL_MAPPED_TIMESTAMP = ZE_BIT(3)             ## Indicates all events in pool will contain kernel timestamps
+                                                    ## synchronized to host time domain; cannot be combined with
+                                                    ## ::ZE_EVENT_POOL_FLAG_KERNEL_TIMESTAMP
 
 class ze_event_pool_flags_t(c_int):
     def __str__(self):
@@ -1210,9 +1216,9 @@ class ze_image_format_swizzle_t(c_int):
 ## @brief Image format 
 class ze_image_format_t(Structure):
     _fields_ = [
-        ("layout", ze_image_format_layout_t),                           ## [in] image format component layout
-        ("type", ze_image_format_type_t),                               ## [in] image format type. Media formats can't be used for
-                                                                        ## ::ZE_IMAGE_TYPE_BUFFER.
+        ("layout", ze_image_format_layout_t),                           ## [in] image format component layout (e.g. N-component layouts and media
+                                                                        ## formats)
+        ("type", ze_image_format_type_t),                               ## [in] image format type
         ("x", ze_image_format_swizzle_t),                               ## [in] image component swizzle into channel x
         ("y", ze_image_format_swizzle_t),                               ## [in] image component swizzle into channel y
         ("z", ze_image_format_swizzle_t),                               ## [in] image component swizzle into channel z
@@ -1229,7 +1235,8 @@ class ze_image_desc_t(Structure):
         ("flags", ze_image_flags_t),                                    ## [in] creation flags.
                                                                         ## must be 0 (default) or a valid combination of ::ze_image_flag_t;
                                                                         ## default is read-only, cached access.
-        ("type", ze_image_type_t),                                      ## [in] image type
+        ("type", ze_image_type_t),                                      ## [in] image type. Media format layouts are unsupported for
+                                                                        ## ::ZE_IMAGE_TYPE_BUFFER
         ("format", ze_image_format_t),                                  ## [in] image format
         ("width", c_ulonglong),                                         ## [in] width dimension.
                                                                         ## ::ZE_IMAGE_TYPE_BUFFER: size in bytes; see
@@ -1508,7 +1515,8 @@ class ze_module_desc_t(Structure):
         ("format", ze_module_format_t),                                 ## [in] Module format passed in with pInputModule
         ("inputSize", c_size_t),                                        ## [in] size of input IL or ISA from pInputModule.
         ("pInputModule", POINTER(c_ubyte)),                             ## [in] pointer to IL or ISA
-        ("pBuildFlags", c_char_p),                                      ## [in][optional] string containing compiler flags. Following options are supported.
+        ("pBuildFlags", c_char_p),                                      ## [in][optional] string containing one or more (comma-separated)
+                                                                        ## compiler flags. If unsupported, flag is ignored with a warning.
                                                                         ##  - "-ze-opt-disable"
                                                                         ##       - Disable optimizations
                                                                         ##  - "-ze-opt-level"
@@ -2917,6 +2925,77 @@ class ze_memory_sub_allocations_exp_properties_t(Structure):
     ]
 
 ###############################################################################
+## @brief Event Query Kernel Timestamps Extension Name
+ZE_EVENT_QUERY_KERNEL_TIMESTAMPS_EXT_NAME = "ZE_extension_event_query_kernel_timestamps"
+
+###############################################################################
+## @brief Event Query Kernel Timestamps Extension Version(s)
+class ze_event_query_kernel_timestamps_ext_version_v(IntEnum):
+    _1_0 = ZE_MAKE_VERSION( 1, 0 )                  ## version 1.0
+    CURRENT = ZE_MAKE_VERSION( 1, 0 )               ## latest known version
+
+class ze_event_query_kernel_timestamps_ext_version_t(c_int):
+    def __str__(self):
+        return str(ze_event_query_kernel_timestamps_ext_version_v(self.value))
+
+
+###############################################################################
+## @brief Event query kernel timestamps flags
+class ze_event_query_kernel_timestamps_ext_flags_v(IntEnum):
+    KERNEL = ZE_BIT(0)                              ## Kernel timestamp results
+    SYNCHRONIZED = ZE_BIT(1)                        ## Device event timestamps synchronized to the host time domain
+
+class ze_event_query_kernel_timestamps_ext_flags_t(c_int):
+    def __str__(self):
+        return hex(self.value)
+
+
+###############################################################################
+## @brief Event query kernel timestamps properties
+## 
+## @details
+##     - This structure may be returned from ::zeDeviceGetProperties, via
+##       `pNext` member of ::ze_device_properties_t.
+class ze_event_query_kernel_timestamps_ext_properties_t(Structure):
+    _fields_ = [
+        ("stype", ze_structure_type_t),                                 ## [in] type of this structure
+        ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains sType and pNext).
+        ("flags", ze_event_query_kernel_timestamps_ext_flags_t)         ## [out] 0 or some combination of
+                                                                        ## ::ze_event_query_kernel_timestamps_ext_flag_t flags
+    ]
+
+###############################################################################
+## @brief Kernel timestamp clock data synchronized to the host time domain
+class ze_synchronized_timestamp_data_ext_t(Structure):
+    _fields_ = [
+        ("kernelStart", c_ulonglong),                                   ## [out] synchronized clock at start of kernel execution
+        ("kernelEnd", c_ulonglong)                                      ## [out] synchronized clock at end of kernel execution
+    ]
+
+###############################################################################
+## @brief Synchronized kernel timestamp result
+class ze_synchronized_timestamp_result_ext_t(Structure):
+    _fields_ = [
+        ("global", ze_synchronized_timestamp_data_ext_t),               ## [out] wall-clock data
+        ("context", ze_synchronized_timestamp_data_ext_t)               ## [out] context-active data; only includes clocks while device context
+                                                                        ## was actively executing.
+    ]
+
+###############################################################################
+## @brief Event query kernel timestamps results properties
+class ze_event_query_kernel_timestamps_results_ext_properties_t(Structure):
+    _fields_ = [
+        ("stype", ze_structure_type_t),                                 ## [in] type of this structure
+        ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains sType and pNext).
+        ("pKernelTimestampsBuffer", POINTER(ze_kernel_timestamp_result_t)), ## [in,out][optional][range(0, *pCount)] pointer to destination buffer of
+                                                                        ## kernel timestamp results
+        ("pSynchronizedTimestampsBuffer", POINTER(ze_synchronized_timestamp_result_ext_t))  ## [in,out][optional][range(0, *pCount)] pointer to destination buffer of
+                                                                        ## synchronized timestamp results
+    ]
+
+###############################################################################
 __use_win_types = "Windows" == platform.uname()[0]
 
 ###############################################################################
@@ -2976,6 +3055,13 @@ if __use_win_types:
 else:
     _zeDriverGetExtensionFunctionAddress_t = CFUNCTYPE( ze_result_t, ze_driver_handle_t, c_char_p, POINTER(c_void_p) )
 
+###############################################################################
+## @brief Function-pointer for zeDriverGetLastErrorDescription
+if __use_win_types:
+    _zeDriverGetLastErrorDescription_t = WINFUNCTYPE( ze_result_t, ze_driver_handle_t, POINTER(c_char_p) )
+else:
+    _zeDriverGetLastErrorDescription_t = CFUNCTYPE( ze_result_t, ze_driver_handle_t, POINTER(c_char_p) )
+
 
 ###############################################################################
 ## @brief Table of Driver functions pointers
@@ -2986,7 +3072,8 @@ class _ze_driver_dditable_t(Structure):
         ("pfnGetProperties", c_void_p),                                 ## _zeDriverGetProperties_t
         ("pfnGetIpcProperties", c_void_p),                              ## _zeDriverGetIpcProperties_t
         ("pfnGetExtensionProperties", c_void_p),                        ## _zeDriverGetExtensionProperties_t
-        ("pfnGetExtensionFunctionAddress", c_void_p)                    ## _zeDriverGetExtensionFunctionAddress_t
+        ("pfnGetExtensionFunctionAddress", c_void_p),                   ## _zeDriverGetExtensionFunctionAddress_t
+        ("pfnGetLastErrorDescription", c_void_p)                        ## _zeDriverGetLastErrorDescription_t
     ]
 
 ###############################################################################
@@ -3469,6 +3556,13 @@ if __use_win_types:
 else:
     _zeCommandListAppendImageCopyFromMemoryExt_t = CFUNCTYPE( ze_result_t, ze_command_list_handle_t, ze_image_handle_t, c_void_p, POINTER(ze_image_region_t), c_ulong, c_ulong, ze_event_handle_t, c_ulong, POINTER(ze_event_handle_t) )
 
+###############################################################################
+## @brief Function-pointer for zeCommandListHostSynchronize
+if __use_win_types:
+    _zeCommandListHostSynchronize_t = WINFUNCTYPE( ze_result_t, ze_command_list_handle_t, c_ulonglong )
+else:
+    _zeCommandListHostSynchronize_t = CFUNCTYPE( ze_result_t, ze_command_list_handle_t, c_ulonglong )
+
 
 ###############################################################################
 ## @brief Table of CommandList functions pointers
@@ -3501,7 +3595,8 @@ class _ze_command_list_dditable_t(Structure):
         ("pfnAppendLaunchKernelIndirect", c_void_p),                    ## _zeCommandListAppendLaunchKernelIndirect_t
         ("pfnAppendLaunchMultipleKernelsIndirect", c_void_p),           ## _zeCommandListAppendLaunchMultipleKernelsIndirect_t
         ("pfnAppendImageCopyToMemoryExt", c_void_p),                    ## _zeCommandListAppendImageCopyToMemoryExt_t
-        ("pfnAppendImageCopyFromMemoryExt", c_void_p)                   ## _zeCommandListAppendImageCopyFromMemoryExt_t
+        ("pfnAppendImageCopyFromMemoryExt", c_void_p),                  ## _zeCommandListAppendImageCopyFromMemoryExt_t
+        ("pfnHostSynchronize", c_void_p)                                ## _zeCommandListHostSynchronize_t
     ]
 
 ###############################################################################
@@ -3656,6 +3751,13 @@ if __use_win_types:
 else:
     _zeEventPoolCloseIpcHandle_t = CFUNCTYPE( ze_result_t, ze_event_pool_handle_t )
 
+###############################################################################
+## @brief Function-pointer for zeEventPoolPutIpcHandle
+if __use_win_types:
+    _zeEventPoolPutIpcHandle_t = WINFUNCTYPE( ze_result_t, ze_context_handle_t, ze_ipc_event_pool_handle_t )
+else:
+    _zeEventPoolPutIpcHandle_t = CFUNCTYPE( ze_result_t, ze_context_handle_t, ze_ipc_event_pool_handle_t )
+
 
 ###############################################################################
 ## @brief Table of EventPool functions pointers
@@ -3665,7 +3767,8 @@ class _ze_event_pool_dditable_t(Structure):
         ("pfnDestroy", c_void_p),                                       ## _zeEventPoolDestroy_t
         ("pfnGetIpcHandle", c_void_p),                                  ## _zeEventPoolGetIpcHandle_t
         ("pfnOpenIpcHandle", c_void_p),                                 ## _zeEventPoolOpenIpcHandle_t
-        ("pfnCloseIpcHandle", c_void_p)                                 ## _zeEventPoolCloseIpcHandle_t
+        ("pfnCloseIpcHandle", c_void_p),                                ## _zeEventPoolCloseIpcHandle_t
+        ("pfnPutIpcHandle", c_void_p)                                   ## _zeEventPoolPutIpcHandle_t
     ]
 
 ###############################################################################
@@ -3717,6 +3820,13 @@ if __use_win_types:
 else:
     _zeEventQueryKernelTimestamp_t = CFUNCTYPE( ze_result_t, ze_event_handle_t, POINTER(ze_kernel_timestamp_result_t) )
 
+###############################################################################
+## @brief Function-pointer for zeEventQueryKernelTimestampsExt
+if __use_win_types:
+    _zeEventQueryKernelTimestampsExt_t = WINFUNCTYPE( ze_result_t, ze_event_handle_t, ze_device_handle_t, POINTER(c_ulong), POINTER(ze_event_query_kernel_timestamps_results_ext_properties_t) )
+else:
+    _zeEventQueryKernelTimestampsExt_t = CFUNCTYPE( ze_result_t, ze_event_handle_t, ze_device_handle_t, POINTER(c_ulong), POINTER(ze_event_query_kernel_timestamps_results_ext_properties_t) )
+
 
 ###############################################################################
 ## @brief Table of Event functions pointers
@@ -3728,7 +3838,8 @@ class _ze_event_dditable_t(Structure):
         ("pfnHostSynchronize", c_void_p),                               ## _zeEventHostSynchronize_t
         ("pfnQueryStatus", c_void_p),                                   ## _zeEventQueryStatus_t
         ("pfnHostReset", c_void_p),                                     ## _zeEventHostReset_t
-        ("pfnQueryKernelTimestamp", c_void_p)                           ## _zeEventQueryKernelTimestamp_t
+        ("pfnQueryKernelTimestamp", c_void_p),                          ## _zeEventQueryKernelTimestamp_t
+        ("pfnQueryKernelTimestampsExt", c_void_p)                       ## _zeEventQueryKernelTimestampsExt_t
     ]
 
 ###############################################################################
@@ -4090,6 +4201,13 @@ if __use_win_types:
 else:
     _zeMemFreeExt_t = CFUNCTYPE( ze_result_t, ze_context_handle_t, POINTER(ze_memory_free_ext_desc_t), c_void_p )
 
+###############################################################################
+## @brief Function-pointer for zeMemPutIpcHandle
+if __use_win_types:
+    _zeMemPutIpcHandle_t = WINFUNCTYPE( ze_result_t, ze_context_handle_t, ze_ipc_mem_handle_t )
+else:
+    _zeMemPutIpcHandle_t = CFUNCTYPE( ze_result_t, ze_context_handle_t, ze_ipc_mem_handle_t )
+
 
 ###############################################################################
 ## @brief Table of Mem functions pointers
@@ -4104,7 +4222,31 @@ class _ze_mem_dditable_t(Structure):
         ("pfnGetIpcHandle", c_void_p),                                  ## _zeMemGetIpcHandle_t
         ("pfnOpenIpcHandle", c_void_p),                                 ## _zeMemOpenIpcHandle_t
         ("pfnCloseIpcHandle", c_void_p),                                ## _zeMemCloseIpcHandle_t
-        ("pfnFreeExt", c_void_p)                                        ## _zeMemFreeExt_t
+        ("pfnFreeExt", c_void_p),                                       ## _zeMemFreeExt_t
+        ("pfnPutIpcHandle", c_void_p)                                   ## _zeMemPutIpcHandle_t
+    ]
+
+###############################################################################
+## @brief Function-pointer for zeMemGetIpcHandleFromFileDescriptorExp
+if __use_win_types:
+    _zeMemGetIpcHandleFromFileDescriptorExp_t = WINFUNCTYPE( ze_result_t, ze_context_handle_t, c_ulonglong, POINTER(ze_ipc_mem_handle_t) )
+else:
+    _zeMemGetIpcHandleFromFileDescriptorExp_t = CFUNCTYPE( ze_result_t, ze_context_handle_t, c_ulonglong, POINTER(ze_ipc_mem_handle_t) )
+
+###############################################################################
+## @brief Function-pointer for zeMemGetFileDescriptorFromIpcHandleExp
+if __use_win_types:
+    _zeMemGetFileDescriptorFromIpcHandleExp_t = WINFUNCTYPE( ze_result_t, ze_context_handle_t, ze_ipc_mem_handle_t, POINTER(c_ulonglong) )
+else:
+    _zeMemGetFileDescriptorFromIpcHandleExp_t = CFUNCTYPE( ze_result_t, ze_context_handle_t, ze_ipc_mem_handle_t, POINTER(c_ulonglong) )
+
+
+###############################################################################
+## @brief Table of MemExp functions pointers
+class _ze_mem_exp_dditable_t(Structure):
+    _fields_ = [
+        ("pfnGetIpcHandleFromFileDescriptorExp", c_void_p),             ## _zeMemGetIpcHandleFromFileDescriptorExp_t
+        ("pfnGetFileDescriptorFromIpcHandleExp", c_void_p)              ## _zeMemGetFileDescriptorFromIpcHandleExp_t
     ]
 
 ###############################################################################
@@ -4263,6 +4405,7 @@ class _ze_dditable_t(Structure):
         ("Sampler", _ze_sampler_dditable_t),
         ("PhysicalMem", _ze_physical_mem_dditable_t),
         ("Mem", _ze_mem_dditable_t),
+        ("MemExp", _ze_mem_exp_dditable_t),
         ("VirtualMem", _ze_virtual_mem_dditable_t),
         ("FabricVertexExp", _ze_fabric_vertex_exp_dditable_t),
         ("FabricEdgeExp", _ze_fabric_edge_exp_dditable_t)
@@ -4305,6 +4448,7 @@ class ZE_DDI:
         self.zeDriverGetIpcProperties = _zeDriverGetIpcProperties_t(self.__dditable.Driver.pfnGetIpcProperties)
         self.zeDriverGetExtensionProperties = _zeDriverGetExtensionProperties_t(self.__dditable.Driver.pfnGetExtensionProperties)
         self.zeDriverGetExtensionFunctionAddress = _zeDriverGetExtensionFunctionAddress_t(self.__dditable.Driver.pfnGetExtensionFunctionAddress)
+        self.zeDriverGetLastErrorDescription = _zeDriverGetLastErrorDescription_t(self.__dditable.Driver.pfnGetLastErrorDescription)
 
         # call driver to get function pointers
         _Device = _ze_device_dditable_t()
@@ -4410,6 +4554,7 @@ class ZE_DDI:
         self.zeCommandListAppendLaunchMultipleKernelsIndirect = _zeCommandListAppendLaunchMultipleKernelsIndirect_t(self.__dditable.CommandList.pfnAppendLaunchMultipleKernelsIndirect)
         self.zeCommandListAppendImageCopyToMemoryExt = _zeCommandListAppendImageCopyToMemoryExt_t(self.__dditable.CommandList.pfnAppendImageCopyToMemoryExt)
         self.zeCommandListAppendImageCopyFromMemoryExt = _zeCommandListAppendImageCopyFromMemoryExt_t(self.__dditable.CommandList.pfnAppendImageCopyFromMemoryExt)
+        self.zeCommandListHostSynchronize = _zeCommandListHostSynchronize_t(self.__dditable.CommandList.pfnHostSynchronize)
 
         # call driver to get function pointers
         _Image = _ze_image_dditable_t()
@@ -4463,6 +4608,7 @@ class ZE_DDI:
         self.zeEventPoolGetIpcHandle = _zeEventPoolGetIpcHandle_t(self.__dditable.EventPool.pfnGetIpcHandle)
         self.zeEventPoolOpenIpcHandle = _zeEventPoolOpenIpcHandle_t(self.__dditable.EventPool.pfnOpenIpcHandle)
         self.zeEventPoolCloseIpcHandle = _zeEventPoolCloseIpcHandle_t(self.__dditable.EventPool.pfnCloseIpcHandle)
+        self.zeEventPoolPutIpcHandle = _zeEventPoolPutIpcHandle_t(self.__dditable.EventPool.pfnPutIpcHandle)
 
         # call driver to get function pointers
         _Event = _ze_event_dditable_t()
@@ -4479,6 +4625,7 @@ class ZE_DDI:
         self.zeEventQueryStatus = _zeEventQueryStatus_t(self.__dditable.Event.pfnQueryStatus)
         self.zeEventHostReset = _zeEventHostReset_t(self.__dditable.Event.pfnHostReset)
         self.zeEventQueryKernelTimestamp = _zeEventQueryKernelTimestamp_t(self.__dditable.Event.pfnQueryKernelTimestamp)
+        self.zeEventQueryKernelTimestampsExt = _zeEventQueryKernelTimestampsExt_t(self.__dditable.Event.pfnQueryKernelTimestampsExt)
 
         # call driver to get function pointers
         _EventExp = _ze_event_exp_dditable_t()
@@ -4591,6 +4738,18 @@ class ZE_DDI:
         self.zeMemOpenIpcHandle = _zeMemOpenIpcHandle_t(self.__dditable.Mem.pfnOpenIpcHandle)
         self.zeMemCloseIpcHandle = _zeMemCloseIpcHandle_t(self.__dditable.Mem.pfnCloseIpcHandle)
         self.zeMemFreeExt = _zeMemFreeExt_t(self.__dditable.Mem.pfnFreeExt)
+        self.zeMemPutIpcHandle = _zeMemPutIpcHandle_t(self.__dditable.Mem.pfnPutIpcHandle)
+
+        # call driver to get function pointers
+        _MemExp = _ze_mem_exp_dditable_t()
+        r = ze_result_v(self.__dll.zeGetMemExpProcAddrTable(version, byref(_MemExp)))
+        if r != ze_result_v.SUCCESS:
+            raise Exception(r)
+        self.__dditable.MemExp = _MemExp
+
+        # attach function interface to function address
+        self.zeMemGetIpcHandleFromFileDescriptorExp = _zeMemGetIpcHandleFromFileDescriptorExp_t(self.__dditable.MemExp.pfnGetIpcHandleFromFileDescriptorExp)
+        self.zeMemGetFileDescriptorFromIpcHandleExp = _zeMemGetFileDescriptorFromIpcHandleExp_t(self.__dditable.MemExp.pfnGetFileDescriptorFromIpcHandleExp)
 
         # call driver to get function pointers
         _VirtualMem = _ze_virtual_mem_dditable_t()
