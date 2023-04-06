@@ -51,8 +51,10 @@ namespace ze_lib
 
         HMODULE tracing_lib = nullptr;
         bool isInitialized = false;
+        bool inTeardown = false;
     };
 
     extern context_t *context;
+    extern bool destruction;
 
 } // namespace ze_lib

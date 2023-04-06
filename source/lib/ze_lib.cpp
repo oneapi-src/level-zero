@@ -16,6 +16,7 @@ namespace ze_lib
 {
     ///////////////////////////////////////////////////////////////////////////////
     context_t *context;
+    bool destruction = false;
 
     ///////////////////////////////////////////////////////////////////////////////
     context_t::context_t()
@@ -28,6 +29,7 @@ namespace ze_lib
 #ifdef DYNAMIC_LOAD_LOADER
         FREE_DRIVER_LIBRARY( loader );
 #endif
+        ze_lib::destruction = true;
     };
 
     //////////////////////////////////////////////////////////////////////////
@@ -129,6 +131,17 @@ zelLoaderTranslateHandle(
 
 {
     return zelLoaderTranslateHandleInternal(handleType, handleIn, handleOut);
+}
+
+ze_result_t ZE_APICALL
+zelSetDriverTeardown()
+
+{
+    ze_result_t result = ZE_RESULT_SUCCESS;
+    if (!ze_lib::destruction) {
+        ze_lib::context->inTeardown = true;
+    }
+    return result;
 }
 
 

@@ -41,7 +41,7 @@ namespace loader
     }
 
     ze_result_t context_t::init_driver(driver_t driver, ze_init_flags_t flags) {
-        
+
         auto getTable = reinterpret_cast<ze_pfnGetGlobalProcAddrTable_t>(
             GET_FUNCTION_PTR(driver.handle, "zeGetGlobalProcAddrTable"));
         if(!getTable) {

@@ -53,6 +53,10 @@ zeInit(
     if( ZE_RESULT_SUCCESS != result )
         return result;
 
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnInit = ze_lib::context->zeDdiTable.Global.pfnInit;
     if( nullptr == pfnInit ) {
         if(!ze_lib::context->isInitialized)
@@ -100,6 +104,10 @@ zeDriverGet(
                                                     ///< shall only retrieve that number of drivers.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGet = ze_lib::context->zeDdiTable.Driver.pfnGet;
     if( nullptr == pfnGet ) {
         if(!ze_lib::context->isInitialized)
@@ -134,6 +142,10 @@ zeDriverGetApiVersion(
     ze_api_version_t* version                       ///< [out] api version
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetApiVersion = ze_lib::context->zeDdiTable.Driver.pfnGetApiVersion;
     if( nullptr == pfnGetApiVersion ) {
         if(!ze_lib::context->isInitialized)
@@ -172,6 +184,10 @@ zeDriverGetProperties(
     ze_driver_properties_t* pDriverProperties       ///< [in,out] query result for driver properties
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetProperties = ze_lib::context->zeDdiTable.Driver.pfnGetProperties;
     if( nullptr == pfnGetProperties ) {
         if(!ze_lib::context->isInitialized)
@@ -206,6 +222,10 @@ zeDriverGetIpcProperties(
     ze_driver_ipc_properties_t* pIpcProperties      ///< [in,out] query result for IPC properties
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetIpcProperties = ze_lib::context->zeDdiTable.Driver.pfnGetIpcProperties;
     if( nullptr == pfnGetIpcProperties ) {
         if(!ze_lib::context->isInitialized)
@@ -253,6 +273,10 @@ zeDriverGetExtensionProperties(
                                                     ///< then driver shall only retrieve that number of extension properties.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetExtensionProperties = ze_lib::context->zeDdiTable.Driver.pfnGetExtensionProperties;
     if( nullptr == pfnGetExtensionProperties ) {
         if(!ze_lib::context->isInitialized)
@@ -290,6 +314,10 @@ zeDriverGetExtensionFunctionAddress(
     void** ppFunctionAddress                        ///< [out] pointer to function pointer
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetExtensionFunctionAddress = ze_lib::context->zeDdiTable.Driver.pfnGetExtensionFunctionAddress;
     if( nullptr == pfnGetExtensionFunctionAddress ) {
         if(!ze_lib::context->isInitialized)
@@ -377,6 +405,10 @@ zeDeviceGet(
                                                     ///< shall only retrieve that number of devices.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGet = ze_lib::context->zeDdiTable.Device.pfnGet;
     if( nullptr == pfnGet ) {
         if(!ze_lib::context->isInitialized)
@@ -426,6 +458,10 @@ zeDeviceGetSubDevices(
                                                     ///< shall only retrieve that number of sub-devices.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetSubDevices = ze_lib::context->zeDdiTable.Device.pfnGetSubDevices;
     if( nullptr == pfnGetSubDevices ) {
         if(!ze_lib::context->isInitialized)
@@ -464,6 +500,10 @@ zeDeviceGetProperties(
     ze_device_properties_t* pDeviceProperties       ///< [in,out] query result for device properties
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetProperties = ze_lib::context->zeDdiTable.Device.pfnGetProperties;
     if( nullptr == pfnGetProperties ) {
         if(!ze_lib::context->isInitialized)
@@ -502,6 +542,10 @@ zeDeviceGetComputeProperties(
     ze_device_compute_properties_t* pComputeProperties  ///< [in,out] query result for compute properties
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetComputeProperties = ze_lib::context->zeDdiTable.Device.pfnGetComputeProperties;
     if( nullptr == pfnGetComputeProperties ) {
         if(!ze_lib::context->isInitialized)
@@ -536,6 +580,10 @@ zeDeviceGetModuleProperties(
     ze_device_module_properties_t* pModuleProperties///< [in,out] query result for module properties
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetModuleProperties = ze_lib::context->zeDdiTable.Device.pfnGetModuleProperties;
     if( nullptr == pfnGetModuleProperties ) {
         if(!ze_lib::context->isInitialized)
@@ -590,6 +638,10 @@ zeDeviceGetCommandQueueGroupProperties(
                                                     ///< queue group properties.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetCommandQueueGroupProperties = ze_lib::context->zeDdiTable.Device.pfnGetCommandQueueGroupProperties;
     if( nullptr == pfnGetCommandQueueGroupProperties ) {
         if(!ze_lib::context->isInitialized)
@@ -643,6 +695,10 @@ zeDeviceGetMemoryProperties(
                                                     ///< driver shall only retrieve that number of memory properties.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetMemoryProperties = ze_lib::context->zeDdiTable.Device.pfnGetMemoryProperties;
     if( nullptr == pfnGetMemoryProperties ) {
         if(!ze_lib::context->isInitialized)
@@ -681,6 +737,10 @@ zeDeviceGetMemoryAccessProperties(
     ze_device_memory_access_properties_t* pMemAccessProperties  ///< [in,out] query result for memory access properties
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetMemoryAccessProperties = ze_lib::context->zeDdiTable.Device.pfnGetMemoryAccessProperties;
     if( nullptr == pfnGetMemoryAccessProperties ) {
         if(!ze_lib::context->isInitialized)
@@ -727,6 +787,10 @@ zeDeviceGetCacheProperties(
                                                     ///< driver shall only retrieve that number of cache properties.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetCacheProperties = ze_lib::context->zeDdiTable.Device.pfnGetCacheProperties;
     if( nullptr == pfnGetCacheProperties ) {
         if(!ze_lib::context->isInitialized)
@@ -762,6 +826,10 @@ zeDeviceGetImageProperties(
     ze_device_image_properties_t* pImageProperties  ///< [in,out] query result for image properties
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetImageProperties = ze_lib::context->zeDdiTable.Device.pfnGetImageProperties;
     if( nullptr == pfnGetImageProperties ) {
         if(!ze_lib::context->isInitialized)
@@ -796,6 +864,10 @@ zeDeviceGetExternalMemoryProperties(
     ze_device_external_memory_properties_t* pExternalMemoryProperties   ///< [in,out] query result for external memory properties
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetExternalMemoryProperties = ze_lib::context->zeDdiTable.Device.pfnGetExternalMemoryProperties;
     if( nullptr == pfnGetExternalMemoryProperties ) {
         if(!ze_lib::context->isInitialized)
@@ -833,6 +905,10 @@ zeDeviceGetP2PProperties(
     ze_device_p2p_properties_t* pP2PProperties      ///< [in,out] Peer-to-Peer properties between source and peer device
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetP2PProperties = ze_lib::context->zeDdiTable.Device.pfnGetP2PProperties;
     if( nullptr == pfnGetP2PProperties ) {
         if(!ze_lib::context->isInitialized)
@@ -883,6 +959,10 @@ zeDeviceCanAccessPeer(
     ze_bool_t* value                                ///< [out] returned access capability
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnCanAccessPeer = ze_lib::context->zeDdiTable.Device.pfnCanAccessPeer;
     if( nullptr == pfnCanAccessPeer ) {
         if(!ze_lib::context->isInitialized)
@@ -921,6 +1001,10 @@ zeDeviceGetStatus(
     ze_device_handle_t hDevice                      ///< [in] handle of the device
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetStatus = ze_lib::context->zeDdiTable.Device.pfnGetStatus;
     if( nullptr == pfnGetStatus ) {
         if(!ze_lib::context->isInitialized)
@@ -960,6 +1044,10 @@ zeDeviceGetGlobalTimestamps(
                                                     ///< Host's global timestamp value
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetGlobalTimestamps = ze_lib::context->zeDdiTable.Device.pfnGetGlobalTimestamps;
     if( nullptr == pfnGetGlobalTimestamps ) {
         if(!ze_lib::context->isInitialized)
@@ -1000,6 +1088,10 @@ zeContextCreate(
     ze_context_handle_t* phContext                  ///< [out] pointer to handle of context object created
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnCreate = ze_lib::context->zeDdiTable.Context.pfnCreate;
     if( nullptr == pfnCreate ) {
         if(!ze_lib::context->isInitialized)
@@ -1052,6 +1144,10 @@ zeContextCreateEx(
     ze_context_handle_t* phContext                  ///< [out] pointer to handle of context object created
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnCreateEx = ze_lib::context->zeDdiTable.Context.pfnCreateEx;
     if( nullptr == pfnCreateEx ) {
         if(!ze_lib::context->isInitialized)
@@ -1089,6 +1185,10 @@ zeContextDestroy(
     ze_context_handle_t hContext                    ///< [in][release] handle of context object to destroy
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnDestroy = ze_lib::context->zeDdiTable.Context.pfnDestroy;
     if( nullptr == pfnDestroy ) {
         if(!ze_lib::context->isInitialized)
@@ -1125,6 +1225,10 @@ zeContextGetStatus(
     ze_context_handle_t hContext                    ///< [in] handle of context object
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetStatus = ze_lib::context->zeDdiTable.Context.pfnGetStatus;
     if( nullptr == pfnGetStatus ) {
         if(!ze_lib::context->isInitialized)
@@ -1175,6 +1279,10 @@ zeCommandQueueCreate(
     ze_command_queue_handle_t* phCommandQueue       ///< [out] pointer to handle of command queue object created
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnCreate = ze_lib::context->zeDdiTable.CommandQueue.pfnCreate;
     if( nullptr == pfnCreate ) {
         if(!ze_lib::context->isInitialized)
@@ -1218,6 +1326,10 @@ zeCommandQueueDestroy(
     ze_command_queue_handle_t hCommandQueue         ///< [in][release] handle of command queue object to destroy
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnDestroy = ze_lib::context->zeDdiTable.CommandQueue.pfnDestroy;
     if( nullptr == pfnDestroy ) {
         if(!ze_lib::context->isInitialized)
@@ -1276,6 +1388,10 @@ zeCommandQueueExecuteCommandLists(
     ze_fence_handle_t hFence                        ///< [in][optional] handle of the fence to signal on completion
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnExecuteCommandLists = ze_lib::context->zeDdiTable.CommandQueue.pfnExecuteCommandLists;
     if( nullptr == pfnExecuteCommandLists ) {
         if(!ze_lib::context->isInitialized)
@@ -1316,6 +1432,10 @@ zeCommandQueueSynchronize(
                                                     ///< value allowed by the accuracy of those dependencies.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnSynchronize = ze_lib::context->zeDdiTable.CommandQueue.pfnSynchronize;
     if( nullptr == pfnSynchronize ) {
         if(!ze_lib::context->isInitialized)
@@ -1361,6 +1481,10 @@ zeCommandListCreate(
     ze_command_list_handle_t* phCommandList         ///< [out] pointer to handle of command list object created
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnCreate = ze_lib::context->zeDdiTable.CommandList.pfnCreate;
     if( nullptr == pfnCreate ) {
         if(!ze_lib::context->isInitialized)
@@ -1412,6 +1536,10 @@ zeCommandListCreateImmediate(
     ze_command_list_handle_t* phCommandList         ///< [out] pointer to handle of command list object created
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnCreateImmediate = ze_lib::context->zeDdiTable.CommandList.pfnCreateImmediate;
     if( nullptr == pfnCreateImmediate ) {
         if(!ze_lib::context->isInitialized)
@@ -1449,6 +1577,10 @@ zeCommandListDestroy(
     ze_command_list_handle_t hCommandList           ///< [in][release] handle of command list object to destroy
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnDestroy = ze_lib::context->zeDdiTable.CommandList.pfnDestroy;
     if( nullptr == pfnDestroy ) {
         if(!ze_lib::context->isInitialized)
@@ -1481,6 +1613,10 @@ zeCommandListClose(
     ze_command_list_handle_t hCommandList           ///< [in] handle of command list object to close
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnClose = ze_lib::context->zeDdiTable.CommandList.pfnClose;
     if( nullptr == pfnClose ) {
         if(!ze_lib::context->isInitialized)
@@ -1516,6 +1652,10 @@ zeCommandListReset(
     ze_command_list_handle_t hCommandList           ///< [in] handle of command list object to reset
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnReset = ze_lib::context->zeDdiTable.CommandList.pfnReset;
     if( nullptr == pfnReset ) {
         if(!ze_lib::context->isInitialized)
@@ -1571,6 +1711,10 @@ zeCommandListAppendWriteGlobalTimestamp(
                                                     ///< on before executing query
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnAppendWriteGlobalTimestamp = ze_lib::context->zeDdiTable.CommandList.pfnAppendWriteGlobalTimestamp;
     if( nullptr == pfnAppendWriteGlobalTimestamp ) {
         if(!ze_lib::context->isInitialized)
@@ -1674,6 +1818,10 @@ zeCommandListAppendBarrier(
                                                     ///< on before executing barrier
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnAppendBarrier = ze_lib::context->zeDdiTable.CommandList.pfnAppendBarrier;
     if( nullptr == pfnAppendBarrier ) {
         if(!ze_lib::context->isInitialized)
@@ -1728,6 +1876,10 @@ zeCommandListAppendMemoryRangesBarrier(
                                                     ///< on before executing barrier
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnAppendMemoryRangesBarrier = ze_lib::context->zeDdiTable.CommandList.pfnAppendMemoryRangesBarrier;
     if( nullptr == pfnAppendMemoryRangesBarrier ) {
         if(!ze_lib::context->isInitialized)
@@ -1767,6 +1919,10 @@ zeContextSystemBarrier(
     ze_device_handle_t hDevice                      ///< [in] handle of the device
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnSystemBarrier = ze_lib::context->zeDdiTable.Context.pfnSystemBarrier;
     if( nullptr == pfnSystemBarrier ) {
         if(!ze_lib::context->isInitialized)
@@ -1829,6 +1985,10 @@ zeCommandListAppendMemoryCopy(
                                                     ///< on before launching
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnAppendMemoryCopy = ze_lib::context->zeDdiTable.CommandList.pfnAppendMemoryCopy;
     if( nullptr == pfnAppendMemoryCopy ) {
         if(!ze_lib::context->isInitialized)
@@ -1894,6 +2054,10 @@ zeCommandListAppendMemoryFill(
                                                     ///< on before launching
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnAppendMemoryFill = ze_lib::context->zeDdiTable.CommandList.pfnAppendMemoryFill;
     if( nullptr == pfnAppendMemoryFill ) {
         if(!ze_lib::context->isInitialized)
@@ -1965,6 +2129,10 @@ zeCommandListAppendMemoryCopyRegion(
                                                     ///< on before launching
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnAppendMemoryCopyRegion = ze_lib::context->zeDdiTable.CommandList.pfnAppendMemoryCopyRegion;
     if( nullptr == pfnAppendMemoryCopyRegion ) {
         if(!ze_lib::context->isInitialized)
@@ -2023,6 +2191,10 @@ zeCommandListAppendMemoryCopyFromContext(
                                                     ///< on before launching
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnAppendMemoryCopyFromContext = ze_lib::context->zeDdiTable.CommandList.pfnAppendMemoryCopyFromContext;
     if( nullptr == pfnAppendMemoryCopyFromContext ) {
         if(!ze_lib::context->isInitialized)
@@ -2077,6 +2249,10 @@ zeCommandListAppendImageCopy(
                                                     ///< on before launching
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnAppendImageCopy = ze_lib::context->zeDdiTable.CommandList.pfnAppendImageCopy;
     if( nullptr == pfnAppendImageCopy ) {
         if(!ze_lib::context->isInitialized)
@@ -2133,6 +2309,10 @@ zeCommandListAppendImageCopyRegion(
                                                     ///< on before launching
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnAppendImageCopyRegion = ze_lib::context->zeDdiTable.CommandList.pfnAppendImageCopyRegion;
     if( nullptr == pfnAppendImageCopyRegion ) {
         if(!ze_lib::context->isInitialized)
@@ -2194,6 +2374,10 @@ zeCommandListAppendImageCopyToMemory(
                                                     ///< on before launching
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnAppendImageCopyToMemory = ze_lib::context->zeDdiTable.CommandList.pfnAppendImageCopyToMemory;
     if( nullptr == pfnAppendImageCopyToMemory ) {
         if(!ze_lib::context->isInitialized)
@@ -2255,6 +2439,10 @@ zeCommandListAppendImageCopyFromMemory(
                                                     ///< on before launching
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnAppendImageCopyFromMemory = ze_lib::context->zeDdiTable.CommandList.pfnAppendImageCopyFromMemory;
     if( nullptr == pfnAppendImageCopyFromMemory ) {
         if(!ze_lib::context->isInitialized)
@@ -2312,6 +2500,10 @@ zeCommandListAppendMemoryPrefetch(
     size_t size                                     ///< [in] size in bytes of the memory range to prefetch
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnAppendMemoryPrefetch = ze_lib::context->zeDdiTable.CommandList.pfnAppendMemoryPrefetch;
     if( nullptr == pfnAppendMemoryPrefetch ) {
         if(!ze_lib::context->isInitialized)
@@ -2369,6 +2561,10 @@ zeCommandListAppendMemAdvise(
     ze_memory_advice_t advice                       ///< [in] Memory advice for the memory range
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnAppendMemAdvise = ze_lib::context->zeDdiTable.CommandList.pfnAppendMemAdvise;
     if( nullptr == pfnAppendMemAdvise ) {
         if(!ze_lib::context->isInitialized)
@@ -2418,6 +2614,10 @@ zeEventPoolCreate(
     ze_event_pool_handle_t* phEventPool             ///< [out] pointer handle of event pool object created
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnCreate = ze_lib::context->zeDdiTable.EventPool.pfnCreate;
     if( nullptr == pfnCreate ) {
         if(!ze_lib::context->isInitialized)
@@ -2457,6 +2657,10 @@ zeEventPoolDestroy(
     ze_event_pool_handle_t hEventPool               ///< [in][release] handle of event pool object to destroy
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnDestroy = ze_lib::context->zeDdiTable.EventPool.pfnDestroy;
     if( nullptr == pfnDestroy ) {
         if(!ze_lib::context->isInitialized)
@@ -2506,6 +2710,10 @@ zeEventCreate(
     ze_event_handle_t* phEvent                      ///< [out] pointer to handle of event object created
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnCreate = ze_lib::context->zeDdiTable.Event.pfnCreate;
     if( nullptr == pfnCreate ) {
         if(!ze_lib::context->isInitialized)
@@ -2548,6 +2756,10 @@ zeEventDestroy(
     ze_event_handle_t hEvent                        ///< [in][release] handle of event object to destroy
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnDestroy = ze_lib::context->zeDdiTable.Event.pfnDestroy;
     if( nullptr == pfnDestroy ) {
         if(!ze_lib::context->isInitialized)
@@ -2584,6 +2796,10 @@ zeEventPoolGetIpcHandle(
     ze_ipc_event_pool_handle_t* phIpc               ///< [out] Returned IPC event handle
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetIpcHandle = ze_lib::context->zeDdiTable.EventPool.pfnGetIpcHandle;
     if( nullptr == pfnGetIpcHandle ) {
         if(!ze_lib::context->isInitialized)
@@ -2666,6 +2882,10 @@ zeEventPoolOpenIpcHandle(
     ze_event_pool_handle_t* phEventPool             ///< [out] pointer handle of event pool object created
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnOpenIpcHandle = ze_lib::context->zeDdiTable.EventPool.pfnOpenIpcHandle;
     if( nullptr == pfnOpenIpcHandle ) {
         if(!ze_lib::context->isInitialized)
@@ -2699,6 +2919,10 @@ zeEventPoolCloseIpcHandle(
     ze_event_pool_handle_t hEventPool               ///< [in][release] handle of event pool object
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnCloseIpcHandle = ze_lib::context->zeDdiTable.EventPool.pfnCloseIpcHandle;
     if( nullptr == pfnCloseIpcHandle ) {
         if(!ze_lib::context->isInitialized)
@@ -2748,6 +2972,10 @@ zeCommandListAppendSignalEvent(
     ze_event_handle_t hEvent                        ///< [in] handle of the event
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnAppendSignalEvent = ze_lib::context->zeDdiTable.CommandList.pfnAppendSignalEvent;
     if( nullptr == pfnAppendSignalEvent ) {
         if(!ze_lib::context->isInitialized)
@@ -2790,6 +3018,10 @@ zeCommandListAppendWaitOnEvents(
                                                     ///< continuing
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnAppendWaitOnEvents = ze_lib::context->zeDdiTable.CommandList.pfnAppendWaitOnEvents;
     if( nullptr == pfnAppendWaitOnEvents ) {
         if(!ze_lib::context->isInitialized)
@@ -2831,6 +3063,10 @@ zeEventHostSignal(
     ze_event_handle_t hEvent                        ///< [in] handle of the event
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnHostSignal = ze_lib::context->zeDdiTable.Event.pfnHostSignal;
     if( nullptr == pfnHostSignal ) {
         if(!ze_lib::context->isInitialized)
@@ -2876,6 +3112,10 @@ zeEventHostSynchronize(
                                                     ///< value allowed by the accuracy of those dependencies.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnHostSynchronize = ze_lib::context->zeDdiTable.Event.pfnHostSynchronize;
     if( nullptr == pfnHostSynchronize ) {
         if(!ze_lib::context->isInitialized)
@@ -2915,6 +3155,10 @@ zeEventQueryStatus(
     ze_event_handle_t hEvent                        ///< [in] handle of the event
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnQueryStatus = ze_lib::context->zeDdiTable.Event.pfnQueryStatus;
     if( nullptr == pfnQueryStatus ) {
         if(!ze_lib::context->isInitialized)
@@ -2959,6 +3203,10 @@ zeCommandListAppendEventReset(
     ze_event_handle_t hEvent                        ///< [in] handle of the event
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnAppendEventReset = ze_lib::context->zeDdiTable.CommandList.pfnAppendEventReset;
     if( nullptr == pfnAppendEventReset ) {
         if(!ze_lib::context->isInitialized)
@@ -2995,6 +3243,10 @@ zeEventHostReset(
     ze_event_handle_t hEvent                        ///< [in] handle of the event
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnHostReset = ze_lib::context->zeDdiTable.Event.pfnHostReset;
     if( nullptr == pfnHostReset ) {
         if(!ze_lib::context->isInitialized)
@@ -3037,6 +3289,10 @@ zeEventQueryKernelTimestamp(
     ze_kernel_timestamp_result_t* dstptr            ///< [in,out] pointer to memory for where timestamp result will be written.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnQueryKernelTimestamp = ze_lib::context->zeDdiTable.Event.pfnQueryKernelTimestamp;
     if( nullptr == pfnQueryKernelTimestamp ) {
         if(!ze_lib::context->isInitialized)
@@ -3100,6 +3356,10 @@ zeCommandListAppendQueryKernelTimestamps(
                                                     ///< on before executing query
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnAppendQueryKernelTimestamps = ze_lib::context->zeDdiTable.CommandList.pfnAppendQueryKernelTimestamps;
     if( nullptr == pfnAppendQueryKernelTimestamps ) {
         if(!ze_lib::context->isInitialized)
@@ -3146,6 +3406,10 @@ zeFenceCreate(
     ze_fence_handle_t* phFence                      ///< [out] pointer to handle of fence object created
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnCreate = ze_lib::context->zeDdiTable.Fence.pfnCreate;
     if( nullptr == pfnCreate ) {
         if(!ze_lib::context->isInitialized)
@@ -3187,6 +3451,10 @@ zeFenceDestroy(
     ze_fence_handle_t hFence                        ///< [in][release] handle of fence object to destroy
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnDestroy = ze_lib::context->zeDdiTable.Fence.pfnDestroy;
     if( nullptr == pfnDestroy ) {
         if(!ze_lib::context->isInitialized)
@@ -3232,6 +3500,10 @@ zeFenceHostSynchronize(
                                                     ///< value allowed by the accuracy of those dependencies.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnHostSynchronize = ze_lib::context->zeDdiTable.Fence.pfnHostSynchronize;
     if( nullptr == pfnHostSynchronize ) {
         if(!ze_lib::context->isInitialized)
@@ -3270,6 +3542,10 @@ zeFenceQueryStatus(
     ze_fence_handle_t hFence                        ///< [in] handle of the fence
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnQueryStatus = ze_lib::context->zeDdiTable.Fence.pfnQueryStatus;
     if( nullptr == pfnQueryStatus ) {
         if(!ze_lib::context->isInitialized)
@@ -3305,6 +3581,10 @@ zeFenceReset(
     ze_fence_handle_t hFence                        ///< [in] handle of the fence
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnReset = ze_lib::context->zeDdiTable.Fence.pfnReset;
     if( nullptr == pfnReset ) {
         if(!ze_lib::context->isInitialized)
@@ -3344,6 +3624,10 @@ zeImageGetProperties(
     ze_image_properties_t* pImageProperties         ///< [out] pointer to image properties
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetProperties = ze_lib::context->zeDdiTable.Image.pfnGetProperties;
     if( nullptr == pfnGetProperties ) {
         if(!ze_lib::context->isInitialized)
@@ -3392,6 +3676,10 @@ zeImageCreate(
     ze_image_handle_t* phImage                      ///< [out] pointer to handle of image object created
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnCreate = ze_lib::context->zeDdiTable.Image.pfnCreate;
     if( nullptr == pfnCreate ) {
         if(!ze_lib::context->isInitialized)
@@ -3429,6 +3717,10 @@ zeImageDestroy(
     ze_image_handle_t hImage                        ///< [in][release] handle of image object to destroy
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnDestroy = ze_lib::context->zeDdiTable.Image.pfnDestroy;
     if( nullptr == pfnDestroy ) {
         if(!ze_lib::context->isInitialized)
@@ -3495,6 +3787,10 @@ zeMemAllocShared(
     void** pptr                                     ///< [out] pointer to shared allocation
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnAllocShared = ze_lib::context->zeDdiTable.Mem.pfnAllocShared;
     if( nullptr == pfnAllocShared ) {
         if(!ze_lib::context->isInitialized)
@@ -3549,6 +3845,10 @@ zeMemAllocDevice(
     void** pptr                                     ///< [out] pointer to device allocation
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnAllocDevice = ze_lib::context->zeDdiTable.Mem.pfnAllocDevice;
     if( nullptr == pfnAllocDevice ) {
         if(!ze_lib::context->isInitialized)
@@ -3603,6 +3903,10 @@ zeMemAllocHost(
     void** pptr                                     ///< [out] pointer to host allocation
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnAllocHost = ze_lib::context->zeDdiTable.Mem.pfnAllocHost;
     if( nullptr == pfnAllocHost ) {
         if(!ze_lib::context->isInitialized)
@@ -3643,6 +3947,10 @@ zeMemFree(
     void* ptr                                       ///< [in][release] pointer to memory to free
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnFree = ze_lib::context->zeDdiTable.Mem.pfnFree;
     if( nullptr == pfnFree ) {
         if(!ze_lib::context->isInitialized)
@@ -3684,6 +3992,10 @@ zeMemGetAllocProperties(
     ze_device_handle_t* phDevice                    ///< [out][optional] device associated with this allocation
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetAllocProperties = ze_lib::context->zeDdiTable.Mem.pfnGetAllocProperties;
     if( nullptr == pfnGetAllocProperties ) {
         if(!ze_lib::context->isInitialized)
@@ -3719,6 +4031,10 @@ zeMemGetAddressRange(
     size_t* pSize                                   ///< [in,out][optional] size of the allocation
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetAddressRange = ze_lib::context->zeDdiTable.Mem.pfnGetAddressRange;
     if( nullptr == pfnGetAddressRange ) {
         if(!ze_lib::context->isInitialized)
@@ -3760,6 +4076,10 @@ zeMemGetIpcHandle(
     ze_ipc_mem_handle_t* pIpcHandle                 ///< [out] Returned IPC memory handle
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetIpcHandle = ze_lib::context->zeDdiTable.Mem.pfnGetIpcHandle;
     if( nullptr == pfnGetIpcHandle ) {
         if(!ze_lib::context->isInitialized)
@@ -3925,6 +4245,10 @@ zeMemOpenIpcHandle(
     void** pptr                                     ///< [out] pointer to device allocation in this process
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnOpenIpcHandle = ze_lib::context->zeDdiTable.Mem.pfnOpenIpcHandle;
     if( nullptr == pfnOpenIpcHandle ) {
         if(!ze_lib::context->isInitialized)
@@ -3962,6 +4286,10 @@ zeMemCloseIpcHandle(
     const void* ptr                                 ///< [in][release] pointer to device allocation in this process
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnCloseIpcHandle = ze_lib::context->zeDdiTable.Mem.pfnCloseIpcHandle;
     if( nullptr == pfnCloseIpcHandle ) {
         if(!ze_lib::context->isInitialized)
@@ -4017,6 +4345,10 @@ zeModuleCreate(
     ze_module_build_log_handle_t* phBuildLog        ///< [out][optional] pointer to handle of module's build log.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnCreate = ze_lib::context->zeDdiTable.Module.pfnCreate;
     if( nullptr == pfnCreate ) {
         if(!ze_lib::context->isInitialized)
@@ -4056,6 +4388,10 @@ zeModuleDestroy(
     ze_module_handle_t hModule                      ///< [in][release] handle of the module
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnDestroy = ze_lib::context->zeDdiTable.Module.pfnDestroy;
     if( nullptr == pfnDestroy ) {
         if(!ze_lib::context->isInitialized)
@@ -4117,6 +4453,10 @@ zeModuleDynamicLink(
     ze_module_build_log_handle_t* phLinkLog         ///< [out][optional] pointer to handle of dynamic link log.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnDynamicLink = ze_lib::context->zeDdiTable.Module.pfnDynamicLink;
     if( nullptr == pfnDynamicLink ) {
         if(!ze_lib::context->isInitialized)
@@ -4154,6 +4494,10 @@ zeModuleBuildLogDestroy(
     ze_module_build_log_handle_t hModuleBuildLog    ///< [in][release] handle of the module build log object.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnDestroy = ze_lib::context->zeDdiTable.ModuleBuildLog.pfnDestroy;
     if( nullptr == pfnDestroy ) {
         if(!ze_lib::context->isInitialized)
@@ -4191,6 +4535,10 @@ zeModuleBuildLogGetString(
     char* pBuildLog                                 ///< [in,out][optional] pointer to null-terminated string of the log.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetString = ze_lib::context->zeDdiTable.ModuleBuildLog.pfnGetString;
     if( nullptr == pfnGetString ) {
         if(!ze_lib::context->isInitialized)
@@ -4234,6 +4582,10 @@ zeModuleGetNativeBinary(
     uint8_t* pModuleNativeBinary                    ///< [in,out][optional] byte pointer to native binary
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetNativeBinary = ze_lib::context->zeDdiTable.Module.pfnGetNativeBinary;
     if( nullptr == pfnGetNativeBinary ) {
         if(!ze_lib::context->isInitialized)
@@ -4275,6 +4627,10 @@ zeModuleGetGlobalPointer(
     void** pptr                                     ///< [in,out][optional] device visible pointer
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetGlobalPointer = ze_lib::context->zeDdiTable.Module.pfnGetGlobalPointer;
     if( nullptr == pfnGetGlobalPointer ) {
         if(!ze_lib::context->isInitialized)
@@ -4316,6 +4672,10 @@ zeModuleGetKernelNames(
                                                     ///< only retrieve that number of names.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetKernelNames = ze_lib::context->zeDdiTable.Module.pfnGetKernelNames;
     if( nullptr == pfnGetKernelNames ) {
         if(!ze_lib::context->isInitialized)
@@ -4350,6 +4710,10 @@ zeModuleGetProperties(
     ze_module_properties_t* pModuleProperties       ///< [in,out] query result for module properties.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetProperties = ze_lib::context->zeDdiTable.Module.pfnGetProperties;
     if( nullptr == pfnGetProperties ) {
         if(!ze_lib::context->isInitialized)
@@ -4393,6 +4757,10 @@ zeKernelCreate(
     ze_kernel_handle_t* phKernel                    ///< [out] handle of the Function object
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnCreate = ze_lib::context->zeDdiTable.Kernel.pfnCreate;
     if( nullptr == pfnCreate ) {
         if(!ze_lib::context->isInitialized)
@@ -4430,6 +4798,10 @@ zeKernelDestroy(
     ze_kernel_handle_t hKernel                      ///< [in][release] handle of the kernel object
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnDestroy = ze_lib::context->zeDdiTable.Kernel.pfnDestroy;
     if( nullptr == pfnDestroy ) {
         if(!ze_lib::context->isInitialized)
@@ -4472,6 +4844,10 @@ zeModuleGetFunctionPointer(
     void** pfnFunction                              ///< [out] pointer to function.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetFunctionPointer = ze_lib::context->zeDdiTable.Module.pfnGetFunctionPointer;
     if( nullptr == pfnGetFunctionPointer ) {
         if(!ze_lib::context->isInitialized)
@@ -4510,6 +4886,10 @@ zeKernelSetGroupSize(
     uint32_t groupSizeZ                             ///< [in] group size for Z dimension to use for this kernel
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnSetGroupSize = ze_lib::context->zeDdiTable.Kernel.pfnSetGroupSize;
     if( nullptr == pfnSetGroupSize ) {
         if(!ze_lib::context->isInitialized)
@@ -4555,6 +4935,10 @@ zeKernelSuggestGroupSize(
     uint32_t* groupSizeZ                            ///< [out] recommended size of group for Z dimension
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnSuggestGroupSize = ze_lib::context->zeDdiTable.Kernel.pfnSuggestGroupSize;
     if( nullptr == pfnSuggestGroupSize ) {
         if(!ze_lib::context->isInitialized)
@@ -4589,6 +4973,10 @@ zeKernelSuggestMaxCooperativeGroupCount(
     uint32_t* totalGroupCount                       ///< [out] recommended total group count.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnSuggestMaxCooperativeGroupCount = ze_lib::context->zeDdiTable.Kernel.pfnSuggestMaxCooperativeGroupCount;
     if( nullptr == pfnSuggestMaxCooperativeGroupCount ) {
         if(!ze_lib::context->isInitialized)
@@ -4629,6 +5017,10 @@ zeKernelSetArgumentValue(
                                                     ///< null then argument value is considered null.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnSetArgumentValue = ze_lib::context->zeDdiTable.Kernel.pfnSetArgumentValue;
     if( nullptr == pfnSetArgumentValue ) {
         if(!ze_lib::context->isInitialized)
@@ -4667,6 +5059,10 @@ zeKernelSetIndirectAccess(
     ze_kernel_indirect_access_flags_t flags         ///< [in] kernel indirect access flags
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnSetIndirectAccess = ze_lib::context->zeDdiTable.Kernel.pfnSetIndirectAccess;
     if( nullptr == pfnSetIndirectAccess ) {
         if(!ze_lib::context->isInitialized)
@@ -4702,6 +5098,10 @@ zeKernelGetIndirectAccess(
     ze_kernel_indirect_access_flags_t* pFlags       ///< [out] query result for kernel indirect access flags.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetIndirectAccess = ze_lib::context->zeDdiTable.Kernel.pfnGetIndirectAccess;
     if( nullptr == pfnGetIndirectAccess ) {
         if(!ze_lib::context->isInitialized)
@@ -4746,6 +5146,10 @@ zeKernelGetSourceAttributes(
                                                     ///< pointed-to string will contain a space-separated list of kernel source attributes.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetSourceAttributes = ze_lib::context->zeDdiTable.Kernel.pfnGetSourceAttributes;
     if( nullptr == pfnGetSourceAttributes ) {
         if(!ze_lib::context->isInitialized)
@@ -4785,6 +5189,10 @@ zeKernelSetCacheConfig(
                                                     ///< must be 0 (default configuration) or a valid combination of ::ze_cache_config_flag_t.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnSetCacheConfig = ze_lib::context->zeDdiTable.Kernel.pfnSetCacheConfig;
     if( nullptr == pfnSetCacheConfig ) {
         if(!ze_lib::context->isInitialized)
@@ -4819,6 +5227,10 @@ zeKernelGetProperties(
     ze_kernel_properties_t* pKernelProperties       ///< [in,out] query result for kernel properties.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetProperties = ze_lib::context->zeDdiTable.Kernel.pfnGetProperties;
     if( nullptr == pfnGetProperties ) {
         if(!ze_lib::context->isInitialized)
@@ -4858,6 +5270,10 @@ zeKernelGetName(
     char* pName                                     ///< [in,out][optional] char pointer to kernel name.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetName = ze_lib::context->zeDdiTable.Kernel.pfnGetName;
     if( nullptr == pfnGetName ) {
         if(!ze_lib::context->isInitialized)
@@ -4909,6 +5325,10 @@ zeCommandListAppendLaunchKernel(
                                                     ///< on before launching
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnAppendLaunchKernel = ze_lib::context->zeDdiTable.CommandList.pfnAppendLaunchKernel;
     if( nullptr == pfnAppendLaunchKernel ) {
         if(!ze_lib::context->isInitialized)
@@ -4964,6 +5384,10 @@ zeCommandListAppendLaunchCooperativeKernel(
                                                     ///< on before launching
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnAppendLaunchCooperativeKernel = ze_lib::context->zeDdiTable.CommandList.pfnAppendLaunchCooperativeKernel;
     if( nullptr == pfnAppendLaunchCooperativeKernel ) {
         if(!ze_lib::context->isInitialized)
@@ -5021,6 +5445,10 @@ zeCommandListAppendLaunchKernelIndirect(
                                                     ///< on before launching
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnAppendLaunchKernelIndirect = ze_lib::context->zeDdiTable.CommandList.pfnAppendLaunchKernelIndirect;
     if( nullptr == pfnAppendLaunchKernelIndirect ) {
         if(!ze_lib::context->isInitialized)
@@ -5085,6 +5513,10 @@ zeCommandListAppendLaunchMultipleKernelsIndirect(
                                                     ///< on before launching
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnAppendLaunchMultipleKernelsIndirect = ze_lib::context->zeDdiTable.CommandList.pfnAppendLaunchMultipleKernelsIndirect;
     if( nullptr == pfnAppendLaunchMultipleKernelsIndirect ) {
         if(!ze_lib::context->isInitialized)
@@ -5124,6 +5556,10 @@ zeContextMakeMemoryResident(
     size_t size                                     ///< [in] size in bytes to make resident
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnMakeMemoryResident = ze_lib::context->zeDdiTable.Context.pfnMakeMemoryResident;
     if( nullptr == pfnMakeMemoryResident ) {
         if(!ze_lib::context->isInitialized)
@@ -5165,6 +5601,10 @@ zeContextEvictMemory(
     size_t size                                     ///< [in] size in bytes to evict
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnEvictMemory = ze_lib::context->zeDdiTable.Context.pfnEvictMemory;
     if( nullptr == pfnEvictMemory ) {
         if(!ze_lib::context->isInitialized)
@@ -5202,6 +5642,10 @@ zeContextMakeImageResident(
     ze_image_handle_t hImage                        ///< [in] handle of image to make resident
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnMakeImageResident = ze_lib::context->zeDdiTable.Context.pfnMakeImageResident;
     if( nullptr == pfnMakeImageResident ) {
         if(!ze_lib::context->isInitialized)
@@ -5241,6 +5685,10 @@ zeContextEvictImage(
     ze_image_handle_t hImage                        ///< [in] handle of image to make evict
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnEvictImage = ze_lib::context->zeDdiTable.Context.pfnEvictImage;
     if( nullptr == pfnEvictImage ) {
         if(!ze_lib::context->isInitialized)
@@ -5284,6 +5732,10 @@ zeSamplerCreate(
     ze_sampler_handle_t* phSampler                  ///< [out] handle of the sampler
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnCreate = ze_lib::context->zeDdiTable.Sampler.pfnCreate;
     if( nullptr == pfnCreate ) {
         if(!ze_lib::context->isInitialized)
@@ -5321,6 +5773,10 @@ zeSamplerDestroy(
     ze_sampler_handle_t hSampler                    ///< [in][release] handle of the sampler
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnDestroy = ze_lib::context->zeDdiTable.Sampler.pfnDestroy;
     if( nullptr == pfnDestroy ) {
         if(!ze_lib::context->isInitialized)
@@ -5369,6 +5825,10 @@ zeVirtualMemReserve(
     void** pptr                                     ///< [out] pointer to virtual reservation.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnReserve = ze_lib::context->zeDdiTable.VirtualMem.pfnReserve;
     if( nullptr == pfnReserve ) {
         if(!ze_lib::context->isInitialized)
@@ -5410,6 +5870,10 @@ zeVirtualMemFree(
     size_t size                                     ///< [in] size in bytes to free; must be page aligned.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnFree = ze_lib::context->zeDdiTable.VirtualMem.pfnFree;
     if( nullptr == pfnFree ) {
         if(!ze_lib::context->isInitialized)
@@ -5451,6 +5915,10 @@ zeVirtualMemQueryPageSize(
                                                     ///< alignments.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnQueryPageSize = ze_lib::context->zeDdiTable.VirtualMem.pfnQueryPageSize;
     if( nullptr == pfnQueryPageSize ) {
         if(!ze_lib::context->isInitialized)
@@ -5497,6 +5965,10 @@ zePhysicalMemCreate(
     ze_physical_mem_handle_t* phPhysicalMemory      ///< [out] pointer to handle of physical memory object created
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnCreate = ze_lib::context->zeDdiTable.PhysicalMem.pfnCreate;
     if( nullptr == pfnCreate ) {
         if(!ze_lib::context->isInitialized)
@@ -5534,6 +6006,10 @@ zePhysicalMemDestroy(
     ze_physical_mem_handle_t hPhysicalMemory        ///< [in][release] handle of physical memory object to destroy
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnDestroy = ze_lib::context->zeDdiTable.PhysicalMem.pfnDestroy;
     if( nullptr == pfnDestroy ) {
         if(!ze_lib::context->isInitialized)
@@ -5590,6 +6066,10 @@ zeVirtualMemMap(
                                                     ///< range.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnMap = ze_lib::context->zeDdiTable.VirtualMem.pfnMap;
     if( nullptr == pfnMap ) {
         if(!ze_lib::context->isInitialized)
@@ -5632,6 +6112,10 @@ zeVirtualMemUnmap(
     size_t size                                     ///< [in] size in bytes to unmap; must be page aligned.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnUnmap = ze_lib::context->zeDdiTable.VirtualMem.pfnUnmap;
     if( nullptr == pfnUnmap ) {
         if(!ze_lib::context->isInitialized)
@@ -5676,6 +6160,10 @@ zeVirtualMemSetAccessAttribute(
                                                     ///< range.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnSetAccessAttribute = ze_lib::context->zeDdiTable.VirtualMem.pfnSetAccessAttribute;
     if( nullptr == pfnSetAccessAttribute ) {
         if(!ze_lib::context->isInitialized)
@@ -5723,6 +6211,10 @@ zeVirtualMemGetAccessAttribute(
                                                     ///< that shares same access attribute.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetAccessAttribute = ze_lib::context->zeDdiTable.VirtualMem.pfnGetAccessAttribute;
     if( nullptr == pfnGetAccessAttribute ) {
         if(!ze_lib::context->isInitialized)
@@ -5760,6 +6252,10 @@ zeKernelSetGlobalOffsetExp(
     uint32_t offsetZ                                ///< [in] global offset for Z dimension to use for this kernel
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnSetGlobalOffsetExp = ze_lib::context->zeDdiTable.KernelExp.pfnSetGlobalOffsetExp;
     if( nullptr == pfnSetGlobalOffsetExp ) {
         if(!ze_lib::context->isInitialized)
@@ -5800,6 +6296,10 @@ zeDeviceReserveCacheExt(
                                                     ///< shall remove prior reservation
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnReserveCacheExt = ze_lib::context->zeDdiTable.Device.pfnReserveCacheExt;
     if( nullptr == pfnReserveCacheExt ) {
         if(!ze_lib::context->isInitialized)
@@ -5838,6 +6338,10 @@ zeDeviceSetCacheAdviceExt(
     ze_cache_ext_region_t cacheRegion               ///< [in] reservation region
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnSetCacheAdviceExt = ze_lib::context->zeDdiTable.Device.pfnSetCacheAdviceExt;
     if( nullptr == pfnSetCacheAdviceExt ) {
         if(!ze_lib::context->isInitialized)
@@ -5893,6 +6397,10 @@ zeEventQueryTimestampsExp(
                                                     ///< shall only retrieve that number of timestamps.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnQueryTimestampsExp = ze_lib::context->zeDdiTable.EventExp.pfnQueryTimestampsExp;
     if( nullptr == pfnQueryTimestampsExp ) {
         if(!ze_lib::context->isInitialized)
@@ -5933,6 +6441,10 @@ zeImageGetMemoryPropertiesExp(
     ze_image_memory_properties_exp_t* pMemoryProperties ///< [in,out] query result for image memory properties.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetMemoryPropertiesExp = ze_lib::context->zeDdiTable.ImageExp.pfnGetMemoryPropertiesExp;
     if( nullptr == pfnGetMemoryPropertiesExp ) {
         if(!ze_lib::context->isInitialized)
@@ -5990,6 +6502,10 @@ zeImageViewCreateExt(
     ze_image_handle_t* phImageView                  ///< [out] pointer to handle of image object created for view
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnViewCreateExt = ze_lib::context->zeDdiTable.Image.pfnViewCreateExt;
     if( nullptr == pfnViewCreateExt ) {
         if(!ze_lib::context->isInitialized)
@@ -6050,6 +6566,10 @@ zeImageViewCreateExp(
     ze_image_handle_t* phImageView                  ///< [out] pointer to handle of image object created for view
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnViewCreateExp = ze_lib::context->zeDdiTable.ImageExp.pfnViewCreateExp;
     if( nullptr == pfnViewCreateExp ) {
         if(!ze_lib::context->isInitialized)
@@ -6093,6 +6613,10 @@ zeKernelSchedulingHintExp(
     ze_scheduling_hint_exp_desc_t* pHint            ///< [in] pointer to kernel scheduling hint descriptor
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnSchedulingHintExp = ze_lib::context->zeDdiTable.KernelExp.pfnSchedulingHintExp;
     if( nullptr == pfnSchedulingHintExp ) {
         if(!ze_lib::context->isInitialized)
@@ -6131,6 +6655,10 @@ zeDevicePciGetPropertiesExt(
     ze_pci_ext_properties_t* pPciProperties         ///< [in,out] returns the PCI properties of the device.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnPciGetPropertiesExt = ze_lib::context->zeDdiTable.Device.pfnPciGetPropertiesExt;
     if( nullptr == pfnPciGetPropertiesExt ) {
         if(!ze_lib::context->isInitialized)
@@ -6206,6 +6734,10 @@ zeCommandListAppendImageCopyToMemoryExt(
                                                     ///< on before launching
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnAppendImageCopyToMemoryExt = ze_lib::context->zeDdiTable.CommandList.pfnAppendImageCopyToMemoryExt;
     if( nullptr == pfnAppendImageCopyToMemoryExt ) {
         if(!ze_lib::context->isInitialized)
@@ -6281,6 +6813,10 @@ zeCommandListAppendImageCopyFromMemoryExt(
                                                     ///< on before launching
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnAppendImageCopyFromMemoryExt = ze_lib::context->zeDdiTable.CommandList.pfnAppendImageCopyFromMemoryExt;
     if( nullptr == pfnAppendImageCopyFromMemoryExt ) {
         if(!ze_lib::context->isInitialized)
@@ -6316,6 +6852,10 @@ zeImageGetAllocPropertiesExt(
     ze_image_allocation_ext_properties_t* pImageAllocProperties ///< [in,out] query result for image allocation properties
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetAllocPropertiesExt = ze_lib::context->zeDdiTable.Image.pfnGetAllocPropertiesExt;
     if( nullptr == pfnGetAllocPropertiesExt ) {
         if(!ze_lib::context->isInitialized)
@@ -6360,6 +6900,10 @@ zeModuleInspectLinkageExt(
                                                     ///< contain separate lists of imports, un-resolvable imports, and exports.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnInspectLinkageExt = ze_lib::context->zeDdiTable.Module.pfnInspectLinkageExt;
     if( nullptr == pfnInspectLinkageExt ) {
         if(!ze_lib::context->isInitialized)
@@ -6401,6 +6945,10 @@ zeMemFreeExt(
     void* ptr                                       ///< [in][release] pointer to memory to free
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnFreeExt = ze_lib::context->zeDdiTable.Mem.pfnFreeExt;
     if( nullptr == pfnFreeExt ) {
         if(!ze_lib::context->isInitialized)
@@ -6445,6 +6993,10 @@ zeFabricVertexGetExp(
                                                     ///< driver shall only retrieve that number of fabric vertices.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetExp = ze_lib::context->zeDdiTable.FabricVertexExp.pfnGetExp;
     if( nullptr == pfnGetExp ) {
         if(!ze_lib::context->isInitialized)
@@ -6491,6 +7043,10 @@ zeFabricVertexGetSubVerticesExp(
                                                     ///< driver shall only retrieve that number of sub-vertices.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetSubVerticesExp = ze_lib::context->zeDdiTable.FabricVertexExp.pfnGetSubVerticesExp;
     if( nullptr == pfnGetSubVerticesExp ) {
         if(!ze_lib::context->isInitialized)
@@ -6525,6 +7081,10 @@ zeFabricVertexGetPropertiesExp(
     ze_fabric_vertex_exp_properties_t* pVertexProperties///< [in,out] query result for fabric vertex properties
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetPropertiesExp = ze_lib::context->zeDdiTable.FabricVertexExp.pfnGetPropertiesExp;
     if( nullptr == pfnGetPropertiesExp ) {
         if(!ze_lib::context->isInitialized)
@@ -6563,6 +7123,10 @@ zeFabricVertexGetDeviceExp(
     ze_device_handle_t* phDevice                    ///< [out] device handle corresponding to fabric vertex
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetDeviceExp = ze_lib::context->zeDdiTable.FabricVertexExp.pfnGetDeviceExp;
     if( nullptr == pfnGetDeviceExp ) {
         if(!ze_lib::context->isInitialized)
@@ -6599,6 +7163,10 @@ zeDeviceGetFabricVertexExp(
     ze_fabric_vertex_handle_t* phVertex             ///< [out] fabric vertex handle corresponding to device
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetFabricVertexExp = ze_lib::context->zeDdiTable.DeviceExp.pfnGetFabricVertexExp;
     if( nullptr == pfnGetFabricVertexExp ) {
         if(!ze_lib::context->isInitialized)
@@ -6645,6 +7213,10 @@ zeFabricEdgeGetExp(
                                                     ///< driver shall only retrieve that number of fabric edges.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetExp = ze_lib::context->zeDdiTable.FabricEdgeExp.pfnGetExp;
     if( nullptr == pfnGetExp ) {
         if(!ze_lib::context->isInitialized)
@@ -6683,6 +7255,10 @@ zeFabricEdgeGetVerticesExp(
     ze_fabric_vertex_handle_t* phVertexB            ///< [out] fabric vertex connected to other end of the given fabric edge.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetVerticesExp = ze_lib::context->zeDdiTable.FabricEdgeExp.pfnGetVerticesExp;
     if( nullptr == pfnGetVerticesExp ) {
         if(!ze_lib::context->isInitialized)
@@ -6717,6 +7293,10 @@ zeFabricEdgeGetPropertiesExp(
     ze_fabric_edge_exp_properties_t* pEdgeProperties///< [in,out] query result for fabric edge properties
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetPropertiesExp = ze_lib::context->zeDdiTable.FabricEdgeExp.pfnGetPropertiesExp;
     if( nullptr == pfnGetPropertiesExp ) {
         if(!ze_lib::context->isInitialized)

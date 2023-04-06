@@ -57,6 +57,10 @@ zesInit(
     if( ZE_RESULT_SUCCESS != result )
         return result;
 
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnInit = ze_lib::context->zesDdiTable.Global.pfnInit;
     if( nullptr == pfnInit ) {
         if(!ze_lib::context->isInitialized)
@@ -101,6 +105,10 @@ zesDriverGet(
                                                     ///< loader shall only retrieve that number of sysman drivers.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGet = ze_lib::context->zesDdiTable.Driver.pfnGet;
     if( nullptr == pfnGet ) {
         if(!ze_lib::context->isInitialized)
@@ -148,6 +156,10 @@ zesDeviceGet(
                                                     ///< driver shall only retrieve that number of sysman devices.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGet = ze_lib::context->zesDdiTable.Device.pfnGet;
     if( nullptr == pfnGet ) {
         if(!ze_lib::context->isInitialized)
@@ -182,6 +194,10 @@ zesDeviceGetProperties(
     zes_device_properties_t* pProperties            ///< [in,out] Structure that will contain information about the device.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetProperties = ze_lib::context->zesDdiTable.Device.pfnGetProperties;
     if( nullptr == pfnGetProperties ) {
         if(!ze_lib::context->isInitialized)
@@ -217,6 +233,10 @@ zesDeviceGetState(
     zes_device_state_t* pState                      ///< [in,out] Structure that will contain information about the device.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetState = ze_lib::context->zesDdiTable.Device.pfnGetState;
     if( nullptr == pfnGetState ) {
         if(!ze_lib::context->isInitialized)
@@ -260,6 +280,10 @@ zesDeviceReset(
                                                     ///< device will be forcibly killed.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnReset = ze_lib::context->zesDdiTable.Device.pfnReset;
     if( nullptr == pfnReset ) {
         if(!ze_lib::context->isInitialized)
@@ -312,6 +336,10 @@ zesDeviceProcessesGetState(
                                                     ///< number of processes. In this case, the return code will ::ZE_RESULT_ERROR_INVALID_SIZE.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnProcessesGetState = ze_lib::context->zesDdiTable.Device.pfnProcessesGetState;
     if( nullptr == pfnProcessesGetState ) {
         if(!ze_lib::context->isInitialized)
@@ -346,6 +374,10 @@ zesDevicePciGetProperties(
     zes_pci_properties_t* pProperties               ///< [in,out] Will contain the PCI properties.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnPciGetProperties = ze_lib::context->zesDdiTable.Device.pfnPciGetProperties;
     if( nullptr == pfnPciGetProperties ) {
         if(!ze_lib::context->isInitialized)
@@ -380,6 +412,10 @@ zesDevicePciGetState(
     zes_pci_state_t* pState                         ///< [in,out] Will contain the PCI properties.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnPciGetState = ze_lib::context->zesDdiTable.Device.pfnPciGetState;
     if( nullptr == pfnPciGetState ) {
         if(!ze_lib::context->isInitialized)
@@ -422,6 +458,10 @@ zesDevicePciGetBars(
                                                     ///< driver shall only retrieve information about that number of PCI bars.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnPciGetBars = ze_lib::context->zesDdiTable.Device.pfnPciGetBars;
     if( nullptr == pfnPciGetBars ) {
         if(!ze_lib::context->isInitialized)
@@ -458,6 +498,10 @@ zesDevicePciGetStats(
     zes_pci_stats_t* pStats                         ///< [in,out] Will contain a snapshot of the latest stats.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnPciGetStats = ze_lib::context->zesDdiTable.Device.pfnPciGetStats;
     if( nullptr == pfnPciGetStats ) {
         if(!ze_lib::context->isInitialized)
@@ -492,6 +536,10 @@ zesDeviceSetOverclockWaiver(
     zes_device_handle_t hDevice                     ///< [in] Sysman handle of the device.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnSetOverclockWaiver = ze_lib::context->zesDdiTable.Device.pfnSetOverclockWaiver;
     if( nullptr == pfnSetOverclockWaiver ) {
         if(!ze_lib::context->isInitialized)
@@ -530,6 +578,10 @@ zesDeviceGetOverclockDomains(
                                                     ///< doesn't support overclocking.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetOverclockDomains = ze_lib::context->zesDdiTable.Device.pfnGetOverclockDomains;
     if( nullptr == pfnGetOverclockDomains ) {
         if(!ze_lib::context->isInitialized)
@@ -572,6 +624,10 @@ zesDeviceGetOverclockControls(
                                                     ///< ::zes_overclock_control_t).
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetOverclockControls = ze_lib::context->zesDdiTable.Device.pfnGetOverclockControls;
     if( nullptr == pfnGetOverclockControls ) {
         if(!ze_lib::context->isInitialized)
@@ -608,6 +664,10 @@ zesDeviceResetOverclockSettings(
                                                     ///< manufacturing state
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnResetOverclockSettings = ze_lib::context->zesDdiTable.Device.pfnResetOverclockSettings;
     if( nullptr == pfnResetOverclockSettings ) {
         if(!ze_lib::context->isInitialized)
@@ -653,6 +713,10 @@ zesDeviceReadOverclockState(
     ze_bool_t* pPendingReset                        ///< [out] Pending reset 0 =manufacturing state, 1= shipped state)..
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnReadOverclockState = ze_lib::context->zesDdiTable.Device.pfnReadOverclockState;
     if( nullptr == pfnReadOverclockState ) {
         if(!ze_lib::context->isInitialized)
@@ -697,6 +761,10 @@ zesDeviceEnumOverclockDomains(
                                                     ///< component handles.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnEnumOverclockDomains = ze_lib::context->zesDdiTable.Device.pfnEnumOverclockDomains;
     if( nullptr == pfnEnumOverclockDomains ) {
         if(!ze_lib::context->isInitialized)
@@ -733,6 +801,10 @@ zesOverclockGetDomainProperties(
     zes_overclock_properties_t* pDomainProperties   ///< [in,out] The overclock properties for the specified domain.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetDomainProperties = ze_lib::context->zesDdiTable.Overclock.pfnGetDomainProperties;
     if( nullptr == pfnGetDomainProperties ) {
         if(!ze_lib::context->isInitialized)
@@ -769,6 +841,10 @@ zesOverclockGetDomainVFProperties(
     zes_vf_property_t* pVFProperties                ///< [in,out] The VF min,max,step for a specified domain.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetDomainVFProperties = ze_lib::context->zesDdiTable.Overclock.pfnGetDomainVFProperties;
     if( nullptr == pfnGetDomainVFProperties ) {
         if(!ze_lib::context->isInitialized)
@@ -808,6 +884,10 @@ zesOverclockGetDomainControlProperties(
     zes_control_property_t* pControlProperties      ///< [in,out] overclock control values.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetDomainControlProperties = ze_lib::context->zesDdiTable.Overclock.pfnGetDomainControlProperties;
     if( nullptr == pfnGetDomainControlProperties ) {
         if(!ze_lib::context->isInitialized)
@@ -847,6 +927,10 @@ zesOverclockGetControlCurrentValue(
     double* pValue                                  ///< [in,out] Getting overclock control value for the specified control.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetControlCurrentValue = ze_lib::context->zesDdiTable.Overclock.pfnGetControlCurrentValue;
     if( nullptr == pfnGetControlCurrentValue ) {
         if(!ze_lib::context->isInitialized)
@@ -887,6 +971,10 @@ zesOverclockGetControlPendingValue(
                                                     ///< format of the value depend on the control type.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetControlPendingValue = ze_lib::context->zesDdiTable.Overclock.pfnGetControlPendingValue;
     if( nullptr == pfnGetControlPendingValue ) {
         if(!ze_lib::context->isInitialized)
@@ -928,6 +1016,10 @@ zesOverclockSetControlUserValue(
     zes_pending_action_t* pPendingAction            ///< [out] Pending overclock setting.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnSetControlUserValue = ze_lib::context->zesDdiTable.Overclock.pfnSetControlUserValue;
     if( nullptr == pfnSetControlUserValue ) {
         if(!ze_lib::context->isInitialized)
@@ -969,6 +1061,10 @@ zesOverclockGetControlState(
     zes_pending_action_t* pPendingAction            ///< [out] Pending overclock setting.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetControlState = ze_lib::context->zesDdiTable.Overclock.pfnGetControlState;
     if( nullptr == pfnGetControlState ) {
         if(!ze_lib::context->isInitialized)
@@ -1013,6 +1109,10 @@ zesOverclockGetVFPointValues(
                                                     ///< units from the custom V-F curve at the specified zero-based index 
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetVFPointValues = ze_lib::context->zesDdiTable.Overclock.pfnGetVFPointValues;
     if( nullptr == pfnGetVFPointValues ) {
         if(!ze_lib::context->isInitialized)
@@ -1052,6 +1152,10 @@ zesOverclockSetVFPointValues(
                                                     ///< custom V-F curve at the specified zero-based index 
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnSetVFPointValues = ze_lib::context->zesDdiTable.Overclock.pfnSetVFPointValues;
     if( nullptr == pfnSetVFPointValues ) {
         if(!ze_lib::context->isInitialized)
@@ -1096,6 +1200,10 @@ zesDeviceEnumDiagnosticTestSuites(
                                                     ///< component handles.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnEnumDiagnosticTestSuites = ze_lib::context->zesDdiTable.Device.pfnEnumDiagnosticTestSuites;
     if( nullptr == pfnEnumDiagnosticTestSuites ) {
         if(!ze_lib::context->isInitialized)
@@ -1131,6 +1239,10 @@ zesDiagnosticsGetProperties(
                                                     ///< suite
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetProperties = ze_lib::context->zesDdiTable.Diagnostics.pfnGetProperties;
     if( nullptr == pfnGetProperties ) {
         if(!ze_lib::context->isInitialized)
@@ -1177,6 +1289,10 @@ zesDiagnosticsGetTests(
                                                     ///< driver shall only retrieve that number of tests.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetTests = ze_lib::context->zesDdiTable.Diagnostics.pfnGetTests;
     if( nullptr == pfnGetTests ) {
         if(!ze_lib::context->isInitialized)
@@ -1226,6 +1342,10 @@ zesDiagnosticsRunTests(
     zes_diag_result_t* pResult                      ///< [in,out] The result of the diagnostics
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnRunTests = ze_lib::context->zesDdiTable.Diagnostics.pfnRunTests;
     if( nullptr == pfnRunTests ) {
         if(!ze_lib::context->isInitialized)
@@ -1260,6 +1380,10 @@ zesDeviceEccAvailable(
     ze_bool_t* pAvailable                           ///< [out] ECC functionality is available (true)/unavailable (false).
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnEccAvailable = ze_lib::context->zesDdiTable.Device.pfnEccAvailable;
     if( nullptr == pfnEccAvailable ) {
         if(!ze_lib::context->isInitialized)
@@ -1294,6 +1418,10 @@ zesDeviceEccConfigurable(
     ze_bool_t* pConfigurable                        ///< [out] ECC can be enabled/disabled (true)/enabled/disabled (false).
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnEccConfigurable = ze_lib::context->zesDdiTable.Device.pfnEccConfigurable;
     if( nullptr == pfnEccConfigurable ) {
         if(!ze_lib::context->isInitialized)
@@ -1328,6 +1456,10 @@ zesDeviceGetEccState(
     zes_device_ecc_properties_t* pState             ///< [out] ECC state, pending state, and pending action for state change.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetEccState = ze_lib::context->zesDdiTable.Device.pfnGetEccState;
     if( nullptr == pfnGetEccState ) {
         if(!ze_lib::context->isInitialized)
@@ -1370,6 +1502,10 @@ zesDeviceSetEccState(
     zes_device_ecc_properties_t* pState             ///< [out] ECC state, pending state, and pending action for state change.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnSetEccState = ze_lib::context->zesDdiTable.Device.pfnSetEccState;
     if( nullptr == pfnSetEccState ) {
         if(!ze_lib::context->isInitialized)
@@ -1414,6 +1550,10 @@ zesDeviceEnumEngineGroups(
                                                     ///< component handles.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnEnumEngineGroups = ze_lib::context->zesDdiTable.Device.pfnEnumEngineGroups;
     if( nullptr == pfnEnumEngineGroups ) {
         if(!ze_lib::context->isInitialized)
@@ -1448,6 +1588,10 @@ zesEngineGetProperties(
     zes_engine_properties_t* pProperties            ///< [in,out] The properties for the specified engine group.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetProperties = ze_lib::context->zesDdiTable.Engine.pfnGetProperties;
     if( nullptr == pfnGetProperties ) {
         if(!ze_lib::context->isInitialized)
@@ -1483,6 +1627,10 @@ zesEngineGetActivity(
                                                     ///< counters.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetActivity = ze_lib::context->zesDdiTable.Engine.pfnGetActivity;
     if( nullptr == pfnGetActivity ) {
         if(!ze_lib::context->isInitialized)
@@ -1517,6 +1665,10 @@ zesDeviceEventRegister(
     zes_event_type_flags_t events                   ///< [in] List of events to listen to.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnEventRegister = ze_lib::context->zesDdiTable.Device.pfnEventRegister;
     if( nullptr == pfnEventRegister ) {
         if(!ze_lib::context->isInitialized)
@@ -1573,6 +1725,10 @@ zesDriverEventListen(
                                                     ///< entry will be zero.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnEventListen = ze_lib::context->zesDdiTable.Driver.pfnEventListen;
     if( nullptr == pfnEventListen ) {
         if(!ze_lib::context->isInitialized)
@@ -1629,6 +1785,10 @@ zesDriverEventListenEx(
                                                     ///< entry will be zero.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnEventListenEx = ze_lib::context->zesDdiTable.Driver.pfnEventListenEx;
     if( nullptr == pfnEventListenEx ) {
         if(!ze_lib::context->isInitialized)
@@ -1673,6 +1833,10 @@ zesDeviceEnumFabricPorts(
                                                     ///< component handles.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnEnumFabricPorts = ze_lib::context->zesDdiTable.Device.pfnEnumFabricPorts;
     if( nullptr == pfnEnumFabricPorts ) {
         if(!ze_lib::context->isInitialized)
@@ -1707,6 +1871,10 @@ zesFabricPortGetProperties(
     zes_fabric_port_properties_t* pProperties       ///< [in,out] Will contain properties of the Fabric Port.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetProperties = ze_lib::context->zesDdiTable.FabricPort.pfnGetProperties;
     if( nullptr == pfnGetProperties ) {
         if(!ze_lib::context->isInitialized)
@@ -1742,6 +1910,10 @@ zesFabricPortGetLinkType(
                                                     ///< port.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetLinkType = ze_lib::context->zesDdiTable.FabricPort.pfnGetLinkType;
     if( nullptr == pfnGetLinkType ) {
         if(!ze_lib::context->isInitialized)
@@ -1776,6 +1948,10 @@ zesFabricPortGetConfig(
     zes_fabric_port_config_t* pConfig               ///< [in,out] Will contain configuration of the Fabric Port.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetConfig = ze_lib::context->zesDdiTable.FabricPort.pfnGetConfig;
     if( nullptr == pfnGetConfig ) {
         if(!ze_lib::context->isInitialized)
@@ -1812,6 +1988,10 @@ zesFabricPortSetConfig(
     const zes_fabric_port_config_t* pConfig         ///< [in] Contains new configuration of the Fabric Port.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnSetConfig = ze_lib::context->zesDdiTable.FabricPort.pfnSetConfig;
     if( nullptr == pfnSetConfig ) {
         if(!ze_lib::context->isInitialized)
@@ -1847,6 +2027,10 @@ zesFabricPortGetState(
     zes_fabric_port_state_t* pState                 ///< [in,out] Will contain the current state of the Fabric Port
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetState = ze_lib::context->zesDdiTable.FabricPort.pfnGetState;
     if( nullptr == pfnGetState ) {
         if(!ze_lib::context->isInitialized)
@@ -1883,6 +2067,10 @@ zesFabricPortGetThroughput(
     zes_fabric_port_throughput_t* pThroughput       ///< [in,out] Will contain the Fabric port throughput counters.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetThroughput = ze_lib::context->zesDdiTable.FabricPort.pfnGetThroughput;
     if( nullptr == pfnGetThroughput ) {
         if(!ze_lib::context->isInitialized)
@@ -1919,6 +2107,10 @@ zesFabricPortGetFabricErrorCounters(
     zes_fabric_port_error_counters_t* pErrors       ///< [in,out] Will contain the Fabric port Error counters.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetFabricErrorCounters = ze_lib::context->zesDdiTable.FabricPort.pfnGetFabricErrorCounters;
     if( nullptr == pfnGetFabricErrorCounters ) {
         if(!ze_lib::context->isInitialized)
@@ -1963,6 +2155,10 @@ zesDeviceEnumFans(
                                                     ///< component handles.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnEnumFans = ze_lib::context->zesDdiTable.Device.pfnEnumFans;
     if( nullptr == pfnEnumFans ) {
         if(!ze_lib::context->isInitialized)
@@ -1997,6 +2193,10 @@ zesFanGetProperties(
     zes_fan_properties_t* pProperties               ///< [in,out] Will contain the properties of the fan.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetProperties = ze_lib::context->zesDdiTable.Fan.pfnGetProperties;
     if( nullptr == pfnGetProperties ) {
         if(!ze_lib::context->isInitialized)
@@ -2032,6 +2232,10 @@ zesFanGetConfig(
     zes_fan_config_t* pConfig                       ///< [in,out] Will contain the current configuration of the fan.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetConfig = ze_lib::context->zesDdiTable.Fan.pfnGetConfig;
     if( nullptr == pfnGetConfig ) {
         if(!ze_lib::context->isInitialized)
@@ -2066,6 +2270,10 @@ zesFanSetDefaultMode(
     zes_fan_handle_t hFan                           ///< [in] Handle for the component.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnSetDefaultMode = ze_lib::context->zesDdiTable.Fan.pfnSetDefaultMode;
     if( nullptr == pfnSetDefaultMode ) {
         if(!ze_lib::context->isInitialized)
@@ -2105,6 +2313,10 @@ zesFanSetFixedSpeedMode(
     const zes_fan_speed_t* speed                    ///< [in] The fixed fan speed setting
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnSetFixedSpeedMode = ze_lib::context->zesDdiTable.Fan.pfnSetFixedSpeedMode;
     if( nullptr == pfnSetFixedSpeedMode ) {
         if(!ze_lib::context->isInitialized)
@@ -2146,6 +2358,10 @@ zesFanSetSpeedTableMode(
     const zes_fan_speed_table_t* speedTable         ///< [in] A table containing temperature/speed pairs.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnSetSpeedTableMode = ze_lib::context->zesDdiTable.Fan.pfnSetSpeedTableMode;
     if( nullptr == pfnSetSpeedTableMode ) {
         if(!ze_lib::context->isInitialized)
@@ -2187,6 +2403,10 @@ zesFanGetState(
                                                     ///< measured.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetState = ze_lib::context->zesDdiTable.Fan.pfnGetState;
     if( nullptr == pfnGetState ) {
         if(!ze_lib::context->isInitialized)
@@ -2231,6 +2451,10 @@ zesDeviceEnumFirmwares(
                                                     ///< component handles.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnEnumFirmwares = ze_lib::context->zesDdiTable.Device.pfnEnumFirmwares;
     if( nullptr == pfnEnumFirmwares ) {
         if(!ze_lib::context->isInitialized)
@@ -2266,6 +2490,10 @@ zesFirmwareGetProperties(
                                                     ///< firmware
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetProperties = ze_lib::context->zesDdiTable.Firmware.pfnGetProperties;
     if( nullptr == pfnGetProperties ) {
         if(!ze_lib::context->isInitialized)
@@ -2303,6 +2531,10 @@ zesFirmwareFlash(
     uint32_t size                                   ///< [in] Size of the flash image.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnFlash = ze_lib::context->zesDdiTable.Firmware.pfnFlash;
     if( nullptr == pfnFlash ) {
         if(!ze_lib::context->isInitialized)
@@ -2347,6 +2579,10 @@ zesDeviceEnumFrequencyDomains(
                                                     ///< component handles.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnEnumFrequencyDomains = ze_lib::context->zesDdiTable.Device.pfnEnumFrequencyDomains;
     if( nullptr == pfnEnumFrequencyDomains ) {
         if(!ze_lib::context->isInitialized)
@@ -2381,6 +2617,10 @@ zesFrequencyGetProperties(
     zes_freq_properties_t* pProperties              ///< [in,out] The frequency properties for the specified domain.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetProperties = ze_lib::context->zesDdiTable.Frequency.pfnGetProperties;
     if( nullptr == pfnGetProperties ) {
         if(!ze_lib::context->isInitialized)
@@ -2426,6 +2666,10 @@ zesFrequencyGetAvailableClocks(
                                                     ///< then the driver shall only retrieve that number of frequencies.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetAvailableClocks = ze_lib::context->zesDdiTable.Frequency.pfnGetAvailableClocks;
     if( nullptr == pfnGetAvailableClocks ) {
         if(!ze_lib::context->isInitialized)
@@ -2461,6 +2705,10 @@ zesFrequencyGetRange(
                                                     ///< specified domain.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetRange = ze_lib::context->zesDdiTable.Frequency.pfnGetRange;
     if( nullptr == pfnGetRange ) {
         if(!ze_lib::context->isInitialized)
@@ -2498,6 +2746,10 @@ zesFrequencySetRange(
                                                     ///< specified domain.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnSetRange = ze_lib::context->zesDdiTable.Frequency.pfnSetRange;
     if( nullptr == pfnSetRange ) {
         if(!ze_lib::context->isInitialized)
@@ -2533,6 +2785,10 @@ zesFrequencyGetState(
     zes_freq_state_t* pState                        ///< [in,out] Frequency state for the specified domain.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetState = ze_lib::context->zesDdiTable.Frequency.pfnGetState;
     if( nullptr == pfnGetState ) {
         if(!ze_lib::context->isInitialized)
@@ -2568,6 +2824,10 @@ zesFrequencyGetThrottleTime(
                                                     ///< specified domain.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetThrottleTime = ze_lib::context->zesDdiTable.Frequency.pfnGetThrottleTime;
     if( nullptr == pfnGetThrottleTime ) {
         if(!ze_lib::context->isInitialized)
@@ -2603,6 +2863,10 @@ zesFrequencyOcGetCapabilities(
                                                     ///< ::zes_oc_capabilities_t.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnOcGetCapabilities = ze_lib::context->zesDdiTable.Frequency.pfnOcGetCapabilities;
     if( nullptr == pfnOcGetCapabilities ) {
         if(!ze_lib::context->isInitialized)
@@ -2648,6 +2912,10 @@ zesFrequencyOcGetFrequencyTarget(
                                                     ///< cannot be greater than ::zes_oc_capabilities_t.maxOcFrequency.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnOcGetFrequencyTarget = ze_lib::context->zesDdiTable.Frequency.pfnOcGetFrequencyTarget;
     if( nullptr == pfnOcGetFrequencyTarget ) {
         if(!ze_lib::context->isInitialized)
@@ -2691,6 +2959,10 @@ zesFrequencyOcSetFrequencyTarget(
                                                     ///< cannot be greater than ::zes_oc_capabilities_t.maxOcFrequency.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnOcSetFrequencyTarget = ze_lib::context->zesDdiTable.Frequency.pfnOcSetFrequencyTarget;
     if( nullptr == pfnOcSetFrequencyTarget ) {
         if(!ze_lib::context->isInitialized)
@@ -2739,6 +3011,10 @@ zesFrequencyOcGetVoltageTarget(
                                                     ///< ::zes_oc_capabilities_t.maxOcVoltageOffset).
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnOcGetVoltageTarget = ze_lib::context->zesDdiTable.Frequency.pfnOcGetVoltageTarget;
     if( nullptr == pfnOcGetVoltageTarget ) {
         if(!ze_lib::context->isInitialized)
@@ -2784,6 +3060,10 @@ zesFrequencyOcSetVoltageTarget(
                                                     ///< ::zes_oc_capabilities_t.maxOcVoltageOffset).
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnOcSetVoltageTarget = ze_lib::context->zesDdiTable.Frequency.pfnOcSetVoltageTarget;
     if( nullptr == pfnOcSetVoltageTarget ) {
         if(!ze_lib::context->isInitialized)
@@ -2826,6 +3106,10 @@ zesFrequencyOcSetMode(
     zes_oc_mode_t CurrentOcMode                     ///< [in] Current Overclocking Mode ::zes_oc_mode_t.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnOcSetMode = ze_lib::context->zesDdiTable.Frequency.pfnOcSetMode;
     if( nullptr == pfnOcSetMode ) {
         if(!ze_lib::context->isInitialized)
@@ -2868,6 +3152,10 @@ zesFrequencyOcGetMode(
     zes_oc_mode_t* pCurrentOcMode                   ///< [out] Current Overclocking Mode ::zes_oc_mode_t.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnOcGetMode = ze_lib::context->zesDdiTable.Frequency.pfnOcGetMode;
     if( nullptr == pfnOcGetMode ) {
         if(!ze_lib::context->isInitialized)
@@ -2906,6 +3194,10 @@ zesFrequencyOcGetIccMax(
                                                     ///< successful return.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnOcGetIccMax = ze_lib::context->zesDdiTable.Frequency.pfnOcGetIccMax;
     if( nullptr == pfnOcGetIccMax ) {
         if(!ze_lib::context->isInitialized)
@@ -2948,6 +3240,10 @@ zesFrequencyOcSetIccMax(
     double ocIccMax                                 ///< [in] The new maximum current limit in Amperes.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnOcSetIccMax = ze_lib::context->zesDdiTable.Frequency.pfnOcSetIccMax;
     if( nullptr == pfnOcSetIccMax ) {
         if(!ze_lib::context->isInitialized)
@@ -2985,6 +3281,10 @@ zesFrequencyOcGetTjMax(
                                                     ///< on successful return.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnOcGetTjMax = ze_lib::context->zesDdiTable.Frequency.pfnOcGetTjMax;
     if( nullptr == pfnOcGetTjMax ) {
         if(!ze_lib::context->isInitialized)
@@ -3027,6 +3327,10 @@ zesFrequencyOcSetTjMax(
     double ocTjMax                                  ///< [in] The new maximum temperature limit in degrees Celsius.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnOcSetTjMax = ze_lib::context->zesDdiTable.Frequency.pfnOcSetTjMax;
     if( nullptr == pfnOcSetTjMax ) {
         if(!ze_lib::context->isInitialized)
@@ -3071,6 +3375,10 @@ zesDeviceEnumLeds(
                                                     ///< component handles.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnEnumLeds = ze_lib::context->zesDdiTable.Device.pfnEnumLeds;
     if( nullptr == pfnEnumLeds ) {
         if(!ze_lib::context->isInitialized)
@@ -3105,6 +3413,10 @@ zesLedGetProperties(
     zes_led_properties_t* pProperties               ///< [in,out] Will contain the properties of the LED.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetProperties = ze_lib::context->zesDdiTable.Led.pfnGetProperties;
     if( nullptr == pfnGetProperties ) {
         if(!ze_lib::context->isInitialized)
@@ -3139,6 +3451,10 @@ zesLedGetState(
     zes_led_state_t* pState                         ///< [in,out] Will contain the current state of the LED.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetState = ze_lib::context->zesDdiTable.Led.pfnGetState;
     if( nullptr == pfnGetState ) {
         if(!ze_lib::context->isInitialized)
@@ -3173,6 +3489,10 @@ zesLedSetState(
     ze_bool_t enable                                ///< [in] Set to TRUE to turn the LED on, FALSE to turn off.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnSetState = ze_lib::context->zesDdiTable.Led.pfnSetState;
     if( nullptr == pfnSetState ) {
         if(!ze_lib::context->isInitialized)
@@ -3211,6 +3531,10 @@ zesLedSetColor(
     const zes_led_color_t* pColor                   ///< [in] New color of the LED.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnSetColor = ze_lib::context->zesDdiTable.Led.pfnSetColor;
     if( nullptr == pfnSetColor ) {
         if(!ze_lib::context->isInitialized)
@@ -3255,6 +3579,10 @@ zesDeviceEnumMemoryModules(
                                                     ///< component handles.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnEnumMemoryModules = ze_lib::context->zesDdiTable.Device.pfnEnumMemoryModules;
     if( nullptr == pfnEnumMemoryModules ) {
         if(!ze_lib::context->isInitialized)
@@ -3289,6 +3617,10 @@ zesMemoryGetProperties(
     zes_mem_properties_t* pProperties               ///< [in,out] Will contain memory properties.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetProperties = ze_lib::context->zesDdiTable.Memory.pfnGetProperties;
     if( nullptr == pfnGetProperties ) {
         if(!ze_lib::context->isInitialized)
@@ -3323,6 +3655,10 @@ zesMemoryGetState(
     zes_mem_state_t* pState                         ///< [in,out] Will contain the current health and allocated memory.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetState = ze_lib::context->zesDdiTable.Memory.pfnGetState;
     if( nullptr == pfnGetState ) {
         if(!ze_lib::context->isInitialized)
@@ -3360,6 +3696,10 @@ zesMemoryGetBandwidth(
                                                     ///< to memory, as well as the current maximum bandwidth.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetBandwidth = ze_lib::context->zesDdiTable.Memory.pfnGetBandwidth;
     if( nullptr == pfnGetBandwidth ) {
         if(!ze_lib::context->isInitialized)
@@ -3406,6 +3746,10 @@ zesDeviceEnumPerformanceFactorDomains(
                                                     ///< component handles.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnEnumPerformanceFactorDomains = ze_lib::context->zesDdiTable.Device.pfnEnumPerformanceFactorDomains;
     if( nullptr == pfnEnumPerformanceFactorDomains ) {
         if(!ze_lib::context->isInitialized)
@@ -3441,6 +3785,10 @@ zesPerformanceFactorGetProperties(
                                                     ///< Factor domain.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetProperties = ze_lib::context->zesDdiTable.PerformanceFactor.pfnGetProperties;
     if( nullptr == pfnGetProperties ) {
         if(!ze_lib::context->isInitialized)
@@ -3476,6 +3824,10 @@ zesPerformanceFactorGetConfig(
                                                     ///< hardware (may not be the same as the requested Performance Factor).
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetConfig = ze_lib::context->zesDdiTable.PerformanceFactor.pfnGetConfig;
     if( nullptr == pfnGetConfig ) {
         if(!ze_lib::context->isInitialized)
@@ -3513,6 +3865,10 @@ zesPerformanceFactorSetConfig(
     double factor                                   ///< [in] The new Performance Factor.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnSetConfig = ze_lib::context->zesDdiTable.PerformanceFactor.pfnSetConfig;
     if( nullptr == pfnSetConfig ) {
         if(!ze_lib::context->isInitialized)
@@ -3557,6 +3913,10 @@ zesDeviceEnumPowerDomains(
                                                     ///< component handles.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnEnumPowerDomains = ze_lib::context->zesDdiTable.Device.pfnEnumPowerDomains;
     if( nullptr == pfnEnumPowerDomains ) {
         if(!ze_lib::context->isInitialized)
@@ -3593,6 +3953,10 @@ zesDeviceGetCardPowerDomain(
     zes_pwr_handle_t* phPower                       ///< [in,out] power domain handle for the entire PCIe card.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetCardPowerDomain = ze_lib::context->zesDdiTable.Device.pfnGetCardPowerDomain;
     if( nullptr == pfnGetCardPowerDomain ) {
         if(!ze_lib::context->isInitialized)
@@ -3627,6 +3991,10 @@ zesPowerGetProperties(
     zes_power_properties_t* pProperties             ///< [in,out] Structure that will contain property data.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetProperties = ze_lib::context->zesDdiTable.Power.pfnGetProperties;
     if( nullptr == pfnGetProperties ) {
         if(!ze_lib::context->isInitialized)
@@ -3662,6 +4030,10 @@ zesPowerGetEnergyCounter(
                                                     ///< timestamp when the last counter value was measured.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetEnergyCounter = ze_lib::context->zesDdiTable.Power.pfnGetEnergyCounter;
     if( nullptr == pfnGetEnergyCounter ) {
         if(!ze_lib::context->isInitialized)
@@ -3701,6 +4073,10 @@ zesPowerGetLimits(
                                                     ///< power limits will not be returned.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetLimits = ze_lib::context->zesDdiTable.Power.pfnGetLimits;
     if( nullptr == pfnGetLimits ) {
         if(!ze_lib::context->isInitialized)
@@ -3744,6 +4120,10 @@ zesPowerSetLimits(
                                                     ///< be made to the peak power limits.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnSetLimits = ze_lib::context->zesDdiTable.Power.pfnSetLimits;
     if( nullptr == pfnSetLimits ) {
         if(!ze_lib::context->isInitialized)
@@ -3783,6 +4163,10 @@ zesPowerGetEnergyThreshold(
                                                     ///< enabled/energy threshold/process ID.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetEnergyThreshold = ze_lib::context->zesDdiTable.Power.pfnGetEnergyThreshold;
     if( nullptr == pfnGetEnergyThreshold ) {
         if(!ze_lib::context->isInitialized)
@@ -3835,6 +4219,10 @@ zesPowerSetEnergyThreshold(
     double threshold                                ///< [in] The energy threshold to be set in joules.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnSetEnergyThreshold = ze_lib::context->zesDdiTable.Power.pfnSetEnergyThreshold;
     if( nullptr == pfnSetEnergyThreshold ) {
         if(!ze_lib::context->isInitialized)
@@ -3879,6 +4267,10 @@ zesDeviceEnumPsus(
                                                     ///< component handles.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnEnumPsus = ze_lib::context->zesDdiTable.Device.pfnEnumPsus;
     if( nullptr == pfnEnumPsus ) {
         if(!ze_lib::context->isInitialized)
@@ -3913,6 +4305,10 @@ zesPsuGetProperties(
     zes_psu_properties_t* pProperties               ///< [in,out] Will contain the properties of the power supply.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetProperties = ze_lib::context->zesDdiTable.Psu.pfnGetProperties;
     if( nullptr == pfnGetProperties ) {
         if(!ze_lib::context->isInitialized)
@@ -3947,6 +4343,10 @@ zesPsuGetState(
     zes_psu_state_t* pState                         ///< [in,out] Will contain the current state of the power supply.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetState = ze_lib::context->zesDdiTable.Psu.pfnGetState;
     if( nullptr == pfnGetState ) {
         if(!ze_lib::context->isInitialized)
@@ -4001,6 +4401,10 @@ zesDeviceEnumRasErrorSets(
                                                     ///< component handles.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnEnumRasErrorSets = ze_lib::context->zesDdiTable.Device.pfnEnumRasErrorSets;
     if( nullptr == pfnEnumRasErrorSets ) {
         if(!ze_lib::context->isInitialized)
@@ -4037,6 +4441,10 @@ zesRasGetProperties(
     zes_ras_properties_t* pProperties               ///< [in,out] Structure describing RAS properties
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetProperties = ze_lib::context->zesDdiTable.Ras.pfnGetProperties;
     if( nullptr == pfnGetProperties ) {
         if(!ze_lib::context->isInitialized)
@@ -4081,6 +4489,10 @@ zesRasGetConfig(
                                                     ///< thresholds used to trigger events
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetConfig = ze_lib::context->zesDdiTable.Ras.pfnGetConfig;
     if( nullptr == pfnGetConfig ) {
         if(!ze_lib::context->isInitialized)
@@ -4130,6 +4542,10 @@ zesRasSetConfig(
     const zes_ras_config_t* pConfig                 ///< [in] Change the RAS configuration - thresholds used to trigger events
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnSetConfig = ze_lib::context->zesDdiTable.Ras.pfnSetConfig;
     if( nullptr == pfnSetConfig ) {
         if(!ze_lib::context->isInitialized)
@@ -4170,6 +4586,10 @@ zesRasGetState(
     zes_ras_state_t* pState                         ///< [in,out] Breakdown of where errors have occurred
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetState = ze_lib::context->zesDdiTable.Ras.pfnGetState;
     if( nullptr == pfnGetState ) {
         if(!ze_lib::context->isInitialized)
@@ -4220,6 +4640,10 @@ zesDeviceEnumSchedulers(
                                                     ///< component handles.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnEnumSchedulers = ze_lib::context->zesDdiTable.Device.pfnEnumSchedulers;
     if( nullptr == pfnEnumSchedulers ) {
         if(!ze_lib::context->isInitialized)
@@ -4254,6 +4678,10 @@ zesSchedulerGetProperties(
     zes_sched_properties_t* pProperties             ///< [in,out] Structure that will contain property data.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetProperties = ze_lib::context->zesDdiTable.Scheduler.pfnGetProperties;
     if( nullptr == pfnGetProperties ) {
         if(!ze_lib::context->isInitialized)
@@ -4290,6 +4718,10 @@ zesSchedulerGetCurrentMode(
     zes_sched_mode_t* pMode                         ///< [in,out] Will contain the current scheduler mode.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetCurrentMode = ze_lib::context->zesDdiTable.Scheduler.pfnGetCurrentMode;
     if( nullptr == pfnGetCurrentMode ) {
         if(!ze_lib::context->isInitialized)
@@ -4328,6 +4760,10 @@ zesSchedulerGetTimeoutModeProperties(
     zes_sched_timeout_properties_t* pConfig         ///< [in,out] Will contain the current parameters for this mode.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetTimeoutModeProperties = ze_lib::context->zesDdiTable.Scheduler.pfnGetTimeoutModeProperties;
     if( nullptr == pfnGetTimeoutModeProperties ) {
         if(!ze_lib::context->isInitialized)
@@ -4366,6 +4802,10 @@ zesSchedulerGetTimesliceModeProperties(
     zes_sched_timeslice_properties_t* pConfig       ///< [in,out] Will contain the current parameters for this mode.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetTimesliceModeProperties = ze_lib::context->zesDdiTable.Scheduler.pfnGetTimesliceModeProperties;
     if( nullptr == pfnGetTimesliceModeProperties ) {
         if(!ze_lib::context->isInitialized)
@@ -4412,6 +4852,10 @@ zesSchedulerSetTimeoutMode(
                                                     ///< apply the new scheduler mode.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnSetTimeoutMode = ze_lib::context->zesDdiTable.Scheduler.pfnSetTimeoutMode;
     if( nullptr == pfnSetTimeoutMode ) {
         if(!ze_lib::context->isInitialized)
@@ -4457,6 +4901,10 @@ zesSchedulerSetTimesliceMode(
                                                     ///< apply the new scheduler mode.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnSetTimesliceMode = ze_lib::context->zesDdiTable.Scheduler.pfnSetTimesliceMode;
     if( nullptr == pfnSetTimesliceMode ) {
         if(!ze_lib::context->isInitialized)
@@ -4500,6 +4948,10 @@ zesSchedulerSetExclusiveMode(
                                                     ///< apply the new scheduler mode.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnSetExclusiveMode = ze_lib::context->zesDdiTable.Scheduler.pfnSetExclusiveMode;
     if( nullptr == pfnSetExclusiveMode ) {
         if(!ze_lib::context->isInitialized)
@@ -4544,6 +4996,10 @@ zesSchedulerSetComputeUnitDebugMode(
                                                     ///< apply the new scheduler mode.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnSetComputeUnitDebugMode = ze_lib::context->zesDdiTable.Scheduler.pfnSetComputeUnitDebugMode;
     if( nullptr == pfnSetComputeUnitDebugMode ) {
         if(!ze_lib::context->isInitialized)
@@ -4588,6 +5044,10 @@ zesDeviceEnumStandbyDomains(
                                                     ///< component handles.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnEnumStandbyDomains = ze_lib::context->zesDdiTable.Device.pfnEnumStandbyDomains;
     if( nullptr == pfnEnumStandbyDomains ) {
         if(!ze_lib::context->isInitialized)
@@ -4622,6 +5082,10 @@ zesStandbyGetProperties(
     zes_standby_properties_t* pProperties           ///< [in,out] Will contain the standby hardware properties.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetProperties = ze_lib::context->zesDdiTable.Standby.pfnGetProperties;
     if( nullptr == pfnGetProperties ) {
         if(!ze_lib::context->isInitialized)
@@ -4656,6 +5120,10 @@ zesStandbyGetMode(
     zes_standby_promo_mode_t* pMode                 ///< [in,out] Will contain the current standby mode.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetMode = ze_lib::context->zesDdiTable.Standby.pfnGetMode;
     if( nullptr == pfnGetMode ) {
         if(!ze_lib::context->isInitialized)
@@ -4692,6 +5160,10 @@ zesStandbySetMode(
     zes_standby_promo_mode_t mode                   ///< [in] New standby mode.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnSetMode = ze_lib::context->zesDdiTable.Standby.pfnSetMode;
     if( nullptr == pfnSetMode ) {
         if(!ze_lib::context->isInitialized)
@@ -4736,6 +5208,10 @@ zesDeviceEnumTemperatureSensors(
                                                     ///< component handles.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnEnumTemperatureSensors = ze_lib::context->zesDdiTable.Device.pfnEnumTemperatureSensors;
     if( nullptr == pfnEnumTemperatureSensors ) {
         if(!ze_lib::context->isInitialized)
@@ -4770,6 +5246,10 @@ zesTemperatureGetProperties(
     zes_temp_properties_t* pProperties              ///< [in,out] Will contain the temperature sensor properties.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetProperties = ze_lib::context->zesDdiTable.Temperature.pfnGetProperties;
     if( nullptr == pfnGetProperties ) {
         if(!ze_lib::context->isInitialized)
@@ -4810,6 +5290,10 @@ zesTemperatureGetConfig(
     zes_temp_config_t* pConfig                      ///< [in,out] Returns current configuration.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetConfig = ze_lib::context->zesDdiTable.Temperature.pfnGetConfig;
     if( nullptr == pfnGetConfig ) {
         if(!ze_lib::context->isInitialized)
@@ -4867,6 +5351,10 @@ zesTemperatureSetConfig(
     const zes_temp_config_t* pConfig                ///< [in] New configuration.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnSetConfig = ze_lib::context->zesDdiTable.Temperature.pfnSetConfig;
     if( nullptr == pfnSetConfig ) {
         if(!ze_lib::context->isInitialized)
@@ -4902,6 +5390,10 @@ zesTemperatureGetState(
                                                     ///< in degrees Celsius.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetState = ze_lib::context->zesDdiTable.Temperature.pfnGetState;
     if( nullptr == pfnGetState ) {
         if(!ze_lib::context->isInitialized)
@@ -4946,6 +5438,10 @@ zesPowerGetLimitsExt(
                                                     ///< number of components.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetLimitsExt = ze_lib::context->zesDdiTable.Power.pfnGetLimitsExt;
     if( nullptr == pfnGetLimitsExt ) {
         if(!ze_lib::context->isInitialized)
@@ -4993,6 +5489,10 @@ zesPowerSetLimitsExt(
     zes_power_limit_ext_desc_t* pSustained          ///< [in][optional][range(0, *pCount)] Array of power limit descriptors.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnSetLimitsExt = ze_lib::context->zesDdiTable.Power.pfnSetLimitsExt;
     if( nullptr == pfnSetLimitsExt ) {
         if(!ze_lib::context->isInitialized)
