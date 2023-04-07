@@ -23,6 +23,9 @@ namespace validation_layer
             paramValidation = std::make_unique<ParameterValidation>();
         }
         enableHandleLifetime = getenv_tobool( "ZE_ENABLE_HANDLE_LIFETIME" );
+        if (enableHandleLifetime) {
+            handleLifetime = std::make_unique<HandleLifetimeValidation>();
+        }
         enableThreadingValidation = getenv_tobool( "ZE_ENABLE_THREADING_VALIDATION" );
     }
 

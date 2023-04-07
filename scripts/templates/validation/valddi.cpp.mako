@@ -50,15 +50,48 @@ ${line} \
             if(result!=${X}_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return ${th.make_pfn_name(n, tags, obj)}( ${", ".join(th.make_param_lines(n, tags, obj, format=["name"]))} );
+        <% 
+        func_name = th.make_func_name(n, tags, obj)
+        generate_post_call = re.match(r"\w+Create\w*$|\w+Get$|\w+Get\w*Exp$|\w+GetIpcHandle$|\w+GetSubDevices$", func_name)
+        %>
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->${n}HandleLifetime.${th.make_func_name(n, tags, obj)}( \
+% for line in th.make_param_lines(n, tags, obj, format=['name','delim']):
+${line} \
+%endfor
+);
+            if(result!=${X}_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = ${th.make_pfn_name(n, tags, obj)}( ${", ".join(th.make_param_lines(n, tags, obj, format=["name"]))} );
+        %if generate_post_call:
+
+        if( result==${X}_RESULT_SUCCESS && context.enableHandleLifetime ){
+            %for i, item in enumerate(th.get_loader_epilogue(n, tags, obj, meta)):
+            %if 'range' in item:
+            for (size_t i = ${item['range'][0]}; ( nullptr != ${item['name']}) && (i < ${item['range'][1]}); ++i){
+                if (${item['name']}[i]){
+                    context.handleLifetime->addHandle( ${item['name']}[i] );
+                }
+            }
+            %else:
+            if (${item['name']}){
+                %if re.match(r"\w+Immediate$", func_name):
+                context.handleLifetime->addHandle( *${item['name']} , false);
+                %else:
+                context.handleLifetime->addHandle( *${item['name']} );
+                %endif
+            }
+            %endif
+            %endfor
+        }
+        %endif
+        return result;
     }
     %if 'condition' in obj:
     #endif // ${th.subt(n, tags, obj['condition'])}

@@ -16,7 +16,7 @@ namespace validation_layer
 {
 
 class ZETValidationEntryPoints {
-
+public:
     virtual ze_result_t zetModuleGetDebugInfo( zet_module_handle_t hModule, zet_module_debug_info_format_t format, size_t* pSize, uint8_t* pDebugInfo ) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zetDeviceGetDebugProperties( zet_device_handle_t hDevice, zet_device_debug_properties_t* pDebugProperties ) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zetDebugAttach( zet_device_handle_t hDevice, const zet_debug_config_t* config, zet_debug_session_handle_t* phDebug ) {return ZE_RESULT_SUCCESS;}

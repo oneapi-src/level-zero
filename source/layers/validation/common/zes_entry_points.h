@@ -16,7 +16,7 @@ namespace validation_layer
 {
 
 class ZESValidationEntryPoints {
-
+public:
     virtual ze_result_t zesInit( zes_init_flags_t flags ) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zesDriverGet( uint32_t* pCount, zes_driver_handle_t* phDrivers ) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zesDeviceGet( zes_driver_handle_t hDriver, uint32_t* pCount, zes_device_handle_t* phDevices ) {return ZE_RESULT_SUCCESS;}

@@ -32,15 +32,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnInit( flags );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zesHandleLifetime.zesInit( flags );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnInit( flags );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -69,15 +73,27 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnGet( pCount, phDrivers );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zesHandleLifetime.zesDriverGet( pCount, phDrivers );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnGet( pCount, phDrivers );
+
+        if( result==ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
+            for (size_t i = 0; ( nullptr != phDrivers) && (i < *pCount); ++i){
+                if (phDrivers[i]){
+                    context.handleLifetime->addHandle( phDrivers[i] );
+                }
+            }
+        }
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -107,15 +123,27 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnGet( hDriver, pCount, phDevices );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zesHandleLifetime.zesDeviceGet( hDriver, pCount, phDevices );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnGet( hDriver, pCount, phDevices );
+
+        if( result==ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
+            for (size_t i = 0; ( nullptr != phDevices) && (i < *pCount); ++i){
+                if (phDevices[i]){
+                    context.handleLifetime->addHandle( phDevices[i] );
+                }
+            }
+        }
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -137,15 +165,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnGetProperties( hDevice, pProperties );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zesHandleLifetime.zesDeviceGetProperties( hDevice, pProperties );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnGetProperties( hDevice, pProperties );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -167,15 +199,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnGetState( hDevice, pState );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zesHandleLifetime.zesDeviceGetState( hDevice, pState );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnGetState( hDevice, pState );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -198,15 +234,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnReset( hDevice, force );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zesHandleLifetime.zesDeviceReset( hDevice, force );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnReset( hDevice, force );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -237,15 +277,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnProcessesGetState( hDevice, pCount, pProcesses );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zesHandleLifetime.zesDeviceProcessesGetState( hDevice, pCount, pProcesses );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnProcessesGetState( hDevice, pCount, pProcesses );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -267,15 +311,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnPciGetProperties( hDevice, pProperties );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zesHandleLifetime.zesDevicePciGetProperties( hDevice, pProperties );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnPciGetProperties( hDevice, pProperties );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -297,15 +345,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnPciGetState( hDevice, pState );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zesHandleLifetime.zesDevicePciGetState( hDevice, pState );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnPciGetState( hDevice, pState );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -335,15 +387,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnPciGetBars( hDevice, pCount, pProperties );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zesHandleLifetime.zesDevicePciGetBars( hDevice, pCount, pProperties );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnPciGetBars( hDevice, pCount, pProperties );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -365,15 +421,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnPciGetStats( hDevice, pStats );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zesHandleLifetime.zesDevicePciGetStats( hDevice, pStats );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnPciGetStats( hDevice, pStats );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -394,15 +454,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnSetOverclockWaiver( hDevice );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zesHandleLifetime.zesDeviceSetOverclockWaiver( hDevice );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnSetOverclockWaiver( hDevice );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -426,15 +490,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnGetOverclockDomains( hDevice, pOverclockDomains );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zesHandleLifetime.zesDeviceGetOverclockDomains( hDevice, pOverclockDomains );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnGetOverclockDomains( hDevice, pOverclockDomains );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -459,15 +527,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnGetOverclockControls( hDevice, domainType, pAvailableControls );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zesHandleLifetime.zesDeviceGetOverclockControls( hDevice, domainType, pAvailableControls );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnGetOverclockControls( hDevice, domainType, pAvailableControls );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -490,15 +562,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnResetOverclockSettings( hDevice, onShippedState );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zesHandleLifetime.zesDeviceResetOverclockSettings( hDevice, onShippedState );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnResetOverclockSettings( hDevice, onShippedState );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -525,15 +601,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnReadOverclockState( hDevice, pOverclockMode, pWaiverSetting, pOverclockState, pPendingAction, pPendingReset );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zesHandleLifetime.zesDeviceReadOverclockState( hDevice, pOverclockMode, pWaiverSetting, pOverclockState, pPendingAction, pPendingReset );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnReadOverclockState( hDevice, pOverclockMode, pWaiverSetting, pOverclockState, pPendingAction, pPendingReset );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -565,15 +645,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnEnumOverclockDomains( hDevice, pCount, phDomainHandle );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zesHandleLifetime.zesDeviceEnumOverclockDomains( hDevice, pCount, phDomainHandle );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnEnumOverclockDomains( hDevice, pCount, phDomainHandle );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -595,15 +679,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnGetDomainProperties( hDomainHandle, pDomainProperties );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zesHandleLifetime.zesOverclockGetDomainProperties( hDomainHandle, pDomainProperties );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnGetDomainProperties( hDomainHandle, pDomainProperties );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -625,15 +713,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnGetDomainVFProperties( hDomainHandle, pVFProperties );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zesHandleLifetime.zesOverclockGetDomainVFProperties( hDomainHandle, pVFProperties );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnGetDomainVFProperties( hDomainHandle, pVFProperties );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -656,15 +748,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnGetDomainControlProperties( hDomainHandle, DomainControl, pControlProperties );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zesHandleLifetime.zesOverclockGetDomainControlProperties( hDomainHandle, DomainControl, pControlProperties );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnGetDomainControlProperties( hDomainHandle, DomainControl, pControlProperties );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -687,15 +783,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnGetControlCurrentValue( hDomainHandle, DomainControl, pValue );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zesHandleLifetime.zesOverclockGetControlCurrentValue( hDomainHandle, DomainControl, pValue );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnGetControlCurrentValue( hDomainHandle, DomainControl, pValue );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -719,15 +819,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnGetControlPendingValue( hDomainHandle, DomainControl, pValue );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zesHandleLifetime.zesOverclockGetControlPendingValue( hDomainHandle, DomainControl, pValue );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnGetControlPendingValue( hDomainHandle, DomainControl, pValue );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -752,15 +856,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnSetControlUserValue( hDomainHandle, DomainControl, pValue, pPendingAction );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zesHandleLifetime.zesOverclockSetControlUserValue( hDomainHandle, DomainControl, pValue, pPendingAction );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnSetControlUserValue( hDomainHandle, DomainControl, pValue, pPendingAction );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -784,15 +892,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnGetControlState( hDomainHandle, DomainControl, pControlState, pPendingAction );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zesHandleLifetime.zesOverclockGetControlState( hDomainHandle, DomainControl, pControlState, pPendingAction );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnGetControlState( hDomainHandle, DomainControl, pControlState, pPendingAction );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -818,15 +930,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnGetVFPointValues( hDomainHandle, VFType, VFArrayType, PointIndex, PointValue );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zesHandleLifetime.zesOverclockGetVFPointValues( hDomainHandle, VFType, VFArrayType, PointIndex, PointValue );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnGetVFPointValues( hDomainHandle, VFType, VFArrayType, PointIndex, PointValue );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -851,15 +967,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnSetVFPointValues( hDomainHandle, VFType, PointIndex, PointValue );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zesHandleLifetime.zesOverclockSetVFPointValues( hDomainHandle, VFType, PointIndex, PointValue );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnSetVFPointValues( hDomainHandle, VFType, PointIndex, PointValue );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -891,15 +1011,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnEnumDiagnosticTestSuites( hDevice, pCount, phDiagnostics );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zesHandleLifetime.zesDeviceEnumDiagnosticTestSuites( hDevice, pCount, phDiagnostics );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnEnumDiagnosticTestSuites( hDevice, pCount, phDiagnostics );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -922,15 +1046,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnGetProperties( hDiagnostics, pProperties );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zesHandleLifetime.zesDiagnosticsGetProperties( hDiagnostics, pProperties );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnGetProperties( hDiagnostics, pProperties );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -960,15 +1088,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnGetTests( hDiagnostics, pCount, pTests );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zesHandleLifetime.zesDiagnosticsGetTests( hDiagnostics, pCount, pTests );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnGetTests( hDiagnostics, pCount, pTests );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -994,15 +1126,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnRunTests( hDiagnostics, startIndex, endIndex, pResult );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zesHandleLifetime.zesDiagnosticsRunTests( hDiagnostics, startIndex, endIndex, pResult );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnRunTests( hDiagnostics, startIndex, endIndex, pResult );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -1024,15 +1160,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnEccAvailable( hDevice, pAvailable );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zesHandleLifetime.zesDeviceEccAvailable( hDevice, pAvailable );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnEccAvailable( hDevice, pAvailable );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -1054,15 +1194,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnEccConfigurable( hDevice, pConfigurable );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zesHandleLifetime.zesDeviceEccConfigurable( hDevice, pConfigurable );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnEccConfigurable( hDevice, pConfigurable );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -1084,15 +1228,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnGetEccState( hDevice, pState );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zesHandleLifetime.zesDeviceGetEccState( hDevice, pState );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnGetEccState( hDevice, pState );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -1115,15 +1263,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnSetEccState( hDevice, newState, pState );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zesHandleLifetime.zesDeviceSetEccState( hDevice, newState, pState );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnSetEccState( hDevice, newState, pState );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -1155,15 +1307,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnEnumEngineGroups( hDevice, pCount, phEngine );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zesHandleLifetime.zesDeviceEnumEngineGroups( hDevice, pCount, phEngine );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnEnumEngineGroups( hDevice, pCount, phEngine );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -1185,15 +1341,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnGetProperties( hEngine, pProperties );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zesHandleLifetime.zesEngineGetProperties( hEngine, pProperties );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnGetProperties( hEngine, pProperties );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -1216,15 +1376,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnGetActivity( hEngine, pStats );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zesHandleLifetime.zesEngineGetActivity( hEngine, pStats );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnGetActivity( hEngine, pStats );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -1246,15 +1410,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnEventRegister( hDevice, events );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zesHandleLifetime.zesDeviceEventRegister( hDevice, events );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnEventRegister( hDevice, events );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -1292,15 +1460,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnEventListen( hDriver, timeout, count, phDevices, pNumDeviceEvents, pEvents );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zesHandleLifetime.zesDriverEventListen( hDriver, timeout, count, phDevices, pNumDeviceEvents, pEvents );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnEventListen( hDriver, timeout, count, phDevices, pNumDeviceEvents, pEvents );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -1338,15 +1510,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnEventListenEx( hDriver, timeout, count, phDevices, pNumDeviceEvents, pEvents );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zesHandleLifetime.zesDriverEventListenEx( hDriver, timeout, count, phDevices, pNumDeviceEvents, pEvents );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnEventListenEx( hDriver, timeout, count, phDevices, pNumDeviceEvents, pEvents );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -1378,15 +1554,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnEnumFabricPorts( hDevice, pCount, phPort );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zesHandleLifetime.zesDeviceEnumFabricPorts( hDevice, pCount, phPort );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnEnumFabricPorts( hDevice, pCount, phPort );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -1408,15 +1588,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnGetProperties( hPort, pProperties );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zesHandleLifetime.zesFabricPortGetProperties( hPort, pProperties );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnGetProperties( hPort, pProperties );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -1439,15 +1623,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnGetLinkType( hPort, pLinkType );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zesHandleLifetime.zesFabricPortGetLinkType( hPort, pLinkType );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnGetLinkType( hPort, pLinkType );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -1469,15 +1657,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnGetConfig( hPort, pConfig );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zesHandleLifetime.zesFabricPortGetConfig( hPort, pConfig );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnGetConfig( hPort, pConfig );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -1499,15 +1691,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnSetConfig( hPort, pConfig );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zesHandleLifetime.zesFabricPortSetConfig( hPort, pConfig );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnSetConfig( hPort, pConfig );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -1529,15 +1725,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnGetState( hPort, pState );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zesHandleLifetime.zesFabricPortGetState( hPort, pState );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnGetState( hPort, pState );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -1559,15 +1759,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnGetThroughput( hPort, pThroughput );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zesHandleLifetime.zesFabricPortGetThroughput( hPort, pThroughput );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnGetThroughput( hPort, pThroughput );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -1589,15 +1793,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnGetFabricErrorCounters( hPort, pErrors );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zesHandleLifetime.zesFabricPortGetFabricErrorCounters( hPort, pErrors );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnGetFabricErrorCounters( hPort, pErrors );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -1629,15 +1837,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnEnumFans( hDevice, pCount, phFan );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zesHandleLifetime.zesDeviceEnumFans( hDevice, pCount, phFan );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnEnumFans( hDevice, pCount, phFan );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -1659,15 +1871,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnGetProperties( hFan, pProperties );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zesHandleLifetime.zesFanGetProperties( hFan, pProperties );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnGetProperties( hFan, pProperties );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -1689,15 +1905,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnGetConfig( hFan, pConfig );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zesHandleLifetime.zesFanGetConfig( hFan, pConfig );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnGetConfig( hFan, pConfig );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -1718,15 +1938,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnSetDefaultMode( hFan );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zesHandleLifetime.zesFanSetDefaultMode( hFan );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnSetDefaultMode( hFan );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -1748,15 +1972,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnSetFixedSpeedMode( hFan, speed );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zesHandleLifetime.zesFanSetFixedSpeedMode( hFan, speed );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnSetFixedSpeedMode( hFan, speed );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -1778,15 +2006,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnSetSpeedTableMode( hFan, speedTable );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zesHandleLifetime.zesFanSetSpeedTableMode( hFan, speedTable );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnSetSpeedTableMode( hFan, speedTable );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -1811,15 +2043,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnGetState( hFan, units, pSpeed );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zesHandleLifetime.zesFanGetState( hFan, units, pSpeed );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnGetState( hFan, units, pSpeed );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -1851,15 +2087,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnEnumFirmwares( hDevice, pCount, phFirmware );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zesHandleLifetime.zesDeviceEnumFirmwares( hDevice, pCount, phFirmware );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnEnumFirmwares( hDevice, pCount, phFirmware );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -1882,15 +2122,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnGetProperties( hFirmware, pProperties );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zesHandleLifetime.zesFirmwareGetProperties( hFirmware, pProperties );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnGetProperties( hFirmware, pProperties );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -1913,15 +2157,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnFlash( hFirmware, pImage, size );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zesHandleLifetime.zesFirmwareFlash( hFirmware, pImage, size );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnFlash( hFirmware, pImage, size );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -1953,15 +2201,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnEnumFrequencyDomains( hDevice, pCount, phFrequency );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zesHandleLifetime.zesDeviceEnumFrequencyDomains( hDevice, pCount, phFrequency );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnEnumFrequencyDomains( hDevice, pCount, phFrequency );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -1983,15 +2235,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnGetProperties( hFrequency, pProperties );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zesHandleLifetime.zesFrequencyGetProperties( hFrequency, pProperties );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnGetProperties( hFrequency, pProperties );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -2021,15 +2277,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnGetAvailableClocks( hFrequency, pCount, phFrequency );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zesHandleLifetime.zesFrequencyGetAvailableClocks( hFrequency, pCount, phFrequency );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnGetAvailableClocks( hFrequency, pCount, phFrequency );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -2052,15 +2312,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnGetRange( hFrequency, pLimits );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zesHandleLifetime.zesFrequencyGetRange( hFrequency, pLimits );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnGetRange( hFrequency, pLimits );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -2083,15 +2347,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnSetRange( hFrequency, pLimits );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zesHandleLifetime.zesFrequencySetRange( hFrequency, pLimits );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnSetRange( hFrequency, pLimits );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -2113,15 +2381,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnGetState( hFrequency, pState );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zesHandleLifetime.zesFrequencyGetState( hFrequency, pState );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnGetState( hFrequency, pState );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -2144,15 +2416,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnGetThrottleTime( hFrequency, pThrottleTime );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zesHandleLifetime.zesFrequencyGetThrottleTime( hFrequency, pThrottleTime );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnGetThrottleTime( hFrequency, pThrottleTime );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -2175,15 +2451,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnOcGetCapabilities( hFrequency, pOcCapabilities );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zesHandleLifetime.zesFrequencyOcGetCapabilities( hFrequency, pOcCapabilities );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnOcGetCapabilities( hFrequency, pOcCapabilities );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -2207,15 +2487,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnOcGetFrequencyTarget( hFrequency, pCurrentOcFrequency );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zesHandleLifetime.zesFrequencyOcGetFrequencyTarget( hFrequency, pCurrentOcFrequency );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnOcGetFrequencyTarget( hFrequency, pCurrentOcFrequency );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -2239,15 +2523,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnOcSetFrequencyTarget( hFrequency, CurrentOcFrequency );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zesHandleLifetime.zesFrequencyOcSetFrequencyTarget( hFrequency, CurrentOcFrequency );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnOcSetFrequencyTarget( hFrequency, CurrentOcFrequency );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -2274,15 +2562,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnOcGetVoltageTarget( hFrequency, pCurrentVoltageTarget, pCurrentVoltageOffset );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zesHandleLifetime.zesFrequencyOcGetVoltageTarget( hFrequency, pCurrentVoltageTarget, pCurrentVoltageOffset );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnOcGetVoltageTarget( hFrequency, pCurrentVoltageTarget, pCurrentVoltageOffset );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -2309,15 +2601,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnOcSetVoltageTarget( hFrequency, CurrentVoltageTarget, CurrentVoltageOffset );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zesHandleLifetime.zesFrequencyOcSetVoltageTarget( hFrequency, CurrentVoltageTarget, CurrentVoltageOffset );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnOcSetVoltageTarget( hFrequency, CurrentVoltageTarget, CurrentVoltageOffset );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -2339,15 +2635,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnOcSetMode( hFrequency, CurrentOcMode );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zesHandleLifetime.zesFrequencyOcSetMode( hFrequency, CurrentOcMode );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnOcSetMode( hFrequency, CurrentOcMode );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -2369,15 +2669,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnOcGetMode( hFrequency, pCurrentOcMode );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zesHandleLifetime.zesFrequencyOcGetMode( hFrequency, pCurrentOcMode );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnOcGetMode( hFrequency, pCurrentOcMode );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -2400,15 +2704,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnOcGetIccMax( hFrequency, pOcIccMax );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zesHandleLifetime.zesFrequencyOcGetIccMax( hFrequency, pOcIccMax );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnOcGetIccMax( hFrequency, pOcIccMax );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -2430,15 +2738,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnOcSetIccMax( hFrequency, ocIccMax );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zesHandleLifetime.zesFrequencyOcSetIccMax( hFrequency, ocIccMax );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnOcSetIccMax( hFrequency, ocIccMax );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -2461,15 +2773,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnOcGetTjMax( hFrequency, pOcTjMax );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zesHandleLifetime.zesFrequencyOcGetTjMax( hFrequency, pOcTjMax );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnOcGetTjMax( hFrequency, pOcTjMax );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -2491,15 +2807,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnOcSetTjMax( hFrequency, ocTjMax );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zesHandleLifetime.zesFrequencyOcSetTjMax( hFrequency, ocTjMax );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnOcSetTjMax( hFrequency, ocTjMax );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -2531,15 +2851,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnEnumLeds( hDevice, pCount, phLed );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zesHandleLifetime.zesDeviceEnumLeds( hDevice, pCount, phLed );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnEnumLeds( hDevice, pCount, phLed );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -2561,15 +2885,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnGetProperties( hLed, pProperties );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zesHandleLifetime.zesLedGetProperties( hLed, pProperties );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnGetProperties( hLed, pProperties );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -2591,15 +2919,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnGetState( hLed, pState );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zesHandleLifetime.zesLedGetState( hLed, pState );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnGetState( hLed, pState );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -2621,15 +2953,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnSetState( hLed, enable );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zesHandleLifetime.zesLedSetState( hLed, enable );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnSetState( hLed, enable );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -2651,15 +2987,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnSetColor( hLed, pColor );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zesHandleLifetime.zesLedSetColor( hLed, pColor );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnSetColor( hLed, pColor );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -2691,15 +3031,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnEnumMemoryModules( hDevice, pCount, phMemory );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zesHandleLifetime.zesDeviceEnumMemoryModules( hDevice, pCount, phMemory );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnEnumMemoryModules( hDevice, pCount, phMemory );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -2721,15 +3065,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnGetProperties( hMemory, pProperties );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zesHandleLifetime.zesMemoryGetProperties( hMemory, pProperties );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnGetProperties( hMemory, pProperties );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -2751,15 +3099,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnGetState( hMemory, pState );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zesHandleLifetime.zesMemoryGetState( hMemory, pState );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnGetState( hMemory, pState );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -2782,15 +3134,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnGetBandwidth( hMemory, pBandwidth );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zesHandleLifetime.zesMemoryGetBandwidth( hMemory, pBandwidth );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnGetBandwidth( hMemory, pBandwidth );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -2822,15 +3178,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnEnumPerformanceFactorDomains( hDevice, pCount, phPerf );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zesHandleLifetime.zesDeviceEnumPerformanceFactorDomains( hDevice, pCount, phPerf );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnEnumPerformanceFactorDomains( hDevice, pCount, phPerf );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -2853,15 +3213,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnGetProperties( hPerf, pProperties );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zesHandleLifetime.zesPerformanceFactorGetProperties( hPerf, pProperties );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnGetProperties( hPerf, pProperties );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -2884,15 +3248,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnGetConfig( hPerf, pFactor );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zesHandleLifetime.zesPerformanceFactorGetConfig( hPerf, pFactor );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnGetConfig( hPerf, pFactor );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -2914,15 +3282,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnSetConfig( hPerf, factor );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zesHandleLifetime.zesPerformanceFactorSetConfig( hPerf, factor );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnSetConfig( hPerf, factor );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -2954,15 +3326,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnEnumPowerDomains( hDevice, pCount, phPower );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zesHandleLifetime.zesDeviceEnumPowerDomains( hDevice, pCount, phPower );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnEnumPowerDomains( hDevice, pCount, phPower );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -2984,15 +3360,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnGetCardPowerDomain( hDevice, phPower );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zesHandleLifetime.zesDeviceGetCardPowerDomain( hDevice, phPower );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnGetCardPowerDomain( hDevice, phPower );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -3014,15 +3394,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnGetProperties( hPower, pProperties );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zesHandleLifetime.zesPowerGetProperties( hPower, pProperties );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnGetProperties( hPower, pProperties );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -3045,15 +3429,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnGetEnergyCounter( hPower, pEnergy );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zesHandleLifetime.zesPowerGetEnergyCounter( hPower, pEnergy );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnGetEnergyCounter( hPower, pEnergy );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -3080,15 +3468,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnGetLimits( hPower, pSustained, pBurst, pPeak );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zesHandleLifetime.zesPowerGetLimits( hPower, pSustained, pBurst, pPeak );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnGetLimits( hPower, pSustained, pBurst, pPeak );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -3115,15 +3507,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnSetLimits( hPower, pSustained, pBurst, pPeak );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zesHandleLifetime.zesPowerSetLimits( hPower, pSustained, pBurst, pPeak );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnSetLimits( hPower, pSustained, pBurst, pPeak );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -3146,15 +3542,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnGetEnergyThreshold( hPower, pThreshold );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zesHandleLifetime.zesPowerGetEnergyThreshold( hPower, pThreshold );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnGetEnergyThreshold( hPower, pThreshold );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -3176,15 +3576,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnSetEnergyThreshold( hPower, threshold );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zesHandleLifetime.zesPowerSetEnergyThreshold( hPower, threshold );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnSetEnergyThreshold( hPower, threshold );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -3216,15 +3620,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnEnumPsus( hDevice, pCount, phPsu );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zesHandleLifetime.zesDeviceEnumPsus( hDevice, pCount, phPsu );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnEnumPsus( hDevice, pCount, phPsu );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -3246,15 +3654,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnGetProperties( hPsu, pProperties );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zesHandleLifetime.zesPsuGetProperties( hPsu, pProperties );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnGetProperties( hPsu, pProperties );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -3276,15 +3688,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnGetState( hPsu, pState );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zesHandleLifetime.zesPsuGetState( hPsu, pState );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnGetState( hPsu, pState );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -3316,15 +3732,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnEnumRasErrorSets( hDevice, pCount, phRas );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zesHandleLifetime.zesDeviceEnumRasErrorSets( hDevice, pCount, phRas );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnEnumRasErrorSets( hDevice, pCount, phRas );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -3346,15 +3766,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnGetProperties( hRas, pProperties );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zesHandleLifetime.zesRasGetProperties( hRas, pProperties );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnGetProperties( hRas, pProperties );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -3377,15 +3801,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnGetConfig( hRas, pConfig );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zesHandleLifetime.zesRasGetConfig( hRas, pConfig );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnGetConfig( hRas, pConfig );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -3407,15 +3835,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnSetConfig( hRas, pConfig );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zesHandleLifetime.zesRasSetConfig( hRas, pConfig );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnSetConfig( hRas, pConfig );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -3438,15 +3870,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnGetState( hRas, clear, pState );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zesHandleLifetime.zesRasGetState( hRas, clear, pState );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnGetState( hRas, clear, pState );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -3478,15 +3914,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnEnumSchedulers( hDevice, pCount, phScheduler );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zesHandleLifetime.zesDeviceEnumSchedulers( hDevice, pCount, phScheduler );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnEnumSchedulers( hDevice, pCount, phScheduler );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -3508,15 +3948,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnGetProperties( hScheduler, pProperties );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zesHandleLifetime.zesSchedulerGetProperties( hScheduler, pProperties );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnGetProperties( hScheduler, pProperties );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -3538,15 +3982,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnGetCurrentMode( hScheduler, pMode );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zesHandleLifetime.zesSchedulerGetCurrentMode( hScheduler, pMode );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnGetCurrentMode( hScheduler, pMode );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -3570,15 +4018,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnGetTimeoutModeProperties( hScheduler, getDefaults, pConfig );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zesHandleLifetime.zesSchedulerGetTimeoutModeProperties( hScheduler, getDefaults, pConfig );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnGetTimeoutModeProperties( hScheduler, getDefaults, pConfig );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -3602,15 +4054,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnGetTimesliceModeProperties( hScheduler, getDefaults, pConfig );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zesHandleLifetime.zesSchedulerGetTimesliceModeProperties( hScheduler, getDefaults, pConfig );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnGetTimesliceModeProperties( hScheduler, getDefaults, pConfig );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -3634,15 +4090,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnSetTimeoutMode( hScheduler, pProperties, pNeedReload );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zesHandleLifetime.zesSchedulerSetTimeoutMode( hScheduler, pProperties, pNeedReload );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnSetTimeoutMode( hScheduler, pProperties, pNeedReload );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -3666,15 +4126,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnSetTimesliceMode( hScheduler, pProperties, pNeedReload );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zesHandleLifetime.zesSchedulerSetTimesliceMode( hScheduler, pProperties, pNeedReload );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnSetTimesliceMode( hScheduler, pProperties, pNeedReload );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -3697,15 +4161,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnSetExclusiveMode( hScheduler, pNeedReload );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zesHandleLifetime.zesSchedulerSetExclusiveMode( hScheduler, pNeedReload );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnSetExclusiveMode( hScheduler, pNeedReload );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -3728,15 +4196,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnSetComputeUnitDebugMode( hScheduler, pNeedReload );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zesHandleLifetime.zesSchedulerSetComputeUnitDebugMode( hScheduler, pNeedReload );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnSetComputeUnitDebugMode( hScheduler, pNeedReload );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -3768,15 +4240,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnEnumStandbyDomains( hDevice, pCount, phStandby );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zesHandleLifetime.zesDeviceEnumStandbyDomains( hDevice, pCount, phStandby );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnEnumStandbyDomains( hDevice, pCount, phStandby );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -3798,15 +4274,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnGetProperties( hStandby, pProperties );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zesHandleLifetime.zesStandbyGetProperties( hStandby, pProperties );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnGetProperties( hStandby, pProperties );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -3828,15 +4308,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnGetMode( hStandby, pMode );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zesHandleLifetime.zesStandbyGetMode( hStandby, pMode );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnGetMode( hStandby, pMode );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -3858,15 +4342,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnSetMode( hStandby, mode );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zesHandleLifetime.zesStandbySetMode( hStandby, mode );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnSetMode( hStandby, mode );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -3898,15 +4386,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnEnumTemperatureSensors( hDevice, pCount, phTemperature );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zesHandleLifetime.zesDeviceEnumTemperatureSensors( hDevice, pCount, phTemperature );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnEnumTemperatureSensors( hDevice, pCount, phTemperature );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -3928,15 +4420,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnGetProperties( hTemperature, pProperties );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zesHandleLifetime.zesTemperatureGetProperties( hTemperature, pProperties );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnGetProperties( hTemperature, pProperties );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -3958,15 +4454,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnGetConfig( hTemperature, pConfig );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zesHandleLifetime.zesTemperatureGetConfig( hTemperature, pConfig );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnGetConfig( hTemperature, pConfig );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -3988,15 +4488,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnSetConfig( hTemperature, pConfig );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zesHandleLifetime.zesTemperatureSetConfig( hTemperature, pConfig );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnSetConfig( hTemperature, pConfig );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -4019,15 +4523,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnGetState( hTemperature, pTemperature );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zesHandleLifetime.zesTemperatureGetState( hTemperature, pTemperature );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnGetState( hTemperature, pTemperature );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -4057,15 +4565,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnGetLimitsExt( hPower, pCount, pSustained );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zesHandleLifetime.zesPowerGetLimitsExt( hPower, pCount, pSustained );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnGetLimitsExt( hPower, pCount, pSustained );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -4088,15 +4600,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnSetLimitsExt( hPower, pCount, pSustained );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zesHandleLifetime.zesPowerSetLimitsExt( hPower, pCount, pSustained );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnSetLimitsExt( hPower, pCount, pSustained );
+        return result;
     }
 
 } // namespace validation_layer

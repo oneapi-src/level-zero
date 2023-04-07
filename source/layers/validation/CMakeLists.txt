@@ -21,6 +21,7 @@ target_include_directories(${TARGET_NAME}
     PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}
         ${CMAKE_CURRENT_SOURCE_DIR}/common
+        ${CMAKE_CURRENT_SOURCE_DIR}/handle_lifetime_tracking
         ${CMAKE_CURRENT_SOURCE_DIR}/parameter_validation
 )
 
@@ -51,3 +52,4 @@ install(TARGETS ze_validation_layer
 )
 
 add_subdirectory(parameter_validation)
+add_subdirectory(handle_lifetime_tracking)

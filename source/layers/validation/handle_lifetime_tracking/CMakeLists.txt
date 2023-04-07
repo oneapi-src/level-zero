@@ -1,0 +1,10 @@
+target_sources(${TARGET_NAME}
+    PRIVATE
+    ${CMAKE_CURRENT_LIST_DIR}/handle_lifetime.h
+    ${CMAKE_CURRENT_LIST_DIR}/ze_handle_lifetime.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/ze_handle_lifetime.h
+    ${CMAKE_CURRENT_LIST_DIR}/zes_handle_lifetime.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/zes_handle_lifetime.h
+    ${CMAKE_CURRENT_LIST_DIR}/zet_handle_lifetime.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/zet_handle_lifetime.h
+)

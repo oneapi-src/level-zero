@@ -19,6 +19,17 @@ class obj_traits:
             return False
 
     @staticmethod
+    def is_function_with_input_handles(obj):
+        try:
+            if re.match(r"function", obj['type']):
+                for param in obj['params']:
+                    if param_traits.is_input(param) and type_traits.is_handle(param['type']):
+                        return True
+            return False
+        except:
+            return False
+
+    @staticmethod
     def is_class(obj):
         try:
             return True if re.match(r"class", obj['type']) else False
