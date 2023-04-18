@@ -8,6 +8,7 @@
 #include "ze_loader_internal.h"
 
 #include "driver_discovery.h"
+#include <iostream>
 
 namespace loader
 {
@@ -153,6 +154,10 @@ namespace loader
                     compVersions.push_back(version);
                 }
             }
+        }
+
+        if( getenv_tobool( "ZET_ENABLE_API_TRACING_EXP" ) ) {
+            std::cout << "ZET_ENABLE_API_TRACING_EXP is deprecated. Use ZE_ENABLE_TRACING_LAYER instead" << std::endl;
         }
 
         forceIntercept = getenv_tobool( "ZE_ENABLE_LOADER_INTERCEPT" );
