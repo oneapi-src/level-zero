@@ -2083,46 +2083,6 @@ zesFabricPortGetThroughput(
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Get Fabric Port Error Counters
-/// 
-/// @details
-///     - The application may call this function from simultaneous threads.
-///     - The implementation of this function should be lock-free.
-/// 
-/// @returns
-///     - ::ZE_RESULT_SUCCESS
-///     - ::ZE_RESULT_ERROR_UNINITIALIZED
-///     - ::ZE_RESULT_ERROR_DEVICE_LOST
-///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
-///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
-///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
-///         + `nullptr == hPort`
-///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
-///         + `nullptr == pErrors`
-///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
-///         + User does not have permissions to query this telemetry.
-ze_result_t ZE_APICALL
-zesFabricPortGetFabricErrorCounters(
-    zes_fabric_port_handle_t hPort,                 ///< [in] Handle for the component.
-    zes_fabric_port_error_counters_t* pErrors       ///< [in,out] Will contain the Fabric port Error counters.
-    )
-{
-    if(ze_lib::context->inTeardown) {
-        return ZE_RESULT_ERROR_UNINITIALIZED;
-    }
-
-    auto pfnGetFabricErrorCounters = ze_lib::context->zesDdiTable.FabricPort.pfnGetFabricErrorCounters;
-    if( nullptr == pfnGetFabricErrorCounters ) {
-        if(!ze_lib::context->isInitialized)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        else
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-    }
-
-    return pfnGetFabricErrorCounters( hPort, pErrors );
-}
-
-///////////////////////////////////////////////////////////////////////////////
 /// @brief Get handle of fans
 /// 
 /// @details

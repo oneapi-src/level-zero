@@ -905,12 +905,3 @@ inline ze_result_t ParameterValidation::validateExtensions(zes_overclock_propert
 
     return validateStructureTypes<zes_structure_type_t, zes_base_properties_t>(descriptor, baseTypes, types);
 }
-
-template <>
-inline ze_result_t ParameterValidation::validateExtensions(zes_fabric_port_error_counters_t *descriptor) {
-
-    std::vector<zes_structure_type_t> baseTypes = {ZES_STRUCTURE_TYPE_FABRIC_PORT_ERROR_COUNTERS};
-    std::vector<zes_structure_type_t> types = {};
-
-    return validateStructureTypes<zes_structure_type_t, zes_base_properties_t>(descriptor, baseTypes, types);
-}

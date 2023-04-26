@@ -1775,40 +1775,6 @@ namespace validation_layer
     }
 
     ///////////////////////////////////////////////////////////////////////////////
-    /// @brief Intercept function for zesFabricPortGetFabricErrorCounters
-    __zedlllocal ze_result_t ZE_APICALL
-    zesFabricPortGetFabricErrorCounters(
-        zes_fabric_port_handle_t hPort,                 ///< [in] Handle for the component.
-        zes_fabric_port_error_counters_t* pErrors       ///< [in,out] Will contain the Fabric port Error counters.
-        )
-    {
-        auto pfnGetFabricErrorCounters = context.zesDdiTable.FabricPort.pfnGetFabricErrorCounters;
-
-        if( nullptr == pfnGetFabricErrorCounters )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zesParamValidation.zesFabricPortGetFabricErrorCounters( hPort, pErrors );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-
-        if( context.enableThreadingValidation ){ 
-            //Unimplemented
-        }
-
-        
-        if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zesHandleLifetime.zesFabricPortGetFabricErrorCounters( hPort, pErrors );
-            if(result!=ZE_RESULT_SUCCESS) return result;    
-        }
-
-        auto result = pfnGetFabricErrorCounters( hPort, pErrors );
-        return result;
-    }
-
-    ///////////////////////////////////////////////////////////////////////////////
     /// @brief Intercept function for zesDeviceEnumFans
     __zedlllocal ze_result_t ZE_APICALL
     zesDeviceEnumFans(
@@ -4938,9 +4904,6 @@ zesGetFabricPortProcAddrTable(
 
     dditable.pfnGetThroughput                            = pDdiTable->pfnGetThroughput;
     pDdiTable->pfnGetThroughput                          = validation_layer::zesFabricPortGetThroughput;
-
-    dditable.pfnGetFabricErrorCounters                   = pDdiTable->pfnGetFabricErrorCounters;
-    pDdiTable->pfnGetFabricErrorCounters                 = validation_layer::zesFabricPortGetFabricErrorCounters;
 
     return result;
 }

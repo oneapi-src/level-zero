@@ -1473,31 +1473,6 @@ namespace loader
     }
 
     ///////////////////////////////////////////////////////////////////////////////
-    /// @brief Intercept function for zesFabricPortGetFabricErrorCounters
-    __zedlllocal ze_result_t ZE_APICALL
-    zesFabricPortGetFabricErrorCounters(
-        zes_fabric_port_handle_t hPort,                 ///< [in] Handle for the component.
-        zes_fabric_port_error_counters_t* pErrors       ///< [in,out] Will contain the Fabric port Error counters.
-        )
-    {
-        ze_result_t result = ZE_RESULT_SUCCESS;
-
-        // extract driver's function pointer table
-        auto dditable = reinterpret_cast<zes_fabric_port_object_t*>( hPort )->dditable;
-        auto pfnGetFabricErrorCounters = dditable->zes.FabricPort.pfnGetFabricErrorCounters;
-        if( nullptr == pfnGetFabricErrorCounters )
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-
-        // convert loader handle to driver handle
-        hPort = reinterpret_cast<zes_fabric_port_object_t*>( hPort )->handle;
-
-        // forward to device-driver
-        result = pfnGetFabricErrorCounters( hPort, pErrors );
-
-        return result;
-    }
-
-    ///////////////////////////////////////////////////////////////////////////////
     /// @brief Intercept function for zesDeviceEnumFans
     __zedlllocal ze_result_t ZE_APICALL
     zesDeviceEnumFans(
@@ -4289,7 +4264,6 @@ zesGetFabricPortProcAddrTable(
             pDdiTable->pfnSetConfig                                = loader::zesFabricPortSetConfig;
             pDdiTable->pfnGetState                                 = loader::zesFabricPortGetState;
             pDdiTable->pfnGetThroughput                            = loader::zesFabricPortGetThroughput;
-            pDdiTable->pfnGetFabricErrorCounters                   = loader::zesFabricPortGetFabricErrorCounters;
         }
         else
         {

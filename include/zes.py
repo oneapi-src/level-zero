@@ -4,7 +4,7 @@
  SPDX-License-Identifier: MIT
 
  @file zes.py
- @version v1.6-r1.6.0
+ @version v1.6-r1.6.3
 
  """
 import platform
@@ -148,7 +148,6 @@ class zes_structure_type_v(IntEnum):
     POWER_LIMIT_EXT_DESC = 0x27                     ## ::zes_power_limit_ext_desc_t
     POWER_EXT_PROPERTIES = 0x28                     ## ::zes_power_ext_properties_t
     OVERCLOCK_PROPERTIES = 0x29                     ## ::zes_overclock_properties_t
-    FABRIC_PORT_ERROR_COUNTERS = 0x2a               ## ::zes_fabric_port_error_counters_t
 
 class zes_structure_type_t(c_int):
     def __str__(self):
@@ -1058,19 +1057,6 @@ class zes_fabric_port_throughput_t(Structure):
     ]
 
 ###############################################################################
-## @brief Fabric Port Error Counters
-class zes_fabric_port_error_counters_t(Structure):
-    _fields_ = [
-        ("stype", zes_structure_type_t),                                ## [in] type of this structure
-        ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
-                                                                        ## structure (i.e. contains sType and pNext).
-        ("linkFailureCount", c_ulonglong),                              ## [out] Link Failure Error Count
-        ("fwCommErrorCount", c_ulonglong),                              ## [out] Firmware Communication Error Count
-        ("fwErrorCount", c_ulonglong),                                  ## [out] Firmware reported Error Count
-        ("linkDegradeCount", c_ulonglong)                               ## [out] Link Degrade Error Count
-    ]
-
-###############################################################################
 ## @brief Fan resource speed mode
 class zes_fan_speed_mode_v(IntEnum):
     DEFAULT = 0                                     ## The fan speed is operating using the hardware default settings
@@ -1771,9 +1757,6 @@ class zes_ras_error_cat_v(IntEnum):
     CACHE_ERRORS = 5                                ## The number of errors that have occurred in caches (L1/L3/register
                                                     ## file/shared local memory/sampler)
     DISPLAY_ERRORS = 6                              ## The number of errors that have occurred in the display
-    MEMORY_ERRORS = 7                               ## The number of errors that have occurred in Memory
-    SCALE_ERRORS = 8                                ## The number of errors that have occurred in Scale Fabric
-    L3FABRIC_ERRORS = 9                             ## The number of errors that have occurred in L3 Fabric
 
 class zes_ras_error_cat_t(c_int):
     def __str__(self):
@@ -1782,7 +1765,7 @@ class zes_ras_error_cat_t(c_int):
 
 ###############################################################################
 ## @brief The maximum number of categories
-ZES_MAX_RAS_ERROR_CATEGORY_COUNT = 10
+ZES_MAX_RAS_ERROR_CATEGORY_COUNT = 7
 
 ###############################################################################
 ## @brief RAS properties
@@ -2964,13 +2947,6 @@ if __use_win_types:
 else:
     _zesFabricPortGetThroughput_t = CFUNCTYPE( ze_result_t, zes_fabric_port_handle_t, POINTER(zes_fabric_port_throughput_t) )
 
-###############################################################################
-## @brief Function-pointer for zesFabricPortGetFabricErrorCounters
-if __use_win_types:
-    _zesFabricPortGetFabricErrorCounters_t = WINFUNCTYPE( ze_result_t, zes_fabric_port_handle_t, POINTER(zes_fabric_port_error_counters_t) )
-else:
-    _zesFabricPortGetFabricErrorCounters_t = CFUNCTYPE( ze_result_t, zes_fabric_port_handle_t, POINTER(zes_fabric_port_error_counters_t) )
-
 
 ###############################################################################
 ## @brief Table of FabricPort functions pointers
@@ -2981,8 +2957,7 @@ class _zes_fabric_port_dditable_t(Structure):
         ("pfnGetConfig", c_void_p),                                     ## _zesFabricPortGetConfig_t
         ("pfnSetConfig", c_void_p),                                     ## _zesFabricPortSetConfig_t
         ("pfnGetState", c_void_p),                                      ## _zesFabricPortGetState_t
-        ("pfnGetThroughput", c_void_p),                                 ## _zesFabricPortGetThroughput_t
-        ("pfnGetFabricErrorCounters", c_void_p)                         ## _zesFabricPortGetFabricErrorCounters_t
+        ("pfnGetThroughput", c_void_p)                                  ## _zesFabricPortGetThroughput_t
     ]
 
 ###############################################################################
@@ -3465,7 +3440,6 @@ class ZES_DDI:
         self.zesFabricPortSetConfig = _zesFabricPortSetConfig_t(self.__dditable.FabricPort.pfnSetConfig)
         self.zesFabricPortGetState = _zesFabricPortGetState_t(self.__dditable.FabricPort.pfnGetState)
         self.zesFabricPortGetThroughput = _zesFabricPortGetThroughput_t(self.__dditable.FabricPort.pfnGetThroughput)
-        self.zesFabricPortGetFabricErrorCounters = _zesFabricPortGetFabricErrorCounters_t(self.__dditable.FabricPort.pfnGetFabricErrorCounters)
 
         # call driver to get function pointers
         _Temperature = _zes_temperature_dditable_t()

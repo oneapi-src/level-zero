@@ -66,7 +66,6 @@ namespace validation_layer
         ze_result_t zesFabricPortSetConfig ( zes_fabric_port_handle_t hPort, const zes_fabric_port_config_t* pConfig ) override;
         ze_result_t zesFabricPortGetState ( zes_fabric_port_handle_t hPort, zes_fabric_port_state_t* pState ) override;
         ze_result_t zesFabricPortGetThroughput ( zes_fabric_port_handle_t hPort, zes_fabric_port_throughput_t* pThroughput ) override;
-        ze_result_t zesFabricPortGetFabricErrorCounters ( zes_fabric_port_handle_t hPort, zes_fabric_port_error_counters_t* pErrors ) override;
         ze_result_t zesDeviceEnumFans ( zes_device_handle_t hDevice, uint32_t* pCount, zes_fan_handle_t* phFan ) override;
         ze_result_t zesFanGetProperties ( zes_fan_handle_t hFan, zes_fan_properties_t* pProperties ) override;
         ze_result_t zesFanGetConfig ( zes_fan_handle_t hFan, zes_fan_config_t* pConfig ) override;

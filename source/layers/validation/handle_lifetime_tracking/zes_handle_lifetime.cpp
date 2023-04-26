@@ -705,18 +705,6 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZESHandleLifetimeValidation::zesFabricPortGetFabricErrorCounters(
-        zes_fabric_port_handle_t hPort,                 ///< [in] Handle for the component.
-        zes_fabric_port_error_counters_t* pErrors       ///< [in,out] Will contain the Fabric port Error counters.
-        )
-    { 
-        
-        if ( !context.handleLifetime->isHandleValid( hPort )){
-                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
-        }
-        return ZE_RESULT_SUCCESS;
-    }
-    ze_result_t
     ZESHandleLifetimeValidation::zesDeviceEnumFans(
         zes_device_handle_t hDevice,                    ///< [in] Sysman handle of the device.
         uint32_t* pCount,                               ///< [in,out] pointer to the number of components of this type.

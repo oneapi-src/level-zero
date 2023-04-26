@@ -1305,30 +1305,6 @@ namespace driver
     }
 
     ///////////////////////////////////////////////////////////////////////////////
-    /// @brief Intercept function for zesFabricPortGetFabricErrorCounters
-    __zedlllocal ze_result_t ZE_APICALL
-    zesFabricPortGetFabricErrorCounters(
-        zes_fabric_port_handle_t hPort,                 ///< [in] Handle for the component.
-        zes_fabric_port_error_counters_t* pErrors       ///< [in,out] Will contain the Fabric port Error counters.
-        )
-    {
-        ze_result_t result = ZE_RESULT_SUCCESS;
-
-        // if the driver has created a custom function, then call it instead of using the generic path
-        auto pfnGetFabricErrorCounters = context.zesDdiTable.FabricPort.pfnGetFabricErrorCounters;
-        if( nullptr != pfnGetFabricErrorCounters )
-        {
-            result = pfnGetFabricErrorCounters( hPort, pErrors );
-        }
-        else
-        {
-            // generic implementation
-        }
-
-        return result;
-    }
-
-    ///////////////////////////////////////////////////////////////////////////////
     /// @brief Intercept function for zesDeviceEnumFans
     __zedlllocal ze_result_t ZE_APICALL
     zesDeviceEnumFans(
@@ -3657,8 +3633,6 @@ zesGetFabricPortProcAddrTable(
     pDdiTable->pfnGetState                               = driver::zesFabricPortGetState;
 
     pDdiTable->pfnGetThroughput                          = driver::zesFabricPortGetThroughput;
-
-    pDdiTable->pfnGetFabricErrorCounters                 = driver::zesFabricPortGetFabricErrorCounters;
 
     return result;
 }

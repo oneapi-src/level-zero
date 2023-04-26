@@ -962,22 +962,6 @@ namespace validation_layer
 
 
     ze_result_t
-    ZESParameterValidation::zesFabricPortGetFabricErrorCounters(
-        zes_fabric_port_handle_t hPort,                 ///< [in] Handle for the component.
-        zes_fabric_port_error_counters_t* pErrors       ///< [in,out] Will contain the Fabric port Error counters.
-        )
-    {
-        if( nullptr == hPort )
-            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
-
-        if( nullptr == pErrors )
-            return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
-
-        return ParameterValidation::validateExtensions(pErrors);
-    }
-
-
-    ze_result_t
     ZESParameterValidation::zesDeviceEnumFans(
         zes_device_handle_t hDevice,                    ///< [in] Sysman handle of the device.
         uint32_t* pCount,                               ///< [in,out] pointer to the number of components of this type.

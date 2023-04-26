@@ -203,8 +203,7 @@
                     "GetConfig",
                     "SetConfig",
                     "GetState",
-                    "GetThroughput",
-                    "GetFabricErrorCounters"
+                    "GetThroughput"
                 ],
                 "handle": [
                     "$s_fabric_port_handle_t"
@@ -222,8 +221,7 @@
                     "$s_fabric_link_type_t",
                     "$s_fabric_port_config_t",
                     "$s_fabric_port_state_t",
-                    "$s_fabric_port_throughput_t",
-                    "$s_fabric_port_error_counters_t"
+                    "$s_fabric_port_throughput_t"
                 ]
             },
             "$sFan": {
@@ -1854,12 +1852,9 @@
                     "$S_RAS_ERROR_CAT_COMPUTE_ERRORS",
                     "$S_RAS_ERROR_CAT_NON_COMPUTE_ERRORS",
                     "$S_RAS_ERROR_CAT_CACHE_ERRORS",
-                    "$S_RAS_ERROR_CAT_DISPLAY_ERRORS",
-                    "$S_RAS_ERROR_CAT_MEMORY_ERRORS",
-                    "$S_RAS_ERROR_CAT_SCALE_ERRORS",
-                    "$S_RAS_ERROR_CAT_L3FABRIC_ERRORS"
+                    "$S_RAS_ERROR_CAT_DISPLAY_ERRORS"
                 ],
-                "max": "$S_RAS_ERROR_CAT_L3FABRIC_ERRORS"
+                "max": "$S_RAS_ERROR_CAT_DISPLAY_ERRORS"
             },
             "$s_ras_error_type_t": {
                 "class": "$sRas",
@@ -1954,10 +1949,9 @@
                     "$S_STRUCTURE_TYPE_DEVICE_ECC_PROPERTIES",
                     "$S_STRUCTURE_TYPE_POWER_LIMIT_EXT_DESC",
                     "$S_STRUCTURE_TYPE_POWER_EXT_PROPERTIES",
-                    "$S_STRUCTURE_TYPE_OVERCLOCK_PROPERTIES",
-                    "$S_STRUCTURE_TYPE_FABRIC_PORT_ERROR_COUNTERS"
+                    "$S_STRUCTURE_TYPE_OVERCLOCK_PROPERTIES"
                 ],
-                "max": "$S_STRUCTURE_TYPE_FABRIC_PORT_ERROR_COUNTERS"
+                "max": "$S_STRUCTURE_TYPE_OVERCLOCK_PROPERTIES"
             },
             "$s_temp_sensors_t": {
                 "class": "$sTemperature",
@@ -3743,17 +3737,6 @@
                     },
                     {
                         "type": "$s_fabric_port_config_t*"
-                    }
-                ]
-            },
-            "$sFabricPortGetFabricErrorCounters": {
-                "class": "$sFabricPort",
-                "params": [
-                    {
-                        "type": "$s_fabric_port_handle_t"
-                    },
-                    {
-                        "type": "$s_fabric_port_error_counters_t*"
                     }
                 ]
             },
@@ -7749,7 +7732,7 @@
             "$S_MAX_RAS_ERROR_CATEGORY_COUNT": {
                 "class": "",
                 "values": [
-                    "10"
+                    "7"
                 ]
             },
             "$S_POWER_LIMITS_EXT_NAME": {
@@ -8499,35 +8482,6 @@
                         "init": null,
                         "name": "beaconing",
                         "type": "$x_bool_t"
-                    }
-                ]
-            },
-            "$s_fabric_port_error_counters_t": {
-                "class": "$sFabricPort",
-                "members": [
-                    {
-                        "desc": "[out] Link Failure Error Count",
-                        "init": null,
-                        "name": "linkFailureCount",
-                        "type": "uint64_t"
-                    },
-                    {
-                        "desc": "[out] Firmware Communication Error Count",
-                        "init": null,
-                        "name": "fwCommErrorCount",
-                        "type": "uint64_t"
-                    },
-                    {
-                        "desc": "[out] Firmware reported Error Count",
-                        "init": null,
-                        "name": "fwErrorCount",
-                        "type": "uint64_t"
-                    },
-                    {
-                        "desc": "[out] Link Degrade Error Count",
-                        "init": null,
-                        "name": "linkDegradeCount",
-                        "type": "uint64_t"
                     }
                 ]
             },
@@ -17461,24 +17415,6 @@
                         "desc": "The number of errors that have occurred in the display",
                         "name": "ZES_RAS_ERROR_CAT_DISPLAY_ERRORS",
                         "value": "6"
-                    },
-                    {
-                        "desc": "The number of errors that have occurred in Memory",
-                        "name": "ZES_RAS_ERROR_CAT_MEMORY_ERRORS",
-                        "value": "7",
-                        "version": "1.5"
-                    },
-                    {
-                        "desc": "The number of errors that have occurred in Scale Fabric",
-                        "name": "ZES_RAS_ERROR_CAT_SCALE_ERRORS",
-                        "value": "8",
-                        "version": "1.5"
-                    },
-                    {
-                        "desc": "The number of errors that have occurred in L3 Fabric",
-                        "name": "ZES_RAS_ERROR_CAT_L3FABRIC_ERRORS",
-                        "value": "9",
-                        "version": "1.5"
                     }
                 ],
                 "name": "zes_ras_error_cat_t",
@@ -17814,12 +17750,6 @@
                         "desc": "zes_overclock_properties_t",
                         "name": "ZES_STRUCTURE_TYPE_OVERCLOCK_PROPERTIES",
                         "value": "0x29",
-                        "version": "1.5"
-                    },
-                    {
-                        "desc": "zes_fabric_port_error_counters_t",
-                        "name": "ZES_STRUCTURE_TYPE_FABRIC_PORT_ERROR_COUNTERS",
-                        "value": "0x2a",
                         "version": "1.5"
                     }
                 ],
@@ -25203,62 +25133,6 @@
                     }
                 ],
                 "type": "function"
-            },
-            "GetFabricErrorCounters": {
-                "class": "zesFabricPort",
-                "desc": "Get Fabric Port Error Counters",
-                "details": [
-                    "The application may call this function from simultaneous threads.",
-                    "The implementation of this function should be lock-free."
-                ],
-                "hash": "67d5b753e3b6f42b1997d5d3db8f20671924a2eee917e7a8147cef40cc6dfeb0",
-                "name": "GetFabricErrorCounters",
-                "params": [
-                    {
-                        "desc": "[in] Handle for the component.",
-                        "name": "hPort",
-                        "type": "zes_fabric_port_handle_t"
-                    },
-                    {
-                        "desc": "[in,out] Will contain the Fabric port Error counters.",
-                        "name": "pErrors",
-                        "type": "zes_fabric_port_error_counters_t*"
-                    }
-                ],
-                "returns": [
-                    {
-                        "ZE_RESULT_SUCCESS": []
-                    },
-                    {
-                        "ZE_RESULT_ERROR_UNINITIALIZED": []
-                    },
-                    {
-                        "ZE_RESULT_ERROR_DEVICE_LOST": []
-                    },
-                    {
-                        "ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY": []
-                    },
-                    {
-                        "ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY": []
-                    },
-                    {
-                        "ZE_RESULT_ERROR_INVALID_NULL_HANDLE": [
-                            "`nullptr == hPort`"
-                        ]
-                    },
-                    {
-                        "ZE_RESULT_ERROR_INVALID_NULL_POINTER": [
-                            "`nullptr == pErrors`"
-                        ]
-                    },
-                    {
-                        "ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS": [
-                            "User does not have permissions to query this telemetry."
-                        ]
-                    }
-                ],
-                "type": "function",
-                "version": "1.5"
             },
             "GetFabricVertexExp": {
                 "class": "zeDevice",
@@ -33315,7 +33189,7 @@
                 "desc": "The maximum number of categories",
                 "name": "ZES_MAX_RAS_ERROR_CATEGORY_COUNT",
                 "type": "macro",
-                "value": "10"
+                "value": "7"
             },
             "ZES_POWER_LIMITS_EXT_NAME": {
                 "desc": "Power Limits Extension Name",
@@ -37289,48 +37163,6 @@
                 ],
                 "name": "zes_fabric_port_config_t",
                 "type": "struct"
-            },
-            "zes_fabric_port_error_counters_t": {
-                "base": "zes_base_properties_t",
-                "class": "zesFabricPort",
-                "desc": "Fabric Port Error Counters",
-                "members": [
-                    {
-                        "desc": "[in] type of this structure",
-                        "init": "ZES_STRUCTURE_TYPE_FABRIC_PORT_ERROR_COUNTERS",
-                        "name": "stype",
-                        "type": "zes_structure_type_t"
-                    },
-                    {
-                        "desc": "[in,out][optional] must be null or a pointer to an extension-specific structure (i.e. contains sType and pNext).",
-                        "init": "nullptr",
-                        "name": "pNext",
-                        "type": "void*"
-                    },
-                    {
-                        "desc": "[out] Link Failure Error Count",
-                        "name": "linkFailureCount",
-                        "type": "uint64_t"
-                    },
-                    {
-                        "desc": "[out] Firmware Communication Error Count",
-                        "name": "fwCommErrorCount",
-                        "type": "uint64_t"
-                    },
-                    {
-                        "desc": "[out] Firmware reported Error Count",
-                        "name": "fwErrorCount",
-                        "type": "uint64_t"
-                    },
-                    {
-                        "desc": "[out] Link Degrade Error Count",
-                        "name": "linkDegradeCount",
-                        "type": "uint64_t"
-                    }
-                ],
-                "name": "zes_fabric_port_error_counters_t",
-                "type": "struct",
-                "version": "1.5"
             },
             "zes_fabric_port_id_t": {
                 "class": "zesFabricPort",
@@ -61156,12 +60988,6 @@
                                 "name": "$S_STRUCTURE_TYPE_OVERCLOCK_PROPERTIES",
                                 "value": "0x29",
                                 "version": "1.5"
-                            },
-                            {
-                                "desc": "$s_fabric_port_error_counters_t",
-                                "name": "$S_STRUCTURE_TYPE_FABRIC_PORT_ERROR_COUNTERS",
-                                "value": "0x2a",
-                                "version": "1.5"
                             }
                         ],
                         "name": "$s_structure_type_t",
@@ -65500,48 +65326,6 @@
                         "type": "struct"
                     },
                     {
-                        "base": "$s_base_properties_t",
-                        "class": "$sFabricPort",
-                        "desc": "Fabric Port Error Counters",
-                        "members": [
-                            {
-                                "desc": "[in] type of this structure",
-                                "init": "$S_STRUCTURE_TYPE_FABRIC_PORT_ERROR_COUNTERS",
-                                "name": "stype",
-                                "type": "$s_structure_type_t"
-                            },
-                            {
-                                "desc": "[in,out][optional] must be null or a pointer to an extension-specific structure (i.e. contains sType and pNext).",
-                                "init": "nullptr",
-                                "name": "pNext",
-                                "type": "void*"
-                            },
-                            {
-                                "desc": "[out] Link Failure Error Count",
-                                "name": "linkFailureCount",
-                                "type": "uint64_t"
-                            },
-                            {
-                                "desc": "[out] Firmware Communication Error Count",
-                                "name": "fwCommErrorCount",
-                                "type": "uint64_t"
-                            },
-                            {
-                                "desc": "[out] Firmware reported Error Count",
-                                "name": "fwErrorCount",
-                                "type": "uint64_t"
-                            },
-                            {
-                                "desc": "[out] Link Degrade Error Count",
-                                "name": "linkDegradeCount",
-                                "type": "uint64_t"
-                            }
-                        ],
-                        "name": "$s_fabric_port_error_counters_t",
-                        "type": "struct",
-                        "version": "1.5"
-                    },
-                    {
                         "class": "$sDevice",
                         "desc": "Get handle of Fabric ports in a device",
                         "details": [
@@ -65905,62 +65689,6 @@
                             }
                         ],
                         "type": "function"
-                    },
-                    {
-                        "class": "$sFabricPort",
-                        "desc": "Get Fabric Port Error Counters",
-                        "details": [
-                            "The application may call this function from simultaneous threads.",
-                            "The implementation of this function should be lock-free."
-                        ],
-                        "hash": "67d5b753e3b6f42b1997d5d3db8f20671924a2eee917e7a8147cef40cc6dfeb0",
-                        "name": "GetFabricErrorCounters",
-                        "params": [
-                            {
-                                "desc": "[in] Handle for the component.",
-                                "name": "hPort",
-                                "type": "$s_fabric_port_handle_t"
-                            },
-                            {
-                                "desc": "[in,out] Will contain the Fabric port Error counters.",
-                                "name": "pErrors",
-                                "type": "$s_fabric_port_error_counters_t*"
-                            }
-                        ],
-                        "returns": [
-                            {
-                                "$X_RESULT_SUCCESS": []
-                            },
-                            {
-                                "$X_RESULT_ERROR_UNINITIALIZED": []
-                            },
-                            {
-                                "$X_RESULT_ERROR_DEVICE_LOST": []
-                            },
-                            {
-                                "$X_RESULT_ERROR_OUT_OF_HOST_MEMORY": []
-                            },
-                            {
-                                "$X_RESULT_ERROR_OUT_OF_DEVICE_MEMORY": []
-                            },
-                            {
-                                "$X_RESULT_ERROR_INVALID_NULL_HANDLE": [
-                                    "`nullptr == hPort`"
-                                ]
-                            },
-                            {
-                                "$X_RESULT_ERROR_INVALID_NULL_POINTER": [
-                                    "`nullptr == pErrors`"
-                                ]
-                            },
-                            {
-                                "$X_RESULT_ERROR_INSUFFICIENT_PERMISSIONS": [
-                                    "User does not have permissions to query this telemetry."
-                                ]
-                            }
-                        ],
-                        "type": "function",
-                        "version": "1.5"
                     },
                     {
                         "desc": "C++ wrapper for a Sysman device Fabric port",
@@ -70575,24 +70303,6 @@
                                 "desc": "The number of errors that have occurred in the display",
                                 "name": "$S_RAS_ERROR_CAT_DISPLAY_ERRORS",
                                 "value": "6"
-                            },
-                            {
-                                "desc": "The number of errors that have occurred in Memory",
-                                "name": "$S_RAS_ERROR_CAT_MEMORY_ERRORS",
-                                "value": "7",
-                                "version": "1.5"
-                            },
-                            {
-                                "desc": "The number of errors that have occurred in Scale Fabric",
-                                "name": "$S_RAS_ERROR_CAT_SCALE_ERRORS",
-                                "value": "8",
-                                "version": "1.5"
-                            },
-                            {
-                                "desc": "The number of errors that have occurred in L3 Fabric",
-                                "name": "$S_RAS_ERROR_CAT_L3FABRIC_ERRORS",
-                                "value": "9",
-                                "version": "1.5"
                             }
                         ],
                         "name": "$s_ras_error_cat_t",
@@ -70602,7 +70312,7 @@
                         "desc": "The maximum number of categories",
                         "name": "$S_MAX_RAS_ERROR_CATEGORY_COUNT",
                         "type": "macro",
-                        "value": "10"
+                        "value": "7"
                     },
                     {
                         "base": "$s_base_properties_t",

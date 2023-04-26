@@ -5,7 +5,7 @@
  * SPDX-License-Identifier: MIT
  *
  * @file zes_api.h
- * @version v1.6-r1.6.0
+ * @version v1.6-r1.6.3
  *
  */
 #ifndef _ZES_API_H
@@ -142,7 +142,6 @@ typedef enum _zes_structure_type_t
     ZES_STRUCTURE_TYPE_POWER_LIMIT_EXT_DESC = 0x27, ///< ::zes_power_limit_ext_desc_t
     ZES_STRUCTURE_TYPE_POWER_EXT_PROPERTIES = 0x28, ///< ::zes_power_ext_properties_t
     ZES_STRUCTURE_TYPE_OVERCLOCK_PROPERTIES = 0x29, ///< ::zes_overclock_properties_t
-    ZES_STRUCTURE_TYPE_FABRIC_PORT_ERROR_COUNTERS = 0x2a,   ///< ::zes_fabric_port_error_counters_t
     ZES_STRUCTURE_TYPE_FORCE_UINT32 = 0x7fffffff
 
 } zes_structure_type_t;
@@ -320,10 +319,6 @@ typedef struct _zes_fabric_port_state_t zes_fabric_port_state_t;
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief Forward-declare zes_fabric_port_throughput_t
 typedef struct _zes_fabric_port_throughput_t zes_fabric_port_throughput_t;
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Forward-declare zes_fabric_port_error_counters_t
-typedef struct _zes_fabric_port_error_counters_t zes_fabric_port_error_counters_t;
 
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief Forward-declare zes_fan_speed_t
@@ -2590,20 +2585,6 @@ typedef struct _zes_fabric_port_throughput_t
 } zes_fabric_port_throughput_t;
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Fabric Port Error Counters
-typedef struct _zes_fabric_port_error_counters_t
-{
-    zes_structure_type_t stype;                     ///< [in] type of this structure
-    void* pNext;                                    ///< [in,out][optional] must be null or a pointer to an extension-specific
-                                                    ///< structure (i.e. contains sType and pNext).
-    uint64_t linkFailureCount;                      ///< [out] Link Failure Error Count
-    uint64_t fwCommErrorCount;                      ///< [out] Firmware Communication Error Count
-    uint64_t fwErrorCount;                          ///< [out] Firmware reported Error Count
-    uint64_t linkDegradeCount;                      ///< [out] Link Degrade Error Count
-
-} zes_fabric_port_error_counters_t;
-
-///////////////////////////////////////////////////////////////////////////////
 /// @brief Get handle of Fabric ports in a device
 /// 
 /// @details
@@ -2778,31 +2759,6 @@ ZE_APIEXPORT ze_result_t ZE_APICALL
 zesFabricPortGetThroughput(
     zes_fabric_port_handle_t hPort,                 ///< [in] Handle for the component.
     zes_fabric_port_throughput_t* pThroughput       ///< [in,out] Will contain the Fabric port throughput counters.
-    );
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Get Fabric Port Error Counters
-/// 
-/// @details
-///     - The application may call this function from simultaneous threads.
-///     - The implementation of this function should be lock-free.
-/// 
-/// @returns
-///     - ::ZE_RESULT_SUCCESS
-///     - ::ZE_RESULT_ERROR_UNINITIALIZED
-///     - ::ZE_RESULT_ERROR_DEVICE_LOST
-///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
-///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
-///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
-///         + `nullptr == hPort`
-///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
-///         + `nullptr == pErrors`
-///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
-///         + User does not have permissions to query this telemetry.
-ZE_APIEXPORT ze_result_t ZE_APICALL
-zesFabricPortGetFabricErrorCounters(
-    zes_fabric_port_handle_t hPort,                 ///< [in] Handle for the component.
-    zes_fabric_port_error_counters_t* pErrors       ///< [in,out] Will contain the Fabric port Error counters.
     );
 
 #if !defined(__GNUC__)
@@ -5041,9 +4997,6 @@ typedef enum _zes_ras_error_cat_t
     ZES_RAS_ERROR_CAT_CACHE_ERRORS = 5,             ///< The number of errors that have occurred in caches (L1/L3/register
                                                     ///< file/shared local memory/sampler)
     ZES_RAS_ERROR_CAT_DISPLAY_ERRORS = 6,           ///< The number of errors that have occurred in the display
-    ZES_RAS_ERROR_CAT_MEMORY_ERRORS = 7,            ///< The number of errors that have occurred in Memory
-    ZES_RAS_ERROR_CAT_SCALE_ERRORS = 8,             ///< The number of errors that have occurred in Scale Fabric
-    ZES_RAS_ERROR_CAT_L3FABRIC_ERRORS = 9,          ///< The number of errors that have occurred in L3 Fabric
     ZES_RAS_ERROR_CAT_FORCE_UINT32 = 0x7fffffff
 
 } zes_ras_error_cat_t;
@@ -5051,7 +5004,7 @@ typedef enum _zes_ras_error_cat_t
 ///////////////////////////////////////////////////////////////////////////////
 #ifndef ZES_MAX_RAS_ERROR_CATEGORY_COUNT
 /// @brief The maximum number of categories
-#define ZES_MAX_RAS_ERROR_CATEGORY_COUNT  10
+#define ZES_MAX_RAS_ERROR_CATEGORY_COUNT  7
 #endif // ZES_MAX_RAS_ERROR_CATEGORY_COUNT
 
 ///////////////////////////////////////////////////////////////////////////////

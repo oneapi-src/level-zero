@@ -295,15 +295,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnGetLastErrorDescription( hDriver, ppString );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeDriverGetLastErrorDescription( hDriver, ppString );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnGetLastErrorDescription( hDriver, ppString );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -1435,15 +1439,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnHostSynchronize( hCommandList, timeout );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeCommandListHostSynchronize( hCommandList, timeout );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnHostSynchronize( hCommandList, timeout );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -2181,15 +2189,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnPutIpcHandle( hContext, hIpc );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeEventPoolPutIpcHandle( hContext, hIpc );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnPutIpcHandle( hContext, hIpc );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -3157,15 +3169,22 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnGetIpcHandleFromFileDescriptorExp( hContext, handle, pIpcHandle );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeMemGetIpcHandleFromFileDescriptorExp( hContext, handle, pIpcHandle );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnGetIpcHandleFromFileDescriptorExp( hContext, handle, pIpcHandle );
+
+        if( result==ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
+        }
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -3188,15 +3207,22 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnGetFileDescriptorFromIpcHandleExp( hContext, ipcHandle, pHandle );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeMemGetFileDescriptorFromIpcHandleExp( hContext, ipcHandle, pHandle );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnGetFileDescriptorFromIpcHandleExp( hContext, ipcHandle, pHandle );
+
+        if( result==ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
+        }
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -3218,15 +3244,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnPutIpcHandle( hContext, handle );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeMemPutIpcHandle( hContext, handle );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnPutIpcHandle( hContext, handle );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -5742,15 +5772,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnQueryKernelTimestampsExt( hEvent, hDevice, pCount, pResults );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeEventQueryKernelTimestampsExt( hEvent, hDevice, pCount, pResults );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnQueryKernelTimestampsExt( hEvent, hDevice, pCount, pResults );
+        return result;
     }
 
 } // namespace validation_layer

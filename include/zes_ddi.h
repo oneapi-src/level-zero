@@ -5,7 +5,7 @@
  * SPDX-License-Identifier: MIT
  *
  * @file zes_ddi.h
- * @version v1.6-r1.6.0
+ * @version v1.6-r1.6.3
  *
  */
 #ifndef _ZES_DDI_H
@@ -1215,13 +1215,6 @@ typedef ze_result_t (ZE_APICALL *zes_pfnFabricPortGetThroughput_t)(
     );
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Function-pointer for zesFabricPortGetFabricErrorCounters 
-typedef ze_result_t (ZE_APICALL *zes_pfnFabricPortGetFabricErrorCounters_t)(
-    zes_fabric_port_handle_t,
-    zes_fabric_port_error_counters_t*
-    );
-
-///////////////////////////////////////////////////////////////////////////////
 /// @brief Table of FabricPort functions pointers
 typedef struct _zes_fabric_port_dditable_t
 {
@@ -1231,7 +1224,6 @@ typedef struct _zes_fabric_port_dditable_t
     zes_pfnFabricPortSetConfig_t                                pfnSetConfig;
     zes_pfnFabricPortGetState_t                                 pfnGetState;
     zes_pfnFabricPortGetThroughput_t                            pfnGetThroughput;
-    zes_pfnFabricPortGetFabricErrorCounters_t                   pfnGetFabricErrorCounters;
 } zes_fabric_port_dditable_t;
 
 ///////////////////////////////////////////////////////////////////////////////

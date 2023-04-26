@@ -359,6 +359,10 @@ zeDriverGetLastErrorDescription(
                                                     ///< cause of error.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetLastErrorDescription = ze_lib::context->zeDdiTable.Driver.pfnGetLastErrorDescription;
     if( nullptr == pfnGetLastErrorDescription ) {
         if(!ze_lib::context->isInitialized)
@@ -1764,6 +1768,10 @@ zeCommandListHostSynchronize(
                                                     ///< value allowed by the accuracy of those dependencies.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnHostSynchronize = ze_lib::context->zeDdiTable.CommandList.pfnHostSynchronize;
     if( nullptr == pfnHostSynchronize ) {
         if(!ze_lib::context->isInitialized)
@@ -2842,6 +2850,10 @@ zeEventPoolPutIpcHandle(
     ze_ipc_event_pool_handle_t hIpc                 ///< [in] IPC event pool handle
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnPutIpcHandle = ze_lib::context->zeDdiTable.EventPool.pfnPutIpcHandle;
     if( nullptr == pfnPutIpcHandle ) {
         if(!ze_lib::context->isInitialized)
@@ -4119,6 +4131,10 @@ zeMemGetIpcHandleFromFileDescriptorExp(
     ze_ipc_mem_handle_t* pIpcHandle                 ///< [out] Returned IPC memory handle
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetIpcHandleFromFileDescriptorExp = ze_lib::context->zeDdiTable.MemExp.pfnGetIpcHandleFromFileDescriptorExp;
     if( nullptr == pfnGetIpcHandleFromFileDescriptorExp ) {
         if(!ze_lib::context->isInitialized)
@@ -4156,6 +4172,10 @@ zeMemGetFileDescriptorFromIpcHandleExp(
     uint64_t* pHandle                               ///< [out] Returned file descriptor
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetFileDescriptorFromIpcHandleExp = ze_lib::context->zeDdiTable.MemExp.pfnGetFileDescriptorFromIpcHandleExp;
     if( nullptr == pfnGetFileDescriptorFromIpcHandleExp ) {
         if(!ze_lib::context->isInitialized)
@@ -4197,6 +4217,10 @@ zeMemPutIpcHandle(
     ze_ipc_mem_handle_t handle                      ///< [in] IPC memory handle
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnPutIpcHandle = ze_lib::context->zeDdiTable.Mem.pfnPutIpcHandle;
     if( nullptr == pfnPutIpcHandle ) {
         if(!ze_lib::context->isInitialized)
@@ -7364,6 +7388,10 @@ zeEventQueryKernelTimestampsExt(
                                                     ///< available, the driver may only update the valid elements.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnQueryKernelTimestampsExt = ze_lib::context->zeDdiTable.Event.pfnQueryKernelTimestampsExt;
     if( nullptr == pfnQueryKernelTimestampsExt ) {
         if(!ze_lib::context->isInitialized)

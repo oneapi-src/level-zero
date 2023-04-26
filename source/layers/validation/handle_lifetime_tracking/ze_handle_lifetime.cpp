@@ -85,6 +85,19 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
+    ZEHandleLifetimeValidation::zeDriverGetLastErrorDescription(
+        ze_driver_handle_t hDriver,                     ///< [in] handle of the driver instance
+        const char** ppString                           ///< [in,out] pointer to a null-terminated array of characters describing
+                                                        ///< cause of error.
+        )
+    { 
+        
+        if ( !context.handleLifetime->isHandleValid( hDriver )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    ze_result_t
     ZEHandleLifetimeValidation::zeDeviceGet(
         ze_driver_handle_t hDriver,                     ///< [in] handle of the driver instance
         uint32_t* pCount,                               ///< [in,out] pointer to the number of devices.
@@ -557,6 +570,24 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
+    ZEHandleLifetimeValidation::zeCommandListHostSynchronize(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of the immediate command list
+        uint64_t timeout                                ///< [in] if non-zero, then indicates the maximum time (in nanoseconds) to
+                                                        ///< yield before returning ::ZE_RESULT_SUCCESS or ::ZE_RESULT_NOT_READY;
+                                                        ///< if zero, then immediately returns the status of the immediate command list;
+                                                        ///< if UINT64_MAX, then function will not return until complete or device
+                                                        ///< is lost.
+                                                        ///< Due to external dependencies, timeout may be rounded to the closest
+                                                        ///< value allowed by the accuracy of those dependencies.
+        )
+    { 
+        
+        if ( !context.handleLifetime->isHandleValid( hCommandList )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    ze_result_t
     ZEHandleLifetimeValidation::zeCommandListAppendBarrier(
         ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
         ze_event_handle_t hSignalEvent,                 ///< [in][optional] handle of the event to signal on completion
@@ -1013,6 +1044,19 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
+    ZEHandleLifetimeValidation::zeEventPoolPutIpcHandle(
+        ze_context_handle_t hContext,                   ///< [in] handle of the context object associated with the IPC event pool
+                                                        ///< handle
+        ze_ipc_event_pool_handle_t hIpc                 ///< [in] IPC event pool handle
+        )
+    { 
+        
+        if ( !context.handleLifetime->isHandleValid( hContext )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    ze_result_t
     ZEHandleLifetimeValidation::zeEventPoolOpenIpcHandle(
         ze_context_handle_t hContext,                   ///< [in] handle of the context object to associate with the IPC event pool
                                                         ///< handle
@@ -1411,6 +1455,44 @@ namespace validation_layer
         ze_context_handle_t hContext,                   ///< [in] handle of the context object
         const void* ptr,                                ///< [in] pointer to the device memory allocation
         ze_ipc_mem_handle_t* pIpcHandle                 ///< [out] Returned IPC memory handle
+        )
+    { 
+        
+        if ( !context.handleLifetime->isHandleValid( hContext )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    ze_result_t
+    ZEHandleLifetimeValidation::zeMemGetIpcHandleFromFileDescriptorExp(
+        ze_context_handle_t hContext,                   ///< [in] handle of the context object
+        uint64_t handle,                                ///< [in] file descriptor
+        ze_ipc_mem_handle_t* pIpcHandle                 ///< [out] Returned IPC memory handle
+        )
+    { 
+        
+        if ( !context.handleLifetime->isHandleValid( hContext )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    ze_result_t
+    ZEHandleLifetimeValidation::zeMemGetFileDescriptorFromIpcHandleExp(
+        ze_context_handle_t hContext,                   ///< [in] handle of the context object
+        ze_ipc_mem_handle_t ipcHandle,                  ///< [in] IPC memory handle
+        uint64_t* pHandle                               ///< [out] Returned file descriptor
+        )
+    { 
+        
+        if ( !context.handleLifetime->isHandleValid( hContext )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    ze_result_t
+    ZEHandleLifetimeValidation::zeMemPutIpcHandle(
+        ze_context_handle_t hContext,                   ///< [in] handle of the context object
+        ze_ipc_mem_handle_t handle                      ///< [in] IPC memory handle
         )
     { 
         
@@ -2534,6 +2616,35 @@ namespace validation_layer
     { 
         
         if ( !context.handleLifetime->isHandleValid( hEdge )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    ze_result_t
+    ZEHandleLifetimeValidation::zeEventQueryKernelTimestampsExt(
+        ze_event_handle_t hEvent,                       ///< [in] handle of the event
+        ze_device_handle_t hDevice,                     ///< [in] handle of the device to query
+        uint32_t* pCount,                               ///< [in,out] pointer to the number of event packets available.
+                                                        ///<    - This value is implementation specific.
+                                                        ///<    - if `*pCount` is zero, then the driver shall update the value with
+                                                        ///< the total number of event packets available.
+                                                        ///<    - if `*pCount` is greater than the number of event packets
+                                                        ///< available, the driver shall update the value with the correct value.
+                                                        ///<    - Buffer(s) for query results must be sized by the application to
+                                                        ///< accommodate a minimum of `*pCount` elements.
+        ze_event_query_kernel_timestamps_results_ext_properties_t* pResults ///< [in][optional] pointer to event query properties structure(s).
+                                                        ///<    - This parameter may be null when `*pCount` is zero.
+                                                        ///<    - if `*pCount` is less than the number of event packets available,
+                                                        ///< the driver may only update `*pCount` elements, starting at element zero.
+                                                        ///<    - if `*pCount` is greater than the number of event packets
+                                                        ///< available, the driver may only update the valid elements.
+        )
+    { 
+        
+        if ( !context.handleLifetime->isHandleValid( hEvent )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        if ( !context.handleLifetime->isHandleValid( hDevice )){
                 return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
         }
         return ZE_RESULT_SUCCESS;
