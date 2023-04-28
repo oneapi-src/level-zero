@@ -1,5 +1,10 @@
 # Level zero loader changelog
 
+## v1.11.0
+* Update to spec 1.6.3
+* Add validation for handle lifetime
+* Improve driver teardown handling
+
 ## v1.10.0
 * Update to spec 1.6
 * Added validation for stype and pnext
