@@ -1,5 +1,7 @@
 # Level zero loader changelog
 
+## v1.12.0
+* Update to spec 1.6.10
 ## v1.11.0
 * Update to spec 1.6.3
 * Add validation for handle lifetime

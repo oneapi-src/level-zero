@@ -271,8 +271,10 @@ zesDeviceGetState(
 ///         + `nullptr == hDevice`
 ///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
 ///         + User does not have permissions to perform this operation.
-///     - ::ZE_RESULT_ERROR_HANDLE_OBJECT_IN_USE - "Reset cannot be performed because applications are using this device."
-///     - ::ZE_RESULT_ERROR_UNKNOWN - "There were problems unloading the device driver, performing a bus reset or reloading the device driver."
+///     - ::ZE_RESULT_ERROR_HANDLE_OBJECT_IN_USE
+///         + Reset cannot be performed because applications are using this device.
+///     - ::ZE_RESULT_ERROR_UNKNOWN
+///         + There were problems unloading the device driver, performing a bus reset or reloading the device driver.
 ze_result_t ZE_APICALL
 zesDeviceReset(
     zes_device_handle_t hDevice,                    ///< [in] Sysman handle for the device
@@ -1256,12 +1258,12 @@ zesDiagnosticsGetProperties(
 
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief Get individual tests that can be run separately. Not all test suites
-///        permit running individual tests - check
-///        ::zes_diag_properties_t.haveTests
+///        permit running individual tests, check the `haveTests` member of
+///        ::zes_diag_properties_t.
 /// 
 /// @details
 ///     - The list of available tests is returned in order of increasing test
-///       index ::zes_diag_test_t.index.
+///       index (see the `index` member of ::zes_diag_test_t).
 ///     - The application may call this function from simultaneous threads.
 ///     - The implementation of this function should be lock-free.
 /// 
@@ -1284,7 +1286,7 @@ zesDiagnosticsGetTests(
                                                     ///< if count is greater than the number of tests that are available, then
                                                     ///< the driver shall update the value with the correct number of tests.
     zes_diag_test_t* pTests                         ///< [in,out][optional][range(0, *pCount)] array of information about
-                                                    ///< individual tests sorted by increasing value of ::zes_diag_test_t.index.
+                                                    ///< individual tests sorted by increasing value of the `index` member of ::zes_diag_test_t.
                                                     ///< if count is less than the number of tests that are available, then the
                                                     ///< driver shall only retrieve that number of tests.
     )
@@ -1312,8 +1314,8 @@ zesDiagnosticsGetTests(
 ///       information. Gracefully close any running workloads before initiating.
 ///     - To run all tests in a test suite, set start =
 ///       ::ZES_DIAG_FIRST_TEST_INDEX and end = ::ZES_DIAG_LAST_TEST_INDEX.
-///     - If the test suite permits running individual tests,
-///       ::zes_diag_properties_t.haveTests will be true. In this case, the
+///     - If the test suite permits running individual tests, the `haveTests`
+///       member of ::zes_diag_properties_t will be true. In this case, the
 ///       function ::zesDiagnosticsGetTests() can be called to get the list of
 ///       tests and corresponding indices that can be supplied to the arguments
 ///       start and end in this function.
@@ -1709,7 +1711,7 @@ zesDriverEventListen(
     uint32_t timeout,                               ///< [in] if non-zero, then indicates the maximum time (in milliseconds) to
                                                     ///< yield before returning ::ZE_RESULT_SUCCESS or ::ZE_RESULT_NOT_READY;
                                                     ///< if zero, then will check status and return immediately;
-                                                    ///< if UINT32_MAX, then function will not return until events arrive.
+                                                    ///< if `UINT32_MAX`, then function will not return until events arrive.
     uint32_t count,                                 ///< [in] Number of device handles in phDevices.
     zes_device_handle_t* phDevices,                 ///< [in][range(0, count)] Device handles to listen to for events. Only
                                                     ///< devices from the provided driver handle can be specified in this list.
@@ -1769,7 +1771,7 @@ zesDriverEventListenEx(
     uint64_t timeout,                               ///< [in] if non-zero, then indicates the maximum time (in milliseconds) to
                                                     ///< yield before returning ::ZE_RESULT_SUCCESS or ::ZE_RESULT_NOT_READY;
                                                     ///< if zero, then will check status and return immediately;
-                                                    ///< if UINT64_MAX, then function will not return until events arrive.
+                                                    ///< if `UINT64_MAX`, then function will not return until events arrive.
     uint32_t count,                                 ///< [in] Number of device handles in phDevices.
     zes_device_handle_t* phDevices,                 ///< [in][range(0, count)] Device handles to listen to for events. Only
                                                     ///< devices from the provided driver handle can be specified in this list.
@@ -2266,7 +2268,7 @@ zesFanSetDefaultMode(
 ///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
 ///         + User does not have permissions to make these modifications.
 ///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
-///         + Fixing the fan speed not supported by the hardware or the fan speed units are not supported. See ::zes_fan_properties_t.supportedModes and ::zes_fan_properties_t.supportedUnits.
+///         + Fixing the fan speed not supported by the hardware or the fan speed units are not supported. See the `supportedModes` and `supportedUnits` members of ::zes_fan_properties_t.
 ze_result_t ZE_APICALL
 zesFanSetFixedSpeedMode(
     zes_fan_handle_t hFan,                          ///< [in] Handle for the component.
@@ -2311,7 +2313,7 @@ zesFanSetFixedSpeedMode(
 ///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
 ///         + The temperature/speed pairs in the array are not sorted on temperature from lowest to highest.
 ///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
-///         + Fan speed table not supported by the hardware or the fan speed units are not supported. See ::zes_fan_properties_t.supportedModes and ::zes_fan_properties_t.supportedUnits.
+///         + Fan speed table not supported by the hardware or the fan speed units are not supported. See the `supportedModes` and `supportedUnits` members of ::zes_fan_properties_t.
 ze_result_t ZE_APICALL
 zesFanSetSpeedTableMode(
     zes_fan_handle_t hFan,                          ///< [in] Handle for the component.
@@ -2353,7 +2355,7 @@ zesFanSetSpeedTableMode(
 ///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
 ///         + `nullptr == pSpeed`
 ///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
-///         + The requested fan speed units are not supported. See ::zes_fan_properties_t.supportedUnits.
+///         + The requested fan speed units are not supported. See the `supportedUnits` member of ::zes_fan_properties_t.
 ze_result_t ZE_APICALL
 zesFanGetState(
     zes_fan_handle_t hFan,                          ///< [in] Handle for the component.
@@ -2819,8 +2821,7 @@ zesFrequencyGetThrottleTime(
 ze_result_t ZE_APICALL
 zesFrequencyOcGetCapabilities(
     zes_freq_handle_t hFrequency,                   ///< [in] Handle for the component.
-    zes_oc_capabilities_t* pOcCapabilities          ///< [in,out] Pointer to the capabilities structure
-                                                    ///< ::zes_oc_capabilities_t.
+    zes_oc_capabilities_t* pOcCapabilities          ///< [in,out] Pointer to the capabilities structure.
     )
 {
     if(ze_lib::context->inTeardown) {
@@ -2857,11 +2858,11 @@ zesFrequencyOcGetCapabilities(
 ///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
 ///         + `nullptr == pCurrentOcFrequency`
 ///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
-///         + Overclocking is not supported on this frequency domain (::zes_oc_capabilities_t.isOcSupported)
-///         + The specified voltage and/or frequency overclock settings exceed the hardware values (see ::zes_oc_capabilities_t.maxOcFrequency, ::zes_oc_capabilities_t.maxOcVoltage, ::zes_oc_capabilities_t.minOcVoltageOffset, ::zes_oc_capabilities_t.maxOcVoltageOffset).
-///         + Requested voltage overclock is very high but ::zes_oc_capabilities_t.isHighVoltModeEnabled is not enabled for the device.
+///         + Overclocking is not supported on this frequency domain (see the `isOcSupported` member of ::zes_oc_capabilities_t).
+///         + The specified voltage and/or frequency overclock settings exceed the hardware values (see the `maxOcFrequency`, `maxOcVoltage`, `minOcVoltageOffset` and `maxOcVoltageOffset` members of ::zes_oc_capabilities_t).
+///         + Requested voltage overclock is very high but the `isHighVoltModeEnabled` member of ::zes_oc_capabilities_t is not enabled for the device.
 ///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
-///         + Overclocking feature is locked on this frequency domain
+///         + Overclocking feature is locked on this frequency domain.
 ///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
 ///         + User does not have permissions to make these modifications.
 ze_result_t ZE_APICALL
@@ -2869,7 +2870,8 @@ zesFrequencyOcGetFrequencyTarget(
     zes_freq_handle_t hFrequency,                   ///< [in] Handle for the component.
     double* pCurrentOcFrequency                     ///< [out] Overclocking Frequency in MHz, if extended moded is supported,
                                                     ///< will returned in 1 Mhz granularity, else, in multiples of 50 Mhz. This
-                                                    ///< cannot be greater than ::zes_oc_capabilities_t.maxOcFrequency.
+                                                    ///< cannot be greater than the `maxOcFrequency` member of
+                                                    ///< ::zes_oc_capabilities_t.
     )
 {
     if(ze_lib::context->inTeardown) {
@@ -2904,11 +2906,11 @@ zesFrequencyOcGetFrequencyTarget(
 ///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
 ///         + `nullptr == hFrequency`
 ///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
-///         + Overclocking is not supported on this frequency domain (::zes_oc_capabilities_t.isOcSupported)
-///         + The specified voltage and/or frequency overclock settings exceed the hardware values (see ::zes_oc_capabilities_t.maxOcFrequency, ::zes_oc_capabilities_t.maxOcVoltage, ::zes_oc_capabilities_t.minOcVoltageOffset, ::zes_oc_capabilities_t.maxOcVoltageOffset).
-///         + Requested voltage overclock is very high but ::zes_oc_capabilities_t.isHighVoltModeEnabled is not enabled for the device.
+///         + Overclocking is not supported on this frequency domain (see the `isOcSupported` member of ::zes_oc_capabilities_t).
+///         + The specified voltage and/or frequency overclock settings exceed the hardware values (see the `maxOcFrequency`, `maxOcVoltage`, `minOcVoltageOffset` and `maxOcVoltageOffset` members of ::zes_oc_capabilities_t).
+///         + Requested voltage overclock is very high but the `isHighVoltModeEnabled` member of ::zes_oc_capabilities_t is not enabled for the device.
 ///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
-///         + Overclocking feature is locked on this frequency domain
+///         + Overclocking feature is locked on this frequency domain.
 ///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
 ///         + User does not have permissions to make these modifications.
 ze_result_t ZE_APICALL
@@ -2916,7 +2918,8 @@ zesFrequencyOcSetFrequencyTarget(
     zes_freq_handle_t hFrequency,                   ///< [in] Handle for the component.
     double CurrentOcFrequency                       ///< [in] Overclocking Frequency in MHz, if extended moded is supported, it
                                                     ///< could be set in 1 Mhz granularity, else, in multiples of 50 Mhz. This
-                                                    ///< cannot be greater than ::zes_oc_capabilities_t.maxOcFrequency.
+                                                    ///< cannot be greater than the `maxOcFrequency` member of
+                                                    ///< ::zes_oc_capabilities_t.
     )
 {
     if(ze_lib::context->inTeardown) {
@@ -2953,22 +2956,22 @@ zesFrequencyOcSetFrequencyTarget(
 ///         + `nullptr == pCurrentVoltageTarget`
 ///         + `nullptr == pCurrentVoltageOffset`
 ///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
-///         + Overclocking is not supported on this frequency domain (::zes_oc_capabilities_t.isOcSupported)
-///         + The specified voltage and/or frequency overclock settings exceed the hardware values (see ::zes_oc_capabilities_t.maxOcFrequency, ::zes_oc_capabilities_t.maxOcVoltage, ::zes_oc_capabilities_t.minOcVoltageOffset, ::zes_oc_capabilities_t.maxOcVoltageOffset).
-///         + Requested voltage overclock is very high but ::zes_oc_capabilities_t.isHighVoltModeEnabled is not enabled for the device.
+///         + Overclocking is not supported on this frequency domain (see the `isOcSupported` member of ::zes_oc_capabilities_t).
+///         + The specified voltage and/or frequency overclock settings exceed the hardware values (see the `maxOcFrequency`, `maxOcVoltage`, `minOcVoltageOffset` and `maxOcVoltageOffset` members of ::zes_oc_capabilities_t).
+///         + Requested voltage overclock is very high but the `isHighVoltModeEnabled` member of ::zes_oc_capabilities_t is not enabled for the device.
 ///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
-///         + Overclocking feature is locked on this frequency domain
+///         + Overclocking feature is locked on this frequency domain.
 ///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
 ///         + User does not have permissions to make these modifications.
 ze_result_t ZE_APICALL
 zesFrequencyOcGetVoltageTarget(
     zes_freq_handle_t hFrequency,                   ///< [in] Handle for the component.
-    double* pCurrentVoltageTarget,                  ///< [out] Overclock voltage in Volts. This cannot be greater than
-                                                    ///< ::zes_oc_capabilities_t.maxOcVoltage.
+    double* pCurrentVoltageTarget,                  ///< [out] Overclock voltage in Volts. This cannot be greater than the
+                                                    ///< `maxOcVoltage` member of ::zes_oc_capabilities_t.
     double* pCurrentVoltageOffset                   ///< [out] This voltage offset is applied to all points on the
-                                                    ///< voltage/frequency curve, include the new overclock voltageTarget. It
-                                                    ///< can be in the range (::zes_oc_capabilities_t.minOcVoltageOffset,
-                                                    ///< ::zes_oc_capabilities_t.maxOcVoltageOffset).
+                                                    ///< voltage/frequency curve, including the new overclock voltageTarget.
+                                                    ///< Valid range is between the `minOcVoltageOffset` and
+                                                    ///< `maxOcVoltageOffset` members of ::zes_oc_capabilities_t.
     )
 {
     if(ze_lib::context->inTeardown) {
@@ -3002,22 +3005,22 @@ zesFrequencyOcGetVoltageTarget(
 ///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
 ///         + `nullptr == hFrequency`
 ///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
-///         + Overclocking is not supported on this frequency domain (::zes_oc_capabilities_t.isOcSupported)
-///         + The specified voltage and/or frequency overclock settings exceed the hardware values (see ::zes_oc_capabilities_t.maxOcFrequency, ::zes_oc_capabilities_t.maxOcVoltage, ::zes_oc_capabilities_t.minOcVoltageOffset, ::zes_oc_capabilities_t.maxOcVoltageOffset).
-///         + Requested voltage overclock is very high but ::zes_oc_capabilities_t.isHighVoltModeEnabled is not enabled for the device.
+///         + Overclocking is not supported on this frequency domain (see the `isOcSupported` member of ::zes_oc_capabilities_t).
+///         + The specified voltage and/or frequency overclock settings exceed the hardware values (see the `maxOcFrequency`, `maxOcVoltage`, `minOcVoltageOffset` and `maxOcVoltageOffset` members of ::zes_oc_capabilities_t).
+///         + Requested voltage overclock is very high but the `isHighVoltModeEnabled` member of ::zes_oc_capabilities_t is not enabled for the device.
 ///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
-///         + Overclocking feature is locked on this frequency domain
+///         + Overclocking feature is locked on this frequency domain.
 ///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
 ///         + User does not have permissions to make these modifications.
 ze_result_t ZE_APICALL
 zesFrequencyOcSetVoltageTarget(
     zes_freq_handle_t hFrequency,                   ///< [in] Handle for the component.
-    double CurrentVoltageTarget,                    ///< [in] Overclock voltage in Volts. This cannot be greater than
-                                                    ///< ::zes_oc_capabilities_t.maxOcVoltage.
+    double CurrentVoltageTarget,                    ///< [in] Overclock voltage in Volts. This cannot be greater than the
+                                                    ///< `maxOcVoltage` member of ::zes_oc_capabilities_t.
     double CurrentVoltageOffset                     ///< [in] This voltage offset is applied to all points on the
-                                                    ///< voltage/frequency curve, include the new overclock voltageTarget. It
-                                                    ///< can be in the range (::zes_oc_capabilities_t.minOcVoltageOffset,
-                                                    ///< ::zes_oc_capabilities_t.maxOcVoltageOffset).
+                                                    ///< voltage/frequency curve, include the new overclock voltageTarget.
+                                                    ///< Valid range is between the `minOcVoltageOffset` and
+                                                    ///< `maxOcVoltageOffset` members of ::zes_oc_capabilities_t.
     )
 {
     if(ze_lib::context->inTeardown) {
@@ -3053,11 +3056,11 @@ zesFrequencyOcSetVoltageTarget(
 ///     - ::ZE_RESULT_ERROR_INVALID_ENUMERATION
 ///         + `::ZES_OC_MODE_FIXED < CurrentOcMode`
 ///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
-///         + Overclocking is not supported on this frequency domain (::zes_oc_capabilities_t.isOcSupported)
-///         + The specified voltage and/or frequency overclock settings exceed the hardware values (see ::zes_oc_capabilities_t.maxOcFrequency, ::zes_oc_capabilities_t.maxOcVoltage, ::zes_oc_capabilities_t.minOcVoltageOffset, ::zes_oc_capabilities_t.maxOcVoltageOffset).
-///         + Requested voltage overclock is very high but ::zes_oc_capabilities_t.isHighVoltModeEnabled is not enabled for the device.
+///         + Overclocking is not supported on this frequency domain (see the `isOcSupported` member of ::zes_oc_capabilities_t).
+///         + The specified voltage and/or frequency overclock settings exceed the hardware values (see the `maxOcFrequency`, `maxOcVoltage`, `minOcVoltageOffset` and `maxOcVoltageOffset` members of ::zes_oc_capabilities_t).
+///         + Requested voltage overclock is very high but the `isHighVoltModeEnabled` member of ::zes_oc_capabilities_t is not enabled for the device.
 ///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
-///         + Overclocking feature is locked on this frequency domain
+///         + Overclocking feature is locked on this frequency domain.
 ///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
 ///         + User does not have permissions to make these modifications.
 ze_result_t ZE_APICALL
@@ -3099,11 +3102,11 @@ zesFrequencyOcSetMode(
 ///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
 ///         + `nullptr == pCurrentOcMode`
 ///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
-///         + Overclocking is not supported on this frequency domain (::zes_oc_capabilities_t.isOcSupported)
-///         + The specified voltage and/or frequency overclock settings exceed the hardware values (see ::zes_oc_capabilities_t.maxOcFrequency, ::zes_oc_capabilities_t.maxOcVoltage, ::zes_oc_capabilities_t.minOcVoltageOffset, ::zes_oc_capabilities_t.maxOcVoltageOffset).
-///         + Requested voltage overclock is very high but ::zes_oc_capabilities_t.isHighVoltModeEnabled is not enabled for the device.
+///         + Overclocking is not supported on this frequency domain (see the `isOcSupported` member of ::zes_oc_capabilities_t).
+///         + The specified voltage and/or frequency overclock settings exceed the hardware values (see the `maxOcFrequency`, `maxOcVoltage`, `minOcVoltageOffset` and `maxOcVoltageOffset` members of ::zes_oc_capabilities_t).
+///         + Requested voltage overclock is very high but the `isHighVoltModeEnabled` member of ::zes_oc_capabilities_t is not enabled for the device.
 ///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
-///         + Overclocking feature is locked on this frequency domain
+///         + Overclocking feature is locked on this frequency domain.
 ///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
 ///         + User does not have permissions to make these modifications.
 ze_result_t ZE_APICALL
@@ -3145,8 +3148,8 @@ zesFrequencyOcGetMode(
 ///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
 ///         + `nullptr == pOcIccMax`
 ///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
-///         + Overclocking is not supported on this frequency domain (::zes_oc_capabilities_t.isOcSupported)
-///         + Capability ::zes_oc_capabilities_t.isIccMaxSupported is false for this frequency domain
+///         + Overclocking is not supported on this frequency domain (see the `isOcSupported` member of ::zes_oc_capabilities_t).
+///         + Capability the `isIccMaxSupported` member of ::zes_oc_capabilities_t is false for this frequency domain.
 ze_result_t ZE_APICALL
 zesFrequencyOcGetIccMax(
     zes_freq_handle_t hFrequency,                   ///< [in] Handle for the component.
@@ -3186,12 +3189,12 @@ zesFrequencyOcGetIccMax(
 ///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
 ///         + `nullptr == hFrequency`
 ///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
-///         + Overclocking is not supported on this frequency domain (::zes_oc_capabilities_t.isOcSupported)
-///         + Capability ::zes_oc_capabilities_t.isIccMaxSupported is false for this frequency domain
+///         + Overclocking is not supported on this frequency domain (see the `isOcSupported` member of ::zes_oc_capabilities_t).
+///         + The `isIccMaxSupported` member of ::zes_oc_capabilities_t is false for this frequency domain.
 ///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
-///         + Overclocking feature is locked on this frequency domain
+///         + Overclocking feature is locked on this frequency domain.
 ///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
-///         + The specified current limit is too low or too high
+///         + The specified current limit is too low or too high.
 ///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
 ///         + User does not have permissions to make these modifications.
 ze_result_t ZE_APICALL
@@ -3233,7 +3236,7 @@ zesFrequencyOcSetIccMax(
 ///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
 ///         + `nullptr == pOcTjMax`
 ///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
-///         + Overclocking is not supported on this frequency domain (::zes_oc_capabilities_t.isOcSupported)
+///         + Overclocking is not supported on this frequency domain (see the `isOcSupported` member of ::zes_oc_capabilities_t).
 ze_result_t ZE_APICALL
 zesFrequencyOcGetTjMax(
     zes_freq_handle_t hFrequency,                   ///< [in] Handle for the component.
@@ -3273,12 +3276,12 @@ zesFrequencyOcGetTjMax(
 ///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
 ///         + `nullptr == hFrequency`
 ///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
-///         + Overclocking is not supported on this frequency domain (::zes_oc_capabilities_t.isOcSupported)
-///         + Capability ::zes_oc_capabilities_t.isTjMaxSupported is false for this frequency domain
+///         + Overclocking is not supported on this frequency domain (see the `isOcSupported` member of ::zes_oc_capabilities_t).
+///         + The `isTjMaxSupported` member of ::zes_oc_capabilities_t is false for this frequency domain.
 ///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
-///         + Overclocking feature is locked on this frequency domain
+///         + Overclocking feature is locked on this frequency domain.
 ///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
-///         + The specified temperature limit is too high
+///         + The specified temperature limit is too high.
 ///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
 ///         + User does not have permissions to make these modifications.
 ze_result_t ZE_APICALL
@@ -3484,7 +3487,7 @@ zesLedSetState(
 ///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
 ///         + User does not have permissions to make these modifications.
 ///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
-///         + This LED doesn't not support color changes. See ::zes_led_properties_t.haveRGB.
+///         + This LED doesn't not support color changes. See the `haveRGB` member of ::zes_led_properties_t.
 ze_result_t ZE_APICALL
 zesLedSetColor(
     zes_led_handle_t hLed,                          ///< [in] Handle for the component.
@@ -4113,7 +4116,7 @@ zesPowerSetLimits(
 ///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
 ///         + `nullptr == pThreshold`
 ///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
-///         + Energy threshold not supported on this power domain (check ::zes_power_properties_t.isEnergyThresholdSupported).
+///         + Energy threshold not supported on this power domain (check the `isEnergyThresholdSupported` member of ::zes_power_properties_t).
 ///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
 ///         + User does not have permissions to request this feature.
 ze_result_t ZE_APICALL
@@ -4168,7 +4171,7 @@ zesPowerGetEnergyThreshold(
 ///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
 ///         + `nullptr == hPower`
 ///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
-///         + Energy threshold not supported on this power domain (check ::zes_power_properties_t.isEnergyThresholdSupported).
+///         + Energy threshold not supported on this power domain (check the `isEnergyThresholdSupported` member of ::zes_power_properties_t).
 ///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
 ///         + User does not have permissions to request this feature.
 ///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
@@ -4569,8 +4572,8 @@ zesRasGetState(
 ///       or more accelerator engines.
 ///     - If an application wishes to change the scheduler behavior for all
 ///       accelerator engines of a specific type (e.g. compute), it should
-///       select all the handles where the structure member
-///       ::zes_sched_properties_t.engines contains that type.
+///       select all the handles where the `engines` member
+///       ::zes_sched_properties_t contains that type.
 ///     - The application may call this function from simultaneous threads.
 ///     - The implementation of this function should be lock-free.
 /// 
@@ -5240,8 +5243,8 @@ zesTemperatureGetProperties(
 ///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
 ///         + `nullptr == pConfig`
 ///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
-///         + Temperature thresholds are not supported on this temperature sensor. Generally this is only supported for temperature sensor ::ZES_TEMP_SENSORS_GLOBAL
-///         + One or both of the thresholds is not supported - check ::zes_temp_properties_t.isThreshold1Supported and ::zes_temp_properties_t.isThreshold2Supported
+///         + Temperature thresholds are not supported on this temperature sensor. Generally this is only supported for temperature sensor ::ZES_TEMP_SENSORS_GLOBAL.
+///         + One or both of the thresholds is not supported. Check the `isThreshold1Supported` and `isThreshold2Supported` members of ::zes_temp_properties_t.
 ///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
 ///         + User does not have permissions to request this feature.
 ze_result_t ZE_APICALL
@@ -5296,9 +5299,9 @@ zesTemperatureGetConfig(
 ///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
 ///         + `nullptr == pConfig`
 ///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
-///         + Temperature thresholds are not supported on this temperature sensor. Generally they are only supported for temperature sensor ::ZES_TEMP_SENSORS_GLOBAL
-///         + Enabling the critical temperature event is not supported - check ::zes_temp_properties_t.isCriticalTempSupported
-///         + One or both of the thresholds is not supported - check ::zes_temp_properties_t.isThreshold1Supported and ::zes_temp_properties_t.isThreshold2Supported
+///         + Temperature thresholds are not supported on this temperature sensor. Generally they are only supported for temperature sensor ::ZES_TEMP_SENSORS_GLOBAL.
+///         + Enabling the critical temperature event is not supported. Check the `isCriticalTempSupported` member of ::zes_temp_properties_t.
+///         + One or both of the thresholds is not supported. Check the `isThreshold1Supported` and `isThreshold2Supported` members of ::zes_temp_properties_t.
 ///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
 ///         + User does not have permissions to request this feature.
 ///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE

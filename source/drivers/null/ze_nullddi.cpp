@@ -832,8 +832,8 @@ namespace driver
         uint64_t timeout                                ///< [in] if non-zero, then indicates the maximum time (in nanoseconds) to
                                                         ///< yield before returning ::ZE_RESULT_SUCCESS or ::ZE_RESULT_NOT_READY;
                                                         ///< if zero, then immediately returns the status of the command queue;
-                                                        ///< if UINT64_MAX, then function will not return until complete or device
-                                                        ///< is lost.
+                                                        ///< if `UINT64_MAX`, then function will not return until complete or
+                                                        ///< device is lost.
                                                         ///< Due to external dependencies, timeout may be rounded to the closest
                                                         ///< value allowed by the accuracy of those dependencies.
         )
@@ -1018,8 +1018,8 @@ namespace driver
         uint64_t timeout                                ///< [in] if non-zero, then indicates the maximum time (in nanoseconds) to
                                                         ///< yield before returning ::ZE_RESULT_SUCCESS or ::ZE_RESULT_NOT_READY;
                                                         ///< if zero, then immediately returns the status of the immediate command list;
-                                                        ///< if UINT64_MAX, then function will not return until complete or device
-                                                        ///< is lost.
+                                                        ///< if `UINT64_MAX`, then function will not return until complete or
+                                                        ///< device is lost.
                                                         ///< Due to external dependencies, timeout may be rounded to the closest
                                                         ///< value allowed by the accuracy of those dependencies.
         )
@@ -1195,14 +1195,14 @@ namespace driver
         const ze_copy_region_t* dstRegion,              ///< [in] pointer to destination region to copy to
         uint32_t dstPitch,                              ///< [in] destination pitch in bytes
         uint32_t dstSlicePitch,                         ///< [in] destination slice pitch in bytes. This is required for 3D region
-                                                        ///< copies where ::ze_copy_region_t.depth is not 0, otherwise it's
-                                                        ///< ignored.
+                                                        ///< copies where the `depth` member of ::ze_copy_region_t is not 0,
+                                                        ///< otherwise it's ignored.
         const void* srcptr,                             ///< [in] pointer to source memory to copy from
         const ze_copy_region_t* srcRegion,              ///< [in] pointer to source region to copy from
         uint32_t srcPitch,                              ///< [in] source pitch in bytes
         uint32_t srcSlicePitch,                         ///< [in] source slice pitch in bytes. This is required for 3D region
-                                                        ///< copies where ::ze_copy_region_t.depth is not 0, otherwise it's
-                                                        ///< ignored.
+                                                        ///< copies where the `depth` member of ::ze_copy_region_t is not 0,
+                                                        ///< otherwise it's ignored.
         ze_event_handle_t hSignalEvent,                 ///< [in][optional] handle of the event to signal on completion
         uint32_t numWaitEvents,                         ///< [in][optional] number of events to wait on before launching; must be 0
                                                         ///< if `nullptr == phWaitEvents`
@@ -1724,8 +1724,8 @@ namespace driver
         uint64_t timeout                                ///< [in] if non-zero, then indicates the maximum time (in nanoseconds) to
                                                         ///< yield before returning ::ZE_RESULT_SUCCESS or ::ZE_RESULT_NOT_READY;
                                                         ///< if zero, then operates exactly like ::zeEventQueryStatus;
-                                                        ///< if UINT64_MAX, then function will not return until complete or device
-                                                        ///< is lost.
+                                                        ///< if `UINT64_MAX`, then function will not return until complete or
+                                                        ///< device is lost.
                                                         ///< Due to external dependencies, timeout may be rounded to the closest
                                                         ///< value allowed by the accuracy of those dependencies.
         )
@@ -1934,8 +1934,8 @@ namespace driver
         uint64_t timeout                                ///< [in] if non-zero, then indicates the maximum time (in nanoseconds) to
                                                         ///< yield before returning ::ZE_RESULT_SUCCESS or ::ZE_RESULT_NOT_READY;
                                                         ///< if zero, then operates exactly like ::zeFenceQueryStatus;
-                                                        ///< if UINT64_MAX, then function will not return until complete or device
-                                                        ///< is lost.
+                                                        ///< if `UINT64_MAX`, then function will not return until complete or
+                                                        ///< device is lost.
                                                         ///< Due to external dependencies, timeout may be rounded to the closest
                                                         ///< value allowed by the accuracy of those dependencies.
         )
@@ -2086,10 +2086,10 @@ namespace driver
         ze_context_handle_t hContext,                   ///< [in] handle of the context object
         const ze_device_mem_alloc_desc_t* device_desc,  ///< [in] pointer to device memory allocation descriptor
         const ze_host_mem_alloc_desc_t* host_desc,      ///< [in] pointer to host memory allocation descriptor
-        size_t size,                                    ///< [in] size in bytes to allocate; must be less than or equal to
-                                                        ///< ::ze_device_properties_t.maxMemAllocSize.
+        size_t size,                                    ///< [in] size in bytes to allocate; must be less than or equal to the
+                                                        ///< `maxMemAllocSize` member of ::ze_device_properties_t
         size_t alignment,                               ///< [in] minimum alignment in bytes for the allocation; must be a power of
-                                                        ///< two.
+                                                        ///< two
         ze_device_handle_t hDevice,                     ///< [in][optional] device handle to associate with
         void** pptr                                     ///< [out] pointer to shared allocation
         )
@@ -2116,10 +2116,10 @@ namespace driver
     zeMemAllocDevice(
         ze_context_handle_t hContext,                   ///< [in] handle of the context object
         const ze_device_mem_alloc_desc_t* device_desc,  ///< [in] pointer to device memory allocation descriptor
-        size_t size,                                    ///< [in] size in bytes to allocate; must be less than or equal to
-                                                        ///< ::ze_device_properties_t.maxMemAllocSize.
+        size_t size,                                    ///< [in] size in bytes to allocate; must be less than or equal to the
+                                                        ///< `maxMemAllocSize` member of ::ze_device_properties_t
         size_t alignment,                               ///< [in] minimum alignment in bytes for the allocation; must be a power of
-                                                        ///< two.
+                                                        ///< two
         ze_device_handle_t hDevice,                     ///< [in] handle of the device
         void** pptr                                     ///< [out] pointer to device allocation
         )
@@ -2146,10 +2146,10 @@ namespace driver
     zeMemAllocHost(
         ze_context_handle_t hContext,                   ///< [in] handle of the context object
         const ze_host_mem_alloc_desc_t* host_desc,      ///< [in] pointer to host memory allocation descriptor
-        size_t size,                                    ///< [in] size in bytes to allocate; must be less than or equal to
-                                                        ///< ::ze_device_properties_t.maxMemAllocSize.
+        size_t size,                                    ///< [in] size in bytes to allocate; must be less than or equal to the
+                                                        ///< `maxMemAllocSize` member of ::ze_device_properties_t
         size_t alignment,                               ///< [in] minimum alignment in bytes for the allocation; must be a power of
-                                                        ///< two.
+                                                        ///< two
         void** pptr                                     ///< [out] pointer to host allocation
         )
     {

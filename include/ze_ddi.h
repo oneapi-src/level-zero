@@ -5,7 +5,7 @@
  * SPDX-License-Identifier: MIT
  *
  * @file ze_ddi.h
- * @version v1.6-r1.6.3
+ * @version v1.6-r1.6.10
  *
  */
 #ifndef _ZE_DDI_H
@@ -43,8 +43,8 @@ typedef struct _ze_global_dditable_t
 ///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
 ZE_DLLEXPORT ze_result_t ZE_APICALL
 zeGetGlobalProcAddrTable(
-    ze_api_version_t version,                       ///< [in] API version requested
-    ze_global_dditable_t* pDdiTable                 ///< [in,out] pointer to table of DDI function pointers
+    ze_api_version_t version,                                               ///< [in] API version requested
+    ze_global_dditable_t* pDdiTable                                         ///< [in,out] pointer to table of DDI function pointers
     );
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -129,8 +129,8 @@ typedef struct _ze_driver_dditable_t
 ///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
 ZE_DLLEXPORT ze_result_t ZE_APICALL
 zeGetDriverProcAddrTable(
-    ze_api_version_t version,                       ///< [in] API version requested
-    ze_driver_dditable_t* pDdiTable                 ///< [in,out] pointer to table of DDI function pointers
+    ze_api_version_t version,                                               ///< [in] API version requested
+    ze_driver_dditable_t* pDdiTable                                         ///< [in,out] pointer to table of DDI function pointers
     );
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -311,8 +311,8 @@ typedef struct _ze_device_dditable_t
 ///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
 ZE_DLLEXPORT ze_result_t ZE_APICALL
 zeGetDeviceProcAddrTable(
-    ze_api_version_t version,                       ///< [in] API version requested
-    ze_device_dditable_t* pDdiTable                 ///< [in,out] pointer to table of DDI function pointers
+    ze_api_version_t version,                                               ///< [in] API version requested
+    ze_device_dditable_t* pDdiTable                                         ///< [in,out] pointer to table of DDI function pointers
     );
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -347,8 +347,8 @@ typedef struct _ze_device_exp_dditable_t
 ///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
 ZE_DLLEXPORT ze_result_t ZE_APICALL
 zeGetDeviceExpProcAddrTable(
-    ze_api_version_t version,                       ///< [in] API version requested
-    ze_device_exp_dditable_t* pDdiTable             ///< [in,out] pointer to table of DDI function pointers
+    ze_api_version_t version,                                               ///< [in] API version requested
+    ze_device_exp_dditable_t* pDdiTable                                     ///< [in,out] pointer to table of DDI function pointers
     );
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -455,8 +455,8 @@ typedef struct _ze_context_dditable_t
 ///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
 ZE_DLLEXPORT ze_result_t ZE_APICALL
 zeGetContextProcAddrTable(
-    ze_api_version_t version,                       ///< [in] API version requested
-    ze_context_dditable_t* pDdiTable                ///< [in,out] pointer to table of DDI function pointers
+    ze_api_version_t version,                                               ///< [in] API version requested
+    ze_context_dditable_t* pDdiTable                                        ///< [in,out] pointer to table of DDI function pointers
     );
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -518,8 +518,8 @@ typedef struct _ze_command_queue_dditable_t
 ///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
 ZE_DLLEXPORT ze_result_t ZE_APICALL
 zeGetCommandQueueProcAddrTable(
-    ze_api_version_t version,                       ///< [in] API version requested
-    ze_command_queue_dditable_t* pDdiTable          ///< [in,out] pointer to table of DDI function pointers
+    ze_api_version_t version,                                               ///< [in] API version requested
+    ze_command_queue_dditable_t* pDdiTable                                  ///< [in,out] pointer to table of DDI function pointers
     );
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -879,8 +879,8 @@ typedef struct _ze_command_list_dditable_t
 ///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
 ZE_DLLEXPORT ze_result_t ZE_APICALL
 zeGetCommandListProcAddrTable(
-    ze_api_version_t version,                       ///< [in] API version requested
-    ze_command_list_dditable_t* pDdiTable           ///< [in,out] pointer to table of DDI function pointers
+    ze_api_version_t version,                                               ///< [in] API version requested
+    ze_command_list_dditable_t* pDdiTable                                   ///< [in,out] pointer to table of DDI function pointers
     );
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -953,8 +953,8 @@ typedef struct _ze_image_dditable_t
 ///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
 ZE_DLLEXPORT ze_result_t ZE_APICALL
 zeGetImageProcAddrTable(
-    ze_api_version_t version,                       ///< [in] API version requested
-    ze_image_dditable_t* pDdiTable                  ///< [in,out] pointer to table of DDI function pointers
+    ze_api_version_t version,                                               ///< [in] API version requested
+    ze_image_dditable_t* pDdiTable                                          ///< [in,out] pointer to table of DDI function pointers
     );
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1000,8 +1000,8 @@ typedef struct _ze_image_exp_dditable_t
 ///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
 ZE_DLLEXPORT ze_result_t ZE_APICALL
 zeGetImageExpProcAddrTable(
-    ze_api_version_t version,                       ///< [in] API version requested
-    ze_image_exp_dditable_t* pDdiTable              ///< [in,out] pointer to table of DDI function pointers
+    ze_api_version_t version,                                               ///< [in] API version requested
+    ze_image_exp_dditable_t* pDdiTable                                      ///< [in,out] pointer to table of DDI function pointers
     );
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1066,8 +1066,8 @@ typedef struct _ze_fence_dditable_t
 ///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
 ZE_DLLEXPORT ze_result_t ZE_APICALL
 zeGetFenceProcAddrTable(
-    ze_api_version_t version,                       ///< [in] API version requested
-    ze_fence_dditable_t* pDdiTable                  ///< [in,out] pointer to table of DDI function pointers
+    ze_api_version_t version,                                               ///< [in] API version requested
+    ze_fence_dditable_t* pDdiTable                                          ///< [in,out] pointer to table of DDI function pointers
     );
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1144,8 +1144,8 @@ typedef struct _ze_event_pool_dditable_t
 ///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
 ZE_DLLEXPORT ze_result_t ZE_APICALL
 zeGetEventPoolProcAddrTable(
-    ze_api_version_t version,                       ///< [in] API version requested
-    ze_event_pool_dditable_t* pDdiTable             ///< [in,out] pointer to table of DDI function pointers
+    ze_api_version_t version,                                               ///< [in] API version requested
+    ze_event_pool_dditable_t* pDdiTable                                     ///< [in,out] pointer to table of DDI function pointers
     );
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1235,8 +1235,8 @@ typedef struct _ze_event_dditable_t
 ///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
 ZE_DLLEXPORT ze_result_t ZE_APICALL
 zeGetEventProcAddrTable(
-    ze_api_version_t version,                       ///< [in] API version requested
-    ze_event_dditable_t* pDdiTable                  ///< [in,out] pointer to table of DDI function pointers
+    ze_api_version_t version,                                               ///< [in] API version requested
+    ze_event_dditable_t* pDdiTable                                          ///< [in,out] pointer to table of DDI function pointers
     );
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1273,8 +1273,8 @@ typedef struct _ze_event_exp_dditable_t
 ///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
 ZE_DLLEXPORT ze_result_t ZE_APICALL
 zeGetEventExpProcAddrTable(
-    ze_api_version_t version,                       ///< [in] API version requested
-    ze_event_exp_dditable_t* pDdiTable              ///< [in,out] pointer to table of DDI function pointers
+    ze_api_version_t version,                                               ///< [in] API version requested
+    ze_event_exp_dditable_t* pDdiTable                                      ///< [in,out] pointer to table of DDI function pointers
     );
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1383,8 +1383,8 @@ typedef struct _ze_module_dditable_t
 ///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
 ZE_DLLEXPORT ze_result_t ZE_APICALL
 zeGetModuleProcAddrTable(
-    ze_api_version_t version,                       ///< [in] API version requested
-    ze_module_dditable_t* pDdiTable                 ///< [in,out] pointer to table of DDI function pointers
+    ze_api_version_t version,                                               ///< [in] API version requested
+    ze_module_dditable_t* pDdiTable                                         ///< [in,out] pointer to table of DDI function pointers
     );
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1427,8 +1427,8 @@ typedef struct _ze_module_build_log_dditable_t
 ///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
 ZE_DLLEXPORT ze_result_t ZE_APICALL
 zeGetModuleBuildLogProcAddrTable(
-    ze_api_version_t version,                       ///< [in] API version requested
-    ze_module_build_log_dditable_t* pDdiTable       ///< [in,out] pointer to table of DDI function pointers
+    ze_api_version_t version,                                               ///< [in] API version requested
+    ze_module_build_log_dditable_t* pDdiTable                               ///< [in,out] pointer to table of DDI function pointers
     );
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1562,8 +1562,8 @@ typedef struct _ze_kernel_dditable_t
 ///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
 ZE_DLLEXPORT ze_result_t ZE_APICALL
 zeGetKernelProcAddrTable(
-    ze_api_version_t version,                       ///< [in] API version requested
-    ze_kernel_dditable_t* pDdiTable                 ///< [in,out] pointer to table of DDI function pointers
+    ze_api_version_t version,                                               ///< [in] API version requested
+    ze_kernel_dditable_t* pDdiTable                                         ///< [in,out] pointer to table of DDI function pointers
     );
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1608,8 +1608,8 @@ typedef struct _ze_kernel_exp_dditable_t
 ///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
 ZE_DLLEXPORT ze_result_t ZE_APICALL
 zeGetKernelExpProcAddrTable(
-    ze_api_version_t version,                       ///< [in] API version requested
-    ze_kernel_exp_dditable_t* pDdiTable             ///< [in,out] pointer to table of DDI function pointers
+    ze_api_version_t version,                                               ///< [in] API version requested
+    ze_kernel_exp_dditable_t* pDdiTable                                     ///< [in,out] pointer to table of DDI function pointers
     );
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1653,8 +1653,8 @@ typedef struct _ze_sampler_dditable_t
 ///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
 ZE_DLLEXPORT ze_result_t ZE_APICALL
 zeGetSamplerProcAddrTable(
-    ze_api_version_t version,                       ///< [in] API version requested
-    ze_sampler_dditable_t* pDdiTable                ///< [in,out] pointer to table of DDI function pointers
+    ze_api_version_t version,                                               ///< [in] API version requested
+    ze_sampler_dditable_t* pDdiTable                                        ///< [in,out] pointer to table of DDI function pointers
     );
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1699,8 +1699,8 @@ typedef struct _ze_physical_mem_dditable_t
 ///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
 ZE_DLLEXPORT ze_result_t ZE_APICALL
 zeGetPhysicalMemProcAddrTable(
-    ze_api_version_t version,                       ///< [in] API version requested
-    ze_physical_mem_dditable_t* pDdiTable           ///< [in,out] pointer to table of DDI function pointers
+    ze_api_version_t version,                                               ///< [in] API version requested
+    ze_physical_mem_dditable_t* pDdiTable                                   ///< [in,out] pointer to table of DDI function pointers
     );
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1836,8 +1836,8 @@ typedef struct _ze_mem_dditable_t
 ///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
 ZE_DLLEXPORT ze_result_t ZE_APICALL
 zeGetMemProcAddrTable(
-    ze_api_version_t version,                       ///< [in] API version requested
-    ze_mem_dditable_t* pDdiTable                    ///< [in,out] pointer to table of DDI function pointers
+    ze_api_version_t version,                                               ///< [in] API version requested
+    ze_mem_dditable_t* pDdiTable                                            ///< [in,out] pointer to table of DDI function pointers
     );
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1882,8 +1882,8 @@ typedef struct _ze_mem_exp_dditable_t
 ///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
 ZE_DLLEXPORT ze_result_t ZE_APICALL
 zeGetMemExpProcAddrTable(
-    ze_api_version_t version,                       ///< [in] API version requested
-    ze_mem_exp_dditable_t* pDdiTable                ///< [in,out] pointer to table of DDI function pointers
+    ze_api_version_t version,                                               ///< [in] API version requested
+    ze_mem_exp_dditable_t* pDdiTable                                        ///< [in,out] pointer to table of DDI function pointers
     );
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1981,8 +1981,8 @@ typedef struct _ze_virtual_mem_dditable_t
 ///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
 ZE_DLLEXPORT ze_result_t ZE_APICALL
 zeGetVirtualMemProcAddrTable(
-    ze_api_version_t version,                       ///< [in] API version requested
-    ze_virtual_mem_dditable_t* pDdiTable            ///< [in,out] pointer to table of DDI function pointers
+    ze_api_version_t version,                                               ///< [in] API version requested
+    ze_virtual_mem_dditable_t* pDdiTable                                    ///< [in,out] pointer to table of DDI function pointers
     );
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -2043,8 +2043,8 @@ typedef struct _ze_fabric_vertex_exp_dditable_t
 ///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
 ZE_DLLEXPORT ze_result_t ZE_APICALL
 zeGetFabricVertexExpProcAddrTable(
-    ze_api_version_t version,                       ///< [in] API version requested
-    ze_fabric_vertex_exp_dditable_t* pDdiTable      ///< [in,out] pointer to table of DDI function pointers
+    ze_api_version_t version,                                               ///< [in] API version requested
+    ze_fabric_vertex_exp_dditable_t* pDdiTable                              ///< [in,out] pointer to table of DDI function pointers
     );
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -2098,8 +2098,8 @@ typedef struct _ze_fabric_edge_exp_dditable_t
 ///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
 ZE_DLLEXPORT ze_result_t ZE_APICALL
 zeGetFabricEdgeExpProcAddrTable(
-    ze_api_version_t version,                       ///< [in] API version requested
-    ze_fabric_edge_exp_dditable_t* pDdiTable        ///< [in,out] pointer to table of DDI function pointers
+    ze_api_version_t version,                                               ///< [in] API version requested
+    ze_fabric_edge_exp_dditable_t* pDdiTable                                ///< [in,out] pointer to table of DDI function pointers
     );
 
 ///////////////////////////////////////////////////////////////////////////////

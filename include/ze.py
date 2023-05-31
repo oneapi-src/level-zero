@@ -4,7 +4,7 @@
  SPDX-License-Identifier: MIT
 
  @file ze.py
- @version v1.6-r1.6.3
+ @version v1.6-r1.6.10
 
  """
 import platform
@@ -160,59 +160,59 @@ def ZE_BIT( _i ):
 ###############################################################################
 ## @brief Defines Return/Error codes
 class ze_result_v(IntEnum):
-    SUCCESS = 0                                     ## [Core] success
-    NOT_READY = 1                                   ## [Core] synchronization primitive not signaled
-    ERROR_DEVICE_LOST = 0x70000001                  ## [Core] device hung, reset, was removed, or driver update occurred
-    ERROR_OUT_OF_HOST_MEMORY = 0x70000002           ## [Core] insufficient host memory to satisfy call
-    ERROR_OUT_OF_DEVICE_MEMORY = 0x70000003         ## [Core] insufficient device memory to satisfy call
-    ERROR_MODULE_BUILD_FAILURE = 0x70000004         ## [Core] error occurred when building module, see build log for details
-    ERROR_MODULE_LINK_FAILURE = 0x70000005          ## [Core] error occurred when linking modules, see build log for details
-    ERROR_DEVICE_REQUIRES_RESET = 0x70000006        ## [Core] device requires a reset
-    ERROR_DEVICE_IN_LOW_POWER_STATE = 0x70000007    ## [Core] device currently in low power state
-    EXP_ERROR_DEVICE_IS_NOT_VERTEX = 0x7ff00001     ## [Core, Expoerimental] device is not represented by a fabric vertex
-    EXP_ERROR_VERTEX_IS_NOT_DEVICE = 0x7ff00002     ## [Core, Experimental] fabric vertex does not represent a device
-    EXP_ERROR_REMOTE_DEVICE = 0x7ff00003            ## [Core, Expoerimental] fabric vertex represents a remote device or
-                                                    ## subdevice
-    ERROR_INSUFFICIENT_PERMISSIONS = 0x70010000     ## [Sysman] access denied due to permission level
-    ERROR_NOT_AVAILABLE = 0x70010001                ## [Sysman] resource already in use and simultaneous access not allowed
-                                                    ## or resource was removed
-    ERROR_DEPENDENCY_UNAVAILABLE = 0x70020000       ## [Tools] external required dependency is unavailable or missing
-    WARNING_DROPPED_DATA = 0x70020001               ## [Tools] data may have been dropped
-    ERROR_UNINITIALIZED = 0x78000001                ## [Validation] driver is not initialized
-    ERROR_UNSUPPORTED_VERSION = 0x78000002          ## [Validation] generic error code for unsupported versions
-    ERROR_UNSUPPORTED_FEATURE = 0x78000003          ## [Validation] generic error code for unsupported features
-    ERROR_INVALID_ARGUMENT = 0x78000004             ## [Validation] generic error code for invalid arguments
-    ERROR_INVALID_NULL_HANDLE = 0x78000005          ## [Validation] handle argument is not valid
-    ERROR_HANDLE_OBJECT_IN_USE = 0x78000006         ## [Validation] object pointed to by handle still in-use by device
-    ERROR_INVALID_NULL_POINTER = 0x78000007         ## [Validation] pointer argument may not be nullptr
-    ERROR_INVALID_SIZE = 0x78000008                 ## [Validation] size argument is invalid (e.g., must not be zero)
-    ERROR_UNSUPPORTED_SIZE = 0x78000009             ## [Validation] size argument is not supported by the device (e.g., too
-                                                    ## large)
-    ERROR_UNSUPPORTED_ALIGNMENT = 0x7800000a        ## [Validation] alignment argument is not supported by the device (e.g.,
-                                                    ## too small)
-    ERROR_INVALID_SYNCHRONIZATION_OBJECT = 0x7800000b   ## [Validation] synchronization object in invalid state
-    ERROR_INVALID_ENUMERATION = 0x7800000c          ## [Validation] enumerator argument is not valid
-    ERROR_UNSUPPORTED_ENUMERATION = 0x7800000d      ## [Validation] enumerator argument is not supported by the device
-    ERROR_UNSUPPORTED_IMAGE_FORMAT = 0x7800000e     ## [Validation] image format is not supported by the device
-    ERROR_INVALID_NATIVE_BINARY = 0x7800000f        ## [Validation] native binary is not supported by the device
-    ERROR_INVALID_GLOBAL_NAME = 0x78000010          ## [Validation] global variable is not found in the module
-    ERROR_INVALID_KERNEL_NAME = 0x78000011          ## [Validation] kernel name is not found in the module
-    ERROR_INVALID_FUNCTION_NAME = 0x78000012        ## [Validation] function name is not found in the module
-    ERROR_INVALID_GROUP_SIZE_DIMENSION = 0x78000013 ## [Validation] group size dimension is not valid for the kernel or
-                                                    ## device
-    ERROR_INVALID_GLOBAL_WIDTH_DIMENSION = 0x78000014   ## [Validation] global width dimension is not valid for the kernel or
-                                                    ## device
-    ERROR_INVALID_KERNEL_ARGUMENT_INDEX = 0x78000015## [Validation] kernel argument index is not valid for kernel
-    ERROR_INVALID_KERNEL_ARGUMENT_SIZE = 0x78000016 ## [Validation] kernel argument size does not match kernel
-    ERROR_INVALID_KERNEL_ATTRIBUTE_VALUE = 0x78000017   ## [Validation] value of kernel attribute is not valid for the kernel or
-                                                    ## device
-    ERROR_INVALID_MODULE_UNLINKED = 0x78000018      ## [Validation] module with imports needs to be linked before kernels can
-                                                    ## be created from it.
-    ERROR_INVALID_COMMAND_LIST_TYPE = 0x78000019    ## [Validation] command list type does not match command queue type
-    ERROR_OVERLAPPING_REGIONS = 0x7800001a          ## [Validation] copy operations do not support overlapping regions of
-                                                    ## memory
-    WARNING_ACTION_REQUIRED = 0x7800001b            ## [Sysman] an action is required to complete the desired operation
-    ERROR_UNKNOWN = 0x7ffffffe                      ## [Core] unknown or internal error
+    SUCCESS = 0                                                             ## [Core] success
+    NOT_READY = 1                                                           ## [Core] synchronization primitive not signaled
+    ERROR_DEVICE_LOST = 0x70000001                                          ## [Core] device hung, reset, was removed, or driver update occurred
+    ERROR_OUT_OF_HOST_MEMORY = 0x70000002                                   ## [Core] insufficient host memory to satisfy call
+    ERROR_OUT_OF_DEVICE_MEMORY = 0x70000003                                 ## [Core] insufficient device memory to satisfy call
+    ERROR_MODULE_BUILD_FAILURE = 0x70000004                                 ## [Core] error occurred when building module, see build log for details
+    ERROR_MODULE_LINK_FAILURE = 0x70000005                                  ## [Core] error occurred when linking modules, see build log for details
+    ERROR_DEVICE_REQUIRES_RESET = 0x70000006                                ## [Core] device requires a reset
+    ERROR_DEVICE_IN_LOW_POWER_STATE = 0x70000007                            ## [Core] device currently in low power state
+    EXP_ERROR_DEVICE_IS_NOT_VERTEX = 0x7ff00001                             ## [Core, Expoerimental] device is not represented by a fabric vertex
+    EXP_ERROR_VERTEX_IS_NOT_DEVICE = 0x7ff00002                             ## [Core, Experimental] fabric vertex does not represent a device
+    EXP_ERROR_REMOTE_DEVICE = 0x7ff00003                                    ## [Core, Expoerimental] fabric vertex represents a remote device or
+                                                                            ## subdevice
+    ERROR_INSUFFICIENT_PERMISSIONS = 0x70010000                             ## [Sysman] access denied due to permission level
+    ERROR_NOT_AVAILABLE = 0x70010001                                        ## [Sysman] resource already in use and simultaneous access not allowed
+                                                                            ## or resource was removed
+    ERROR_DEPENDENCY_UNAVAILABLE = 0x70020000                               ## [Tools] external required dependency is unavailable or missing
+    WARNING_DROPPED_DATA = 0x70020001                                       ## [Tools] data may have been dropped
+    ERROR_UNINITIALIZED = 0x78000001                                        ## [Validation] driver is not initialized
+    ERROR_UNSUPPORTED_VERSION = 0x78000002                                  ## [Validation] generic error code for unsupported versions
+    ERROR_UNSUPPORTED_FEATURE = 0x78000003                                  ## [Validation] generic error code for unsupported features
+    ERROR_INVALID_ARGUMENT = 0x78000004                                     ## [Validation] generic error code for invalid arguments
+    ERROR_INVALID_NULL_HANDLE = 0x78000005                                  ## [Validation] handle argument is not valid
+    ERROR_HANDLE_OBJECT_IN_USE = 0x78000006                                 ## [Validation] object pointed to by handle still in-use by device
+    ERROR_INVALID_NULL_POINTER = 0x78000007                                 ## [Validation] pointer argument may not be nullptr
+    ERROR_INVALID_SIZE = 0x78000008                                         ## [Validation] size argument is invalid (e.g., must not be zero)
+    ERROR_UNSUPPORTED_SIZE = 0x78000009                                     ## [Validation] size argument is not supported by the device (e.g., too
+                                                                            ## large)
+    ERROR_UNSUPPORTED_ALIGNMENT = 0x7800000a                                ## [Validation] alignment argument is not supported by the device (e.g.,
+                                                                            ## too small)
+    ERROR_INVALID_SYNCHRONIZATION_OBJECT = 0x7800000b                       ## [Validation] synchronization object in invalid state
+    ERROR_INVALID_ENUMERATION = 0x7800000c                                  ## [Validation] enumerator argument is not valid
+    ERROR_UNSUPPORTED_ENUMERATION = 0x7800000d                              ## [Validation] enumerator argument is not supported by the device
+    ERROR_UNSUPPORTED_IMAGE_FORMAT = 0x7800000e                             ## [Validation] image format is not supported by the device
+    ERROR_INVALID_NATIVE_BINARY = 0x7800000f                                ## [Validation] native binary is not supported by the device
+    ERROR_INVALID_GLOBAL_NAME = 0x78000010                                  ## [Validation] global variable is not found in the module
+    ERROR_INVALID_KERNEL_NAME = 0x78000011                                  ## [Validation] kernel name is not found in the module
+    ERROR_INVALID_FUNCTION_NAME = 0x78000012                                ## [Validation] function name is not found in the module
+    ERROR_INVALID_GROUP_SIZE_DIMENSION = 0x78000013                         ## [Validation] group size dimension is not valid for the kernel or
+                                                                            ## device
+    ERROR_INVALID_GLOBAL_WIDTH_DIMENSION = 0x78000014                       ## [Validation] global width dimension is not valid for the kernel or
+                                                                            ## device
+    ERROR_INVALID_KERNEL_ARGUMENT_INDEX = 0x78000015                        ## [Validation] kernel argument index is not valid for kernel
+    ERROR_INVALID_KERNEL_ARGUMENT_SIZE = 0x78000016                         ## [Validation] kernel argument size does not match kernel
+    ERROR_INVALID_KERNEL_ATTRIBUTE_VALUE = 0x78000017                       ## [Validation] value of kernel attribute is not valid for the kernel or
+                                                                            ## device
+    ERROR_INVALID_MODULE_UNLINKED = 0x78000018                              ## [Validation] module with imports needs to be linked before kernels can
+                                                                            ## be created from it.
+    ERROR_INVALID_COMMAND_LIST_TYPE = 0x78000019                            ## [Validation] command list type does not match command queue type
+    ERROR_OVERLAPPING_REGIONS = 0x7800001a                                  ## [Validation] copy operations do not support overlapping regions of
+                                                                            ## memory
+    WARNING_ACTION_REQUIRED = 0x7800001b                                    ## [Sysman] an action is required to complete the desired operation
+    ERROR_UNKNOWN = 0x7ffffffe                                              ## [Core] unknown or internal error
 
 class ze_result_t(c_int):
     def __str__(self):
@@ -222,72 +222,72 @@ class ze_result_t(c_int):
 ###############################################################################
 ## @brief Defines structure types
 class ze_structure_type_v(IntEnum):
-    DRIVER_PROPERTIES = 0x1                         ## ::ze_driver_properties_t
-    DRIVER_IPC_PROPERTIES = 0x2                     ## ::ze_driver_ipc_properties_t
-    DEVICE_PROPERTIES = 0x3                         ## ::ze_device_properties_t
-    DEVICE_COMPUTE_PROPERTIES = 0x4                 ## ::ze_device_compute_properties_t
-    DEVICE_MODULE_PROPERTIES = 0x5                  ## ::ze_device_module_properties_t
-    COMMAND_QUEUE_GROUP_PROPERTIES = 0x6            ## ::ze_command_queue_group_properties_t
-    DEVICE_MEMORY_PROPERTIES = 0x7                  ## ::ze_device_memory_properties_t
-    DEVICE_MEMORY_ACCESS_PROPERTIES = 0x8           ## ::ze_device_memory_access_properties_t
-    DEVICE_CACHE_PROPERTIES = 0x9                   ## ::ze_device_cache_properties_t
-    DEVICE_IMAGE_PROPERTIES = 0xa                   ## ::ze_device_image_properties_t
-    DEVICE_P2P_PROPERTIES = 0xb                     ## ::ze_device_p2p_properties_t
-    DEVICE_EXTERNAL_MEMORY_PROPERTIES = 0xc         ## ::ze_device_external_memory_properties_t
-    CONTEXT_DESC = 0xd                              ## ::ze_context_desc_t
-    COMMAND_QUEUE_DESC = 0xe                        ## ::ze_command_queue_desc_t
-    COMMAND_LIST_DESC = 0xf                         ## ::ze_command_list_desc_t
-    EVENT_POOL_DESC = 0x10                          ## ::ze_event_pool_desc_t
-    EVENT_DESC = 0x11                               ## ::ze_event_desc_t
-    FENCE_DESC = 0x12                               ## ::ze_fence_desc_t
-    IMAGE_DESC = 0x13                               ## ::ze_image_desc_t
-    IMAGE_PROPERTIES = 0x14                         ## ::ze_image_properties_t
-    DEVICE_MEM_ALLOC_DESC = 0x15                    ## ::ze_device_mem_alloc_desc_t
-    HOST_MEM_ALLOC_DESC = 0x16                      ## ::ze_host_mem_alloc_desc_t
-    MEMORY_ALLOCATION_PROPERTIES = 0x17             ## ::ze_memory_allocation_properties_t
-    EXTERNAL_MEMORY_EXPORT_DESC = 0x18              ## ::ze_external_memory_export_desc_t
-    EXTERNAL_MEMORY_IMPORT_FD = 0x19                ## ::ze_external_memory_import_fd_t
-    EXTERNAL_MEMORY_EXPORT_FD = 0x1a                ## ::ze_external_memory_export_fd_t
-    MODULE_DESC = 0x1b                              ## ::ze_module_desc_t
-    MODULE_PROPERTIES = 0x1c                        ## ::ze_module_properties_t
-    KERNEL_DESC = 0x1d                              ## ::ze_kernel_desc_t
-    KERNEL_PROPERTIES = 0x1e                        ## ::ze_kernel_properties_t
-    SAMPLER_DESC = 0x1f                             ## ::ze_sampler_desc_t
-    PHYSICAL_MEM_DESC = 0x20                        ## ::ze_physical_mem_desc_t
-    KERNEL_PREFERRED_GROUP_SIZE_PROPERTIES = 0x21   ## ::ze_kernel_preferred_group_size_properties_t
-    EXTERNAL_MEMORY_IMPORT_WIN32 = 0x22             ## ::ze_external_memory_import_win32_handle_t
-    EXTERNAL_MEMORY_EXPORT_WIN32 = 0x23             ## ::ze_external_memory_export_win32_handle_t
-    DEVICE_RAYTRACING_EXT_PROPERTIES = 0x00010001   ## ::ze_device_raytracing_ext_properties_t
-    RAYTRACING_MEM_ALLOC_EXT_DESC = 0x10002         ## ::ze_raytracing_mem_alloc_ext_desc_t
-    FLOAT_ATOMIC_EXT_PROPERTIES = 0x10003           ## ::ze_float_atomic_ext_properties_t
-    CACHE_RESERVATION_EXT_DESC = 0x10004            ## ::ze_cache_reservation_ext_desc_t
-    EU_COUNT_EXT = 0x10005                          ## ::ze_eu_count_ext_t
-    SRGB_EXT_DESC = 0x10006                         ## ::ze_srgb_ext_desc_t
-    LINKAGE_INSPECTION_EXT_DESC = 0x10007           ## ::ze_linkage_inspection_ext_desc_t
-    PCI_EXT_PROPERTIES = 0x10008                    ## ::ze_pci_ext_properties_t
-    DRIVER_MEMORY_FREE_EXT_PROPERTIES = 0x10009     ## ::ze_driver_memory_free_ext_properties_t
-    MEMORY_FREE_EXT_DESC = 0x1000a                  ## ::ze_memory_free_ext_desc_t
-    MEMORY_COMPRESSION_HINTS_EXT_DESC = 0x1000b     ## ::ze_memory_compression_hints_ext_desc_t
-    IMAGE_ALLOCATION_EXT_PROPERTIES = 0x1000c       ## ::ze_image_allocation_ext_properties_t
-    DEVICE_LUID_EXT_PROPERTIES = 0x1000d            ## ::ze_device_luid_ext_properties_t
-    DEVICE_MEMORY_EXT_PROPERTIES = 0x1000e          ## ::ze_device_memory_ext_properties_t
-    DEVICE_IP_VERSION_EXT = 0x1000f                 ## ::ze_device_ip_version_ext_t
-    IMAGE_VIEW_PLANAR_EXT_DESC = 0x10010            ## ::ze_image_view_planar_ext_desc_t
-    EVENT_QUERY_KERNEL_TIMESTAMPS_EXT_PROPERTIES = 0x10011  ## ::ze_event_query_kernel_timestamps_ext_properties_t
-    EVENT_QUERY_KERNEL_TIMESTAMPS_RESULTS_EXT_PROPERTIES = 0x10012  ## ::ze_event_query_kernel_timestamps_results_ext_properties_t
-    RELAXED_ALLOCATION_LIMITS_EXP_DESC = 0x00020001 ## ::ze_relaxed_allocation_limits_exp_desc_t
-    MODULE_PROGRAM_EXP_DESC = 0x00020002            ## ::ze_module_program_exp_desc_t
-    SCHEDULING_HINT_EXP_PROPERTIES = 0x00020003     ## ::ze_scheduling_hint_exp_properties_t
-    SCHEDULING_HINT_EXP_DESC = 0x00020004           ## ::ze_scheduling_hint_exp_desc_t
-    IMAGE_VIEW_PLANAR_EXP_DESC = 0x00020005         ## ::ze_image_view_planar_exp_desc_t
-    DEVICE_PROPERTIES_1_2 = 0x00020006              ## ::ze_device_properties_t
-    IMAGE_MEMORY_EXP_PROPERTIES = 0x00020007        ## ::ze_image_memory_properties_exp_t
-    POWER_SAVING_HINT_EXP_DESC = 0x00020008         ## ::ze_context_power_saving_hint_exp_desc_t
-    COPY_BANDWIDTH_EXP_PROPERTIES = 0x00020009      ## ::ze_copy_bandwidth_exp_properties_t
-    DEVICE_P2P_BANDWIDTH_EXP_PROPERTIES = 0x0002000A## ::ze_device_p2p_bandwidth_exp_properties_t
-    FABRIC_VERTEX_EXP_PROPERTIES = 0x0002000B       ## ::ze_fabric_vertex_exp_properties_t
-    FABRIC_EDGE_EXP_PROPERTIES = 0x0002000C         ## ::ze_fabric_edge_exp_properties_t
-    MEMORY_SUB_ALLOCATIONS_EXP_PROPERTIES = 0x0002000D  ## ::ze_memory_sub_allocations_exp_properties_t
+    DRIVER_PROPERTIES = 0x1                                                 ## ::ze_driver_properties_t
+    DRIVER_IPC_PROPERTIES = 0x2                                             ## ::ze_driver_ipc_properties_t
+    DEVICE_PROPERTIES = 0x3                                                 ## ::ze_device_properties_t
+    DEVICE_COMPUTE_PROPERTIES = 0x4                                         ## ::ze_device_compute_properties_t
+    DEVICE_MODULE_PROPERTIES = 0x5                                          ## ::ze_device_module_properties_t
+    COMMAND_QUEUE_GROUP_PROPERTIES = 0x6                                    ## ::ze_command_queue_group_properties_t
+    DEVICE_MEMORY_PROPERTIES = 0x7                                          ## ::ze_device_memory_properties_t
+    DEVICE_MEMORY_ACCESS_PROPERTIES = 0x8                                   ## ::ze_device_memory_access_properties_t
+    DEVICE_CACHE_PROPERTIES = 0x9                                           ## ::ze_device_cache_properties_t
+    DEVICE_IMAGE_PROPERTIES = 0xa                                           ## ::ze_device_image_properties_t
+    DEVICE_P2P_PROPERTIES = 0xb                                             ## ::ze_device_p2p_properties_t
+    DEVICE_EXTERNAL_MEMORY_PROPERTIES = 0xc                                 ## ::ze_device_external_memory_properties_t
+    CONTEXT_DESC = 0xd                                                      ## ::ze_context_desc_t
+    COMMAND_QUEUE_DESC = 0xe                                                ## ::ze_command_queue_desc_t
+    COMMAND_LIST_DESC = 0xf                                                 ## ::ze_command_list_desc_t
+    EVENT_POOL_DESC = 0x10                                                  ## ::ze_event_pool_desc_t
+    EVENT_DESC = 0x11                                                       ## ::ze_event_desc_t
+    FENCE_DESC = 0x12                                                       ## ::ze_fence_desc_t
+    IMAGE_DESC = 0x13                                                       ## ::ze_image_desc_t
+    IMAGE_PROPERTIES = 0x14                                                 ## ::ze_image_properties_t
+    DEVICE_MEM_ALLOC_DESC = 0x15                                            ## ::ze_device_mem_alloc_desc_t
+    HOST_MEM_ALLOC_DESC = 0x16                                              ## ::ze_host_mem_alloc_desc_t
+    MEMORY_ALLOCATION_PROPERTIES = 0x17                                     ## ::ze_memory_allocation_properties_t
+    EXTERNAL_MEMORY_EXPORT_DESC = 0x18                                      ## ::ze_external_memory_export_desc_t
+    EXTERNAL_MEMORY_IMPORT_FD = 0x19                                        ## ::ze_external_memory_import_fd_t
+    EXTERNAL_MEMORY_EXPORT_FD = 0x1a                                        ## ::ze_external_memory_export_fd_t
+    MODULE_DESC = 0x1b                                                      ## ::ze_module_desc_t
+    MODULE_PROPERTIES = 0x1c                                                ## ::ze_module_properties_t
+    KERNEL_DESC = 0x1d                                                      ## ::ze_kernel_desc_t
+    KERNEL_PROPERTIES = 0x1e                                                ## ::ze_kernel_properties_t
+    SAMPLER_DESC = 0x1f                                                     ## ::ze_sampler_desc_t
+    PHYSICAL_MEM_DESC = 0x20                                                ## ::ze_physical_mem_desc_t
+    KERNEL_PREFERRED_GROUP_SIZE_PROPERTIES = 0x21                           ## ::ze_kernel_preferred_group_size_properties_t
+    EXTERNAL_MEMORY_IMPORT_WIN32 = 0x22                                     ## ::ze_external_memory_import_win32_handle_t
+    EXTERNAL_MEMORY_EXPORT_WIN32 = 0x23                                     ## ::ze_external_memory_export_win32_handle_t
+    DEVICE_RAYTRACING_EXT_PROPERTIES = 0x00010001                           ## ::ze_device_raytracing_ext_properties_t
+    RAYTRACING_MEM_ALLOC_EXT_DESC = 0x10002                                 ## ::ze_raytracing_mem_alloc_ext_desc_t
+    FLOAT_ATOMIC_EXT_PROPERTIES = 0x10003                                   ## ::ze_float_atomic_ext_properties_t
+    CACHE_RESERVATION_EXT_DESC = 0x10004                                    ## ::ze_cache_reservation_ext_desc_t
+    EU_COUNT_EXT = 0x10005                                                  ## ::ze_eu_count_ext_t
+    SRGB_EXT_DESC = 0x10006                                                 ## ::ze_srgb_ext_desc_t
+    LINKAGE_INSPECTION_EXT_DESC = 0x10007                                   ## ::ze_linkage_inspection_ext_desc_t
+    PCI_EXT_PROPERTIES = 0x10008                                            ## ::ze_pci_ext_properties_t
+    DRIVER_MEMORY_FREE_EXT_PROPERTIES = 0x10009                             ## ::ze_driver_memory_free_ext_properties_t
+    MEMORY_FREE_EXT_DESC = 0x1000a                                          ## ::ze_memory_free_ext_desc_t
+    MEMORY_COMPRESSION_HINTS_EXT_DESC = 0x1000b                             ## ::ze_memory_compression_hints_ext_desc_t
+    IMAGE_ALLOCATION_EXT_PROPERTIES = 0x1000c                               ## ::ze_image_allocation_ext_properties_t
+    DEVICE_LUID_EXT_PROPERTIES = 0x1000d                                    ## ::ze_device_luid_ext_properties_t
+    DEVICE_MEMORY_EXT_PROPERTIES = 0x1000e                                  ## ::ze_device_memory_ext_properties_t
+    DEVICE_IP_VERSION_EXT = 0x1000f                                         ## ::ze_device_ip_version_ext_t
+    IMAGE_VIEW_PLANAR_EXT_DESC = 0x10010                                    ## ::ze_image_view_planar_ext_desc_t
+    EVENT_QUERY_KERNEL_TIMESTAMPS_EXT_PROPERTIES = 0x10011                  ## ::ze_event_query_kernel_timestamps_ext_properties_t
+    EVENT_QUERY_KERNEL_TIMESTAMPS_RESULTS_EXT_PROPERTIES = 0x10012          ## ::ze_event_query_kernel_timestamps_results_ext_properties_t
+    RELAXED_ALLOCATION_LIMITS_EXP_DESC = 0x00020001                         ## ::ze_relaxed_allocation_limits_exp_desc_t
+    MODULE_PROGRAM_EXP_DESC = 0x00020002                                    ## ::ze_module_program_exp_desc_t
+    SCHEDULING_HINT_EXP_PROPERTIES = 0x00020003                             ## ::ze_scheduling_hint_exp_properties_t
+    SCHEDULING_HINT_EXP_DESC = 0x00020004                                   ## ::ze_scheduling_hint_exp_desc_t
+    IMAGE_VIEW_PLANAR_EXP_DESC = 0x00020005                                 ## ::ze_image_view_planar_exp_desc_t
+    DEVICE_PROPERTIES_1_2 = 0x00020006                                      ## ::ze_device_properties_t
+    IMAGE_MEMORY_EXP_PROPERTIES = 0x00020007                                ## ::ze_image_memory_properties_exp_t
+    POWER_SAVING_HINT_EXP_DESC = 0x00020008                                 ## ::ze_context_power_saving_hint_exp_desc_t
+    COPY_BANDWIDTH_EXP_PROPERTIES = 0x00020009                              ## ::ze_copy_bandwidth_exp_properties_t
+    DEVICE_P2P_BANDWIDTH_EXP_PROPERTIES = 0x0002000A                        ## ::ze_device_p2p_bandwidth_exp_properties_t
+    FABRIC_VERTEX_EXP_PROPERTIES = 0x0002000B                               ## ::ze_fabric_vertex_exp_properties_t
+    FABRIC_EDGE_EXP_PROPERTIES = 0x0002000C                                 ## ::ze_fabric_edge_exp_properties_t
+    MEMORY_SUB_ALLOCATIONS_EXP_PROPERTIES = 0x0002000D                      ## ::ze_memory_sub_allocations_exp_properties_t
 
 class ze_structure_type_t(c_int):
     def __str__(self):
@@ -297,15 +297,15 @@ class ze_structure_type_t(c_int):
 ###############################################################################
 ## @brief External memory type flags
 class ze_external_memory_type_flags_v(IntEnum):
-    OPAQUE_FD = ZE_BIT(0)                           ## an opaque POSIX file descriptor handle
-    DMA_BUF = ZE_BIT(1)                             ## a file descriptor handle for a Linux dma_buf
-    OPAQUE_WIN32 = ZE_BIT(2)                        ## an NT handle
-    OPAQUE_WIN32_KMT = ZE_BIT(3)                    ## a global share (KMT) handle
-    D3D11_TEXTURE = ZE_BIT(4)                       ## an NT handle referring to a Direct3D 10 or 11 texture resource
-    D3D11_TEXTURE_KMT = ZE_BIT(5)                   ## a global share (KMT) handle referring to a Direct3D 10 or 11 texture
-                                                    ## resource
-    D3D12_HEAP = ZE_BIT(6)                          ## an NT handle referring to a Direct3D 12 heap resource
-    D3D12_RESOURCE = ZE_BIT(7)                      ## an NT handle referring to a Direct3D 12 committed resource
+    OPAQUE_FD = ZE_BIT(0)                                                   ## an opaque POSIX file descriptor handle
+    DMA_BUF = ZE_BIT(1)                                                     ## a file descriptor handle for a Linux dma_buf
+    OPAQUE_WIN32 = ZE_BIT(2)                                                ## an NT handle
+    OPAQUE_WIN32_KMT = ZE_BIT(3)                                            ## a global share (KMT) handle
+    D3D11_TEXTURE = ZE_BIT(4)                                               ## an NT handle referring to a Direct3D 10 or 11 texture resource
+    D3D11_TEXTURE_KMT = ZE_BIT(5)                                           ## a global share (KMT) handle referring to a Direct3D 10 or 11 texture
+                                                                            ## resource
+    D3D12_HEAP = ZE_BIT(6)                                                  ## an NT handle referring to a Direct3D 12 heap resource
+    D3D12_RESOURCE = ZE_BIT(7)                                              ## an NT handle referring to a Direct3D 12 committed resource
 
 class ze_external_memory_type_flags_t(c_int):
     def __str__(self):
@@ -315,9 +315,9 @@ class ze_external_memory_type_flags_t(c_int):
 ###############################################################################
 ## @brief Bandwidth unit
 class ze_bandwidth_unit_v(IntEnum):
-    UNKNOWN = 0                                     ## The unit used for bandwidth is unknown
-    BYTES_PER_NANOSEC = 1                           ## Bandwidth is provided in bytes/nanosec
-    BYTES_PER_CLOCK = 2                             ## Bandwidth is provided in bytes/clock
+    UNKNOWN = 0                                                             ## The unit used for bandwidth is unknown
+    BYTES_PER_NANOSEC = 1                                                   ## Bandwidth is provided in bytes/nanosec
+    BYTES_PER_CLOCK = 2                                                     ## Bandwidth is provided in bytes/clock
 
 class ze_bandwidth_unit_t(c_int):
     def __str__(self):
@@ -327,11 +327,11 @@ class ze_bandwidth_unit_t(c_int):
 ###############################################################################
 ## @brief Latency unit
 class ze_latency_unit_v(IntEnum):
-    UNKNOWN = 0                                     ## The unit used for latency is unknown
-    NANOSEC = 1                                     ## Latency is provided in nanosecs
-    CLOCK = 2                                       ## Latency is provided in clocks
-    HOP = 3                                         ## Latency is provided in hops (normalized so that the lowest latency
-                                                    ## link has a latency of 1 hop)
+    UNKNOWN = 0                                                             ## The unit used for latency is unknown
+    NANOSEC = 1                                                             ## Latency is provided in nanosecs
+    CLOCK = 2                                                               ## Latency is provided in clocks
+    HOP = 3                                                                 ## Latency is provided in hops (normalized so that the lowest latency
+                                                                            ## link has a latency of 1 hop)
 
 class ze_latency_unit_t(c_int):
     def __str__(self):
@@ -355,7 +355,7 @@ class ze_base_properties_t(Structure):
     _fields_ = [
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
         ("pNext", c_void_p)                                             ## [in,out][optional] must be null or a pointer to an extension-specific
-                                                                        ## structure (i.e. contains sType and pNext).
+                                                                        ## structure (i.e. contains stype and pNext).
     ]
 
 ###############################################################################
@@ -364,7 +364,7 @@ class ze_base_desc_t(Structure):
     _fields_ = [
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
         ("pNext", c_void_p)                                             ## [in][optional] must be null or a pointer to an extension-specific
-                                                                        ## structure (i.e. contains sType and pNext).
+                                                                        ## structure (i.e. contains stype and pNext).
     ]
 
 ###############################################################################
@@ -380,8 +380,8 @@ class ze_base_desc_t(Structure):
 ###############################################################################
 ## @brief Supported initialization flags
 class ze_init_flags_v(IntEnum):
-    GPU_ONLY = ZE_BIT(0)                            ## only initialize GPU drivers
-    VPU_ONLY = ZE_BIT(1)                            ## only initialize VPU drivers
+    GPU_ONLY = ZE_BIT(0)                                                    ## only initialize GPU drivers
+    VPU_ONLY = ZE_BIT(1)                                                    ## only initialize VPU drivers
 
 class ze_init_flags_t(c_int):
     def __str__(self):
@@ -395,14 +395,14 @@ class ze_init_flags_t(c_int):
 ##     - API versions contain major and minor attributes, use
 ##       ::ZE_MAJOR_VERSION and ::ZE_MINOR_VERSION
 class ze_api_version_v(IntEnum):
-    _1_0 = ZE_MAKE_VERSION( 1, 0 )                  ## version 1.0
-    _1_1 = ZE_MAKE_VERSION( 1, 1 )                  ## version 1.1
-    _1_2 = ZE_MAKE_VERSION( 1, 2 )                  ## version 1.2
-    _1_3 = ZE_MAKE_VERSION( 1, 3 )                  ## version 1.3
-    _1_4 = ZE_MAKE_VERSION( 1, 4 )                  ## version 1.4
-    _1_5 = ZE_MAKE_VERSION( 1, 5 )                  ## version 1.5
-    _1_6 = ZE_MAKE_VERSION( 1, 6 )                  ## version 1.6
-    CURRENT = ZE_MAKE_VERSION( 1, 6 )               ## latest known version
+    _1_0 = ZE_MAKE_VERSION( 1, 0 )                                          ## version 1.0
+    _1_1 = ZE_MAKE_VERSION( 1, 1 )                                          ## version 1.1
+    _1_2 = ZE_MAKE_VERSION( 1, 2 )                                          ## version 1.2
+    _1_3 = ZE_MAKE_VERSION( 1, 3 )                                          ## version 1.3
+    _1_4 = ZE_MAKE_VERSION( 1, 4 )                                          ## version 1.4
+    _1_5 = ZE_MAKE_VERSION( 1, 5 )                                          ## version 1.5
+    _1_6 = ZE_MAKE_VERSION( 1, 6 )                                          ## version 1.6
+    CURRENT = ZE_MAKE_VERSION( 1, 6 )                                       ## latest known version
 
 class ze_api_version_t(c_int):
     def __str__(self):
@@ -426,7 +426,7 @@ class ze_driver_properties_t(Structure):
     _fields_ = [
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
         ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
-                                                                        ## structure (i.e. contains sType and pNext).
+                                                                        ## structure (i.e. contains stype and pNext).
         ("uuid", ze_driver_uuid_t),                                     ## [out] universal unique identifier.
         ("driverVersion", c_ulong)                                      ## [out] driver version
                                                                         ## The driver version is a non-zero, monotonically increasing value where
@@ -436,10 +436,10 @@ class ze_driver_properties_t(Structure):
 ###############################################################################
 ## @brief Supported IPC property flags
 class ze_ipc_property_flags_v(IntEnum):
-    MEMORY = ZE_BIT(0)                              ## Supports passing memory allocations between processes. See
-                                                    ## ::zeMemGetIpcHandle.
-    EVENT_POOL = ZE_BIT(1)                          ## Supports passing event pools between processes. See
-                                                    ## ::zeEventPoolGetIpcHandle.
+    MEMORY = ZE_BIT(0)                                                      ## Supports passing memory allocations between processes. See
+                                                                            ## ::zeMemGetIpcHandle.
+    EVENT_POOL = ZE_BIT(1)                                                  ## Supports passing event pools between processes. See
+                                                                            ## ::zeEventPoolGetIpcHandle.
 
 class ze_ipc_property_flags_t(c_int):
     def __str__(self):
@@ -452,7 +452,7 @@ class ze_driver_ipc_properties_t(Structure):
     _fields_ = [
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
         ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
-                                                                        ## structure (i.e. contains sType and pNext).
+                                                                        ## structure (i.e. contains stype and pNext).
         ("flags", ze_ipc_property_flags_t)                              ## [out] 0 (none) or a valid combination of ::ze_ipc_property_flag_t
     ]
 
@@ -471,11 +471,11 @@ class ze_driver_extension_properties_t(Structure):
 ###############################################################################
 ## @brief Supported device types
 class ze_device_type_v(IntEnum):
-    GPU = 1                                         ## Graphics Processing Unit
-    CPU = 2                                         ## Central Processing Unit
-    FPGA = 3                                        ## Field Programmable Gate Array
-    MCA = 4                                         ## Memory Copy Accelerator
-    VPU = 5                                         ## Vision Processing Unit
+    GPU = 1                                                                 ## Graphics Processing Unit
+    CPU = 2                                                                 ## Central Processing Unit
+    FPGA = 3                                                                ## Field Programmable Gate Array
+    MCA = 4                                                                 ## Memory Copy Accelerator
+    VPU = 5                                                                 ## Vision Processing Unit
 
 class ze_device_type_t(c_int):
     def __str__(self):
@@ -500,10 +500,10 @@ ZE_MAX_DEVICE_NAME = 256
 ###############################################################################
 ## @brief Supported device property flags
 class ze_device_property_flags_v(IntEnum):
-    INTEGRATED = ZE_BIT(0)                          ## Device is integrated with the Host.
-    SUBDEVICE = ZE_BIT(1)                           ## Device handle used for query represents a sub-device.
-    ECC = ZE_BIT(2)                                 ## Device supports error correction memory access.
-    ONDEMANDPAGING = ZE_BIT(3)                      ## Device supports on-demand page-faulting.
+    INTEGRATED = ZE_BIT(0)                                                  ## Device is integrated with the Host.
+    SUBDEVICE = ZE_BIT(1)                                                   ## Device handle used for query represents a sub-device.
+    ECC = ZE_BIT(2)                                                         ## Device supports error correction memory access.
+    ONDEMANDPAGING = ZE_BIT(3)                                              ## Device supports on-demand page-faulting.
 
 class ze_device_property_flags_t(c_int):
     def __str__(self):
@@ -516,7 +516,7 @@ class ze_device_properties_t(Structure):
     _fields_ = [
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
         ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
-                                                                        ## structure (i.e. contains sType and pNext).
+                                                                        ## structure (i.e. contains stype and pNext).
         ("type", ze_device_type_t),                                     ## [out] generic device type
         ("vendorId", c_ulong),                                          ## [out] vendor id from PCI configuration
         ("deviceId", c_ulong),                                          ## [out] device id from PCI configuration
@@ -551,13 +551,16 @@ class ze_device_properties_t(Structure):
 class ze_device_thread_t(Structure):
     _fields_ = [
         ("slice", c_ulong),                                             ## [in,out] the slice number.
-                                                                        ## Must be UINT32_MAX (all) or less than ::ze_device_properties_t.numSlices.
+                                                                        ## Must be `UINT32_MAX` (all) or less than the `numSlices` member of ::ze_device_properties_t.
         ("subslice", c_ulong),                                          ## [in,out] the sub-slice number within its slice.
-                                                                        ## Must be UINT32_MAX (all) or less than ::ze_device_properties_t.numSubslicesPerSlice.
+                                                                        ## Must be `UINT32_MAX` (all) or less than the `numSubslicesPerSlice`
+                                                                        ## member of ::ze_device_properties_t.
         ("eu", c_ulong),                                                ## [in,out] the EU number within its sub-slice.
-                                                                        ## Must be UINT32_MAX (all) or less than ::ze_device_properties_t.numEUsPerSubslice.
+                                                                        ## Must be `UINT32_MAX` (all) or less than the `numEUsPerSubslice` member
+                                                                        ## of ::ze_device_properties_t.
         ("thread", c_ulong)                                             ## [in,out] the thread number within its EU.
-                                                                        ## Must be UINT32_MAX (all) or less than ::ze_device_properties_t.numThreadsPerEU.
+                                                                        ## Must be `UINT32_MAX` (all) or less than the `numThreadsPerEU` member
+                                                                        ## of ::ze_device_properties_t.
     ]
 
 ###############################################################################
@@ -570,7 +573,7 @@ class ze_device_compute_properties_t(Structure):
     _fields_ = [
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
         ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
-                                                                        ## structure (i.e. contains sType and pNext).
+                                                                        ## structure (i.e. contains stype and pNext).
         ("maxTotalGroupSize", c_ulong),                                 ## [out] Maximum items per compute group. (groupSizeX * groupSizeY *
                                                                         ## groupSizeZ) <= maxTotalGroupSize
         ("maxGroupSizeX", c_ulong),                                     ## [out] Maximum items for X dimension in group
@@ -599,10 +602,10 @@ class ze_native_kernel_uuid_t(Structure):
 ###############################################################################
 ## @brief Supported device module flags
 class ze_device_module_flags_v(IntEnum):
-    FP16 = ZE_BIT(0)                                ## Device supports 16-bit floating-point operations
-    FP64 = ZE_BIT(1)                                ## Device supports 64-bit floating-point operations
-    INT64_ATOMICS = ZE_BIT(2)                       ## Device supports 64-bit atomic operations
-    DP4A = ZE_BIT(3)                                ## Device supports four component dot product and accumulate operations
+    FP16 = ZE_BIT(0)                                                        ## Device supports 16-bit floating-point operations
+    FP64 = ZE_BIT(1)                                                        ## Device supports 64-bit floating-point operations
+    INT64_ATOMICS = ZE_BIT(2)                                               ## Device supports 64-bit atomic operations
+    DP4A = ZE_BIT(3)                                                        ## Device supports four component dot product and accumulate operations
 
 class ze_device_module_flags_t(c_int):
     def __str__(self):
@@ -612,15 +615,15 @@ class ze_device_module_flags_t(c_int):
 ###############################################################################
 ## @brief Supported floating-Point capability flags
 class ze_device_fp_flags_v(IntEnum):
-    DENORM = ZE_BIT(0)                              ## Supports denorms
-    INF_NAN = ZE_BIT(1)                             ## Supports INF and quiet NaNs
-    ROUND_TO_NEAREST = ZE_BIT(2)                    ## Supports rounding to nearest even rounding mode
-    ROUND_TO_ZERO = ZE_BIT(3)                       ## Supports rounding to zero.
-    ROUND_TO_INF = ZE_BIT(4)                        ## Supports rounding to both positive and negative INF.
-    FMA = ZE_BIT(5)                                 ## Supports IEEE754-2008 fused multiply-add.
-    ROUNDED_DIVIDE_SQRT = ZE_BIT(6)                 ## Supports rounding as defined by IEEE754 for divide and sqrt
-                                                    ## operations.
-    SOFT_FLOAT = ZE_BIT(7)                          ## Uses software implementation for basic floating-point operations.
+    DENORM = ZE_BIT(0)                                                      ## Supports denorms
+    INF_NAN = ZE_BIT(1)                                                     ## Supports INF and quiet NaNs
+    ROUND_TO_NEAREST = ZE_BIT(2)                                            ## Supports rounding to nearest even rounding mode
+    ROUND_TO_ZERO = ZE_BIT(3)                                               ## Supports rounding to zero.
+    ROUND_TO_INF = ZE_BIT(4)                                                ## Supports rounding to both positive and negative INF.
+    FMA = ZE_BIT(5)                                                         ## Supports IEEE754-2008 fused multiply-add.
+    ROUNDED_DIVIDE_SQRT = ZE_BIT(6)                                         ## Supports rounding as defined by IEEE754 for divide and sqrt
+                                                                            ## operations.
+    SOFT_FLOAT = ZE_BIT(7)                                                  ## Uses software implementation for basic floating-point operations.
 
 class ze_device_fp_flags_t(c_int):
     def __str__(self):
@@ -633,7 +636,7 @@ class ze_device_module_properties_t(Structure):
     _fields_ = [
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
         ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
-                                                                        ## structure (i.e. contains sType and pNext).
+                                                                        ## structure (i.e. contains stype and pNext).
         ("spirvVersionSupported", c_ulong),                             ## [out] Maximum supported SPIR-V version.
                                                                         ## Returns zero if SPIR-V is not supported.
                                                                         ## Contains major and minor attributes, use ::ZE_MAJOR_VERSION and ::ZE_MINOR_VERSION.
@@ -660,11 +663,11 @@ class ze_device_module_properties_t(Structure):
 ###############################################################################
 ## @brief Supported command queue group property flags
 class ze_command_queue_group_property_flags_v(IntEnum):
-    COMPUTE = ZE_BIT(0)                             ## Command queue group supports enqueing compute commands.
-    COPY = ZE_BIT(1)                                ## Command queue group supports enqueing copy commands.
-    COOPERATIVE_KERNELS = ZE_BIT(2)                 ## Command queue group supports cooperative kernels.
-                                                    ## See ::zeCommandListAppendLaunchCooperativeKernel for more details.
-    METRICS = ZE_BIT(3)                             ## Command queue groups supports metric queries.
+    COMPUTE = ZE_BIT(0)                                                     ## Command queue group supports enqueing compute commands.
+    COPY = ZE_BIT(1)                                                        ## Command queue group supports enqueing copy commands.
+    COOPERATIVE_KERNELS = ZE_BIT(2)                                         ## Command queue group supports cooperative kernels.
+                                                                            ## See ::zeCommandListAppendLaunchCooperativeKernel for more details.
+    METRICS = ZE_BIT(3)                                                     ## Command queue groups supports metric queries.
 
 class ze_command_queue_group_property_flags_t(c_int):
     def __str__(self):
@@ -678,7 +681,7 @@ class ze_command_queue_group_properties_t(Structure):
     _fields_ = [
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
         ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
-                                                                        ## structure (i.e. contains sType and pNext).
+                                                                        ## structure (i.e. contains stype and pNext).
         ("flags", ze_command_queue_group_property_flags_t),             ## [out] 0 (none) or a valid combination of
                                                                         ## ::ze_command_queue_group_property_flag_t
         ("maxMemoryFillPatternSize", c_size_t),                         ## [out] maximum `pattern_size` supported by command queue group.
@@ -689,7 +692,7 @@ class ze_command_queue_group_properties_t(Structure):
 ###############################################################################
 ## @brief Supported device memory property flags
 class ze_device_memory_property_flags_v(IntEnum):
-    TBD = ZE_BIT(0)                                 ## reserved for future use
+    TBD = ZE_BIT(0)                                                         ## reserved for future use
 
 class ze_device_memory_property_flags_t(c_int):
     def __str__(self):
@@ -703,7 +706,7 @@ class ze_device_memory_properties_t(Structure):
     _fields_ = [
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
         ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
-                                                                        ## structure (i.e. contains sType and pNext).
+                                                                        ## structure (i.e. contains stype and pNext).
         ("flags", ze_device_memory_property_flags_t),                   ## [out] 0 (none) or a valid combination of
                                                                         ## ::ze_device_memory_property_flag_t
         ("maxClockRate", c_ulong),                                      ## [out] Maximum clock rate for device memory.
@@ -719,10 +722,10 @@ class ze_device_memory_properties_t(Structure):
 ##     - Supported access capabilities for different types of memory
 ##       allocations
 class ze_memory_access_cap_flags_v(IntEnum):
-    RW = ZE_BIT(0)                                  ## Supports load/store access
-    ATOMIC = ZE_BIT(1)                              ## Supports atomic access
-    CONCURRENT = ZE_BIT(2)                          ## Supports concurrent access
-    CONCURRENT_ATOMIC = ZE_BIT(3)                   ## Supports concurrent atomic access
+    RW = ZE_BIT(0)                                                          ## Supports load/store access
+    ATOMIC = ZE_BIT(1)                                                      ## Supports atomic access
+    CONCURRENT = ZE_BIT(2)                                                  ## Supports concurrent access
+    CONCURRENT_ATOMIC = ZE_BIT(3)                                           ## Supports concurrent atomic access
 
 class ze_memory_access_cap_flags_t(c_int):
     def __str__(self):
@@ -736,7 +739,7 @@ class ze_device_memory_access_properties_t(Structure):
     _fields_ = [
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
         ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
-                                                                        ## structure (i.e. contains sType and pNext).
+                                                                        ## structure (i.e. contains stype and pNext).
         ("hostAllocCapabilities", ze_memory_access_cap_flags_t),        ## [out] host memory capabilities.
                                                                         ## returns 0 (unsupported) or a combination of ::ze_memory_access_cap_flag_t.
         ("deviceAllocCapabilities", ze_memory_access_cap_flags_t),      ## [out] device memory capabilities.
@@ -752,7 +755,7 @@ class ze_device_memory_access_properties_t(Structure):
 ###############################################################################
 ## @brief Supported cache control property flags
 class ze_device_cache_property_flags_v(IntEnum):
-    USER_CONTROL = ZE_BIT(0)                        ## Device support User Cache Control (i.e. SLM section vs Generic Cache)
+    USER_CONTROL = ZE_BIT(0)                                                ## Device support User Cache Control (i.e. SLM section vs Generic Cache)
 
 class ze_device_cache_property_flags_t(c_int):
     def __str__(self):
@@ -765,7 +768,7 @@ class ze_device_cache_properties_t(Structure):
     _fields_ = [
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
         ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
-                                                                        ## structure (i.e. contains sType and pNext).
+                                                                        ## structure (i.e. contains stype and pNext).
         ("flags", ze_device_cache_property_flags_t),                    ## [out] 0 (none) or a valid combination of
                                                                         ## ::ze_device_cache_property_flag_t
         ("cacheSize", c_size_t)                                         ## [out] Per-cache size, in bytes
@@ -777,7 +780,7 @@ class ze_device_image_properties_t(Structure):
     _fields_ = [
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
         ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
-                                                                        ## structure (i.e. contains sType and pNext).
+                                                                        ## structure (i.e. contains stype and pNext).
         ("maxImageDims1D", c_ulong),                                    ## [out] Maximum image dimensions for 1D resources. if 0, then 1D images
                                                                         ## are unsupported.
         ("maxImageDims2D", c_ulong),                                    ## [out] Maximum image dimensions for 2D resources. if 0, then 2D images
@@ -804,7 +807,7 @@ class ze_device_external_memory_properties_t(Structure):
     _fields_ = [
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
         ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
-                                                                        ## structure (i.e. contains sType and pNext).
+                                                                        ## structure (i.e. contains stype and pNext).
         ("memoryAllocationImportTypes", ze_external_memory_type_flags_t),   ## [out] Supported external memory import types for memory allocations.
         ("memoryAllocationExportTypes", ze_external_memory_type_flags_t),   ## [out] Supported external memory export types for memory allocations.
         ("imageImportTypes", ze_external_memory_type_flags_t),          ## [out] Supported external memory import types for images.
@@ -814,8 +817,8 @@ class ze_device_external_memory_properties_t(Structure):
 ###############################################################################
 ## @brief Supported device peer-to-peer property flags
 class ze_device_p2p_property_flags_v(IntEnum):
-    ACCESS = ZE_BIT(0)                              ## Device supports access between peer devices.
-    ATOMICS = ZE_BIT(1)                             ## Device supports atomics between peer devices.
+    ACCESS = ZE_BIT(0)                                                      ## Device supports access between peer devices.
+    ATOMICS = ZE_BIT(1)                                                     ## Device supports atomics between peer devices.
 
 class ze_device_p2p_property_flags_t(c_int):
     def __str__(self):
@@ -829,7 +832,7 @@ class ze_device_p2p_properties_t(Structure):
     _fields_ = [
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
         ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
-                                                                        ## structure (i.e. contains sType and pNext).
+                                                                        ## structure (i.e. contains stype and pNext).
         ("flags", ze_device_p2p_property_flags_t)                       ## [out] 0 (none) or a valid combination of
                                                                         ## ::ze_device_p2p_property_flag_t
     ]
@@ -837,7 +840,7 @@ class ze_device_p2p_properties_t(Structure):
 ###############################################################################
 ## @brief Supported context creation flags
 class ze_context_flags_v(IntEnum):
-    TBD = ZE_BIT(0)                                 ## reserved for future use
+    TBD = ZE_BIT(0)                                                         ## reserved for future use
 
 class ze_context_flags_t(c_int):
     def __str__(self):
@@ -850,7 +853,7 @@ class ze_context_desc_t(Structure):
     _fields_ = [
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
         ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
-                                                                        ## structure (i.e. contains sType and pNext).
+                                                                        ## structure (i.e. contains stype and pNext).
         ("flags", ze_context_flags_t)                                   ## [in] creation flags.
                                                                         ## must be 0 (default) or a valid combination of ::ze_context_flag_t;
                                                                         ## default behavior may use implicit driver-based heuristics.
@@ -859,11 +862,11 @@ class ze_context_desc_t(Structure):
 ###############################################################################
 ## @brief Supported command queue flags
 class ze_command_queue_flags_v(IntEnum):
-    EXPLICIT_ONLY = ZE_BIT(0)                       ## command queue should be optimized for submission to a single device engine.
-                                                    ## driver **must** disable any implicit optimizations for distributing
-                                                    ## work across multiple engines.
-                                                    ## this flag should be used when applications want full control over
-                                                    ## multi-engine submission and scheduling.
+    EXPLICIT_ONLY = ZE_BIT(0)                                               ## command queue should be optimized for submission to a single device engine.
+                                                                            ## driver **must** disable any implicit optimizations for distributing
+                                                                            ## work across multiple engines.
+                                                                            ## this flag should be used when applications want full control over
+                                                                            ## multi-engine submission and scheduling.
 
 class ze_command_queue_flags_t(c_int):
     def __str__(self):
@@ -873,11 +876,11 @@ class ze_command_queue_flags_t(c_int):
 ###############################################################################
 ## @brief Supported command queue modes
 class ze_command_queue_mode_v(IntEnum):
-    DEFAULT = 0                                     ## implicit default behavior; uses driver-based heuristics
-    SYNCHRONOUS = 1                                 ## Device execution always completes immediately on execute;
-                                                    ## Host thread is blocked using wait on implicit synchronization object
-    ASYNCHRONOUS = 2                                ## Device execution is scheduled and will complete in future;
-                                                    ## explicit synchronization object must be used to determine completeness
+    DEFAULT = 0                                                             ## implicit default behavior; uses driver-based heuristics
+    SYNCHRONOUS = 1                                                         ## Device execution always completes immediately on execute;
+                                                                            ## Host thread is blocked using wait on implicit synchronization object
+    ASYNCHRONOUS = 2                                                        ## Device execution is scheduled and will complete in future;
+                                                                            ## explicit synchronization object must be used to determine completeness
 
 class ze_command_queue_mode_t(c_int):
     def __str__(self):
@@ -887,9 +890,9 @@ class ze_command_queue_mode_t(c_int):
 ###############################################################################
 ## @brief Supported command queue priorities
 class ze_command_queue_priority_v(IntEnum):
-    NORMAL = 0                                      ## [default] normal priority
-    PRIORITY_LOW = 1                                ## lower priority than normal
-    PRIORITY_HIGH = 2                               ## higher priority than normal
+    NORMAL = 0                                                              ## [default] normal priority
+    PRIORITY_LOW = 1                                                        ## lower priority than normal
+    PRIORITY_HIGH = 2                                                       ## higher priority than normal
 
 class ze_command_queue_priority_t(c_int):
     def __str__(self):
@@ -902,7 +905,7 @@ class ze_command_queue_desc_t(Structure):
     _fields_ = [
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
         ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
-                                                                        ## structure (i.e. contains sType and pNext).
+                                                                        ## structure (i.e. contains stype and pNext).
         ("ordinal", c_ulong),                                           ## [in] command queue group ordinal
         ("index", c_ulong),                                             ## [in] command queue index within the group;
                                                                         ## must be zero if ::ZE_COMMAND_QUEUE_FLAG_EXPLICIT_ONLY is not set
@@ -917,20 +920,20 @@ class ze_command_queue_desc_t(Structure):
 ###############################################################################
 ## @brief Supported command list creation flags
 class ze_command_list_flags_v(IntEnum):
-    RELAXED_ORDERING = ZE_BIT(0)                    ## driver may reorder commands (e.g., kernels, copies) between barriers
-                                                    ## and synchronization primitives.
-                                                    ## using this flag may increase Host overhead of ::zeCommandListClose.
-                                                    ## therefore, this flag should **not** be set for low-latency usage-models.
-    MAXIMIZE_THROUGHPUT = ZE_BIT(1)                 ## driver may perform additional optimizations that increase execution
-                                                    ## throughput. 
-                                                    ## using this flag may increase Host overhead of ::zeCommandListClose and ::zeCommandQueueExecuteCommandLists.
-                                                    ## therefore, this flag should **not** be set for low-latency usage-models.
-    EXPLICIT_ONLY = ZE_BIT(2)                       ## command list should be optimized for submission to a single command
-                                                    ## queue and device engine.
-                                                    ## driver **must** disable any implicit optimizations for distributing
-                                                    ## work across multiple engines.
-                                                    ## this flag should be used when applications want full control over
-                                                    ## multi-engine submission and scheduling.
+    RELAXED_ORDERING = ZE_BIT(0)                                            ## driver may reorder commands (e.g., kernels, copies) between barriers
+                                                                            ## and synchronization primitives.
+                                                                            ## using this flag may increase Host overhead of ::zeCommandListClose.
+                                                                            ## therefore, this flag should **not** be set for low-latency usage-models.
+    MAXIMIZE_THROUGHPUT = ZE_BIT(1)                                         ## driver may perform additional optimizations that increase execution
+                                                                            ## throughput. 
+                                                                            ## using this flag may increase Host overhead of ::zeCommandListClose and ::zeCommandQueueExecuteCommandLists.
+                                                                            ## therefore, this flag should **not** be set for low-latency usage-models.
+    EXPLICIT_ONLY = ZE_BIT(2)                                               ## command list should be optimized for submission to a single command
+                                                                            ## queue and device engine.
+                                                                            ## driver **must** disable any implicit optimizations for distributing
+                                                                            ## work across multiple engines.
+                                                                            ## this flag should be used when applications want full control over
+                                                                            ## multi-engine submission and scheduling.
 
 class ze_command_list_flags_t(c_int):
     def __str__(self):
@@ -943,7 +946,7 @@ class ze_command_list_desc_t(Structure):
     _fields_ = [
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
         ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
-                                                                        ## structure (i.e. contains sType and pNext).
+                                                                        ## structure (i.e. contains stype and pNext).
         ("commandQueueGroupOrdinal", c_ulong),                          ## [in] command queue group ordinal to which this command list will be
                                                                         ## submitted
         ("flags", ze_command_list_flags_t)                              ## [in] usage flags.
@@ -981,14 +984,14 @@ class ze_image_region_t(Structure):
 ###############################################################################
 ## @brief Supported memory advice hints
 class ze_memory_advice_v(IntEnum):
-    SET_READ_MOSTLY = 0                             ## hint that memory will be read from frequently and written to rarely
-    CLEAR_READ_MOSTLY = 1                           ## removes the affect of ::ZE_MEMORY_ADVICE_SET_READ_MOSTLY
-    SET_PREFERRED_LOCATION = 2                      ## hint that the preferred memory location is the specified device
-    CLEAR_PREFERRED_LOCATION = 3                    ## removes the affect of ::ZE_MEMORY_ADVICE_SET_PREFERRED_LOCATION
-    SET_NON_ATOMIC_MOSTLY = 4                       ## hints that memory will mostly be accessed non-atomically
-    CLEAR_NON_ATOMIC_MOSTLY = 5                     ## removes the affect of ::ZE_MEMORY_ADVICE_SET_NON_ATOMIC_MOSTLY
-    BIAS_CACHED = 6                                 ## hints that memory should be cached
-    BIAS_UNCACHED = 7                               ## hints that memory should be not be cached
+    SET_READ_MOSTLY = 0                                                     ## hint that memory will be read from frequently and written to rarely
+    CLEAR_READ_MOSTLY = 1                                                   ## removes the affect of ::ZE_MEMORY_ADVICE_SET_READ_MOSTLY
+    SET_PREFERRED_LOCATION = 2                                              ## hint that the preferred memory location is the specified device
+    CLEAR_PREFERRED_LOCATION = 3                                            ## removes the affect of ::ZE_MEMORY_ADVICE_SET_PREFERRED_LOCATION
+    SET_NON_ATOMIC_MOSTLY = 4                                               ## hints that memory will mostly be accessed non-atomically
+    CLEAR_NON_ATOMIC_MOSTLY = 5                                             ## removes the affect of ::ZE_MEMORY_ADVICE_SET_NON_ATOMIC_MOSTLY
+    BIAS_CACHED = 6                                                         ## hints that memory should be cached
+    BIAS_UNCACHED = 7                                                       ## hints that memory should be not be cached
 
 class ze_memory_advice_t(c_int):
     def __str__(self):
@@ -998,12 +1001,12 @@ class ze_memory_advice_t(c_int):
 ###############################################################################
 ## @brief Supported event pool creation flags
 class ze_event_pool_flags_v(IntEnum):
-    HOST_VISIBLE = ZE_BIT(0)                        ## signals and waits are also visible to host
-    IPC = ZE_BIT(1)                                 ## signals and waits may be shared across processes
-    KERNEL_TIMESTAMP = ZE_BIT(2)                    ## Indicates all events in pool will contain kernel timestamps
-    KERNEL_MAPPED_TIMESTAMP = ZE_BIT(3)             ## Indicates all events in pool will contain kernel timestamps
-                                                    ## synchronized to host time domain; cannot be combined with
-                                                    ## ::ZE_EVENT_POOL_FLAG_KERNEL_TIMESTAMP
+    HOST_VISIBLE = ZE_BIT(0)                                                ## signals and waits are also visible to host
+    IPC = ZE_BIT(1)                                                         ## signals and waits may be shared across processes
+    KERNEL_TIMESTAMP = ZE_BIT(2)                                            ## Indicates all events in pool will contain kernel timestamps
+    KERNEL_MAPPED_TIMESTAMP = ZE_BIT(3)                                     ## Indicates all events in pool will contain kernel timestamps
+                                                                            ## synchronized to host time domain; cannot be combined with
+                                                                            ## ::ZE_EVENT_POOL_FLAG_KERNEL_TIMESTAMP
 
 class ze_event_pool_flags_t(c_int):
     def __str__(self):
@@ -1016,7 +1019,7 @@ class ze_event_pool_desc_t(Structure):
     _fields_ = [
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
         ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
-                                                                        ## structure (i.e. contains sType and pNext).
+                                                                        ## structure (i.e. contains stype and pNext).
         ("flags", ze_event_pool_flags_t),                               ## [in] creation flags.
                                                                         ## must be 0 (default) or a valid combination of ::ze_event_pool_flag_t;
                                                                         ## default behavior is signals and waits are visible to the entire device
@@ -1027,12 +1030,12 @@ class ze_event_pool_desc_t(Structure):
 ###############################################################################
 ## @brief Supported event scope flags
 class ze_event_scope_flags_v(IntEnum):
-    SUBDEVICE = ZE_BIT(0)                           ## cache hierarchies are flushed or invalidated sufficient for local
-                                                    ## sub-device access
-    DEVICE = ZE_BIT(1)                              ## cache hierarchies are flushed or invalidated sufficient for global
-                                                    ## device access and peer device access
-    HOST = ZE_BIT(2)                                ## cache hierarchies are flushed or invalidated sufficient for device and
-                                                    ## host access
+    SUBDEVICE = ZE_BIT(0)                                                   ## cache hierarchies are flushed or invalidated sufficient for local
+                                                                            ## sub-device access
+    DEVICE = ZE_BIT(1)                                                      ## cache hierarchies are flushed or invalidated sufficient for global
+                                                                            ## device access and peer device access
+    HOST = ZE_BIT(2)                                                        ## cache hierarchies are flushed or invalidated sufficient for device and
+                                                                            ## host access
 
 class ze_event_scope_flags_t(c_int):
     def __str__(self):
@@ -1045,7 +1048,7 @@ class ze_event_desc_t(Structure):
     _fields_ = [
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
         ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
-                                                                        ## structure (i.e. contains sType and pNext).
+                                                                        ## structure (i.e. contains stype and pNext).
         ("index", c_ulong),                                             ## [in] index of the event within the pool; must be less than the count
                                                                         ## specified during pool creation
         ("signal", ze_event_scope_flags_t),                             ## [in] defines the scope of relevant cache hierarchies to flush on a
@@ -1064,10 +1067,10 @@ class ze_event_desc_t(Structure):
 ## @brief Kernel timestamp clock data
 ## 
 ## @details
-##     - The timestamp frequency can be queried from
-##       ::ze_device_properties_t.timerResolution.
+##     - The timestamp frequency can be queried from the `timerResolution`
+##       member of ::ze_device_properties_t.
 ##     - The number of valid bits in the timestamp value can be queried from
-##       ::ze_device_properties_t.kernelTimestampValidBits.
+##       the `kernelTimestampValidBits` member of ::ze_device_properties_t.
 class ze_kernel_timestamp_data_t(Structure):
     _fields_ = [
         ("kernelStart", c_ulonglong),                                   ## [out] device clock at start of kernel execution
@@ -1086,7 +1089,7 @@ class ze_kernel_timestamp_result_t(Structure):
 ###############################################################################
 ## @brief Supported fence creation flags
 class ze_fence_flags_v(IntEnum):
-    SIGNALED = ZE_BIT(0)                            ## fence is created in the signaled state, otherwise not signaled.
+    SIGNALED = ZE_BIT(0)                                                    ## fence is created in the signaled state, otherwise not signaled.
 
 class ze_fence_flags_t(c_int):
     def __str__(self):
@@ -1099,7 +1102,7 @@ class ze_fence_desc_t(Structure):
     _fields_ = [
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
         ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
-                                                                        ## structure (i.e. contains sType and pNext).
+                                                                        ## structure (i.e. contains stype and pNext).
         ("flags", ze_fence_flags_t)                                     ## [in] creation flags.
                                                                         ## must be 0 (default) or a valid combination of ::ze_fence_flag_t.
     ]
@@ -1107,8 +1110,8 @@ class ze_fence_desc_t(Structure):
 ###############################################################################
 ## @brief Supported image creation flags
 class ze_image_flags_v(IntEnum):
-    KERNEL_WRITE = ZE_BIT(0)                        ## kernels will write contents
-    BIAS_UNCACHED = ZE_BIT(1)                       ## device should not cache contents
+    KERNEL_WRITE = ZE_BIT(0)                                                ## kernels will write contents
+    BIAS_UNCACHED = ZE_BIT(1)                                               ## device should not cache contents
 
 class ze_image_flags_t(c_int):
     def __str__(self):
@@ -1118,12 +1121,12 @@ class ze_image_flags_t(c_int):
 ###############################################################################
 ## @brief Supported image types
 class ze_image_type_v(IntEnum):
-    _1D = 0                                         ## 1D
-    _1DARRAY = 1                                    ## 1D array
-    _2D = 2                                         ## 2D
-    _2DARRAY = 3                                    ## 2D array
-    _3D = 4                                         ## 3D
-    BUFFER = 5                                      ## Buffer
+    _1D = 0                                                                 ## 1D
+    _1DARRAY = 1                                                            ## 1D array
+    _2D = 2                                                                 ## 2D
+    _2DARRAY = 3                                                            ## 2D array
+    _3D = 4                                                                 ## 3D
+    BUFFER = 5                                                              ## Buffer
 
 class ze_image_type_t(c_int):
     def __str__(self):
@@ -1133,49 +1136,49 @@ class ze_image_type_t(c_int):
 ###############################################################################
 ## @brief Supported image format layouts
 class ze_image_format_layout_v(IntEnum):
-    _8 = 0                                          ## 8-bit single component layout
-    _16 = 1                                         ## 16-bit single component layout
-    _32 = 2                                         ## 32-bit single component layout
-    _8_8 = 3                                        ## 2-component 8-bit layout
-    _8_8_8_8 = 4                                    ## 4-component 8-bit layout
-    _16_16 = 5                                      ## 2-component 16-bit layout
-    _16_16_16_16 = 6                                ## 4-component 16-bit layout
-    _32_32 = 7                                      ## 2-component 32-bit layout
-    _32_32_32_32 = 8                                ## 4-component 32-bit layout
-    _10_10_10_2 = 9                                 ## 4-component 10_10_10_2 layout
-    _11_11_10 = 10                                  ## 3-component 11_11_10 layout
-    _5_6_5 = 11                                     ## 3-component 5_6_5 layout
-    _5_5_5_1 = 12                                   ## 4-component 5_5_5_1 layout
-    _4_4_4_4 = 13                                   ## 4-component 4_4_4_4 layout
-    Y8 = 14                                         ## Media Format: Y8. Format type and swizzle is ignored for this.
-    NV12 = 15                                       ## Media Format: NV12. Format type and swizzle is ignored for this.
-    YUYV = 16                                       ## Media Format: YUYV. Format type and swizzle is ignored for this.
-    VYUY = 17                                       ## Media Format: VYUY. Format type and swizzle is ignored for this.
-    YVYU = 18                                       ## Media Format: YVYU. Format type and swizzle is ignored for this.
-    UYVY = 19                                       ## Media Format: UYVY. Format type and swizzle is ignored for this.
-    AYUV = 20                                       ## Media Format: AYUV. Format type and swizzle is ignored for this.
-    P010 = 21                                       ## Media Format: P010. Format type and swizzle is ignored for this.
-    Y410 = 22                                       ## Media Format: Y410. Format type and swizzle is ignored for this.
-    P012 = 23                                       ## Media Format: P012. Format type and swizzle is ignored for this.
-    Y16 = 24                                        ## Media Format: Y16. Format type and swizzle is ignored for this.
-    P016 = 25                                       ## Media Format: P016. Format type and swizzle is ignored for this.
-    Y216 = 26                                       ## Media Format: Y216. Format type and swizzle is ignored for this.
-    P216 = 27                                       ## Media Format: P216. Format type and swizzle is ignored for this.
-    P8 = 28                                         ## Media Format: P8. Format type and swizzle is ignored for this.
-    YUY2 = 29                                       ## Media Format: YUY2. Format type and swizzle is ignored for this.
-    A8P8 = 30                                       ## Media Format: A8P8. Format type and swizzle is ignored for this.
-    IA44 = 31                                       ## Media Format: IA44. Format type and swizzle is ignored for this.
-    AI44 = 32                                       ## Media Format: AI44. Format type and swizzle is ignored for this.
-    Y416 = 33                                       ## Media Format: Y416. Format type and swizzle is ignored for this.
-    Y210 = 34                                       ## Media Format: Y210. Format type and swizzle is ignored for this.
-    I420 = 35                                       ## Media Format: I420. Format type and swizzle is ignored for this.
-    YV12 = 36                                       ## Media Format: YV12. Format type and swizzle is ignored for this.
-    _400P = 37                                      ## Media Format: 400P. Format type and swizzle is ignored for this.
-    _422H = 38                                      ## Media Format: 422H. Format type and swizzle is ignored for this.
-    _422V = 39                                      ## Media Format: 422V. Format type and swizzle is ignored for this.
-    _444P = 40                                      ## Media Format: 444P. Format type and swizzle is ignored for this.
-    RGBP = 41                                       ## Media Format: RGBP. Format type and swizzle is ignored for this.
-    BRGP = 42                                       ## Media Format: BRGP. Format type and swizzle is ignored for this.
+    _8 = 0                                                                  ## 8-bit single component layout
+    _16 = 1                                                                 ## 16-bit single component layout
+    _32 = 2                                                                 ## 32-bit single component layout
+    _8_8 = 3                                                                ## 2-component 8-bit layout
+    _8_8_8_8 = 4                                                            ## 4-component 8-bit layout
+    _16_16 = 5                                                              ## 2-component 16-bit layout
+    _16_16_16_16 = 6                                                        ## 4-component 16-bit layout
+    _32_32 = 7                                                              ## 2-component 32-bit layout
+    _32_32_32_32 = 8                                                        ## 4-component 32-bit layout
+    _10_10_10_2 = 9                                                         ## 4-component 10_10_10_2 layout
+    _11_11_10 = 10                                                          ## 3-component 11_11_10 layout
+    _5_6_5 = 11                                                             ## 3-component 5_6_5 layout
+    _5_5_5_1 = 12                                                           ## 4-component 5_5_5_1 layout
+    _4_4_4_4 = 13                                                           ## 4-component 4_4_4_4 layout
+    Y8 = 14                                                                 ## Media Format: Y8. Format type and swizzle is ignored for this.
+    NV12 = 15                                                               ## Media Format: NV12. Format type and swizzle is ignored for this.
+    YUYV = 16                                                               ## Media Format: YUYV. Format type and swizzle is ignored for this.
+    VYUY = 17                                                               ## Media Format: VYUY. Format type and swizzle is ignored for this.
+    YVYU = 18                                                               ## Media Format: YVYU. Format type and swizzle is ignored for this.
+    UYVY = 19                                                               ## Media Format: UYVY. Format type and swizzle is ignored for this.
+    AYUV = 20                                                               ## Media Format: AYUV. Format type and swizzle is ignored for this.
+    P010 = 21                                                               ## Media Format: P010. Format type and swizzle is ignored for this.
+    Y410 = 22                                                               ## Media Format: Y410. Format type and swizzle is ignored for this.
+    P012 = 23                                                               ## Media Format: P012. Format type and swizzle is ignored for this.
+    Y16 = 24                                                                ## Media Format: Y16. Format type and swizzle is ignored for this.
+    P016 = 25                                                               ## Media Format: P016. Format type and swizzle is ignored for this.
+    Y216 = 26                                                               ## Media Format: Y216. Format type and swizzle is ignored for this.
+    P216 = 27                                                               ## Media Format: P216. Format type and swizzle is ignored for this.
+    P8 = 28                                                                 ## Media Format: P8. Format type and swizzle is ignored for this.
+    YUY2 = 29                                                               ## Media Format: YUY2. Format type and swizzle is ignored for this.
+    A8P8 = 30                                                               ## Media Format: A8P8. Format type and swizzle is ignored for this.
+    IA44 = 31                                                               ## Media Format: IA44. Format type and swizzle is ignored for this.
+    AI44 = 32                                                               ## Media Format: AI44. Format type and swizzle is ignored for this.
+    Y416 = 33                                                               ## Media Format: Y416. Format type and swizzle is ignored for this.
+    Y210 = 34                                                               ## Media Format: Y210. Format type and swizzle is ignored for this.
+    I420 = 35                                                               ## Media Format: I420. Format type and swizzle is ignored for this.
+    YV12 = 36                                                               ## Media Format: YV12. Format type and swizzle is ignored for this.
+    _400P = 37                                                              ## Media Format: 400P. Format type and swizzle is ignored for this.
+    _422H = 38                                                              ## Media Format: 422H. Format type and swizzle is ignored for this.
+    _422V = 39                                                              ## Media Format: 422V. Format type and swizzle is ignored for this.
+    _444P = 40                                                              ## Media Format: 444P. Format type and swizzle is ignored for this.
+    RGBP = 41                                                               ## Media Format: RGBP. Format type and swizzle is ignored for this.
+    BRGP = 42                                                               ## Media Format: BRGP. Format type and swizzle is ignored for this.
 
 class ze_image_format_layout_t(c_int):
     def __str__(self):
@@ -1185,11 +1188,11 @@ class ze_image_format_layout_t(c_int):
 ###############################################################################
 ## @brief Supported image format types
 class ze_image_format_type_v(IntEnum):
-    UINT = 0                                        ## Unsigned integer
-    SINT = 1                                        ## Signed integer
-    UNORM = 2                                       ## Unsigned normalized integer
-    SNORM = 3                                       ## Signed normalized integer
-    FLOAT = 4                                       ## Float
+    UINT = 0                                                                ## Unsigned integer
+    SINT = 1                                                                ## Signed integer
+    UNORM = 2                                                               ## Unsigned normalized integer
+    SNORM = 3                                                               ## Signed normalized integer
+    FLOAT = 4                                                               ## Float
 
 class ze_image_format_type_t(c_int):
     def __str__(self):
@@ -1199,13 +1202,13 @@ class ze_image_format_type_t(c_int):
 ###############################################################################
 ## @brief Supported image format component swizzle into channel
 class ze_image_format_swizzle_v(IntEnum):
-    R = 0                                           ## Red component
-    G = 1                                           ## Green component
-    B = 2                                           ## Blue component
-    A = 3                                           ## Alpha component
-    _0 = 4                                          ## Zero
-    _1 = 5                                          ## One
-    X = 6                                           ## Don't care
+    R = 0                                                                   ## Red component
+    G = 1                                                                   ## Green component
+    B = 2                                                                   ## Blue component
+    A = 3                                                                   ## Alpha component
+    _0 = 4                                                                  ## Zero
+    _1 = 5                                                                  ## One
+    X = 6                                                                   ## Don't care
 
 class ze_image_format_swizzle_t(c_int):
     def __str__(self):
@@ -1231,7 +1234,7 @@ class ze_image_desc_t(Structure):
     _fields_ = [
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
         ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
-                                                                        ## structure (i.e. contains sType and pNext).
+                                                                        ## structure (i.e. contains stype and pNext).
         ("flags", ze_image_flags_t),                                    ## [in] creation flags.
                                                                         ## must be 0 (default) or a valid combination of ::ze_image_flag_t;
                                                                         ## default is read-only, cached access.
@@ -1239,27 +1242,27 @@ class ze_image_desc_t(Structure):
                                                                         ## ::ZE_IMAGE_TYPE_BUFFER
         ("format", ze_image_format_t),                                  ## [in] image format
         ("width", c_ulonglong),                                         ## [in] width dimension.
-                                                                        ## ::ZE_IMAGE_TYPE_BUFFER: size in bytes; see
-                                                                        ## ::ze_device_image_properties_t.maxImageBufferSize for limits.
-                                                                        ## ::ZE_IMAGE_TYPE_1D, ::ZE_IMAGE_TYPE_1DARRAY: width in pixels; see
-                                                                        ## ::ze_device_image_properties_t.maxImageDims1D for limits.
-                                                                        ## ::ZE_IMAGE_TYPE_2D, ::ZE_IMAGE_TYPE_2DARRAY: width in pixels; see
-                                                                        ## ::ze_device_image_properties_t.maxImageDims2D for limits.
-                                                                        ## ::ZE_IMAGE_TYPE_3D: width in pixels; see
-                                                                        ## ::ze_device_image_properties_t.maxImageDims3D for limits.
+                                                                        ## ::ZE_IMAGE_TYPE_BUFFER: size in bytes; see the `maxImageBufferSize`
+                                                                        ## member of ::ze_device_image_properties_t for limits.
+                                                                        ## ::ZE_IMAGE_TYPE_1D, ::ZE_IMAGE_TYPE_1DARRAY: width in pixels; see the
+                                                                        ## `maxImageDims1D` member of ::ze_device_image_properties_t for limits.
+                                                                        ## ::ZE_IMAGE_TYPE_2D, ::ZE_IMAGE_TYPE_2DARRAY: width in pixels; see the
+                                                                        ## `maxImageDims2D` member of ::ze_device_image_properties_t for limits.
+                                                                        ## ::ZE_IMAGE_TYPE_3D: width in pixels; see the `maxImageDims3D` member
+                                                                        ## of ::ze_device_image_properties_t for limits.
         ("height", c_ulong),                                            ## [in] height dimension.
-                                                                        ## ::ZE_IMAGE_TYPE_2D, ::ZE_IMAGE_TYPE_2DARRAY: height in pixels; see
-                                                                        ## ::ze_device_image_properties_t.maxImageDims2D for limits.
-                                                                        ## ::ZE_IMAGE_TYPE_3D: height in pixels; see
-                                                                        ## ::ze_device_image_properties_t.maxImageDims3D for limits.
+                                                                        ## ::ZE_IMAGE_TYPE_2D, ::ZE_IMAGE_TYPE_2DARRAY: height in pixels; see the
+                                                                        ## `maxImageDims2D` member of ::ze_device_image_properties_t for limits.
+                                                                        ## ::ZE_IMAGE_TYPE_3D: height in pixels; see the `maxImageDims3D` member
+                                                                        ## of ::ze_device_image_properties_t for limits.
                                                                         ## other: ignored.
         ("depth", c_ulong),                                             ## [in] depth dimension.
-                                                                        ## ::ZE_IMAGE_TYPE_3D: depth in pixels; see
-                                                                        ## ::ze_device_image_properties_t.maxImageDims3D for limits.
+                                                                        ## ::ZE_IMAGE_TYPE_3D: depth in pixels; see the `maxImageDims3D` member
+                                                                        ## of ::ze_device_image_properties_t for limits.
                                                                         ## other: ignored.
         ("arraylevels", c_ulong),                                       ## [in] array levels.
-                                                                        ## ::ZE_IMAGE_TYPE_1DARRAY, ::ZE_IMAGE_TYPE_2DARRAY: see
-                                                                        ## ::ze_device_image_properties_t.maxImageArraySlices for limits.
+                                                                        ## ::ZE_IMAGE_TYPE_1DARRAY, ::ZE_IMAGE_TYPE_2DARRAY: see the
+                                                                        ## `maxImageArraySlices` member of ::ze_device_image_properties_t for limits.
                                                                         ## other: ignored.
         ("miplevels", c_ulong)                                          ## [in] mipmap levels (must be 0)
     ]
@@ -1267,8 +1270,8 @@ class ze_image_desc_t(Structure):
 ###############################################################################
 ## @brief Supported sampler filtering flags
 class ze_image_sampler_filter_flags_v(IntEnum):
-    POINT = ZE_BIT(0)                               ## device supports point filtering
-    LINEAR = ZE_BIT(1)                              ## device supports linear filtering
+    POINT = ZE_BIT(0)                                                       ## device supports point filtering
+    LINEAR = ZE_BIT(1)                                                      ## device supports linear filtering
 
 class ze_image_sampler_filter_flags_t(c_int):
     def __str__(self):
@@ -1281,7 +1284,7 @@ class ze_image_properties_t(Structure):
     _fields_ = [
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
         ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
-                                                                        ## structure (i.e. contains sType and pNext).
+                                                                        ## structure (i.e. contains stype and pNext).
         ("samplerFilterFlags", ze_image_sampler_filter_flags_t)         ## [out] supported sampler filtering.
                                                                         ## returns 0 (unsupported) or a combination of ::ze_image_sampler_filter_flag_t.
     ]
@@ -1289,9 +1292,9 @@ class ze_image_properties_t(Structure):
 ###############################################################################
 ## @brief Supported memory allocation flags
 class ze_device_mem_alloc_flags_v(IntEnum):
-    BIAS_CACHED = ZE_BIT(0)                         ## device should cache allocation
-    BIAS_UNCACHED = ZE_BIT(1)                       ## device should not cache allocation (UC)
-    BIAS_INITIAL_PLACEMENT = ZE_BIT(2)              ## optimize shared allocation for first access on the device
+    BIAS_CACHED = ZE_BIT(0)                                                 ## device should cache allocation
+    BIAS_UNCACHED = ZE_BIT(1)                                               ## device should not cache allocation (UC)
+    BIAS_INITIAL_PLACEMENT = ZE_BIT(2)                                      ## optimize shared allocation for first access on the device
 
 class ze_device_mem_alloc_flags_t(c_int):
     def __str__(self):
@@ -1304,7 +1307,7 @@ class ze_device_mem_alloc_desc_t(Structure):
     _fields_ = [
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
         ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
-                                                                        ## structure (i.e. contains sType and pNext).
+                                                                        ## structure (i.e. contains stype and pNext).
         ("flags", ze_device_mem_alloc_flags_t),                         ## [in] flags specifying additional allocation controls.
                                                                         ## must be 0 (default) or a valid combination of ::ze_device_mem_alloc_flag_t;
                                                                         ## default behavior may use implicit driver-based heuristics.
@@ -1315,10 +1318,10 @@ class ze_device_mem_alloc_desc_t(Structure):
 ###############################################################################
 ## @brief Supported host memory allocation flags
 class ze_host_mem_alloc_flags_v(IntEnum):
-    BIAS_CACHED = ZE_BIT(0)                         ## host should cache allocation
-    BIAS_UNCACHED = ZE_BIT(1)                       ## host should not cache allocation (UC)
-    BIAS_WRITE_COMBINED = ZE_BIT(2)                 ## host memory should be allocated write-combined (WC)
-    BIAS_INITIAL_PLACEMENT = ZE_BIT(3)              ## optimize shared allocation for first access on the host
+    BIAS_CACHED = ZE_BIT(0)                                                 ## host should cache allocation
+    BIAS_UNCACHED = ZE_BIT(1)                                               ## host should not cache allocation (UC)
+    BIAS_WRITE_COMBINED = ZE_BIT(2)                                         ## host memory should be allocated write-combined (WC)
+    BIAS_INITIAL_PLACEMENT = ZE_BIT(3)                                      ## optimize shared allocation for first access on the host
 
 class ze_host_mem_alloc_flags_t(c_int):
     def __str__(self):
@@ -1331,7 +1334,7 @@ class ze_host_mem_alloc_desc_t(Structure):
     _fields_ = [
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
         ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
-                                                                        ## structure (i.e. contains sType and pNext).
+                                                                        ## structure (i.e. contains stype and pNext).
         ("flags", ze_host_mem_alloc_flags_t)                            ## [in] flags specifying additional allocation controls.
                                                                         ## must be 0 (default) or a valid combination of ::ze_host_mem_alloc_flag_t;
                                                                         ## default behavior may use implicit driver-based heuristics.
@@ -1340,10 +1343,10 @@ class ze_host_mem_alloc_desc_t(Structure):
 ###############################################################################
 ## @brief Memory allocation type
 class ze_memory_type_v(IntEnum):
-    UNKNOWN = 0                                     ## the memory pointed to is of unknown type
-    HOST = 1                                        ## the memory pointed to is a host allocation
-    DEVICE = 2                                      ## the memory pointed to is a device allocation
-    SHARED = 3                                      ## the memory pointed to is a shared ownership allocation
+    UNKNOWN = 0                                                             ## the memory pointed to is of unknown type
+    HOST = 1                                                                ## the memory pointed to is a host allocation
+    DEVICE = 2                                                              ## the memory pointed to is a device allocation
+    SHARED = 3                                                              ## the memory pointed to is a shared ownership allocation
 
 class ze_memory_type_t(c_int):
     def __str__(self):
@@ -1356,7 +1359,7 @@ class ze_memory_allocation_properties_t(Structure):
     _fields_ = [
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
         ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
-                                                                        ## structure (i.e. contains sType and pNext).
+                                                                        ## structure (i.e. contains stype and pNext).
         ("type", ze_memory_type_t),                                     ## [out] type of allocated memory
         ("id", c_ulonglong),                                            ## [out] identifier for this allocation
         ("pageSize", c_ulonglong)                                       ## [out] page size used for allocation
@@ -1365,8 +1368,8 @@ class ze_memory_allocation_properties_t(Structure):
 ###############################################################################
 ## @brief Supported IPC memory flags
 class ze_ipc_memory_flags_v(IntEnum):
-    BIAS_CACHED = ZE_BIT(0)                         ## device should cache allocation
-    BIAS_UNCACHED = ZE_BIT(1)                       ## device should not cache allocation (UC)
+    BIAS_CACHED = ZE_BIT(0)                                                 ## device should cache allocation
+    BIAS_UNCACHED = ZE_BIT(1)                                               ## device should not cache allocation (UC)
 
 class ze_ipc_memory_flags_t(c_int):
     def __str__(self):
@@ -1387,7 +1390,7 @@ class ze_external_memory_export_desc_t(Structure):
     _fields_ = [
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
         ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
-                                                                        ## structure (i.e. contains sType and pNext).
+                                                                        ## structure (i.e. contains stype and pNext).
         ("flags", ze_external_memory_type_flags_t)                      ## [in] flags specifying memory export types for this allocation.
                                                                         ## must be 0 (default) or a valid combination of ::ze_external_memory_type_flags_t
     ]
@@ -1407,7 +1410,7 @@ class ze_external_memory_import_fd_t(Structure):
     _fields_ = [
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
         ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
-                                                                        ## structure (i.e. contains sType and pNext).
+                                                                        ## structure (i.e. contains stype and pNext).
         ("flags", ze_external_memory_type_flags_t),                     ## [in] flags specifying the memory import type for the file descriptor.
                                                                         ## must be 0 (default) or a valid combination of ::ze_external_memory_type_flags_t
         ("fd", c_int)                                                   ## [in] the file descriptor handle to import
@@ -1429,7 +1432,7 @@ class ze_external_memory_export_fd_t(Structure):
     _fields_ = [
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
         ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
-                                                                        ## structure (i.e. contains sType and pNext).
+                                                                        ## structure (i.e. contains stype and pNext).
         ("flags", ze_external_memory_type_flags_t),                     ## [in] flags specifying the memory export type for the file descriptor.
                                                                         ## must be 0 (default) or a valid combination of ::ze_external_memory_type_flags_t
         ("fd", c_int)                                                   ## [out] the exported file descriptor handle representing the allocation.
@@ -1454,7 +1457,7 @@ class ze_external_memory_import_win32_handle_t(Structure):
     _fields_ = [
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
         ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
-                                                                        ## structure (i.e. contains sType and pNext).
+                                                                        ## structure (i.e. contains stype and pNext).
         ("flags", ze_external_memory_type_flags_t),                     ## [in] flags specifying the memory import type for the Win32 handle.
                                                                         ## must be 0 (default) or a valid combination of ::ze_external_memory_type_flags_t
         ("handle", c_void_p),                                           ## [in][optional] the Win32 handle to import
@@ -1477,7 +1480,7 @@ class ze_external_memory_export_win32_handle_t(Structure):
     _fields_ = [
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
         ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
-                                                                        ## structure (i.e. contains sType and pNext).
+                                                                        ## structure (i.e. contains stype and pNext).
         ("flags", ze_external_memory_type_flags_t),                     ## [in] flags specifying the memory export type for the Win32 handle.
                                                                         ## must be 0 (default) or a valid combination of ::ze_external_memory_type_flags_t
         ("handle", c_void_p)                                            ## [out] the exported Win32 handle representing the allocation.
@@ -1486,8 +1489,8 @@ class ze_external_memory_export_win32_handle_t(Structure):
 ###############################################################################
 ## @brief Supported module creation input formats
 class ze_module_format_v(IntEnum):
-    IL_SPIRV = 0                                    ## Format is SPIRV IL format
-    NATIVE = 1                                      ## Format is device native format
+    IL_SPIRV = 0                                                            ## Format is SPIRV IL format
+    NATIVE = 1                                                              ## Format is device native format
 
 class ze_module_format_t(c_int):
     def __str__(self):
@@ -1511,7 +1514,7 @@ class ze_module_desc_t(Structure):
     _fields_ = [
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
         ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
-                                                                        ## structure (i.e. contains sType and pNext).
+                                                                        ## structure (i.e. contains stype and pNext).
         ("format", ze_module_format_t),                                 ## [in] Module format passed in with pInputModule
         ("inputSize", c_size_t),                                        ## [in] size of input IL or ISA from pInputModule.
         ("pInputModule", POINTER(c_ubyte)),                             ## [in] pointer to IL or ISA
@@ -1543,8 +1546,8 @@ class ze_module_desc_t(Structure):
 ###############################################################################
 ## @brief Supported module property flags
 class ze_module_property_flags_v(IntEnum):
-    IMPORTS = ZE_BIT(0)                             ## Module has imports (i.e. imported global variables and/or kernels).
-                                                    ## See ::zeModuleDynamicLink.
+    IMPORTS = ZE_BIT(0)                                                     ## Module has imports (i.e. imported global variables and/or kernels).
+                                                                            ## See ::zeModuleDynamicLink.
 
 class ze_module_property_flags_t(c_int):
     def __str__(self):
@@ -1557,16 +1560,16 @@ class ze_module_properties_t(Structure):
     _fields_ = [
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
         ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
-                                                                        ## structure (i.e. contains sType and pNext).
+                                                                        ## structure (i.e. contains stype and pNext).
         ("flags", ze_module_property_flags_t)                           ## [out] 0 (none) or a valid combination of ::ze_module_property_flag_t
     ]
 
 ###############################################################################
 ## @brief Supported kernel creation flags
 class ze_kernel_flags_v(IntEnum):
-    FORCE_RESIDENCY = ZE_BIT(0)                     ## force all device allocations to be resident during execution
-    EXPLICIT_RESIDENCY = ZE_BIT(1)                  ## application is responsible for all residency of device allocations.
-                                                    ## driver may disable implicit residency management.
+    FORCE_RESIDENCY = ZE_BIT(0)                                             ## force all device allocations to be resident during execution
+    EXPLICIT_RESIDENCY = ZE_BIT(1)                                          ## application is responsible for all residency of device allocations.
+                                                                            ## driver may disable implicit residency management.
 
 class ze_kernel_flags_t(c_int):
     def __str__(self):
@@ -1579,7 +1582,7 @@ class ze_kernel_desc_t(Structure):
     _fields_ = [
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
         ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
-                                                                        ## structure (i.e. contains sType and pNext).
+                                                                        ## structure (i.e. contains stype and pNext).
         ("flags", ze_kernel_flags_t),                                   ## [in] creation flags.
                                                                         ## must be 0 (default) or a valid combination of ::ze_kernel_flag_t;
                                                                         ## default behavior may use driver-based residency.
@@ -1589,9 +1592,9 @@ class ze_kernel_desc_t(Structure):
 ###############################################################################
 ## @brief Kernel indirect access flags
 class ze_kernel_indirect_access_flags_v(IntEnum):
-    HOST = ZE_BIT(0)                                ## Indicates that the kernel accesses host allocations indirectly.
-    DEVICE = ZE_BIT(1)                              ## Indicates that the kernel accesses device allocations indirectly.
-    SHARED = ZE_BIT(2)                              ## Indicates that the kernel accesses shared allocations indirectly.
+    HOST = ZE_BIT(0)                                                        ## Indicates that the kernel accesses host allocations indirectly.
+    DEVICE = ZE_BIT(1)                                                      ## Indicates that the kernel accesses device allocations indirectly.
+    SHARED = ZE_BIT(2)                                                      ## Indicates that the kernel accesses shared allocations indirectly.
 
 class ze_kernel_indirect_access_flags_t(c_int):
     def __str__(self):
@@ -1601,8 +1604,8 @@ class ze_kernel_indirect_access_flags_t(c_int):
 ###############################################################################
 ## @brief Supported Cache Config flags
 class ze_cache_config_flags_v(IntEnum):
-    LARGE_SLM = ZE_BIT(0)                           ## Large SLM size
-    LARGE_DATA = ZE_BIT(1)                          ## Large General Data size
+    LARGE_SLM = ZE_BIT(0)                                                   ## Large SLM size
+    LARGE_DATA = ZE_BIT(1)                                                  ## Large General Data size
 
 class ze_cache_config_flags_t(c_int):
     def __str__(self):
@@ -1631,7 +1634,7 @@ class ze_kernel_properties_t(Structure):
     _fields_ = [
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
         ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
-                                                                        ## structure (i.e. contains sType and pNext).
+                                                                        ## structure (i.e. contains stype and pNext).
         ("numKernelArgs", c_ulong),                                     ## [out] number of kernel arguments.
         ("requiredGroupSizeX", c_ulong),                                ## [out] required group size in the X dimension,
                                                                         ## or zero if there is no required group size
@@ -1662,7 +1665,7 @@ class ze_kernel_preferred_group_size_properties_t(Structure):
     _fields_ = [
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
         ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
-                                                                        ## structure (i.e. contains sType and pNext).
+                                                                        ## structure (i.e. contains stype and pNext).
         ("preferredMultiple", c_ulong)                                  ## [out] preferred group size multiple
     ]
 
@@ -1682,8 +1685,8 @@ ZE_MODULE_PROGRAM_EXP_NAME = "ZE_experimental_module_program"
 ###############################################################################
 ## @brief Module Program Extension Version(s)
 class ze_module_program_exp_version_v(IntEnum):
-    _1_0 = ZE_MAKE_VERSION( 1, 0 )                  ## version 1.0
-    CURRENT = ZE_MAKE_VERSION( 1, 0 )               ## latest known version
+    _1_0 = ZE_MAKE_VERSION( 1, 0 )                                          ## version 1.0
+    CURRENT = ZE_MAKE_VERSION( 1, 0 )                                       ## latest known version
 
 class ze_module_program_exp_version_t(c_int):
     def __str__(self):
@@ -1707,7 +1710,7 @@ class ze_module_program_exp_desc_t(Structure):
     _fields_ = [
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
         ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
-                                                                        ## structure (i.e. contains sType and pNext).
+                                                                        ## structure (i.e. contains stype and pNext).
         ("count", c_ulong),                                             ## [in] Count of input modules
         ("inputSizes", POINTER(c_size_t)),                              ## [in][range(0, count)] sizes of each input IL module in pInputModules.
         ("pInputModules", POINTER(c_ubyte*)),                           ## [in][range(0, count)] pointer to an array of IL (e.g. SPIR-V modules).
@@ -1726,8 +1729,8 @@ ZE_RAYTRACING_EXT_NAME = "ZE_extension_raytracing"
 ###############################################################################
 ## @brief Raytracing Extension Version(s)
 class ze_raytracing_ext_version_v(IntEnum):
-    _1_0 = ZE_MAKE_VERSION( 1, 0 )                  ## version 1.0
-    CURRENT = ZE_MAKE_VERSION( 1, 0 )               ## latest known version
+    _1_0 = ZE_MAKE_VERSION( 1, 0 )                                          ## version 1.0
+    CURRENT = ZE_MAKE_VERSION( 1, 0 )                                       ## latest known version
 
 class ze_raytracing_ext_version_t(c_int):
     def __str__(self):
@@ -1737,7 +1740,7 @@ class ze_raytracing_ext_version_t(c_int):
 ###############################################################################
 ## @brief Supported raytracing capability flags
 class ze_device_raytracing_ext_flags_v(IntEnum):
-    RAYQUERY = ZE_BIT(0)                            ## Supports rayquery
+    RAYQUERY = ZE_BIT(0)                                                    ## Supports rayquery
 
 class ze_device_raytracing_ext_flags_t(c_int):
     def __str__(self):
@@ -1749,12 +1752,12 @@ class ze_device_raytracing_ext_flags_t(c_int):
 ## 
 ## @details
 ##     - This structure may be returned from ::zeDeviceGetModuleProperties, via
-##       `pNext` member of ::ze_device_module_properties_t.
+##       the `pNext` member of ::ze_device_module_properties_t.
 class ze_device_raytracing_ext_properties_t(Structure):
     _fields_ = [
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
         ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
-                                                                        ## structure (i.e. contains sType and pNext).
+                                                                        ## structure (i.e. contains stype and pNext).
         ("flags", ze_device_raytracing_ext_flags_t),                    ## [out] 0 or a valid combination of ::ze_device_raytracing_ext_flags_t
         ("maxBVHLevels", c_ulong)                                       ## [out] Maximum number of BVH levels supported
     ]
@@ -1762,7 +1765,7 @@ class ze_device_raytracing_ext_properties_t(Structure):
 ###############################################################################
 ## @brief Supported raytracing memory allocation flags
 class ze_raytracing_mem_alloc_ext_flags_v(IntEnum):
-    TBD = ZE_BIT(0)                                 ## reserved for future use
+    TBD = ZE_BIT(0)                                                         ## reserved for future use
 
 class ze_raytracing_mem_alloc_ext_flags_t(c_int):
     def __str__(self):
@@ -1774,14 +1777,14 @@ class ze_raytracing_mem_alloc_ext_flags_t(c_int):
 ## 
 ## @details
 ##     - This structure must be passed to ::zeMemAllocShared or
-##       ::zeMemAllocDevice, via `pNext` member of
+##       ::zeMemAllocDevice, via the `pNext` member of
 ##       ::ze_device_mem_alloc_desc_t, for any memory allocation that is to be
 ##       accessed by raytracing fixed-function of the device.
 class ze_raytracing_mem_alloc_ext_desc_t(Structure):
     _fields_ = [
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
         ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
-                                                                        ## structure (i.e. contains sType and pNext).
+                                                                        ## structure (i.e. contains stype and pNext).
         ("flags", ze_raytracing_mem_alloc_ext_flags_t)                  ## [in] flags specifying additional allocation controls.
                                                                         ## must be 0 (default) or a valid combination of ::ze_raytracing_mem_alloc_ext_flag_t;
                                                                         ## default behavior may use implicit driver-based heuristics.
@@ -1790,13 +1793,13 @@ class ze_raytracing_mem_alloc_ext_desc_t(Structure):
 ###############################################################################
 ## @brief Sampler addressing modes
 class ze_sampler_address_mode_v(IntEnum):
-    NONE = 0                                        ## No coordinate modifications for out-of-bounds image access.
-    REPEAT = 1                                      ## Out-of-bounds coordinates are wrapped back around.
-    CLAMP = 2                                       ## Out-of-bounds coordinates are clamped to edge.
-    CLAMP_TO_BORDER = 3                             ## Out-of-bounds coordinates are clamped to border color which is (0.0f,
-                                                    ## 0.0f, 0.0f, 0.0f) if image format swizzle contains alpha, otherwise
-                                                    ## (0.0f, 0.0f, 0.0f, 1.0f).
-    MIRROR = 4                                      ## Out-of-bounds coordinates are mirrored starting from edge.
+    NONE = 0                                                                ## No coordinate modifications for out-of-bounds image access.
+    REPEAT = 1                                                              ## Out-of-bounds coordinates are wrapped back around.
+    CLAMP = 2                                                               ## Out-of-bounds coordinates are clamped to edge.
+    CLAMP_TO_BORDER = 3                                                     ## Out-of-bounds coordinates are clamped to border color which is (0.0f,
+                                                                            ## 0.0f, 0.0f, 0.0f) if image format swizzle contains alpha, otherwise
+                                                                            ## (0.0f, 0.0f, 0.0f, 1.0f).
+    MIRROR = 4                                                              ## Out-of-bounds coordinates are mirrored starting from edge.
 
 class ze_sampler_address_mode_t(c_int):
     def __str__(self):
@@ -1806,8 +1809,8 @@ class ze_sampler_address_mode_t(c_int):
 ###############################################################################
 ## @brief Sampler filtering modes
 class ze_sampler_filter_mode_v(IntEnum):
-    NEAREST = 0                                     ## No coordinate modifications for out of bounds image access.
-    LINEAR = 1                                      ## Out-of-bounds coordinates are wrapped back around.
+    NEAREST = 0                                                             ## No coordinate modifications for out of bounds image access.
+    LINEAR = 1                                                              ## Out-of-bounds coordinates are wrapped back around.
 
 class ze_sampler_filter_mode_t(c_int):
     def __str__(self):
@@ -1820,7 +1823,7 @@ class ze_sampler_desc_t(Structure):
     _fields_ = [
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
         ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
-                                                                        ## structure (i.e. contains sType and pNext).
+                                                                        ## structure (i.e. contains stype and pNext).
         ("addressMode", ze_sampler_address_mode_t),                     ## [in] Sampler addressing mode to determine how out-of-bounds
                                                                         ## coordinates are handled.
         ("filterMode", ze_sampler_filter_mode_t),                       ## [in] Sampler filter mode to determine how samples are filtered.
@@ -1830,9 +1833,9 @@ class ze_sampler_desc_t(Structure):
 ###############################################################################
 ## @brief Virtual memory page access attributes
 class ze_memory_access_attribute_v(IntEnum):
-    NONE = 0                                        ## Indicates the memory page is inaccessible.
-    READWRITE = 1                                   ## Indicates the memory page supports read write access.
-    READONLY = 2                                    ## Indicates the memory page supports read-only access.
+    NONE = 0                                                                ## Indicates the memory page is inaccessible.
+    READWRITE = 1                                                           ## Indicates the memory page supports read write access.
+    READONLY = 2                                                            ## Indicates the memory page supports read-only access.
 
 class ze_memory_access_attribute_t(c_int):
     def __str__(self):
@@ -1842,7 +1845,7 @@ class ze_memory_access_attribute_t(c_int):
 ###############################################################################
 ## @brief Supported physical memory creation flags
 class ze_physical_mem_flags_v(IntEnum):
-    TBD = ZE_BIT(0)                                 ## reserved for future use.
+    TBD = ZE_BIT(0)                                                         ## reserved for future use.
 
 class ze_physical_mem_flags_t(c_int):
     def __str__(self):
@@ -1855,7 +1858,7 @@ class ze_physical_mem_desc_t(Structure):
     _fields_ = [
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
         ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
-                                                                        ## structure (i.e. contains sType and pNext).
+                                                                        ## structure (i.e. contains stype and pNext).
         ("flags", ze_physical_mem_flags_t),                             ## [in] creation flags.
                                                                         ## must be 0 (default) or a valid combination of ::ze_physical_mem_flag_t.
         ("size", c_size_t)                                              ## [in] size in bytes to reserve; must be page aligned.
@@ -1868,8 +1871,8 @@ ZE_FLOAT_ATOMICS_EXT_NAME = "ZE_extension_float_atomics"
 ###############################################################################
 ## @brief Floating-Point Atomics Extension Version(s)
 class ze_float_atomics_ext_version_v(IntEnum):
-    _1_0 = ZE_MAKE_VERSION( 1, 0 )                  ## version 1.0
-    CURRENT = ZE_MAKE_VERSION( 1, 0 )               ## latest known version
+    _1_0 = ZE_MAKE_VERSION( 1, 0 )                                          ## version 1.0
+    CURRENT = ZE_MAKE_VERSION( 1, 0 )                                       ## latest known version
 
 class ze_float_atomics_ext_version_t(c_int):
     def __str__(self):
@@ -1879,12 +1882,12 @@ class ze_float_atomics_ext_version_t(c_int):
 ###############################################################################
 ## @brief Supported floating-point atomic capability flags
 class ze_device_fp_atomic_ext_flags_v(IntEnum):
-    GLOBAL_LOAD_STORE = ZE_BIT(0)                   ## Supports atomic load, store, and exchange
-    GLOBAL_ADD = ZE_BIT(1)                          ## Supports atomic add and subtract
-    GLOBAL_MIN_MAX = ZE_BIT(2)                      ## Supports atomic min and max
-    LOCAL_LOAD_STORE = ZE_BIT(16)                   ## Supports atomic load, store, and exchange
-    LOCAL_ADD = ZE_BIT(17)                          ## Supports atomic add and subtract
-    LOCAL_MIN_MAX = ZE_BIT(18)                      ## Supports atomic min and max
+    GLOBAL_LOAD_STORE = ZE_BIT(0)                                           ## Supports atomic load, store, and exchange
+    GLOBAL_ADD = ZE_BIT(1)                                                  ## Supports atomic add and subtract
+    GLOBAL_MIN_MAX = ZE_BIT(2)                                              ## Supports atomic min and max
+    LOCAL_LOAD_STORE = ZE_BIT(16)                                           ## Supports atomic load, store, and exchange
+    LOCAL_ADD = ZE_BIT(17)                                                  ## Supports atomic add and subtract
+    LOCAL_MIN_MAX = ZE_BIT(18)                                              ## Supports atomic min and max
 
 class ze_device_fp_atomic_ext_flags_t(c_int):
     def __str__(self):
@@ -1897,12 +1900,12 @@ class ze_device_fp_atomic_ext_flags_t(c_int):
 ## 
 ## @details
 ##     - This structure may be returned from ::zeDeviceGetModuleProperties, via
-##       `pNext` member of ::ze_device_module_properties_t.
+##       the `pNext` member of ::ze_device_module_properties_t.
 class ze_float_atomic_ext_properties_t(Structure):
     _fields_ = [
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
         ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
-                                                                        ## structure (i.e. contains sType and pNext).
+                                                                        ## structure (i.e. contains stype and pNext).
         ("fp16Flags", ze_device_fp_atomic_ext_flags_t),                 ## [out] Capabilities for half-precision floating-point atomic operations
         ("fp32Flags", ze_device_fp_atomic_ext_flags_t),                 ## [out] Capabilities for single-precision floating-point atomic
                                                                         ## operations
@@ -1917,8 +1920,8 @@ ZE_GLOBAL_OFFSET_EXP_NAME = "ZE_experimental_global_offset"
 ###############################################################################
 ## @brief Global Offset Extension Version(s)
 class ze_global_offset_exp_version_v(IntEnum):
-    _1_0 = ZE_MAKE_VERSION( 1, 0 )                  ## version 1.0
-    CURRENT = ZE_MAKE_VERSION( 1, 0 )               ## latest known version
+    _1_0 = ZE_MAKE_VERSION( 1, 0 )                                          ## version 1.0
+    CURRENT = ZE_MAKE_VERSION( 1, 0 )                                       ## latest known version
 
 class ze_global_offset_exp_version_t(c_int):
     def __str__(self):
@@ -1932,8 +1935,8 @@ ZE_RELAXED_ALLOCATION_LIMITS_EXP_NAME = "ZE_experimental_relaxed_allocation_limi
 ###############################################################################
 ## @brief Relaxed Allocation Limits Extension Version(s)
 class ze_relaxed_allocation_limits_exp_version_v(IntEnum):
-    _1_0 = ZE_MAKE_VERSION( 1, 0 )                  ## version 1.0
-    CURRENT = ZE_MAKE_VERSION( 1, 0 )               ## latest known version
+    _1_0 = ZE_MAKE_VERSION( 1, 0 )                                          ## version 1.0
+    CURRENT = ZE_MAKE_VERSION( 1, 0 )                                       ## latest known version
 
 class ze_relaxed_allocation_limits_exp_version_t(c_int):
     def __str__(self):
@@ -1943,7 +1946,8 @@ class ze_relaxed_allocation_limits_exp_version_t(c_int):
 ###############################################################################
 ## @brief Supported relaxed memory allocation flags
 class ze_relaxed_allocation_limits_exp_flags_v(IntEnum):
-    MAX_SIZE = ZE_BIT(0)                            ## Allocation size may exceed ::ze_device_properties_t.maxMemAllocSize
+    MAX_SIZE = ZE_BIT(0)                                                    ## Allocation size may exceed the `maxMemAllocSize` member of
+                                                                            ## ::ze_device_properties_t.
 
 class ze_relaxed_allocation_limits_exp_flags_t(c_int):
     def __str__(self):
@@ -1955,15 +1959,15 @@ class ze_relaxed_allocation_limits_exp_flags_t(c_int):
 ## 
 ## @details
 ##     - This structure may be passed to ::zeMemAllocShared or
-##       ::zeMemAllocDevice, via `pNext` member of
+##       ::zeMemAllocDevice, via the `pNext` member of
 ##       ::ze_device_mem_alloc_desc_t.
-##     - This structure may also be passed to ::zeMemAllocHost, via `pNext`
+##     - This structure may also be passed to ::zeMemAllocHost, via the `pNext`
 ##       member of ::ze_host_mem_alloc_desc_t.
 class ze_relaxed_allocation_limits_exp_desc_t(Structure):
     _fields_ = [
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
         ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
-                                                                        ## structure (i.e. contains sType and pNext).
+                                                                        ## structure (i.e. contains stype and pNext).
         ("flags", ze_relaxed_allocation_limits_exp_flags_t)             ## [in] flags specifying allocation limits to relax.
                                                                         ## must be 0 (default) or a valid combination of ::ze_relaxed_allocation_limits_exp_flag_t;
     ]
@@ -1975,8 +1979,8 @@ ZE_CACHE_RESERVATION_EXT_NAME = "ZE_extension_cache_reservation"
 ###############################################################################
 ## @brief Cache_Reservation Extension Version(s)
 class ze_cache_reservation_ext_version_v(IntEnum):
-    _1_0 = ZE_MAKE_VERSION( 1, 0 )                  ## version 1.0
-    CURRENT = ZE_MAKE_VERSION( 1, 0 )               ## latest known version
+    _1_0 = ZE_MAKE_VERSION( 1, 0 )                                          ## version 1.0
+    CURRENT = ZE_MAKE_VERSION( 1, 0 )                                       ## latest known version
 
 class ze_cache_reservation_ext_version_t(c_int):
     def __str__(self):
@@ -1986,9 +1990,9 @@ class ze_cache_reservation_ext_version_t(c_int):
 ###############################################################################
 ## @brief Cache Reservation Region
 class ze_cache_ext_region_v(IntEnum):
-    ZE_CACHE_REGION_DEFAULT = 0                     ## utilize driver default scheme
-    ZE_CACHE_RESERVE_REGION = 1                     ## Utilize reserver region
-    ZE_CACHE_NON_RESERVED_REGION = 2                ## Utilize non-reserverd region
+    ZE_CACHE_REGION_DEFAULT = 0                                             ## utilize driver default scheme
+    ZE_CACHE_RESERVE_REGION = 1                                             ## utilize reserved region
+    ZE_CACHE_NON_RESERVED_REGION = 2                                        ## utilize non-reserverd region
 
 class ze_cache_ext_region_t(c_int):
     def __str__(self):
@@ -1999,7 +2003,7 @@ class ze_cache_ext_region_t(c_int):
 ## @brief CacheReservation structure
 ## 
 ## @details
-##     - This structure must be passed to ::zeDeviceGetCacheProperties via
+##     - This structure must be passed to ::zeDeviceGetCacheProperties via the
 ##       `pNext` member of ::ze_device_cache_properties_t
 ##     - Used for determining the max cache reservation allowed on device. Size
 ##       of zero means no reservation available.
@@ -2007,7 +2011,7 @@ class ze_cache_reservation_ext_desc_t(Structure):
     _fields_ = [
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
         ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
-                                                                        ## structure (i.e. contains sType and pNext).
+                                                                        ## structure (i.e. contains stype and pNext).
         ("maxCacheReservationSize", c_size_t)                           ## [out] max cache reservation size
     ]
 
@@ -2018,8 +2022,8 @@ ZE_EVENT_QUERY_TIMESTAMPS_EXP_NAME = "ZE_experimental_event_query_timestamps"
 ###############################################################################
 ## @brief Event Query Timestamps Extension Version(s)
 class ze_event_query_timestamps_exp_version_v(IntEnum):
-    _1_0 = ZE_MAKE_VERSION( 1, 0 )                  ## version 1.0
-    CURRENT = ZE_MAKE_VERSION( 1, 0 )               ## latest known version
+    _1_0 = ZE_MAKE_VERSION( 1, 0 )                                          ## version 1.0
+    CURRENT = ZE_MAKE_VERSION( 1, 0 )                                       ## latest known version
 
 class ze_event_query_timestamps_exp_version_t(c_int):
     def __str__(self):
@@ -2033,8 +2037,8 @@ ZE_IMAGE_MEMORY_PROPERTIES_EXP_NAME = "ZE_experimental_image_memory_properties"
 ###############################################################################
 ## @brief Image Memory Properties Extension Version(s)
 class ze_image_memory_properties_exp_version_v(IntEnum):
-    _1_0 = ZE_MAKE_VERSION( 1, 0 )                  ## version 1.0
-    CURRENT = ZE_MAKE_VERSION( 1, 0 )               ## latest known version
+    _1_0 = ZE_MAKE_VERSION( 1, 0 )                                          ## version 1.0
+    CURRENT = ZE_MAKE_VERSION( 1, 0 )                                       ## latest known version
 
 class ze_image_memory_properties_exp_version_t(c_int):
     def __str__(self):
@@ -2047,7 +2051,7 @@ class ze_image_memory_properties_exp_t(Structure):
     _fields_ = [
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
         ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
-                                                                        ## structure (i.e. contains sType and pNext).
+                                                                        ## structure (i.e. contains stype and pNext).
         ("size", c_ulonglong),                                          ## [out] size of image allocation in bytes.
         ("rowPitch", c_ulonglong),                                      ## [out] size of image row in bytes.
         ("slicePitch", c_ulonglong)                                     ## [out] size of image slice in bytes.
@@ -2060,8 +2064,8 @@ ZE_IMAGE_VIEW_EXT_NAME = "ZE_extension_image_view"
 ###############################################################################
 ## @brief Image View Extension Version(s)
 class ze_image_view_ext_version_v(IntEnum):
-    _1_0 = ZE_MAKE_VERSION( 1, 0 )                  ## version 1.0
-    CURRENT = ZE_MAKE_VERSION( 1, 0 )               ## latest known version
+    _1_0 = ZE_MAKE_VERSION( 1, 0 )                                          ## version 1.0
+    CURRENT = ZE_MAKE_VERSION( 1, 0 )                                       ## latest known version
 
 class ze_image_view_ext_version_t(c_int):
     def __str__(self):
@@ -2075,8 +2079,8 @@ ZE_IMAGE_VIEW_EXP_NAME = "ZE_experimental_image_view"
 ###############################################################################
 ## @brief Image View Extension Version(s)
 class ze_image_view_exp_version_v(IntEnum):
-    _1_0 = ZE_MAKE_VERSION( 1, 0 )                  ## version 1.0
-    CURRENT = ZE_MAKE_VERSION( 1, 0 )               ## latest known version
+    _1_0 = ZE_MAKE_VERSION( 1, 0 )                                          ## version 1.0
+    CURRENT = ZE_MAKE_VERSION( 1, 0 )                                       ## latest known version
 
 class ze_image_view_exp_version_t(c_int):
     def __str__(self):
@@ -2090,8 +2094,8 @@ ZE_IMAGE_VIEW_PLANAR_EXT_NAME = "ZE_extension_image_view_planar"
 ###############################################################################
 ## @brief Image View Planar Extension Version(s)
 class ze_image_view_planar_ext_version_v(IntEnum):
-    _1_0 = ZE_MAKE_VERSION( 1, 0 )                  ## version 1.0
-    CURRENT = ZE_MAKE_VERSION( 1, 0 )               ## latest known version
+    _1_0 = ZE_MAKE_VERSION( 1, 0 )                                          ## version 1.0
+    CURRENT = ZE_MAKE_VERSION( 1, 0 )                                       ## latest known version
 
 class ze_image_view_planar_ext_version_t(c_int):
     def __str__(self):
@@ -2104,7 +2108,7 @@ class ze_image_view_planar_ext_desc_t(Structure):
     _fields_ = [
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
         ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
-                                                                        ## structure (i.e. contains sType and pNext).
+                                                                        ## structure (i.e. contains stype and pNext).
         ("planeIndex", c_ulong)                                         ## [in] the 0-based plane index (e.g. NV12 is 0 = Y plane, 1 UV plane)
     ]
 
@@ -2115,8 +2119,8 @@ ZE_IMAGE_VIEW_PLANAR_EXP_NAME = "ZE_experimental_image_view_planar"
 ###############################################################################
 ## @brief Image View Planar Extension Version(s)
 class ze_image_view_planar_exp_version_v(IntEnum):
-    _1_0 = ZE_MAKE_VERSION( 1, 0 )                  ## version 1.0
-    CURRENT = ZE_MAKE_VERSION( 1, 0 )               ## latest known version
+    _1_0 = ZE_MAKE_VERSION( 1, 0 )                                          ## version 1.0
+    CURRENT = ZE_MAKE_VERSION( 1, 0 )                                       ## latest known version
 
 class ze_image_view_planar_exp_version_t(c_int):
     def __str__(self):
@@ -2129,7 +2133,7 @@ class ze_image_view_planar_exp_desc_t(Structure):
     _fields_ = [
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
         ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
-                                                                        ## structure (i.e. contains sType and pNext).
+                                                                        ## structure (i.e. contains stype and pNext).
         ("planeIndex", c_ulong)                                         ## [in] the 0-based plane index (e.g. NV12 is 0 = Y plane, 1 UV plane)
     ]
 
@@ -2140,8 +2144,8 @@ ZE_KERNEL_SCHEDULING_HINTS_EXP_NAME = "ZE_experimental_scheduling_hints"
 ###############################################################################
 ## @brief Kernel Scheduling Hints Extension Version(s)
 class ze_scheduling_hints_exp_version_v(IntEnum):
-    _1_0 = ZE_MAKE_VERSION( 1, 0 )                  ## version 1.0
-    CURRENT = ZE_MAKE_VERSION( 1, 0 )               ## latest known version
+    _1_0 = ZE_MAKE_VERSION( 1, 0 )                                          ## version 1.0
+    CURRENT = ZE_MAKE_VERSION( 1, 0 )                                       ## latest known version
 
 class ze_scheduling_hints_exp_version_t(c_int):
     def __str__(self):
@@ -2151,9 +2155,9 @@ class ze_scheduling_hints_exp_version_t(c_int):
 ###############################################################################
 ## @brief Supported kernel scheduling hint flags
 class ze_scheduling_hint_exp_flags_v(IntEnum):
-    OLDEST_FIRST = ZE_BIT(0)                        ## Hint that the kernel prefers oldest-first scheduling
-    ROUND_ROBIN = ZE_BIT(1)                         ## Hint that the kernel prefers round-robin scheduling
-    STALL_BASED_ROUND_ROBIN = ZE_BIT(2)             ## Hint that the kernel prefers stall-based round-robin scheduling
+    OLDEST_FIRST = ZE_BIT(0)                                                ## Hint that the kernel prefers oldest-first scheduling
+    ROUND_ROBIN = ZE_BIT(1)                                                 ## Hint that the kernel prefers round-robin scheduling
+    STALL_BASED_ROUND_ROBIN = ZE_BIT(2)                                     ## Hint that the kernel prefers stall-based round-robin scheduling
 
 class ze_scheduling_hint_exp_flags_t(c_int):
     def __str__(self):
@@ -2166,12 +2170,12 @@ class ze_scheduling_hint_exp_flags_t(c_int):
 ## 
 ## @details
 ##     - This structure may be returned from ::zeDeviceGetModuleProperties, via
-##       `pNext` member of ::ze_device_module_properties_t.
+##       the `pNext` member of ::ze_device_module_properties_t.
 class ze_scheduling_hint_exp_properties_t(Structure):
     _fields_ = [
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
         ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
-                                                                        ## structure (i.e. contains sType and pNext).
+                                                                        ## structure (i.e. contains stype and pNext).
         ("schedulingHintFlags", ze_scheduling_hint_exp_flags_t)         ## [out] Supported kernel scheduling hints.
                                                                         ## May be 0 (none) or a valid combination of ::ze_scheduling_hint_exp_flag_t.
     ]
@@ -2185,7 +2189,7 @@ class ze_scheduling_hint_exp_desc_t(Structure):
     _fields_ = [
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
         ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
-                                                                        ## structure (i.e. contains sType and pNext).
+                                                                        ## structure (i.e. contains stype and pNext).
         ("flags", ze_scheduling_hint_exp_flags_t)                       ## [in] flags specifying kernel scheduling hints.
                                                                         ## must be 0 (default) or a valid combination of ::ze_scheduling_hint_exp_flag_t.
     ]
@@ -2197,8 +2201,8 @@ ZE_LINKONCE_ODR_EXT_NAME = "ZE_extension_linkonce_odr"
 ###############################################################################
 ## @brief Linkonce ODR Extension Version(s)
 class ze_linkonce_odr_ext_version_v(IntEnum):
-    _1_0 = ZE_MAKE_VERSION( 1, 0 )                  ## version 1.0
-    CURRENT = ZE_MAKE_VERSION( 1, 0 )               ## latest known version
+    _1_0 = ZE_MAKE_VERSION( 1, 0 )                                          ## version 1.0
+    CURRENT = ZE_MAKE_VERSION( 1, 0 )                                       ## latest known version
 
 class ze_linkonce_odr_ext_version_t(c_int):
     def __str__(self):
@@ -2212,8 +2216,8 @@ ZE_CONTEXT_POWER_SAVING_HINT_EXP_NAME = "ZE_experimental_power_saving_hint"
 ###############################################################################
 ## @brief Power Saving Hint Extension Version(s)
 class ze_power_saving_hint_exp_version_v(IntEnum):
-    _1_0 = ZE_MAKE_VERSION( 1, 0 )                  ## version 1.0
-    CURRENT = ZE_MAKE_VERSION( 1, 0 )               ## latest known version
+    _1_0 = ZE_MAKE_VERSION( 1, 0 )                                          ## version 1.0
+    CURRENT = ZE_MAKE_VERSION( 1, 0 )                                       ## latest known version
 
 class ze_power_saving_hint_exp_version_t(c_int):
     def __str__(self):
@@ -2223,10 +2227,10 @@ class ze_power_saving_hint_exp_version_t(c_int):
 ###############################################################################
 ## @brief Supported device types
 class ze_power_saving_hint_type_v(IntEnum):
-    MIN = 0                                         ## Minumum power savings. The device will make no attempt to save power
-                                                    ## while executing work submitted to this context.
-    MAX = 100                                       ## Maximum power savings. The device will do everything to bring power to
-                                                    ## a minimum while executing work submitted to this context.
+    MIN = 0                                                                 ## Minumum power savings. The device will make no attempt to save power
+                                                                            ## while executing work submitted to this context.
+    MAX = 100                                                               ## Maximum power savings. The device will do everything to bring power to
+                                                                            ## a minimum while executing work submitted to this context.
 
 class ze_power_saving_hint_type_t(c_int):
     def __str__(self):
@@ -2239,7 +2243,7 @@ class ze_context_power_saving_hint_exp_desc_t(Structure):
     _fields_ = [
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
         ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
-                                                                        ## structure (i.e. contains sType and pNext).
+                                                                        ## structure (i.e. contains stype and pNext).
         ("hint", c_ulong)                                               ## [in] power saving hint (default value = 0). This is value from [0,100]
                                                                         ## and can use pre-defined settings from ::ze_power_saving_hint_type_t.
     ]
@@ -2251,8 +2255,8 @@ ZE_SUBGROUPS_EXT_NAME = "ZE_extension_subgroups"
 ###############################################################################
 ## @brief Subgroups Extension Version(s)
 class ze_subgroup_ext_version_v(IntEnum):
-    _1_0 = ZE_MAKE_VERSION( 1, 0 )                  ## version 1.0
-    CURRENT = ZE_MAKE_VERSION( 1, 0 )               ## latest known version
+    _1_0 = ZE_MAKE_VERSION( 1, 0 )                                          ## version 1.0
+    CURRENT = ZE_MAKE_VERSION( 1, 0 )                                       ## latest known version
 
 class ze_subgroup_ext_version_t(c_int):
     def __str__(self):
@@ -2266,8 +2270,8 @@ ZE_EU_COUNT_EXT_NAME = "ZE_extension_eu_count"
 ###############################################################################
 ## @brief EU Count Extension Version(s)
 class ze_eu_count_ext_version_v(IntEnum):
-    _1_0 = ZE_MAKE_VERSION( 1, 0 )                  ## version 1.0
-    CURRENT = ZE_MAKE_VERSION( 1, 0 )               ## latest known version
+    _1_0 = ZE_MAKE_VERSION( 1, 0 )                                          ## version 1.0
+    CURRENT = ZE_MAKE_VERSION( 1, 0 )                                       ## latest known version
 
 class ze_eu_count_ext_version_t(c_int):
     def __str__(self):
@@ -2278,14 +2282,14 @@ class ze_eu_count_ext_version_t(c_int):
 ## @brief EU count queried using ::zeDeviceGetProperties
 ## 
 ## @details
-##     - This structure may be returned from ::zeDeviceGetProperties via
-##       `pNext` member of ::ze_device_properties_t
+##     - This structure may be returned from ::zeDeviceGetProperties via the
+##       `pNext` member of ::ze_device_properties_t.
 ##     - Used for determining the total number of EUs available on device.
 class ze_eu_count_ext_t(Structure):
     _fields_ = [
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
         ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
-                                                                        ## structure (i.e. contains sType and pNext).
+                                                                        ## structure (i.e. contains stype and pNext).
         ("numTotalEUs", c_ulong)                                        ## [out] Total number of EUs available
     ]
 
@@ -2296,8 +2300,8 @@ ZE_PCI_PROPERTIES_EXT_NAME = "ZE_extension_pci_properties"
 ###############################################################################
 ## @brief PCI Properties Extension Version(s)
 class ze_pci_properties_ext_version_v(IntEnum):
-    _1_0 = ZE_MAKE_VERSION( 1, 0 )                  ## version 1.0
-    CURRENT = ZE_MAKE_VERSION( 1, 0 )               ## latest known version
+    _1_0 = ZE_MAKE_VERSION( 1, 0 )                                          ## version 1.0
+    CURRENT = ZE_MAKE_VERSION( 1, 0 )                                       ## latest known version
 
 class ze_pci_properties_ext_version_t(c_int):
     def __str__(self):
@@ -2338,7 +2342,7 @@ class ze_pci_ext_properties_t(Structure):
     _fields_ = [
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
         ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
-                                                                        ## structure (i.e. contains sType and pNext).
+                                                                        ## structure (i.e. contains stype and pNext).
         ("address", ze_pci_address_ext_t),                              ## [out] The BDF address
         ("maxSpeed", ze_pci_speed_ext_t)                                ## [out] Fastest port configuration supported by the device (sum of all
                                                                         ## lanes)
@@ -2351,8 +2355,8 @@ ZE_SRGB_EXT_NAME = "ZE_extension_srgb"
 ###############################################################################
 ## @brief sRGB Extension Version(s)
 class ze_srgb_ext_version_v(IntEnum):
-    _1_0 = ZE_MAKE_VERSION( 1, 0 )                  ## version 1.0
-    CURRENT = ZE_MAKE_VERSION( 1, 0 )               ## latest known version
+    _1_0 = ZE_MAKE_VERSION( 1, 0 )                                          ## version 1.0
+    CURRENT = ZE_MAKE_VERSION( 1, 0 )                                       ## latest known version
 
 class ze_srgb_ext_version_t(c_int):
     def __str__(self):
@@ -2370,7 +2374,7 @@ class ze_srgb_ext_desc_t(Structure):
     _fields_ = [
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
         ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
-                                                                        ## structure (i.e. contains sType and pNext).
+                                                                        ## structure (i.e. contains stype and pNext).
         ("sRGB", ze_bool_t)                                             ## [in] Is sRGB.
     ]
 
@@ -2381,8 +2385,8 @@ ZE_IMAGE_COPY_EXT_NAME = "ZE_extension_image_copy"
 ###############################################################################
 ## @brief Image Copy Extension Version(s)
 class ze_image_copy_ext_version_v(IntEnum):
-    _1_0 = ZE_MAKE_VERSION( 1, 0 )                  ## version 1.0
-    CURRENT = ZE_MAKE_VERSION( 1, 0 )               ## latest known version
+    _1_0 = ZE_MAKE_VERSION( 1, 0 )                                          ## version 1.0
+    CURRENT = ZE_MAKE_VERSION( 1, 0 )                                       ## latest known version
 
 class ze_image_copy_ext_version_t(c_int):
     def __str__(self):
@@ -2396,8 +2400,8 @@ ZE_IMAGE_QUERY_ALLOC_PROPERTIES_EXT_NAME = "ZE_extension_image_query_alloc_prope
 ###############################################################################
 ## @brief Image Query Allocation Properties Extension Version(s)
 class ze_image_query_alloc_properties_ext_version_v(IntEnum):
-    _1_0 = ZE_MAKE_VERSION( 1, 0 )                  ## version 1.0
-    CURRENT = ZE_MAKE_VERSION( 1, 0 )               ## latest known version
+    _1_0 = ZE_MAKE_VERSION( 1, 0 )                                          ## version 1.0
+    CURRENT = ZE_MAKE_VERSION( 1, 0 )                                       ## latest known version
 
 class ze_image_query_alloc_properties_ext_version_t(c_int):
     def __str__(self):
@@ -2411,7 +2415,7 @@ class ze_image_allocation_ext_properties_t(Structure):
     _fields_ = [
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
         ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
-                                                                        ## structure (i.e. contains sType and pNext).
+                                                                        ## structure (i.e. contains stype and pNext).
         ("id", c_ulonglong)                                             ## [out] identifier for this allocation
     ]
 
@@ -2422,8 +2426,8 @@ ZE_LINKAGE_INSPECTION_EXT_NAME = "ZE_extension_linkage_inspection"
 ###############################################################################
 ## @brief Linkage Inspection Extension Version(s)
 class ze_linkage_inspection_ext_version_v(IntEnum):
-    _1_0 = ZE_MAKE_VERSION( 1, 0 )                  ## version 1.0
-    CURRENT = ZE_MAKE_VERSION( 1, 0 )               ## latest known version
+    _1_0 = ZE_MAKE_VERSION( 1, 0 )                                          ## version 1.0
+    CURRENT = ZE_MAKE_VERSION( 1, 0 )                                       ## latest known version
 
 class ze_linkage_inspection_ext_version_t(c_int):
     def __str__(self):
@@ -2433,9 +2437,9 @@ class ze_linkage_inspection_ext_version_t(c_int):
 ###############################################################################
 ## @brief Supported module linkage inspection flags
 class ze_linkage_inspection_ext_flags_v(IntEnum):
-    IMPORTS = ZE_BIT(0)                             ## List all imports of modules
-    UNRESOLVABLE_IMPORTS = ZE_BIT(1)                ## List all imports of modules that do not have a corresponding export
-    EXPORTS = ZE_BIT(2)                             ## List all exports of modules
+    IMPORTS = ZE_BIT(0)                                                     ## List all imports of modules
+    UNRESOLVABLE_IMPORTS = ZE_BIT(1)                                        ## List all imports of modules that do not have a corresponding export
+    EXPORTS = ZE_BIT(2)                                                     ## List all exports of modules
 
 class ze_linkage_inspection_ext_flags_t(c_int):
     def __str__(self):
@@ -2451,7 +2455,7 @@ class ze_linkage_inspection_ext_desc_t(Structure):
     _fields_ = [
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
         ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
-                                                                        ## structure (i.e. contains sType and pNext).
+                                                                        ## structure (i.e. contains stype and pNext).
         ("flags", ze_linkage_inspection_ext_flags_t)                    ## [in] flags specifying module linkage inspection.
                                                                         ## must be 0 (default) or a valid combination of ::ze_linkage_inspection_ext_flag_t.
     ]
@@ -2463,8 +2467,8 @@ ZE_MEMORY_COMPRESSION_HINTS_EXT_NAME = "ZE_extension_memory_compression_hints"
 ###############################################################################
 ## @brief Memory Compression Hints Extension Version(s)
 class ze_memory_compression_hints_ext_version_v(IntEnum):
-    _1_0 = ZE_MAKE_VERSION( 1, 0 )                  ## version 1.0
-    CURRENT = ZE_MAKE_VERSION( 1, 0 )               ## latest known version
+    _1_0 = ZE_MAKE_VERSION( 1, 0 )                                          ## version 1.0
+    CURRENT = ZE_MAKE_VERSION( 1, 0 )                                       ## latest known version
 
 class ze_memory_compression_hints_ext_version_t(c_int):
     def __str__(self):
@@ -2474,8 +2478,8 @@ class ze_memory_compression_hints_ext_version_t(c_int):
 ###############################################################################
 ## @brief Supported memory compression hints flags
 class ze_memory_compression_hints_ext_flags_v(IntEnum):
-    COMPRESSED = ZE_BIT(0)                          ## Hint Driver implementation to make allocation compressible
-    UNCOMPRESSED = ZE_BIT(1)                        ## Hint Driver implementation to make allocation not compressible
+    COMPRESSED = ZE_BIT(0)                                                  ## Hint Driver implementation to make allocation compressible
+    UNCOMPRESSED = ZE_BIT(1)                                                ## Hint Driver implementation to make allocation not compressible
 
 class ze_memory_compression_hints_ext_flags_t(c_int):
     def __str__(self):
@@ -2487,17 +2491,17 @@ class ze_memory_compression_hints_ext_flags_t(c_int):
 ## 
 ## @details
 ##     - This structure may be passed to ::zeMemAllocShared or
-##       ::zeMemAllocDevice, via `pNext` member of
+##       ::zeMemAllocDevice, via the `pNext` member of
 ##       ::ze_device_mem_alloc_desc_t.
-##     - This structure may be passed to ::zeMemAllocHost, via `pNext` member
-##       of ::ze_host_mem_alloc_desc_t.
-##     - This structure may be passed to ::zeImageCreate, via `pNext` member of
-##       ::ze_image_desc_t.
+##     - This structure may be passed to ::zeMemAllocHost, via the `pNext`
+##       member of ::ze_host_mem_alloc_desc_t.
+##     - This structure may be passed to ::zeImageCreate, via the `pNext`
+##       member of ::ze_image_desc_t.
 class ze_memory_compression_hints_ext_desc_t(Structure):
     _fields_ = [
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
         ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
-                                                                        ## structure (i.e. contains sType and pNext).
+                                                                        ## structure (i.e. contains stype and pNext).
         ("flags", ze_memory_compression_hints_ext_flags_t)              ## [in] flags specifying if allocation should be compressible or not.
                                                                         ## Must be set to one of the ::ze_memory_compression_hints_ext_flag_t;
     ]
@@ -2509,8 +2513,8 @@ ZE_MEMORY_FREE_POLICIES_EXT_NAME = "ZE_extension_memory_free_policies"
 ###############################################################################
 ## @brief Memory Free Policies Extension Version(s)
 class ze_memory_free_policies_ext_version_v(IntEnum):
-    _1_0 = ZE_MAKE_VERSION( 1, 0 )                  ## version 1.0
-    CURRENT = ZE_MAKE_VERSION( 1, 0 )               ## latest known version
+    _1_0 = ZE_MAKE_VERSION( 1, 0 )                                          ## version 1.0
+    CURRENT = ZE_MAKE_VERSION( 1, 0 )                                       ## latest known version
 
 class ze_memory_free_policies_ext_version_t(c_int):
     def __str__(self):
@@ -2520,8 +2524,8 @@ class ze_memory_free_policies_ext_version_t(c_int):
 ###############################################################################
 ## @brief Supported memory free policy capability flags
 class ze_driver_memory_free_policy_ext_flags_v(IntEnum):
-    BLOCKING_FREE = ZE_BIT(0)                       ## blocks until all commands using the memory are complete before freeing
-    DEFER_FREE = ZE_BIT(1)                          ## schedules the memory to be freed but does not free immediately
+    BLOCKING_FREE = ZE_BIT(0)                                               ## blocks until all commands using the memory are complete before freeing
+    DEFER_FREE = ZE_BIT(1)                                                  ## schedules the memory to be freed but does not free immediately
 
 class ze_driver_memory_free_policy_ext_flags_t(c_int):
     def __str__(self):
@@ -2534,13 +2538,13 @@ class ze_driver_memory_free_policy_ext_flags_t(c_int):
 ## @details
 ##     - All drivers must support an immediate free policy, which is the
 ##       default free policy.
-##     - This structure may be returned from ::zeDriverGetProperties, via
+##     - This structure may be returned from ::zeDriverGetProperties, via the
 ##       `pNext` member of ::ze_driver_properties_t.
 class ze_driver_memory_free_ext_properties_t(Structure):
     _fields_ = [
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
         ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
-                                                                        ## structure (i.e. contains sType and pNext).
+                                                                        ## structure (i.e. contains stype and pNext).
         ("freePolicies", ze_driver_memory_free_policy_ext_flags_t)      ## [out] Supported memory free policies.
                                                                         ## must be 0 or a combination of ::ze_driver_memory_free_policy_ext_flag_t.
     ]
@@ -2551,7 +2555,7 @@ class ze_memory_free_ext_desc_t(Structure):
     _fields_ = [
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
         ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
-                                                                        ## structure (i.e. contains sType and pNext).
+                                                                        ## structure (i.e. contains stype and pNext).
         ("freePolicy", ze_driver_memory_free_policy_ext_flags_t)        ## [in] flags specifying the memory free policy.
                                                                         ## must be 0 (default) or a supported ::ze_driver_memory_free_policy_ext_flag_t;
                                                                         ## default behavior is to free immediately.
@@ -2571,7 +2575,7 @@ class ze_device_p2p_bandwidth_exp_properties_t(Structure):
     _fields_ = [
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
         ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
-                                                                        ## structure (i.e. contains sType and pNext).
+                                                                        ## structure (i.e. contains stype and pNext).
         ("logicalBandwidth", c_ulong),                                  ## [out] total logical design bandwidth for all links connecting the two
                                                                         ## devices
         ("physicalBandwidth", c_ulong),                                 ## [out] total physical design bandwidth for all links connecting the two
@@ -2595,7 +2599,7 @@ class ze_copy_bandwidth_exp_properties_t(Structure):
     _fields_ = [
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
         ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
-                                                                        ## structure (i.e. contains sType and pNext).
+                                                                        ## structure (i.e. contains stype and pNext).
         ("copyBandwidth", c_ulong),                                     ## [out] design bandwidth supported by this engine type for copy
                                                                         ## operations
         ("copyBandwidthUnit", ze_bandwidth_unit_t)                      ## [out] copy bandwidth unit
@@ -2608,8 +2612,8 @@ ZE_DEVICE_LUID_EXT_NAME = "ZE_extension_device_luid"
 ###############################################################################
 ## @brief Device Local Identifier (LUID) Extension Version(s)
 class ze_device_luid_ext_version_v(IntEnum):
-    _1_0 = ZE_MAKE_VERSION( 1, 0 )                  ## version 1.0
-    CURRENT = ZE_MAKE_VERSION( 1, 0 )               ## latest known version
+    _1_0 = ZE_MAKE_VERSION( 1, 0 )                                          ## version 1.0
+    CURRENT = ZE_MAKE_VERSION( 1, 0 )                                       ## latest known version
 
 class ze_device_luid_ext_version_t(c_int):
     def __str__(self):
@@ -2631,13 +2635,13 @@ class ze_device_luid_ext_t(Structure):
 ## @brief Device LUID properties queried using ::zeDeviceGetProperties
 ## 
 ## @details
-##     - This structure may be returned from ::zeDeviceGetProperties, via
+##     - This structure may be returned from ::zeDeviceGetProperties, via the
 ##       `pNext` member of ::ze_device_properties_t.
 class ze_device_luid_ext_properties_t(Structure):
     _fields_ = [
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
         ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
-                                                                        ## structure (i.e. contains sType and pNext).
+                                                                        ## structure (i.e. contains stype and pNext).
         ("luid", ze_device_luid_ext_t),                                 ## [out] locally unique identifier (LUID).
                                                                         ## The returned LUID can be cast to a LUID object and must be equal to
                                                                         ## the locally
@@ -2664,10 +2668,10 @@ ZE_MAX_FABRIC_EDGE_MODEL_EXP_SIZE = 256
 ###############################################################################
 ## @brief Fabric Vertex types
 class ze_fabric_vertex_exp_type_v(IntEnum):
-    UNKNOWN = 0                                     ## Fabric vertex type is unknown
-    DEVICE = 1                                      ## Fabric vertex represents a device
-    SUBDEVICE = 2                                   ## Fabric vertex represents a subdevice
-    SWITCH = 3                                      ## Fabric vertex represents a switch
+    UNKNOWN = 0                                                             ## Fabric vertex type is unknown
+    DEVICE = 1                                                              ## Fabric vertex represents a device
+    SUBDEVICE = 2                                                           ## Fabric vertex represents a subdevice
+    SWITCH = 3                                                              ## Fabric vertex represents a switch
 
 class ze_fabric_vertex_exp_type_t(c_int):
     def __str__(self):
@@ -2677,11 +2681,11 @@ class ze_fabric_vertex_exp_type_t(c_int):
 ###############################################################################
 ## @brief Fabric edge duplexity
 class ze_fabric_edge_exp_duplexity_v(IntEnum):
-    UNKNOWN = 0                                     ## Fabric edge duplexity is unknown
-    HALF_DUPLEX = 1                                 ## Fabric edge is half duplex, i.e. stated bandwidth is obtained in only
-                                                    ## one direction at time
-    FULL_DUPLEX = 2                                 ## Fabric edge is full duplex, i.e. stated bandwidth is supported in both
-                                                    ## directions simultaneously
+    UNKNOWN = 0                                                             ## Fabric edge duplexity is unknown
+    HALF_DUPLEX = 1                                                         ## Fabric edge is half duplex, i.e. stated bandwidth is obtained in only
+                                                                            ## one direction at time
+    FULL_DUPLEX = 2                                                         ## Fabric edge is full duplex, i.e. stated bandwidth is supported in both
+                                                                            ## directions simultaneously
 
 class ze_fabric_edge_exp_duplexity_t(c_int):
     def __str__(self):
@@ -2708,7 +2712,7 @@ class ze_fabric_vertex_exp_properties_t(Structure):
     _fields_ = [
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
         ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
-                                                                        ## structure (i.e. contains sType and pNext).
+                                                                        ## structure (i.e. contains stype and pNext).
         ("uuid", ze_uuid_t),                                            ## [out] universal unique identifier. If the vertex is co-located with a
                                                                         ## device/subdevice, then this uuid will match that of the corresponding
                                                                         ## device/subdevice
@@ -2725,7 +2729,7 @@ class ze_fabric_edge_exp_properties_t(Structure):
     _fields_ = [
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
         ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
-                                                                        ## structure (i.e. contains sType and pNext).
+                                                                        ## structure (i.e. contains stype and pNext).
         ("uuid", ze_uuid_t),                                            ## [out] universal unique identifier.
         ("model", c_char * ZE_MAX_FABRIC_EDGE_MODEL_EXP_SIZE),          ## [out] Description of fabric edge technology. Will be set to the string
                                                                         ## "unkown" if this cannot be determined for this edge
@@ -2743,8 +2747,8 @@ ZE_DEVICE_MEMORY_PROPERTIES_EXT_NAME = "ZE_extension_device_memory_properties"
 ###############################################################################
 ## @brief Device Memory Properties Extension Version(s)
 class ze_device_memory_properties_ext_version_v(IntEnum):
-    _1_0 = ZE_MAKE_VERSION( 1, 0 )                  ## version 1.0
-    CURRENT = ZE_MAKE_VERSION( 1, 0 )               ## latest known version
+    _1_0 = ZE_MAKE_VERSION( 1, 0 )                                          ## version 1.0
+    CURRENT = ZE_MAKE_VERSION( 1, 0 )                                       ## latest known version
 
 class ze_device_memory_properties_ext_version_t(c_int):
     def __str__(self):
@@ -2754,28 +2758,28 @@ class ze_device_memory_properties_ext_version_t(c_int):
 ###############################################################################
 ## @brief Memory module types
 class ze_device_memory_ext_type_v(IntEnum):
-    HBM = 0                                         ## HBM memory
-    HBM2 = 1                                        ## HBM2 memory
-    DDR = 2                                         ## DDR memory
-    DDR2 = 3                                        ## DDR2 memory
-    DDR3 = 4                                        ## DDR3 memory
-    DDR4 = 5                                        ## DDR4 memory
-    DDR5 = 6                                        ## DDR5 memory
-    LPDDR = 7                                       ## LPDDR memory
-    LPDDR3 = 8                                      ## LPDDR3 memory
-    LPDDR4 = 9                                      ## LPDDR4 memory
-    LPDDR5 = 10                                     ## LPDDR5 memory
-    SRAM = 11                                       ## SRAM memory
-    L1 = 12                                         ## L1 cache
-    L3 = 13                                         ## L3 cache
-    GRF = 14                                        ## Execution unit register file
-    SLM = 15                                        ## Execution unit shared local memory
-    GDDR4 = 16                                      ## GDDR4 memory
-    GDDR5 = 17                                      ## GDDR5 memory
-    GDDR5X = 18                                     ## GDDR5X memory
-    GDDR6 = 19                                      ## GDDR6 memory
-    GDDR6X = 20                                     ## GDDR6X memory
-    GDDR7 = 21                                      ## GDDR7 memory
+    HBM = 0                                                                 ## HBM memory
+    HBM2 = 1                                                                ## HBM2 memory
+    DDR = 2                                                                 ## DDR memory
+    DDR2 = 3                                                                ## DDR2 memory
+    DDR3 = 4                                                                ## DDR3 memory
+    DDR4 = 5                                                                ## DDR4 memory
+    DDR5 = 6                                                                ## DDR5 memory
+    LPDDR = 7                                                               ## LPDDR memory
+    LPDDR3 = 8                                                              ## LPDDR3 memory
+    LPDDR4 = 9                                                              ## LPDDR4 memory
+    LPDDR5 = 10                                                             ## LPDDR5 memory
+    SRAM = 11                                                               ## SRAM memory
+    L1 = 12                                                                 ## L1 cache
+    L3 = 13                                                                 ## L3 cache
+    GRF = 14                                                                ## Execution unit register file
+    SLM = 15                                                                ## Execution unit shared local memory
+    GDDR4 = 16                                                              ## GDDR4 memory
+    GDDR5 = 17                                                              ## GDDR5 memory
+    GDDR5X = 18                                                             ## GDDR5X memory
+    GDDR6 = 19                                                              ## GDDR6 memory
+    GDDR6X = 20                                                             ## GDDR6X memory
+    GDDR7 = 21                                                              ## GDDR7 memory
 
 class ze_device_memory_ext_type_t(c_int):
     def __str__(self):
@@ -2792,7 +2796,7 @@ class ze_device_memory_ext_properties_t(Structure):
     _fields_ = [
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
         ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
-                                                                        ## structure (i.e. contains sType and pNext).
+                                                                        ## structure (i.e. contains stype and pNext).
         ("type", ze_device_memory_ext_type_t),                          ## [out] The memory type
         ("physicalSize", c_ulonglong),                                  ## [out] Physical memory size in bytes. A value of 0 indicates that this
                                                                         ## property is not known. However, a call to $sMemoryGetState() will
@@ -2809,8 +2813,8 @@ ZE_BFLOAT16_CONVERSIONS_EXT_NAME = "ZE_extension_bfloat16_conversions"
 ###############################################################################
 ## @brief Bfloat16 Conversions Extension Version(s)
 class ze_bfloat16_conversions_ext_version_v(IntEnum):
-    _1_0 = ZE_MAKE_VERSION( 1, 0 )                  ## version 1.0
-    CURRENT = ZE_MAKE_VERSION( 1, 0 )               ## latest known version
+    _1_0 = ZE_MAKE_VERSION( 1, 0 )                                          ## version 1.0
+    CURRENT = ZE_MAKE_VERSION( 1, 0 )                                       ## latest known version
 
 class ze_bfloat16_conversions_ext_version_t(c_int):
     def __str__(self):
@@ -2824,8 +2828,8 @@ ZE_DEVICE_IP_VERSION_EXT_NAME = "ZE_extension_device_ip_version"
 ###############################################################################
 ## @brief Device IP Version Extension Version(s)
 class ze_device_ip_version_version_v(IntEnum):
-    _1_0 = ZE_MAKE_VERSION( 1, 0 )                  ## version 1.0
-    CURRENT = ZE_MAKE_VERSION( 1, 0 )               ## latest known version
+    _1_0 = ZE_MAKE_VERSION( 1, 0 )                                          ## version 1.0
+    CURRENT = ZE_MAKE_VERSION( 1, 0 )                                       ## latest known version
 
 class ze_device_ip_version_version_t(c_int):
     def __str__(self):
@@ -2836,13 +2840,13 @@ class ze_device_ip_version_version_t(c_int):
 ## @brief Device IP version queried using ::zeDeviceGetProperties
 ## 
 ## @details
-##     - This structure may be returned from ::zeDeviceGetProperties via
+##     - This structure may be returned from ::zeDeviceGetProperties via the
 ##       `pNext` member of ::ze_device_properties_t
 class ze_device_ip_version_ext_t(Structure):
     _fields_ = [
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
         ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
-                                                                        ## structure (i.e. contains sType and pNext).
+                                                                        ## structure (i.e. contains stype and pNext).
         ("ipVersion", c_ulong)                                          ## [out] Device IP version. The meaning of the device IP version is
                                                                         ## implementation-defined, but newer devices should have a higher
                                                                         ## version than older devices.
@@ -2855,8 +2859,8 @@ ZE_KERNEL_MAX_GROUP_SIZE_PROPERTIES_EXT_NAME = "ZE_extension_kernel_max_group_si
 ###############################################################################
 ## @brief Kernel Max Group Size Properties Extension Version(s)
 class ze_kernel_max_group_size_properties_ext_version_v(IntEnum):
-    _1_0 = ZE_MAKE_VERSION( 1, 0 )                  ## version 1.0
-    CURRENT = ZE_MAKE_VERSION( 1, 0 )               ## latest known version
+    _1_0 = ZE_MAKE_VERSION( 1, 0 )                                          ## version 1.0
+    CURRENT = ZE_MAKE_VERSION( 1, 0 )                                       ## latest known version
 
 class ze_kernel_max_group_size_properties_ext_version_t(c_int):
     def __str__(self):
@@ -2874,7 +2878,7 @@ class ze_kernel_max_group_size_properties_ext_t(Structure):
     _fields_ = [
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
         ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
-                                                                        ## structure (i.e. contains sType and pNext).
+                                                                        ## structure (i.e. contains stype and pNext).
         ("maxGroupSize", c_ulong)                                       ## [out] maximum group size that can be used to execute the kernel. This
                                                                         ## value may be less than or equal to the `maxTotalGroupSize` member of
                                                                         ## ::ze_device_compute_properties_t.
@@ -2887,8 +2891,8 @@ ZE_SUB_ALLOCATIONS_EXP_NAME = "ZE_experimental_sub_allocations"
 ###############################################################################
 ## @brief Sub-Allocations Properties Extension Version(s)
 class ze_sub_allocations_exp_version_v(IntEnum):
-    _1_0 = ZE_MAKE_VERSION( 1, 0 )                  ## version 1.0
-    CURRENT = ZE_MAKE_VERSION( 1, 0 )               ## latest known version
+    _1_0 = ZE_MAKE_VERSION( 1, 0 )                                          ## version 1.0
+    CURRENT = ZE_MAKE_VERSION( 1, 0 )                                       ## latest known version
 
 class ze_sub_allocations_exp_version_t(c_int):
     def __str__(self):
@@ -2907,13 +2911,13 @@ class ze_sub_allocation_t(Structure):
 ## @brief Sub-Allocations Properties
 ## 
 ## @details
-##     - This structure may be passed to ::zeMemGetAllocProperties, via `pNext`
-##       member of ::ze_memory_allocation_properties_t.
+##     - This structure may be passed to ::zeMemGetAllocProperties, via the
+##       `pNext` member of ::ze_memory_allocation_properties_t.
 class ze_memory_sub_allocations_exp_properties_t(Structure):
     _fields_ = [
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
         ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
-                                                                        ## structure (i.e. contains sType and pNext).
+                                                                        ## structure (i.e. contains stype and pNext).
         ("pCount", POINTER(c_ulong)),                                   ## [in,out] pointer to the number of sub-allocations.
                                                                         ## if count is zero, then the driver shall update the value with the
                                                                         ## total number of sub-allocations on which the allocation has been divided.
@@ -2931,8 +2935,8 @@ ZE_EVENT_QUERY_KERNEL_TIMESTAMPS_EXT_NAME = "ZE_extension_event_query_kernel_tim
 ###############################################################################
 ## @brief Event Query Kernel Timestamps Extension Version(s)
 class ze_event_query_kernel_timestamps_ext_version_v(IntEnum):
-    _1_0 = ZE_MAKE_VERSION( 1, 0 )                  ## version 1.0
-    CURRENT = ZE_MAKE_VERSION( 1, 0 )               ## latest known version
+    _1_0 = ZE_MAKE_VERSION( 1, 0 )                                          ## version 1.0
+    CURRENT = ZE_MAKE_VERSION( 1, 0 )                                       ## latest known version
 
 class ze_event_query_kernel_timestamps_ext_version_t(c_int):
     def __str__(self):
@@ -2942,8 +2946,8 @@ class ze_event_query_kernel_timestamps_ext_version_t(c_int):
 ###############################################################################
 ## @brief Event query kernel timestamps flags
 class ze_event_query_kernel_timestamps_ext_flags_v(IntEnum):
-    KERNEL = ZE_BIT(0)                              ## Kernel timestamp results
-    SYNCHRONIZED = ZE_BIT(1)                        ## Device event timestamps synchronized to the host time domain
+    KERNEL = ZE_BIT(0)                                                      ## Kernel timestamp results
+    SYNCHRONIZED = ZE_BIT(1)                                                ## Device event timestamps synchronized to the host time domain
 
 class ze_event_query_kernel_timestamps_ext_flags_t(c_int):
     def __str__(self):
@@ -2954,13 +2958,13 @@ class ze_event_query_kernel_timestamps_ext_flags_t(c_int):
 ## @brief Event query kernel timestamps properties
 ## 
 ## @details
-##     - This structure may be returned from ::zeDeviceGetProperties, via
+##     - This structure may be returned from ::zeDeviceGetProperties, via the
 ##       `pNext` member of ::ze_device_properties_t.
 class ze_event_query_kernel_timestamps_ext_properties_t(Structure):
     _fields_ = [
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
         ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
-                                                                        ## structure (i.e. contains sType and pNext).
+                                                                        ## structure (i.e. contains stype and pNext).
         ("flags", ze_event_query_kernel_timestamps_ext_flags_t)         ## [out] 0 or some combination of
                                                                         ## ::ze_event_query_kernel_timestamps_ext_flag_t flags
     ]
@@ -2988,7 +2992,7 @@ class ze_event_query_kernel_timestamps_results_ext_properties_t(Structure):
     _fields_ = [
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
         ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
-                                                                        ## structure (i.e. contains sType and pNext).
+                                                                        ## structure (i.e. contains stype and pNext).
         ("pKernelTimestampsBuffer", POINTER(ze_kernel_timestamp_result_t)), ## [in,out][optional][range(0, *pCount)] pointer to destination buffer of
                                                                         ## kernel timestamp results
         ("pSynchronizedTimestampsBuffer", POINTER(ze_synchronized_timestamp_result_ext_t))  ## [in,out][optional][range(0, *pCount)] pointer to destination buffer of

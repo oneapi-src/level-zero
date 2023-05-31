@@ -576,7 +576,7 @@ namespace validation_layer
                                                         ///< if count is greater than the number of tests that are available, then
                                                         ///< the driver shall update the value with the correct number of tests.
         zes_diag_test_t* pTests                         ///< [in,out][optional][range(0, *pCount)] array of information about
-                                                        ///< individual tests sorted by increasing value of ::zes_diag_test_t.index.
+                                                        ///< individual tests sorted by increasing value of the `index` member of ::zes_diag_test_t.
                                                         ///< if count is less than the number of tests that are available, then the
                                                         ///< driver shall only retrieve that number of tests.
         )
@@ -768,7 +768,7 @@ namespace validation_layer
         uint32_t timeout,                               ///< [in] if non-zero, then indicates the maximum time (in milliseconds) to
                                                         ///< yield before returning ::ZE_RESULT_SUCCESS or ::ZE_RESULT_NOT_READY;
                                                         ///< if zero, then will check status and return immediately;
-                                                        ///< if UINT32_MAX, then function will not return until events arrive.
+                                                        ///< if `UINT32_MAX`, then function will not return until events arrive.
         uint32_t count,                                 ///< [in] Number of device handles in phDevices.
         zes_device_handle_t* phDevices,                 ///< [in][range(0, count)] Device handles to listen to for events. Only
                                                         ///< devices from the provided driver handle can be specified in this list.
@@ -806,7 +806,7 @@ namespace validation_layer
         uint64_t timeout,                               ///< [in] if non-zero, then indicates the maximum time (in milliseconds) to
                                                         ///< yield before returning ::ZE_RESULT_SUCCESS or ::ZE_RESULT_NOT_READY;
                                                         ///< if zero, then will check status and return immediately;
-                                                        ///< if UINT64_MAX, then function will not return until events arrive.
+                                                        ///< if `UINT64_MAX`, then function will not return until events arrive.
         uint32_t count,                                 ///< [in] Number of device handles in phDevices.
         zes_device_handle_t* phDevices,                 ///< [in][range(0, count)] Device handles to listen to for events. Only
                                                         ///< devices from the provided driver handle can be specified in this list.
@@ -1281,8 +1281,7 @@ namespace validation_layer
     ze_result_t
     ZESParameterValidation::zesFrequencyOcGetCapabilities(
         zes_freq_handle_t hFrequency,                   ///< [in] Handle for the component.
-        zes_oc_capabilities_t* pOcCapabilities          ///< [in,out] Pointer to the capabilities structure
-                                                        ///< ::zes_oc_capabilities_t.
+        zes_oc_capabilities_t* pOcCapabilities          ///< [in,out] Pointer to the capabilities structure.
         )
     {
         if( nullptr == hFrequency )
@@ -1300,7 +1299,8 @@ namespace validation_layer
         zes_freq_handle_t hFrequency,                   ///< [in] Handle for the component.
         double* pCurrentOcFrequency                     ///< [out] Overclocking Frequency in MHz, if extended moded is supported,
                                                         ///< will returned in 1 Mhz granularity, else, in multiples of 50 Mhz. This
-                                                        ///< cannot be greater than ::zes_oc_capabilities_t.maxOcFrequency.
+                                                        ///< cannot be greater than the `maxOcFrequency` member of
+                                                        ///< ::zes_oc_capabilities_t.
         )
     {
         if( nullptr == hFrequency )
@@ -1318,7 +1318,8 @@ namespace validation_layer
         zes_freq_handle_t hFrequency,                   ///< [in] Handle for the component.
         double CurrentOcFrequency                       ///< [in] Overclocking Frequency in MHz, if extended moded is supported, it
                                                         ///< could be set in 1 Mhz granularity, else, in multiples of 50 Mhz. This
-                                                        ///< cannot be greater than ::zes_oc_capabilities_t.maxOcFrequency.
+                                                        ///< cannot be greater than the `maxOcFrequency` member of
+                                                        ///< ::zes_oc_capabilities_t.
         )
     {
         if( nullptr == hFrequency )
@@ -1331,12 +1332,12 @@ namespace validation_layer
     ze_result_t
     ZESParameterValidation::zesFrequencyOcGetVoltageTarget(
         zes_freq_handle_t hFrequency,                   ///< [in] Handle for the component.
-        double* pCurrentVoltageTarget,                  ///< [out] Overclock voltage in Volts. This cannot be greater than
-                                                        ///< ::zes_oc_capabilities_t.maxOcVoltage.
+        double* pCurrentVoltageTarget,                  ///< [out] Overclock voltage in Volts. This cannot be greater than the
+                                                        ///< `maxOcVoltage` member of ::zes_oc_capabilities_t.
         double* pCurrentVoltageOffset                   ///< [out] This voltage offset is applied to all points on the
-                                                        ///< voltage/frequency curve, include the new overclock voltageTarget. It
-                                                        ///< can be in the range (::zes_oc_capabilities_t.minOcVoltageOffset,
-                                                        ///< ::zes_oc_capabilities_t.maxOcVoltageOffset).
+                                                        ///< voltage/frequency curve, including the new overclock voltageTarget.
+                                                        ///< Valid range is between the `minOcVoltageOffset` and
+                                                        ///< `maxOcVoltageOffset` members of ::zes_oc_capabilities_t.
         )
     {
         if( nullptr == hFrequency )
@@ -1355,12 +1356,12 @@ namespace validation_layer
     ze_result_t
     ZESParameterValidation::zesFrequencyOcSetVoltageTarget(
         zes_freq_handle_t hFrequency,                   ///< [in] Handle for the component.
-        double CurrentVoltageTarget,                    ///< [in] Overclock voltage in Volts. This cannot be greater than
-                                                        ///< ::zes_oc_capabilities_t.maxOcVoltage.
+        double CurrentVoltageTarget,                    ///< [in] Overclock voltage in Volts. This cannot be greater than the
+                                                        ///< `maxOcVoltage` member of ::zes_oc_capabilities_t.
         double CurrentVoltageOffset                     ///< [in] This voltage offset is applied to all points on the
-                                                        ///< voltage/frequency curve, include the new overclock voltageTarget. It
-                                                        ///< can be in the range (::zes_oc_capabilities_t.minOcVoltageOffset,
-                                                        ///< ::zes_oc_capabilities_t.maxOcVoltageOffset).
+                                                        ///< voltage/frequency curve, include the new overclock voltageTarget.
+                                                        ///< Valid range is between the `minOcVoltageOffset` and
+                                                        ///< `maxOcVoltageOffset` members of ::zes_oc_capabilities_t.
         )
     {
         if( nullptr == hFrequency )

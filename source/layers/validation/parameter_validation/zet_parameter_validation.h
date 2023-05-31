@@ -60,6 +60,8 @@ namespace validation_layer
         ze_result_t zetTracerExpSetEnabled ( zet_tracer_exp_handle_t hTracer, ze_bool_t enable ) override;
         ze_result_t zetMetricGroupCalculateMultipleMetricValuesExp ( zet_metric_group_handle_t hMetricGroup, zet_metric_group_calculation_type_t type, size_t rawDataSize, const uint8_t* pRawData, uint32_t* pSetCount, uint32_t* pTotalMetricValueCount, uint32_t* pMetricCounts, zet_typed_value_t* pMetricValues ) override;
         ze_result_t zetMetricGroupGetGlobalTimestampsExp ( zet_metric_group_handle_t hMetricGroup, ze_bool_t synchronizedWithHost, uint64_t* globalTimestamp, uint64_t* metricTimestamp ) override;
+        ze_result_t zetMetricGroupGetExportDataExp ( zet_metric_group_handle_t hMetricGroup, const uint8_t* pRawData, size_t rawDataSize, size_t* pExportDataSize, uint8_t * pExportData ) override;
+        ze_result_t zetMetricGroupCalculateMetricExportDataExp ( ze_driver_handle_t hDriver, zet_metric_group_calculation_type_t type, size_t exportDataSize, const uint8_t* pExportData, zet_metric_calculate_exp_desc_t* pCalculateDescriptor, uint32_t* pSetCount, uint32_t* pTotalMetricValueCount, uint32_t* pMetricCounts, zet_typed_value_t* pMetricValues ) override;
     };
 
 }
