@@ -5,6 +5,7 @@ This repository contains the following components of oneAPI:
 - Copies of the Level Zero Specification API C/C++ header files
 - Level Zero Loader
 - Level Zero Validation Layer
+- Level Zero Tracing Layer
 
 This project is part of the larger [oneAPI](https://www.oneapi.com/) project.
 
