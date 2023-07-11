@@ -425,9 +425,57 @@ zeDeviceGet(
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+/// @brief Retrieves the root-device of a device handle
+/// 
+/// @details
+///     - When the device handle passed does not belong to any root-device,
+///       nullptr is returned.
+///     - Multiple calls to this function will return the same device handle.
+///     - The root-device handle returned by this function does not have access
+///       automatically to the resources
+///       created with the associated sub-device, unless those resources have
+///       been created with a context
+///       explicitly containing both handles.
+///     - The application may call this function from simultaneous threads.
+///     - The implementation of this function should be lock-free.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hDevice`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == phRootDevice`
+ze_result_t ZE_APICALL
+zeDeviceGetRootDevice(
+    ze_device_handle_t hDevice,                     ///< [in] handle of the device object
+    ze_device_handle_t* phRootDevice                ///< [in,out] parent root device.
+    )
+{
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
+    auto pfnGetRootDevice = ze_lib::context->zeDdiTable.Device.pfnGetRootDevice;
+    if( nullptr == pfnGetRootDevice ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    return pfnGetRootDevice( hDevice, phRootDevice );
+}
+
+///////////////////////////////////////////////////////////////////////////////
 /// @brief Retrieves a sub-device from a device
 /// 
 /// @details
+///     - When the device handle passed does not contain any sub-device, a
+///       pCount of 0 is returned.
 ///     - Multiple calls to this function will return identical device handles,
 ///       in the same order.
 ///     - The number of handles returned from this function is affected by the
@@ -1272,7 +1320,7 @@ zeContextGetStatus(
 ///         + `nullptr == desc`
 ///         + `nullptr == phCommandQueue`
 ///     - ::ZE_RESULT_ERROR_INVALID_ENUMERATION
-///         + `0x1 < desc->flags`
+///         + `0x3 < desc->flags`
 ///         + `::ZE_COMMAND_QUEUE_MODE_ASYNCHRONOUS < desc->mode`
 ///         + `::ZE_COMMAND_QUEUE_PRIORITY_PRIORITY_HIGH < desc->priority`
 ze_result_t ZE_APICALL
@@ -1362,6 +1410,8 @@ zeCommandQueueDestroy(
 ///     - The application must use a fence created using the same command queue.
 ///     - The application must ensure the command queue, command list and fence
 ///       were created on the same context.
+///     - The application must ensure the command lists being executed are not
+///       immediate command lists.
 ///     - The application may call this function from simultaneous threads.
 ///     - The implementation of this function should be lock-free.
 /// 
@@ -1476,7 +1526,7 @@ zeCommandQueueSynchronize(
 ///         + `nullptr == desc`
 ///         + `nullptr == phCommandList`
 ///     - ::ZE_RESULT_ERROR_INVALID_ENUMERATION
-///         + `0x7 < desc->flags`
+///         + `0xf < desc->flags`
 ze_result_t ZE_APICALL
 zeCommandListCreate(
     ze_context_handle_t hContext,                   ///< [in] handle of the context object
@@ -1507,6 +1557,8 @@ zeCommandListCreate(
 ///     - An immediate command list is used for low-latency submission of
 ///       commands.
 ///     - An immediate command list creates an implicit command queue.
+///     - Immediate command lists must not be passed to
+///       ::zeCommandQueueExecuteCommandLists.
 ///     - Commands appended into an immediate command list may execute
 ///       synchronously, by blocking until the command is complete.
 ///     - The command list is created in the 'open' state and never needs to be
@@ -1529,7 +1581,7 @@ zeCommandListCreate(
 ///         + `nullptr == altdesc`
 ///         + `nullptr == phCommandList`
 ///     - ::ZE_RESULT_ERROR_INVALID_ENUMERATION
-///         + `0x1 < altdesc->flags`
+///         + `0x3 < altdesc->flags`
 ///         + `::ZE_COMMAND_QUEUE_MODE_ASYNCHRONOUS < altdesc->mode`
 ///         + `::ZE_COMMAND_QUEUE_PRIORITY_PRIORITY_HIGH < altdesc->priority`
 ze_result_t ZE_APICALL
@@ -2560,7 +2612,7 @@ zeCommandListAppendMemoryPrefetch(
 ///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
 ///         + `nullptr == ptr`
 ///     - ::ZE_RESULT_ERROR_INVALID_ENUMERATION
-///         + `::ZE_MEMORY_ADVICE_BIAS_UNCACHED < advice`
+///         + `::ZE_MEMORY_ADVICE_CLEAR_SYSTEM_MEMORY_PREFERRED_LOCATION < advice`
 ze_result_t ZE_APICALL
 zeCommandListAppendMemAdvise(
     ze_command_list_handle_t hCommandList,          ///< [in] handle of command list
@@ -4324,6 +4376,112 @@ zeMemCloseIpcHandle(
     }
 
     return pfnCloseIpcHandle( hContext, ptr );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Sets atomic access attributes for a shared allocation
+/// 
+/// @details
+///     - If the shared-allocation is owned by multiple devices (i.e. nullptr
+///       was passed to ::zeMemAllocShared when creating it), then hDevice may be
+///       passed to set the attributes in that specific device. If nullptr is
+///       passed in hDevice, then the atomic attributes are set in all devices
+///       associated with the allocation.
+///     - If the atomic access attribute select is not supported by the driver,
+///       ::ZE_RESULT_INVALID_ARGUMENT is returned.
+///     - The atomic access attribute may be only supported at a device-specific
+///       granularity, such as at a page boundary. In this case, the memory range
+///       may be expanded such that the start and end of the range satisfy granularity
+///       requirements.
+///     - When calling this function multiple times with different flags, only the
+///       attributes from last call are honored.
+///     - The application must not call this function for shared-allocations currently
+///       being used by the device.
+///     - The application must **not** call this function from simultaneous threads
+///       with the same pointer.
+///     - The implementation of this function should be lock-free.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hContext`
+///         + `nullptr == hDevice`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == ptr`
+///     - ::ZE_RESULT_ERROR_INVALID_ENUMERATION
+///         + `0x7f < attr`
+ze_result_t ZE_APICALL
+zeMemSetAtomicAccessAttributeExp(
+    ze_context_handle_t hContext,                   ///< [in] handle of context
+    ze_device_handle_t hDevice,                     ///< [in] device associated with the memory advice
+    const void* ptr,                                ///< [in] Pointer to the start of the memory range
+    size_t size,                                    ///< [in] Size in bytes of the memory range
+    ze_memory_atomic_attr_exp_flags_t attr          ///< [in] Atomic access attributes to set for the specified range.
+                                                    ///< Must be 0 (default) or a valid combination of ::ze_memory_atomic_attr_exp_flag_t.
+    )
+{
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
+    auto pfnSetAtomicAccessAttributeExp = ze_lib::context->zeDdiTable.MemExp.pfnSetAtomicAccessAttributeExp;
+    if( nullptr == pfnSetAtomicAccessAttributeExp ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    return pfnSetAtomicAccessAttributeExp( hContext, hDevice, ptr, size, attr );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Retrieves the atomic access attributes previously set for a shared
+///        allocation
+/// 
+/// @details
+///     - The application may call this function from simultaneous threads
+///       with the same pointer.
+///     - The implementation of this function should be lock-free.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hContext`
+///         + `nullptr == hDevice`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == ptr`
+///         + `nullptr == pAttr`
+ze_result_t ZE_APICALL
+zeMemGetAtomicAccessAttributeExp(
+    ze_context_handle_t hContext,                   ///< [in] handle of context
+    ze_device_handle_t hDevice,                     ///< [in] device associated with the memory advice
+    const void* ptr,                                ///< [in] Pointer to the start of the memory range
+    size_t size,                                    ///< [in] Size in bytes of the memory range
+    ze_memory_atomic_attr_exp_flags_t* pAttr        ///< [out] Atomic access attributes for the specified range
+    )
+{
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
+    auto pfnGetAtomicAccessAttributeExp = ze_lib::context->zeDdiTable.MemExp.pfnGetAtomicAccessAttributeExp;
+    if( nullptr == pfnGetAtomicAccessAttributeExp ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    return pfnGetAtomicAccessAttributeExp( hContext, hDevice, ptr, size, pAttr );
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -6357,7 +6515,7 @@ zeDeviceReserveCacheExt(
 ///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
 ///         + `nullptr == ptr`
 ///     - ::ZE_RESULT_ERROR_INVALID_ENUMERATION
-///         + `::ZE_CACHE_EXT_REGION_::ZE_CACHE_NON_RESERVED_REGION < cacheRegion`
+///         + `::ZE_CACHE_EXT_REGION_NON_RESERVED < cacheRegion`
 ze_result_t ZE_APICALL
 zeDeviceSetCacheAdviceExt(
     ze_device_handle_t hDevice,                     ///< [in] handle of the device object
@@ -7405,6 +7563,441 @@ zeEventQueryKernelTimestampsExt(
     }
 
     return pfnQueryKernelTimestampsExt( hEvent, hDevice, pCount, pResults );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Creates a ray tracing acceleration structure builder object
+/// 
+/// @details
+///     - The application may call this function from simultaneous threads.
+///     - The implementation of this function must be thread-safe.
+///     - The implementation must support ::ZE_experimental_rtas_builder
+///       extension.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hDriver`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == pDescriptor`
+///         + `nullptr == phBuilder`
+///     - ::ZE_RESULT_ERROR_INVALID_ENUMERATION
+///         + `::ZE_RTAS_BUILDER_EXP_VERSION_CURRENT < pDescriptor->builderVersion`
+ze_result_t ZE_APICALL
+zeRTASBuilderCreateExp(
+    ze_driver_handle_t hDriver,                     ///< [in] handle of driver object
+    const ze_rtas_builder_exp_desc_t* pDescriptor,  ///< [in] pointer to builder descriptor
+    ze_rtas_builder_exp_handle_t* phBuilder         ///< [out] handle of builder object
+    )
+{
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
+    auto pfnCreateExp = ze_lib::context->zeDdiTable.RTASBuilderExp.pfnCreateExp;
+    if( nullptr == pfnCreateExp ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    return pfnCreateExp( hDriver, pDescriptor, phBuilder );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Retrieves ray tracing acceleration structure builder properties
+/// 
+/// @details
+///     - The application may call this function from simultaneous threads.
+///     - The implementation of this function must be thread-safe.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hBuilder`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == pBuildOpDescriptor`
+///         + `nullptr == pProperties`
+///     - ::ZE_RESULT_ERROR_INVALID_ENUMERATION
+///         + `::ZE_RTAS_FORMAT_EXP_INVALID < pBuildOpDescriptor->rtasFormat`
+///         + `::ZE_RTAS_BUILDER_BUILD_QUALITY_HINT_EXP_HIGH < pBuildOpDescriptor->buildQuality`
+///         + `0x3 < pBuildOpDescriptor->buildFlags`
+ze_result_t ZE_APICALL
+zeRTASBuilderGetBuildPropertiesExp(
+    ze_rtas_builder_exp_handle_t hBuilder,          ///< [in] handle of builder object
+    const ze_rtas_builder_build_op_exp_desc_t* pBuildOpDescriptor,  ///< [in] pointer to build operation descriptor
+    ze_rtas_builder_exp_properties_t* pProperties   ///< [in,out] query result for builder properties
+    )
+{
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
+    auto pfnGetBuildPropertiesExp = ze_lib::context->zeDdiTable.RTASBuilderExp.pfnGetBuildPropertiesExp;
+    if( nullptr == pfnGetBuildPropertiesExp ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    return pfnGetBuildPropertiesExp( hBuilder, pBuildOpDescriptor, pProperties );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Checks ray tracing acceleration structure format compatibility
+/// 
+/// @details
+///     - The application may call this function from simultaneous threads.
+///     - The implementation of this function must be thread-safe.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hDriver`
+///     - ::ZE_RESULT_ERROR_INVALID_ENUMERATION
+///         + `::ZE_RTAS_FORMAT_EXP_INVALID < rtasFormatA`
+///         + `::ZE_RTAS_FORMAT_EXP_INVALID < rtasFormatB`
+///     - ::ZE_RESULT_SUCCESS
+///         + An acceleration structure built with `rtasFormatA` is compatible with devices that report `rtasFormatB`.
+///     - ::ZE_RESULT_EXP_ERROR_OPERANDS_INCOMPATIBLE
+///         + An acceleration structure built with `rtasFormatA` is **not** compatible with devices that report `rtasFormatB`.
+ze_result_t ZE_APICALL
+zeDriverRTASFormatCompatibilityCheckExp(
+    ze_driver_handle_t hDriver,                     ///< [in] handle of driver object
+    ze_rtas_format_exp_t rtasFormatA,               ///< [in] operand A
+    ze_rtas_format_exp_t rtasFormatB                ///< [in] operand B
+    )
+{
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
+    auto pfnRTASFormatCompatibilityCheckExp = ze_lib::context->zeDdiTable.DriverExp.pfnRTASFormatCompatibilityCheckExp;
+    if( nullptr == pfnRTASFormatCompatibilityCheckExp ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    return pfnRTASFormatCompatibilityCheckExp( hDriver, rtasFormatA, rtasFormatB );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Build ray tracing acceleration structure
+/// 
+/// @details
+///     - This function builds an acceleration structure of the scene consisting
+///       of the specified geometry information and writes the acceleration
+///       structure to the provided destination buffer. All types of geometries
+///       can get freely mixed inside a scene.
+///     - It is the user's responsibility to manage the acceleration structure
+///       buffer allocation, de-allocation, and potential prefetching to the
+///       device memory. The required size of the acceleration structure buffer
+///       can be queried with the ::zeRTASBuilderGetBuildPropertiesExp function.
+///       The acceleration structure buffer must be a shared USM allocation and
+///       should be present on the host at build time. The referenced scene data
+///       (index- and vertex- buffers) can be standard host allocations, and
+///       will not be referenced into by the build acceleration structure.
+///     - Before an acceleration structure can be built, the user must allocate
+///       the memory for the acceleration structure buffer and scratch buffer
+///       using sizes based on a query for the estimated size properties.
+///     - When using the "worst-case" size for the acceleration structure
+///       buffer, the acceleration structure construction will never fail with ::ZE_RESULT_EXP_RTAS_BUILD_RETRY.
+///     - When using the "expected" size for the acceleration structure buffer,
+///       the acceleration structure construction may fail with
+///       ::ZE_RESULT_EXP_RTAS_BUILD_RETRY. If this happens, the user may resize
+///       their acceleration structure buffer using the returned
+///       `*pRtasBufferSizeBytes` value, which will be updated with an improved
+///       size estimate that will likely result in a successful build.
+///     - The acceleration structure construction is run on the host and is
+///       synchronous, thus after the function returns with a successful result,
+///       the acceleration structure may be used.
+///     - All provided data buffers must be host-accessible.
+///     - The acceleration structure buffer must be a USM allocation.
+///     - A successfully constructed acceleration structure is entirely
+///       self-contained. There is no requirement for input data to persist
+///       beyond build completion.
+///     - A successfully constructed acceleration structure is non-copyable.
+///     - Acceleration structure construction may be parallelized by passing a
+///       valid handle to a parallel operation object and joining that parallel
+///       operation using ::zeRTASParallelOperationJoinExp with user-provided
+///       worker threads.
+///     - **Additional Notes**
+///        - "The geometry infos array, geometry infos, and scratch buffer must
+///       all be standard host memory allocations."
+///        - "A pointer to a geometry info can be a null pointer, in which case
+///       the geometry is treated as empty."
+///        - "If no parallel operation handle is provided, the build is run
+///       sequentially on the current thread."
+///        - "A parallel operation object may only be associated with a single
+///       acceleration structure build at a time."
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hBuilder`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == pBuildOpDescriptor`
+///         + `nullptr == pScratchBuffer`
+///         + `nullptr == pRtasBuffer`
+///     - ::ZE_RESULT_ERROR_INVALID_ENUMERATION
+///         + `::ZE_RTAS_FORMAT_EXP_INVALID < pBuildOpDescriptor->rtasFormat`
+///         + `::ZE_RTAS_BUILDER_BUILD_QUALITY_HINT_EXP_HIGH < pBuildOpDescriptor->buildQuality`
+///         + `0x3 < pBuildOpDescriptor->buildFlags`
+///     - ::ZE_RESULT_EXP_RTAS_BUILD_DEFERRED
+///         + Acceleration structure build completion is deferred to parallel operation join.
+///     - ::ZE_RESULT_EXP_RTAS_BUILD_RETRY
+///         + Acceleration structure build failed due to insufficient resources, retry the build operation with a larger acceleration structure buffer allocation.
+///     - ::ZE_RESULT_ERROR_HANDLE_OBJECT_IN_USE
+///         + Acceleration structure build failed due to parallel operation object participation in another build operation.
+ze_result_t ZE_APICALL
+zeRTASBuilderBuildExp(
+    ze_rtas_builder_exp_handle_t hBuilder,          ///< [in] handle of builder object
+    const ze_rtas_builder_build_op_exp_desc_t* pBuildOpDescriptor,  ///< [in] pointer to build operation descriptor
+    void* pScratchBuffer,                           ///< [in][range(0, `scratchBufferSizeBytes`)] scratch buffer to be used
+                                                    ///< during acceleration structure construction
+    size_t scratchBufferSizeBytes,                  ///< [in] size of scratch buffer, in bytes
+    void* pRtasBuffer,                              ///< [in] pointer to destination buffer
+    size_t rtasBufferSizeBytes,                     ///< [in] destination buffer size, in bytes
+    ze_rtas_parallel_operation_exp_handle_t hParallelOperation, ///< [in][optional] handle to parallel operation object
+    void* pBuildUserPtr,                            ///< [in][optional] pointer passed to callbacks
+    ze_rtas_aabb_exp_t* pBounds,                    ///< [in,out][optional] pointer to destination address for acceleration
+                                                    ///< structure bounds
+    size_t* pRtasBufferSizeBytes                    ///< [out][optional] updated acceleration structure size requirement, in
+                                                    ///< bytes
+    )
+{
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
+    auto pfnBuildExp = ze_lib::context->zeDdiTable.RTASBuilderExp.pfnBuildExp;
+    if( nullptr == pfnBuildExp ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    return pfnBuildExp( hBuilder, pBuildOpDescriptor, pScratchBuffer, scratchBufferSizeBytes, pRtasBuffer, rtasBufferSizeBytes, hParallelOperation, pBuildUserPtr, pBounds, pRtasBufferSizeBytes );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Destroys a ray tracing acceleration structure builder object
+/// 
+/// @details
+///     - The implementation of this function may immediately release any
+///       internal Host and Device resources associated with this builder.
+///     - The application must **not** call this function from simultaneous
+///       threads with the same builder handle.
+///     - The implementation of this function must be thread-safe.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hBuilder`
+///     - ::ZE_RESULT_ERROR_HANDLE_OBJECT_IN_USE
+ze_result_t ZE_APICALL
+zeRTASBuilderDestroyExp(
+    ze_rtas_builder_exp_handle_t hBuilder           ///< [in][release] handle of builder object to destroy
+    )
+{
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
+    auto pfnDestroyExp = ze_lib::context->zeDdiTable.RTASBuilderExp.pfnDestroyExp;
+    if( nullptr == pfnDestroyExp ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    return pfnDestroyExp( hBuilder );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Creates a ray tracing acceleration structure builder parallel
+///        operation object
+/// 
+/// @details
+///     - The application may call this function from simultaneous threads.
+///     - The implementation of this function must be thread-safe.
+///     - The implementation must support ::ZE_experimental_rtas_builder
+///       extension.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hDriver`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == phParallelOperation`
+ze_result_t ZE_APICALL
+zeRTASParallelOperationCreateExp(
+    ze_driver_handle_t hDriver,                     ///< [in] handle of driver object
+    ze_rtas_parallel_operation_exp_handle_t* phParallelOperation///< [out] handle of parallel operation object
+    )
+{
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
+    auto pfnCreateExp = ze_lib::context->zeDdiTable.RTASParallelOperationExp.pfnCreateExp;
+    if( nullptr == pfnCreateExp ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    return pfnCreateExp( hDriver, phParallelOperation );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Retrieves ray tracing acceleration structure builder parallel
+///        operation properties
+/// 
+/// @details
+///     - The application must first bind the parallel operation object to a
+///       build operation before it may query the parallel operation properties.
+///       In other words, the application must first call
+///       ::zeRTASBuilderBuildExp with **hParallelOperation** before calling
+///       this function.
+///     - The application may call this function from simultaneous threads.
+///     - The implementation of this function must be thread-safe.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hParallelOperation`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == pProperties`
+ze_result_t ZE_APICALL
+zeRTASParallelOperationGetPropertiesExp(
+    ze_rtas_parallel_operation_exp_handle_t hParallelOperation, ///< [in] handle of parallel operation object
+    ze_rtas_parallel_operation_exp_properties_t* pProperties///< [in,out] query result for parallel operation properties
+    )
+{
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
+    auto pfnGetPropertiesExp = ze_lib::context->zeDdiTable.RTASParallelOperationExp.pfnGetPropertiesExp;
+    if( nullptr == pfnGetPropertiesExp ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    return pfnGetPropertiesExp( hParallelOperation, pProperties );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Joins a parallel build operation
+/// 
+/// @details
+///     - All worker threads return the same error code for the parallel build
+///       operation upon build completion
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hParallelOperation`
+ze_result_t ZE_APICALL
+zeRTASParallelOperationJoinExp(
+    ze_rtas_parallel_operation_exp_handle_t hParallelOperation  ///< [in] handle of parallel operation object
+    )
+{
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
+    auto pfnJoinExp = ze_lib::context->zeDdiTable.RTASParallelOperationExp.pfnJoinExp;
+    if( nullptr == pfnJoinExp ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    return pfnJoinExp( hParallelOperation );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Destroys a ray tracing acceleration structure builder parallel
+///        operation object
+/// 
+/// @details
+///     - The implementation of this function may immediately release any
+///       internal Host and Device resources associated with this parallel
+///       operation.
+///     - The application must **not** call this function from simultaneous
+///       threads with the same parallel operation handle.
+///     - The implementation of this function must be thread-safe.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hParallelOperation`
+ze_result_t ZE_APICALL
+zeRTASParallelOperationDestroyExp(
+    ze_rtas_parallel_operation_exp_handle_t hParallelOperation  ///< [in][release] handle of parallel operation object to destroy
+    )
+{
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
+    auto pfnDestroyExp = ze_lib::context->zeDdiTable.RTASParallelOperationExp.pfnDestroyExp;
+    if( nullptr == pfnDestroyExp ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    return pfnDestroyExp( hParallelOperation );
 }
 
 } // extern "C"

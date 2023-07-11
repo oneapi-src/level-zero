@@ -4,7 +4,7 @@
  SPDX-License-Identifier: MIT
 
  @file ze.py
- @version v1.6-r1.6.10
+ @version v1.7-r1.7.0
 
  """
 import platform
@@ -169,14 +169,20 @@ class ze_result_v(IntEnum):
     ERROR_MODULE_LINK_FAILURE = 0x70000005                                  ## [Core] error occurred when linking modules, see build log for details
     ERROR_DEVICE_REQUIRES_RESET = 0x70000006                                ## [Core] device requires a reset
     ERROR_DEVICE_IN_LOW_POWER_STATE = 0x70000007                            ## [Core] device currently in low power state
-    EXP_ERROR_DEVICE_IS_NOT_VERTEX = 0x7ff00001                             ## [Core, Expoerimental] device is not represented by a fabric vertex
+    EXP_ERROR_DEVICE_IS_NOT_VERTEX = 0x7ff00001                             ## [Core, Experimental] device is not represented by a fabric vertex
     EXP_ERROR_VERTEX_IS_NOT_DEVICE = 0x7ff00002                             ## [Core, Experimental] fabric vertex does not represent a device
-    EXP_ERROR_REMOTE_DEVICE = 0x7ff00003                                    ## [Core, Expoerimental] fabric vertex represents a remote device or
+    EXP_ERROR_REMOTE_DEVICE = 0x7ff00003                                    ## [Core, Experimental] fabric vertex represents a remote device or
                                                                             ## subdevice
+    EXP_ERROR_OPERANDS_INCOMPATIBLE = 0x7ff00004                            ## [Core, Experimental] operands of comparison are not compatible
+    EXP_RTAS_BUILD_RETRY = 0x7ff00005                                       ## [Core, Experimental] ray tracing acceleration structure build
+                                                                            ## operation failed due to insufficient resources, retry with a larger
+                                                                            ## acceleration structure buffer allocation
+    EXP_RTAS_BUILD_DEFERRED = 0x7ff00006                                    ## [Core, Experimental] ray tracing acceleration structure build
+                                                                            ## operation deferred to parallel operation join
     ERROR_INSUFFICIENT_PERMISSIONS = 0x70010000                             ## [Sysman] access denied due to permission level
     ERROR_NOT_AVAILABLE = 0x70010001                                        ## [Sysman] resource already in use and simultaneous access not allowed
                                                                             ## or resource was removed
-    ERROR_DEPENDENCY_UNAVAILABLE = 0x70020000                               ## [Tools] external required dependency is unavailable or missing
+    ERROR_DEPENDENCY_UNAVAILABLE = 0x70020000                               ## [Common] external required dependency is unavailable or missing
     WARNING_DROPPED_DATA = 0x70020001                                       ## [Tools] data may have been dropped
     ERROR_UNINITIALIZED = 0x78000001                                        ## [Validation] driver is not initialized
     ERROR_UNSUPPORTED_VERSION = 0x78000002                                  ## [Validation] generic error code for unsupported versions
@@ -275,6 +281,7 @@ class ze_structure_type_v(IntEnum):
     IMAGE_VIEW_PLANAR_EXT_DESC = 0x10010                                    ## ::ze_image_view_planar_ext_desc_t
     EVENT_QUERY_KERNEL_TIMESTAMPS_EXT_PROPERTIES = 0x10011                  ## ::ze_event_query_kernel_timestamps_ext_properties_t
     EVENT_QUERY_KERNEL_TIMESTAMPS_RESULTS_EXT_PROPERTIES = 0x10012          ## ::ze_event_query_kernel_timestamps_results_ext_properties_t
+    KERNEL_MAX_GROUP_SIZE_EXT_PROPERTIES = 0x10013                          ## ::ze_kernel_max_group_size_ext_properties_t
     RELAXED_ALLOCATION_LIMITS_EXP_DESC = 0x00020001                         ## ::ze_relaxed_allocation_limits_exp_desc_t
     MODULE_PROGRAM_EXP_DESC = 0x00020002                                    ## ::ze_module_program_exp_desc_t
     SCHEDULING_HINT_EXP_PROPERTIES = 0x00020003                             ## ::ze_scheduling_hint_exp_properties_t
@@ -288,6 +295,12 @@ class ze_structure_type_v(IntEnum):
     FABRIC_VERTEX_EXP_PROPERTIES = 0x0002000B                               ## ::ze_fabric_vertex_exp_properties_t
     FABRIC_EDGE_EXP_PROPERTIES = 0x0002000C                                 ## ::ze_fabric_edge_exp_properties_t
     MEMORY_SUB_ALLOCATIONS_EXP_PROPERTIES = 0x0002000D                      ## ::ze_memory_sub_allocations_exp_properties_t
+    RTAS_BUILDER_EXP_DESC = 0x0002000E                                      ## ::ze_rtas_builder_exp_desc_t
+    RTAS_BUILDER_BUILD_OP_EXP_DESC = 0x0002000F                             ## ::ze_rtas_builder_build_op_exp_desc_t
+    RTAS_BUILDER_EXP_PROPERTIES = 0x00020010                                ## ::ze_rtas_builder_exp_properties_t
+    RTAS_PARALLEL_OPERATION_EXP_PROPERTIES = 0x00020011                     ## ::ze_rtas_parallel_operation_exp_properties_t
+    RTAS_DEVICE_EXP_PROPERTIES = 0x00020012                                 ## ::ze_rtas_device_exp_properties_t
+    RTAS_GEOMETRY_AABBS_EXP_CB_PARAMS = 0x00020013                          ## ::ze_rtas_geometry_aabbs_exp_cb_params_t
 
 class ze_structure_type_t(c_int):
     def __str__(self):
@@ -350,6 +363,15 @@ class ze_uuid_t(Structure):
     ]
 
 ###############################################################################
+## @brief Base for all callback function parameter types
+class ze_base_cb_params_t(Structure):
+    _fields_ = [
+        ("stype", ze_structure_type_t),                                 ## [in] type of this structure
+        ("pNext", c_void_p)                                             ## [in,out][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains stype and pNext).
+    ]
+
+###############################################################################
 ## @brief Base for all properties types
 class ze_base_properties_t(Structure):
     _fields_ = [
@@ -378,6 +400,10 @@ class ze_base_desc_t(Structure):
 ## @brief Forces all shared allocations into device memory
 
 ###############################################################################
+## @brief Defines the device hierarchy model exposed by Level Zero driver
+##        implementation
+
+###############################################################################
 ## @brief Supported initialization flags
 class ze_init_flags_v(IntEnum):
     GPU_ONLY = ZE_BIT(0)                                                    ## only initialize GPU drivers
@@ -402,7 +428,8 @@ class ze_api_version_v(IntEnum):
     _1_4 = ZE_MAKE_VERSION( 1, 4 )                                          ## version 1.4
     _1_5 = ZE_MAKE_VERSION( 1, 5 )                                          ## version 1.5
     _1_6 = ZE_MAKE_VERSION( 1, 6 )                                          ## version 1.6
-    CURRENT = ZE_MAKE_VERSION( 1, 6 )                                       ## latest known version
+    _1_7 = ZE_MAKE_VERSION( 1, 7 )                                          ## version 1.7
+    CURRENT = ZE_MAKE_VERSION( 1, 7 )                                       ## latest known version
 
 class ze_api_version_t(c_int):
     def __str__(self):
@@ -867,6 +894,15 @@ class ze_command_queue_flags_v(IntEnum):
                                                                             ## work across multiple engines.
                                                                             ## this flag should be used when applications want full control over
                                                                             ## multi-engine submission and scheduling.
+    IN_ORDER = ZE_BIT(1)                                                    ## To be used only when creating immediate command lists. Commands
+                                                                            ## appended to the immediate command
+                                                                            ## list are executed in-order, with driver implementation enforcing
+                                                                            ## dependencies between them.
+                                                                            ## Application is not required to have the signal event of a given
+                                                                            ## command being the wait event of
+                                                                            ## the next to define an in-order list, and application is allowed to
+                                                                            ## pass signal and wait events
+                                                                            ## to each appended command to implement more complex dependency graphs.
 
 class ze_command_queue_flags_t(c_int):
     def __str__(self):
@@ -934,6 +970,15 @@ class ze_command_list_flags_v(IntEnum):
                                                                             ## work across multiple engines.
                                                                             ## this flag should be used when applications want full control over
                                                                             ## multi-engine submission and scheduling.
+    IN_ORDER = ZE_BIT(3)                                                    ## commands appended to this command list are executed in-order, with
+                                                                            ## driver implementation
+                                                                            ## enforcing dependencies between them. Application is not required to
+                                                                            ## have the signal event
+                                                                            ## of a given command being the wait event of the next to define an
+                                                                            ## in-order list, and
+                                                                            ## application is allowed to pass signal and wait events to each appended
+                                                                            ## command to implement
+                                                                            ## more complex dependency graphs. Cannot be combined with ::ZE_COMMAND_LIST_FLAG_RELAXED_ORDERING.
 
 class ze_command_list_flags_t(c_int):
     def __str__(self):
@@ -985,13 +1030,16 @@ class ze_image_region_t(Structure):
 ## @brief Supported memory advice hints
 class ze_memory_advice_v(IntEnum):
     SET_READ_MOSTLY = 0                                                     ## hint that memory will be read from frequently and written to rarely
-    CLEAR_READ_MOSTLY = 1                                                   ## removes the affect of ::ZE_MEMORY_ADVICE_SET_READ_MOSTLY
+    CLEAR_READ_MOSTLY = 1                                                   ## removes the effect of ::ZE_MEMORY_ADVICE_SET_READ_MOSTLY
     SET_PREFERRED_LOCATION = 2                                              ## hint that the preferred memory location is the specified device
-    CLEAR_PREFERRED_LOCATION = 3                                            ## removes the affect of ::ZE_MEMORY_ADVICE_SET_PREFERRED_LOCATION
+    CLEAR_PREFERRED_LOCATION = 3                                            ## removes the effect of ::ZE_MEMORY_ADVICE_SET_PREFERRED_LOCATION
     SET_NON_ATOMIC_MOSTLY = 4                                               ## hints that memory will mostly be accessed non-atomically
-    CLEAR_NON_ATOMIC_MOSTLY = 5                                             ## removes the affect of ::ZE_MEMORY_ADVICE_SET_NON_ATOMIC_MOSTLY
+    CLEAR_NON_ATOMIC_MOSTLY = 5                                             ## removes the effect of ::ZE_MEMORY_ADVICE_SET_NON_ATOMIC_MOSTLY
     BIAS_CACHED = 6                                                         ## hints that memory should be cached
     BIAS_UNCACHED = 7                                                       ## hints that memory should be not be cached
+    SET_SYSTEM_MEMORY_PREFERRED_LOCATION = 8                                ## hint that the preferred memory location is host memory
+    CLEAR_SYSTEM_MEMORY_PREFERRED_LOCATION = 9                              ## removes the effect of
+                                                                            ## ::ZE_MEMORY_ADVICE_SET_SYSTEM_MEMORY_PREFERRED_LOCATION
 
 class ze_memory_advice_t(c_int):
     def __str__(self):
@@ -1485,6 +1533,29 @@ class ze_external_memory_export_win32_handle_t(Structure):
                                                                         ## must be 0 (default) or a valid combination of ::ze_external_memory_type_flags_t
         ("handle", c_void_p)                                            ## [out] the exported Win32 handle representing the allocation.
     ]
+
+###############################################################################
+## @brief atomic access attribute flags
+class ze_memory_atomic_attr_exp_flags_v(IntEnum):
+    NO_ATOMICS = ZE_BIT(0)                                                  ## Atomics on the pointer are not allowed
+    NO_HOST_ATOMICS = ZE_BIT(1)                                             ## Host atomics on the pointer are not allowed
+    HOST_ATOMICS = ZE_BIT(2)                                                ## Host atomics on the pointer are allowed. Requires
+                                                                            ## ::ZE_MEMORY_ACCESS_CAP_FLAG_ATOMIC returned by
+                                                                            ## ::zeDeviceGetMemoryAccessProperties.
+    NO_DEVICE_ATOMICS = ZE_BIT(3)                                           ## Device atomics on the pointer are not allowed
+    DEVICE_ATOMICS = ZE_BIT(4)                                              ## Device atomics on the pointer are allowed. Requires
+                                                                            ## ::ZE_MEMORY_ACCESS_CAP_FLAG_ATOMIC returned by
+                                                                            ## ::zeDeviceGetMemoryAccessProperties.
+    NO_SYSTEM_ATOMICS = ZE_BIT(5)                                           ## Concurrent atomics on the pointer from both host and device are not
+                                                                            ## allowed
+    SYSTEM_ATOMICS = ZE_BIT(6)                                              ## Concurrent atomics on the pointer from both host and device are
+                                                                            ## allowed. Requires ::ZE_MEMORY_ACCESS_CAP_FLAG_CONCURRENT_ATOMIC
+                                                                            ## returned by ::zeDeviceGetMemoryAccessProperties.
+
+class ze_memory_atomic_attr_exp_flags_t(c_int):
+    def __str__(self):
+        return hex(self.value)
+
 
 ###############################################################################
 ## @brief Supported module creation input formats
@@ -1990,9 +2061,15 @@ class ze_cache_reservation_ext_version_t(c_int):
 ###############################################################################
 ## @brief Cache Reservation Region
 class ze_cache_ext_region_v(IntEnum):
-    ZE_CACHE_REGION_DEFAULT = 0                                             ## utilize driver default scheme
-    ZE_CACHE_RESERVE_REGION = 1                                             ## utilize reserved region
-    ZE_CACHE_NON_RESERVED_REGION = 2                                        ## utilize non-reserverd region
+    ZE_CACHE_REGION_DEFAULT = 0                                             ## [DEPRECATED] utilize driver default scheme. Use
+                                                                            ## ::ZE_CACHE_EXT_REGION_DEFAULT.
+    ZE_CACHE_RESERVE_REGION = 1                                             ## [DEPRECATED] utilize reserved region. Use
+                                                                            ## ::ZE_CACHE_EXT_REGION_RESERVED.
+    ZE_CACHE_NON_RESERVED_REGION = 2                                        ## [DEPRECATED] utilize non-reserverd region. Use
+                                                                            ## ::ZE_CACHE_EXT_REGION_NON_RESERVED.
+    DEFAULT = 0                                                             ## utilize driver default scheme
+    RESERVED = 1                                                            ## utilize reserved region
+    NON_RESERVED = 2                                                        ## utilize non-reserverd region
 
 class ze_cache_ext_region_t(c_int):
     def __str__(self):
@@ -2885,6 +2962,11 @@ class ze_kernel_max_group_size_properties_ext_t(Structure):
     ]
 
 ###############################################################################
+## @brief compiler-independent type
+class ze_kernel_max_group_size_ext_properties_t(ze_kernel_max_group_size_properties_ext_t):
+    pass
+
+###############################################################################
 ## @brief Sub-Allocations Properties Extension Name
 ZE_SUB_ALLOCATIONS_EXP_NAME = "ZE_experimental_sub_allocations"
 
@@ -3000,7 +3082,649 @@ class ze_event_query_kernel_timestamps_results_ext_properties_t(Structure):
     ]
 
 ###############################################################################
+## @brief Ray Tracing Acceleration Structure Builder Extension Name
+ZE_RTAS_BUILDER_EXP_NAME = "ZE_experimental_rtas_builder"
+
+###############################################################################
+## @brief Ray Tracing Acceleration Structure Builder Extension Version(s)
+class ze_rtas_builder_exp_version_v(IntEnum):
+    _1_0 = ZE_MAKE_VERSION( 1, 0 )                                          ## version 1.0
+    CURRENT = ZE_MAKE_VERSION( 1, 0 )                                       ## latest known version
+
+class ze_rtas_builder_exp_version_t(c_int):
+    def __str__(self):
+        return str(ze_rtas_builder_exp_version_v(self.value))
+
+
+###############################################################################
+## @brief Ray tracing acceleration structure device flags
+class ze_rtas_device_exp_flags_v(IntEnum):
+    RESERVED = ZE_BIT(0)                                                    ## reserved for future use
+
+class ze_rtas_device_exp_flags_t(c_int):
+    def __str__(self):
+        return hex(self.value)
+
+
+###############################################################################
+## @brief Ray tracing acceleration structure format
+## 
+## @details
+##     - This is an opaque ray tracing acceleration structure format
+##       identifier.
+class ze_rtas_format_exp_v(IntEnum):
+    INVALID = 0                                                             ## Invalid acceleration structure format
+
+class ze_rtas_format_exp_t(c_int):
+    def __str__(self):
+        return str(ze_rtas_format_exp_v(self.value))
+
+
+###############################################################################
+## @brief Ray tracing acceleration structure builder flags
+class ze_rtas_builder_exp_flags_v(IntEnum):
+    RESERVED = ZE_BIT(0)                                                    ## Reserved for future use
+
+class ze_rtas_builder_exp_flags_t(c_int):
+    def __str__(self):
+        return hex(self.value)
+
+
+###############################################################################
+## @brief Ray tracing acceleration structure builder parallel operation flags
+class ze_rtas_parallel_operation_exp_flags_v(IntEnum):
+    RESERVED = ZE_BIT(0)                                                    ## Reserved for future use
+
+class ze_rtas_parallel_operation_exp_flags_t(c_int):
+    def __str__(self):
+        return hex(self.value)
+
+
+###############################################################################
+## @brief Ray tracing acceleration structure builder geometry flags
+class ze_rtas_builder_geometry_exp_flags_v(IntEnum):
+    NON_OPAQUE = ZE_BIT(0)                                                  ## non-opaque geometries invoke an any-hit shader
+
+class ze_rtas_builder_geometry_exp_flags_t(c_int):
+    def __str__(self):
+        return hex(self.value)
+
+
+###############################################################################
+## @brief Packed ray tracing acceleration structure builder geometry flags (see
+##        ::ze_rtas_builder_geometry_exp_flags_t)
+class ze_rtas_builder_packed_geometry_exp_flags_t(c_ubyte):
+    pass
+
+###############################################################################
+## @brief Ray tracing acceleration structure builder instance flags
+class ze_rtas_builder_instance_exp_flags_v(IntEnum):
+    TRIANGLE_CULL_DISABLE = ZE_BIT(0)                                       ## disables culling of front-facing and back-facing triangles
+    TRIANGLE_FRONT_COUNTERCLOCKWISE = ZE_BIT(1)                             ## reverses front and back face of triangles
+    TRIANGLE_FORCE_OPAQUE = ZE_BIT(2)                                       ## forces instanced geometry to be opaque, unless ray flag forces it to
+                                                                            ## be non-opaque
+    TRIANGLE_FORCE_NON_OPAQUE = ZE_BIT(3)                                   ## forces instanced geometry to be non-opaque, unless ray flag forces it
+                                                                            ## to be opaque
+
+class ze_rtas_builder_instance_exp_flags_t(c_int):
+    def __str__(self):
+        return hex(self.value)
+
+
+###############################################################################
+## @brief Packed ray tracing acceleration structure builder instance flags (see
+##        ::ze_rtas_builder_instance_exp_flags_t)
+class ze_rtas_builder_packed_instance_exp_flags_t(c_ubyte):
+    pass
+
+###############################################################################
+## @brief Ray tracing acceleration structure builder build operation flags
+## 
+## @details
+##     - These flags allow the application to tune the acceleration structure
+##       build operation.
+##     - The acceleration structure builder implementation might choose to use
+##       spatial splitting to split large or long primitives into smaller
+##       pieces. This may result in any-hit shaders being invoked multiple
+##       times for non-opaque primitives, unless
+##       ::ZE_RTAS_BUILDER_BUILD_OP_EXP_FLAG_NO_DUPLICATE_ANYHIT_INVOCATION is specified.
+##     - Usage of any of these flags may reduce ray tracing performance.
+class ze_rtas_builder_build_op_exp_flags_v(IntEnum):
+    COMPACT = ZE_BIT(0)                                                     ## build more compact acceleration structure
+    NO_DUPLICATE_ANYHIT_INVOCATION = ZE_BIT(1)                              ## guarantees single any-hit shader invocation per primitive
+
+class ze_rtas_builder_build_op_exp_flags_t(c_int):
+    def __str__(self):
+        return hex(self.value)
+
+
+###############################################################################
+## @brief Ray tracing acceleration structure builder build quality hint
+## 
+## @details
+##     - Depending on use case different quality modes for acceleration
+##       structure build are supported.
+##     - A low-quality build builds an acceleration structure fast, but at the
+##       cost of some reduction in ray tracing performance. This mode is
+##       recommended for dynamic content, such as animated characters.
+##     - A medium-quality build uses a compromise between build quality and ray
+##       tracing performance. This mode should be used by default.
+##     - Higher ray tracing performance can be achieved by using a high-quality
+##       build, but acceleration structure build performance might be
+##       significantly reduced.
+class ze_rtas_builder_build_quality_hint_exp_v(IntEnum):
+    LOW = 0                                                                 ## build low-quality acceleration structure (fast)
+    MEDIUM = 1                                                              ## build medium-quality acceleration structure (slower)
+    HIGH = 2                                                                ## build high-quality acceleration structure (slow)
+
+class ze_rtas_builder_build_quality_hint_exp_t(c_int):
+    def __str__(self):
+        return str(ze_rtas_builder_build_quality_hint_exp_v(self.value))
+
+
+###############################################################################
+## @brief Ray tracing acceleration structure builder geometry type
+class ze_rtas_builder_geometry_type_exp_v(IntEnum):
+    TRIANGLES = 0                                                           ## triangle mesh geometry type
+    QUADS = 1                                                               ## quad mesh geometry type
+    PROCEDURAL = 2                                                          ## procedural geometry type
+    INSTANCE = 3                                                            ## instance geometry type
+
+class ze_rtas_builder_geometry_type_exp_t(c_int):
+    def __str__(self):
+        return str(ze_rtas_builder_geometry_type_exp_v(self.value))
+
+
+###############################################################################
+## @brief Packed ray tracing acceleration structure builder geometry type (see
+##        ::ze_rtas_builder_geometry_type_exp_t)
+class ze_rtas_builder_packed_geometry_type_exp_t(c_ubyte):
+    pass
+
+###############################################################################
+## @brief Ray tracing acceleration structure data buffer element format
+## 
+## @details
+##     - Specifies the format of data buffer elements.
+##     - Data buffers may contain instancing transform matrices, triangle/quad
+##       vertex indices, etc...
+class ze_rtas_builder_input_data_format_exp_v(IntEnum):
+    FLOAT3 = 0                                                              ## 3-component float vector (see ::ze_rtas_float3_exp_t)
+    FLOAT3X4_COLUMN_MAJOR = 1                                               ## 3x4 affine transformation in column-major format (see
+                                                                            ## ::ze_rtas_transform_float3x4_column_major_exp_t)
+    FLOAT3X4_ALIGNED_COLUMN_MAJOR = 2                                       ## 3x4 affine transformation in column-major format (see
+                                                                            ## ::ze_rtas_transform_float3x4_aligned_column_major_exp_t)
+    FLOAT3X4_ROW_MAJOR = 3                                                  ## 3x4 affine transformation in row-major format (see
+                                                                            ## ::ze_rtas_transform_float3x4_row_major_exp_t)
+    AABB = 4                                                                ## 3-dimensional axis-aligned bounding-box (see ::ze_rtas_aabb_exp_t)
+    TRIANGLE_INDICES_UINT32 = 5                                             ## Unsigned 32-bit triangle indices (see
+                                                                            ## ::ze_rtas_triangle_indices_uint32_exp_t)
+    QUAD_INDICES_UINT32 = 6                                                 ## Unsigned 32-bit quad indices (see ::ze_rtas_quad_indices_uint32_exp_t)
+
+class ze_rtas_builder_input_data_format_exp_t(c_int):
+    def __str__(self):
+        return str(ze_rtas_builder_input_data_format_exp_v(self.value))
+
+
+###############################################################################
+## @brief Packed ray tracing acceleration structure data buffer element format
+##        (see ::ze_rtas_builder_input_data_format_exp_t)
+class ze_rtas_builder_packed_input_data_format_exp_t(c_ubyte):
+    pass
+
+###############################################################################
+## @brief Handle of ray tracing acceleration structure builder object
+class ze_rtas_builder_exp_handle_t(c_void_p):
+    pass
+
+###############################################################################
+## @brief Handle of ray tracing acceleration structure builder parallel
+##        operation object
+class ze_rtas_parallel_operation_exp_handle_t(c_void_p):
+    pass
+
+###############################################################################
+## @brief Ray tracing acceleration structure builder descriptor
+class ze_rtas_builder_exp_desc_t(Structure):
+    _fields_ = [
+        ("stype", ze_structure_type_t),                                 ## [in] type of this structure
+        ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains stype and pNext).
+        ("builderVersion", ze_rtas_builder_exp_version_t)               ## [in] ray tracing acceleration structure builder version
+    ]
+
+###############################################################################
+## @brief Ray tracing acceleration structure builder properties
+class ze_rtas_builder_exp_properties_t(Structure):
+    _fields_ = [
+        ("stype", ze_structure_type_t),                                 ## [in] type of this structure
+        ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains stype and pNext).
+        ("flags", ze_rtas_builder_exp_flags_t),                         ## [out] ray tracing acceleration structure builder flags
+        ("rtasBufferSizeBytesExpected", c_size_t),                      ## [out] expected size (in bytes) required for acceleration structure buffer
+                                                                        ##    - When using an acceleration structure buffer of this size, the
+                                                                        ## build is expected to succeed; however, it is possible that the build
+                                                                        ## may fail with ::ZE_RESULT_EXP_RTAS_BUILD_RETRY
+        ("rtasBufferSizeBytesMaxRequired", c_size_t),                   ## [out] worst-case size (in bytes) required for acceleration structure buffer
+                                                                        ##    - When using an acceleration structure buffer of this size, the
+                                                                        ## build is guaranteed to not run out of memory.
+        ("scratchBufferSizeBytes", c_size_t)                            ## [out] scratch buffer size (in bytes) required for acceleration
+                                                                        ## structure build.
+    ]
+
+###############################################################################
+## @brief Ray tracing acceleration structure builder parallel operation
+##        properties
+class ze_rtas_parallel_operation_exp_properties_t(Structure):
+    _fields_ = [
+        ("stype", ze_structure_type_t),                                 ## [in] type of this structure
+        ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains stype and pNext).
+        ("flags", ze_rtas_parallel_operation_exp_flags_t),              ## [out] ray tracing acceleration structure builder parallel operation
+                                                                        ## flags
+        ("maxConcurrency", c_ulong)                                     ## [out] maximum number of threads that may join the parallel operation
+    ]
+
+###############################################################################
+## @brief Ray tracing acceleration structure device properties
+## 
+## @details
+##     - This structure may be passed to ::zeDeviceGetProperties, via `pNext`
+##       member of ::ze_device_properties_t.
+##     - The implementation shall populate `format` with a value other than
+##       ::ZE_RTAS_FORMAT_EXP_INVALID when the device supports ray tracing.
+class ze_rtas_device_exp_properties_t(Structure):
+    _fields_ = [
+        ("stype", ze_structure_type_t),                                 ## [in] type of this structure
+        ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains stype and pNext).
+        ("flags", ze_rtas_device_exp_flags_t),                          ## [out] ray tracing acceleration structure device flags
+        ("rtasFormat", ze_rtas_format_exp_t),                           ## [out] ray tracing acceleration structure format
+        ("rtasBufferAlignment", c_ulong)                                ## [out] required alignment of acceleration structure buffer
+    ]
+
+###############################################################################
+## @brief A 3-component vector type
+class ze_rtas_float3_exp_t(Structure):
+    _fields_ = [
+        ("x", c_float),                                                 ## [in] x-coordinate of float3 vector
+        ("y", c_float),                                                 ## [in] y-coordinate of float3 vector
+        ("z", c_float)                                                  ## [in] z-coordinate of float3 vector
+    ]
+
+###############################################################################
+## @brief 3x4 affine transformation in column-major layout
+## 
+## @details
+##     - A 3x4 affine transformation in column major layout, consisting of vectors
+##          - vx=(vx_x, vx_y, vx_z),
+##          - vy=(vy_x, vy_y, vy_z),
+##          - vz=(vz_x, vz_y, vz_z), and
+##          - p=(p_x, p_y, p_z)
+##     - The transformation transforms a point (x, y, z) to: `x*vx + y*vy +
+##       z*vz + p`.
+class ze_rtas_transform_float3x4_column_major_exp_t(Structure):
+    _fields_ = [
+        ("vx_x", c_float),                                              ## [in] element 0 of column 0 of 3x4 matrix
+        ("vx_y", c_float),                                              ## [in] element 1 of column 0 of 3x4 matrix
+        ("vx_z", c_float),                                              ## [in] element 2 of column 0 of 3x4 matrix
+        ("vy_x", c_float),                                              ## [in] element 0 of column 1 of 3x4 matrix
+        ("vy_y", c_float),                                              ## [in] element 1 of column 1 of 3x4 matrix
+        ("vy_z", c_float),                                              ## [in] element 2 of column 1 of 3x4 matrix
+        ("vz_x", c_float),                                              ## [in] element 0 of column 2 of 3x4 matrix
+        ("vz_y", c_float),                                              ## [in] element 1 of column 2 of 3x4 matrix
+        ("vz_z", c_float),                                              ## [in] element 2 of column 2 of 3x4 matrix
+        ("p_x", c_float),                                               ## [in] element 0 of column 3 of 3x4 matrix
+        ("p_y", c_float),                                               ## [in] element 1 of column 3 of 3x4 matrix
+        ("p_z", c_float)                                                ## [in] element 2 of column 3 of 3x4 matrix
+    ]
+
+###############################################################################
+## @brief 3x4 affine transformation in column-major layout with aligned column
+##        vectors
+## 
+## @details
+##     - A 3x4 affine transformation in column major layout, consisting of vectors
+##        - vx=(vx_x, vx_y, vx_z),
+##        - vy=(vy_x, vy_y, vy_z),
+##        - vz=(vz_x, vz_y, vz_z), and
+##        - p=(p_x, p_y, p_z)
+##     - The transformation transforms a point (x, y, z) to: `x*vx + y*vy +
+##       z*vz + p`.
+##     - The column vectors are aligned to 16-bytes and pad members are
+##       ignored.
+class ze_rtas_transform_float3x4_aligned_column_major_exp_t(Structure):
+    _fields_ = [
+        ("vx_x", c_float),                                              ## [in] element 0 of column 0 of 3x4 matrix
+        ("vx_y", c_float),                                              ## [in] element 1 of column 0 of 3x4 matrix
+        ("vx_z", c_float),                                              ## [in] element 2 of column 0 of 3x4 matrix
+        ("pad0", c_float),                                              ## [in] ignored padding
+        ("vy_x", c_float),                                              ## [in] element 0 of column 1 of 3x4 matrix
+        ("vy_y", c_float),                                              ## [in] element 1 of column 1 of 3x4 matrix
+        ("vy_z", c_float),                                              ## [in] element 2 of column 1 of 3x4 matrix
+        ("pad1", c_float),                                              ## [in] ignored padding
+        ("vz_x", c_float),                                              ## [in] element 0 of column 2 of 3x4 matrix
+        ("vz_y", c_float),                                              ## [in] element 1 of column 2 of 3x4 matrix
+        ("vz_z", c_float),                                              ## [in] element 2 of column 2 of 3x4 matrix
+        ("pad2", c_float),                                              ## [in] ignored padding
+        ("p_x", c_float),                                               ## [in] element 0 of column 3 of 3x4 matrix
+        ("p_y", c_float),                                               ## [in] element 1 of column 3 of 3x4 matrix
+        ("p_z", c_float),                                               ## [in] element 2 of column 3 of 3x4 matrix
+        ("pad3", c_float)                                               ## [in] ignored padding
+    ]
+
+###############################################################################
+## @brief 3x4 affine transformation in row-major layout
+## 
+## @details
+##     - A 3x4 affine transformation in row-major layout, consisting of vectors
+##          - vx=(vx_x, vx_y, vx_z),
+##          - vy=(vy_x, vy_y, vy_z),
+##          - vz=(vz_x, vz_y, vz_z), and
+##          - p=(p_x, p_y, p_z)
+##     - The transformation transforms a point (x, y, z) to: `x*vx + y*vy +
+##       z*vz + p`.
+class ze_rtas_transform_float3x4_row_major_exp_t(Structure):
+    _fields_ = [
+        ("vx_x", c_float),                                              ## [in] element 0 of row 0 of 3x4 matrix
+        ("vy_x", c_float),                                              ## [in] element 1 of row 0 of 3x4 matrix
+        ("vz_x", c_float),                                              ## [in] element 2 of row 0 of 3x4 matrix
+        ("p_x", c_float),                                               ## [in] element 3 of row 0 of 3x4 matrix
+        ("vx_y", c_float),                                              ## [in] element 0 of row 1 of 3x4 matrix
+        ("vy_y", c_float),                                              ## [in] element 1 of row 1 of 3x4 matrix
+        ("vz_y", c_float),                                              ## [in] element 2 of row 1 of 3x4 matrix
+        ("p_y", c_float),                                               ## [in] element 3 of row 1 of 3x4 matrix
+        ("vx_z", c_float),                                              ## [in] element 0 of row 2 of 3x4 matrix
+        ("vy_z", c_float),                                              ## [in] element 1 of row 2 of 3x4 matrix
+        ("vz_z", c_float),                                              ## [in] element 2 of row 2 of 3x4 matrix
+        ("p_z", c_float)                                                ## [in] element 3 of row 2 of 3x4 matrix
+    ]
+
+###############################################################################
+## @brief A 3-dimensional axis-aligned bounding-box with lower and upper bounds
+##        in each dimension
+class ze_rtas_aabb_exp_t(Structure):
+    _fields_ = [
+        ("lower", ze_rtas_c_float3_exp_t),                              ## [in] lower bounds of AABB
+        ("upper", ze_rtas_c_float3_exp_t)                               ## [in] upper bounds of AABB
+    ]
+
+###############################################################################
+## @brief Triangle represented using 3 vertex indices
+## 
+## @details
+##     - Represents a triangle using 3 vertex indices that index into a vertex
+##       array that needs to be provided together with the index array.
+##     - The linear barycentric u/v parametrization of the triangle is defined as:
+##          - (u=0, v=0) at v0,
+##          - (u=1, v=0) at v1, and
+##          - (u=0, v=1) at v2
+class ze_rtas_triangle_indices_uint32_exp_t(Structure):
+    _fields_ = [
+        ("v0", c_ulong),                                                ## [in] first index pointing to the first triangle vertex in vertex array
+        ("v1", c_ulong),                                                ## [in] second index pointing to the second triangle vertex in vertex
+                                                                        ## array
+        ("v2", c_ulong)                                                 ## [in] third index pointing to the third triangle vertex in vertex array
+    ]
+
+###############################################################################
+## @brief Quad represented using 4 vertex indices
+## 
+## @details
+##     - Represents a quad composed of 4 indices that index into a vertex array
+##       that needs to be provided together with the index array.
+##     - A quad is a triangle pair represented using 4 vertex indices v0, v1,
+##       v2, v3.
+##       The first triangle is made out of indices v0, v1, v3 and the second triangle
+##       from indices v2, v3, v1. The piecewise linear barycentric u/v parametrization
+##       of the quad is defined as:
+##          - (u=0, v=0) at v0,
+##          - (u=1, v=0) at v1,
+##          - (u=0, v=1) at v3, and
+##          - (u=1, v=1) at v2
+##       This is achieved by correcting the u'/v' coordinates of the second
+##       triangle by
+##       *u = 1-u'* and *v = 1-v'*, yielding a piecewise linear parametrization.
+class ze_rtas_quad_indices_uint32_exp_t(Structure):
+    _fields_ = [
+        ("v0", c_ulong),                                                ## [in] first index pointing to the first quad vertex in vertex array
+        ("v1", c_ulong),                                                ## [in] second index pointing to the second quad vertex in vertex array
+        ("v2", c_ulong),                                                ## [in] third index pointing to the third quad vertex in vertex array
+        ("v3", c_ulong)                                                 ## [in] fourth index pointing to the fourth quad vertex in vertex array
+    ]
+
+###############################################################################
+## @brief Ray tracing acceleration structure builder geometry info
+class ze_rtas_builder_geometry_info_exp_t(Structure):
+    _fields_ = [
+        ("geometryType", ze_rtas_builder_packed_geometry_type_exp_t)    ## [in] geometry type
+    ]
+
+###############################################################################
+## @brief Ray tracing acceleration structure builder triangle mesh geometry info
+## 
+## @details
+##     - The linear barycentric u/v parametrization of the triangle is defined as:
+##          - (u=0, v=0) at v0,
+##          - (u=1, v=0) at v1, and
+##          - (u=0, v=1) at v2
+class ze_rtas_builder_triangles_geometry_info_exp_t(Structure):
+    _fields_ = [
+        ("geometryType", ze_rtas_builder_packed_geometry_type_exp_t),   ## [in] geometry type, must be
+                                                                        ## ::ZE_RTAS_BUILDER_GEOMETRY_TYPE_EXP_TRIANGLES
+        ("geometryFlags", ze_rtas_builder_packed_geometry_exp_flags_t), ## [in] 0 or some combination of ::ze_rtas_builder_geometry_exp_flag_t
+                                                                        ## bits representing the geometry flags for all primitives of this
+                                                                        ## geometry
+        ("geometryMask", c_ubyte),                                      ## [in] 8-bit geometry mask for ray masking
+        ("triangleFormat", ze_rtas_builder_packed_input_data_format_exp_t), ## [in] format of triangle buffer data, must be
+                                                                        ## ::ZE_RTAS_BUILDER_INPUT_DATA_FORMAT_EXP_TRIANGLE_INDICES_UINT32
+        ("vertexFormat", ze_rtas_builder_packed_input_data_format_exp_t),   ## [in] format of vertex buffer data, must be
+                                                                        ## ::ZE_RTAS_BUILDER_INPUT_DATA_FORMAT_EXP_FLOAT3
+        ("triangleCount", c_ulong),                                     ## [in] number of triangles in triangle buffer
+        ("vertexCount", c_ulong),                                       ## [in] number of vertices in vertex buffer
+        ("triangleStride", c_ulong),                                    ## [in] stride (in bytes) of triangles in triangle buffer
+        ("vertexStride", c_ulong),                                      ## [in] stride (in bytes) of vertices in vertex buffer
+        ("pTriangleBuffer", c_void_p),                                  ## [in] pointer to array of triangle indices in specified format
+        ("pVertexBuffer", c_void_p)                                     ## [in] pointer to array of triangle vertices in specified format
+    ]
+
+###############################################################################
+## @brief Ray tracing acceleration structure builder quad mesh geometry info
+## 
+## @details
+##     - A quad is a triangle pair represented using 4 vertex indices v0, v1,
+##       v2, v3.
+##       The first triangle is made out of indices v0, v1, v3 and the second triangle
+##       from indices v2, v3, v1. The piecewise linear barycentric u/v parametrization
+##       of the quad is defined as:
+##          - (u=0, v=0) at v0,
+##          - (u=1, v=0) at v1,
+##          - (u=0, v=1) at v3, and
+##          - (u=1, v=1) at v2
+##       This is achieved by correcting the u'/v' coordinates of the second
+##       triangle by
+##       *u = 1-u'* and *v = 1-v'*, yielding a piecewise linear parametrization.
+class ze_rtas_builder_quads_geometry_info_exp_t(Structure):
+    _fields_ = [
+        ("geometryType", ze_rtas_builder_packed_geometry_type_exp_t),   ## [in] geometry type, must be ::ZE_RTAS_BUILDER_GEOMETRY_TYPE_EXP_QUADS
+        ("geometryFlags", ze_rtas_builder_packed_geometry_exp_flags_t), ## [in] 0 or some combination of ::ze_rtas_builder_geometry_exp_flag_t
+                                                                        ## bits representing the geometry flags for all primitives of this
+                                                                        ## geometry
+        ("geometryMask", c_ubyte),                                      ## [in] 8-bit geometry mask for ray masking
+        ("quadFormat", ze_rtas_builder_packed_input_data_format_exp_t), ## [in] format of quad buffer data, must be
+                                                                        ## ::ZE_RTAS_BUILDER_INPUT_DATA_FORMAT_EXP_QUAD_INDICES_UINT32
+        ("vertexFormat", ze_rtas_builder_packed_input_data_format_exp_t),   ## [in] format of vertex buffer data, must be
+                                                                        ## ::ZE_RTAS_BUILDER_INPUT_DATA_FORMAT_EXP_FLOAT3
+        ("quadCount", c_ulong),                                         ## [in] number of quads in quad buffer
+        ("vertexCount", c_ulong),                                       ## [in] number of vertices in vertex buffer
+        ("quadStride", c_ulong),                                        ## [in] stride (in bytes) of quads in quad buffer
+        ("vertexStride", c_ulong),                                      ## [in] stride (in bytes) of vertices in vertex buffer
+        ("pQuadBuffer", c_void_p),                                      ## [in] pointer to array of quad indices in specified format
+        ("pVertexBuffer", c_void_p)                                     ## [in] pointer to array of quad vertices in specified format
+    ]
+
+###############################################################################
+## @brief AABB callback function parameters
+class ze_rtas_geometry_aabbs_exp_cb_params_t(Structure):
+    _fields_ = [
+        ("stype", ze_structure_type_t),                                 ## [in] type of this structure
+        ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains stype and pNext).
+        ("primID", c_ulong),                                            ## [in] first primitive to return bounds for
+        ("primIDCount", c_ulong),                                       ## [in] number of primitives to return bounds for
+        ("pGeomUserPtr", c_void_p),                                     ## [in] pointer provided through geometry descriptor
+        ("pBuildUserPtr", c_void_p),                                    ## [in] pointer provided through ::zeRTASBuilderBuildExp function
+        ("pBoundsOut", POINTER(ze_rtas_aabb_exp_t))                     ## [out] destination buffer to write AABB bounds to
+    ]
+
+###############################################################################
+## @brief Callback function pointer type to return AABBs for a range of
+##        procedural primitives
+
+###############################################################################
+## @brief Ray tracing acceleration structure builder procedural primitives
+##        geometry info
+## 
+## @details
+##     - A host-side bounds callback function is invoked by the acceleration
+##       structure builder to query the bounds of procedural primitives on
+##       demand. The callback is passed some `pGeomUserPtr` that can point to
+##       an application-side representation of the procedural primitives.
+##       Further, a second `pBuildUserPtr`, which is set by a parameter to
+##       ::zeRTASBuilderBuildExp, is passed to the callback. This allows the
+##       build to change the bounds of the procedural geometry, for example, to
+##       build a BVH only over a short time range to implement multi-segment
+##       motion blur.
+class ze_rtas_builder_procedural_geometry_info_exp_t(Structure):
+    _fields_ = [
+        ("geometryType", ze_rtas_builder_packed_geometry_type_exp_t),   ## [in] geometry type, must be
+                                                                        ## ::ZE_RTAS_BUILDER_GEOMETRY_TYPE_EXP_PROCEDURAL
+        ("geometryFlags", ze_rtas_builder_packed_geometry_exp_flags_t), ## [in] 0 or some combination of ::ze_rtas_builder_geometry_exp_flag_t
+                                                                        ## bits representing the geometry flags for all primitives of this
+                                                                        ## geometry
+        ("geometryMask", c_ubyte),                                      ## [in] 8-bit geometry mask for ray masking
+        ("reserved", c_ubyte),                                          ## [in] reserved for future use
+        ("primCount", c_ulong),                                         ## [in] number of primitives in geometry
+        ("pfnGetBoundsCb", ze_rtas_geometry_aabbs_cb_exp_t),            ## [in] pointer to callback function to get the axis-aligned bounding-box
+                                                                        ## for a range of primitives
+        ("pGeomUserPtr", c_void_p)                                      ## [in] user data pointer passed to callback
+    ]
+
+###############################################################################
+## @brief Ray tracing acceleration structure builder instance geometry info
+class ze_rtas_builder_instance_geometry_info_exp_t(Structure):
+    _fields_ = [
+        ("geometryType", ze_rtas_builder_packed_geometry_type_exp_t),   ## [in] geometry type, must be
+                                                                        ## ::ZE_RTAS_BUILDER_GEOMETRY_TYPE_EXP_INSTANCE
+        ("instanceFlags", ze_rtas_builder_packed_instance_exp_flags_t), ## [in] 0 or some combination of ::ze_rtas_builder_geometry_exp_flag_t
+                                                                        ## bits representing the geometry flags for all primitives of this
+                                                                        ## geometry
+        ("geometryMask", c_ubyte),                                      ## [in] 8-bit geometry mask for ray masking
+        ("transformFormat", ze_rtas_builder_packed_input_data_format_exp_t),## [in] format of the specified transformation
+        ("instanceUserID", c_ulong),                                    ## [in] user-specified identifier for the instance
+        ("pTransform", c_void_p),                                       ## [in] object-to-world instance transformation in specified format
+        ("pBounds", POINTER(ze_rtas_aabb_exp_t)),                       ## [in] object-space axis-aligned bounding-box of the instanced
+                                                                        ## acceleration structure
+        ("pAccelerationStructure", c_void_p)                            ## [in] pointer to acceleration structure to instantiate
+    ]
+
+###############################################################################
+## @brief 
+class ze_rtas_builder_build_op_exp_desc_t(Structure):
+    _fields_ = [
+        ("stype", ze_structure_type_t),                                 ## [in] type of this structure
+        ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains stype and pNext).
+        ("rtasFormat", ze_rtas_format_exp_t),                           ## [in] ray tracing acceleration structure format
+        ("buildQuality", ze_rtas_builder_build_quality_hint_exp_t),     ## [in] acceleration structure build quality hint
+        ("buildFlags", ze_rtas_builder_build_op_exp_flags_t),           ## [in] 0 or some combination of ::ze_rtas_builder_build_op_exp_flag_t
+                                                                        ## flags
+        ("ppGeometries", POINTER(ze_rtas_builder_geometry_info_exp_t*)),## [in][optional][range(0, `numGeometries`)] NULL or a valid array of
+                                                                        ## pointers to geometry infos
+        ("numGeometries", c_ulong)                                      ## [in] number of geometries in geometry infos array, can be zero when
+                                                                        ## `ppGeometries` is NULL
+    ]
+
+###############################################################################
 __use_win_types = "Windows" == platform.uname()[0]
+
+###############################################################################
+## @brief Function-pointer for zeRTASBuilderCreateExp
+if __use_win_types:
+    _zeRTASBuilderCreateExp_t = WINFUNCTYPE( ze_result_t, ze_driver_handle_t, POINTER(ze_rtas_builder_exp_desc_t), POINTER(ze_rtas_builder_exp_handle_t) )
+else:
+    _zeRTASBuilderCreateExp_t = CFUNCTYPE( ze_result_t, ze_driver_handle_t, POINTER(ze_rtas_builder_exp_desc_t), POINTER(ze_rtas_builder_exp_handle_t) )
+
+###############################################################################
+## @brief Function-pointer for zeRTASBuilderGetBuildPropertiesExp
+if __use_win_types:
+    _zeRTASBuilderGetBuildPropertiesExp_t = WINFUNCTYPE( ze_result_t, ze_rtas_builder_exp_handle_t, POINTER(ze_rtas_builder_build_op_exp_desc_t), POINTER(ze_rtas_builder_exp_properties_t) )
+else:
+    _zeRTASBuilderGetBuildPropertiesExp_t = CFUNCTYPE( ze_result_t, ze_rtas_builder_exp_handle_t, POINTER(ze_rtas_builder_build_op_exp_desc_t), POINTER(ze_rtas_builder_exp_properties_t) )
+
+###############################################################################
+## @brief Function-pointer for zeRTASBuilderBuildExp
+if __use_win_types:
+    _zeRTASBuilderBuildExp_t = WINFUNCTYPE( ze_result_t, ze_rtas_builder_exp_handle_t, POINTER(ze_rtas_builder_build_op_exp_desc_t), c_void_p, c_size_t, c_void_p, c_size_t, ze_rtas_parallel_operation_exp_handle_t, c_void_p, POINTER(ze_rtas_aabb_exp_t), POINTER(c_size_t) )
+else:
+    _zeRTASBuilderBuildExp_t = CFUNCTYPE( ze_result_t, ze_rtas_builder_exp_handle_t, POINTER(ze_rtas_builder_build_op_exp_desc_t), c_void_p, c_size_t, c_void_p, c_size_t, ze_rtas_parallel_operation_exp_handle_t, c_void_p, POINTER(ze_rtas_aabb_exp_t), POINTER(c_size_t) )
+
+###############################################################################
+## @brief Function-pointer for zeRTASBuilderDestroyExp
+if __use_win_types:
+    _zeRTASBuilderDestroyExp_t = WINFUNCTYPE( ze_result_t, ze_rtas_builder_exp_handle_t )
+else:
+    _zeRTASBuilderDestroyExp_t = CFUNCTYPE( ze_result_t, ze_rtas_builder_exp_handle_t )
+
+
+###############################################################################
+## @brief Table of RTASBuilderExp functions pointers
+class _ze_rtas_builder_exp_dditable_t(Structure):
+    _fields_ = [
+        ("pfnCreateExp", c_void_p),                                     ## _zeRTASBuilderCreateExp_t
+        ("pfnGetBuildPropertiesExp", c_void_p),                         ## _zeRTASBuilderGetBuildPropertiesExp_t
+        ("pfnBuildExp", c_void_p),                                      ## _zeRTASBuilderBuildExp_t
+        ("pfnDestroyExp", c_void_p)                                     ## _zeRTASBuilderDestroyExp_t
+    ]
+
+###############################################################################
+## @brief Function-pointer for zeRTASParallelOperationCreateExp
+if __use_win_types:
+    _zeRTASParallelOperationCreateExp_t = WINFUNCTYPE( ze_result_t, ze_driver_handle_t, POINTER(ze_rtas_parallel_operation_exp_handle_t) )
+else:
+    _zeRTASParallelOperationCreateExp_t = CFUNCTYPE( ze_result_t, ze_driver_handle_t, POINTER(ze_rtas_parallel_operation_exp_handle_t) )
+
+###############################################################################
+## @brief Function-pointer for zeRTASParallelOperationGetPropertiesExp
+if __use_win_types:
+    _zeRTASParallelOperationGetPropertiesExp_t = WINFUNCTYPE( ze_result_t, ze_rtas_parallel_operation_exp_handle_t, POINTER(ze_rtas_parallel_operation_exp_properties_t) )
+else:
+    _zeRTASParallelOperationGetPropertiesExp_t = CFUNCTYPE( ze_result_t, ze_rtas_parallel_operation_exp_handle_t, POINTER(ze_rtas_parallel_operation_exp_properties_t) )
+
+###############################################################################
+## @brief Function-pointer for zeRTASParallelOperationJoinExp
+if __use_win_types:
+    _zeRTASParallelOperationJoinExp_t = WINFUNCTYPE( ze_result_t, ze_rtas_parallel_operation_exp_handle_t )
+else:
+    _zeRTASParallelOperationJoinExp_t = CFUNCTYPE( ze_result_t, ze_rtas_parallel_operation_exp_handle_t )
+
+###############################################################################
+## @brief Function-pointer for zeRTASParallelOperationDestroyExp
+if __use_win_types:
+    _zeRTASParallelOperationDestroyExp_t = WINFUNCTYPE( ze_result_t, ze_rtas_parallel_operation_exp_handle_t )
+else:
+    _zeRTASParallelOperationDestroyExp_t = CFUNCTYPE( ze_result_t, ze_rtas_parallel_operation_exp_handle_t )
+
+
+###############################################################################
+## @brief Table of RTASParallelOperationExp functions pointers
+class _ze_rtas_parallel_operation_exp_dditable_t(Structure):
+    _fields_ = [
+        ("pfnCreateExp", c_void_p),                                     ## _zeRTASParallelOperationCreateExp_t
+        ("pfnGetPropertiesExp", c_void_p),                              ## _zeRTASParallelOperationGetPropertiesExp_t
+        ("pfnJoinExp", c_void_p),                                       ## _zeRTASParallelOperationJoinExp_t
+        ("pfnDestroyExp", c_void_p)                                     ## _zeRTASParallelOperationDestroyExp_t
+    ]
 
 ###############################################################################
 ## @brief Function-pointer for zeInit
@@ -3078,6 +3802,21 @@ class _ze_driver_dditable_t(Structure):
         ("pfnGetExtensionProperties", c_void_p),                        ## _zeDriverGetExtensionProperties_t
         ("pfnGetExtensionFunctionAddress", c_void_p),                   ## _zeDriverGetExtensionFunctionAddress_t
         ("pfnGetLastErrorDescription", c_void_p)                        ## _zeDriverGetLastErrorDescription_t
+    ]
+
+###############################################################################
+## @brief Function-pointer for zeDriverRTASFormatCompatibilityCheckExp
+if __use_win_types:
+    _zeDriverRTASFormatCompatibilityCheckExp_t = WINFUNCTYPE( ze_result_t, ze_driver_handle_t, ze_rtas_format_exp_t, ze_rtas_format_exp_t )
+else:
+    _zeDriverRTASFormatCompatibilityCheckExp_t = CFUNCTYPE( ze_result_t, ze_driver_handle_t, ze_rtas_format_exp_t, ze_rtas_format_exp_t )
+
+
+###############################################################################
+## @brief Table of DriverExp functions pointers
+class _ze_driver_exp_dditable_t(Structure):
+    _fields_ = [
+        ("pfnRTASFormatCompatibilityCheckExp", c_void_p)                ## _zeDriverRTASFormatCompatibilityCheckExp_t
     ]
 
 ###############################################################################
@@ -3206,6 +3945,13 @@ if __use_win_types:
 else:
     _zeDevicePciGetPropertiesExt_t = CFUNCTYPE( ze_result_t, ze_device_handle_t, POINTER(ze_pci_ext_properties_t) )
 
+###############################################################################
+## @brief Function-pointer for zeDeviceGetRootDevice
+if __use_win_types:
+    _zeDeviceGetRootDevice_t = WINFUNCTYPE( ze_result_t, ze_device_handle_t, POINTER(ze_device_handle_t) )
+else:
+    _zeDeviceGetRootDevice_t = CFUNCTYPE( ze_result_t, ze_device_handle_t, POINTER(ze_device_handle_t) )
+
 
 ###############################################################################
 ## @brief Table of Device functions pointers
@@ -3228,7 +3974,8 @@ class _ze_device_dditable_t(Structure):
         ("pfnGetGlobalTimestamps", c_void_p),                           ## _zeDeviceGetGlobalTimestamps_t
         ("pfnReserveCacheExt", c_void_p),                               ## _zeDeviceReserveCacheExt_t
         ("pfnSetCacheAdviceExt", c_void_p),                             ## _zeDeviceSetCacheAdviceExt_t
-        ("pfnPciGetPropertiesExt", c_void_p)                            ## _zeDevicePciGetPropertiesExt_t
+        ("pfnPciGetPropertiesExt", c_void_p),                           ## _zeDevicePciGetPropertiesExt_t
+        ("pfnGetRootDevice", c_void_p)                                  ## _zeDeviceGetRootDevice_t
     ]
 
 ###############################################################################
@@ -4244,13 +4991,29 @@ if __use_win_types:
 else:
     _zeMemGetFileDescriptorFromIpcHandleExp_t = CFUNCTYPE( ze_result_t, ze_context_handle_t, ze_ipc_mem_handle_t, POINTER(c_ulonglong) )
 
+###############################################################################
+## @brief Function-pointer for zeMemSetAtomicAccessAttributeExp
+if __use_win_types:
+    _zeMemSetAtomicAccessAttributeExp_t = WINFUNCTYPE( ze_result_t, ze_context_handle_t, ze_device_handle_t, c_void_p, c_size_t, ze_memory_atomic_attr_exp_flags_t )
+else:
+    _zeMemSetAtomicAccessAttributeExp_t = CFUNCTYPE( ze_result_t, ze_context_handle_t, ze_device_handle_t, c_void_p, c_size_t, ze_memory_atomic_attr_exp_flags_t )
+
+###############################################################################
+## @brief Function-pointer for zeMemGetAtomicAccessAttributeExp
+if __use_win_types:
+    _zeMemGetAtomicAccessAttributeExp_t = WINFUNCTYPE( ze_result_t, ze_context_handle_t, ze_device_handle_t, c_void_p, c_size_t, POINTER(ze_memory_atomic_attr_exp_flags_t) )
+else:
+    _zeMemGetAtomicAccessAttributeExp_t = CFUNCTYPE( ze_result_t, ze_context_handle_t, ze_device_handle_t, c_void_p, c_size_t, POINTER(ze_memory_atomic_attr_exp_flags_t) )
+
 
 ###############################################################################
 ## @brief Table of MemExp functions pointers
 class _ze_mem_exp_dditable_t(Structure):
     _fields_ = [
         ("pfnGetIpcHandleFromFileDescriptorExp", c_void_p),             ## _zeMemGetIpcHandleFromFileDescriptorExp_t
-        ("pfnGetFileDescriptorFromIpcHandleExp", c_void_p)              ## _zeMemGetFileDescriptorFromIpcHandleExp_t
+        ("pfnGetFileDescriptorFromIpcHandleExp", c_void_p),             ## _zeMemGetFileDescriptorFromIpcHandleExp_t
+        ("pfnSetAtomicAccessAttributeExp", c_void_p),                   ## _zeMemSetAtomicAccessAttributeExp_t
+        ("pfnGetAtomicAccessAttributeExp", c_void_p)                    ## _zeMemGetAtomicAccessAttributeExp_t
     ]
 
 ###############################################################################
@@ -4389,8 +5152,11 @@ class _ze_fabric_edge_exp_dditable_t(Structure):
 ###############################################################################
 class _ze_dditable_t(Structure):
     _fields_ = [
+        ("RTASBuilderExp", _ze_rtas_builder_exp_dditable_t),
+        ("RTASParallelOperationExp", _ze_rtas_parallel_operation_exp_dditable_t),
         ("Global", _ze_global_dditable_t),
         ("Driver", _ze_driver_dditable_t),
+        ("DriverExp", _ze_driver_exp_dditable_t),
         ("Device", _ze_device_dditable_t),
         ("DeviceExp", _ze_device_exp_dditable_t),
         ("Context", _ze_context_dditable_t),
@@ -4429,6 +5195,32 @@ class ZE_DDI:
         self.__dditable = _ze_dditable_t()
 
         # call driver to get function pointers
+        _RTASBuilderExp = _ze_rtas_builder_exp_dditable_t()
+        r = ze_result_v(self.__dll.zeGetRTASBuilderExpProcAddrTable(version, byref(_RTASBuilderExp)))
+        if r != ze_result_v.SUCCESS:
+            raise Exception(r)
+        self.__dditable.RTASBuilderExp = _RTASBuilderExp
+
+        # attach function interface to function address
+        self.zeRTASBuilderCreateExp = _zeRTASBuilderCreateExp_t(self.__dditable.RTASBuilderExp.pfnCreateExp)
+        self.zeRTASBuilderGetBuildPropertiesExp = _zeRTASBuilderGetBuildPropertiesExp_t(self.__dditable.RTASBuilderExp.pfnGetBuildPropertiesExp)
+        self.zeRTASBuilderBuildExp = _zeRTASBuilderBuildExp_t(self.__dditable.RTASBuilderExp.pfnBuildExp)
+        self.zeRTASBuilderDestroyExp = _zeRTASBuilderDestroyExp_t(self.__dditable.RTASBuilderExp.pfnDestroyExp)
+
+        # call driver to get function pointers
+        _RTASParallelOperationExp = _ze_rtas_parallel_operation_exp_dditable_t()
+        r = ze_result_v(self.__dll.zeGetRTASParallelOperationExpProcAddrTable(version, byref(_RTASParallelOperationExp)))
+        if r != ze_result_v.SUCCESS:
+            raise Exception(r)
+        self.__dditable.RTASParallelOperationExp = _RTASParallelOperationExp
+
+        # attach function interface to function address
+        self.zeRTASParallelOperationCreateExp = _zeRTASParallelOperationCreateExp_t(self.__dditable.RTASParallelOperationExp.pfnCreateExp)
+        self.zeRTASParallelOperationGetPropertiesExp = _zeRTASParallelOperationGetPropertiesExp_t(self.__dditable.RTASParallelOperationExp.pfnGetPropertiesExp)
+        self.zeRTASParallelOperationJoinExp = _zeRTASParallelOperationJoinExp_t(self.__dditable.RTASParallelOperationExp.pfnJoinExp)
+        self.zeRTASParallelOperationDestroyExp = _zeRTASParallelOperationDestroyExp_t(self.__dditable.RTASParallelOperationExp.pfnDestroyExp)
+
+        # call driver to get function pointers
         _Global = _ze_global_dditable_t()
         r = ze_result_v(self.__dll.zeGetGlobalProcAddrTable(version, byref(_Global)))
         if r != ze_result_v.SUCCESS:
@@ -4453,6 +5245,16 @@ class ZE_DDI:
         self.zeDriverGetExtensionProperties = _zeDriverGetExtensionProperties_t(self.__dditable.Driver.pfnGetExtensionProperties)
         self.zeDriverGetExtensionFunctionAddress = _zeDriverGetExtensionFunctionAddress_t(self.__dditable.Driver.pfnGetExtensionFunctionAddress)
         self.zeDriverGetLastErrorDescription = _zeDriverGetLastErrorDescription_t(self.__dditable.Driver.pfnGetLastErrorDescription)
+
+        # call driver to get function pointers
+        _DriverExp = _ze_driver_exp_dditable_t()
+        r = ze_result_v(self.__dll.zeGetDriverExpProcAddrTable(version, byref(_DriverExp)))
+        if r != ze_result_v.SUCCESS:
+            raise Exception(r)
+        self.__dditable.DriverExp = _DriverExp
+
+        # attach function interface to function address
+        self.zeDriverRTASFormatCompatibilityCheckExp = _zeDriverRTASFormatCompatibilityCheckExp_t(self.__dditable.DriverExp.pfnRTASFormatCompatibilityCheckExp)
 
         # call driver to get function pointers
         _Device = _ze_device_dditable_t()
@@ -4480,6 +5282,7 @@ class ZE_DDI:
         self.zeDeviceReserveCacheExt = _zeDeviceReserveCacheExt_t(self.__dditable.Device.pfnReserveCacheExt)
         self.zeDeviceSetCacheAdviceExt = _zeDeviceSetCacheAdviceExt_t(self.__dditable.Device.pfnSetCacheAdviceExt)
         self.zeDevicePciGetPropertiesExt = _zeDevicePciGetPropertiesExt_t(self.__dditable.Device.pfnPciGetPropertiesExt)
+        self.zeDeviceGetRootDevice = _zeDeviceGetRootDevice_t(self.__dditable.Device.pfnGetRootDevice)
 
         # call driver to get function pointers
         _DeviceExp = _ze_device_exp_dditable_t()
@@ -4754,6 +5557,8 @@ class ZE_DDI:
         # attach function interface to function address
         self.zeMemGetIpcHandleFromFileDescriptorExp = _zeMemGetIpcHandleFromFileDescriptorExp_t(self.__dditable.MemExp.pfnGetIpcHandleFromFileDescriptorExp)
         self.zeMemGetFileDescriptorFromIpcHandleExp = _zeMemGetFileDescriptorFromIpcHandleExp_t(self.__dditable.MemExp.pfnGetFileDescriptorFromIpcHandleExp)
+        self.zeMemSetAtomicAccessAttributeExp = _zeMemSetAtomicAccessAttributeExp_t(self.__dditable.MemExp.pfnSetAtomicAccessAttributeExp)
+        self.zeMemGetAtomicAccessAttributeExp = _zeMemGetAtomicAccessAttributeExp_t(self.__dditable.MemExp.pfnGetAtomicAccessAttributeExp)
 
         # call driver to get function pointers
         _VirtualMem = _ze_virtual_mem_dditable_t()

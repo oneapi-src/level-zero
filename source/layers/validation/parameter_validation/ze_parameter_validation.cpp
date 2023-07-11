@@ -181,6 +181,22 @@ namespace validation_layer
 
 
     ze_result_t
+    ZEParameterValidation::zeDeviceGetRootDevice(
+        ze_device_handle_t hDevice,                     ///< [in] handle of the device object
+        ze_device_handle_t* phRootDevice                ///< [in,out] parent root device.
+        )
+    {
+        if( nullptr == hDevice )
+            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+        if( nullptr == phRootDevice )
+            return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+        return ZE_RESULT_SUCCESS;
+    }
+
+
+    ze_result_t
     ZEParameterValidation::zeDeviceGetSubDevices(
         ze_device_handle_t hDevice,                     ///< [in] handle of the device object
         uint32_t* pCount,                               ///< [in,out] pointer to the number of sub-devices.
@@ -551,7 +567,7 @@ namespace validation_layer
         if( nullptr == phCommandQueue )
             return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-        if( 0x1 < desc->flags )
+        if( 0x3 < desc->flags )
             return ZE_RESULT_ERROR_INVALID_ENUMERATION;
 
         if( ZE_COMMAND_QUEUE_MODE_ASYNCHRONOUS < desc->mode )
@@ -637,7 +653,7 @@ namespace validation_layer
         if( nullptr == phCommandList )
             return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-        if( 0x7 < desc->flags )
+        if( 0xf < desc->flags )
             return ZE_RESULT_ERROR_INVALID_ENUMERATION;
 
         return ParameterValidation::validateExtensions(desc);
@@ -664,7 +680,7 @@ namespace validation_layer
         if( nullptr == phCommandList )
             return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-        if( 0x1 < altdesc->flags )
+        if( 0x3 < altdesc->flags )
             return ZE_RESULT_ERROR_INVALID_ENUMERATION;
 
         if( ZE_COMMAND_QUEUE_MODE_ASYNCHRONOUS < altdesc->mode )
@@ -1109,7 +1125,7 @@ namespace validation_layer
         if( nullptr == ptr )
             return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-        if( ZE_MEMORY_ADVICE_BIAS_UNCACHED < advice )
+        if( ZE_MEMORY_ADVICE_CLEAR_SYSTEM_MEMORY_PREFERRED_LOCATION < advice )
             return ZE_RESULT_ERROR_INVALID_ENUMERATION;
 
         return ZE_RESULT_SUCCESS;
@@ -1840,6 +1856,57 @@ namespace validation_layer
             return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
 
         if( nullptr == ptr )
+            return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+        return ZE_RESULT_SUCCESS;
+    }
+
+
+    ze_result_t
+    ZEParameterValidation::zeMemSetAtomicAccessAttributeExp(
+        ze_context_handle_t hContext,                   ///< [in] handle of context
+        ze_device_handle_t hDevice,                     ///< [in] device associated with the memory advice
+        const void* ptr,                                ///< [in] Pointer to the start of the memory range
+        size_t size,                                    ///< [in] Size in bytes of the memory range
+        ze_memory_atomic_attr_exp_flags_t attr          ///< [in] Atomic access attributes to set for the specified range.
+                                                        ///< Must be 0 (default) or a valid combination of ::ze_memory_atomic_attr_exp_flag_t.
+        )
+    {
+        if( nullptr == hContext )
+            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+        if( nullptr == hDevice )
+            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+        if( nullptr == ptr )
+            return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+        if( 0x7f < attr )
+            return ZE_RESULT_ERROR_INVALID_ENUMERATION;
+
+        return ZE_RESULT_SUCCESS;
+    }
+
+
+    ze_result_t
+    ZEParameterValidation::zeMemGetAtomicAccessAttributeExp(
+        ze_context_handle_t hContext,                   ///< [in] handle of context
+        ze_device_handle_t hDevice,                     ///< [in] device associated with the memory advice
+        const void* ptr,                                ///< [in] Pointer to the start of the memory range
+        size_t size,                                    ///< [in] Size in bytes of the memory range
+        ze_memory_atomic_attr_exp_flags_t* pAttr        ///< [out] Atomic access attributes for the specified range
+        )
+    {
+        if( nullptr == hContext )
+            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+        if( nullptr == hDevice )
+            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+        if( nullptr == ptr )
+            return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+        if( nullptr == pAttr )
             return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
         return ZE_RESULT_SUCCESS;
@@ -2759,7 +2826,7 @@ namespace validation_layer
         if( nullptr == ptr )
             return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-        if( ZE_CACHE_EXT_REGION_ZE_CACHE_NON_RESERVED_REGION < cacheRegion )
+        if( ZE_CACHE_EXT_REGION_NON_RESERVED < cacheRegion )
             return ZE_RESULT_ERROR_INVALID_ENUMERATION;
 
         return ZE_RESULT_SUCCESS;
@@ -3237,6 +3304,193 @@ namespace validation_layer
             return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
         return ParameterValidation::validateExtensions(pResults);
+    }
+
+
+    ze_result_t
+    ZEParameterValidation::zeRTASBuilderCreateExp(
+        ze_driver_handle_t hDriver,                     ///< [in] handle of driver object
+        const ze_rtas_builder_exp_desc_t* pDescriptor,  ///< [in] pointer to builder descriptor
+        ze_rtas_builder_exp_handle_t* phBuilder         ///< [out] handle of builder object
+        )
+    {
+        if( nullptr == hDriver )
+            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+        if( nullptr == pDescriptor )
+            return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+        if( nullptr == phBuilder )
+            return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+        if( ZE_RTAS_BUILDER_EXP_VERSION_CURRENT < pDescriptor->builderVersion )
+            return ZE_RESULT_ERROR_INVALID_ENUMERATION;
+
+        return ParameterValidation::validateExtensions(pDescriptor);
+    }
+
+
+    ze_result_t
+    ZEParameterValidation::zeRTASBuilderGetBuildPropertiesExp(
+        ze_rtas_builder_exp_handle_t hBuilder,          ///< [in] handle of builder object
+        const ze_rtas_builder_build_op_exp_desc_t* pBuildOpDescriptor,  ///< [in] pointer to build operation descriptor
+        ze_rtas_builder_exp_properties_t* pProperties   ///< [in,out] query result for builder properties
+        )
+    {
+        if( nullptr == hBuilder )
+            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+        if( nullptr == pBuildOpDescriptor )
+            return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+        if( nullptr == pProperties )
+            return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+        if( ZE_RTAS_FORMAT_EXP_INVALID < pBuildOpDescriptor->rtasFormat )
+            return ZE_RESULT_ERROR_INVALID_ENUMERATION;
+
+        if( ZE_RTAS_BUILDER_BUILD_QUALITY_HINT_EXP_HIGH < pBuildOpDescriptor->buildQuality )
+            return ZE_RESULT_ERROR_INVALID_ENUMERATION;
+
+        if( 0x3 < pBuildOpDescriptor->buildFlags )
+            return ZE_RESULT_ERROR_INVALID_ENUMERATION;
+
+        auto retVal = ZE_RESULT_SUCCESS;
+        retVal = ParameterValidation::validateExtensions(pBuildOpDescriptor);
+        if(retVal)
+            return retVal;
+        retVal = ParameterValidation::validateExtensions(pProperties);
+        return retVal;
+    }
+
+
+    ze_result_t
+    ZEParameterValidation::zeDriverRTASFormatCompatibilityCheckExp(
+        ze_driver_handle_t hDriver,                     ///< [in] handle of driver object
+        ze_rtas_format_exp_t rtasFormatA,               ///< [in] operand A
+        ze_rtas_format_exp_t rtasFormatB                ///< [in] operand B
+        )
+    {
+        if( nullptr == hDriver )
+            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+        if( ZE_RTAS_FORMAT_EXP_INVALID < rtasFormatA )
+            return ZE_RESULT_ERROR_INVALID_ENUMERATION;
+
+        if( ZE_RTAS_FORMAT_EXP_INVALID < rtasFormatB )
+            return ZE_RESULT_ERROR_INVALID_ENUMERATION;
+
+        return ZE_RESULT_SUCCESS;
+    }
+
+
+    ze_result_t
+    ZEParameterValidation::zeRTASBuilderBuildExp(
+        ze_rtas_builder_exp_handle_t hBuilder,          ///< [in] handle of builder object
+        const ze_rtas_builder_build_op_exp_desc_t* pBuildOpDescriptor,  ///< [in] pointer to build operation descriptor
+        void* pScratchBuffer,                           ///< [in][range(0, `scratchBufferSizeBytes`)] scratch buffer to be used
+                                                        ///< during acceleration structure construction
+        size_t scratchBufferSizeBytes,                  ///< [in] size of scratch buffer, in bytes
+        void* pRtasBuffer,                              ///< [in] pointer to destination buffer
+        size_t rtasBufferSizeBytes,                     ///< [in] destination buffer size, in bytes
+        ze_rtas_parallel_operation_exp_handle_t hParallelOperation, ///< [in][optional] handle to parallel operation object
+        void* pBuildUserPtr,                            ///< [in][optional] pointer passed to callbacks
+        ze_rtas_aabb_exp_t* pBounds,                    ///< [in,out][optional] pointer to destination address for acceleration
+                                                        ///< structure bounds
+        size_t* pRtasBufferSizeBytes                    ///< [out][optional] updated acceleration structure size requirement, in
+                                                        ///< bytes
+        )
+    {
+        if( nullptr == hBuilder )
+            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+        if( nullptr == pBuildOpDescriptor )
+            return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+        if( nullptr == pScratchBuffer )
+            return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+        if( nullptr == pRtasBuffer )
+            return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+        if( ZE_RTAS_FORMAT_EXP_INVALID < pBuildOpDescriptor->rtasFormat )
+            return ZE_RESULT_ERROR_INVALID_ENUMERATION;
+
+        if( ZE_RTAS_BUILDER_BUILD_QUALITY_HINT_EXP_HIGH < pBuildOpDescriptor->buildQuality )
+            return ZE_RESULT_ERROR_INVALID_ENUMERATION;
+
+        if( 0x3 < pBuildOpDescriptor->buildFlags )
+            return ZE_RESULT_ERROR_INVALID_ENUMERATION;
+
+        return ParameterValidation::validateExtensions(pBuildOpDescriptor);
+    }
+
+
+    ze_result_t
+    ZEParameterValidation::zeRTASBuilderDestroyExp(
+        ze_rtas_builder_exp_handle_t hBuilder           ///< [in][release] handle of builder object to destroy
+        )
+    {
+        if( nullptr == hBuilder )
+            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+        return ZE_RESULT_SUCCESS;
+    }
+
+
+    ze_result_t
+    ZEParameterValidation::zeRTASParallelOperationCreateExp(
+        ze_driver_handle_t hDriver,                     ///< [in] handle of driver object
+        ze_rtas_parallel_operation_exp_handle_t* phParallelOperation///< [out] handle of parallel operation object
+        )
+    {
+        if( nullptr == hDriver )
+            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+        if( nullptr == phParallelOperation )
+            return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+        return ZE_RESULT_SUCCESS;
+    }
+
+
+    ze_result_t
+    ZEParameterValidation::zeRTASParallelOperationGetPropertiesExp(
+        ze_rtas_parallel_operation_exp_handle_t hParallelOperation, ///< [in] handle of parallel operation object
+        ze_rtas_parallel_operation_exp_properties_t* pProperties///< [in,out] query result for parallel operation properties
+        )
+    {
+        if( nullptr == hParallelOperation )
+            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+        if( nullptr == pProperties )
+            return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+        return ParameterValidation::validateExtensions(pProperties);
+    }
+
+
+    ze_result_t
+    ZEParameterValidation::zeRTASParallelOperationJoinExp(
+        ze_rtas_parallel_operation_exp_handle_t hParallelOperation  ///< [in] handle of parallel operation object
+        )
+    {
+        if( nullptr == hParallelOperation )
+            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+        return ZE_RESULT_SUCCESS;
+    }
+
+
+    ze_result_t
+    ZEParameterValidation::zeRTASParallelOperationDestroyExp(
+        ze_rtas_parallel_operation_exp_handle_t hParallelOperation  ///< [in][release] handle of parallel operation object to destroy
+        )
+    {
+        if( nullptr == hParallelOperation )
+            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+        return ZE_RESULT_SUCCESS;
     }
 
 }

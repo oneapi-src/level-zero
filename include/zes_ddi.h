@@ -5,7 +5,7 @@
  * SPDX-License-Identifier: MIT
  *
  * @file zes_ddi.h
- * @version v1.6-r1.6.10
+ * @version v1.7-r1.7.0
  *
  */
 #ifndef _ZES_DDI_H
@@ -331,6 +331,13 @@ typedef ze_result_t (ZE_APICALL *zes_pfnDeviceEnumOverclockDomains_t)(
     );
 
 ///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zesDeviceResetExt 
+typedef ze_result_t (ZE_APICALL *zes_pfnDeviceResetExt_t)(
+    zes_device_handle_t,
+    zes_reset_properties_t*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
 /// @brief Table of Device functions pointers
 typedef struct _zes_device_dditable_t
 {
@@ -370,6 +377,7 @@ typedef struct _zes_device_dditable_t
     zes_pfnDeviceResetOverclockSettings_t                       pfnResetOverclockSettings;
     zes_pfnDeviceReadOverclockState_t                           pfnReadOverclockState;
     zes_pfnDeviceEnumOverclockDomains_t                         pfnEnumOverclockDomains;
+    zes_pfnDeviceResetExt_t                                     pfnResetExt;
 } zes_device_dditable_t;
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -994,11 +1002,20 @@ typedef ze_result_t (ZE_APICALL *zes_pfnEngineGetActivity_t)(
     );
 
 ///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zesEngineGetActivityExt 
+typedef ze_result_t (ZE_APICALL *zes_pfnEngineGetActivityExt_t)(
+    zes_engine_handle_t,
+    uint32_t*,
+    zes_engine_stats_t*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
 /// @brief Table of Engine functions pointers
 typedef struct _zes_engine_dditable_t
 {
     zes_pfnEngineGetProperties_t                                pfnGetProperties;
     zes_pfnEngineGetActivity_t                                  pfnGetActivity;
+    zes_pfnEngineGetActivityExt_t                               pfnGetActivityExt;
 } zes_engine_dditable_t;
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1215,6 +1232,22 @@ typedef ze_result_t (ZE_APICALL *zes_pfnFabricPortGetThroughput_t)(
     );
 
 ///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zesFabricPortGetFabricErrorCounters 
+typedef ze_result_t (ZE_APICALL *zes_pfnFabricPortGetFabricErrorCounters_t)(
+    zes_fabric_port_handle_t,
+    zes_fabric_port_error_counters_t*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zesFabricPortGetMultiPortThroughput 
+typedef ze_result_t (ZE_APICALL *zes_pfnFabricPortGetMultiPortThroughput_t)(
+    zes_device_handle_t,
+    uint32_t,
+    zes_fabric_port_handle_t*,
+    zes_fabric_port_throughput_t**
+    );
+
+///////////////////////////////////////////////////////////////////////////////
 /// @brief Table of FabricPort functions pointers
 typedef struct _zes_fabric_port_dditable_t
 {
@@ -1224,6 +1257,8 @@ typedef struct _zes_fabric_port_dditable_t
     zes_pfnFabricPortSetConfig_t                                pfnSetConfig;
     zes_pfnFabricPortGetState_t                                 pfnGetState;
     zes_pfnFabricPortGetThroughput_t                            pfnGetThroughput;
+    zes_pfnFabricPortGetFabricErrorCounters_t                   pfnGetFabricErrorCounters;
+    zes_pfnFabricPortGetMultiPortThroughput_t                   pfnGetMultiPortThroughput;
 } zes_fabric_port_dditable_t;
 
 ///////////////////////////////////////////////////////////////////////////////

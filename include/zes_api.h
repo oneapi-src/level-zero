@@ -5,7 +5,7 @@
  * SPDX-License-Identifier: MIT
  *
  * @file zes_api.h
- * @version v1.6-r1.6.10
+ * @version v1.7-r1.7.0
  *
  */
 #ifndef _ZES_API_H
@@ -142,6 +142,11 @@ typedef enum _zes_structure_type_t
     ZES_STRUCTURE_TYPE_POWER_LIMIT_EXT_DESC = 0x27,                         ///< ::zes_power_limit_ext_desc_t
     ZES_STRUCTURE_TYPE_POWER_EXT_PROPERTIES = 0x28,                         ///< ::zes_power_ext_properties_t
     ZES_STRUCTURE_TYPE_OVERCLOCK_PROPERTIES = 0x29,                         ///< ::zes_overclock_properties_t
+    ZES_STRUCTURE_TYPE_FABRIC_PORT_ERROR_COUNTERS = 0x2a,                   ///< ::zes_fabric_port_error_counters_t
+    ZES_STRUCTURE_TYPE_ENGINE_EXT_PROPERTIES = 0x2b,                        ///< ::zes_engine_ext_properties_t
+    ZES_STRUCTURE_TYPE_RESET_PROPERTIES = 0x2c,                             ///< ::zes_reset_properties_t
+    ZES_STRUCTURE_TYPE_DEVICE_EXT_PROPERTIES = 0x2d,                        ///< ::zes_device_ext_properties_t
+    ZES_STRUCTURE_TYPE_DEVICE_UUID = 0x2e,                                  ///< ::zes_uuid_t
     ZES_STRUCTURE_TYPE_FORCE_UINT32 = 0x7fffffff
 
 } zes_structure_type_t;
@@ -221,8 +226,20 @@ typedef struct _zes_base_capability_t zes_base_capability_t;
 typedef struct _zes_device_state_t zes_device_state_t;
 
 ///////////////////////////////////////////////////////////////////////////////
+/// @brief Forward-declare zes_reset_properties_t
+typedef struct _zes_reset_properties_t zes_reset_properties_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Forward-declare zes_uuid_t
+typedef struct _zes_uuid_t zes_uuid_t;
+
+///////////////////////////////////////////////////////////////////////////////
 /// @brief Forward-declare zes_device_properties_t
 typedef struct _zes_device_properties_t zes_device_properties_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Forward-declare zes_device_ext_properties_t
+typedef struct _zes_device_ext_properties_t zes_device_ext_properties_t;
 
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief Forward-declare zes_process_state_t
@@ -289,6 +306,10 @@ typedef struct _zes_device_ecc_properties_t zes_device_ecc_properties_t;
 typedef struct _zes_engine_properties_t zes_engine_properties_t;
 
 ///////////////////////////////////////////////////////////////////////////////
+/// @brief Forward-declare zes_engine_ext_properties_t
+typedef struct _zes_engine_ext_properties_t zes_engine_ext_properties_t;
+
+///////////////////////////////////////////////////////////////////////////////
 /// @brief Forward-declare zes_engine_stats_t
 typedef struct _zes_engine_stats_t zes_engine_stats_t;
 
@@ -319,6 +340,10 @@ typedef struct _zes_fabric_port_state_t zes_fabric_port_state_t;
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief Forward-declare zes_fabric_port_throughput_t
 typedef struct _zes_fabric_port_throughput_t zes_fabric_port_throughput_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Forward-declare zes_fabric_port_error_counters_t
+typedef struct _zes_fabric_port_error_counters_t zes_fabric_port_error_counters_t;
 
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief Forward-declare zes_fan_speed_t
@@ -387,6 +412,10 @@ typedef struct _zes_mem_state_t zes_mem_state_t;
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief Forward-declare zes_mem_bandwidth_t
 typedef struct _zes_mem_bandwidth_t zes_mem_bandwidth_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Forward-declare zes_mem_ext_bandwidth_t
+typedef struct _zes_mem_ext_bandwidth_t zes_mem_ext_bandwidth_t;
 
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief Forward-declare zes_perf_properties_t
@@ -572,8 +601,8 @@ zesDriverGet(
 ///     - Multiple calls to this function will return identical sysman device
 ///       handles, in the same order.
 ///     - The number and order of handles returned from this function is NOT
-///       affected by the ::ZE_AFFINITY_MASK or ::ZE_ENABLE_PCI_ID_DEVICE_ORDER
-///       environment variables.
+///       affected by the ::ZE_AFFINITY_MASK, ::ZE_ENABLE_PCI_ID_DEVICE_ORDER,
+///       or ::ZE_FLAT_DEVICE_HIERARCHY environment variables.
 ///     - The application may call this function from simultaneous threads.
 ///     - The implementation of this function should be lock-free.
 /// 
@@ -606,6 +635,12 @@ zesDeviceGet(
 /// @brief Maximum number of characters in string properties.
 #define ZES_STRING_PROPERTY_SIZE  64
 #endif // ZES_STRING_PROPERTY_SIZE
+
+///////////////////////////////////////////////////////////////////////////////
+#ifndef ZES_MAX_UUID_SIZE
+/// @brief Maximum device universal unique id (UUID) size in bytes.
+#define ZES_MAX_UUID_SIZE  16
+#endif // ZES_MAX_UUID_SIZE
 
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief Types of accelerator engines
@@ -646,6 +681,17 @@ typedef enum _zes_reset_reason_flag_t
 } zes_reset_reason_flag_t;
 
 ///////////////////////////////////////////////////////////////////////////////
+/// @brief Device reset type
+typedef enum _zes_reset_type_t
+{
+    ZES_RESET_TYPE_WARM = 0,                                                ///< Apply warm reset
+    ZES_RESET_TYPE_COLD = 1,                                                ///< Apply cold reset
+    ZES_RESET_TYPE_FLR = 2,                                                 ///< Apply FLR reset
+    ZES_RESET_TYPE_FORCE_UINT32 = 0x7fffffff
+
+} zes_reset_type_t;
+
+///////////////////////////////////////////////////////////////////////////////
 /// @brief Device state
 typedef struct _zes_device_state_t
 {
@@ -659,13 +705,61 @@ typedef struct _zes_device_state_t
 } zes_device_state_t;
 
 ///////////////////////////////////////////////////////////////////////////////
+/// @brief Device reset properties
+typedef struct _zes_reset_properties_t
+{
+    zes_structure_type_t stype;                                             ///< [in] type of this structure
+    void* pNext;                                                            ///< [in,out][optional] must be null or a pointer to an extension-specific
+                                                                            ///< structure (i.e. contains stype and pNext).
+    ze_bool_t force;                                                        ///< [in] If set to true, all applications that are currently using the
+                                                                            ///< device will be forcibly killed.
+    zes_reset_type_t resetType;                                             ///< [in] Type of reset needs to be performed
+
+} zes_reset_properties_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Device universal unique id (UUID)
+typedef struct _zes_uuid_t
+{
+    uint8_t id[ZES_MAX_UUID_SIZE];                                          ///< [out] opaque data representing a device UUID
+
+} zes_uuid_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Supported device types
+typedef enum _zes_device_type_t
+{
+    ZES_DEVICE_TYPE_GPU = 1,                                                ///< Graphics Processing Unit
+    ZES_DEVICE_TYPE_CPU = 2,                                                ///< Central Processing Unit
+    ZES_DEVICE_TYPE_FPGA = 3,                                               ///< Field Programmable Gate Array
+    ZES_DEVICE_TYPE_MCA = 4,                                                ///< Memory Copy Accelerator
+    ZES_DEVICE_TYPE_VPU = 5,                                                ///< Vision Processing Unit
+    ZES_DEVICE_TYPE_FORCE_UINT32 = 0x7fffffff
+
+} zes_device_type_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Supported device property flags
+typedef uint32_t zes_device_property_flags_t;
+typedef enum _zes_device_property_flag_t
+{
+    ZES_DEVICE_PROPERTY_FLAG_INTEGRATED = ZE_BIT(0),                        ///< Device is integrated with the Host.
+    ZES_DEVICE_PROPERTY_FLAG_SUBDEVICE = ZE_BIT(1),                         ///< Device handle used for query represents a sub-device.
+    ZES_DEVICE_PROPERTY_FLAG_ECC = ZE_BIT(2),                               ///< Device supports error correction memory access.
+    ZES_DEVICE_PROPERTY_FLAG_ONDEMANDPAGING = ZE_BIT(3),                    ///< Device supports on-demand page-faulting.
+    ZES_DEVICE_PROPERTY_FLAG_FORCE_UINT32 = 0x7fffffff
+
+} zes_device_property_flag_t;
+
+///////////////////////////////////////////////////////////////////////////////
 /// @brief Device properties
 typedef struct _zes_device_properties_t
 {
     zes_structure_type_t stype;                                             ///< [in] type of this structure
     void* pNext;                                                            ///< [in,out][optional] must be null or a pointer to an extension-specific
                                                                             ///< structure (i.e. contains stype and pNext).
-    ze_device_properties_t core;                                            ///< [out] Core device properties
+    ze_device_properties_t core;                                            ///< [out] (Deprecated, use ::zes_uuid_t in the extended structure) Core
+                                                                            ///< device properties
     uint32_t numSubdevices;                                                 ///< [out] Number of sub-devices. A value of 0 indicates that this device
                                                                             ///< doesn't have sub-devices.
     char serialNumber[ZES_STRING_PROPERTY_SIZE];                            ///< [out] Manufacturing serial number (NULL terminated string value). Will
@@ -688,6 +782,20 @@ typedef struct _zes_device_properties_t
                                                                             ///< device.
 
 } zes_device_properties_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Device properties
+typedef struct _zes_device_ext_properties_t
+{
+    zes_structure_type_t stype;                                             ///< [in] type of this structure
+    void* pNext;                                                            ///< [in,out][optional] must be null or a pointer to an extension-specific
+                                                                            ///< structure (i.e. contains stype and pNext).
+    zes_uuid_t uuid;                                                        ///< [out] universal unique identifier. Note: uuid obtained from Sysman API
+                                                                            ///< is the same as from core API. Subdevices will have their own uuid.
+    zes_device_type_t type;                                                 ///< [out] generic device type
+    zes_device_property_flags_t flags;                                      ///< [out] 0 (none) or a valid combination of ::zes_device_property_flag_t
+
+} zes_device_ext_properties_t;
 
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief Get properties about the device
@@ -746,8 +854,9 @@ zesDeviceGetState(
 ///       this function.
 ///     - If the force argument is specified, all applications using the device
 ///       will be forcibly killed.
-///     - The function will block until the device has restarted or a timeout
-///       occurred waiting for the reset to complete.
+///     - The function will block until the device has restarted or an
+///       implementation defined timeout occurred waiting for the reset to
+///       complete.
 /// 
 /// @returns
 ///     - ::ZE_RESULT_SUCCESS
@@ -768,6 +877,42 @@ zesDeviceReset(
     zes_device_handle_t hDevice,                                            ///< [in] Sysman handle for the device
     ze_bool_t force                                                         ///< [in] If set to true, all applications that are currently using the
                                                                             ///< device will be forcibly killed.
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Reset device extension
+/// 
+/// @details
+///     - Performs a PCI bus reset of the device. This will result in all
+///       current device state being lost.
+///     - Prior to calling this function, user is responsible for closing
+///       applications using the device unless force argument is specified.
+///     - If the force argument is specified, all applications using the device
+///       will be forcibly killed.
+///     - The function will block until the device has restarted or a
+///       implementation specific timeout occurred waiting for the reset to
+///       complete.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hDevice`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == pProperties`
+///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
+///         + User does not have permissions to perform this operation.
+///     - ::ZE_RESULT_ERROR_HANDLE_OBJECT_IN_USE
+///         + Reset cannot be performed because applications are using this device.
+///     - ::ZE_RESULT_ERROR_UNKNOWN
+///         + There were problems unloading the device driver, performing a bus reset or reloading the device driver.
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zesDeviceResetExt(
+    zes_device_handle_t hDevice,                                            ///< [in] Sysman handle for the device
+    zes_reset_properties_t* pProperties                                     ///< [in] Device reset properties to apply
     );
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -2146,6 +2291,27 @@ typedef struct _zes_engine_properties_t
 } zes_engine_properties_t;
 
 ///////////////////////////////////////////////////////////////////////////////
+/// @brief Extension properties related to Engine Groups
+/// 
+/// @details
+///     - This structure may be returned from ::zesEngineGetProperties via the
+///       `pNext` member of ::zes_engine_properties_t.
+///     - Used for SRIOV per Virtual Function device utilization by
+///       ::zes_engine_group_t
+typedef struct _zes_engine_ext_properties_t
+{
+    zes_structure_type_t stype;                                             ///< [in] type of this structure
+    void* pNext;                                                            ///< [in,out][optional] must be null or a pointer to an extension-specific
+                                                                            ///< structure (i.e. contains stype and pNext).
+    uint32_t countOfVirtualFunctionInstance;                                ///< [out] Number of Virtual Function(VF) instances associated with engine
+                                                                            ///< to monitor the global utilization of hardware across all Virtual
+                                                                            ///< Function from a Physical Function (PF) instance. These global and
+                                                                            ///< VF-by-VF views should provide engine group and individual engine level
+                                                                            ///< granularity.
+
+} zes_engine_ext_properties_t;
+
+///////////////////////////////////////////////////////////////////////////////
 /// @brief Engine activity counters
 /// 
 /// @details
@@ -2224,9 +2390,11 @@ zesEngineGetProperties(
     );
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Get the activity stats for an engine group
+/// @brief Get the activity stats for an engine group.
 /// 
 /// @details
+///     - This function also returns the engine activity inside a Virtual
+///       Machine (VM), in the presence of hardware virtualization (SRIOV)
 ///     - The application may call this function from simultaneous threads.
 ///     - The implementation of this function should be lock-free.
 /// 
@@ -2245,6 +2413,40 @@ zesEngineGetActivity(
     zes_engine_handle_t hEngine,                                            ///< [in] Handle for the component.
     zes_engine_stats_t* pStats                                              ///< [in,out] Will contain a snapshot of the engine group activity
                                                                             ///< counters.
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Get the activity stats for each Virtual Function (VF) associated with
+///        engine group. This function is used from a Physical Function (PF)
+///        interface when GPU is virtualized (SRIOV) into Virtual Function and
+///        Physical Function devices
+/// 
+/// @details
+///     - The application may call this function from simultaneous threads.
+///     - The implementation of this function should be lock-free.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hEngine`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == pCount`
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zesEngineGetActivityExt(
+    zes_engine_handle_t hEngine,                                            ///< [in] Handle for the component.
+    uint32_t* pCount,                                                       ///< [in,out] Pointer to the number of engine stats descriptors.
+                                                                            ///<  - if count is zero, the driver shall update the value with the total
+                                                                            ///< number of components of this type.
+                                                                            ///<  - if count is greater than the total number of components available,
+                                                                            ///< the driver shall update the value with the correct number of
+                                                                            ///< components available.
+    zes_engine_stats_t* pStats                                              ///< [in,out][optional][range(0, *pCount)] array of engine group activity counters.
+                                                                            ///<  - if count is less than the total number of components available, the
+                                                                            ///< driver shall only retrieve that number of components.
     );
 
 #if !defined(__GNUC__)
@@ -2588,6 +2790,20 @@ typedef struct _zes_fabric_port_throughput_t
 } zes_fabric_port_throughput_t;
 
 ///////////////////////////////////////////////////////////////////////////////
+/// @brief Fabric Port Error Counters
+typedef struct _zes_fabric_port_error_counters_t
+{
+    zes_structure_type_t stype;                                             ///< [in] type of this structure
+    void* pNext;                                                            ///< [in,out][optional] must be null or a pointer to an extension-specific
+                                                                            ///< structure (i.e. contains stype and pNext).
+    uint64_t linkFailureCount;                                              ///< [out] Link Failure Error Count reported per port
+    uint64_t fwCommErrorCount;                                              ///< [out] Firmware Communication Error Count reported per device
+    uint64_t fwErrorCount;                                                  ///< [out] Firmware reported Error Count reported per device
+    uint64_t linkDegradeCount;                                              ///< [out] Link Degrade Error Count reported per port
+
+} zes_fabric_port_error_counters_t;
+
+///////////////////////////////////////////////////////////////////////////////
 /// @brief Get handle of Fabric ports in a device
 /// 
 /// @details
@@ -2762,6 +2978,67 @@ ZE_APIEXPORT ze_result_t ZE_APICALL
 zesFabricPortGetThroughput(
     zes_fabric_port_handle_t hPort,                                         ///< [in] Handle for the component.
     zes_fabric_port_throughput_t* pThroughput                               ///< [in,out] Will contain the Fabric port throughput counters.
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Get Fabric Port Error Counters
+/// 
+/// @details
+///     - The application may call this function from simultaneous threads.
+///     - The implementation of this function should be lock-free.
+///     - The memory backing the arrays for phPorts and ppThroughputs must be
+///       allocated in system memory by the user who is also responsible for
+///       releasing them when they are no longer needed.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hPort`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == pErrors`
+///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
+///         + User does not have permissions to query this telemetry.
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zesFabricPortGetFabricErrorCounters(
+    zes_fabric_port_handle_t hPort,                                         ///< [in] Handle for the component.
+    zes_fabric_port_error_counters_t* pErrors                               ///< [in,out] Will contain the Fabric port Error counters.
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Get Fabric port throughput from multiple ports in a single call
+/// 
+/// @details
+///     - The application may call this function from simultaneous threads.
+///     - The implementation of this function should be lock-free.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hDevice`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == phPort`
+///         + `nullptr == pThroughput`
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zesFabricPortGetMultiPortThroughput(
+    zes_device_handle_t hDevice,                                            ///< [in] Sysman handle of the device.
+    uint32_t numPorts,                                                      ///< [in] Number of ports enumerated in function ::zesDeviceEnumFabricPorts
+    zes_fabric_port_handle_t* phPort,                                       ///< [in][range(0, numPorts)] array of handle of components of this type.
+                                                                            ///< if numPorts is less than the number of components of this type that
+                                                                            ///< are available, then the driver shall only retrieve that number of
+                                                                            ///< component handles.
+                                                                            ///< if numPorts is greater than the number of components of this type that
+                                                                            ///< are available, then the driver shall only retrieve up to correct
+                                                                            ///< number of available ports enumerated in ::zesDeviceEnumFabricPorts.
+    zes_fabric_port_throughput_t** pThroughput                              ///< [out][range(0, numPorts)] array of Fabric port throughput counters
+                                                                            ///< from multiple ports of type ::zes_fabric_port_throughput_t.
     );
 
 #if !defined(__GNUC__)
@@ -4179,6 +4456,12 @@ typedef struct _zes_mem_state_t
 ///       using the equation: %bw = 10^6 * ((s2.readCounter - s1.readCounter) +
 ///       (s2.writeCounter - s1.writeCounter)) / (s2.maxBandwidth *
 ///       (s2.timestamp - s1.timestamp))
+///     - Counter can roll over and rollover needs to be handled by comparing
+///       the current read against the previous read
+///     - Counter is a 32 byte transaction count, which means the calculated
+///       delta (delta = current_value - previous_value or delta = 2^32 -
+///       previous_value + current_value in case of rollover) needs to be
+///       multiplied by 32 to get delta between samples in actual byte count
 typedef struct _zes_mem_bandwidth_t
 {
     uint64_t readCounter;                                                   ///< [out] Total bytes read from memory
@@ -4193,6 +4476,17 @@ typedef struct _zes_mem_bandwidth_t
                                                                             ///< application and may be different on the next execution.
 
 } zes_mem_bandwidth_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Extension properties for Memory bandwidth
+/// 
+/// @details
+///     - Number of counter bits
+typedef struct _zes_mem_ext_bandwidth_t
+{
+    uint32_t memoryTimestampValidBits;                                      ///< [out] Returns the number of valid bits in the timestamp values
+
+} zes_mem_ext_bandwidth_t;
 
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief Get handle of memory modules

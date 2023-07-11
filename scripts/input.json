@@ -2174,6 +2174,7 @@
                     "$X_API_VERSION_1_4",
                     "$X_API_VERSION_1_5",
                     "$X_API_VERSION_1_6",
+                    "$X_API_VERSION_1_7",
                     "$X_API_VERSION_CURRENT"
                 ],
                 "max": "$X_API_VERSION_CURRENT"
@@ -13515,9 +13516,15 @@
                         "version": "1.6"
                     },
                     {
+                        "desc": "version 1.7",
+                        "name": "ZE_API_VERSION_1_7",
+                        "value": "ZE_MAKE_VERSION( 1, 7 )",
+                        "version": "1.7"
+                    },
+                    {
                         "desc": "latest known version",
                         "name": "ZE_API_VERSION_CURRENT",
-                        "value": "ZE_MAKE_VERSION( 1, 6 )"
+                        "value": "ZE_MAKE_VERSION( 1, 7 )"
                     }
                 ],
                 "name": "ze_api_version_t",
@@ -41306,9 +41313,15 @@
                                 "version": "1.6"
                             },
                             {
+                                "desc": "version 1.7",
+                                "name": "$X_API_VERSION_1_7",
+                                "value": "$X_MAKE_VERSION( 1, 7 )",
+                                "version": "1.7"
+                            },
+                            {
                                 "desc": "latest known version",
                                 "name": "$X_API_VERSION_CURRENT",
-                                "value": "$X_MAKE_VERSION( 1, 6 )"
+                                "value": "$X_MAKE_VERSION( 1, 7 )"
                             }
                         ],
                         "name": "$x_api_version_t",

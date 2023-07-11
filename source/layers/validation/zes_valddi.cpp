@@ -250,6 +250,40 @@ namespace validation_layer
     }
 
     ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesDeviceResetExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zesDeviceResetExt(
+        zes_device_handle_t hDevice,                    ///< [in] Sysman handle for the device
+        zes_reset_properties_t* pProperties             ///< [in] Device reset properties to apply
+        )
+    {
+        auto pfnResetExt = context.zesDdiTable.Device.pfnResetExt;
+
+        if( nullptr == pfnResetExt )
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        if( context.enableParameterValidation )
+        {
+            auto result = context.paramValidation->zesParamValidation.zesDeviceResetExt( hDevice, pProperties );
+            if(result!=ZE_RESULT_SUCCESS) return result;
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zesHandleLifetime.zesDeviceResetExt( hDevice, pProperties );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnResetExt( hDevice, pProperties );
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
     /// @brief Intercept function for zesDeviceProcessesGetState
     __zedlllocal ze_result_t ZE_APICALL
     zesDeviceProcessesGetState(
@@ -1392,6 +1426,48 @@ namespace validation_layer
     }
 
     ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesEngineGetActivityExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zesEngineGetActivityExt(
+        zes_engine_handle_t hEngine,                    ///< [in] Handle for the component.
+        uint32_t* pCount,                               ///< [in,out] Pointer to the number of engine stats descriptors.
+                                                        ///<  - if count is zero, the driver shall update the value with the total
+                                                        ///< number of components of this type.
+                                                        ///<  - if count is greater than the total number of components available,
+                                                        ///< the driver shall update the value with the correct number of
+                                                        ///< components available.
+        zes_engine_stats_t* pStats                      ///< [in,out][optional][range(0, *pCount)] array of engine group activity counters.
+                                                        ///<  - if count is less than the total number of components available, the
+                                                        ///< driver shall only retrieve that number of components.
+        )
+    {
+        auto pfnGetActivityExt = context.zesDdiTable.Engine.pfnGetActivityExt;
+
+        if( nullptr == pfnGetActivityExt )
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        if( context.enableParameterValidation )
+        {
+            auto result = context.paramValidation->zesParamValidation.zesEngineGetActivityExt( hEngine, pCount, pStats );
+            if(result!=ZE_RESULT_SUCCESS) return result;
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zesHandleLifetime.zesEngineGetActivityExt( hEngine, pCount, pStats );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnGetActivityExt( hEngine, pCount, pStats );
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
     /// @brief Intercept function for zesDeviceEventRegister
     __zedlllocal ze_result_t ZE_APICALL
     zesDeviceEventRegister(
@@ -1771,6 +1847,83 @@ namespace validation_layer
         }
 
         auto result = pfnGetThroughput( hPort, pThroughput );
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesFabricPortGetFabricErrorCounters
+    __zedlllocal ze_result_t ZE_APICALL
+    zesFabricPortGetFabricErrorCounters(
+        zes_fabric_port_handle_t hPort,                 ///< [in] Handle for the component.
+        zes_fabric_port_error_counters_t* pErrors       ///< [in,out] Will contain the Fabric port Error counters.
+        )
+    {
+        auto pfnGetFabricErrorCounters = context.zesDdiTable.FabricPort.pfnGetFabricErrorCounters;
+
+        if( nullptr == pfnGetFabricErrorCounters )
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        if( context.enableParameterValidation )
+        {
+            auto result = context.paramValidation->zesParamValidation.zesFabricPortGetFabricErrorCounters( hPort, pErrors );
+            if(result!=ZE_RESULT_SUCCESS) return result;
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zesHandleLifetime.zesFabricPortGetFabricErrorCounters( hPort, pErrors );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnGetFabricErrorCounters( hPort, pErrors );
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesFabricPortGetMultiPortThroughput
+    __zedlllocal ze_result_t ZE_APICALL
+    zesFabricPortGetMultiPortThroughput(
+        zes_device_handle_t hDevice,                    ///< [in] Sysman handle of the device.
+        uint32_t numPorts,                              ///< [in] Number of ports enumerated in function ::zesDeviceEnumFabricPorts
+        zes_fabric_port_handle_t* phPort,               ///< [in][range(0, numPorts)] array of handle of components of this type.
+                                                        ///< if numPorts is less than the number of components of this type that
+                                                        ///< are available, then the driver shall only retrieve that number of
+                                                        ///< component handles.
+                                                        ///< if numPorts is greater than the number of components of this type that
+                                                        ///< are available, then the driver shall only retrieve up to correct
+                                                        ///< number of available ports enumerated in ::zesDeviceEnumFabricPorts.
+        zes_fabric_port_throughput_t** pThroughput      ///< [out][range(0, numPorts)] array of Fabric port throughput counters
+                                                        ///< from multiple ports of type ::zes_fabric_port_throughput_t.
+        )
+    {
+        auto pfnGetMultiPortThroughput = context.zesDdiTable.FabricPort.pfnGetMultiPortThroughput;
+
+        if( nullptr == pfnGetMultiPortThroughput )
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        if( context.enableParameterValidation )
+        {
+            auto result = context.paramValidation->zesParamValidation.zesFabricPortGetMultiPortThroughput( hDevice, numPorts, phPort, pThroughput );
+            if(result!=ZE_RESULT_SUCCESS) return result;
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zesHandleLifetime.zesFabricPortGetMultiPortThroughput( hDevice, numPorts, phPort, pThroughput );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnGetMultiPortThroughput( hDevice, numPorts, phPort, pThroughput );
         return result;
     }
 
@@ -4752,6 +4905,9 @@ zesGetDeviceProcAddrTable(
     dditable.pfnEnumOverclockDomains                     = pDdiTable->pfnEnumOverclockDomains;
     pDdiTable->pfnEnumOverclockDomains                   = validation_layer::zesDeviceEnumOverclockDomains;
 
+    dditable.pfnResetExt                                 = pDdiTable->pfnResetExt;
+    pDdiTable->pfnResetExt                               = validation_layer::zesDeviceResetExt;
+
     return result;
 }
 
@@ -4860,6 +5016,9 @@ zesGetEngineProcAddrTable(
     dditable.pfnGetActivity                              = pDdiTable->pfnGetActivity;
     pDdiTable->pfnGetActivity                            = validation_layer::zesEngineGetActivity;
 
+    dditable.pfnGetActivityExt                           = pDdiTable->pfnGetActivityExt;
+    pDdiTable->pfnGetActivityExt                         = validation_layer::zesEngineGetActivityExt;
+
     return result;
 }
 
@@ -4905,6 +5064,12 @@ zesGetFabricPortProcAddrTable(
 
     dditable.pfnGetThroughput                            = pDdiTable->pfnGetThroughput;
     pDdiTable->pfnGetThroughput                          = validation_layer::zesFabricPortGetThroughput;
+
+    dditable.pfnGetFabricErrorCounters                   = pDdiTable->pfnGetFabricErrorCounters;
+    pDdiTable->pfnGetFabricErrorCounters                 = validation_layer::zesFabricPortGetFabricErrorCounters;
+
+    dditable.pfnGetMultiPortThroughput                   = pDdiTable->pfnGetMultiPortThroughput;
+    pDdiTable->pfnGetMultiPortThroughput                 = validation_layer::zesFabricPortGetMultiPortThroughput;
 
     return result;
 }

@@ -30,9 +30,30 @@ namespace ze_lib
 
         if( ZE_RESULT_SUCCESS == result )
         {
+            auto getTable = reinterpret_cast<ze_pfnGetRTASBuilderExpProcAddrTable_t>(
+                GET_FUNCTION_PTR(loader, "zeGetRTASBuilderExpProcAddrTable") );
+            result = getTable( ZE_API_VERSION_CURRENT, &zeDdiTable.RTASBuilderExp );
+        }
+
+        if( ZE_RESULT_SUCCESS == result )
+        {
+            auto getTable = reinterpret_cast<ze_pfnGetRTASParallelOperationExpProcAddrTable_t>(
+                GET_FUNCTION_PTR(loader, "zeGetRTASParallelOperationExpProcAddrTable") );
+            result = getTable( ZE_API_VERSION_CURRENT, &zeDdiTable.RTASParallelOperationExp );
+        }
+
+        if( ZE_RESULT_SUCCESS == result )
+        {
             auto getTable = reinterpret_cast<ze_pfnGetDriverProcAddrTable_t>(
                 GET_FUNCTION_PTR(loader, "zeGetDriverProcAddrTable") );
             result = getTable( ZE_API_VERSION_CURRENT, &zeDdiTable.Driver );
+        }
+
+        if( ZE_RESULT_SUCCESS == result )
+        {
+            auto getTable = reinterpret_cast<ze_pfnGetDriverExpProcAddrTable_t>(
+                GET_FUNCTION_PTR(loader, "zeGetDriverExpProcAddrTable") );
+            result = getTable( ZE_API_VERSION_CURRENT, &zeDdiTable.DriverExp );
         }
 
         if( ZE_RESULT_SUCCESS == result )
@@ -203,7 +224,22 @@ namespace ze_lib
 
         if( ZE_RESULT_SUCCESS == result )
         {
+            result = zeGetRTASBuilderExpProcAddrTable( ZE_API_VERSION_CURRENT, &zeDdiTable.RTASBuilderExp );
+        }
+
+        if( ZE_RESULT_SUCCESS == result )
+        {
+            result = zeGetRTASParallelOperationExpProcAddrTable( ZE_API_VERSION_CURRENT, &zeDdiTable.RTASParallelOperationExp );
+        }
+
+        if( ZE_RESULT_SUCCESS == result )
+        {
             result = zeGetDriverProcAddrTable( ZE_API_VERSION_CURRENT, &zeDdiTable.Driver );
+        }
+
+        if( ZE_RESULT_SUCCESS == result )
+        {
+            result = zeGetDriverExpProcAddrTable( ZE_API_VERSION_CURRENT, &zeDdiTable.DriverExp );
         }
 
         if( ZE_RESULT_SUCCESS == result )

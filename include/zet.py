@@ -4,7 +4,7 @@
  SPDX-License-Identifier: MIT
 
  @file zet.py
- @version v1.6-r1.6.10
+ @version v1.7-r1.7.0
 
  """
 import platform
@@ -90,9 +90,13 @@ class zet_structure_type_v(IntEnum):
     DEVICE_DEBUG_PROPERTIES = 0x6                                           ## ::zet_device_debug_properties_t
     DEBUG_MEMORY_SPACE_DESC = 0x7                                           ## ::zet_debug_memory_space_desc_t
     DEBUG_REGSET_PROPERTIES = 0x8                                           ## ::zet_debug_regset_properties_t
-    GLOBAL_METRICS_TIMESTAMPS_EXP_PROPERTIES = 0x9                          ## ::zet_metric_global_timestamps_resolution_exp_t
+    GLOBAL_METRICS_TIMESTAMPS_EXP_PROPERTIES = 0x9                          ## ::zet_metric_global_timestamps_resolution_exp_t. Deprecated, use
+                                                                            ## ::ZET_STRUCTURE_TYPE_METRIC_GLOBAL_TIMESTAMPS_RESOLUTION_EXP.
+    METRIC_GLOBAL_TIMESTAMPS_RESOLUTION_EXP = 0x9                           ## ::zet_metric_global_timestamps_resolution_exp_t
     TRACER_EXP_DESC = 0x00010001                                            ## ::zet_tracer_exp_desc_t
-    METRICS_CALCULATE_EXP_DESC = 0x10002                                    ## ::zet_metric_calculate_exp_desc_t
+    METRICS_CALCULATE_EXP_DESC = 0x00010002                                 ## ::zet_metric_calculate_exp_desc_t. Deprecated, use
+                                                                            ## ::ZET_STRUCTURE_TYPE_METRIC_CALCULATE_EXP_DESC.
+    METRIC_CALCULATE_EXP_DESC = 0x00010002                                  ## ::zet_metric_calculate_exp_desc_t
 
 class zet_structure_type_t(c_int):
     def __str__(self):
@@ -405,7 +409,9 @@ class zet_metric_type_v(IntEnum):
     FLAG = 5                                                                ## Metric type: flag
     RATIO = 6                                                               ## Metric type: ratio
     RAW = 7                                                                 ## Metric type: raw
-    IP_EXP = 0x7ffffffe                                                     ## Metric type: instruction pointer
+    IP_EXP = 0x7ffffffe                                                     ## Metric type: instruction pointer. Deprecated, use
+                                                                            ## ::ZET_METRIC_TYPE_IP.
+    IP = 0x7ffffffe                                                         ## Metric type: instruction pointer
 
 class zet_metric_type_t(c_int):
     def __str__(self):

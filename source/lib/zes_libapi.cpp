@@ -127,8 +127,8 @@ zesDriverGet(
 ///     - Multiple calls to this function will return identical sysman device
 ///       handles, in the same order.
 ///     - The number and order of handles returned from this function is NOT
-///       affected by the ::ZE_AFFINITY_MASK or ::ZE_ENABLE_PCI_ID_DEVICE_ORDER
-///       environment variables.
+///       affected by the ::ZE_AFFINITY_MASK, ::ZE_ENABLE_PCI_ID_DEVICE_ORDER,
+///       or ::ZE_FLAT_DEVICE_HIERARCHY environment variables.
 ///     - The application may call this function from simultaneous threads.
 ///     - The implementation of this function should be lock-free.
 /// 
@@ -258,8 +258,9 @@ zesDeviceGetState(
 ///       this function.
 ///     - If the force argument is specified, all applications using the device
 ///       will be forcibly killed.
-///     - The function will block until the device has restarted or a timeout
-///       occurred waiting for the reset to complete.
+///     - The function will block until the device has restarted or an
+///       implementation defined timeout occurred waiting for the reset to
+///       complete.
 /// 
 /// @returns
 ///     - ::ZE_RESULT_SUCCESS
@@ -295,6 +296,57 @@ zesDeviceReset(
     }
 
     return pfnReset( hDevice, force );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Reset device extension
+/// 
+/// @details
+///     - Performs a PCI bus reset of the device. This will result in all
+///       current device state being lost.
+///     - Prior to calling this function, user is responsible for closing
+///       applications using the device unless force argument is specified.
+///     - If the force argument is specified, all applications using the device
+///       will be forcibly killed.
+///     - The function will block until the device has restarted or a
+///       implementation specific timeout occurred waiting for the reset to
+///       complete.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hDevice`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == pProperties`
+///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
+///         + User does not have permissions to perform this operation.
+///     - ::ZE_RESULT_ERROR_HANDLE_OBJECT_IN_USE
+///         + Reset cannot be performed because applications are using this device.
+///     - ::ZE_RESULT_ERROR_UNKNOWN
+///         + There were problems unloading the device driver, performing a bus reset or reloading the device driver.
+ze_result_t ZE_APICALL
+zesDeviceResetExt(
+    zes_device_handle_t hDevice,                    ///< [in] Sysman handle for the device
+    zes_reset_properties_t* pProperties             ///< [in] Device reset properties to apply
+    )
+{
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
+    auto pfnResetExt = ze_lib::context->zesDdiTable.Device.pfnResetExt;
+    if( nullptr == pfnResetExt ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    return pfnResetExt( hDevice, pProperties );
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1606,9 +1658,11 @@ zesEngineGetProperties(
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Get the activity stats for an engine group
+/// @brief Get the activity stats for an engine group.
 /// 
 /// @details
+///     - This function also returns the engine activity inside a Virtual
+///       Machine (VM), in the presence of hardware virtualization (SRIOV)
 ///     - The application may call this function from simultaneous threads.
 ///     - The implementation of this function should be lock-free.
 /// 
@@ -1642,6 +1696,55 @@ zesEngineGetActivity(
     }
 
     return pfnGetActivity( hEngine, pStats );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Get the activity stats for each Virtual Function (VF) associated with
+///        engine group. This function is used from a Physical Function (PF)
+///        interface when GPU is virtualized (SRIOV) into Virtual Function and
+///        Physical Function devices
+/// 
+/// @details
+///     - The application may call this function from simultaneous threads.
+///     - The implementation of this function should be lock-free.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hEngine`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == pCount`
+ze_result_t ZE_APICALL
+zesEngineGetActivityExt(
+    zes_engine_handle_t hEngine,                    ///< [in] Handle for the component.
+    uint32_t* pCount,                               ///< [in,out] Pointer to the number of engine stats descriptors.
+                                                    ///<  - if count is zero, the driver shall update the value with the total
+                                                    ///< number of components of this type.
+                                                    ///<  - if count is greater than the total number of components available,
+                                                    ///< the driver shall update the value with the correct number of
+                                                    ///< components available.
+    zes_engine_stats_t* pStats                      ///< [in,out][optional][range(0, *pCount)] array of engine group activity counters.
+                                                    ///<  - if count is less than the total number of components available, the
+                                                    ///< driver shall only retrieve that number of components.
+    )
+{
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
+    auto pfnGetActivityExt = ze_lib::context->zesDdiTable.Engine.pfnGetActivityExt;
+    if( nullptr == pfnGetActivityExt ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    return pfnGetActivityExt( hEngine, pCount, pStats );
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -2082,6 +2185,97 @@ zesFabricPortGetThroughput(
     }
 
     return pfnGetThroughput( hPort, pThroughput );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Get Fabric Port Error Counters
+/// 
+/// @details
+///     - The application may call this function from simultaneous threads.
+///     - The implementation of this function should be lock-free.
+///     - The memory backing the arrays for phPorts and ppThroughputs must be
+///       allocated in system memory by the user who is also responsible for
+///       releasing them when they are no longer needed.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hPort`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == pErrors`
+///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
+///         + User does not have permissions to query this telemetry.
+ze_result_t ZE_APICALL
+zesFabricPortGetFabricErrorCounters(
+    zes_fabric_port_handle_t hPort,                 ///< [in] Handle for the component.
+    zes_fabric_port_error_counters_t* pErrors       ///< [in,out] Will contain the Fabric port Error counters.
+    )
+{
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
+    auto pfnGetFabricErrorCounters = ze_lib::context->zesDdiTable.FabricPort.pfnGetFabricErrorCounters;
+    if( nullptr == pfnGetFabricErrorCounters ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    return pfnGetFabricErrorCounters( hPort, pErrors );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Get Fabric port throughput from multiple ports in a single call
+/// 
+/// @details
+///     - The application may call this function from simultaneous threads.
+///     - The implementation of this function should be lock-free.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hDevice`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == phPort`
+///         + `nullptr == pThroughput`
+ze_result_t ZE_APICALL
+zesFabricPortGetMultiPortThroughput(
+    zes_device_handle_t hDevice,                    ///< [in] Sysman handle of the device.
+    uint32_t numPorts,                              ///< [in] Number of ports enumerated in function ::zesDeviceEnumFabricPorts
+    zes_fabric_port_handle_t* phPort,               ///< [in][range(0, numPorts)] array of handle of components of this type.
+                                                    ///< if numPorts is less than the number of components of this type that
+                                                    ///< are available, then the driver shall only retrieve that number of
+                                                    ///< component handles.
+                                                    ///< if numPorts is greater than the number of components of this type that
+                                                    ///< are available, then the driver shall only retrieve up to correct
+                                                    ///< number of available ports enumerated in ::zesDeviceEnumFabricPorts.
+    zes_fabric_port_throughput_t** pThroughput      ///< [out][range(0, numPorts)] array of Fabric port throughput counters
+                                                    ///< from multiple ports of type ::zes_fabric_port_throughput_t.
+    )
+{
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
+    auto pfnGetMultiPortThroughput = ze_lib::context->zesDdiTable.FabricPort.pfnGetMultiPortThroughput;
+    if( nullptr == pfnGetMultiPortThroughput ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    return pfnGetMultiPortThroughput( hDevice, numPorts, phPort, pThroughput );
 }
 
 ///////////////////////////////////////////////////////////////////////////////

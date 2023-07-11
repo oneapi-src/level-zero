@@ -244,6 +244,31 @@ zelTracerDeviceGetRegisterCallback(
 
 
 ZE_APIEXPORT ze_result_t ZE_APICALL
+zelTracerDeviceGetRootDeviceRegisterCallback(
+    zel_tracer_handle_t hTracer,
+    zel_tracer_reg_t callback_type,
+    ze_pfnDeviceGetRootDeviceCb_t pfnGetRootDeviceCb
+    ) {
+
+    if(!ze_lib::context->tracing_lib)
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    typedef ze_result_t (ZE_APICALL *ze_pfnSetCallback_t)(
+        zel_tracer_handle_t hTracer,
+        zel_tracer_reg_t callback_type,
+        ze_pfnDeviceGetRootDeviceCb_t pfnGetRootDeviceCb
+    );
+
+    auto func = reinterpret_cast<ze_pfnSetCallback_t>(
+        GET_FUNCTION_PTR(ze_lib::context->tracing_lib, "zelTracerDeviceGetRootDeviceRegisterCallback") );
+
+    if(func)
+        return func(hTracer, callback_type, pfnGetRootDeviceCb);
+
+    return ZE_RESULT_ERROR_UNINITIALIZED;    
+}
+
+
+ZE_APIEXPORT ze_result_t ZE_APICALL
 zelTracerDeviceGetSubDevicesRegisterCallback(
     zel_tracer_handle_t hTracer,
     zel_tracer_reg_t callback_type,
@@ -2219,6 +2244,56 @@ zelTracerMemCloseIpcHandleRegisterCallback(
 
 
 ZE_APIEXPORT ze_result_t ZE_APICALL
+zelTracerMemSetAtomicAccessAttributeExpRegisterCallback(
+    zel_tracer_handle_t hTracer,
+    zel_tracer_reg_t callback_type,
+    ze_pfnMemSetAtomicAccessAttributeExpCb_t pfnSetAtomicAccessAttributeExpCb
+    ) {
+
+    if(!ze_lib::context->tracing_lib)
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    typedef ze_result_t (ZE_APICALL *ze_pfnSetCallback_t)(
+        zel_tracer_handle_t hTracer,
+        zel_tracer_reg_t callback_type,
+        ze_pfnMemSetAtomicAccessAttributeExpCb_t pfnSetAtomicAccessAttributeExpCb
+    );
+
+    auto func = reinterpret_cast<ze_pfnSetCallback_t>(
+        GET_FUNCTION_PTR(ze_lib::context->tracing_lib, "zelTracerMemSetAtomicAccessAttributeExpRegisterCallback") );
+
+    if(func)
+        return func(hTracer, callback_type, pfnSetAtomicAccessAttributeExpCb);
+
+    return ZE_RESULT_ERROR_UNINITIALIZED;    
+}
+
+
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zelTracerMemGetAtomicAccessAttributeExpRegisterCallback(
+    zel_tracer_handle_t hTracer,
+    zel_tracer_reg_t callback_type,
+    ze_pfnMemGetAtomicAccessAttributeExpCb_t pfnGetAtomicAccessAttributeExpCb
+    ) {
+
+    if(!ze_lib::context->tracing_lib)
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    typedef ze_result_t (ZE_APICALL *ze_pfnSetCallback_t)(
+        zel_tracer_handle_t hTracer,
+        zel_tracer_reg_t callback_type,
+        ze_pfnMemGetAtomicAccessAttributeExpCb_t pfnGetAtomicAccessAttributeExpCb
+    );
+
+    auto func = reinterpret_cast<ze_pfnSetCallback_t>(
+        GET_FUNCTION_PTR(ze_lib::context->tracing_lib, "zelTracerMemGetAtomicAccessAttributeExpRegisterCallback") );
+
+    if(func)
+        return func(hTracer, callback_type, pfnGetAtomicAccessAttributeExpCb);
+
+    return ZE_RESULT_ERROR_UNINITIALIZED;    
+}
+
+
+ZE_APIEXPORT ze_result_t ZE_APICALL
 zelTracerModuleCreateRegisterCallback(
     zel_tracer_handle_t hTracer,
     zel_tracer_reg_t callback_type,
@@ -3813,6 +3888,231 @@ zelTracerEventQueryKernelTimestampsExtRegisterCallback(
 
     if(func)
         return func(hTracer, callback_type, pfnQueryKernelTimestampsExtCb);
+
+    return ZE_RESULT_ERROR_UNINITIALIZED;    
+}
+
+
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zelTracerRTASBuilderCreateExpRegisterCallback(
+    zel_tracer_handle_t hTracer,
+    zel_tracer_reg_t callback_type,
+    ze_pfnRTASBuilderCreateExpCb_t pfnCreateExpCb
+    ) {
+
+    if(!ze_lib::context->tracing_lib)
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    typedef ze_result_t (ZE_APICALL *ze_pfnSetCallback_t)(
+        zel_tracer_handle_t hTracer,
+        zel_tracer_reg_t callback_type,
+        ze_pfnRTASBuilderCreateExpCb_t pfnCreateExpCb
+    );
+
+    auto func = reinterpret_cast<ze_pfnSetCallback_t>(
+        GET_FUNCTION_PTR(ze_lib::context->tracing_lib, "zelTracerRTASBuilderCreateExpRegisterCallback") );
+
+    if(func)
+        return func(hTracer, callback_type, pfnCreateExpCb);
+
+    return ZE_RESULT_ERROR_UNINITIALIZED;    
+}
+
+
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zelTracerRTASBuilderGetBuildPropertiesExpRegisterCallback(
+    zel_tracer_handle_t hTracer,
+    zel_tracer_reg_t callback_type,
+    ze_pfnRTASBuilderGetBuildPropertiesExpCb_t pfnGetBuildPropertiesExpCb
+    ) {
+
+    if(!ze_lib::context->tracing_lib)
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    typedef ze_result_t (ZE_APICALL *ze_pfnSetCallback_t)(
+        zel_tracer_handle_t hTracer,
+        zel_tracer_reg_t callback_type,
+        ze_pfnRTASBuilderGetBuildPropertiesExpCb_t pfnGetBuildPropertiesExpCb
+    );
+
+    auto func = reinterpret_cast<ze_pfnSetCallback_t>(
+        GET_FUNCTION_PTR(ze_lib::context->tracing_lib, "zelTracerRTASBuilderGetBuildPropertiesExpRegisterCallback") );
+
+    if(func)
+        return func(hTracer, callback_type, pfnGetBuildPropertiesExpCb);
+
+    return ZE_RESULT_ERROR_UNINITIALIZED;    
+}
+
+
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zelTracerDriverRTASFormatCompatibilityCheckExpRegisterCallback(
+    zel_tracer_handle_t hTracer,
+    zel_tracer_reg_t callback_type,
+    ze_pfnDriverRTASFormatCompatibilityCheckExpCb_t pfnRTASFormatCompatibilityCheckExpCb
+    ) {
+
+    if(!ze_lib::context->tracing_lib)
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    typedef ze_result_t (ZE_APICALL *ze_pfnSetCallback_t)(
+        zel_tracer_handle_t hTracer,
+        zel_tracer_reg_t callback_type,
+        ze_pfnDriverRTASFormatCompatibilityCheckExpCb_t pfnRTASFormatCompatibilityCheckExpCb
+    );
+
+    auto func = reinterpret_cast<ze_pfnSetCallback_t>(
+        GET_FUNCTION_PTR(ze_lib::context->tracing_lib, "zelTracerDriverRTASFormatCompatibilityCheckExpRegisterCallback") );
+
+    if(func)
+        return func(hTracer, callback_type, pfnRTASFormatCompatibilityCheckExpCb);
+
+    return ZE_RESULT_ERROR_UNINITIALIZED;    
+}
+
+
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zelTracerRTASBuilderBuildExpRegisterCallback(
+    zel_tracer_handle_t hTracer,
+    zel_tracer_reg_t callback_type,
+    ze_pfnRTASBuilderBuildExpCb_t pfnBuildExpCb
+    ) {
+
+    if(!ze_lib::context->tracing_lib)
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    typedef ze_result_t (ZE_APICALL *ze_pfnSetCallback_t)(
+        zel_tracer_handle_t hTracer,
+        zel_tracer_reg_t callback_type,
+        ze_pfnRTASBuilderBuildExpCb_t pfnBuildExpCb
+    );
+
+    auto func = reinterpret_cast<ze_pfnSetCallback_t>(
+        GET_FUNCTION_PTR(ze_lib::context->tracing_lib, "zelTracerRTASBuilderBuildExpRegisterCallback") );
+
+    if(func)
+        return func(hTracer, callback_type, pfnBuildExpCb);
+
+    return ZE_RESULT_ERROR_UNINITIALIZED;    
+}
+
+
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zelTracerRTASBuilderDestroyExpRegisterCallback(
+    zel_tracer_handle_t hTracer,
+    zel_tracer_reg_t callback_type,
+    ze_pfnRTASBuilderDestroyExpCb_t pfnDestroyExpCb
+    ) {
+
+    if(!ze_lib::context->tracing_lib)
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    typedef ze_result_t (ZE_APICALL *ze_pfnSetCallback_t)(
+        zel_tracer_handle_t hTracer,
+        zel_tracer_reg_t callback_type,
+        ze_pfnRTASBuilderDestroyExpCb_t pfnDestroyExpCb
+    );
+
+    auto func = reinterpret_cast<ze_pfnSetCallback_t>(
+        GET_FUNCTION_PTR(ze_lib::context->tracing_lib, "zelTracerRTASBuilderDestroyExpRegisterCallback") );
+
+    if(func)
+        return func(hTracer, callback_type, pfnDestroyExpCb);
+
+    return ZE_RESULT_ERROR_UNINITIALIZED;    
+}
+
+
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zelTracerRTASParallelOperationCreateExpRegisterCallback(
+    zel_tracer_handle_t hTracer,
+    zel_tracer_reg_t callback_type,
+    ze_pfnRTASParallelOperationCreateExpCb_t pfnCreateExpCb
+    ) {
+
+    if(!ze_lib::context->tracing_lib)
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    typedef ze_result_t (ZE_APICALL *ze_pfnSetCallback_t)(
+        zel_tracer_handle_t hTracer,
+        zel_tracer_reg_t callback_type,
+        ze_pfnRTASParallelOperationCreateExpCb_t pfnCreateExpCb
+    );
+
+    auto func = reinterpret_cast<ze_pfnSetCallback_t>(
+        GET_FUNCTION_PTR(ze_lib::context->tracing_lib, "zelTracerRTASParallelOperationCreateExpRegisterCallback") );
+
+    if(func)
+        return func(hTracer, callback_type, pfnCreateExpCb);
+
+    return ZE_RESULT_ERROR_UNINITIALIZED;    
+}
+
+
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zelTracerRTASParallelOperationGetPropertiesExpRegisterCallback(
+    zel_tracer_handle_t hTracer,
+    zel_tracer_reg_t callback_type,
+    ze_pfnRTASParallelOperationGetPropertiesExpCb_t pfnGetPropertiesExpCb
+    ) {
+
+    if(!ze_lib::context->tracing_lib)
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    typedef ze_result_t (ZE_APICALL *ze_pfnSetCallback_t)(
+        zel_tracer_handle_t hTracer,
+        zel_tracer_reg_t callback_type,
+        ze_pfnRTASParallelOperationGetPropertiesExpCb_t pfnGetPropertiesExpCb
+    );
+
+    auto func = reinterpret_cast<ze_pfnSetCallback_t>(
+        GET_FUNCTION_PTR(ze_lib::context->tracing_lib, "zelTracerRTASParallelOperationGetPropertiesExpRegisterCallback") );
+
+    if(func)
+        return func(hTracer, callback_type, pfnGetPropertiesExpCb);
+
+    return ZE_RESULT_ERROR_UNINITIALIZED;    
+}
+
+
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zelTracerRTASParallelOperationJoinExpRegisterCallback(
+    zel_tracer_handle_t hTracer,
+    zel_tracer_reg_t callback_type,
+    ze_pfnRTASParallelOperationJoinExpCb_t pfnJoinExpCb
+    ) {
+
+    if(!ze_lib::context->tracing_lib)
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    typedef ze_result_t (ZE_APICALL *ze_pfnSetCallback_t)(
+        zel_tracer_handle_t hTracer,
+        zel_tracer_reg_t callback_type,
+        ze_pfnRTASParallelOperationJoinExpCb_t pfnJoinExpCb
+    );
+
+    auto func = reinterpret_cast<ze_pfnSetCallback_t>(
+        GET_FUNCTION_PTR(ze_lib::context->tracing_lib, "zelTracerRTASParallelOperationJoinExpRegisterCallback") );
+
+    if(func)
+        return func(hTracer, callback_type, pfnJoinExpCb);
+
+    return ZE_RESULT_ERROR_UNINITIALIZED;    
+}
+
+
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zelTracerRTASParallelOperationDestroyExpRegisterCallback(
+    zel_tracer_handle_t hTracer,
+    zel_tracer_reg_t callback_type,
+    ze_pfnRTASParallelOperationDestroyExpCb_t pfnDestroyExpCb
+    ) {
+
+    if(!ze_lib::context->tracing_lib)
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    typedef ze_result_t (ZE_APICALL *ze_pfnSetCallback_t)(
+        zel_tracer_handle_t hTracer,
+        zel_tracer_reg_t callback_type,
+        ze_pfnRTASParallelOperationDestroyExpCb_t pfnDestroyExpCb
+    );
+
+    auto func = reinterpret_cast<ze_pfnSetCallback_t>(
+        GET_FUNCTION_PTR(ze_lib::context->tracing_lib, "zelTracerRTASParallelOperationDestroyExpRegisterCallback") );
+
+    if(func)
+        return func(hTracer, callback_type, pfnDestroyExpCb);
 
     return ZE_RESULT_ERROR_UNINITIALIZED;    
 }

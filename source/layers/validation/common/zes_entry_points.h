@@ -23,6 +23,7 @@ public:
     virtual ze_result_t zesDeviceGetProperties( zes_device_handle_t hDevice, zes_device_properties_t* pProperties ) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zesDeviceGetState( zes_device_handle_t hDevice, zes_device_state_t* pState ) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zesDeviceReset( zes_device_handle_t hDevice, ze_bool_t force ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zesDeviceResetExt( zes_device_handle_t hDevice, zes_reset_properties_t* pProperties ) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zesDeviceProcessesGetState( zes_device_handle_t hDevice, uint32_t* pCount, zes_process_state_t* pProcesses ) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zesDevicePciGetProperties( zes_device_handle_t hDevice, zes_pci_properties_t* pProperties ) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zesDevicePciGetState( zes_device_handle_t hDevice, zes_pci_state_t* pState ) {return ZE_RESULT_SUCCESS;}
@@ -54,6 +55,7 @@ public:
     virtual ze_result_t zesDeviceEnumEngineGroups( zes_device_handle_t hDevice, uint32_t* pCount, zes_engine_handle_t* phEngine ) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zesEngineGetProperties( zes_engine_handle_t hEngine, zes_engine_properties_t* pProperties ) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zesEngineGetActivity( zes_engine_handle_t hEngine, zes_engine_stats_t* pStats ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zesEngineGetActivityExt( zes_engine_handle_t hEngine, uint32_t* pCount, zes_engine_stats_t* pStats ) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zesDeviceEventRegister( zes_device_handle_t hDevice, zes_event_type_flags_t events ) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zesDriverEventListen( ze_driver_handle_t hDriver, uint32_t timeout, uint32_t count, zes_device_handle_t* phDevices, uint32_t* pNumDeviceEvents, zes_event_type_flags_t* pEvents ) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zesDriverEventListenEx( ze_driver_handle_t hDriver, uint64_t timeout, uint32_t count, zes_device_handle_t* phDevices, uint32_t* pNumDeviceEvents, zes_event_type_flags_t* pEvents ) {return ZE_RESULT_SUCCESS;}
@@ -64,6 +66,8 @@ public:
     virtual ze_result_t zesFabricPortSetConfig( zes_fabric_port_handle_t hPort, const zes_fabric_port_config_t* pConfig ) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zesFabricPortGetState( zes_fabric_port_handle_t hPort, zes_fabric_port_state_t* pState ) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zesFabricPortGetThroughput( zes_fabric_port_handle_t hPort, zes_fabric_port_throughput_t* pThroughput ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zesFabricPortGetFabricErrorCounters( zes_fabric_port_handle_t hPort, zes_fabric_port_error_counters_t* pErrors ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zesFabricPortGetMultiPortThroughput( zes_device_handle_t hDevice, uint32_t numPorts, zes_fabric_port_handle_t* phPort, zes_fabric_port_throughput_t** pThroughput ) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zesDeviceEnumFans( zes_device_handle_t hDevice, uint32_t* pCount, zes_fan_handle_t* phFan ) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zesFanGetProperties( zes_fan_handle_t hFan, zes_fan_properties_t* pProperties ) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zesFanGetConfig( zes_fan_handle_t hFan, zes_fan_config_t* pConfig ) {return ZE_RESULT_SUCCESS;}

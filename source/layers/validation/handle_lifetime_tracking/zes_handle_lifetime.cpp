@@ -72,6 +72,18 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
+    ZESHandleLifetimeValidation::zesDeviceResetExt(
+        zes_device_handle_t hDevice,                    ///< [in] Sysman handle for the device
+        zes_reset_properties_t* pProperties             ///< [in] Device reset properties to apply
+        )
+    { 
+        
+        if ( !context.handleLifetime->isHandleValid( hDevice )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    ze_result_t
     ZESHandleLifetimeValidation::zesDeviceProcessesGetState(
         zes_device_handle_t hDevice,                    ///< [in] Sysman handle for the device
         uint32_t* pCount,                               ///< [in,out] pointer to the number of processes.
@@ -532,6 +544,26 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
+    ZESHandleLifetimeValidation::zesEngineGetActivityExt(
+        zes_engine_handle_t hEngine,                    ///< [in] Handle for the component.
+        uint32_t* pCount,                               ///< [in,out] Pointer to the number of engine stats descriptors.
+                                                        ///<  - if count is zero, the driver shall update the value with the total
+                                                        ///< number of components of this type.
+                                                        ///<  - if count is greater than the total number of components available,
+                                                        ///< the driver shall update the value with the correct number of
+                                                        ///< components available.
+        zes_engine_stats_t* pStats                      ///< [in,out][optional][range(0, *pCount)] array of engine group activity counters.
+                                                        ///<  - if count is less than the total number of components available, the
+                                                        ///< driver shall only retrieve that number of components.
+        )
+    { 
+        
+        if ( !context.handleLifetime->isHandleValid( hEngine )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    ze_result_t
     ZESHandleLifetimeValidation::zesDeviceEventRegister(
         zes_device_handle_t hDevice,                    ///< [in] The device handle.
         zes_event_type_flags_t events                   ///< [in] List of events to listen to.
@@ -701,6 +733,44 @@ namespace validation_layer
         
         if ( !context.handleLifetime->isHandleValid( hPort )){
                 return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    ze_result_t
+    ZESHandleLifetimeValidation::zesFabricPortGetFabricErrorCounters(
+        zes_fabric_port_handle_t hPort,                 ///< [in] Handle for the component.
+        zes_fabric_port_error_counters_t* pErrors       ///< [in,out] Will contain the Fabric port Error counters.
+        )
+    { 
+        
+        if ( !context.handleLifetime->isHandleValid( hPort )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    ze_result_t
+    ZESHandleLifetimeValidation::zesFabricPortGetMultiPortThroughput(
+        zes_device_handle_t hDevice,                    ///< [in] Sysman handle of the device.
+        uint32_t numPorts,                              ///< [in] Number of ports enumerated in function ::zesDeviceEnumFabricPorts
+        zes_fabric_port_handle_t* phPort,               ///< [in][range(0, numPorts)] array of handle of components of this type.
+                                                        ///< if numPorts is less than the number of components of this type that
+                                                        ///< are available, then the driver shall only retrieve that number of
+                                                        ///< component handles.
+                                                        ///< if numPorts is greater than the number of components of this type that
+                                                        ///< are available, then the driver shall only retrieve up to correct
+                                                        ///< number of available ports enumerated in ::zesDeviceEnumFabricPorts.
+        zes_fabric_port_throughput_t** pThroughput      ///< [out][range(0, numPorts)] array of Fabric port throughput counters
+                                                        ///< from multiple ports of type ::zes_fabric_port_throughput_t.
+        )
+    { 
+        
+        if ( !context.handleLifetime->isHandleValid( hDevice )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        for (size_t i = 0; ( nullptr != phPort) && (i < numPorts); ++i){
+            if (!context.handleLifetime->isHandleValid( phPort[i] )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+            }
         }
         return ZE_RESULT_SUCCESS;
     }

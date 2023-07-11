@@ -245,6 +245,31 @@ namespace loader
     }
 
     ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesDeviceResetExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zesDeviceResetExt(
+        zes_device_handle_t hDevice,                    ///< [in] Sysman handle for the device
+        zes_reset_properties_t* pProperties             ///< [in] Device reset properties to apply
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_device_object_t*>( hDevice )->dditable;
+        auto pfnResetExt = dditable->zes.Device.pfnResetExt;
+        if( nullptr == pfnResetExt )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hDevice = reinterpret_cast<zes_device_object_t*>( hDevice )->handle;
+
+        // forward to device-driver
+        result = pfnResetExt( hDevice, pProperties );
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
     /// @brief Intercept function for zesDeviceProcessesGetState
     __zedlllocal ze_result_t ZE_APICALL
     zesDeviceProcessesGetState(
@@ -1153,6 +1178,39 @@ namespace loader
     }
 
     ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesEngineGetActivityExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zesEngineGetActivityExt(
+        zes_engine_handle_t hEngine,                    ///< [in] Handle for the component.
+        uint32_t* pCount,                               ///< [in,out] Pointer to the number of engine stats descriptors.
+                                                        ///<  - if count is zero, the driver shall update the value with the total
+                                                        ///< number of components of this type.
+                                                        ///<  - if count is greater than the total number of components available,
+                                                        ///< the driver shall update the value with the correct number of
+                                                        ///< components available.
+        zes_engine_stats_t* pStats                      ///< [in,out][optional][range(0, *pCount)] array of engine group activity counters.
+                                                        ///<  - if count is less than the total number of components available, the
+                                                        ///< driver shall only retrieve that number of components.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_engine_object_t*>( hEngine )->dditable;
+        auto pfnGetActivityExt = dditable->zes.Engine.pfnGetActivityExt;
+        if( nullptr == pfnGetActivityExt )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hEngine = reinterpret_cast<zes_engine_object_t*>( hEngine )->handle;
+
+        // forward to device-driver
+        result = pfnGetActivityExt( hEngine, pCount, pStats );
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
     /// @brief Intercept function for zesDeviceEventRegister
     __zedlllocal ze_result_t ZE_APICALL
     zesDeviceEventRegister(
@@ -1468,6 +1526,71 @@ namespace loader
 
         // forward to device-driver
         result = pfnGetThroughput( hPort, pThroughput );
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesFabricPortGetFabricErrorCounters
+    __zedlllocal ze_result_t ZE_APICALL
+    zesFabricPortGetFabricErrorCounters(
+        zes_fabric_port_handle_t hPort,                 ///< [in] Handle for the component.
+        zes_fabric_port_error_counters_t* pErrors       ///< [in,out] Will contain the Fabric port Error counters.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_fabric_port_object_t*>( hPort )->dditable;
+        auto pfnGetFabricErrorCounters = dditable->zes.FabricPort.pfnGetFabricErrorCounters;
+        if( nullptr == pfnGetFabricErrorCounters )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hPort = reinterpret_cast<zes_fabric_port_object_t*>( hPort )->handle;
+
+        // forward to device-driver
+        result = pfnGetFabricErrorCounters( hPort, pErrors );
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesFabricPortGetMultiPortThroughput
+    __zedlllocal ze_result_t ZE_APICALL
+    zesFabricPortGetMultiPortThroughput(
+        zes_device_handle_t hDevice,                    ///< [in] Sysman handle of the device.
+        uint32_t numPorts,                              ///< [in] Number of ports enumerated in function ::zesDeviceEnumFabricPorts
+        zes_fabric_port_handle_t* phPort,               ///< [in][range(0, numPorts)] array of handle of components of this type.
+                                                        ///< if numPorts is less than the number of components of this type that
+                                                        ///< are available, then the driver shall only retrieve that number of
+                                                        ///< component handles.
+                                                        ///< if numPorts is greater than the number of components of this type that
+                                                        ///< are available, then the driver shall only retrieve up to correct
+                                                        ///< number of available ports enumerated in ::zesDeviceEnumFabricPorts.
+        zes_fabric_port_throughput_t** pThroughput      ///< [out][range(0, numPorts)] array of Fabric port throughput counters
+                                                        ///< from multiple ports of type ::zes_fabric_port_throughput_t.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_device_object_t*>( hDevice )->dditable;
+        auto pfnGetMultiPortThroughput = dditable->zes.FabricPort.pfnGetMultiPortThroughput;
+        if( nullptr == pfnGetMultiPortThroughput )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hDevice = reinterpret_cast<zes_device_object_t*>( hDevice )->handle;
+
+        // convert loader handles to driver handles
+        auto phPortLocal = new zes_fabric_port_handle_t [numPorts];
+        for( size_t i = 0; ( nullptr != phPort ) && ( i < numPorts ); ++i )
+            phPortLocal[ i ] = reinterpret_cast<zes_fabric_port_object_t*>( phPort[ i ] )->handle;
+
+        // forward to device-driver
+        result = pfnGetMultiPortThroughput( hDevice, numPorts, phPortLocal, pThroughput );
+        delete []phPortLocal;
 
         return result;
     }
@@ -3955,6 +4078,7 @@ zesGetDeviceProcAddrTable(
             pDdiTable->pfnResetOverclockSettings                   = loader::zesDeviceResetOverclockSettings;
             pDdiTable->pfnReadOverclockState                       = loader::zesDeviceReadOverclockState;
             pDdiTable->pfnEnumOverclockDomains                     = loader::zesDeviceEnumOverclockDomains;
+            pDdiTable->pfnResetExt                                 = loader::zesDeviceResetExt;
         }
         else
         {
@@ -4185,6 +4309,7 @@ zesGetEngineProcAddrTable(
             // return pointers to loader's DDIs
             pDdiTable->pfnGetProperties                            = loader::zesEngineGetProperties;
             pDdiTable->pfnGetActivity                              = loader::zesEngineGetActivity;
+            pDdiTable->pfnGetActivityExt                           = loader::zesEngineGetActivityExt;
         }
         else
         {
@@ -4265,6 +4390,8 @@ zesGetFabricPortProcAddrTable(
             pDdiTable->pfnSetConfig                                = loader::zesFabricPortSetConfig;
             pDdiTable->pfnGetState                                 = loader::zesFabricPortGetState;
             pDdiTable->pfnGetThroughput                            = loader::zesFabricPortGetThroughput;
+            pDdiTable->pfnGetFabricErrorCounters                   = loader::zesFabricPortGetFabricErrorCounters;
+            pDdiTable->pfnGetMultiPortThroughput                   = loader::zesFabricPortGetMultiPortThroughput;
         }
         else
         {

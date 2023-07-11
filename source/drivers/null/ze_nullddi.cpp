@@ -258,6 +258,32 @@ namespace driver
     }
 
     ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeDeviceGetRootDevice
+    __zedlllocal ze_result_t ZE_APICALL
+    zeDeviceGetRootDevice(
+        ze_device_handle_t hDevice,                     ///< [in] handle of the device object
+        ze_device_handle_t* phRootDevice                ///< [in,out] parent root device.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnGetRootDevice = context.zeDdiTable.Device.pfnGetRootDevice;
+        if( nullptr != pfnGetRootDevice )
+        {
+            result = pfnGetRootDevice( hDevice, phRootDevice );
+        }
+        else
+        {
+            // generic implementation
+            *phRootDevice = reinterpret_cast<ze_device_handle_t>( context.get() );
+
+        }
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
     /// @brief Intercept function for zeDeviceGetSubDevices
     __zedlllocal ze_result_t ZE_APICALL
     zeDeviceGetSubDevices(
@@ -2399,6 +2425,61 @@ namespace driver
     }
 
     ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeMemSetAtomicAccessAttributeExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zeMemSetAtomicAccessAttributeExp(
+        ze_context_handle_t hContext,                   ///< [in] handle of context
+        ze_device_handle_t hDevice,                     ///< [in] device associated with the memory advice
+        const void* ptr,                                ///< [in] Pointer to the start of the memory range
+        size_t size,                                    ///< [in] Size in bytes of the memory range
+        ze_memory_atomic_attr_exp_flags_t attr          ///< [in] Atomic access attributes to set for the specified range.
+                                                        ///< Must be 0 (default) or a valid combination of ::ze_memory_atomic_attr_exp_flag_t.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnSetAtomicAccessAttributeExp = context.zeDdiTable.MemExp.pfnSetAtomicAccessAttributeExp;
+        if( nullptr != pfnSetAtomicAccessAttributeExp )
+        {
+            result = pfnSetAtomicAccessAttributeExp( hContext, hDevice, ptr, size, attr );
+        }
+        else
+        {
+            // generic implementation
+        }
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeMemGetAtomicAccessAttributeExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zeMemGetAtomicAccessAttributeExp(
+        ze_context_handle_t hContext,                   ///< [in] handle of context
+        ze_device_handle_t hDevice,                     ///< [in] device associated with the memory advice
+        const void* ptr,                                ///< [in] Pointer to the start of the memory range
+        size_t size,                                    ///< [in] Size in bytes of the memory range
+        ze_memory_atomic_attr_exp_flags_t* pAttr        ///< [out] Atomic access attributes for the specified range
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnGetAtomicAccessAttributeExp = context.zeDdiTable.MemExp.pfnGetAtomicAccessAttributeExp;
+        if( nullptr != pfnGetAtomicAccessAttributeExp )
+        {
+            result = pfnGetAtomicAccessAttributeExp( hContext, hDevice, ptr, size, pAttr );
+        }
+        else
+        {
+            // generic implementation
+        }
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
     /// @brief Intercept function for zeModuleCreate
     __zedlllocal ze_result_t ZE_APICALL
     zeModuleCreate(
@@ -4161,6 +4242,239 @@ namespace driver
         return result;
     }
 
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeRTASBuilderCreateExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zeRTASBuilderCreateExp(
+        ze_driver_handle_t hDriver,                     ///< [in] handle of driver object
+        const ze_rtas_builder_exp_desc_t* pDescriptor,  ///< [in] pointer to builder descriptor
+        ze_rtas_builder_exp_handle_t* phBuilder         ///< [out] handle of builder object
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnCreateExp = context.zeDdiTable.RTASBuilderExp.pfnCreateExp;
+        if( nullptr != pfnCreateExp )
+        {
+            result = pfnCreateExp( hDriver, pDescriptor, phBuilder );
+        }
+        else
+        {
+            // generic implementation
+            *phBuilder = reinterpret_cast<ze_rtas_builder_exp_handle_t>( context.get() );
+
+        }
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeRTASBuilderGetBuildPropertiesExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zeRTASBuilderGetBuildPropertiesExp(
+        ze_rtas_builder_exp_handle_t hBuilder,          ///< [in] handle of builder object
+        const ze_rtas_builder_build_op_exp_desc_t* pBuildOpDescriptor,  ///< [in] pointer to build operation descriptor
+        ze_rtas_builder_exp_properties_t* pProperties   ///< [in,out] query result for builder properties
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnGetBuildPropertiesExp = context.zeDdiTable.RTASBuilderExp.pfnGetBuildPropertiesExp;
+        if( nullptr != pfnGetBuildPropertiesExp )
+        {
+            result = pfnGetBuildPropertiesExp( hBuilder, pBuildOpDescriptor, pProperties );
+        }
+        else
+        {
+            // generic implementation
+        }
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeDriverRTASFormatCompatibilityCheckExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zeDriverRTASFormatCompatibilityCheckExp(
+        ze_driver_handle_t hDriver,                     ///< [in] handle of driver object
+        ze_rtas_format_exp_t rtasFormatA,               ///< [in] operand A
+        ze_rtas_format_exp_t rtasFormatB                ///< [in] operand B
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnRTASFormatCompatibilityCheckExp = context.zeDdiTable.DriverExp.pfnRTASFormatCompatibilityCheckExp;
+        if( nullptr != pfnRTASFormatCompatibilityCheckExp )
+        {
+            result = pfnRTASFormatCompatibilityCheckExp( hDriver, rtasFormatA, rtasFormatB );
+        }
+        else
+        {
+            // generic implementation
+        }
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeRTASBuilderBuildExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zeRTASBuilderBuildExp(
+        ze_rtas_builder_exp_handle_t hBuilder,          ///< [in] handle of builder object
+        const ze_rtas_builder_build_op_exp_desc_t* pBuildOpDescriptor,  ///< [in] pointer to build operation descriptor
+        void* pScratchBuffer,                           ///< [in][range(0, `scratchBufferSizeBytes`)] scratch buffer to be used
+                                                        ///< during acceleration structure construction
+        size_t scratchBufferSizeBytes,                  ///< [in] size of scratch buffer, in bytes
+        void* pRtasBuffer,                              ///< [in] pointer to destination buffer
+        size_t rtasBufferSizeBytes,                     ///< [in] destination buffer size, in bytes
+        ze_rtas_parallel_operation_exp_handle_t hParallelOperation, ///< [in][optional] handle to parallel operation object
+        void* pBuildUserPtr,                            ///< [in][optional] pointer passed to callbacks
+        ze_rtas_aabb_exp_t* pBounds,                    ///< [in,out][optional] pointer to destination address for acceleration
+                                                        ///< structure bounds
+        size_t* pRtasBufferSizeBytes                    ///< [out][optional] updated acceleration structure size requirement, in
+                                                        ///< bytes
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnBuildExp = context.zeDdiTable.RTASBuilderExp.pfnBuildExp;
+        if( nullptr != pfnBuildExp )
+        {
+            result = pfnBuildExp( hBuilder, pBuildOpDescriptor, pScratchBuffer, scratchBufferSizeBytes, pRtasBuffer, rtasBufferSizeBytes, hParallelOperation, pBuildUserPtr, pBounds, pRtasBufferSizeBytes );
+        }
+        else
+        {
+            // generic implementation
+        }
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeRTASBuilderDestroyExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zeRTASBuilderDestroyExp(
+        ze_rtas_builder_exp_handle_t hBuilder           ///< [in][release] handle of builder object to destroy
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnDestroyExp = context.zeDdiTable.RTASBuilderExp.pfnDestroyExp;
+        if( nullptr != pfnDestroyExp )
+        {
+            result = pfnDestroyExp( hBuilder );
+        }
+        else
+        {
+            // generic implementation
+
+        }
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeRTASParallelOperationCreateExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zeRTASParallelOperationCreateExp(
+        ze_driver_handle_t hDriver,                     ///< [in] handle of driver object
+        ze_rtas_parallel_operation_exp_handle_t* phParallelOperation///< [out] handle of parallel operation object
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnCreateExp = context.zeDdiTable.RTASParallelOperationExp.pfnCreateExp;
+        if( nullptr != pfnCreateExp )
+        {
+            result = pfnCreateExp( hDriver, phParallelOperation );
+        }
+        else
+        {
+            // generic implementation
+            *phParallelOperation = reinterpret_cast<ze_rtas_parallel_operation_exp_handle_t>( context.get() );
+
+        }
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeRTASParallelOperationGetPropertiesExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zeRTASParallelOperationGetPropertiesExp(
+        ze_rtas_parallel_operation_exp_handle_t hParallelOperation, ///< [in] handle of parallel operation object
+        ze_rtas_parallel_operation_exp_properties_t* pProperties///< [in,out] query result for parallel operation properties
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnGetPropertiesExp = context.zeDdiTable.RTASParallelOperationExp.pfnGetPropertiesExp;
+        if( nullptr != pfnGetPropertiesExp )
+        {
+            result = pfnGetPropertiesExp( hParallelOperation, pProperties );
+        }
+        else
+        {
+            // generic implementation
+        }
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeRTASParallelOperationJoinExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zeRTASParallelOperationJoinExp(
+        ze_rtas_parallel_operation_exp_handle_t hParallelOperation  ///< [in] handle of parallel operation object
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnJoinExp = context.zeDdiTable.RTASParallelOperationExp.pfnJoinExp;
+        if( nullptr != pfnJoinExp )
+        {
+            result = pfnJoinExp( hParallelOperation );
+        }
+        else
+        {
+            // generic implementation
+        }
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeRTASParallelOperationDestroyExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zeRTASParallelOperationDestroyExp(
+        ze_rtas_parallel_operation_exp_handle_t hParallelOperation  ///< [in][release] handle of parallel operation object to destroy
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnDestroyExp = context.zeDdiTable.RTASParallelOperationExp.pfnDestroyExp;
+        if( nullptr != pfnDestroyExp )
+        {
+            result = pfnDestroyExp( hParallelOperation );
+        }
+        else
+        {
+            // generic implementation
+
+        }
+
+        return result;
+    }
+
 } // namespace driver
 
 #if defined(__cplusplus)
@@ -4190,6 +4504,72 @@ zeGetGlobalProcAddrTable(
     ze_result_t result = ZE_RESULT_SUCCESS;
 
     pDdiTable->pfnInit                                   = driver::zeInit;
+
+    return result;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Exported function for filling application's RTASBuilderExp table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+ZE_DLLEXPORT ze_result_t ZE_APICALL
+zeGetRTASBuilderExpProcAddrTable(
+    ze_api_version_t version,                       ///< [in] API version requested
+    ze_rtas_builder_exp_dditable_t* pDdiTable       ///< [in,out] pointer to table of DDI function pointers
+    )
+{
+    if( nullptr == pDdiTable )
+        return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+    if( driver::context.version < version )
+        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+
+    ze_result_t result = ZE_RESULT_SUCCESS;
+
+    pDdiTable->pfnCreateExp                              = driver::zeRTASBuilderCreateExp;
+
+    pDdiTable->pfnGetBuildPropertiesExp                  = driver::zeRTASBuilderGetBuildPropertiesExp;
+
+    pDdiTable->pfnBuildExp                               = driver::zeRTASBuilderBuildExp;
+
+    pDdiTable->pfnDestroyExp                             = driver::zeRTASBuilderDestroyExp;
+
+    return result;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Exported function for filling application's RTASParallelOperationExp table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+ZE_DLLEXPORT ze_result_t ZE_APICALL
+zeGetRTASParallelOperationExpProcAddrTable(
+    ze_api_version_t version,                       ///< [in] API version requested
+    ze_rtas_parallel_operation_exp_dditable_t* pDdiTable///< [in,out] pointer to table of DDI function pointers
+    )
+{
+    if( nullptr == pDdiTable )
+        return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+    if( driver::context.version < version )
+        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+
+    ze_result_t result = ZE_RESULT_SUCCESS;
+
+    pDdiTable->pfnCreateExp                              = driver::zeRTASParallelOperationCreateExp;
+
+    pDdiTable->pfnGetPropertiesExp                       = driver::zeRTASParallelOperationGetPropertiesExp;
+
+    pDdiTable->pfnJoinExp                                = driver::zeRTASParallelOperationJoinExp;
+
+    pDdiTable->pfnDestroyExp                             = driver::zeRTASParallelOperationDestroyExp;
 
     return result;
 }
@@ -4229,6 +4609,33 @@ zeGetDriverProcAddrTable(
     pDdiTable->pfnGetExtensionFunctionAddress            = driver::zeDriverGetExtensionFunctionAddress;
 
     pDdiTable->pfnGetLastErrorDescription                = driver::zeDriverGetLastErrorDescription;
+
+    return result;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Exported function for filling application's DriverExp table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+ZE_DLLEXPORT ze_result_t ZE_APICALL
+zeGetDriverExpProcAddrTable(
+    ze_api_version_t version,                       ///< [in] API version requested
+    ze_driver_exp_dditable_t* pDdiTable             ///< [in,out] pointer to table of DDI function pointers
+    )
+{
+    if( nullptr == pDdiTable )
+        return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+    if( driver::context.version < version )
+        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+
+    ze_result_t result = ZE_RESULT_SUCCESS;
+
+    pDdiTable->pfnRTASFormatCompatibilityCheckExp        = driver::zeDriverRTASFormatCompatibilityCheckExp;
 
     return result;
 }
@@ -4290,6 +4697,8 @@ zeGetDeviceProcAddrTable(
     pDdiTable->pfnSetCacheAdviceExt                      = driver::zeDeviceSetCacheAdviceExt;
 
     pDdiTable->pfnPciGetPropertiesExt                    = driver::zeDevicePciGetPropertiesExt;
+
+    pDdiTable->pfnGetRootDevice                          = driver::zeDeviceGetRootDevice;
 
     return result;
 }
@@ -4834,6 +5243,10 @@ zeGetMemExpProcAddrTable(
     pDdiTable->pfnGetIpcHandleFromFileDescriptorExp      = driver::zeMemGetIpcHandleFromFileDescriptorExp;
 
     pDdiTable->pfnGetFileDescriptorFromIpcHandleExp      = driver::zeMemGetFileDescriptorFromIpcHandleExp;
+
+    pDdiTable->pfnSetAtomicAccessAttributeExp            = driver::zeMemSetAtomicAccessAttributeExp;
+
+    pDdiTable->pfnGetAtomicAccessAttributeExp            = driver::zeMemGetAtomicAccessAttributeExp;
 
     return result;
 }

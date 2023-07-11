@@ -178,6 +178,30 @@ namespace driver
     }
 
     ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesDeviceResetExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zesDeviceResetExt(
+        zes_device_handle_t hDevice,                    ///< [in] Sysman handle for the device
+        zes_reset_properties_t* pProperties             ///< [in] Device reset properties to apply
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnResetExt = context.zesDdiTable.Device.pfnResetExt;
+        if( nullptr != pfnResetExt )
+        {
+            result = pfnResetExt( hDevice, pProperties );
+        }
+        else
+        {
+            // generic implementation
+        }
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
     /// @brief Intercept function for zesDeviceProcessesGetState
     __zedlllocal ze_result_t ZE_APICALL
     zesDeviceProcessesGetState(
@@ -1019,6 +1043,38 @@ namespace driver
     }
 
     ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesEngineGetActivityExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zesEngineGetActivityExt(
+        zes_engine_handle_t hEngine,                    ///< [in] Handle for the component.
+        uint32_t* pCount,                               ///< [in,out] Pointer to the number of engine stats descriptors.
+                                                        ///<  - if count is zero, the driver shall update the value with the total
+                                                        ///< number of components of this type.
+                                                        ///<  - if count is greater than the total number of components available,
+                                                        ///< the driver shall update the value with the correct number of
+                                                        ///< components available.
+        zes_engine_stats_t* pStats                      ///< [in,out][optional][range(0, *pCount)] array of engine group activity counters.
+                                                        ///<  - if count is less than the total number of components available, the
+                                                        ///< driver shall only retrieve that number of components.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnGetActivityExt = context.zesDdiTable.Engine.pfnGetActivityExt;
+        if( nullptr != pfnGetActivityExt )
+        {
+            result = pfnGetActivityExt( hEngine, pCount, pStats );
+        }
+        else
+        {
+            // generic implementation
+        }
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
     /// @brief Intercept function for zesDeviceEventRegister
     __zedlllocal ze_result_t ZE_APICALL
     zesDeviceEventRegister(
@@ -1295,6 +1351,63 @@ namespace driver
         if( nullptr != pfnGetThroughput )
         {
             result = pfnGetThroughput( hPort, pThroughput );
+        }
+        else
+        {
+            // generic implementation
+        }
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesFabricPortGetFabricErrorCounters
+    __zedlllocal ze_result_t ZE_APICALL
+    zesFabricPortGetFabricErrorCounters(
+        zes_fabric_port_handle_t hPort,                 ///< [in] Handle for the component.
+        zes_fabric_port_error_counters_t* pErrors       ///< [in,out] Will contain the Fabric port Error counters.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnGetFabricErrorCounters = context.zesDdiTable.FabricPort.pfnGetFabricErrorCounters;
+        if( nullptr != pfnGetFabricErrorCounters )
+        {
+            result = pfnGetFabricErrorCounters( hPort, pErrors );
+        }
+        else
+        {
+            // generic implementation
+        }
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesFabricPortGetMultiPortThroughput
+    __zedlllocal ze_result_t ZE_APICALL
+    zesFabricPortGetMultiPortThroughput(
+        zes_device_handle_t hDevice,                    ///< [in] Sysman handle of the device.
+        uint32_t numPorts,                              ///< [in] Number of ports enumerated in function ::zesDeviceEnumFabricPorts
+        zes_fabric_port_handle_t* phPort,               ///< [in][range(0, numPorts)] array of handle of components of this type.
+                                                        ///< if numPorts is less than the number of components of this type that
+                                                        ///< are available, then the driver shall only retrieve that number of
+                                                        ///< component handles.
+                                                        ///< if numPorts is greater than the number of components of this type that
+                                                        ///< are available, then the driver shall only retrieve up to correct
+                                                        ///< number of available ports enumerated in ::zesDeviceEnumFabricPorts.
+        zes_fabric_port_throughput_t** pThroughput      ///< [out][range(0, numPorts)] array of Fabric port throughput counters
+                                                        ///< from multiple ports of type ::zes_fabric_port_throughput_t.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnGetMultiPortThroughput = context.zesDdiTable.FabricPort.pfnGetMultiPortThroughput;
+        if( nullptr != pfnGetMultiPortThroughput )
+        {
+            result = pfnGetMultiPortThroughput( hDevice, numPorts, phPort, pThroughput );
         }
         else
         {
@@ -3507,6 +3620,8 @@ zesGetDeviceProcAddrTable(
 
     pDdiTable->pfnEnumOverclockDomains                   = driver::zesDeviceEnumOverclockDomains;
 
+    pDdiTable->pfnResetExt                               = driver::zesDeviceResetExt;
+
     return result;
 }
 
@@ -3598,6 +3713,8 @@ zesGetEngineProcAddrTable(
 
     pDdiTable->pfnGetActivity                            = driver::zesEngineGetActivity;
 
+    pDdiTable->pfnGetActivityExt                         = driver::zesEngineGetActivityExt;
+
     return result;
 }
 
@@ -3634,6 +3751,10 @@ zesGetFabricPortProcAddrTable(
     pDdiTable->pfnGetState                               = driver::zesFabricPortGetState;
 
     pDdiTable->pfnGetThroughput                          = driver::zesFabricPortGetThroughput;
+
+    pDdiTable->pfnGetFabricErrorCounters                 = driver::zesFabricPortGetFabricErrorCounters;
+
+    pDdiTable->pfnGetMultiPortThroughput                 = driver::zesFabricPortGetMultiPortThroughput;
 
     return result;
 }

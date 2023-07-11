@@ -117,6 +117,18 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
+    ZEHandleLifetimeValidation::zeDeviceGetRootDevice(
+        ze_device_handle_t hDevice,                     ///< [in] handle of the device object
+        ze_device_handle_t* phRootDevice                ///< [in,out] parent root device.
+        )
+    { 
+        
+        if ( !context.handleLifetime->isHandleValid( hDevice )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    ze_result_t
     ZEHandleLifetimeValidation::zeDeviceGetSubDevices(
         ze_device_handle_t hDevice,                     ///< [in] handle of the device object
         uint32_t* pCount,                               ///< [in,out] pointer to the number of sub-devices.
@@ -1533,6 +1545,43 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
+    ZEHandleLifetimeValidation::zeMemSetAtomicAccessAttributeExp(
+        ze_context_handle_t hContext,                   ///< [in] handle of context
+        ze_device_handle_t hDevice,                     ///< [in] device associated with the memory advice
+        const void* ptr,                                ///< [in] Pointer to the start of the memory range
+        size_t size,                                    ///< [in] Size in bytes of the memory range
+        ze_memory_atomic_attr_exp_flags_t attr          ///< [in] Atomic access attributes to set for the specified range.
+                                                        ///< Must be 0 (default) or a valid combination of ::ze_memory_atomic_attr_exp_flag_t.
+        )
+    { 
+        
+        if ( !context.handleLifetime->isHandleValid( hContext )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        if ( !context.handleLifetime->isHandleValid( hDevice )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    ze_result_t
+    ZEHandleLifetimeValidation::zeMemGetAtomicAccessAttributeExp(
+        ze_context_handle_t hContext,                   ///< [in] handle of context
+        ze_device_handle_t hDevice,                     ///< [in] device associated with the memory advice
+        const void* ptr,                                ///< [in] Pointer to the start of the memory range
+        size_t size,                                    ///< [in] Size in bytes of the memory range
+        ze_memory_atomic_attr_exp_flags_t* pAttr        ///< [out] Atomic access attributes for the specified range
+        )
+    { 
+        
+        if ( !context.handleLifetime->isHandleValid( hContext )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        if ( !context.handleLifetime->isHandleValid( hDevice )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    ze_result_t
     ZEHandleLifetimeValidation::zeModuleCreate(
         ze_context_handle_t hContext,                   ///< [in] handle of the context object
         ze_device_handle_t hDevice,                     ///< [in] handle of the device
@@ -2645,6 +2694,128 @@ namespace validation_layer
                 return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
         }
         if ( !context.handleLifetime->isHandleValid( hDevice )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    ze_result_t
+    ZEHandleLifetimeValidation::zeRTASBuilderCreateExp(
+        ze_driver_handle_t hDriver,                     ///< [in] handle of driver object
+        const ze_rtas_builder_exp_desc_t* pDescriptor,  ///< [in] pointer to builder descriptor
+        ze_rtas_builder_exp_handle_t* phBuilder         ///< [out] handle of builder object
+        )
+    { 
+        
+        if ( !context.handleLifetime->isHandleValid( hDriver )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    ze_result_t
+    ZEHandleLifetimeValidation::zeRTASBuilderGetBuildPropertiesExp(
+        ze_rtas_builder_exp_handle_t hBuilder,          ///< [in] handle of builder object
+        const ze_rtas_builder_build_op_exp_desc_t* pBuildOpDescriptor,  ///< [in] pointer to build operation descriptor
+        ze_rtas_builder_exp_properties_t* pProperties   ///< [in,out] query result for builder properties
+        )
+    { 
+        
+        if ( !context.handleLifetime->isHandleValid( hBuilder )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    ze_result_t
+    ZEHandleLifetimeValidation::zeDriverRTASFormatCompatibilityCheckExp(
+        ze_driver_handle_t hDriver,                     ///< [in] handle of driver object
+        ze_rtas_format_exp_t rtasFormatA,               ///< [in] operand A
+        ze_rtas_format_exp_t rtasFormatB                ///< [in] operand B
+        )
+    { 
+        
+        if ( !context.handleLifetime->isHandleValid( hDriver )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    ze_result_t
+    ZEHandleLifetimeValidation::zeRTASBuilderBuildExp(
+        ze_rtas_builder_exp_handle_t hBuilder,          ///< [in] handle of builder object
+        const ze_rtas_builder_build_op_exp_desc_t* pBuildOpDescriptor,  ///< [in] pointer to build operation descriptor
+        void* pScratchBuffer,                           ///< [in][range(0, `scratchBufferSizeBytes`)] scratch buffer to be used
+                                                        ///< during acceleration structure construction
+        size_t scratchBufferSizeBytes,                  ///< [in] size of scratch buffer, in bytes
+        void* pRtasBuffer,                              ///< [in] pointer to destination buffer
+        size_t rtasBufferSizeBytes,                     ///< [in] destination buffer size, in bytes
+        ze_rtas_parallel_operation_exp_handle_t hParallelOperation, ///< [in][optional] handle to parallel operation object
+        void* pBuildUserPtr,                            ///< [in][optional] pointer passed to callbacks
+        ze_rtas_aabb_exp_t* pBounds,                    ///< [in,out][optional] pointer to destination address for acceleration
+                                                        ///< structure bounds
+        size_t* pRtasBufferSizeBytes                    ///< [out][optional] updated acceleration structure size requirement, in
+                                                        ///< bytes
+        )
+    { 
+        
+        if ( !context.handleLifetime->isHandleValid( hBuilder )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        if (hParallelOperation && !context.handleLifetime->isHandleValid( hParallelOperation )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    ze_result_t
+    ZEHandleLifetimeValidation::zeRTASBuilderDestroyExp(
+        ze_rtas_builder_exp_handle_t hBuilder           ///< [in][release] handle of builder object to destroy
+        )
+    { 
+        
+        if ( !context.handleLifetime->isHandleValid( hBuilder )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    ze_result_t
+    ZEHandleLifetimeValidation::zeRTASParallelOperationCreateExp(
+        ze_driver_handle_t hDriver,                     ///< [in] handle of driver object
+        ze_rtas_parallel_operation_exp_handle_t* phParallelOperation///< [out] handle of parallel operation object
+        )
+    { 
+        
+        if ( !context.handleLifetime->isHandleValid( hDriver )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    ze_result_t
+    ZEHandleLifetimeValidation::zeRTASParallelOperationGetPropertiesExp(
+        ze_rtas_parallel_operation_exp_handle_t hParallelOperation, ///< [in] handle of parallel operation object
+        ze_rtas_parallel_operation_exp_properties_t* pProperties///< [in,out] query result for parallel operation properties
+        )
+    { 
+        
+        if ( !context.handleLifetime->isHandleValid( hParallelOperation )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    ze_result_t
+    ZEHandleLifetimeValidation::zeRTASParallelOperationJoinExp(
+        ze_rtas_parallel_operation_exp_handle_t hParallelOperation  ///< [in] handle of parallel operation object
+        )
+    { 
+        
+        if ( !context.handleLifetime->isHandleValid( hParallelOperation )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    ze_result_t
+    ZEHandleLifetimeValidation::zeRTASParallelOperationDestroyExp(
+        ze_rtas_parallel_operation_exp_handle_t hParallelOperation  ///< [in][release] handle of parallel operation object to destroy
+        )
+    { 
+        
+        if ( !context.handleLifetime->isHandleValid( hParallelOperation )){
                 return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
         }
         return ZE_RESULT_SUCCESS;

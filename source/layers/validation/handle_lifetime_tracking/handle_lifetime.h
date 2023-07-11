@@ -158,6 +158,12 @@ public:
   void addHandle(zes_overclock_handle_t handle) {
     overclockHandleStateMap.insert({handle, nullptr});
   }
+  void addHandle(ze_rtas_parallel_operation_exp_handle_t handle) {
+    rtasParallelOperationHandleStateMap.insert({handle, nullptr});
+  }
+  void addHandle(ze_rtas_builder_exp_handle_t handle) {
+    rtasBuilderHandleStateMap.insert({handle, nullptr});
+  }
 
   void removeHandle(ze_context_handle_t handle) {
     contextHandleStateMap.erase(handle);
@@ -289,6 +295,12 @@ public:
   }
   void removeHandle(zes_overclock_handle_t handle) {
     overclockHandleStateMap.erase(handle);
+  }
+  void removeHandle(ze_rtas_parallel_operation_exp_handle_t handle) {
+    rtasParallelOperationHandleStateMap.erase(handle);
+  }
+  void removeHandle(ze_rtas_builder_exp_handle_t handle) {
+    rtasBuilderHandleStateMap.erase(handle);
   }
 
   bool isHandleValid(ze_context_handle_t handle) {
@@ -441,6 +453,16 @@ public:
            overclockHandleStateMap.end();
   }
 
+  bool isHandleValid(ze_rtas_parallel_operation_exp_handle_t handle) {
+    return rtasParallelOperationHandleStateMap.find(handle) !=
+           rtasParallelOperationHandleStateMap.end();
+  }
+
+  bool isHandleValid(ze_rtas_builder_exp_handle_t handle) {
+    return rtasBuilderHandleStateMap.find(handle) !=
+           rtasBuilderHandleStateMap.end();
+  }
+
   bool isOpen(ze_command_list_handle_t handle) {
     return commandListHandleStateMap[handle]->is_open;
   }
@@ -580,6 +602,12 @@ private:
   std::unordered_map<zes_overclock_handle_t,
                      std::unique_ptr<zel_handle_state_t>>
       overclockHandleStateMap;
+  std::unordered_map<ze_rtas_parallel_operation_exp_handle_t,
+                     std::unique_ptr<zel_handle_state_t>>
+      rtasParallelOperationHandleStateMap;
+  std::unordered_map<ze_rtas_builder_exp_handle_t,
+                     std::unique_ptr<zel_handle_state_t>>
+      rtasBuilderHandleStateMap;
 };
 
 } // namespace validation_layer

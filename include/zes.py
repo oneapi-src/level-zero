@@ -4,7 +4,7 @@
  SPDX-License-Identifier: MIT
 
  @file zes.py
- @version v1.6-r1.6.10
+ @version v1.7-r1.7.0
 
  """
 import platform
@@ -148,6 +148,11 @@ class zes_structure_type_v(IntEnum):
     POWER_LIMIT_EXT_DESC = 0x27                                             ## ::zes_power_limit_ext_desc_t
     POWER_EXT_PROPERTIES = 0x28                                             ## ::zes_power_ext_properties_t
     OVERCLOCK_PROPERTIES = 0x29                                             ## ::zes_overclock_properties_t
+    FABRIC_PORT_ERROR_COUNTERS = 0x2a                                       ## ::zes_fabric_port_error_counters_t
+    ENGINE_EXT_PROPERTIES = 0x2b                                            ## ::zes_engine_ext_properties_t
+    RESET_PROPERTIES = 0x2c                                                 ## ::zes_reset_properties_t
+    DEVICE_EXT_PROPERTIES = 0x2d                                            ## ::zes_device_ext_properties_t
+    DEVICE_UUID = 0x2e                                                      ## ::zes_uuid_t
 
 class zes_structure_type_t(c_int):
     def __str__(self):
@@ -214,6 +219,10 @@ class zes_init_flags_t(c_int):
 ZES_STRING_PROPERTY_SIZE = 64
 
 ###############################################################################
+## @brief Maximum device universal unique id (UUID) size in bytes.
+ZES_MAX_UUID_SIZE = 16
+
+###############################################################################
 ## @brief Types of accelerator engines
 class zes_engine_type_flags_v(IntEnum):
     OTHER = ZE_BIT(0)                                                       ## Undefined types of accelerators.
@@ -253,6 +262,18 @@ class zes_reset_reason_flags_t(c_int):
 
 
 ###############################################################################
+## @brief Device reset type
+class zes_reset_type_v(IntEnum):
+    WARM = 0                                                                ## Apply warm reset
+    COLD = 1                                                                ## Apply cold reset
+    FLR = 2                                                                 ## Apply FLR reset
+
+class zes_reset_type_t(c_int):
+    def __str__(self):
+        return str(zes_reset_type_v(self.value))
+
+
+###############################################################################
 ## @brief Device state
 class zes_device_state_t(Structure):
     _fields_ = [
@@ -265,13 +286,60 @@ class zes_device_state_t(Structure):
     ]
 
 ###############################################################################
+## @brief Device reset properties
+class zes_reset_properties_t(Structure):
+    _fields_ = [
+        ("stype", zes_structure_type_t),                                ## [in] type of this structure
+        ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains stype and pNext).
+        ("force", ze_bool_t),                                           ## [in] If set to true, all applications that are currently using the
+                                                                        ## device will be forcibly killed.
+        ("resetType", zes_reset_type_t)                                 ## [in] Type of reset needs to be performed
+    ]
+
+###############################################################################
+## @brief Device universal unique id (UUID)
+class zes_uuid_t(Structure):
+    _fields_ = [
+        ("id", c_ubyte * ZES_MAX_UUID_SIZE)                             ## [out] opaque data representing a device UUID
+    ]
+
+###############################################################################
+## @brief Supported device types
+class zes_device_type_v(IntEnum):
+    GPU = 1                                                                 ## Graphics Processing Unit
+    CPU = 2                                                                 ## Central Processing Unit
+    FPGA = 3                                                                ## Field Programmable Gate Array
+    MCA = 4                                                                 ## Memory Copy Accelerator
+    VPU = 5                                                                 ## Vision Processing Unit
+
+class zes_device_type_t(c_int):
+    def __str__(self):
+        return str(zes_device_type_v(self.value))
+
+
+###############################################################################
+## @brief Supported device property flags
+class zes_device_property_flags_v(IntEnum):
+    INTEGRATED = ZE_BIT(0)                                                  ## Device is integrated with the Host.
+    SUBDEVICE = ZE_BIT(1)                                                   ## Device handle used for query represents a sub-device.
+    ECC = ZE_BIT(2)                                                         ## Device supports error correction memory access.
+    ONDEMANDPAGING = ZE_BIT(3)                                              ## Device supports on-demand page-faulting.
+
+class zes_device_property_flags_t(c_int):
+    def __str__(self):
+        return hex(self.value)
+
+
+###############################################################################
 ## @brief Device properties
 class zes_device_properties_t(Structure):
     _fields_ = [
         ("stype", zes_structure_type_t),                                ## [in] type of this structure
         ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
                                                                         ## structure (i.e. contains stype and pNext).
-        ("core", ze_device_properties_t),                               ## [out] Core device properties
+        ("core", ze_device_properties_t),                               ## [out] (Deprecated, use ::zes_uuid_t in the extended structure) Core
+                                                                        ## device properties
         ("numSubdevices", c_ulong),                                     ## [out] Number of sub-devices. A value of 0 indicates that this device
                                                                         ## doesn't have sub-devices.
         ("serialNumber", c_char * ZES_STRING_PROPERTY_SIZE),            ## [out] Manufacturing serial number (NULL terminated string value). Will
@@ -292,6 +360,19 @@ class zes_device_properties_t(Structure):
         ("driverVersion", c_char * ZES_STRING_PROPERTY_SIZE)            ## [out] Installed driver version (NULL terminated string value). Will be
                                                                         ## set to the string "unkown" if this cannot be determined for the
                                                                         ## device.
+    ]
+
+###############################################################################
+## @brief Device properties
+class zes_device_ext_properties_t(Structure):
+    _fields_ = [
+        ("stype", zes_structure_type_t),                                ## [in] type of this structure
+        ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains stype and pNext).
+        ("uuid", zes_uuid_t),                                           ## [out] universal unique identifier. Note: uuid obtained from Sysman API
+                                                                        ## is the same as from core API. Subdevices will have their own uuid.
+        ("type", zes_device_type_t),                                    ## [out] generic device type
+        ("flags", zes_device_property_flags_t)                          ## [out] 0 (none) or a valid combination of ::zes_device_property_flag_t
     ]
 
 ###############################################################################
@@ -834,6 +915,26 @@ class zes_engine_properties_t(Structure):
     ]
 
 ###############################################################################
+## @brief Extension properties related to Engine Groups
+## 
+## @details
+##     - This structure may be returned from ::zesEngineGetProperties via the
+##       `pNext` member of ::zes_engine_properties_t.
+##     - Used for SRIOV per Virtual Function device utilization by
+##       ::zes_engine_group_t
+class zes_engine_ext_properties_t(Structure):
+    _fields_ = [
+        ("stype", zes_structure_type_t),                                ## [in] type of this structure
+        ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains stype and pNext).
+        ("countOfVirtualFunctionInstance", c_ulong)                     ## [out] Number of Virtual Function(VF) instances associated with engine
+                                                                        ## to monitor the global utilization of hardware across all Virtual
+                                                                        ## Function from a Physical Function (PF) instance. These global and
+                                                                        ## VF-by-VF views should provide engine group and individual engine level
+                                                                        ## granularity.
+    ]
+
+###############################################################################
 ## @brief Engine activity counters
 ## 
 ## @details
@@ -1055,6 +1156,19 @@ class zes_fabric_port_throughput_t(Structure):
         ("txCounter", c_ulonglong)                                      ## [out] Monotonic counter for the number of bytes transmitted (sum of
                                                                         ## all lanes). This includes all protocol overhead, not only the GPU
                                                                         ## traffic.
+    ]
+
+###############################################################################
+## @brief Fabric Port Error Counters
+class zes_fabric_port_error_counters_t(Structure):
+    _fields_ = [
+        ("stype", zes_structure_type_t),                                ## [in] type of this structure
+        ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains stype and pNext).
+        ("linkFailureCount", c_ulonglong),                              ## [out] Link Failure Error Count reported per port
+        ("fwCommErrorCount", c_ulonglong),                              ## [out] Firmware Communication Error Count reported per device
+        ("fwErrorCount", c_ulonglong),                                  ## [out] Firmware reported Error Count reported per device
+        ("linkDegradeCount", c_ulonglong)                               ## [out] Link Degrade Error Count reported per port
     ]
 
 ###############################################################################
@@ -1496,6 +1610,12 @@ class zes_mem_state_t(Structure):
 ##       using the equation: %bw = 10^6 * ((s2.readCounter - s1.readCounter) +
 ##       (s2.writeCounter - s1.writeCounter)) / (s2.maxBandwidth *
 ##       (s2.timestamp - s1.timestamp))
+##     - Counter can roll over and rollover needs to be handled by comparing
+##       the current read against the previous read
+##     - Counter is a 32 byte transaction count, which means the calculated
+##       delta (delta = current_value - previous_value or delta = 2^32 -
+##       previous_value + current_value in case of rollover) needs to be
+##       multiplied by 32 to get delta between samples in actual byte count
 class zes_mem_bandwidth_t(Structure):
     _fields_ = [
         ("readCounter", c_ulonglong),                                   ## [out] Total bytes read from memory
@@ -1508,6 +1628,16 @@ class zes_mem_bandwidth_t(Structure):
                                                                         ## different structure since they are not guaranteed to have the same base.
                                                                         ## The absolute value of the timestamp is only valid during within the
                                                                         ## application and may be different on the next execution.
+    ]
+
+###############################################################################
+## @brief Extension properties for Memory bandwidth
+## 
+## @details
+##     - Number of counter bits
+class zes_mem_ext_bandwidth_t(Structure):
+    _fields_ = [
+        ("memoryTimestampValidBits", c_ulong)                           ## [out] Returns the number of valid bits in the timestamp values
     ]
 
 ###############################################################################
@@ -2329,6 +2459,13 @@ if __use_win_types:
 else:
     _zesDeviceEnumOverclockDomains_t = CFUNCTYPE( ze_result_t, zes_device_handle_t, POINTER(c_ulong), POINTER(zes_overclock_handle_t) )
 
+###############################################################################
+## @brief Function-pointer for zesDeviceResetExt
+if __use_win_types:
+    _zesDeviceResetExt_t = WINFUNCTYPE( ze_result_t, zes_device_handle_t, POINTER(zes_reset_properties_t) )
+else:
+    _zesDeviceResetExt_t = CFUNCTYPE( ze_result_t, zes_device_handle_t, POINTER(zes_reset_properties_t) )
+
 
 ###############################################################################
 ## @brief Table of Device functions pointers
@@ -2369,7 +2506,8 @@ class _zes_device_dditable_t(Structure):
         ("pfnGetOverclockControls", c_void_p),                          ## _zesDeviceGetOverclockControls_t
         ("pfnResetOverclockSettings", c_void_p),                        ## _zesDeviceResetOverclockSettings_t
         ("pfnReadOverclockState", c_void_p),                            ## _zesDeviceReadOverclockState_t
-        ("pfnEnumOverclockDomains", c_void_p)                           ## _zesDeviceEnumOverclockDomains_t
+        ("pfnEnumOverclockDomains", c_void_p),                          ## _zesDeviceEnumOverclockDomains_t
+        ("pfnResetExt", c_void_p)                                       ## _zesDeviceResetExt_t
     ]
 
 ###############################################################################
@@ -2812,13 +2950,21 @@ if __use_win_types:
 else:
     _zesEngineGetActivity_t = CFUNCTYPE( ze_result_t, zes_engine_handle_t, POINTER(zes_engine_stats_t) )
 
+###############################################################################
+## @brief Function-pointer for zesEngineGetActivityExt
+if __use_win_types:
+    _zesEngineGetActivityExt_t = WINFUNCTYPE( ze_result_t, zes_engine_handle_t, POINTER(c_ulong), POINTER(zes_engine_stats_t) )
+else:
+    _zesEngineGetActivityExt_t = CFUNCTYPE( ze_result_t, zes_engine_handle_t, POINTER(c_ulong), POINTER(zes_engine_stats_t) )
+
 
 ###############################################################################
 ## @brief Table of Engine functions pointers
 class _zes_engine_dditable_t(Structure):
     _fields_ = [
         ("pfnGetProperties", c_void_p),                                 ## _zesEngineGetProperties_t
-        ("pfnGetActivity", c_void_p)                                    ## _zesEngineGetActivity_t
+        ("pfnGetActivity", c_void_p),                                   ## _zesEngineGetActivity_t
+        ("pfnGetActivityExt", c_void_p)                                 ## _zesEngineGetActivityExt_t
     ]
 
 ###############################################################################
@@ -2948,6 +3094,20 @@ if __use_win_types:
 else:
     _zesFabricPortGetThroughput_t = CFUNCTYPE( ze_result_t, zes_fabric_port_handle_t, POINTER(zes_fabric_port_throughput_t) )
 
+###############################################################################
+## @brief Function-pointer for zesFabricPortGetFabricErrorCounters
+if __use_win_types:
+    _zesFabricPortGetFabricErrorCounters_t = WINFUNCTYPE( ze_result_t, zes_fabric_port_handle_t, POINTER(zes_fabric_port_error_counters_t) )
+else:
+    _zesFabricPortGetFabricErrorCounters_t = CFUNCTYPE( ze_result_t, zes_fabric_port_handle_t, POINTER(zes_fabric_port_error_counters_t) )
+
+###############################################################################
+## @brief Function-pointer for zesFabricPortGetMultiPortThroughput
+if __use_win_types:
+    _zesFabricPortGetMultiPortThroughput_t = WINFUNCTYPE( ze_result_t, zes_device_handle_t, c_ulong, POINTER(zes_fabric_port_handle_t), POINTER(zes_fabric_port_throughput_t*) )
+else:
+    _zesFabricPortGetMultiPortThroughput_t = CFUNCTYPE( ze_result_t, zes_device_handle_t, c_ulong, POINTER(zes_fabric_port_handle_t), POINTER(zes_fabric_port_throughput_t*) )
+
 
 ###############################################################################
 ## @brief Table of FabricPort functions pointers
@@ -2958,7 +3118,9 @@ class _zes_fabric_port_dditable_t(Structure):
         ("pfnGetConfig", c_void_p),                                     ## _zesFabricPortGetConfig_t
         ("pfnSetConfig", c_void_p),                                     ## _zesFabricPortSetConfig_t
         ("pfnGetState", c_void_p),                                      ## _zesFabricPortGetState_t
-        ("pfnGetThroughput", c_void_p)                                  ## _zesFabricPortGetThroughput_t
+        ("pfnGetThroughput", c_void_p),                                 ## _zesFabricPortGetThroughput_t
+        ("pfnGetFabricErrorCounters", c_void_p),                        ## _zesFabricPortGetFabricErrorCounters_t
+        ("pfnGetMultiPortThroughput", c_void_p)                         ## _zesFabricPortGetMultiPortThroughput_t
     ]
 
 ###############################################################################
@@ -3278,6 +3440,7 @@ class ZES_DDI:
         self.zesDeviceResetOverclockSettings = _zesDeviceResetOverclockSettings_t(self.__dditable.Device.pfnResetOverclockSettings)
         self.zesDeviceReadOverclockState = _zesDeviceReadOverclockState_t(self.__dditable.Device.pfnReadOverclockState)
         self.zesDeviceEnumOverclockDomains = _zesDeviceEnumOverclockDomains_t(self.__dditable.Device.pfnEnumOverclockDomains)
+        self.zesDeviceResetExt = _zesDeviceResetExt_t(self.__dditable.Device.pfnResetExt)
 
         # call driver to get function pointers
         _Driver = _zes_driver_dditable_t()
@@ -3391,6 +3554,7 @@ class ZES_DDI:
         # attach function interface to function address
         self.zesEngineGetProperties = _zesEngineGetProperties_t(self.__dditable.Engine.pfnGetProperties)
         self.zesEngineGetActivity = _zesEngineGetActivity_t(self.__dditable.Engine.pfnGetActivity)
+        self.zesEngineGetActivityExt = _zesEngineGetActivityExt_t(self.__dditable.Engine.pfnGetActivityExt)
 
         # call driver to get function pointers
         _Standby = _zes_standby_dditable_t()
@@ -3441,6 +3605,8 @@ class ZES_DDI:
         self.zesFabricPortSetConfig = _zesFabricPortSetConfig_t(self.__dditable.FabricPort.pfnSetConfig)
         self.zesFabricPortGetState = _zesFabricPortGetState_t(self.__dditable.FabricPort.pfnGetState)
         self.zesFabricPortGetThroughput = _zesFabricPortGetThroughput_t(self.__dditable.FabricPort.pfnGetThroughput)
+        self.zesFabricPortGetFabricErrorCounters = _zesFabricPortGetFabricErrorCounters_t(self.__dditable.FabricPort.pfnGetFabricErrorCounters)
+        self.zesFabricPortGetMultiPortThroughput = _zesFabricPortGetMultiPortThroughput_t(self.__dditable.FabricPort.pfnGetMultiPortThroughput)
 
         # call driver to get function pointers
         _Temperature = _zes_temperature_dditable_t()
