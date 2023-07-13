@@ -579,7 +579,7 @@ namespace validation_layer
 
         auto result = pfnGet( hDevice, pCount, phMetricGroups );
 
-        if( result==ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
+        if( result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
             for (size_t i = 0; ( nullptr != phMetricGroups) && (i < *pCount); ++i){
                 if (phMetricGroups[i]){
                     context.handleLifetime->addHandle( phMetricGroups[i] );
@@ -707,7 +707,7 @@ namespace validation_layer
 
         auto result = pfnGet( hMetricGroup, pCount, phMetrics );
 
-        if( result==ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
+        if( result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
             for (size_t i = 0; ( nullptr != phMetrics) && (i < *pCount); ++i){
                 if (phMetrics[i]){
                     context.handleLifetime->addHandle( phMetrics[i] );
@@ -976,7 +976,7 @@ namespace validation_layer
 
         auto result = pfnCreate( hContext, hDevice, hMetricGroup, desc, phMetricQueryPool );
 
-        if( result==ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
+        if( result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
             if (phMetricQueryPool){
                 context.handleLifetime->addHandle( *phMetricQueryPool );
             }
@@ -1050,7 +1050,7 @@ namespace validation_layer
 
         auto result = pfnCreate( hMetricQueryPool, index, phMetricQuery );
 
-        if( result==ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
+        if( result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
             if (phMetricQuery){
                 context.handleLifetime->addHandle( *phMetricQuery );
             }
@@ -1337,7 +1337,7 @@ namespace validation_layer
 
         auto result = pfnCreate( hContext, desc, phTracer );
 
-        if( result==ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
+        if( result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
             if (phTracer){
                 context.handleLifetime->addHandle( *phTracer );
             }
@@ -1569,7 +1569,7 @@ namespace validation_layer
 
         auto result = pfnGetGlobalTimestampsExp( hMetricGroup, synchronizedWithHost, globalTimestamp, metricTimestamp );
 
-        if( result==ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
+        if( result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
         }
         return result;
     }
@@ -1613,7 +1613,7 @@ namespace validation_layer
 
         auto result = pfnGetExportDataExp( hMetricGroup, pRawData, rawDataSize, pExportDataSize, pExportData );
 
-        if( result==ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
+        if( result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
         }
         return result;
     }

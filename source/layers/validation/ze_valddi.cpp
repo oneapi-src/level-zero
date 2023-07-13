@@ -85,7 +85,7 @@ namespace validation_layer
 
         auto result = pfnGet( pCount, phDrivers );
 
-        if( result==ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
+        if( result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
             for (size_t i = 0; ( nullptr != phDrivers) && (i < *pCount); ++i){
                 if (phDrivers[i]){
                     context.handleLifetime->addHandle( phDrivers[i] );
@@ -349,7 +349,7 @@ namespace validation_layer
 
         auto result = pfnGet( hDriver, pCount, phDevices );
 
-        if( result==ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
+        if( result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
             for (size_t i = 0; ( nullptr != phDevices) && (i < *pCount); ++i){
                 if (phDevices[i]){
                     context.handleLifetime->addHandle( phDevices[i] );
@@ -432,7 +432,7 @@ namespace validation_layer
 
         auto result = pfnGetSubDevices( hDevice, pCount, phSubdevices );
 
-        if( result==ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
+        if( result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
             for (size_t i = 0; ( nullptr != phSubdevices) && (i < *pCount); ++i){
                 if (phSubdevices[i]){
                     context.handleLifetime->addHandle( phSubdevices[i] );
@@ -948,7 +948,7 @@ namespace validation_layer
 
         auto result = pfnCreate( hDriver, desc, phContext );
 
-        if( result==ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
+        if( result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
             if (phContext){
                 context.handleLifetime->addHandle( *phContext );
             }
@@ -999,7 +999,7 @@ namespace validation_layer
 
         auto result = pfnCreateEx( hDriver, desc, numDevices, phDevices, phContext );
 
-        if( result==ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
+        if( result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
             if (phContext){
                 context.handleLifetime->addHandle( *phContext );
             }
@@ -1107,7 +1107,7 @@ namespace validation_layer
 
         auto result = pfnCreate( hContext, hDevice, desc, phCommandQueue );
 
-        if( result==ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
+        if( result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
             if (phCommandQueue){
                 context.handleLifetime->addHandle( *phCommandQueue );
             }
@@ -1259,7 +1259,7 @@ namespace validation_layer
 
         auto result = pfnCreate( hContext, hDevice, desc, phCommandList );
 
-        if( result==ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
+        if( result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
             if (phCommandList){
                 context.handleLifetime->addHandle( *phCommandList );
             }
@@ -1301,7 +1301,7 @@ namespace validation_layer
 
         auto result = pfnCreateImmediate( hContext, hDevice, altdesc, phCommandList );
 
-        if( result==ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
+        if( result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
             if (phCommandList){
                 context.handleLifetime->addHandle( *phCommandList , false);
             }
@@ -2051,7 +2051,7 @@ namespace validation_layer
 
         auto result = pfnCreate( hContext, desc, numDevices, phDevices, phEventPool );
 
-        if( result==ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
+        if( result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
             if (phEventPool){
                 context.handleLifetime->addHandle( *phEventPool );
             }
@@ -2125,7 +2125,7 @@ namespace validation_layer
 
         auto result = pfnCreate( hEventPool, desc, phEvent );
 
-        if( result==ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
+        if( result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
             if (phEvent){
                 context.handleLifetime->addHandle( *phEvent );
             }
@@ -2198,7 +2198,7 @@ namespace validation_layer
 
         auto result = pfnGetIpcHandle( hEventPool, phIpc );
 
-        if( result==ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
+        if( result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
         }
         return result;
     }
@@ -2662,7 +2662,7 @@ namespace validation_layer
 
         auto result = pfnCreate( hCommandQueue, desc, phFence );
 
-        if( result==ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
+        if( result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
             if (phFence){
                 context.handleLifetime->addHandle( *phFence );
             }
@@ -2878,7 +2878,7 @@ namespace validation_layer
 
         auto result = pfnCreate( hContext, hDevice, desc, phImage );
 
-        if( result==ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
+        if( result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
             if (phImage){
                 context.handleLifetime->addHandle( *phImage );
             }
@@ -3178,7 +3178,7 @@ namespace validation_layer
 
         auto result = pfnGetIpcHandle( hContext, ptr, pIpcHandle );
 
-        if( result==ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
+        if( result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
         }
         return result;
     }
@@ -3216,7 +3216,7 @@ namespace validation_layer
 
         auto result = pfnGetIpcHandleFromFileDescriptorExp( hContext, handle, pIpcHandle );
 
-        if( result==ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
+        if( result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
         }
         return result;
     }
@@ -3254,7 +3254,7 @@ namespace validation_layer
 
         auto result = pfnGetFileDescriptorFromIpcHandleExp( hContext, ipcHandle, pHandle );
 
-        if( result==ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
+        if( result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
         }
         return result;
     }
@@ -3438,7 +3438,7 @@ namespace validation_layer
 
         auto result = pfnGetAtomicAccessAttributeExp( hContext, hDevice, ptr, size, pAttr );
 
-        if( result==ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
+        if( result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
         }
         return result;
     }
@@ -3478,7 +3478,7 @@ namespace validation_layer
 
         auto result = pfnCreate( hContext, hDevice, desc, phModule, phBuildLog );
 
-        if( result==ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
+        if( result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
             if (phModule){
                 context.handleLifetime->addHandle( *phModule );
             }
@@ -3805,7 +3805,7 @@ namespace validation_layer
 
         auto result = pfnCreate( hModule, desc, phKernel );
 
-        if( result==ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
+        if( result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
             if (phKernel){
                 context.handleLifetime->addHandle( *phKernel );
             }
@@ -4584,7 +4584,7 @@ namespace validation_layer
 
         auto result = pfnCreate( hContext, hDevice, desc, phSampler );
 
-        if( result==ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
+        if( result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
             if (phSampler){
                 context.handleLifetime->addHandle( *phSampler );
             }
@@ -4768,7 +4768,7 @@ namespace validation_layer
 
         auto result = pfnCreate( hContext, hDevice, desc, phPhysicalMemory );
 
-        if( result==ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
+        if( result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
             if (phPhysicalMemory){
                 context.handleLifetime->addHandle( *phPhysicalMemory );
             }
@@ -5145,7 +5145,7 @@ namespace validation_layer
 
         auto result = pfnGetMemoryPropertiesExp( hImage, pMemoryProperties );
 
-        if( result==ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
+        if( result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
         }
         return result;
     }
@@ -5185,7 +5185,7 @@ namespace validation_layer
 
         auto result = pfnViewCreateExt( hContext, hDevice, desc, hImage, phImageView );
 
-        if( result==ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
+        if( result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
             if (phImageView){
                 context.handleLifetime->addHandle( *phImageView );
             }
@@ -5228,7 +5228,7 @@ namespace validation_layer
 
         auto result = pfnViewCreateExp( hContext, hDevice, desc, hImage, phImageView );
 
-        if( result==ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
+        if( result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
             if (phImageView){
                 context.handleLifetime->addHandle( *phImageView );
             }
@@ -5542,7 +5542,7 @@ namespace validation_layer
 
         auto result = pfnGetExp( hDriver, pCount, phVertices );
 
-        if( result==ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
+        if( result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
             for (size_t i = 0; ( nullptr != phVertices) && (i < *pCount); ++i){
                 if (phVertices[i]){
                     context.handleLifetime->addHandle( phVertices[i] );
@@ -5592,7 +5592,7 @@ namespace validation_layer
 
         auto result = pfnGetSubVerticesExp( hVertex, pCount, phSubvertices );
 
-        if( result==ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
+        if( result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
             for (size_t i = 0; ( nullptr != phSubvertices) && (i < *pCount); ++i){
                 if (phSubvertices[i]){
                     context.handleLifetime->addHandle( phSubvertices[i] );
@@ -5634,7 +5634,7 @@ namespace validation_layer
 
         auto result = pfnGetPropertiesExp( hVertex, pVertexProperties );
 
-        if( result==ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
+        if( result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
         }
         return result;
     }
@@ -5671,7 +5671,7 @@ namespace validation_layer
 
         auto result = pfnGetDeviceExp( hVertex, phDevice );
 
-        if( result==ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
+        if( result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
             if (phDevice){
                 context.handleLifetime->addHandle( *phDevice );
             }
@@ -5711,7 +5711,7 @@ namespace validation_layer
 
         auto result = pfnGetFabricVertexExp( hDevice, phVertex );
 
-        if( result==ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
+        if( result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
             if (phVertex){
                 context.handleLifetime->addHandle( *phVertex );
             }
@@ -5760,7 +5760,7 @@ namespace validation_layer
 
         auto result = pfnGetExp( hVertexA, hVertexB, pCount, phEdges );
 
-        if( result==ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
+        if( result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
             for (size_t i = 0; ( nullptr != phEdges) && (i < *pCount); ++i){
                 if (phEdges[i]){
                     context.handleLifetime->addHandle( phEdges[i] );
@@ -5803,7 +5803,7 @@ namespace validation_layer
 
         auto result = pfnGetVerticesExp( hEdge, phVertexA, phVertexB );
 
-        if( result==ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
+        if( result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
             if (phVertexA){
                 context.handleLifetime->addHandle( *phVertexA );
             }
@@ -5846,7 +5846,7 @@ namespace validation_layer
 
         auto result = pfnGetPropertiesExp( hEdge, pEdgeProperties );
 
-        if( result==ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
+        if( result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
         }
         return result;
     }
@@ -5932,7 +5932,7 @@ namespace validation_layer
 
         auto result = pfnCreateExp( hDriver, pDescriptor, phBuilder );
 
-        if( result==ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
+        if( result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
             if (phBuilder){
                 context.handleLifetime->addHandle( *phBuilder );
             }
@@ -5973,7 +5973,7 @@ namespace validation_layer
 
         auto result = pfnGetBuildPropertiesExp( hBuilder, pBuildOpDescriptor, pProperties );
 
-        if( result==ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
+        if( result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
         }
         return result;
     }
@@ -6123,7 +6123,7 @@ namespace validation_layer
 
         auto result = pfnCreateExp( hDriver, phParallelOperation );
 
-        if( result==ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
+        if( result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
             if (phParallelOperation){
                 context.handleLifetime->addHandle( *phParallelOperation );
             }
@@ -6163,7 +6163,7 @@ namespace validation_layer
 
         auto result = pfnGetPropertiesExp( hParallelOperation, pProperties );
 
-        if( result==ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
+        if( result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
         }
         return result;
     }

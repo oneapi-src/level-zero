@@ -86,7 +86,7 @@ namespace validation_layer
 
         auto result = pfnGet( pCount, phDrivers );
 
-        if( result==ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
+        if( result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
             for (size_t i = 0; ( nullptr != phDrivers) && (i < *pCount); ++i){
                 if (phDrivers[i]){
                     context.handleLifetime->addHandle( phDrivers[i] );
@@ -136,7 +136,7 @@ namespace validation_layer
 
         auto result = pfnGet( hDriver, pCount, phDevices );
 
-        if( result==ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
+        if( result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
             for (size_t i = 0; ( nullptr != phDevices) && (i < *pCount); ++i){
                 if (phDevices[i]){
                     context.handleLifetime->addHandle( phDevices[i] );

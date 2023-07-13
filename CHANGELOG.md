@@ -1,5 +1,7 @@
 # Level zero loader changelog
 
+## v1.13.1
+* Fix Formatting issues
 ## v1.13.0
 * Update to spec 1.7.0
 * Add reference to Tracing Layer in README.md
