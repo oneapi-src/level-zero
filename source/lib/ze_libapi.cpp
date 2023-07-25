@@ -48,24 +48,30 @@ zeInit(
     std::call_once(ze_lib::context->initOnce, [flags]() {
         result = ze_lib::context->Init(flags, false);
 
+        if( ZE_RESULT_SUCCESS != result )
+            return result;
+
+        if(ze_lib::context->inTeardown) {
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
+
+        auto pfnInit = ze_lib::context->zeDdiTable.Global.pfnInit;
+        if( nullptr == pfnInit ) {
+            if(!ze_lib::context->isInitialized)
+                return ZE_RESULT_ERROR_UNINITIALIZED;
+            else
+                return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+        }
+
+        result = pfnInit( flags );
+        return result;
     });
 
-    if( ZE_RESULT_SUCCESS != result )
-        return result;
-
     if(ze_lib::context->inTeardown) {
-        return ZE_RESULT_ERROR_UNINITIALIZED;
+        result = ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnInit = ze_lib::context->zeDdiTable.Global.pfnInit;
-    if( nullptr == pfnInit ) {
-        if(!ze_lib::context->isInitialized)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        else
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-    }
-
-    return pfnInit( flags );
+    return result;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
