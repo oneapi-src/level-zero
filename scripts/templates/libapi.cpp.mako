@@ -59,16 +59,12 @@ ${th.make_func_name(n, tags, obj)}(
     std::call_once(${x}_lib::context->initOnce, [flags]() {
 %if re.match("zes", n): 
         result = ${x}_lib::context->Init(flags, true);
-%else:
-        result = ${x}_lib::context->Init(flags, false);
-%endif
 
     });
 
     if( ${X}_RESULT_SUCCESS != result )
         return result;
 
-%endif
     if(ze_lib::context->inTeardown) {
         return ${X}_RESULT_ERROR_UNINITIALIZED;
     }
@@ -83,6 +79,51 @@ ${th.make_func_name(n, tags, obj)}(
 
     return ${th.make_pfn_name(n, tags, obj)}( ${", ".join(th.make_param_lines(n, tags, obj, format=["name"]))} );
 }
+%else:
+        result = ${x}_lib::context->Init(flags, false);
+
+        if( ${X}_RESULT_SUCCESS != result )
+            return result;
+
+        if(ze_lib::context->inTeardown) {
+            return ${X}_RESULT_ERROR_UNINITIALIZED;
+        }
+
+        auto ${th.make_pfn_name(n, tags, obj)} = ${x}_lib::context->${n}DdiTable.${th.get_table_name(n, tags, obj)}.${th.make_pfn_name(n, tags, obj)};
+        if( nullptr == ${th.make_pfn_name(n, tags, obj)} ) {
+            if(!ze_lib::context->isInitialized)
+                return ${X}_RESULT_ERROR_UNINITIALIZED;
+            else
+                return ${X}_RESULT_ERROR_UNSUPPORTED_FEATURE;
+        }
+
+        result = ${th.make_pfn_name(n, tags, obj)}( ${", ".join(th.make_param_lines(n, tags, obj, format=["name"]))} );
+        return result;
+    });
+
+    if(ze_lib::context->inTeardown) {
+        result = ${X}_RESULT_ERROR_UNINITIALIZED;
+    }
+
+    return result;
+}
+%endif
+%else:
+    if(ze_lib::context->inTeardown) {
+        return ${X}_RESULT_ERROR_UNINITIALIZED;
+    }
+
+    auto ${th.make_pfn_name(n, tags, obj)} = ${x}_lib::context->${n}DdiTable.${th.get_table_name(n, tags, obj)}.${th.make_pfn_name(n, tags, obj)};
+    if( nullptr == ${th.make_pfn_name(n, tags, obj)} ) {
+        if(!ze_lib::context->isInitialized)
+            return ${X}_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ${X}_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    return ${th.make_pfn_name(n, tags, obj)}( ${", ".join(th.make_param_lines(n, tags, obj, format=["name"]))} );
+}
+%endif
 %if 'condition' in obj:
 #endif // ${th.subt(n, tags, obj['condition'])}
 %endif

@@ -71,7 +71,7 @@ ${line} \
         auto result = ${th.make_pfn_name(n, tags, obj)}( ${", ".join(th.make_param_lines(n, tags, obj, format=["name"]))} );
         %if generate_post_call:
 
-        if( result==${X}_RESULT_SUCCESS && context.enableHandleLifetime ){
+        if( result == ${X}_RESULT_SUCCESS && context.enableHandleLifetime ){
             %for i, item in enumerate(th.get_loader_epilogue(n, tags, obj, meta)):
             %if 'range' in item:
             for (size_t i = ${item['range'][0]}; ( nullptr != ${item['name']}) && (i < ${item['range'][1]}); ++i){
