@@ -1,5 +1,7 @@
 # Level zero loader changelog
-
+## v1.13.5
+* Updated code generating scripts for updated spec and init functionality
+* Change zeInit to only init on the first call in a process
 ## v1.13.1
 * Fix Formatting issues
 ## v1.13.0
