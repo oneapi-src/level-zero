@@ -73,6 +73,13 @@ docker run \
   cmake --build . --config Release
 ```
 
+# Debug Trace
+The Level Zero Loader has the ability to print warnings and errors which occur within the internals of the Level Zero Loader itself.
+
+To enable this debug tracing feature, set the environment variable `ZE_ENABLE_LOADER_DEBUG_TRACE=1`.
+
+This will enforce the Loader to print all errors whether fatal or non-fatal to stderr with the PREFIX `ZE_LOADER_DEBUG_TRACE:`.
+
 # Contributing
 
 See [CONTRIBUTING](CONTRIBUTING.md) for more information.

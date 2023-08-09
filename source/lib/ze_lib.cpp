@@ -27,7 +27,9 @@ namespace ze_lib
     context_t::~context_t()
     {
 #ifdef DYNAMIC_LOAD_LOADER
-        FREE_DRIVER_LIBRARY( loader );
+        if (loader) {
+            FREE_DRIVER_LIBRARY( loader );
+        }
 #endif
         ze_lib::destruction = true;
     };

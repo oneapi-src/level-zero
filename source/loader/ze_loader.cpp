@@ -15,6 +15,11 @@ namespace loader
     ///////////////////////////////////////////////////////////////////////////////
     context_t *context;
 
+    void context_t::debug_trace_error(std::string errorMessage, std::string errorValue) {
+        std::string debugTracePrefix = "ZE_LOADER_DEBUG_TRACE:";
+        std::cerr << debugTracePrefix << errorMessage << errorValue << std::endl;
+    };
+
     ze_result_t context_t::check_drivers(ze_init_flags_t flags) {
         bool return_first_driver_result=false;
         if(drivers.size()==1) {
@@ -23,9 +28,21 @@ namespace loader
 
         for(auto it = drivers.begin(); it != drivers.end(); )
         {
+            std::string freeLibraryErrorValue;
             ze_result_t result = init_driver(*it, flags);
             if(result != ZE_RESULT_SUCCESS) {
-                FREE_DRIVER_LIBRARY(it->handle);
+                if (it->handle) {
+                    auto free_result = FREE_DRIVER_LIBRARY(it->handle);
+                    auto failure = FREE_DRIVER_LIBRARY_FAILURE_CHECK(free_result);
+                    if (debugTraceEnabled && failure) {
+                        GET_LIBRARY_ERROR(freeLibraryErrorValue);
+                        if (!freeLibraryErrorValue.empty()) {
+                            std::string errorMessage = "Free Library Failed on " + it->name + " with ";
+                            debug_trace_error(errorMessage, freeLibraryErrorValue);
+                            freeLibraryErrorValue.clear();
+                        }
+                    }
+                }
                 it = drivers.erase(it);
                 if(return_first_driver_result)
                     return result;
@@ -92,7 +109,9 @@ namespace loader
     ///////////////////////////////////////////////////////////////////////////////
     ze_result_t context_t::init()
     {
+        debugTraceEnabled = getenv_tobool( "ZE_ENABLE_LOADER_DEBUG_TRACE" );
         auto discoveredDrivers = discoverEnabledDrivers();
+        std::string loadLibraryErrorValue;
 
         drivers.reserve( discoveredDrivers.size() + getenv_tobool( "ZE_ENABLE_NULL_DRIVER" ) );
         if( getenv_tobool( "ZE_ENABLE_NULL_DRIVER" ) )
@@ -102,6 +121,12 @@ namespace loader
             {
                 drivers.emplace_back();
                 drivers.rbegin()->handle = handle;
+                drivers.rbegin()->name = "ze_null";
+            } else if (debugTraceEnabled) {
+                GET_LIBRARY_ERROR(loadLibraryErrorValue);
+                std::string errorMessage = "Load Library of " + std::string(MAKE_LIBRARY_NAME( "ze_null", L0_LOADER_VERSION )) + " failed with ";
+                debug_trace_error(errorMessage, loadLibraryErrorValue);
+                loadLibraryErrorValue.clear();
             }
         }
 
@@ -112,6 +137,12 @@ namespace loader
             {
                 drivers.emplace_back();
                 drivers.rbegin()->handle = handle;
+                drivers.rbegin()->name = name;
+            } else if (debugTraceEnabled) {
+                GET_LIBRARY_ERROR(loadLibraryErrorValue);
+                std::string errorMessage = "Load Library of " + name + " failed with ";
+                debug_trace_error(errorMessage, loadLibraryErrorValue);
+                loadLibraryErrorValue.clear();
             }
         }
 
@@ -137,6 +168,11 @@ namespace loader
                 {   
                     compVersions.push_back(version);
                 }
+            } else if (debugTraceEnabled) {
+                GET_LIBRARY_ERROR(loadLibraryErrorValue);
+                std::string errorMessage = "Load Library of " + std::string(MAKE_LAYER_NAME( "ze_validation_layer" )) + " failed with ";
+                debug_trace_error(errorMessage, loadLibraryErrorValue);
+                loadLibraryErrorValue.clear();
             }
         }
 
@@ -153,6 +189,11 @@ namespace loader
                 {   
                     compVersions.push_back(version);
                 }
+            } else if (debugTraceEnabled) {
+                GET_LIBRARY_ERROR(loadLibraryErrorValue);
+                std::string errorMessage = "Load Library of " + std::string(MAKE_LAYER_NAME( "ze_tracing_layer" )) + " failed with ";
+                debug_trace_error(errorMessage, loadLibraryErrorValue);
+                loadLibraryErrorValue.clear();
             }
         }
 
@@ -171,12 +212,46 @@ namespace loader
     ///////////////////////////////////////////////////////////////////////////////
     context_t::~context_t()
     {
-        FREE_DRIVER_LIBRARY( validationLayer );
-        FREE_DRIVER_LIBRARY( tracingLayer );
+        std::string freeLibraryErrorValue;
+        if (validationLayer) {
+            auto free_result = FREE_DRIVER_LIBRARY( validationLayer );
+            auto failure = FREE_DRIVER_LIBRARY_FAILURE_CHECK(free_result);
+            if (debugTraceEnabled && failure) {
+                GET_LIBRARY_ERROR(freeLibraryErrorValue);
+                if (!freeLibraryErrorValue.empty()) {
+                    std::string errorMessage = "Free Library Failed for ze_validation_layer with ";
+                    debug_trace_error(errorMessage, freeLibraryErrorValue);
+                    freeLibraryErrorValue.clear();
+                }
+            }
+        }
+        if (tracingLayer) {
+            auto free_result = FREE_DRIVER_LIBRARY( tracingLayer );
+            auto failure = FREE_DRIVER_LIBRARY_FAILURE_CHECK(free_result);
+            if (debugTraceEnabled && failure) {
+                GET_LIBRARY_ERROR(freeLibraryErrorValue);
+                if (!freeLibraryErrorValue.empty()) {
+                    std::string errorMessage = "Free Library Failed for ze_tracing_layer with ";
+                    debug_trace_error(errorMessage, freeLibraryErrorValue);
+                    freeLibraryErrorValue.clear();
+                }
+            }
+        }
 
         for( auto& drv : drivers )
         {
-            FREE_DRIVER_LIBRARY( drv.handle );
+            if (drv.handle) {
+                auto free_result = FREE_DRIVER_LIBRARY( drv.handle );
+                auto failure = FREE_DRIVER_LIBRARY_FAILURE_CHECK(free_result);
+                if (debugTraceEnabled && failure) {
+                    GET_LIBRARY_ERROR(freeLibraryErrorValue);
+                    if (!freeLibraryErrorValue.empty()) {
+                        std::string errorMessage = "Free Library Failed for " + drv.name + " With ";
+                        debug_trace_error(errorMessage, freeLibraryErrorValue);
+                        freeLibraryErrorValue.clear();
+                    }
+                }
+            }
         }
     };
 
