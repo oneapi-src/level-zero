@@ -7,9 +7,10 @@
  * @file extension_validation.inl
  *
  */
+#include <type_traits>
 
 template <typename S, typename B>
-inline ze_result_t validateStructureTypes(void *descriptorPtr,
+inline ze_result_t validateStructureTypes(const void *descriptorPtr,
                                    std::vector<S> &baseTypesVector,
                                    std::vector<S> &extensionTypesVector) {
 
@@ -38,6 +39,14 @@ inline ze_result_t validateStructureTypes(void *descriptorPtr,
             for (auto t : (extensionTypesVector)) {
                 if (pBase->stype == t) {
                     validExtensionTypeFound = true;
+
+                    // if extension type is ZE_STRUCTURE_TYPE_MODULE_PROGRAM_EXP_DESC
+                    // then base type->format must be ZE_MODULE_FORMAT_IL_SPIRV
+                    if (std::is_same<S, ze_structure_type_t>::value && (ZE_STRUCTURE_TYPE_MODULE_PROGRAM_EXP_DESC == static_cast<ze_structure_type_t>(t))){
+                        if (ZE_MODULE_FORMAT_IL_SPIRV != reinterpret_cast<const ze_module_desc_t *>(descriptorPtr)->format){
+                            return ZE_RESULT_ERROR_INVALID_ARGUMENT;
+                        }
+                    }
                     break;
                 }
             }
@@ -353,7 +362,7 @@ inline ze_result_t ParameterValidation::validateExtensions(ze_host_mem_alloc_des
 }
 
 template <>
-inline ze_result_t ParameterValidation::validateExtensions(ze_module_desc_t *descriptor) {
+inline ze_result_t ParameterValidation::validateExtensions(const ze_module_desc_t *descriptor) {
 
     std::vector<ze_structure_type_t> baseTypes = {ZE_STRUCTURE_TYPE_MODULE_DESC};
     std::vector<ze_structure_type_t> types = {ZE_STRUCTURE_TYPE_MODULE_PROGRAM_EXP_DESC};
