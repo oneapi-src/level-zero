@@ -181,5 +181,6 @@ public:
     virtual ze_result_t zeRTASParallelOperationGetPropertiesExp( ze_rtas_parallel_operation_exp_handle_t hParallelOperation, ze_rtas_parallel_operation_exp_properties_t* pProperties ) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zeRTASParallelOperationJoinExp( ze_rtas_parallel_operation_exp_handle_t hParallelOperation ) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zeRTASParallelOperationDestroyExp( ze_rtas_parallel_operation_exp_handle_t hParallelOperation ) {return ZE_RESULT_SUCCESS;}
+    virtual ~ZEValidationEntryPoints() {}
 };
 }

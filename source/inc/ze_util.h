@@ -16,14 +16,14 @@
 ///////////////////////////////////////////////////////////////////////////////
 #if defined(_WIN32)
 #  include <Windows.h>
-static void getLastErrorString(std::string &errorValue) {
+inline void getLastErrorString(std::string &errorValue) {
     DWORD errorID = GetLastError();
     if (errorID) {
 
         LPSTR tempErrorMessage = nullptr;
 
-        auto size = FormatMessageA(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
-                       NULL, errorID, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPSTR)&tempErrorMessage, 0, NULL);
+        FormatMessageA(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
+            NULL, errorID, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPSTR)&tempErrorMessage, 0, NULL);
 
         errorValue.assign(tempErrorMessage);
 

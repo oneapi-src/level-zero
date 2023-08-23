@@ -5640,7 +5640,6 @@ zeGetRTASBuilderExpProcAddrTable(
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
-    bool atLeastOneDriverValid = false;
     // Load the device-driver DDI tables
     for( auto& drv : loader::context->drivers )
     {
@@ -5650,9 +5649,7 @@ zeGetRTASBuilderExpProcAddrTable(
             GET_FUNCTION_PTR( drv.handle, "zeGetRTASBuilderExpProcAddrTable") );
         if(!getTable) 
             continue; 
-        auto getTableResult = getTable( version, &drv.dditable.ze.RTASBuilderExp);
-        if(getTableResult == ZE_RESULT_SUCCESS) 
-            atLeastOneDriverValid = true;
+        result = getTable( version, &drv.dditable.ze.RTASBuilderExp);
     }
 
 
@@ -5722,7 +5719,6 @@ zeGetRTASParallelOperationExpProcAddrTable(
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
-    bool atLeastOneDriverValid = false;
     // Load the device-driver DDI tables
     for( auto& drv : loader::context->drivers )
     {
@@ -5732,9 +5728,7 @@ zeGetRTASParallelOperationExpProcAddrTable(
             GET_FUNCTION_PTR( drv.handle, "zeGetRTASParallelOperationExpProcAddrTable") );
         if(!getTable) 
             continue; 
-        auto getTableResult = getTable( version, &drv.dditable.ze.RTASParallelOperationExp);
-        if(getTableResult == ZE_RESULT_SUCCESS) 
-            atLeastOneDriverValid = true;
+        result = getTable( version, &drv.dditable.ze.RTASParallelOperationExp);
     }
 
 
@@ -5895,7 +5889,6 @@ zeGetDriverExpProcAddrTable(
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
-    bool atLeastOneDriverValid = false;
     // Load the device-driver DDI tables
     for( auto& drv : loader::context->drivers )
     {
@@ -5905,9 +5898,7 @@ zeGetDriverExpProcAddrTable(
             GET_FUNCTION_PTR( drv.handle, "zeGetDriverExpProcAddrTable") );
         if(!getTable) 
             continue; 
-        auto getTableResult = getTable( version, &drv.dditable.ze.DriverExp);
-        if(getTableResult == ZE_RESULT_SUCCESS) 
-            atLeastOneDriverValid = true;
+        result = getTable( version, &drv.dditable.ze.DriverExp);
     }
 
 
@@ -6077,7 +6068,6 @@ zeGetDeviceExpProcAddrTable(
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
-    bool atLeastOneDriverValid = false;
     // Load the device-driver DDI tables
     for( auto& drv : loader::context->drivers )
     {
@@ -6087,9 +6077,7 @@ zeGetDeviceExpProcAddrTable(
             GET_FUNCTION_PTR( drv.handle, "zeGetDeviceExpProcAddrTable") );
         if(!getTable) 
             continue; 
-        auto getTableResult = getTable( version, &drv.dditable.ze.DeviceExp);
-        if(getTableResult == ZE_RESULT_SUCCESS) 
-            atLeastOneDriverValid = true;
+        result = getTable( version, &drv.dditable.ze.DeviceExp);
     }
 
 
@@ -6542,7 +6530,6 @@ zeGetEventExpProcAddrTable(
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
-    bool atLeastOneDriverValid = false;
     // Load the device-driver DDI tables
     for( auto& drv : loader::context->drivers )
     {
@@ -6552,9 +6539,7 @@ zeGetEventExpProcAddrTable(
             GET_FUNCTION_PTR( drv.handle, "zeGetEventExpProcAddrTable") );
         if(!getTable) 
             continue; 
-        auto getTableResult = getTable( version, &drv.dditable.ze.EventExp);
-        if(getTableResult == ZE_RESULT_SUCCESS) 
-            atLeastOneDriverValid = true;
+        result = getTable( version, &drv.dditable.ze.EventExp);
     }
 
 
@@ -6889,7 +6874,6 @@ zeGetImageExpProcAddrTable(
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
-    bool atLeastOneDriverValid = false;
     // Load the device-driver DDI tables
     for( auto& drv : loader::context->drivers )
     {
@@ -6899,9 +6883,7 @@ zeGetImageExpProcAddrTable(
             GET_FUNCTION_PTR( drv.handle, "zeGetImageExpProcAddrTable") );
         if(!getTable) 
             continue; 
-        auto getTableResult = getTable( version, &drv.dditable.ze.ImageExp);
-        if(getTableResult == ZE_RESULT_SUCCESS) 
-            atLeastOneDriverValid = true;
+        result = getTable( version, &drv.dditable.ze.ImageExp);
     }
 
 
@@ -7065,7 +7047,6 @@ zeGetKernelExpProcAddrTable(
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
-    bool atLeastOneDriverValid = false;
     // Load the device-driver DDI tables
     for( auto& drv : loader::context->drivers )
     {
@@ -7075,9 +7056,7 @@ zeGetKernelExpProcAddrTable(
             GET_FUNCTION_PTR( drv.handle, "zeGetKernelExpProcAddrTable") );
         if(!getTable) 
             continue; 
-        auto getTableResult = getTable( version, &drv.dditable.ze.KernelExp);
-        if(getTableResult == ZE_RESULT_SUCCESS) 
-            atLeastOneDriverValid = true;
+        result = getTable( version, &drv.dditable.ze.KernelExp);
     }
 
 
@@ -7240,7 +7219,6 @@ zeGetMemExpProcAddrTable(
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
-    bool atLeastOneDriverValid = false;
     // Load the device-driver DDI tables
     for( auto& drv : loader::context->drivers )
     {
@@ -7250,9 +7228,7 @@ zeGetMemExpProcAddrTable(
             GET_FUNCTION_PTR( drv.handle, "zeGetMemExpProcAddrTable") );
         if(!getTable) 
             continue; 
-        auto getTableResult = getTable( version, &drv.dditable.ze.MemExp);
-        if(getTableResult == ZE_RESULT_SUCCESS) 
-            atLeastOneDriverValid = true;
+        result = getTable( version, &drv.dditable.ze.MemExp);
     }
 
 
@@ -7764,7 +7740,6 @@ zeGetFabricEdgeExpProcAddrTable(
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
-    bool atLeastOneDriverValid = false;
     // Load the device-driver DDI tables
     for( auto& drv : loader::context->drivers )
     {
@@ -7774,9 +7749,7 @@ zeGetFabricEdgeExpProcAddrTable(
             GET_FUNCTION_PTR( drv.handle, "zeGetFabricEdgeExpProcAddrTable") );
         if(!getTable) 
             continue; 
-        auto getTableResult = getTable( version, &drv.dditable.ze.FabricEdgeExp);
-        if(getTableResult == ZE_RESULT_SUCCESS) 
-            atLeastOneDriverValid = true;
+        result = getTable( version, &drv.dditable.ze.FabricEdgeExp);
     }
 
 
@@ -7845,7 +7818,6 @@ zeGetFabricVertexExpProcAddrTable(
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
-    bool atLeastOneDriverValid = false;
     // Load the device-driver DDI tables
     for( auto& drv : loader::context->drivers )
     {
@@ -7855,9 +7827,7 @@ zeGetFabricVertexExpProcAddrTable(
             GET_FUNCTION_PTR( drv.handle, "zeGetFabricVertexExpProcAddrTable") );
         if(!getTable) 
             continue; 
-        auto getTableResult = getTable( version, &drv.dditable.ze.FabricVertexExp);
-        if(getTableResult == ZE_RESULT_SUCCESS) 
-            atLeastOneDriverValid = true;
+        result = getTable( version, &drv.dditable.ze.FabricVertexExp);
     }
 
 

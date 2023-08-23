@@ -2075,7 +2075,6 @@ zetGetMetricGroupExpProcAddrTable(
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
-    bool atLeastOneDriverValid = false;
     // Load the device-driver DDI tables
     for( auto& drv : loader::context->drivers )
     {
@@ -2085,9 +2084,7 @@ zetGetMetricGroupExpProcAddrTable(
             GET_FUNCTION_PTR( drv.handle, "zetGetMetricGroupExpProcAddrTable") );
         if(!getTable) 
             continue; 
-        auto getTableResult = getTable( version, &drv.dditable.zet.MetricGroupExp);
-        if(getTableResult == ZE_RESULT_SUCCESS) 
-            atLeastOneDriverValid = true;
+        result = getTable( version, &drv.dditable.zet.MetricGroupExp);
     }
 
 

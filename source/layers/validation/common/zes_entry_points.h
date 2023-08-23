@@ -145,5 +145,6 @@ public:
     virtual ze_result_t zesTemperatureGetState( zes_temp_handle_t hTemperature, double* pTemperature ) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zesPowerGetLimitsExt( zes_pwr_handle_t hPower, uint32_t* pCount, zes_power_limit_ext_desc_t* pSustained ) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zesPowerSetLimitsExt( zes_pwr_handle_t hPower, uint32_t* pCount, zes_power_limit_ext_desc_t* pSustained ) {return ZE_RESULT_SUCCESS;}
+    virtual ~ZESValidationEntryPoints() {}
 };
 }

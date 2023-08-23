@@ -33,5 +33,6 @@ ${line} \
 %endfor
 ) {return ZE_RESULT_SUCCESS;}
     %endfor
+    virtual ~${N}ValidationEntryPoints() {}
 };
 }

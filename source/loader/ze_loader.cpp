@@ -77,22 +77,22 @@ namespace loader
         }
 
         if(nullptr != validationLayer) {
-            auto getTable = reinterpret_cast<ze_pfnGetGlobalProcAddrTable_t>(
+            getTable = reinterpret_cast<ze_pfnGetGlobalProcAddrTable_t>(
                 GET_FUNCTION_PTR(validationLayer, "zeGetGlobalProcAddrTable") );
             if(!getTable)
                 return ZE_RESULT_ERROR_UNINITIALIZED;
-            auto getTableResult = getTable( version, &global);
+            getTableResult = getTable( version, &global);
             if(getTableResult != ZE_RESULT_SUCCESS) {
                 return ZE_RESULT_ERROR_UNINITIALIZED;
             }
         }
 
         if(nullptr != tracingLayer) {
-            auto getTable = reinterpret_cast<ze_pfnGetGlobalProcAddrTable_t>(
+            getTable = reinterpret_cast<ze_pfnGetGlobalProcAddrTable_t>(
                 GET_FUNCTION_PTR(tracingLayer, "zeGetGlobalProcAddrTable") );
             if(!getTable)
                 return ZE_RESULT_ERROR_UNINITIALIZED;
-            auto getTableResult = getTable( version, &global);
+            getTableResult = getTable( version, &global);
             if(getTableResult != ZE_RESULT_SUCCESS) {
                 return ZE_RESULT_ERROR_UNINITIALIZED;
             }
@@ -163,10 +163,10 @@ namespace loader
             {
                 auto getVersion = reinterpret_cast<getVersion_t>(
                     GET_FUNCTION_PTR(validationLayer, "zelLoaderGetVersion"));
-                zel_component_version_t version;
-                if(getVersion && ZE_RESULT_SUCCESS == getVersion(&version))
+                zel_component_version_t compVersion;
+                if(getVersion && ZE_RESULT_SUCCESS == getVersion(&compVersion))
                 {   
-                    compVersions.push_back(version);
+                    compVersions.push_back(compVersion);
                 }
             } else if (debugTraceEnabled) {
                 GET_LIBRARY_ERROR(loadLibraryErrorValue);
@@ -184,10 +184,10 @@ namespace loader
             {   
                 auto getVersion = reinterpret_cast<getVersion_t>(
                     GET_FUNCTION_PTR(tracingLayer, "zelLoaderGetVersion"));
-                zel_component_version_t version;
-                if(getVersion && ZE_RESULT_SUCCESS == getVersion(&version))
+                zel_component_version_t compVersion;
+                if(getVersion && ZE_RESULT_SUCCESS == getVersion(&compVersion))
                 {   
-                    compVersions.push_back(version);
+                    compVersions.push_back(compVersion);
                 }
             } else if (debugTraceEnabled) {
                 GET_LIBRARY_ERROR(loadLibraryErrorValue);
@@ -256,14 +256,14 @@ namespace loader
     };
 
     void context_t::add_loader_version(){
-        zel_component_version_t version = {};
-        string_copy_s(version.component_name, LOADER_COMP_NAME, ZEL_COMPONENT_STRING_SIZE);
-        version.spec_version = ZE_API_VERSION_CURRENT;
-        version.component_lib_version.major = LOADER_VERSION_MAJOR;
-        version.component_lib_version.minor = LOADER_VERSION_MINOR;
-        version.component_lib_version.patch = LOADER_VERSION_PATCH;
+        zel_component_version_t compVersion = {};
+        string_copy_s(compVersion.component_name, LOADER_COMP_NAME, ZEL_COMPONENT_STRING_SIZE - 1);
+        compVersion.spec_version = ZE_API_VERSION_CURRENT;
+        compVersion.component_lib_version.major = LOADER_VERSION_MAJOR;
+        compVersion.component_lib_version.minor = LOADER_VERSION_MINOR;
+        compVersion.component_lib_version.patch = LOADER_VERSION_PATCH;
 
-        compVersions.push_back(version);
+        compVersions.push_back(compVersion);
     }
 
 }

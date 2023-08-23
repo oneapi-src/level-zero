@@ -268,7 +268,9 @@ ${tbl['export']['name']}(
 
     ${x}_result_t result = ${X}_RESULT_SUCCESS;
 
+    %if tbl['experimental'] is False: #//Experimental Tables may not be implemented in driver
     bool atLeastOneDriverValid = false;
+    %endif
     // Load the device-driver DDI tables
     for( auto& drv : loader::context->drivers )
     {
@@ -286,12 +288,14 @@ ${tbl['export']['name']}(
         %else:
             continue; 
         %endif
+        %if tbl['experimental'] is False: #//Experimental Tables may not be implemented in driver
         auto getTableResult = getTable( version, &drv.dditable.${n}.${tbl['name']});
         if(getTableResult == ZE_RESULT_SUCCESS) 
             atLeastOneDriverValid = true;
-        %if tbl['experimental'] is False:
         else
             drv.initStatus = getTableResult;
+        %else:
+        result = getTable( version, &drv.dditable.${n}.${tbl['name']});
         %endif
     }
 
