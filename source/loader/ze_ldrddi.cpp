@@ -3071,9 +3071,6 @@ namespace loader
         // forward to device-driver
         result = pfnCreate( hContext, hDevice, desc, phModule, phBuildLog );
 
-        if( ZE_RESULT_SUCCESS != result )
-            return result;
-
         try
         {
             // convert driver handle to loader handle
@@ -3084,6 +3081,9 @@ namespace loader
         {
             result = ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY;
         }
+
+        if( ZE_RESULT_SUCCESS != result )
+            return result;
 
         try
         {
@@ -3143,7 +3143,7 @@ namespace loader
         ze_result_t result = ZE_RESULT_SUCCESS;
 
         // extract driver's function pointer table
-        auto dditable = reinterpret_cast<ze_module_object_t*>( phModules )->dditable;
+        auto dditable = reinterpret_cast<ze_module_object_t*>( phModules[ 0 ] )->dditable;
         auto pfnDynamicLink = dditable->ze.Module.pfnDynamicLink;
         if( nullptr == pfnDynamicLink )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -3157,9 +3157,6 @@ namespace loader
         result = pfnDynamicLink( numModules, phModulesLocal, phLinkLog );
         delete []phModulesLocal;
 
-        if( ZE_RESULT_SUCCESS != result )
-            return result;
-
         try
         {
             // convert driver handle to loader handle
@@ -3171,6 +3168,9 @@ namespace loader
         {
             result = ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY;
         }
+
+        if( ZE_RESULT_SUCCESS != result )
+            return result;
 
         return result;
     }
@@ -4818,7 +4818,7 @@ namespace loader
         ze_result_t result = ZE_RESULT_SUCCESS;
 
         // extract driver's function pointer table
-        auto dditable = reinterpret_cast<ze_module_object_t*>( phModules )->dditable;
+        auto dditable = reinterpret_cast<ze_module_object_t*>( phModules[ 0 ] )->dditable;
         auto pfnInspectLinkageExt = dditable->ze.Module.pfnInspectLinkageExt;
         if( nullptr == pfnInspectLinkageExt )
             return ZE_RESULT_ERROR_UNINITIALIZED;
