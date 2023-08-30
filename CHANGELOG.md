@@ -1,8 +1,10 @@
 # Level zero loader changelog
-
 ## v1.14.0
 * Update to spec 1.7.8
-
+* Fix intercept layer access to array of handles and return of logs
+* Enable All warnings and warnings as errors to cleanup code
+* Add validation of module extended descriptor
+* Add ZE_ENABLE_LOADER_DEBUG_TRACE for tracking Library Load/Unload errors
 ## v1.13.5
 * Updated code generating scripts for updated spec and init functionality
 * Change zeInit to only init on the first call in a process
