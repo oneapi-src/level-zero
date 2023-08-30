@@ -5,7 +5,7 @@
  * SPDX-License-Identifier: MIT
  *
  * @file zes_ddi.h
- * @version v1.7-r1.7.0
+ * @version v1.7-r1.7.9
  *
  */
 #ifndef _ZES_DDI_H
@@ -1585,6 +1585,51 @@ typedef ze_result_t (ZE_APICALL *zes_pfnGetRasProcAddrTable_t)(
     );
 
 ///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zesRasGetStateExp 
+typedef ze_result_t (ZE_APICALL *zes_pfnRasGetStateExp_t)(
+    zes_ras_handle_t,
+    uint32_t*,
+    zes_ras_state_exp_t*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zesRasClearStateExp 
+typedef ze_result_t (ZE_APICALL *zes_pfnRasClearStateExp_t)(
+    zes_ras_handle_t,
+    zes_ras_error_category_exp_t
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Table of RasExp functions pointers
+typedef struct _zes_ras_exp_dditable_t
+{
+    zes_pfnRasGetStateExp_t                                     pfnGetStateExp;
+    zes_pfnRasClearStateExp_t                                   pfnClearStateExp;
+} zes_ras_exp_dditable_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Exported function for filling application's RasExp table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+ZE_DLLEXPORT ze_result_t ZE_APICALL
+zesGetRasExpProcAddrTable(
+    ze_api_version_t version,                                               ///< [in] API version requested
+    zes_ras_exp_dditable_t* pDdiTable                                       ///< [in,out] pointer to table of DDI function pointers
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zesGetRasExpProcAddrTable
+typedef ze_result_t (ZE_APICALL *zes_pfnGetRasExpProcAddrTable_t)(
+    ze_api_version_t,
+    zes_ras_exp_dditable_t*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
 /// @brief Function-pointer for zesDiagnosticsGetProperties 
 typedef ze_result_t (ZE_APICALL *zes_pfnDiagnosticsGetProperties_t)(
     zes_diag_handle_t,
@@ -1661,6 +1706,7 @@ typedef struct _zes_dditable_t
     zes_fan_dditable_t                  Fan;
     zes_led_dditable_t                  Led;
     zes_ras_dditable_t                  Ras;
+    zes_ras_exp_dditable_t              RasExp;
     zes_diagnostics_dditable_t          Diagnostics;
 } zes_dditable_t;
 

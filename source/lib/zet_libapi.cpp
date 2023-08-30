@@ -1199,7 +1199,7 @@ zetMetricQueryDestroy(
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Resets a metric query object back to inital state.
+/// @brief Resets a metric query object back to initial state.
 /// 
 /// @details
 ///     - The application must ensure the device is not currently referencing

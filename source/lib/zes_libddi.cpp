@@ -135,6 +135,13 @@ namespace ze_lib
 
         if( ZE_RESULT_SUCCESS == result )
         {
+            auto getTable = reinterpret_cast<zes_pfnGetRasExpProcAddrTable_t>(
+                GET_FUNCTION_PTR(loader, "zesGetRasExpProcAddrTable") );
+            result = getTable( ZE_API_VERSION_CURRENT, &zesDdiTable.RasExp );
+        }
+
+        if( ZE_RESULT_SUCCESS == result )
+        {
             auto getTable = reinterpret_cast<zes_pfnGetSchedulerProcAddrTable_t>(
                 GET_FUNCTION_PTR(loader, "zesGetSchedulerProcAddrTable") );
             result = getTable( ZE_API_VERSION_CURRENT, &zesDdiTable.Scheduler );
@@ -239,6 +246,11 @@ namespace ze_lib
         if( ZE_RESULT_SUCCESS == result )
         {
             result = zesGetRasProcAddrTable( ZE_API_VERSION_CURRENT, &zesDdiTable.Ras );
+        }
+
+        if( ZE_RESULT_SUCCESS == result )
+        {
+            result = zesGetRasExpProcAddrTable( ZE_API_VERSION_CURRENT, &zesDdiTable.RasExp );
         }
 
         if( ZE_RESULT_SUCCESS == result )

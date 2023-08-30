@@ -5,7 +5,7 @@
  * SPDX-License-Identifier: MIT
  *
  * @file zet_api.h
- * @version v1.7-r1.7.0
+ * @version v1.7-r1.7.9
  *
  */
 #ifndef _ZET_API_H
@@ -1157,8 +1157,13 @@ typedef struct _zet_metric_streamer_desc_t
     const void* pNext;                                                      ///< [in][optional] must be null or a pointer to an extension-specific
                                                                             ///< structure (i.e. contains stype and pNext).
     uint32_t notifyEveryNReports;                                           ///< [in,out] number of collected reports after which notification event
-                                                                            ///< will be signalled
-    uint32_t samplingPeriod;                                                ///< [in,out] streamer sampling period in nanoseconds
+                                                                            ///< will be signaled. If the requested value is not supported exactly,
+                                                                            ///< then the driver may use a value that is the closest supported
+                                                                            ///< approximation and shall update this member during ::zetMetricStreamerOpen.
+    uint32_t samplingPeriod;                                                ///< [in,out] streamer sampling period in nanoseconds. If the requested
+                                                                            ///< value is not supported exactly, then the driver may use a value that
+                                                                            ///< is the closest supported approximation and shall update this member
+                                                                            ///< during ::zetMetricStreamerOpen.
 
 } zet_metric_streamer_desc_t;
 
@@ -1410,7 +1415,7 @@ zetMetricQueryDestroy(
     );
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Resets a metric query object back to inital state.
+/// @brief Resets a metric query object back to initial state.
 /// 
 /// @details
 ///     - The application must ensure the device is not currently referencing

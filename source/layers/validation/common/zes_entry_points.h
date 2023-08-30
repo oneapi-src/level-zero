@@ -55,7 +55,6 @@ public:
     virtual ze_result_t zesDeviceEnumEngineGroups( zes_device_handle_t hDevice, uint32_t* pCount, zes_engine_handle_t* phEngine ) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zesEngineGetProperties( zes_engine_handle_t hEngine, zes_engine_properties_t* pProperties ) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zesEngineGetActivity( zes_engine_handle_t hEngine, zes_engine_stats_t* pStats ) {return ZE_RESULT_SUCCESS;}
-    virtual ze_result_t zesEngineGetActivityExt( zes_engine_handle_t hEngine, uint32_t* pCount, zes_engine_stats_t* pStats ) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zesDeviceEventRegister( zes_device_handle_t hDevice, zes_event_type_flags_t events ) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zesDriverEventListen( ze_driver_handle_t hDriver, uint32_t timeout, uint32_t count, zes_device_handle_t* phDevices, uint32_t* pNumDeviceEvents, zes_event_type_flags_t* pEvents ) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zesDriverEventListenEx( ze_driver_handle_t hDriver, uint64_t timeout, uint32_t count, zes_device_handle_t* phDevices, uint32_t* pNumDeviceEvents, zes_event_type_flags_t* pEvents ) {return ZE_RESULT_SUCCESS;}
@@ -145,6 +144,9 @@ public:
     virtual ze_result_t zesTemperatureGetState( zes_temp_handle_t hTemperature, double* pTemperature ) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zesPowerGetLimitsExt( zes_pwr_handle_t hPower, uint32_t* pCount, zes_power_limit_ext_desc_t* pSustained ) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zesPowerSetLimitsExt( zes_pwr_handle_t hPower, uint32_t* pCount, zes_power_limit_ext_desc_t* pSustained ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zesEngineGetActivityExt( zes_engine_handle_t hEngine, uint32_t* pCount, zes_engine_stats_t* pStats ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zesRasGetStateExp( zes_ras_handle_t hRas, uint32_t* pCount, zes_ras_state_exp_t* pState ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zesRasClearStateExp( zes_ras_handle_t hRas, zes_ras_error_category_exp_t category ) {return ZE_RESULT_SUCCESS;}
     virtual ~ZESValidationEntryPoints() {}
 };
 }

@@ -5216,7 +5216,8 @@ namespace loader
                                                         ///< available, the driver shall update the value with the correct value.
                                                         ///<    - Buffer(s) for query results must be sized by the application to
                                                         ///< accommodate a minimum of `*pCount` elements.
-        ze_event_query_kernel_timestamps_results_ext_properties_t* pResults ///< [in][optional] pointer to event query properties structure(s).
+        ze_event_query_kernel_timestamps_results_ext_properties_t* pResults ///< [in,out][optional][range(0, *pCount)] pointer to event query
+                                                        ///< properties structure(s).
                                                         ///<    - This parameter may be null when `*pCount` is zero.
                                                         ///<    - if `*pCount` is less than the number of event packets available,
                                                         ///< the driver may only update `*pCount` elements, starting at element zero.

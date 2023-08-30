@@ -4,7 +4,7 @@
  SPDX-License-Identifier: MIT
 
  @file zet.py
- @version v1.7-r1.7.0
+ @version v1.7-r1.7.9
 
  """
 import platform
@@ -469,8 +469,13 @@ class zet_metric_streamer_desc_t(Structure):
         ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
                                                                         ## structure (i.e. contains stype and pNext).
         ("notifyEveryNReports", c_ulong),                               ## [in,out] number of collected reports after which notification event
-                                                                        ## will be signalled
-        ("samplingPeriod", c_ulong)                                     ## [in,out] streamer sampling period in nanoseconds
+                                                                        ## will be signaled. If the requested value is not supported exactly,
+                                                                        ## then the driver may use a value that is the closest supported
+                                                                        ## approximation and shall update this member during ::zetMetricStreamerOpen.
+        ("samplingPeriod", c_ulong)                                     ## [in,out] streamer sampling period in nanoseconds. If the requested
+                                                                        ## value is not supported exactly, then the driver may use a value that
+                                                                        ## is the closest supported approximation and shall update this member
+                                                                        ## during ::zetMetricStreamerOpen.
     ]
 
 ###############################################################################

@@ -4,7 +4,7 @@
  SPDX-License-Identifier: MIT
 
  @file zes.py
- @version v1.7-r1.7.0
+ @version v1.7-r1.7.9
 
  """
 import platform
@@ -342,23 +342,25 @@ class zes_device_properties_t(Structure):
                                                                         ## device properties
         ("numSubdevices", c_ulong),                                     ## [out] Number of sub-devices. A value of 0 indicates that this device
                                                                         ## doesn't have sub-devices.
-        ("serialNumber", c_char * ZES_STRING_PROPERTY_SIZE),            ## [out] Manufacturing serial number (NULL terminated string value). Will
-                                                                        ## be set to the string "unkown" if this cannot be determined for the
-                                                                        ## device.
-        ("boardNumber", c_char * ZES_STRING_PROPERTY_SIZE),             ## [out] Manufacturing board number (NULL terminated string value). Will
-                                                                        ## be set to the string "unkown" if this cannot be determined for the
-                                                                        ## device.
+        ("serialNumber", c_char * ZES_STRING_PROPERTY_SIZE),            ## [out] Manufacturing serial number (NULL terminated string value). This
+                                                                        ## value is intended to reflect the Part ID/SoC ID assigned by
+                                                                        ## manufacturer that is unique for a SoC. Will be set to the string
+                                                                        ## "unknown" if this cannot be determined for the device.
+        ("boardNumber", c_char * ZES_STRING_PROPERTY_SIZE),             ## [out] Manufacturing board number (NULL terminated string value).
+                                                                        ## Alternatively "boardSerialNumber", this value is intended to reflect
+                                                                        ## the string printed on board label by manufacturer. Will be set to the
+                                                                        ## string "unknown" if this cannot be determined for the device.
         ("brandName", c_char * ZES_STRING_PROPERTY_SIZE),               ## [out] Brand name of the device (NULL terminated string value). Will be
-                                                                        ## set to the string "unkown" if this cannot be determined for the
+                                                                        ## set to the string "unknown" if this cannot be determined for the
                                                                         ## device.
         ("modelName", c_char * ZES_STRING_PROPERTY_SIZE),               ## [out] Model name of the device (NULL terminated string value). Will be
-                                                                        ## set to the string "unkown" if this cannot be determined for the
+                                                                        ## set to the string "unknown" if this cannot be determined for the
                                                                         ## device.
         ("vendorName", c_char * ZES_STRING_PROPERTY_SIZE),              ## [out] Vendor name of the device (NULL terminated string value). Will
-                                                                        ## be set to the string "unkown" if this cannot be determined for the
+                                                                        ## be set to the string "unknown" if this cannot be determined for the
                                                                         ## device.
         ("driverVersion", c_char * ZES_STRING_PROPERTY_SIZE)            ## [out] Installed driver version (NULL terminated string value). Will be
-                                                                        ## set to the string "unkown" if this cannot be determined for the
+                                                                        ## set to the string "unknown" if this cannot be determined for the
                                                                         ## device.
     ]
 
@@ -912,26 +914,6 @@ class zes_engine_properties_t(Structure):
         ("onSubdevice", ze_bool_t),                                     ## [out] True if this resource is located on a sub-device; false means
                                                                         ## that the resource is on the device of the calling Sysman handle
         ("subdeviceId", c_ulong)                                        ## [out] If onSubdevice is true, this gives the ID of the sub-device
-    ]
-
-###############################################################################
-## @brief Extension properties related to Engine Groups
-## 
-## @details
-##     - This structure may be returned from ::zesEngineGetProperties via the
-##       `pNext` member of ::zes_engine_properties_t.
-##     - Used for SRIOV per Virtual Function device utilization by
-##       ::zes_engine_group_t
-class zes_engine_ext_properties_t(Structure):
-    _fields_ = [
-        ("stype", zes_structure_type_t),                                ## [in] type of this structure
-        ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
-                                                                        ## structure (i.e. contains stype and pNext).
-        ("countOfVirtualFunctionInstance", c_ulong)                     ## [out] Number of Virtual Function(VF) instances associated with engine
-                                                                        ## to monitor the global utilization of hardware across all Virtual
-                                                                        ## Function from a Physical Function (PF) instance. These global and
-                                                                        ## VF-by-VF views should provide engine group and individual engine level
-                                                                        ## granularity.
     ]
 
 ###############################################################################
@@ -2190,6 +2172,90 @@ class zes_power_ext_properties_t(Structure):
     ]
 
 ###############################################################################
+## @brief Engine Activity Extension Name
+ZES_ENGINE_ACTIVITY_EXT_NAME = "ZES_extension_engine_activity"
+
+###############################################################################
+## @brief Engine Activity Extension Version(s)
+class zes_engine_activity_ext_version_v(IntEnum):
+    _1_0 = ZE_MAKE_VERSION( 1, 0 )                                          ## version 1.0
+    CURRENT = ZE_MAKE_VERSION( 1, 0 )                                       ## latest known version
+
+class zes_engine_activity_ext_version_t(c_int):
+    def __str__(self):
+        return str(zes_engine_activity_ext_version_v(self.value))
+
+
+###############################################################################
+## @brief Extension properties related to Engine Groups
+## 
+## @details
+##     - This structure may be passed to ::zesEngineGetProperties by having the
+##       pNext member of ::zes_engine_properties_t point at this struct.
+##     - Used for SRIOV per Virtual Function device utilization by
+##       ::zes_engine_group_t
+class zes_engine_ext_properties_t(Structure):
+    _fields_ = [
+        ("stype", zes_structure_type_t),                                ## [in] type of this structure
+        ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains stype and pNext).
+        ("countOfVirtualFunctionInstance", c_ulong)                     ## [out] Number of Virtual Function(VF) instances associated with engine
+                                                                        ## to monitor the utilization of hardware across all Virtual Function
+                                                                        ## from a Physical Function (PF) instance.
+                                                                        ## These VF-by-VF views should provide engine group and individual engine
+                                                                        ## level granularity.
+                                                                        ## This count represents the number of VF instances that are actively
+                                                                        ## using the resource represented by the engine handle.
+    ]
+
+###############################################################################
+## @brief RAS Get State Extension Name
+ZES_RAS_GET_STATE_EXP_NAME = "ZES_extension_ras_state"
+
+###############################################################################
+## @brief RAS Get State Extension Version(s)
+class zes_ras_state_exp_version_v(IntEnum):
+    _1_0 = ZE_MAKE_VERSION( 1, 0 )                                          ## version 1.0
+    CURRENT = ZE_MAKE_VERSION( 1, 0 )                                       ## latest known version
+
+class zes_ras_state_exp_version_t(c_int):
+    def __str__(self):
+        return str(zes_ras_state_exp_version_v(self.value))
+
+
+###############################################################################
+## @brief RAS error categories
+class zes_ras_error_category_exp_v(IntEnum):
+    RESET = 0                                                               ## The number of accelerator engine resets attempted by the driver
+    PROGRAMMING_ERRORS = 1                                                  ## The number of hardware exceptions generated by the way workloads have
+                                                                            ## programmed the hardware
+    DRIVER_ERRORS = 2                                                       ## The number of low level driver communication errors have occurred
+    COMPUTE_ERRORS = 3                                                      ## The number of errors that have occurred in the compute accelerator
+                                                                            ## hardware
+    NON_COMPUTE_ERRORS = 4                                                  ## The number of errors that have occurred in the fixed-function
+                                                                            ## accelerator hardware
+    CACHE_ERRORS = 5                                                        ## The number of errors that have occurred in caches (L1/L3/register
+                                                                            ## file/shared local memory/sampler)
+    DISPLAY_ERRORS = 6                                                      ## The number of errors that have occurred in the display
+    MEMORY_ERRORS = 7                                                       ## The number of errors that have occurred in Memory
+    SCALE_ERRORS = 8                                                        ## The number of errors that have occurred in Scale Fabric
+    L3FABRIC_ERRORS = 9                                                     ## The number of errors that have occurred in L3 Fabric
+
+class zes_ras_error_category_exp_t(c_int):
+    def __str__(self):
+        return str(zes_ras_error_category_exp_v(self.value))
+
+
+###############################################################################
+## @brief Extension structure for providing RAS error counters for different
+##        error sets
+class zes_ras_state_exp_t(Structure):
+    _fields_ = [
+        ("category", zes_ras_error_category_exp_t),                     ## [out] category for which error counter is provided.
+        ("errorCounter", c_ulonglong)                                   ## [out] Current value of RAS counter for specific error category.
+    ]
+
+###############################################################################
 __use_win_types = "Windows" == platform.uname()[0]
 
 ###############################################################################
@@ -3319,6 +3385,29 @@ class _zes_ras_dditable_t(Structure):
     ]
 
 ###############################################################################
+## @brief Function-pointer for zesRasGetStateExp
+if __use_win_types:
+    _zesRasGetStateExp_t = WINFUNCTYPE( ze_result_t, zes_ras_handle_t, POINTER(c_ulong), POINTER(zes_ras_state_exp_t) )
+else:
+    _zesRasGetStateExp_t = CFUNCTYPE( ze_result_t, zes_ras_handle_t, POINTER(c_ulong), POINTER(zes_ras_state_exp_t) )
+
+###############################################################################
+## @brief Function-pointer for zesRasClearStateExp
+if __use_win_types:
+    _zesRasClearStateExp_t = WINFUNCTYPE( ze_result_t, zes_ras_handle_t, zes_ras_error_category_exp_t )
+else:
+    _zesRasClearStateExp_t = CFUNCTYPE( ze_result_t, zes_ras_handle_t, zes_ras_error_category_exp_t )
+
+
+###############################################################################
+## @brief Table of RasExp functions pointers
+class _zes_ras_exp_dditable_t(Structure):
+    _fields_ = [
+        ("pfnGetStateExp", c_void_p),                                   ## _zesRasGetStateExp_t
+        ("pfnClearStateExp", c_void_p)                                  ## _zesRasClearStateExp_t
+    ]
+
+###############################################################################
 ## @brief Function-pointer for zesDiagnosticsGetProperties
 if __use_win_types:
     _zesDiagnosticsGetProperties_t = WINFUNCTYPE( ze_result_t, zes_diag_handle_t, POINTER(zes_diag_properties_t) )
@@ -3370,6 +3459,7 @@ class _zes_dditable_t(Structure):
         ("Fan", _zes_fan_dditable_t),
         ("Led", _zes_led_dditable_t),
         ("Ras", _zes_ras_dditable_t),
+        ("RasExp", _zes_ras_exp_dditable_t),
         ("Diagnostics", _zes_diagnostics_dditable_t)
     ]
 
@@ -3672,6 +3762,17 @@ class ZES_DDI:
         self.zesRasGetConfig = _zesRasGetConfig_t(self.__dditable.Ras.pfnGetConfig)
         self.zesRasSetConfig = _zesRasSetConfig_t(self.__dditable.Ras.pfnSetConfig)
         self.zesRasGetState = _zesRasGetState_t(self.__dditable.Ras.pfnGetState)
+
+        # call driver to get function pointers
+        _RasExp = _zes_ras_exp_dditable_t()
+        r = ze_result_v(self.__dll.zesGetRasExpProcAddrTable(version, byref(_RasExp)))
+        if r != ze_result_v.SUCCESS:
+            raise Exception(r)
+        self.__dditable.RasExp = _RasExp
+
+        # attach function interface to function address
+        self.zesRasGetStateExp = _zesRasGetStateExp_t(self.__dditable.RasExp.pfnGetStateExp)
+        self.zesRasClearStateExp = _zesRasClearStateExp_t(self.__dditable.RasExp.pfnClearStateExp)
 
         # call driver to get function pointers
         _Diagnostics = _zes_diagnostics_dditable_t()

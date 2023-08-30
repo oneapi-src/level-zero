@@ -1426,48 +1426,6 @@ namespace validation_layer
     }
 
     ///////////////////////////////////////////////////////////////////////////////
-    /// @brief Intercept function for zesEngineGetActivityExt
-    __zedlllocal ze_result_t ZE_APICALL
-    zesEngineGetActivityExt(
-        zes_engine_handle_t hEngine,                    ///< [in] Handle for the component.
-        uint32_t* pCount,                               ///< [in,out] Pointer to the number of engine stats descriptors.
-                                                        ///<  - if count is zero, the driver shall update the value with the total
-                                                        ///< number of components of this type.
-                                                        ///<  - if count is greater than the total number of components available,
-                                                        ///< the driver shall update the value with the correct number of
-                                                        ///< components available.
-        zes_engine_stats_t* pStats                      ///< [in,out][optional][range(0, *pCount)] array of engine group activity counters.
-                                                        ///<  - if count is less than the total number of components available, the
-                                                        ///< driver shall only retrieve that number of components.
-        )
-    {
-        auto pfnGetActivityExt = context.zesDdiTable.Engine.pfnGetActivityExt;
-
-        if( nullptr == pfnGetActivityExt )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zesParamValidation.zesEngineGetActivityExt( hEngine, pCount, pStats );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-
-        if( context.enableThreadingValidation ){ 
-            //Unimplemented
-        }
-
-        
-        if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zesHandleLifetime.zesEngineGetActivityExt( hEngine, pCount, pStats );
-            if(result!=ZE_RESULT_SUCCESS) return result;    
-        }
-
-        auto result = pfnGetActivityExt( hEngine, pCount, pStats );
-        return result;
-    }
-
-    ///////////////////////////////////////////////////////////////////////////////
     /// @brief Intercept function for zesDeviceEventRegister
     __zedlllocal ze_result_t ZE_APICALL
     zesDeviceEventRegister(
@@ -1890,14 +1848,9 @@ namespace validation_layer
     zesFabricPortGetMultiPortThroughput(
         zes_device_handle_t hDevice,                    ///< [in] Sysman handle of the device.
         uint32_t numPorts,                              ///< [in] Number of ports enumerated in function ::zesDeviceEnumFabricPorts
-        zes_fabric_port_handle_t* phPort,               ///< [in][range(0, numPorts)] array of handle of components of this type.
-                                                        ///< if numPorts is less than the number of components of this type that
-                                                        ///< are available, then the driver shall only retrieve that number of
-                                                        ///< component handles.
-                                                        ///< if numPorts is greater than the number of components of this type that
-                                                        ///< are available, then the driver shall only retrieve up to correct
-                                                        ///< number of available ports enumerated in ::zesDeviceEnumFabricPorts.
-        zes_fabric_port_throughput_t** pThroughput      ///< [out][range(0, numPorts)] array of Fabric port throughput counters
+        zes_fabric_port_handle_t* phPort,               ///< [in][range(0, numPorts)] array of fabric port handles provided by user
+                                                        ///< to gather throughput values. 
+        zes_fabric_port_throughput_t** pThroughput      ///< [out][range(0, numPorts)] array of fabric port throughput counters
                                                         ///< from multiple ports of type ::zes_fabric_port_throughput_t.
         )
     {
@@ -4735,6 +4688,132 @@ namespace validation_layer
         return result;
     }
 
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesEngineGetActivityExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zesEngineGetActivityExt(
+        zes_engine_handle_t hEngine,                    ///< [in] Handle for the component.
+        uint32_t* pCount,                               ///< [in,out] Pointer to the number of VF engine stats descriptors.
+                                                        ///<  - if count is zero, the driver shall update the value with the total
+                                                        ///< number of engine stats available.
+                                                        ///<  - if count is greater than the total number of engine stats
+                                                        ///< available, the driver shall update the value with the correct number
+                                                        ///< of engine stats available.
+                                                        ///<  - The count returned is the sum of number of VF instances currently
+                                                        ///< available and the PF instance.
+        zes_engine_stats_t* pStats                      ///< [in,out][optional][range(0, *pCount)] array of engine group activity counters.
+                                                        ///<  - if count is less than the total number of engine stats available,
+                                                        ///< then driver shall only retrieve that number of stats.
+                                                        ///<  - the implementation shall populate the vector with engine stat for
+                                                        ///< PF at index 0 of the vector followed by user provided pCount-1 number
+                                                        ///< of VF engine stats.
+        )
+    {
+        auto pfnGetActivityExt = context.zesDdiTable.Engine.pfnGetActivityExt;
+
+        if( nullptr == pfnGetActivityExt )
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        if( context.enableParameterValidation )
+        {
+            auto result = context.paramValidation->zesParamValidation.zesEngineGetActivityExt( hEngine, pCount, pStats );
+            if(result!=ZE_RESULT_SUCCESS) return result;
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zesHandleLifetime.zesEngineGetActivityExt( hEngine, pCount, pStats );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnGetActivityExt( hEngine, pCount, pStats );
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesRasGetStateExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zesRasGetStateExp(
+        zes_ras_handle_t hRas,                          ///< [in] Handle for the component.
+        uint32_t* pCount,                               ///< [in,out] pointer to the number of RAS state structures that can be retrieved.
+                                                        ///< if count is zero, then the driver shall update the value with the
+                                                        ///< total number of error categories for which state can be retrieved.
+                                                        ///< if count is greater than the number of RAS states available, then the
+                                                        ///< driver shall update the value with the correct number of RAS states available.
+        zes_ras_state_exp_t* pState                     ///< [in,out][optional][range(0, *pCount)] array of query results for RAS
+                                                        ///< error states for different categories.
+                                                        ///< if count is less than the number of RAS states available, then driver
+                                                        ///< shall only retrieve that number of RAS states.
+        )
+    {
+        auto pfnGetStateExp = context.zesDdiTable.RasExp.pfnGetStateExp;
+
+        if( nullptr == pfnGetStateExp )
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        if( context.enableParameterValidation )
+        {
+            auto result = context.paramValidation->zesParamValidation.zesRasGetStateExp( hRas, pCount, pState );
+            if(result!=ZE_RESULT_SUCCESS) return result;
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zesHandleLifetime.zesRasGetStateExp( hRas, pCount, pState );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnGetStateExp( hRas, pCount, pState );
+
+        if( result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
+        }
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesRasClearStateExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zesRasClearStateExp(
+        zes_ras_handle_t hRas,                          ///< [in] Handle for the component.
+        zes_ras_error_category_exp_t category           ///< [in] category for which error counter is to be cleared.
+        )
+    {
+        auto pfnClearStateExp = context.zesDdiTable.RasExp.pfnClearStateExp;
+
+        if( nullptr == pfnClearStateExp )
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        if( context.enableParameterValidation )
+        {
+            auto result = context.paramValidation->zesParamValidation.zesRasClearStateExp( hRas, category );
+            if(result!=ZE_RESULT_SUCCESS) return result;
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zesHandleLifetime.zesRasClearStateExp( hRas, category );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnClearStateExp( hRas, category );
+        return result;
+    }
+
 } // namespace validation_layer
 
 #if defined(__cplusplus)
@@ -5524,6 +5603,40 @@ zesGetRasProcAddrTable(
 
     dditable.pfnGetState                                 = pDdiTable->pfnGetState;
     pDdiTable->pfnGetState                               = validation_layer::zesRasGetState;
+
+    return result;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Exported function for filling application's RasExp table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+ZE_DLLEXPORT ze_result_t ZE_APICALL
+zesGetRasExpProcAddrTable(
+    ze_api_version_t version,                       ///< [in] API version requested
+    zes_ras_exp_dditable_t* pDdiTable               ///< [in,out] pointer to table of DDI function pointers
+    )
+{
+    auto& dditable = validation_layer::context.zesDdiTable.RasExp;
+
+    if( nullptr == pDdiTable )
+        return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+    if (ZE_MAJOR_VERSION(validation_layer::context.version) != ZE_MAJOR_VERSION(version) ||
+        ZE_MINOR_VERSION(validation_layer::context.version) > ZE_MINOR_VERSION(version))
+        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+
+    ze_result_t result = ZE_RESULT_SUCCESS;
+
+    dditable.pfnGetStateExp                              = pDdiTable->pfnGetStateExp;
+    pDdiTable->pfnGetStateExp                            = validation_layer::zesRasGetStateExp;
+
+    dditable.pfnClearStateExp                            = pDdiTable->pfnClearStateExp;
+    pDdiTable->pfnClearStateExp                          = validation_layer::zesRasClearStateExp;
 
     return result;
 }

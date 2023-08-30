@@ -763,30 +763,6 @@ namespace validation_layer
 
 
     ze_result_t
-    ZESParameterValidation::zesEngineGetActivityExt(
-        zes_engine_handle_t hEngine,                    ///< [in] Handle for the component.
-        uint32_t* pCount,                               ///< [in,out] Pointer to the number of engine stats descriptors.
-                                                        ///<  - if count is zero, the driver shall update the value with the total
-                                                        ///< number of components of this type.
-                                                        ///<  - if count is greater than the total number of components available,
-                                                        ///< the driver shall update the value with the correct number of
-                                                        ///< components available.
-        zes_engine_stats_t* pStats                      ///< [in,out][optional][range(0, *pCount)] array of engine group activity counters.
-                                                        ///<  - if count is less than the total number of components available, the
-                                                        ///< driver shall only retrieve that number of components.
-        )
-    {
-        if( nullptr == hEngine )
-            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
-
-        if( nullptr == pCount )
-            return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
-
-        return ZE_RESULT_SUCCESS;
-    }
-
-
-    ze_result_t
     ZESParameterValidation::zesDeviceEventRegister(
         zes_device_handle_t hDevice,                    ///< [in] The device handle.
         zes_event_type_flags_t events                   ///< [in] List of events to listen to.
@@ -1021,14 +997,9 @@ namespace validation_layer
     ZESParameterValidation::zesFabricPortGetMultiPortThroughput(
         zes_device_handle_t hDevice,                    ///< [in] Sysman handle of the device.
         uint32_t numPorts,                              ///< [in] Number of ports enumerated in function ::zesDeviceEnumFabricPorts
-        zes_fabric_port_handle_t* phPort,               ///< [in][range(0, numPorts)] array of handle of components of this type.
-                                                        ///< if numPorts is less than the number of components of this type that
-                                                        ///< are available, then the driver shall only retrieve that number of
-                                                        ///< component handles.
-                                                        ///< if numPorts is greater than the number of components of this type that
-                                                        ///< are available, then the driver shall only retrieve up to correct
-                                                        ///< number of available ports enumerated in ::zesDeviceEnumFabricPorts.
-        zes_fabric_port_throughput_t** pThroughput      ///< [out][range(0, numPorts)] array of Fabric port throughput counters
+        zes_fabric_port_handle_t* phPort,               ///< [in][range(0, numPorts)] array of fabric port handles provided by user
+                                                        ///< to gather throughput values. 
+        zes_fabric_port_throughput_t** pThroughput      ///< [out][range(0, numPorts)] array of fabric port throughput counters
                                                         ///< from multiple ports of type ::zes_fabric_port_throughput_t.
         )
     {
@@ -2446,6 +2417,75 @@ namespace validation_layer
             return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
         return ParameterValidation::validateExtensions(pSustained);
+    }
+
+
+    ze_result_t
+    ZESParameterValidation::zesEngineGetActivityExt(
+        zes_engine_handle_t hEngine,                    ///< [in] Handle for the component.
+        uint32_t* pCount,                               ///< [in,out] Pointer to the number of VF engine stats descriptors.
+                                                        ///<  - if count is zero, the driver shall update the value with the total
+                                                        ///< number of engine stats available.
+                                                        ///<  - if count is greater than the total number of engine stats
+                                                        ///< available, the driver shall update the value with the correct number
+                                                        ///< of engine stats available.
+                                                        ///<  - The count returned is the sum of number of VF instances currently
+                                                        ///< available and the PF instance.
+        zes_engine_stats_t* pStats                      ///< [in,out][optional][range(0, *pCount)] array of engine group activity counters.
+                                                        ///<  - if count is less than the total number of engine stats available,
+                                                        ///< then driver shall only retrieve that number of stats.
+                                                        ///<  - the implementation shall populate the vector with engine stat for
+                                                        ///< PF at index 0 of the vector followed by user provided pCount-1 number
+                                                        ///< of VF engine stats.
+        )
+    {
+        if( nullptr == hEngine )
+            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+        if( nullptr == pCount )
+            return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+        return ZE_RESULT_SUCCESS;
+    }
+
+
+    ze_result_t
+    ZESParameterValidation::zesRasGetStateExp(
+        zes_ras_handle_t hRas,                          ///< [in] Handle for the component.
+        uint32_t* pCount,                               ///< [in,out] pointer to the number of RAS state structures that can be retrieved.
+                                                        ///< if count is zero, then the driver shall update the value with the
+                                                        ///< total number of error categories for which state can be retrieved.
+                                                        ///< if count is greater than the number of RAS states available, then the
+                                                        ///< driver shall update the value with the correct number of RAS states available.
+        zes_ras_state_exp_t* pState                     ///< [in,out][optional][range(0, *pCount)] array of query results for RAS
+                                                        ///< error states for different categories.
+                                                        ///< if count is less than the number of RAS states available, then driver
+                                                        ///< shall only retrieve that number of RAS states.
+        )
+    {
+        if( nullptr == hRas )
+            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+        if( nullptr == pCount )
+            return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+        return ZE_RESULT_SUCCESS;
+    }
+
+
+    ze_result_t
+    ZESParameterValidation::zesRasClearStateExp(
+        zes_ras_handle_t hRas,                          ///< [in] Handle for the component.
+        zes_ras_error_category_exp_t category           ///< [in] category for which error counter is to be cleared.
+        )
+    {
+        if( nullptr == hRas )
+            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+        if( ZES_RAS_ERROR_CATEGORY_EXP_L3FABRIC_ERRORS < category )
+            return ZE_RESULT_ERROR_INVALID_ENUMERATION;
+
+        return ZE_RESULT_SUCCESS;
     }
 
 }
