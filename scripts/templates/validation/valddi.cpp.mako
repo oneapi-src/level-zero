@@ -72,11 +72,17 @@ ${line} \
         %if generate_post_call:
 
         if( result == ${X}_RESULT_SUCCESS && context.enableHandleLifetime ){
+            ## Add 'Created' handles/objects to dependent maps
+            <% lines = th.make_param_lines(n, tags, obj, format=['name','delim'])
+            %>
             %for i, item in enumerate(th.get_loader_epilogue(n, tags, obj, meta)):
             %if 'range' in item:
             for (size_t i = ${item['range'][0]}; ( nullptr != ${item['name']}) && (i < ${item['range'][1]}); ++i){
                 if (${item['name']}[i]){
                     context.handleLifetime->addHandle( ${item['name']}[i] );
+                    %if th.type_traits.is_handle(item['type']):
+                    context.handleLifetime->addDependent( ${lines[0]} ${item['name']}[i] );
+                    %endif
                 }
             }
             %else:
@@ -85,6 +91,10 @@ ${line} \
                 context.handleLifetime->addHandle( *${item['name']} , false);
                 %else:
                 context.handleLifetime->addHandle( *${item['name']} );
+                %if th.type_traits.is_handle(item['type']):
+                context.handleLifetime->addDependent( ${lines[0]} *${item['name']} );
+                %endif
+
                 %endif
             }
             %endif

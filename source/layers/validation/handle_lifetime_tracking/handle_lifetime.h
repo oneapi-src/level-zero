@@ -11,7 +11,9 @@
 #include "zes_handle_lifetime.h"
 #include "zet_handle_lifetime.h"
 #include <memory>
+#include <type_traits>
 #include <unordered_map>
+#include <unordered_set>
 
 namespace validation_layer {
 
@@ -24,6 +26,34 @@ public:
   ZEHandleLifetimeValidation zeHandleLifetime;
   ZESHandleLifetimeValidation zesHandleLifetime;
   ZETHandleLifetimeValidation zetHandleLifetime;
+
+  // default methods
+  template <class T> void addHandle(T handle) {
+    // TODO : Log warning
+    untrackedHandles++;
+    defaultHandleStateMap.insert({static_cast<void *>(handle), nullptr});
+  }
+
+  template <class T> void removeHandle(T handle) {
+    // TODO: Log warning
+    untrackedHandles--;
+    defaultHandleStateMap.erase(static_cast<void *>(handle));
+  }
+
+  template <class T> bool isHandleValid(T handle) {
+    return defaultHandleStateMap.find(static_cast<void *>(handle)) !=
+           defaultHandleStateMap.end();
+  }
+
+  template <class S, class T> S get_handle_map(T handle) {
+    if (std::is_same<T, ze_context_handle_t>::value) {
+      return contextHandleStateMap;
+    } else if (std::is_same<T, ze_driver_handle_t>::value) {
+      return driverHandleStateMap;
+    } else {
+      return defaultHandleStateMap;
+    }
+  }
 
   void addHandle(ze_context_handle_t handle) {
     contextHandleStateMap.insert({handle, nullptr});
@@ -473,7 +503,54 @@ public:
     commandListHandleStateMap[handle]->is_open = true;
   }
 
+  void printDependentMap() {
+
+    printf("\n--------------------------------------------\n");
+    for (auto &handle : dependentMap) {
+      printf("Handle: %p Dependents: {", handle.first);
+
+      for (auto dependent : handle.second) {
+        printf(" %p ", dependent);
+      }
+      printf("}\n");
+    }
+    printf("--------------------------------------------\n");
+  }
+
+  void addDependent(const void *handle, const void *dependent) {
+    // No need to track driver dependents
+    for (auto &driverHandle : driverHandleStateMap){
+      if (handle == (void*)driverHandle.first){
+        return;
+      }
+    }
+
+    if (dependentMap.count(handle) == 0) {
+      dependentMap[handle] = std::unordered_set<const void *>();
+    }
+    dependentMap[handle].insert(dependent);
+  }
+
+  void removeDependent(const void *dependent) {
+    for (auto &handle : dependentMap) {
+      handle.second.erase(dependent);
+    }
+  }
+
+  void removeDependent(const void *handle, const void *dependent) {
+    if (dependentMap.count(handle) == 0) {
+      return;
+    }
+    dependentMap[handle].erase(dependent);
+  }
+
+  bool hasDependents(const void *handle) {
+    return dependentMap.count(handle) && !dependentMap[handle].empty();
+  }
+
 private:
+  std::unordered_map<void *, std::unique_ptr<zel_handle_state_t>>
+      defaultHandleStateMap;
   std::unordered_map<ze_context_handle_t, std::unique_ptr<zel_handle_state_t>>
       contextHandleStateMap;
   std::unordered_map<ze_driver_handle_t, std::unique_ptr<zel_handle_state_t>>
@@ -608,6 +685,12 @@ private:
   std::unordered_map<ze_rtas_builder_exp_handle_t,
                      std::unique_ptr<zel_handle_state_t>>
       rtasBuilderHandleStateMap;
-};
+
+  std::unordered_map<const void *, std::unordered_set<const void *>>
+      dependentMap;
+
+  int untrackedHandles = 0;
+
+}; // class HandleLifetimeValidation
 
 } // namespace validation_layer

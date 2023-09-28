@@ -449,6 +449,10 @@ namespace validation_layer
     { 
         
         if (hMetricQueryPool && context.handleLifetime->isHandleValid( hMetricQueryPool )){
+            if (context.handleLifetime->hasDependents( hMetricQueryPool )){
+                return ZE_RESULT_ERROR_HANDLE_OBJECT_IN_USE;
+            }
+            context.handleLifetime->removeDependent( hMetricQueryPool);
             context.handleLifetime->removeHandle( hMetricQueryPool );
         } else if (!context.handleLifetime->isHandleValid( hMetricQueryPool )) {
             return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
@@ -475,6 +479,10 @@ namespace validation_layer
     { 
         
         if (hMetricQuery && context.handleLifetime->isHandleValid( hMetricQuery )){
+            if (context.handleLifetime->hasDependents( hMetricQuery )){
+                return ZE_RESULT_ERROR_HANDLE_OBJECT_IN_USE;
+            }
+            context.handleLifetime->removeDependent( hMetricQuery);
             context.handleLifetime->removeHandle( hMetricQuery );
         } else if (!context.handleLifetime->isHandleValid( hMetricQuery )) {
             return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
@@ -600,6 +608,10 @@ namespace validation_layer
     { 
         
         if (hTracer && context.handleLifetime->isHandleValid( hTracer )){
+            if (context.handleLifetime->hasDependents( hTracer )){
+                return ZE_RESULT_ERROR_HANDLE_OBJECT_IN_USE;
+            }
+            context.handleLifetime->removeDependent( hTracer);
             context.handleLifetime->removeHandle( hTracer );
         } else if (!context.handleLifetime->isHandleValid( hTracer )) {
             return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;

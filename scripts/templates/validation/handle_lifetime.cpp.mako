@@ -38,12 +38,16 @@ namespace validation_layer
         %if re.match(r"\w+Destroy$", func_name):
         %for i, item in enumerate(th.get_loader_prologue(n, tags, obj, meta)):
         if (${item['name']} && context.handleLifetime->isHandleValid( ${item['name']} )){
+            if (context.handleLifetime->hasDependents( ${item['name']} )){
+                return ${X}_RESULT_ERROR_HANDLE_OBJECT_IN_USE;
+            }
+            context.handleLifetime->removeDependent( ${item['name']});
             context.handleLifetime->removeHandle( ${item['name']} );
         } else if (!context.handleLifetime->isHandleValid( ${item['name']} )) {
             return ${X}_RESULT_ERROR_INVALID_NULL_HANDLE;
         }
         %endfor
-        %else:
+        %else: ## Not Destroy
         %for i, item in enumerate(th.get_loader_prologue(n, tags, obj, meta)):
         %if not 'range' in item:
         ## if item is optional, check if it is not null before checking if it is valid

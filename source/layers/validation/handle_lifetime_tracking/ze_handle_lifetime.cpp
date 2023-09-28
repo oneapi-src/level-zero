@@ -388,6 +388,10 @@ namespace validation_layer
     { 
         
         if (hContext && context.handleLifetime->isHandleValid( hContext )){
+            if (context.handleLifetime->hasDependents( hContext )){
+                return ZE_RESULT_ERROR_HANDLE_OBJECT_IN_USE;
+            }
+            context.handleLifetime->removeDependent( hContext);
             context.handleLifetime->removeHandle( hContext );
         } else if (!context.handleLifetime->isHandleValid( hContext )) {
             return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
@@ -429,6 +433,10 @@ namespace validation_layer
     { 
         
         if (hCommandQueue && context.handleLifetime->isHandleValid( hCommandQueue )){
+            if (context.handleLifetime->hasDependents( hCommandQueue )){
+                return ZE_RESULT_ERROR_HANDLE_OBJECT_IN_USE;
+            }
+            context.handleLifetime->removeDependent( hCommandQueue);
             context.handleLifetime->removeHandle( hCommandQueue );
         } else if (!context.handleLifetime->isHandleValid( hCommandQueue )) {
             return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
@@ -522,6 +530,10 @@ namespace validation_layer
     { 
         
         if (hCommandList && context.handleLifetime->isHandleValid( hCommandList )){
+            if (context.handleLifetime->hasDependents( hCommandList )){
+                return ZE_RESULT_ERROR_HANDLE_OBJECT_IN_USE;
+            }
+            context.handleLifetime->removeDependent( hCommandList);
             context.handleLifetime->removeHandle( hCommandList );
         } else if (!context.handleLifetime->isHandleValid( hCommandList )) {
             return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
@@ -1011,6 +1023,10 @@ namespace validation_layer
     { 
         
         if (hEventPool && context.handleLifetime->isHandleValid( hEventPool )){
+            if (context.handleLifetime->hasDependents( hEventPool )){
+                return ZE_RESULT_ERROR_HANDLE_OBJECT_IN_USE;
+            }
+            context.handleLifetime->removeDependent( hEventPool);
             context.handleLifetime->removeHandle( hEventPool );
         } else if (!context.handleLifetime->isHandleValid( hEventPool )) {
             return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
@@ -1037,6 +1053,10 @@ namespace validation_layer
     { 
         
         if (hEvent && context.handleLifetime->isHandleValid( hEvent )){
+            if (context.handleLifetime->hasDependents( hEvent )){
+                return ZE_RESULT_ERROR_HANDLE_OBJECT_IN_USE;
+            }
+            context.handleLifetime->removeDependent( hEvent);
             context.handleLifetime->removeHandle( hEvent );
         } else if (!context.handleLifetime->isHandleValid( hEvent )) {
             return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
@@ -1273,6 +1293,10 @@ namespace validation_layer
     { 
         
         if (hFence && context.handleLifetime->isHandleValid( hFence )){
+            if (context.handleLifetime->hasDependents( hFence )){
+                return ZE_RESULT_ERROR_HANDLE_OBJECT_IN_USE;
+            }
+            context.handleLifetime->removeDependent( hFence);
             context.handleLifetime->removeHandle( hFence );
         } else if (!context.handleLifetime->isHandleValid( hFence )) {
             return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
@@ -1356,6 +1380,10 @@ namespace validation_layer
     { 
         
         if (hImage && context.handleLifetime->isHandleValid( hImage )){
+            if (context.handleLifetime->hasDependents( hImage )){
+                return ZE_RESULT_ERROR_HANDLE_OBJECT_IN_USE;
+            }
+            context.handleLifetime->removeDependent( hImage);
             context.handleLifetime->removeHandle( hImage );
         } else if (!context.handleLifetime->isHandleValid( hImage )) {
             return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
@@ -1606,6 +1634,10 @@ namespace validation_layer
     { 
         
         if (hModule && context.handleLifetime->isHandleValid( hModule )){
+            if (context.handleLifetime->hasDependents( hModule )){
+                return ZE_RESULT_ERROR_HANDLE_OBJECT_IN_USE;
+            }
+            context.handleLifetime->removeDependent( hModule);
             context.handleLifetime->removeHandle( hModule );
         } else if (!context.handleLifetime->isHandleValid( hModule )) {
             return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
@@ -1635,6 +1667,10 @@ namespace validation_layer
     { 
         
         if (hModuleBuildLog && context.handleLifetime->isHandleValid( hModuleBuildLog )){
+            if (context.handleLifetime->hasDependents( hModuleBuildLog )){
+                return ZE_RESULT_ERROR_HANDLE_OBJECT_IN_USE;
+            }
+            context.handleLifetime->removeDependent( hModuleBuildLog);
             context.handleLifetime->removeHandle( hModuleBuildLog );
         } else if (!context.handleLifetime->isHandleValid( hModuleBuildLog )) {
             return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
@@ -1732,6 +1768,10 @@ namespace validation_layer
     { 
         
         if (hKernel && context.handleLifetime->isHandleValid( hKernel )){
+            if (context.handleLifetime->hasDependents( hKernel )){
+                return ZE_RESULT_ERROR_HANDLE_OBJECT_IN_USE;
+            }
+            context.handleLifetime->removeDependent( hKernel);
             context.handleLifetime->removeHandle( hKernel );
         } else if (!context.handleLifetime->isHandleValid( hKernel )) {
             return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
@@ -2124,6 +2164,10 @@ namespace validation_layer
     { 
         
         if (hSampler && context.handleLifetime->isHandleValid( hSampler )){
+            if (context.handleLifetime->hasDependents( hSampler )){
+                return ZE_RESULT_ERROR_HANDLE_OBJECT_IN_USE;
+            }
+            context.handleLifetime->removeDependent( hSampler);
             context.handleLifetime->removeHandle( hSampler );
         } else if (!context.handleLifetime->isHandleValid( hSampler )) {
             return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
@@ -2201,11 +2245,19 @@ namespace validation_layer
     { 
         
         if (hContext && context.handleLifetime->isHandleValid( hContext )){
+            if (context.handleLifetime->hasDependents( hContext )){
+                return ZE_RESULT_ERROR_HANDLE_OBJECT_IN_USE;
+            }
+            context.handleLifetime->removeDependent( hContext);
             context.handleLifetime->removeHandle( hContext );
         } else if (!context.handleLifetime->isHandleValid( hContext )) {
             return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
         }
         if (hPhysicalMemory && context.handleLifetime->isHandleValid( hPhysicalMemory )){
+            if (context.handleLifetime->hasDependents( hPhysicalMemory )){
+                return ZE_RESULT_ERROR_HANDLE_OBJECT_IN_USE;
+            }
+            context.handleLifetime->removeDependent( hPhysicalMemory);
             context.handleLifetime->removeHandle( hPhysicalMemory );
         } else if (!context.handleLifetime->isHandleValid( hPhysicalMemory )) {
             return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
