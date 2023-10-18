@@ -49,6 +49,51 @@ namespace validation_layer
 
 
     ze_result_t
+    ZESParameterValidation::zesDriverGetExtensionProperties(
+        zes_driver_handle_t hDriver,                    ///< [in] handle of the driver instance
+        uint32_t* pCount,                               ///< [in,out] pointer to the number of extension properties.
+                                                        ///< if count is zero, then the driver shall update the value with the
+                                                        ///< total number of extension properties available.
+                                                        ///< if count is greater than the number of extension properties available,
+                                                        ///< then the driver shall update the value with the correct number of
+                                                        ///< extension properties available.
+        zes_driver_extension_properties_t* pExtensionProperties ///< [in,out][optional][range(0, *pCount)] array of query results for
+                                                        ///< extension properties.
+                                                        ///< if count is less than the number of extension properties available,
+                                                        ///< then driver shall only retrieve that number of extension properties.
+        )
+    {
+        if( nullptr == hDriver )
+            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+        if( nullptr == pCount )
+            return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+        return ParameterValidation::validateExtensions(pExtensionProperties);
+    }
+
+
+    ze_result_t
+    ZESParameterValidation::zesDriverGetExtensionFunctionAddress(
+        zes_driver_handle_t hDriver,                    ///< [in] handle of the driver instance
+        const char* name,                               ///< [in] extension function name
+        void** ppFunctionAddress                        ///< [out] pointer to function pointer
+        )
+    {
+        if( nullptr == hDriver )
+            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+        if( nullptr == name )
+            return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+        if( nullptr == ppFunctionAddress )
+            return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+        return ZE_RESULT_SUCCESS;
+    }
+
+
+    ze_result_t
     ZESParameterValidation::zesDeviceGet(
         zes_driver_handle_t hDriver,                    ///< [in] handle of the sysman driver instance
         uint32_t* pCount,                               ///< [in,out] pointer to the number of sysman devices.
@@ -1194,6 +1239,22 @@ namespace validation_layer
             return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
 
         if( nullptr == pImage )
+            return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+        return ZE_RESULT_SUCCESS;
+    }
+
+
+    ze_result_t
+    ZESParameterValidation::zesFirmwareGetFlashProgress(
+        zes_firmware_handle_t hFirmware,                ///< [in] Handle for the component.
+        uint32_t* pCompletionPercent                    ///< [in,out] Pointer to the Completion Percentage of Firmware Update
+        )
+    {
+        if( nullptr == hFirmware )
+            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+        if( nullptr == pCompletionPercent )
             return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
         return ZE_RESULT_SUCCESS;

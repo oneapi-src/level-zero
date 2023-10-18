@@ -121,6 +121,66 @@ namespace loader
     }
 
     ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesDriverGetExtensionProperties
+    __zedlllocal ze_result_t ZE_APICALL
+    zesDriverGetExtensionProperties(
+        zes_driver_handle_t hDriver,                    ///< [in] handle of the driver instance
+        uint32_t* pCount,                               ///< [in,out] pointer to the number of extension properties.
+                                                        ///< if count is zero, then the driver shall update the value with the
+                                                        ///< total number of extension properties available.
+                                                        ///< if count is greater than the number of extension properties available,
+                                                        ///< then the driver shall update the value with the correct number of
+                                                        ///< extension properties available.
+        zes_driver_extension_properties_t* pExtensionProperties ///< [in,out][optional][range(0, *pCount)] array of query results for
+                                                        ///< extension properties.
+                                                        ///< if count is less than the number of extension properties available,
+                                                        ///< then driver shall only retrieve that number of extension properties.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_driver_object_t*>( hDriver )->dditable;
+        auto pfnGetExtensionProperties = dditable->zes.Driver.pfnGetExtensionProperties;
+        if( nullptr == pfnGetExtensionProperties )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hDriver = reinterpret_cast<zes_driver_object_t*>( hDriver )->handle;
+
+        // forward to device-driver
+        result = pfnGetExtensionProperties( hDriver, pCount, pExtensionProperties );
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesDriverGetExtensionFunctionAddress
+    __zedlllocal ze_result_t ZE_APICALL
+    zesDriverGetExtensionFunctionAddress(
+        zes_driver_handle_t hDriver,                    ///< [in] handle of the driver instance
+        const char* name,                               ///< [in] extension function name
+        void** ppFunctionAddress                        ///< [out] pointer to function pointer
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_driver_object_t*>( hDriver )->dditable;
+        auto pfnGetExtensionFunctionAddress = dditable->zes.Driver.pfnGetExtensionFunctionAddress;
+        if( nullptr == pfnGetExtensionFunctionAddress )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hDriver = reinterpret_cast<zes_driver_object_t*>( hDriver )->handle;
+
+        // forward to device-driver
+        result = pfnGetExtensionFunctionAddress( hDriver, name, ppFunctionAddress );
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
     /// @brief Intercept function for zesDeviceGet
     __zedlllocal ze_result_t ZE_APICALL
     zesDeviceGet(
@@ -1857,6 +1917,31 @@ namespace loader
 
         // forward to device-driver
         result = pfnFlash( hFirmware, pImage, size );
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesFirmwareGetFlashProgress
+    __zedlllocal ze_result_t ZE_APICALL
+    zesFirmwareGetFlashProgress(
+        zes_firmware_handle_t hFirmware,                ///< [in] Handle for the component.
+        uint32_t* pCompletionPercent                    ///< [in,out] Pointer to the Completion Percentage of Firmware Update
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_firmware_object_t*>( hFirmware )->dditable;
+        auto pfnGetFlashProgress = dditable->zes.Firmware.pfnGetFlashProgress;
+        if( nullptr == pfnGetFlashProgress )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hFirmware = reinterpret_cast<zes_firmware_object_t*>( hFirmware )->handle;
+
+        // forward to device-driver
+        result = pfnGetFlashProgress( hFirmware, pCompletionPercent );
 
         return result;
     }
@@ -4214,6 +4299,8 @@ zesGetDriverProcAddrTable(
             pDdiTable->pfnEventListen                              = loader::zesDriverEventListen;
             pDdiTable->pfnEventListenEx                            = loader::zesDriverEventListenEx;
             pDdiTable->pfnGet                                      = loader::zesDriverGet;
+            pDdiTable->pfnGetExtensionProperties                   = loader::zesDriverGetExtensionProperties;
+            pDdiTable->pfnGetExtensionFunctionAddress              = loader::zesDriverGetExtensionFunctionAddress;
         }
         else
         {
@@ -4606,6 +4693,7 @@ zesGetFirmwareProcAddrTable(
             // return pointers to loader's DDIs
             pDdiTable->pfnGetProperties                            = loader::zesFirmwareGetProperties;
             pDdiTable->pfnFlash                                    = loader::zesFirmwareFlash;
+            pDdiTable->pfnGetFlashProgress                         = loader::zesFirmwareGetFlashProgress;
         }
         else
         {

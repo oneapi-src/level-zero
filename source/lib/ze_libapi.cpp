@@ -2933,6 +2933,18 @@ zeEventPoolPutIpcHandle(
 ///       unique event pool handles.
 ///     - The event handle in this process should not be freed with
 ///       ::zeEventPoolDestroy, but rather with ::zeEventPoolCloseIpcHandle.
+///     - If the original event pool has been created for a device containing a
+///       number of sub-devices, then the event pool
+///       returned by this call may be used on a device containing the same
+///       number of sub-devices, or on any of
+///       those sub-devices.
+///     - However, if the original event pool has been created for a sub-device,
+///       then the event pool returned by this call
+///       cannot be used on a device containing any number of sub-devices, and
+///       must be used only in a sub-device. This ensures
+///       functional correctness for any implementation or optimizations the
+///       underlying Level Zero driver may do on
+///       event pools and events.
 ///     - The application may call this function from simultaneous threads.
 /// 
 /// @returns

@@ -5,7 +5,7 @@
  * SPDX-License-Identifier: MIT
  *
  * @file zes_api.h
- * @version v1.7-r1.7.9
+ * @version v1.8-r1.8.0
  *
  */
 #ifndef _ZES_API_H
@@ -147,6 +147,9 @@ typedef enum _zes_structure_type_t
     ZES_STRUCTURE_TYPE_RESET_PROPERTIES = 0x2c,                             ///< ::zes_reset_properties_t
     ZES_STRUCTURE_TYPE_DEVICE_EXT_PROPERTIES = 0x2d,                        ///< ::zes_device_ext_properties_t
     ZES_STRUCTURE_TYPE_DEVICE_UUID = 0x2e,                                  ///< ::zes_uuid_t
+    ZES_STRUCTURE_TYPE_POWER_DOMAIN_EXP_PROPERTIES = 0x00020001,            ///< ::zes_power_domain_exp_properties_t
+    ZES_STRUCTURE_TYPE_MEM_TIMESTAMP_BITS_EXP = 0x00020002,                 ///< ::zes_mem_timestamp_bits_exp_t
+    ZES_STRUCTURE_TYPE_MEMORY_PAGE_OFFLINE_STATE_EXP = 0x00020003,          ///< ::zes_mem_page_offline_state_exp_t
     ZES_STRUCTURE_TYPE_FORCE_UINT32 = 0x7fffffff
 
 } zes_structure_type_t;
@@ -220,6 +223,10 @@ typedef struct _zes_base_config_t zes_base_config_t;
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief Forward-declare zes_base_capability_t
 typedef struct _zes_base_capability_t zes_base_capability_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Forward-declare zes_driver_extension_properties_t
+typedef struct _zes_driver_extension_properties_t zes_driver_extension_properties_t;
 
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief Forward-declare zes_device_state_t
@@ -505,6 +512,18 @@ typedef struct _zes_engine_ext_properties_t zes_engine_ext_properties_t;
 /// @brief Forward-declare zes_ras_state_exp_t
 typedef struct _zes_ras_state_exp_t zes_ras_state_exp_t;
 
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Forward-declare zes_mem_page_offline_state_exp_t
+typedef struct _zes_mem_page_offline_state_exp_t zes_mem_page_offline_state_exp_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Forward-declare zes_mem_timestamp_bits_exp_t
+typedef struct _zes_mem_timestamp_bits_exp_t zes_mem_timestamp_bits_exp_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Forward-declare zes_power_domain_exp_properties_t
+typedef struct _zes_power_domain_exp_properties_t zes_power_domain_exp_properties_t;
+
 
 #if !defined(__GNUC__)
 #pragma endregion
@@ -589,6 +608,79 @@ zesDriverGet(
     zes_driver_handle_t* phDrivers                                          ///< [in,out][optional][range(0, *pCount)] array of sysman driver instance handles.
                                                                             ///< if count is less than the number of sysman drivers available, then the
                                                                             ///< loader shall only retrieve that number of sysman drivers.
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+#ifndef ZES_MAX_EXTENSION_NAME
+/// @brief Maximum extension name string size
+#define ZES_MAX_EXTENSION_NAME  256
+#endif // ZES_MAX_EXTENSION_NAME
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Extension properties queried using ::zesDriverGetExtensionProperties
+typedef struct _zes_driver_extension_properties_t
+{
+    char name[ZES_MAX_EXTENSION_NAME];                                      ///< [out] extension name
+    uint32_t version;                                                       ///< [out] extension version using ::ZE_MAKE_VERSION
+
+} zes_driver_extension_properties_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Retrieves extension properties
+/// 
+/// @details
+///     - The application may call this function from simultaneous threads.
+///     - The implementation of this function should be lock-free.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hDriver`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == pCount`
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zesDriverGetExtensionProperties(
+    zes_driver_handle_t hDriver,                                            ///< [in] handle of the driver instance
+    uint32_t* pCount,                                                       ///< [in,out] pointer to the number of extension properties.
+                                                                            ///< if count is zero, then the driver shall update the value with the
+                                                                            ///< total number of extension properties available.
+                                                                            ///< if count is greater than the number of extension properties available,
+                                                                            ///< then the driver shall update the value with the correct number of
+                                                                            ///< extension properties available.
+    zes_driver_extension_properties_t* pExtensionProperties                 ///< [in,out][optional][range(0, *pCount)] array of query results for
+                                                                            ///< extension properties.
+                                                                            ///< if count is less than the number of extension properties available,
+                                                                            ///< then driver shall only retrieve that number of extension properties.
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Retrieves function pointer for vendor-specific or experimental
+///        extensions
+/// 
+/// @details
+///     - The application may call this function from simultaneous threads.
+///     - The implementation of this function should be lock-free.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hDriver`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == name`
+///         + `nullptr == ppFunctionAddress`
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zesDriverGetExtensionFunctionAddress(
+    zes_driver_handle_t hDriver,                                            ///< [in] handle of the driver instance
+    const char* name,                                                       ///< [in] extension function name
+    void** ppFunctionAddress                                                ///< [out] pointer to function pointer
     );
 
 #if !defined(__GNUC__)
@@ -2248,16 +2340,8 @@ typedef enum _zes_engine_group_t
                                                                             ///< engines so activity of such an engine may not be indicative of the
                                                                             ///< underlying resource utilization - use
                                                                             ///< ::ZES_ENGINE_GROUP_3D_RENDER_COMPUTE_ALL for that.
-    ZES_ENGINE_GROUP_MEDIA_DECODE_SINGLE = 6,                               ///< Access information about a single media decode engine. Note that
-                                                                            ///< single engines may share the same underlying accelerator resources as
-                                                                            ///< other engines so activity of such an engine may not be indicative of
-                                                                            ///< the underlying resource utilization - use ::ZES_ENGINE_GROUP_MEDIA_ALL
-                                                                            ///< for that.
-    ZES_ENGINE_GROUP_MEDIA_ENCODE_SINGLE = 7,                               ///< Access information about a single media encode engine. Note that
-                                                                            ///< single engines may share the same underlying accelerator resources as
-                                                                            ///< other engines so activity of such an engine may not be indicative of
-                                                                            ///< the underlying resource utilization - use ::ZES_ENGINE_GROUP_MEDIA_ALL
-                                                                            ///< for that.
+    ZES_ENGINE_GROUP_MEDIA_DECODE_SINGLE = 6,                               ///< [DEPRECATED] No longer supported.
+    ZES_ENGINE_GROUP_MEDIA_ENCODE_SINGLE = 7,                               ///< [DEPRECATED] No longer supported.
     ZES_ENGINE_GROUP_COPY_SINGLE = 8,                                       ///< Access information about a single media encode engine. Note that
                                                                             ///< single engines may share the same underlying accelerator resources as
                                                                             ///< other engines so activity of such an engine may not be indicative of
@@ -2268,16 +2352,16 @@ typedef enum _zes_engine_group_t
                                                                             ///< other engines so activity of such an engine may not be indicative of
                                                                             ///< the underlying resource utilization - use ::ZES_ENGINE_GROUP_MEDIA_ALL
                                                                             ///< for that.
-    ZES_ENGINE_GROUP_3D_SINGLE = 10,                                        ///< Access information about a single 3D engine - this is an engine that
-                                                                            ///< can process 3D content only. Note that single engines may share the
-                                                                            ///< same underlying accelerator resources as other engines so activity of
-                                                                            ///< such an engine may not be indicative of the underlying resource
-                                                                            ///< utilization - use ::ZES_ENGINE_GROUP_3D_RENDER_COMPUTE_ALL for that.
-    ZES_ENGINE_GROUP_3D_RENDER_COMPUTE_ALL = 11,                            ///< Access information about all 3D/render/compute engines combined.
+    ZES_ENGINE_GROUP_3D_SINGLE = 10,                                        ///< [DEPRECATED] No longer supported.
+    ZES_ENGINE_GROUP_3D_RENDER_COMPUTE_ALL = 11,                            ///< [DEPRECATED] No longer supported.
     ZES_ENGINE_GROUP_RENDER_ALL = 12,                                       ///< Access information about all render engines combined. Render engines
                                                                             ///< are those than process both 3D content and compute kernels.
-    ZES_ENGINE_GROUP_3D_ALL = 13,                                           ///< Access information about all 3D engines combined. 3D engines can
-                                                                            ///< process 3D content only (no compute kernels).
+    ZES_ENGINE_GROUP_3D_ALL = 13,                                           ///< [DEPRECATED] No longer supported.
+    ZES_ENGINE_GROUP_MEDIA_CODEC_SINGLE = 14,                               ///< Access information about a single media engine. Note that single
+                                                                            ///< engines may share the same underlying accelerator resources as other
+                                                                            ///< engines so activity of such an engine may not be indicative of the
+                                                                            ///< underlying resource utilization - use ::ZES_ENGINE_GROUP_MEDIA_ALL for
+                                                                            ///< that.
     ZES_ENGINE_GROUP_FORCE_UINT32 = 0x7fffffff
 
 } zes_engine_group_t;
@@ -2305,11 +2389,11 @@ typedef struct _zes_engine_properties_t
 ///       (s2.timestamp - s1.timestamp)
 typedef struct _zes_engine_stats_t
 {
-    uint64_t activeTime;                                                    ///< [out] Monotonic counter for time in microseconds that this resource is
-                                                                            ///< actively running workloads.
-    uint64_t timestamp;                                                     ///< [out] Monotonic timestamp counter in microseconds when activeTime
-                                                                            ///< counter was sampled.
-                                                                            ///< This timestamp should only be used to calculate delta time between
+    uint64_t activeTime;                                                    ///< [out] Monotonic counter where the resource is actively running workloads.
+                                                                            ///< Time units are implementation specific since the activeTime value is
+                                                                            ///< only intended for calculating utilization percentage as noted above.
+    uint64_t timestamp;                                                     ///< [out] Monotonic counter when activeTime counter was sampled.
+                                                                            ///< This timestamp should only be used to calculate delta between
                                                                             ///< snapshots of this structure.
                                                                             ///< Never take the delta of this timestamp with the timestamp from a
                                                                             ///< different structure since they are not guaranteed to have the same base.
@@ -3369,8 +3453,12 @@ zesFirmwareGetProperties(
 /// @brief Flash a new firmware image
 /// 
 /// @details
+///     - Any running workload must be gracefully closed before invoking this
+///       function.
 ///     - The application may call this function from simultaneous threads.
 ///     - The implementation of this function should be lock-free.
+///     - This is a non-blocking call. Application may call
+///       ::zesFirmwareGetFlashProgress to get completion status.
 /// 
 /// @returns
 ///     - ::ZE_RESULT_SUCCESS
@@ -3389,6 +3477,29 @@ zesFirmwareFlash(
     zes_firmware_handle_t hFirmware,                                        ///< [in] Handle for the component.
     void* pImage,                                                           ///< [in] Image of the new firmware to flash.
     uint32_t size                                                           ///< [in] Size of the flash image.
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Get Firmware Flash Progress
+/// 
+/// @details
+///     - The application may call this function from simultaneous threads.
+///     - The implementation of this function should be lock-free.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hFirmware`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == pCompletionPercent`
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zesFirmwareGetFlashProgress(
+    zes_firmware_handle_t hFirmware,                                        ///< [in] Handle for the component.
+    uint32_t* pCompletionPercent                                            ///< [in,out] Pointer to the Completion Percentage of Firmware Update
     );
 
 #if !defined(__GNUC__)
@@ -3530,6 +3641,9 @@ typedef struct _zes_freq_throttle_time_t
 
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief Overclocking modes
+/// 
+/// @details
+///     - [DEPRECATED] No longer supported.
 typedef enum _zes_oc_mode_t
 {
     ZES_OC_MODE_OFF = 0,                                                    ///< Overclocking if off - hardware is running using factory default
@@ -3558,6 +3672,7 @@ typedef enum _zes_oc_mode_t
 /// @details
 ///     - Provides all the overclocking capabilities and properties supported by
 ///       the device for the frequency domain.
+///     - [DEPRECATED] No longer supported.
 typedef struct _zes_oc_capabilities_t
 {
     zes_structure_type_t stype;                                             ///< [in] type of this structure
@@ -3784,6 +3899,7 @@ zesFrequencyGetThrottleTime(
 /// @details
 ///     - The application may call this function from simultaneous threads.
 ///     - The implementation of this function should be lock-free.
+///     - [DEPRECATED] No longer supported.
 /// 
 /// @returns
 ///     - ::ZE_RESULT_SUCCESS
@@ -3808,6 +3924,7 @@ zesFrequencyOcGetCapabilities(
 /// @details
 ///     - The application may call this function from simultaneous threads.
 ///     - The implementation of this function should be lock-free.
+///     - [DEPRECATED] No longer supported.
 /// 
 /// @returns
 ///     - ::ZE_RESULT_SUCCESS
@@ -3843,6 +3960,7 @@ zesFrequencyOcGetFrequencyTarget(
 /// @details
 ///     - The application may call this function from simultaneous threads.
 ///     - The implementation of this function should be lock-free.
+///     - [DEPRECATED] No longer supported.
 /// 
 /// @returns
 ///     - ::ZE_RESULT_SUCCESS
@@ -3875,6 +3993,7 @@ zesFrequencyOcSetFrequencyTarget(
 /// @details
 ///     - The application may call this function from simultaneous threads.
 ///     - The implementation of this function should be lock-free.
+///     - [DEPRECATED] No longer supported.
 /// 
 /// @returns
 ///     - ::ZE_RESULT_SUCCESS
@@ -3912,6 +4031,7 @@ zesFrequencyOcGetVoltageTarget(
 /// @details
 ///     - The application may call this function from simultaneous threads.
 ///     - The implementation of this function should be lock-free.
+///     - [DEPRECATED] No longer supported.
 /// 
 /// @returns
 ///     - ::ZE_RESULT_SUCCESS
@@ -3946,6 +4066,7 @@ zesFrequencyOcSetVoltageTarget(
 /// @details
 ///     - The application may call this function from simultaneous threads.
 ///     - The implementation of this function should be lock-free.
+///     - [DEPRECATED] No longer supported.
 /// 
 /// @returns
 ///     - ::ZE_RESULT_SUCCESS
@@ -3977,6 +4098,7 @@ zesFrequencyOcSetMode(
 /// @details
 ///     - The application may call this function from simultaneous threads.
 ///     - The implementation of this function should be lock-free.
+///     - [DEPRECATED] No longer supported.
 /// 
 /// @returns
 ///     - ::ZE_RESULT_SUCCESS
@@ -4008,6 +4130,7 @@ zesFrequencyOcGetMode(
 /// @details
 ///     - The application may call this function from simultaneous threads.
 ///     - The implementation of this function should be lock-free.
+///     - [DEPRECATED] No longer supported.
 /// 
 /// @returns
 ///     - ::ZE_RESULT_SUCCESS
@@ -4036,6 +4159,7 @@ zesFrequencyOcGetIccMax(
 ///     - Setting ocIccMax to 0.0 will return the value to the factory default.
 ///     - The application may call this function from simultaneous threads.
 ///     - The implementation of this function should be lock-free.
+///     - [DEPRECATED] No longer supported.
 /// 
 /// @returns
 ///     - ::ZE_RESULT_SUCCESS
@@ -4066,6 +4190,7 @@ zesFrequencyOcSetIccMax(
 /// @details
 ///     - The application may call this function from simultaneous threads.
 ///     - The implementation of this function should be lock-free.
+///     - [DEPRECATED] No longer supported.
 /// 
 /// @returns
 ///     - ::ZE_RESULT_SUCCESS
@@ -4093,6 +4218,7 @@ zesFrequencyOcGetTjMax(
 ///     - Setting ocTjMax to 0.0 will return the value to the factory default.
 ///     - The application may call this function from simultaneous threads.
 ///     - The implementation of this function should be lock-free.
+///     - [DEPRECATED] No longer supported.
 /// 
 /// @returns
 ///     - ::ZE_RESULT_SUCCESS
@@ -4428,6 +4554,7 @@ typedef struct _zes_mem_bandwidth_t
 /// 
 /// @details
 ///     - Number of counter bits
+///     - [DEPRECATED] No longer supported.
 typedef struct _zes_mem_ext_bandwidth_t
 {
     uint32_t memoryTimestampValidBits;                                      ///< [out] Returns the number of valid bits in the timestamp values
@@ -4685,6 +4812,8 @@ typedef enum _zes_power_domain_t
     ZES_POWER_DOMAIN_CARD = 1,                                              ///< The PUnit power domain is a card-level power domain.
     ZES_POWER_DOMAIN_PACKAGE = 2,                                           ///< The PUnit power domain is a package-level power domain.
     ZES_POWER_DOMAIN_STACK = 3,                                             ///< The PUnit power domain is a stack-level power domain.
+    ZES_POWER_DOMAIN_MEMORY = 4,                                            ///< The PUnit power domain is a memory-level power domain.
+    ZES_POWER_DOMAIN_GPU = 5,                                               ///< The PUnit power domain is a GPU-level power domain.
     ZES_POWER_DOMAIN_FORCE_UINT32 = 0x7fffffff
 
 } zes_power_domain_t;
@@ -4782,6 +4911,7 @@ typedef struct _zes_power_energy_counter_t
 ///     - The power controller (Punit) will throttle the operating frequency if
 ///       the power averaged over a window (typically seconds) exceeds this
 ///       limit.
+///     - [DEPRECATED] No longer supported.
 typedef struct _zes_power_sustained_limit_t
 {
     ze_bool_t enabled;                                                      ///< [in,out] indicates if the limit is enabled (true) or ignored (false)
@@ -4799,6 +4929,7 @@ typedef struct _zes_power_sustained_limit_t
 ///       limit known as PL2. Typically PL2 > PL1 so that it permits the
 ///       frequency to burst higher for short periods than would be otherwise
 ///       permitted by PL1.
+///     - [DEPRECATED] No longer supported.
 typedef struct _zes_power_burst_limit_t
 {
     ze_bool_t enabled;                                                      ///< [in,out] indicates if the limit is enabled (true) or ignored (false)
@@ -4819,6 +4950,7 @@ typedef struct _zes_power_burst_limit_t
 ///       power controller will throttle the device frequencies down to min. It
 ///       is thus better to tune the PL4 value in order to avoid such
 ///       excursions.
+///     - [DEPRECATED] No longer supported.
 typedef struct _zes_power_peak_limit_t
 {
     int32_t powerAC;                                                        ///< [in,out] power limit in milliwatts for the AC power source.
@@ -4882,6 +5014,7 @@ zesDeviceEnumPowerDomains(
 /// @details
 ///     - The application may call this function from simultaneous threads.
 ///     - The implementation of this function should be lock-free.
+///     - [DEPRECATED] No longer supported.
 /// 
 /// @returns
 ///     - ::ZE_RESULT_SUCCESS
@@ -4954,8 +5087,7 @@ zesPowerGetEnergyCounter(
 /// @details
 ///     - The application may call this function from simultaneous threads.
 ///     - The implementation of this function should be lock-free.
-///     - Note: This function is deprecated and replaced by
-///       ::zesPowerGetLimitsExt.
+///     - [DEPRECATED] Use ::zesPowerGetLimitsExt.
 /// 
 /// @returns
 ///     - ::ZE_RESULT_SUCCESS
@@ -4982,8 +5114,7 @@ zesPowerGetLimits(
 /// @details
 ///     - The application may call this function from simultaneous threads.
 ///     - The implementation of this function should be lock-free.
-///     - Note: This function is deprecated and replaced by
-///       ::zesPowerSetLimitsExt.
+///     - [DEPRECATED] Use ::zesPowerSetLimitsExt.
 /// 
 /// @returns
 ///     - ::ZE_RESULT_SUCCESS
@@ -5495,10 +5626,7 @@ typedef enum _zes_sched_mode_t
                                                                             ///< without being preempted or terminated. All pending work for other
                                                                             ///< contexts must wait until the running context completes with no further
                                                                             ///< submitted work.
-    ZES_SCHED_MODE_COMPUTE_UNIT_DEBUG = 3,                                  ///< This is a special mode that must ben enabled when debugging an
-                                                                            ///< application that uses this device e.g. using the Level0 Debug API. It
-                                                                            ///< has the effect of disabling any timeouts on workload execution time
-                                                                            ///< and will change workload scheduling to ensure debug accuracy.
+    ZES_SCHED_MODE_COMPUTE_UNIT_DEBUG = 3,                                  ///< [DEPRECATED] No longer supported.
     ZES_SCHED_MODE_FORCE_UINT32 = 0x7fffffff
 
 } zes_sched_mode_t;
@@ -5816,6 +5944,7 @@ zesSchedulerSetExclusiveMode(
 ///       without enforcing any scheduler fairness policies.
 ///     - The application may call this function from simultaneous threads.
 ///     - The implementation of this function should be lock-free.
+///     - [DEPRECATED] No longer supported.
 /// 
 /// @returns
 ///     - ::ZE_RESULT_SUCCESS
@@ -6000,6 +6129,8 @@ typedef enum _zes_temp_sensors_t
     ZES_TEMP_SENSORS_GLOBAL_MIN = 3,                                        ///< The minimum temperature across all device sensors
     ZES_TEMP_SENSORS_GPU_MIN = 4,                                           ///< The minimum temperature across all sensors in the GPU
     ZES_TEMP_SENSORS_MEMORY_MIN = 5,                                        ///< The minimum temperature across all sensors in the local device memory
+    ZES_TEMP_SENSORS_GPU_BOARD = 6,                                         ///< The maximum temperature across all sensors in the GPU Board
+    ZES_TEMP_SENSORS_GPU_BOARD_MIN = 7,                                     ///< The minimum temperature across all sensors in the GPU Board
     ZES_TEMP_SENSORS_FORCE_UINT32 = 0x7fffffff
 
 } zes_temp_sensors_t;
@@ -6553,6 +6684,124 @@ zesRasClearStateExp(
     zes_ras_handle_t hRas,                                                  ///< [in] Handle for the component.
     zes_ras_error_category_exp_t category                                   ///< [in] category for which error counter is to be cleared.
     );
+
+#if !defined(__GNUC__)
+#pragma endregion
+#endif
+// Intel 'oneAPI' Level-Zero Sysman Extension APIs for Memory State
+#if !defined(__GNUC__)
+#pragma region memPageOfflineState
+#endif
+///////////////////////////////////////////////////////////////////////////////
+#ifndef ZES_MEM_PAGE_OFFLINE_STATE_EXP_NAME
+/// @brief Memory State Extension Name
+#define ZES_MEM_PAGE_OFFLINE_STATE_EXP_NAME  "ZES_extension_mem_state"
+#endif // ZES_MEM_PAGE_OFFLINE_STATE_EXP_NAME
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Memory State Extension Version(s)
+typedef enum _zes_mem_page_offline_state_exp_version_t
+{
+    ZES_MEM_PAGE_OFFLINE_STATE_EXP_VERSION_1_0 = ZE_MAKE_VERSION( 1, 0 ),   ///< version 1.0
+    ZES_MEM_PAGE_OFFLINE_STATE_EXP_VERSION_CURRENT = ZE_MAKE_VERSION( 1, 0 ),   ///< latest known version
+    ZES_MEM_PAGE_OFFLINE_STATE_EXP_VERSION_FORCE_UINT32 = 0x7fffffff
+
+} zes_mem_page_offline_state_exp_version_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Extension properties for Memory State
+/// 
+/// @details
+///     - This structure may be returned from ::zesMemoryGetState via the
+///       `pNext` member of ::zes_mem_state_t
+///     - These additional parameters get Memory Page Offline Metrics
+typedef struct _zes_mem_page_offline_state_exp_t
+{
+    zes_structure_type_t stype;                                             ///< [in] type of this structure
+    const void* pNext;                                                      ///< [in][optional] must be null or a pointer to an extension-specific
+                                                                            ///< structure (i.e. contains stype and pNext).
+    uint32_t memoryPageOffline;                                             ///< [out] Returns the number of Memory Pages Offline
+    uint32_t maxMemoryPageOffline;                                          ///< [out] Returns the Allowed Memory Pages Offline
+
+} zes_mem_page_offline_state_exp_t;
+
+#if !defined(__GNUC__)
+#pragma endregion
+#endif
+// Intel 'oneAPI' Level-Zero Sysman Extension APIs for Memory Timestamp Valid Bits
+#if !defined(__GNUC__)
+#pragma region memoryTimestampValidBits
+#endif
+///////////////////////////////////////////////////////////////////////////////
+#ifndef ZES_MEMORY_TIMESTAMP_VALID_BITS_EXP_NAME
+/// @brief Memory Timestamp Valid Bits Extension Name
+#define ZES_MEMORY_TIMESTAMP_VALID_BITS_EXP_NAME  "ZES_extension_mem_timestamp_valid_bits"
+#endif // ZES_MEMORY_TIMESTAMP_VALID_BITS_EXP_NAME
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Memory Timestamp Valid Bits Extension Version(s)
+typedef enum _zes_mem_timestamp_bits_exp_version_t
+{
+    ZES_MEM_TIMESTAMP_BITS_EXP_VERSION_1_0 = ZE_MAKE_VERSION( 1, 0 ),       ///< version 1.0
+    ZES_MEM_TIMESTAMP_BITS_EXP_VERSION_CURRENT = ZE_MAKE_VERSION( 1, 0 ),   ///< latest known version
+    ZES_MEM_TIMESTAMP_BITS_EXP_VERSION_FORCE_UINT32 = 0x7fffffff
+
+} zes_mem_timestamp_bits_exp_version_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Extension properties for reporting valid bit count for memory
+///        timestamp value
+/// 
+/// @details
+///     - This structure may be returned from ::zesMemoryGetProperties via the
+///       `pNext` member of ::zes_mem_properties_t.
+///     - Used for denoting number of valid bits in the timestamp value returned
+///       in ::zes_mem_bandwidth_t.
+typedef struct _zes_mem_timestamp_bits_exp_t
+{
+    uint32_t memoryTimestampValidBits;                                      ///< [out] Returns the number of valid bits in the timestamp values
+
+} zes_mem_timestamp_bits_exp_t;
+
+#if !defined(__GNUC__)
+#pragma endregion
+#endif
+// Intel 'oneAPI' Level-Zero Sysman Extension APIs for Power Domain Properties
+#if !defined(__GNUC__)
+#pragma region powerDomainProperties
+#endif
+///////////////////////////////////////////////////////////////////////////////
+#ifndef ZES_POWER_DOMAIN_PROPERTIES_EXP_NAME
+/// @brief Power Domain Properties Name
+#define ZES_POWER_DOMAIN_PROPERTIES_EXP_NAME  "ZES_extension_power_domain_properties"
+#endif // ZES_POWER_DOMAIN_PROPERTIES_EXP_NAME
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Power Domain Properties Extension Version(s)
+typedef enum _zes_power_domain_properties_exp_version_t
+{
+    ZES_POWER_DOMAIN_PROPERTIES_EXP_VERSION_1_0 = ZE_MAKE_VERSION( 1, 0 ),  ///< version 1.0
+    ZES_POWER_DOMAIN_PROPERTIES_EXP_VERSION_CURRENT = ZE_MAKE_VERSION( 1, 0 ),  ///< latest known version
+    ZES_POWER_DOMAIN_PROPERTIES_EXP_VERSION_FORCE_UINT32 = 0x7fffffff
+
+} zes_power_domain_properties_exp_version_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Extension structure for providing power domain information associated
+///        with a power handle
+/// 
+/// @details
+///     - This structure may be returned from ::zesPowerGetProperties via the
+///       `pNext` member of ::zes_power_properties_t.
+///     - Used for associating a power handle with a power domain.
+typedef struct _zes_power_domain_exp_properties_t
+{
+    zes_structure_type_t stype;                                             ///< [in] type of this structure
+    void* pNext;                                                            ///< [in,out][optional] must be null or a pointer to an extension-specific
+                                                                            ///< structure (i.e. contains stype and pNext).
+    zes_power_domain_t powerDomain;                                         ///< [out] Power domain associated with the power handle.
+
+} zes_power_domain_exp_properties_t;
 
 #if !defined(__GNUC__)
 #pragma endregion

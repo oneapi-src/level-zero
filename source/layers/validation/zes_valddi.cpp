@@ -99,6 +99,84 @@ namespace validation_layer
     }
 
     ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesDriverGetExtensionProperties
+    __zedlllocal ze_result_t ZE_APICALL
+    zesDriverGetExtensionProperties(
+        zes_driver_handle_t hDriver,                    ///< [in] handle of the driver instance
+        uint32_t* pCount,                               ///< [in,out] pointer to the number of extension properties.
+                                                        ///< if count is zero, then the driver shall update the value with the
+                                                        ///< total number of extension properties available.
+                                                        ///< if count is greater than the number of extension properties available,
+                                                        ///< then the driver shall update the value with the correct number of
+                                                        ///< extension properties available.
+        zes_driver_extension_properties_t* pExtensionProperties ///< [in,out][optional][range(0, *pCount)] array of query results for
+                                                        ///< extension properties.
+                                                        ///< if count is less than the number of extension properties available,
+                                                        ///< then driver shall only retrieve that number of extension properties.
+        )
+    {
+        auto pfnGetExtensionProperties = context.zesDdiTable.Driver.pfnGetExtensionProperties;
+
+        if( nullptr == pfnGetExtensionProperties )
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        if( context.enableParameterValidation )
+        {
+            auto result = context.paramValidation->zesParamValidation.zesDriverGetExtensionProperties( hDriver, pCount, pExtensionProperties );
+            if(result!=ZE_RESULT_SUCCESS) return result;
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zesHandleLifetime.zesDriverGetExtensionProperties( hDriver, pCount, pExtensionProperties );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnGetExtensionProperties( hDriver, pCount, pExtensionProperties );
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesDriverGetExtensionFunctionAddress
+    __zedlllocal ze_result_t ZE_APICALL
+    zesDriverGetExtensionFunctionAddress(
+        zes_driver_handle_t hDriver,                    ///< [in] handle of the driver instance
+        const char* name,                               ///< [in] extension function name
+        void** ppFunctionAddress                        ///< [out] pointer to function pointer
+        )
+    {
+        auto pfnGetExtensionFunctionAddress = context.zesDdiTable.Driver.pfnGetExtensionFunctionAddress;
+
+        if( nullptr == pfnGetExtensionFunctionAddress )
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        if( context.enableParameterValidation )
+        {
+            auto result = context.paramValidation->zesParamValidation.zesDriverGetExtensionFunctionAddress( hDriver, name, ppFunctionAddress );
+            if(result!=ZE_RESULT_SUCCESS) return result;
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zesHandleLifetime.zesDriverGetExtensionFunctionAddress( hDriver, name, ppFunctionAddress );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnGetExtensionFunctionAddress( hDriver, name, ppFunctionAddress );
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
     /// @brief Intercept function for zesDeviceGet
     __zedlllocal ze_result_t ZE_APICALL
     zesDeviceGet(
@@ -2245,6 +2323,40 @@ namespace validation_layer
         }
 
         auto result = pfnFlash( hFirmware, pImage, size );
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesFirmwareGetFlashProgress
+    __zedlllocal ze_result_t ZE_APICALL
+    zesFirmwareGetFlashProgress(
+        zes_firmware_handle_t hFirmware,                ///< [in] Handle for the component.
+        uint32_t* pCompletionPercent                    ///< [in,out] Pointer to the Completion Percentage of Firmware Update
+        )
+    {
+        auto pfnGetFlashProgress = context.zesDdiTable.Firmware.pfnGetFlashProgress;
+
+        if( nullptr == pfnGetFlashProgress )
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        if( context.enableParameterValidation )
+        {
+            auto result = context.paramValidation->zesParamValidation.zesFirmwareGetFlashProgress( hFirmware, pCompletionPercent );
+            if(result!=ZE_RESULT_SUCCESS) return result;
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zesHandleLifetime.zesFirmwareGetFlashProgress( hFirmware, pCompletionPercent );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnGetFlashProgress( hFirmware, pCompletionPercent );
         return result;
     }
 
@@ -5029,6 +5141,12 @@ zesGetDriverProcAddrTable(
     dditable.pfnGet                                      = pDdiTable->pfnGet;
     pDdiTable->pfnGet                                    = validation_layer::zesDriverGet;
 
+    dditable.pfnGetExtensionProperties                   = pDdiTable->pfnGetExtensionProperties;
+    pDdiTable->pfnGetExtensionProperties                 = validation_layer::zesDriverGetExtensionProperties;
+
+    dditable.pfnGetExtensionFunctionAddress              = pDdiTable->pfnGetExtensionFunctionAddress;
+    pDdiTable->pfnGetExtensionFunctionAddress            = validation_layer::zesDriverGetExtensionFunctionAddress;
+
     return result;
 }
 
@@ -5234,6 +5352,9 @@ zesGetFirmwareProcAddrTable(
 
     dditable.pfnFlash                                    = pDdiTable->pfnFlash;
     pDdiTable->pfnFlash                                  = validation_layer::zesFirmwareFlash;
+
+    dditable.pfnGetFlashProgress                         = pDdiTable->pfnGetFlashProgress;
+    pDdiTable->pfnGetFlashProgress                       = validation_layer::zesFirmwareGetFlashProgress;
 
     return result;
 }

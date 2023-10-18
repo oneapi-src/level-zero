@@ -1,4 +1,7 @@
 # Level zero loader changelog
+
+## v1.15.0
+* Update to spec 1.8.0
 ## v1.14.0
 * Update to spec 1.7.8
 * Fix intercept layer access to array of handles and return of logs

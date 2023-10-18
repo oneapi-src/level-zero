@@ -15,6 +15,40 @@
 namespace validation_layer
 {
     ze_result_t
+    ZESHandleLifetimeValidation::zesDriverGetExtensionProperties(
+        zes_driver_handle_t hDriver,                    ///< [in] handle of the driver instance
+        uint32_t* pCount,                               ///< [in,out] pointer to the number of extension properties.
+                                                        ///< if count is zero, then the driver shall update the value with the
+                                                        ///< total number of extension properties available.
+                                                        ///< if count is greater than the number of extension properties available,
+                                                        ///< then the driver shall update the value with the correct number of
+                                                        ///< extension properties available.
+        zes_driver_extension_properties_t* pExtensionProperties ///< [in,out][optional][range(0, *pCount)] array of query results for
+                                                        ///< extension properties.
+                                                        ///< if count is less than the number of extension properties available,
+                                                        ///< then driver shall only retrieve that number of extension properties.
+        )
+    { 
+        
+        if ( !context.handleLifetime->isHandleValid( hDriver )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    ze_result_t
+    ZESHandleLifetimeValidation::zesDriverGetExtensionFunctionAddress(
+        zes_driver_handle_t hDriver,                    ///< [in] handle of the driver instance
+        const char* name,                               ///< [in] extension function name
+        void** ppFunctionAddress                        ///< [out] pointer to function pointer
+        )
+    { 
+        
+        if ( !context.handleLifetime->isHandleValid( hDriver )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    ze_result_t
     ZESHandleLifetimeValidation::zesDeviceGet(
         zes_driver_handle_t hDriver,                    ///< [in] handle of the sysman driver instance
         uint32_t* pCount,                               ///< [in,out] pointer to the number of sysman devices.
@@ -885,6 +919,18 @@ namespace validation_layer
         zes_firmware_handle_t hFirmware,                ///< [in] Handle for the component.
         void* pImage,                                   ///< [in] Image of the new firmware to flash.
         uint32_t size                                   ///< [in] Size of the flash image.
+        )
+    { 
+        
+        if ( !context.handleLifetime->isHandleValid( hFirmware )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    ze_result_t
+    ZESHandleLifetimeValidation::zesFirmwareGetFlashProgress(
+        zes_firmware_handle_t hFirmware,                ///< [in] Handle for the component.
+        uint32_t* pCompletionPercent                    ///< [in,out] Pointer to the Completion Percentage of Firmware Update
         )
     { 
         

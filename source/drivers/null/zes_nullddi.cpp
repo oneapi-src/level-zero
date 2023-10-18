@@ -70,6 +70,64 @@ namespace driver
     }
 
     ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesDriverGetExtensionProperties
+    __zedlllocal ze_result_t ZE_APICALL
+    zesDriverGetExtensionProperties(
+        zes_driver_handle_t hDriver,                    ///< [in] handle of the driver instance
+        uint32_t* pCount,                               ///< [in,out] pointer to the number of extension properties.
+                                                        ///< if count is zero, then the driver shall update the value with the
+                                                        ///< total number of extension properties available.
+                                                        ///< if count is greater than the number of extension properties available,
+                                                        ///< then the driver shall update the value with the correct number of
+                                                        ///< extension properties available.
+        zes_driver_extension_properties_t* pExtensionProperties ///< [in,out][optional][range(0, *pCount)] array of query results for
+                                                        ///< extension properties.
+                                                        ///< if count is less than the number of extension properties available,
+                                                        ///< then driver shall only retrieve that number of extension properties.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnGetExtensionProperties = context.zesDdiTable.Driver.pfnGetExtensionProperties;
+        if( nullptr != pfnGetExtensionProperties )
+        {
+            result = pfnGetExtensionProperties( hDriver, pCount, pExtensionProperties );
+        }
+        else
+        {
+            // generic implementation
+        }
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesDriverGetExtensionFunctionAddress
+    __zedlllocal ze_result_t ZE_APICALL
+    zesDriverGetExtensionFunctionAddress(
+        zes_driver_handle_t hDriver,                    ///< [in] handle of the driver instance
+        const char* name,                               ///< [in] extension function name
+        void** ppFunctionAddress                        ///< [out] pointer to function pointer
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnGetExtensionFunctionAddress = context.zesDdiTable.Driver.pfnGetExtensionFunctionAddress;
+        if( nullptr != pfnGetExtensionFunctionAddress )
+        {
+            result = pfnGetExtensionFunctionAddress( hDriver, name, ppFunctionAddress );
+        }
+        else
+        {
+            // generic implementation
+        }
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
     /// @brief Intercept function for zesDeviceGet
     __zedlllocal ze_result_t ZE_APICALL
     zesDeviceGet(
@@ -1641,6 +1699,30 @@ namespace driver
         if( nullptr != pfnFlash )
         {
             result = pfnFlash( hFirmware, pImage, size );
+        }
+        else
+        {
+            // generic implementation
+        }
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesFirmwareGetFlashProgress
+    __zedlllocal ze_result_t ZE_APICALL
+    zesFirmwareGetFlashProgress(
+        zes_firmware_handle_t hFirmware,                ///< [in] Handle for the component.
+        uint32_t* pCompletionPercent                    ///< [in,out] Pointer to the Completion Percentage of Firmware Update
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnGetFlashProgress = context.zesDdiTable.Firmware.pfnGetFlashProgress;
+        if( nullptr != pfnGetFlashProgress )
+        {
+            result = pfnGetFlashProgress( hFirmware, pCompletionPercent );
         }
         else
         {
@@ -3709,6 +3791,10 @@ zesGetDriverProcAddrTable(
 
     pDdiTable->pfnGet                                    = driver::zesDriverGet;
 
+    pDdiTable->pfnGetExtensionProperties                 = driver::zesDriverGetExtensionProperties;
+
+    pDdiTable->pfnGetExtensionFunctionAddress            = driver::zesDriverGetExtensionFunctionAddress;
+
     return result;
 }
 
@@ -3877,6 +3963,8 @@ zesGetFirmwareProcAddrTable(
     pDdiTable->pfnGetProperties                          = driver::zesFirmwareGetProperties;
 
     pDdiTable->pfnFlash                                  = driver::zesFirmwareFlash;
+
+    pDdiTable->pfnGetFlashProgress                       = driver::zesFirmwareGetFlashProgress;
 
     return result;
 }

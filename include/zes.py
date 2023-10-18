@@ -4,7 +4,7 @@
  SPDX-License-Identifier: MIT
 
  @file zes.py
- @version v1.7-r1.7.9
+ @version v1.8-r1.8.0
 
  """
 import platform
@@ -153,6 +153,9 @@ class zes_structure_type_v(IntEnum):
     RESET_PROPERTIES = 0x2c                                                 ## ::zes_reset_properties_t
     DEVICE_EXT_PROPERTIES = 0x2d                                            ## ::zes_device_ext_properties_t
     DEVICE_UUID = 0x2e                                                      ## ::zes_uuid_t
+    POWER_DOMAIN_EXP_PROPERTIES = 0x00020001                                ## ::zes_power_domain_exp_properties_t
+    MEM_TIMESTAMP_BITS_EXP = 0x00020002                                     ## ::zes_mem_timestamp_bits_exp_t
+    MEMORY_PAGE_OFFLINE_STATE_EXP = 0x00020003                              ## ::zes_mem_page_offline_state_exp_t
 
 class zes_structure_type_t(c_int):
     def __str__(self):
@@ -213,6 +216,18 @@ class zes_init_flags_t(c_int):
     def __str__(self):
         return hex(self.value)
 
+
+###############################################################################
+## @brief Maximum extension name string size
+ZES_MAX_EXTENSION_NAME = 256
+
+###############################################################################
+## @brief Extension properties queried using ::zesDriverGetExtensionProperties
+class zes_driver_extension_properties_t(Structure):
+    _fields_ = [
+        ("name", c_char * ZES_MAX_EXTENSION_NAME),                      ## [out] extension name
+        ("version", c_ulong)                                            ## [out] extension version using ::ZE_MAKE_VERSION
+    ]
 
 ###############################################################################
 ## @brief Maximum number of characters in string properties.
@@ -867,16 +882,8 @@ class zes_engine_group_v(IntEnum):
                                                                             ## engines so activity of such an engine may not be indicative of the
                                                                             ## underlying resource utilization - use
                                                                             ## ::ZES_ENGINE_GROUP_3D_RENDER_COMPUTE_ALL for that.
-    MEDIA_DECODE_SINGLE = 6                                                 ## Access information about a single media decode engine. Note that
-                                                                            ## single engines may share the same underlying accelerator resources as
-                                                                            ## other engines so activity of such an engine may not be indicative of
-                                                                            ## the underlying resource utilization - use ::ZES_ENGINE_GROUP_MEDIA_ALL
-                                                                            ## for that.
-    MEDIA_ENCODE_SINGLE = 7                                                 ## Access information about a single media encode engine. Note that
-                                                                            ## single engines may share the same underlying accelerator resources as
-                                                                            ## other engines so activity of such an engine may not be indicative of
-                                                                            ## the underlying resource utilization - use ::ZES_ENGINE_GROUP_MEDIA_ALL
-                                                                            ## for that.
+    MEDIA_DECODE_SINGLE = 6                                                 ## [DEPRECATED] No longer supported.
+    MEDIA_ENCODE_SINGLE = 7                                                 ## [DEPRECATED] No longer supported.
     COPY_SINGLE = 8                                                         ## Access information about a single media encode engine. Note that
                                                                             ## single engines may share the same underlying accelerator resources as
                                                                             ## other engines so activity of such an engine may not be indicative of
@@ -887,16 +894,16 @@ class zes_engine_group_v(IntEnum):
                                                                             ## other engines so activity of such an engine may not be indicative of
                                                                             ## the underlying resource utilization - use ::ZES_ENGINE_GROUP_MEDIA_ALL
                                                                             ## for that.
-    _3D_SINGLE = 10                                                         ## Access information about a single 3D engine - this is an engine that
-                                                                            ## can process 3D content only. Note that single engines may share the
-                                                                            ## same underlying accelerator resources as other engines so activity of
-                                                                            ## such an engine may not be indicative of the underlying resource
-                                                                            ## utilization - use ::ZES_ENGINE_GROUP_3D_RENDER_COMPUTE_ALL for that.
-    _3D_RENDER_COMPUTE_ALL = 11                                             ## Access information about all 3D/render/compute engines combined.
+    _3D_SINGLE = 10                                                         ## [DEPRECATED] No longer supported.
+    _3D_RENDER_COMPUTE_ALL = 11                                             ## [DEPRECATED] No longer supported.
     RENDER_ALL = 12                                                         ## Access information about all render engines combined. Render engines
                                                                             ## are those than process both 3D content and compute kernels.
-    _3D_ALL = 13                                                            ## Access information about all 3D engines combined. 3D engines can
-                                                                            ## process 3D content only (no compute kernels).
+    _3D_ALL = 13                                                            ## [DEPRECATED] No longer supported.
+    MEDIA_CODEC_SINGLE = 14                                                 ## Access information about a single media engine. Note that single
+                                                                            ## engines may share the same underlying accelerator resources as other
+                                                                            ## engines so activity of such an engine may not be indicative of the
+                                                                            ## underlying resource utilization - use ::ZES_ENGINE_GROUP_MEDIA_ALL for
+                                                                            ## that.
 
 class zes_engine_group_t(c_int):
     def __str__(self):
@@ -925,11 +932,11 @@ class zes_engine_properties_t(Structure):
 ##       (s2.timestamp - s1.timestamp)
 class zes_engine_stats_t(Structure):
     _fields_ = [
-        ("activeTime", c_ulonglong),                                    ## [out] Monotonic counter for time in microseconds that this resource is
-                                                                        ## actively running workloads.
-        ("timestamp", c_ulonglong)                                      ## [out] Monotonic timestamp counter in microseconds when activeTime
-                                                                        ## counter was sampled.
-                                                                        ## This timestamp should only be used to calculate delta time between
+        ("activeTime", c_ulonglong),                                    ## [out] Monotonic counter where the resource is actively running workloads.
+                                                                        ## Time units are implementation specific since the activeTime value is
+                                                                        ## only intended for calculating utilization percentage as noted above.
+        ("timestamp", c_ulonglong)                                      ## [out] Monotonic counter when activeTime counter was sampled.
+                                                                        ## This timestamp should only be used to calculate delta between
                                                                         ## snapshots of this structure.
                                                                         ## Never take the delta of this timestamp with the timestamp from a
                                                                         ## different structure since they are not guaranteed to have the same base.
@@ -1392,6 +1399,9 @@ class zes_freq_throttle_time_t(Structure):
 
 ###############################################################################
 ## @brief Overclocking modes
+## 
+## @details
+##     - [DEPRECATED] No longer supported.
 class zes_oc_mode_v(IntEnum):
     OFF = 0                                                                 ## Overclocking if off - hardware is running using factory default
                                                                             ## voltages/frequencies.
@@ -1421,6 +1431,7 @@ class zes_oc_mode_t(c_int):
 ## @details
 ##     - Provides all the overclocking capabilities and properties supported by
 ##       the device for the frequency domain.
+##     - [DEPRECATED] No longer supported.
 class zes_oc_capabilities_t(Structure):
     _fields_ = [
         ("stype", zes_structure_type_t),                                ## [in] type of this structure
@@ -1617,6 +1628,7 @@ class zes_mem_bandwidth_t(Structure):
 ## 
 ## @details
 ##     - Number of counter bits
+##     - [DEPRECATED] No longer supported.
 class zes_mem_ext_bandwidth_t(Structure):
     _fields_ = [
         ("memoryTimestampValidBits", c_ulong)                           ## [out] Returns the number of valid bits in the timestamp values
@@ -1643,6 +1655,8 @@ class zes_power_domain_v(IntEnum):
     CARD = 1                                                                ## The PUnit power domain is a card-level power domain.
     PACKAGE = 2                                                             ## The PUnit power domain is a package-level power domain.
     STACK = 3                                                               ## The PUnit power domain is a stack-level power domain.
+    MEMORY = 4                                                              ## The PUnit power domain is a memory-level power domain.
+    GPU = 5                                                                 ## The PUnit power domain is a GPU-level power domain.
 
 class zes_power_domain_t(c_int):
     def __str__(self):
@@ -1743,6 +1757,7 @@ class zes_power_energy_counter_t(Structure):
 ##     - The power controller (Punit) will throttle the operating frequency if
 ##       the power averaged over a window (typically seconds) exceeds this
 ##       limit.
+##     - [DEPRECATED] No longer supported.
 class zes_power_sustained_limit_t(Structure):
     _fields_ = [
         ("enabled", ze_bool_t),                                         ## [in,out] indicates if the limit is enabled (true) or ignored (false)
@@ -1759,6 +1774,7 @@ class zes_power_sustained_limit_t(Structure):
 ##       limit known as PL2. Typically PL2 > PL1 so that it permits the
 ##       frequency to burst higher for short periods than would be otherwise
 ##       permitted by PL1.
+##     - [DEPRECATED] No longer supported.
 class zes_power_burst_limit_t(Structure):
     _fields_ = [
         ("enabled", ze_bool_t),                                         ## [in,out] indicates if the limit is enabled (true) or ignored (false)
@@ -1778,6 +1794,7 @@ class zes_power_burst_limit_t(Structure):
 ##       power controller will throttle the device frequencies down to min. It
 ##       is thus better to tune the PL4 value in order to avoid such
 ##       excursions.
+##     - [DEPRECATED] No longer supported.
 class zes_power_peak_limit_t(Structure):
     _fields_ = [
         ("powerAC", c_int32_t),                                         ## [in,out] power limit in milliwatts for the AC power source.
@@ -1945,10 +1962,7 @@ class zes_sched_mode_v(IntEnum):
                                                                             ## without being preempted or terminated. All pending work for other
                                                                             ## contexts must wait until the running context completes with no further
                                                                             ## submitted work.
-    COMPUTE_UNIT_DEBUG = 3                                                  ## This is a special mode that must ben enabled when debugging an
-                                                                            ## application that uses this device e.g. using the Level0 Debug API. It
-                                                                            ## has the effect of disabling any timeouts on workload execution time
-                                                                            ## and will change workload scheduling to ensure debug accuracy.
+    COMPUTE_UNIT_DEBUG = 3                                                  ## [DEPRECATED] No longer supported.
 
 class zes_sched_mode_t(c_int):
     def __str__(self):
@@ -2054,6 +2068,8 @@ class zes_temp_sensors_v(IntEnum):
     GLOBAL_MIN = 3                                                          ## The minimum temperature across all device sensors
     GPU_MIN = 4                                                             ## The minimum temperature across all sensors in the GPU
     MEMORY_MIN = 5                                                          ## The minimum temperature across all sensors in the local device memory
+    GPU_BOARD = 6                                                           ## The maximum temperature across all sensors in the GPU Board
+    GPU_BOARD_MIN = 7                                                       ## The minimum temperature across all sensors in the GPU Board
 
 class zes_temp_sensors_t(c_int):
     def __str__(self):
@@ -2253,6 +2269,97 @@ class zes_ras_state_exp_t(Structure):
     _fields_ = [
         ("category", zes_ras_error_category_exp_t),                     ## [out] category for which error counter is provided.
         ("errorCounter", c_ulonglong)                                   ## [out] Current value of RAS counter for specific error category.
+    ]
+
+###############################################################################
+## @brief Memory State Extension Name
+ZES_MEM_PAGE_OFFLINE_STATE_EXP_NAME = "ZES_extension_mem_state"
+
+###############################################################################
+## @brief Memory State Extension Version(s)
+class zes_mem_page_offline_state_exp_version_v(IntEnum):
+    _1_0 = ZE_MAKE_VERSION( 1, 0 )                                          ## version 1.0
+    CURRENT = ZE_MAKE_VERSION( 1, 0 )                                       ## latest known version
+
+class zes_mem_page_offline_state_exp_version_t(c_int):
+    def __str__(self):
+        return str(zes_mem_page_offline_state_exp_version_v(self.value))
+
+
+###############################################################################
+## @brief Extension properties for Memory State
+## 
+## @details
+##     - This structure may be returned from ::zesMemoryGetState via the
+##       `pNext` member of ::zes_mem_state_t
+##     - These additional parameters get Memory Page Offline Metrics
+class zes_mem_page_offline_state_exp_t(Structure):
+    _fields_ = [
+        ("stype", zes_structure_type_t),                                ## [in] type of this structure
+        ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains stype and pNext).
+        ("memoryPageOffline", c_ulong),                                 ## [out] Returns the number of Memory Pages Offline
+        ("maxMemoryPageOffline", c_ulong)                               ## [out] Returns the Allowed Memory Pages Offline
+    ]
+
+###############################################################################
+## @brief Memory Timestamp Valid Bits Extension Name
+ZES_MEMORY_TIMESTAMP_VALID_BITS_EXP_NAME = "ZES_extension_mem_timestamp_valid_bits"
+
+###############################################################################
+## @brief Memory Timestamp Valid Bits Extension Version(s)
+class zes_mem_timestamp_bits_exp_version_v(IntEnum):
+    _1_0 = ZE_MAKE_VERSION( 1, 0 )                                          ## version 1.0
+    CURRENT = ZE_MAKE_VERSION( 1, 0 )                                       ## latest known version
+
+class zes_mem_timestamp_bits_exp_version_t(c_int):
+    def __str__(self):
+        return str(zes_mem_timestamp_bits_exp_version_v(self.value))
+
+
+###############################################################################
+## @brief Extension properties for reporting valid bit count for memory
+##        timestamp value
+## 
+## @details
+##     - This structure may be returned from ::zesMemoryGetProperties via the
+##       `pNext` member of ::zes_mem_properties_t.
+##     - Used for denoting number of valid bits in the timestamp value returned
+##       in ::zes_mem_bandwidth_t.
+class zes_mem_timestamp_bits_exp_t(Structure):
+    _fields_ = [
+        ("memoryTimestampValidBits", c_ulong)                           ## [out] Returns the number of valid bits in the timestamp values
+    ]
+
+###############################################################################
+## @brief Power Domain Properties Name
+ZES_POWER_DOMAIN_PROPERTIES_EXP_NAME = "ZES_extension_power_domain_properties"
+
+###############################################################################
+## @brief Power Domain Properties Extension Version(s)
+class zes_power_domain_properties_exp_version_v(IntEnum):
+    _1_0 = ZE_MAKE_VERSION( 1, 0 )                                          ## version 1.0
+    CURRENT = ZE_MAKE_VERSION( 1, 0 )                                       ## latest known version
+
+class zes_power_domain_properties_exp_version_t(c_int):
+    def __str__(self):
+        return str(zes_power_domain_properties_exp_version_v(self.value))
+
+
+###############################################################################
+## @brief Extension structure for providing power domain information associated
+##        with a power handle
+## 
+## @details
+##     - This structure may be returned from ::zesPowerGetProperties via the
+##       `pNext` member of ::zes_power_properties_t.
+##     - Used for associating a power handle with a power domain.
+class zes_power_domain_exp_properties_t(Structure):
+    _fields_ = [
+        ("stype", zes_structure_type_t),                                ## [in] type of this structure
+        ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains stype and pNext).
+        ("powerDomain", zes_power_domain_t)                             ## [out] Power domain associated with the power handle.
     ]
 
 ###############################################################################
@@ -2597,6 +2704,20 @@ if __use_win_types:
 else:
     _zesDriverGet_t = CFUNCTYPE( ze_result_t, POINTER(c_ulong), POINTER(zes_driver_handle_t) )
 
+###############################################################################
+## @brief Function-pointer for zesDriverGetExtensionProperties
+if __use_win_types:
+    _zesDriverGetExtensionProperties_t = WINFUNCTYPE( ze_result_t, zes_driver_handle_t, POINTER(c_ulong), POINTER(zes_driver_extension_properties_t) )
+else:
+    _zesDriverGetExtensionProperties_t = CFUNCTYPE( ze_result_t, zes_driver_handle_t, POINTER(c_ulong), POINTER(zes_driver_extension_properties_t) )
+
+###############################################################################
+## @brief Function-pointer for zesDriverGetExtensionFunctionAddress
+if __use_win_types:
+    _zesDriverGetExtensionFunctionAddress_t = WINFUNCTYPE( ze_result_t, zes_driver_handle_t, c_char_p, POINTER(c_void_p) )
+else:
+    _zesDriverGetExtensionFunctionAddress_t = CFUNCTYPE( ze_result_t, zes_driver_handle_t, c_char_p, POINTER(c_void_p) )
+
 
 ###############################################################################
 ## @brief Table of Driver functions pointers
@@ -2604,7 +2725,9 @@ class _zes_driver_dditable_t(Structure):
     _fields_ = [
         ("pfnEventListen", c_void_p),                                   ## _zesDriverEventListen_t
         ("pfnEventListenEx", c_void_p),                                 ## _zesDriverEventListenEx_t
-        ("pfnGet", c_void_p)                                            ## _zesDriverGet_t
+        ("pfnGet", c_void_p),                                           ## _zesDriverGet_t
+        ("pfnGetExtensionProperties", c_void_p),                        ## _zesDriverGetExtensionProperties_t
+        ("pfnGetExtensionFunctionAddress", c_void_p)                    ## _zesDriverGetExtensionFunctionAddress_t
     ]
 
 ###############################################################################
@@ -3078,13 +3201,21 @@ if __use_win_types:
 else:
     _zesFirmwareFlash_t = CFUNCTYPE( ze_result_t, zes_firmware_handle_t, c_void_p, c_ulong )
 
+###############################################################################
+## @brief Function-pointer for zesFirmwareGetFlashProgress
+if __use_win_types:
+    _zesFirmwareGetFlashProgress_t = WINFUNCTYPE( ze_result_t, zes_firmware_handle_t, POINTER(c_ulong) )
+else:
+    _zesFirmwareGetFlashProgress_t = CFUNCTYPE( ze_result_t, zes_firmware_handle_t, POINTER(c_ulong) )
+
 
 ###############################################################################
 ## @brief Table of Firmware functions pointers
 class _zes_firmware_dditable_t(Structure):
     _fields_ = [
         ("pfnGetProperties", c_void_p),                                 ## _zesFirmwareGetProperties_t
-        ("pfnFlash", c_void_p)                                          ## _zesFirmwareFlash_t
+        ("pfnFlash", c_void_p),                                         ## _zesFirmwareFlash_t
+        ("pfnGetFlashProgress", c_void_p)                               ## _zesFirmwareGetFlashProgress_t
     ]
 
 ###############################################################################
@@ -3543,6 +3674,8 @@ class ZES_DDI:
         self.zesDriverEventListen = _zesDriverEventListen_t(self.__dditable.Driver.pfnEventListen)
         self.zesDriverEventListenEx = _zesDriverEventListenEx_t(self.__dditable.Driver.pfnEventListenEx)
         self.zesDriverGet = _zesDriverGet_t(self.__dditable.Driver.pfnGet)
+        self.zesDriverGetExtensionProperties = _zesDriverGetExtensionProperties_t(self.__dditable.Driver.pfnGetExtensionProperties)
+        self.zesDriverGetExtensionFunctionAddress = _zesDriverGetExtensionFunctionAddress_t(self.__dditable.Driver.pfnGetExtensionFunctionAddress)
 
         # call driver to get function pointers
         _Overclock = _zes_overclock_dditable_t()
@@ -3668,6 +3801,7 @@ class ZES_DDI:
         # attach function interface to function address
         self.zesFirmwareGetProperties = _zesFirmwareGetProperties_t(self.__dditable.Firmware.pfnGetProperties)
         self.zesFirmwareFlash = _zesFirmwareFlash_t(self.__dditable.Firmware.pfnFlash)
+        self.zesFirmwareGetFlashProgress = _zesFirmwareGetFlashProgress_t(self.__dditable.Firmware.pfnGetFlashProgress)
 
         # call driver to get function pointers
         _Memory = _zes_memory_dditable_t()

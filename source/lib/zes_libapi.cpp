@@ -121,6 +121,94 @@ zesDriverGet(
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+/// @brief Retrieves extension properties
+/// 
+/// @details
+///     - The application may call this function from simultaneous threads.
+///     - The implementation of this function should be lock-free.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hDriver`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == pCount`
+ze_result_t ZE_APICALL
+zesDriverGetExtensionProperties(
+    zes_driver_handle_t hDriver,                    ///< [in] handle of the driver instance
+    uint32_t* pCount,                               ///< [in,out] pointer to the number of extension properties.
+                                                    ///< if count is zero, then the driver shall update the value with the
+                                                    ///< total number of extension properties available.
+                                                    ///< if count is greater than the number of extension properties available,
+                                                    ///< then the driver shall update the value with the correct number of
+                                                    ///< extension properties available.
+    zes_driver_extension_properties_t* pExtensionProperties ///< [in,out][optional][range(0, *pCount)] array of query results for
+                                                    ///< extension properties.
+                                                    ///< if count is less than the number of extension properties available,
+                                                    ///< then driver shall only retrieve that number of extension properties.
+    )
+{
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
+    auto pfnGetExtensionProperties = ze_lib::context->zesDdiTable.Driver.pfnGetExtensionProperties;
+    if( nullptr == pfnGetExtensionProperties ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    return pfnGetExtensionProperties( hDriver, pCount, pExtensionProperties );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Retrieves function pointer for vendor-specific or experimental
+///        extensions
+/// 
+/// @details
+///     - The application may call this function from simultaneous threads.
+///     - The implementation of this function should be lock-free.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hDriver`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == name`
+///         + `nullptr == ppFunctionAddress`
+ze_result_t ZE_APICALL
+zesDriverGetExtensionFunctionAddress(
+    zes_driver_handle_t hDriver,                    ///< [in] handle of the driver instance
+    const char* name,                               ///< [in] extension function name
+    void** ppFunctionAddress                        ///< [out] pointer to function pointer
+    )
+{
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
+    auto pfnGetExtensionFunctionAddress = ze_lib::context->zesDdiTable.Driver.pfnGetExtensionFunctionAddress;
+    if( nullptr == pfnGetExtensionFunctionAddress ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    return pfnGetExtensionFunctionAddress( hDriver, name, ppFunctionAddress );
+}
+
+///////////////////////////////////////////////////////////////////////////////
 /// @brief Retrieves sysman devices within a sysman driver
 /// 
 /// @details
@@ -2611,8 +2699,12 @@ zesFirmwareGetProperties(
 /// @brief Flash a new firmware image
 /// 
 /// @details
+///     - Any running workload must be gracefully closed before invoking this
+///       function.
 ///     - The application may call this function from simultaneous threads.
 ///     - The implementation of this function should be lock-free.
+///     - This is a non-blocking call. Application may call
+///       ::zesFirmwareGetFlashProgress to get completion status.
 /// 
 /// @returns
 ///     - ::ZE_RESULT_SUCCESS
@@ -2646,6 +2738,44 @@ zesFirmwareFlash(
     }
 
     return pfnFlash( hFirmware, pImage, size );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Get Firmware Flash Progress
+/// 
+/// @details
+///     - The application may call this function from simultaneous threads.
+///     - The implementation of this function should be lock-free.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hFirmware`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == pCompletionPercent`
+ze_result_t ZE_APICALL
+zesFirmwareGetFlashProgress(
+    zes_firmware_handle_t hFirmware,                ///< [in] Handle for the component.
+    uint32_t* pCompletionPercent                    ///< [in,out] Pointer to the Completion Percentage of Firmware Update
+    )
+{
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
+    auto pfnGetFlashProgress = ze_lib::context->zesDdiTable.Firmware.pfnGetFlashProgress;
+    if( nullptr == pfnGetFlashProgress ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    return pfnGetFlashProgress( hFirmware, pCompletionPercent );
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -2947,6 +3077,7 @@ zesFrequencyGetThrottleTime(
 /// @details
 ///     - The application may call this function from simultaneous threads.
 ///     - The implementation of this function should be lock-free.
+///     - [DEPRECATED] No longer supported.
 /// 
 /// @returns
 ///     - ::ZE_RESULT_SUCCESS
@@ -2986,6 +3117,7 @@ zesFrequencyOcGetCapabilities(
 /// @details
 ///     - The application may call this function from simultaneous threads.
 ///     - The implementation of this function should be lock-free.
+///     - [DEPRECATED] No longer supported.
 /// 
 /// @returns
 ///     - ::ZE_RESULT_SUCCESS
@@ -3036,6 +3168,7 @@ zesFrequencyOcGetFrequencyTarget(
 /// @details
 ///     - The application may call this function from simultaneous threads.
 ///     - The implementation of this function should be lock-free.
+///     - [DEPRECATED] No longer supported.
 /// 
 /// @returns
 ///     - ::ZE_RESULT_SUCCESS
@@ -3083,6 +3216,7 @@ zesFrequencyOcSetFrequencyTarget(
 /// @details
 ///     - The application may call this function from simultaneous threads.
 ///     - The implementation of this function should be lock-free.
+///     - [DEPRECATED] No longer supported.
 /// 
 /// @returns
 ///     - ::ZE_RESULT_SUCCESS
@@ -3135,6 +3269,7 @@ zesFrequencyOcGetVoltageTarget(
 /// @details
 ///     - The application may call this function from simultaneous threads.
 ///     - The implementation of this function should be lock-free.
+///     - [DEPRECATED] No longer supported.
 /// 
 /// @returns
 ///     - ::ZE_RESULT_SUCCESS
@@ -3184,6 +3319,7 @@ zesFrequencyOcSetVoltageTarget(
 /// @details
 ///     - The application may call this function from simultaneous threads.
 ///     - The implementation of this function should be lock-free.
+///     - [DEPRECATED] No longer supported.
 /// 
 /// @returns
 ///     - ::ZE_RESULT_SUCCESS
@@ -3230,6 +3366,7 @@ zesFrequencyOcSetMode(
 /// @details
 ///     - The application may call this function from simultaneous threads.
 ///     - The implementation of this function should be lock-free.
+///     - [DEPRECATED] No longer supported.
 /// 
 /// @returns
 ///     - ::ZE_RESULT_SUCCESS
@@ -3276,6 +3413,7 @@ zesFrequencyOcGetMode(
 /// @details
 ///     - The application may call this function from simultaneous threads.
 ///     - The implementation of this function should be lock-free.
+///     - [DEPRECATED] No longer supported.
 /// 
 /// @returns
 ///     - ::ZE_RESULT_SUCCESS
@@ -3319,6 +3457,7 @@ zesFrequencyOcGetIccMax(
 ///     - Setting ocIccMax to 0.0 will return the value to the factory default.
 ///     - The application may call this function from simultaneous threads.
 ///     - The implementation of this function should be lock-free.
+///     - [DEPRECATED] No longer supported.
 /// 
 /// @returns
 ///     - ::ZE_RESULT_SUCCESS
@@ -3364,6 +3503,7 @@ zesFrequencyOcSetIccMax(
 /// @details
 ///     - The application may call this function from simultaneous threads.
 ///     - The implementation of this function should be lock-free.
+///     - [DEPRECATED] No longer supported.
 /// 
 /// @returns
 ///     - ::ZE_RESULT_SUCCESS
@@ -3406,6 +3546,7 @@ zesFrequencyOcGetTjMax(
 ///     - Setting ocTjMax to 0.0 will return the value to the factory default.
 ///     - The application may call this function from simultaneous threads.
 ///     - The implementation of this function should be lock-free.
+///     - [DEPRECATED] No longer supported.
 /// 
 /// @returns
 ///     - ::ZE_RESULT_SUCCESS
@@ -4037,6 +4178,7 @@ zesDeviceEnumPowerDomains(
 /// @details
 ///     - The application may call this function from simultaneous threads.
 ///     - The implementation of this function should be lock-free.
+///     - [DEPRECATED] No longer supported.
 /// 
 /// @returns
 ///     - ::ZE_RESULT_SUCCESS
@@ -4154,8 +4296,7 @@ zesPowerGetEnergyCounter(
 /// @details
 ///     - The application may call this function from simultaneous threads.
 ///     - The implementation of this function should be lock-free.
-///     - Note: This function is deprecated and replaced by
-///       ::zesPowerGetLimitsExt.
+///     - [DEPRECATED] Use ::zesPowerGetLimitsExt.
 /// 
 /// @returns
 ///     - ::ZE_RESULT_SUCCESS
@@ -4197,8 +4338,7 @@ zesPowerGetLimits(
 /// @details
 ///     - The application may call this function from simultaneous threads.
 ///     - The implementation of this function should be lock-free.
-///     - Note: This function is deprecated and replaced by
-///       ::zesPowerSetLimitsExt.
+///     - [DEPRECATED] Use ::zesPowerSetLimitsExt.
 /// 
 /// @returns
 ///     - ::ZE_RESULT_SUCCESS
@@ -5077,6 +5217,7 @@ zesSchedulerSetExclusiveMode(
 ///       without enforcing any scheduler fairness policies.
 ///     - The application may call this function from simultaneous threads.
 ///     - The implementation of this function should be lock-free.
+///     - [DEPRECATED] No longer supported.
 /// 
 /// @returns
 ///     - ::ZE_RESULT_SUCCESS

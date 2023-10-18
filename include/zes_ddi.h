@@ -5,7 +5,7 @@
  * SPDX-License-Identifier: MIT
  *
  * @file zes_ddi.h
- * @version v1.7-r1.7.9
+ * @version v1.8-r1.8.0
  *
  */
 #ifndef _ZES_DDI_H
@@ -432,12 +432,30 @@ typedef ze_result_t (ZE_APICALL *zes_pfnDriverGet_t)(
     );
 
 ///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zesDriverGetExtensionProperties 
+typedef ze_result_t (ZE_APICALL *zes_pfnDriverGetExtensionProperties_t)(
+    zes_driver_handle_t,
+    uint32_t*,
+    zes_driver_extension_properties_t*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zesDriverGetExtensionFunctionAddress 
+typedef ze_result_t (ZE_APICALL *zes_pfnDriverGetExtensionFunctionAddress_t)(
+    zes_driver_handle_t,
+    const char*,
+    void**
+    );
+
+///////////////////////////////////////////////////////////////////////////////
 /// @brief Table of Driver functions pointers
 typedef struct _zes_driver_dditable_t
 {
     zes_pfnDriverEventListen_t                                  pfnEventListen;
     zes_pfnDriverEventListenEx_t                                pfnEventListenEx;
     zes_pfnDriverGet_t                                          pfnGet;
+    zes_pfnDriverGetExtensionProperties_t                       pfnGetExtensionProperties;
+    zes_pfnDriverGetExtensionFunctionAddress_t                  pfnGetExtensionFunctionAddress;
 } zes_driver_dditable_t;
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1108,11 +1126,19 @@ typedef ze_result_t (ZE_APICALL *zes_pfnFirmwareFlash_t)(
     );
 
 ///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zesFirmwareGetFlashProgress 
+typedef ze_result_t (ZE_APICALL *zes_pfnFirmwareGetFlashProgress_t)(
+    zes_firmware_handle_t,
+    uint32_t*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
 /// @brief Table of Firmware functions pointers
 typedef struct _zes_firmware_dditable_t
 {
     zes_pfnFirmwareGetProperties_t                              pfnGetProperties;
     zes_pfnFirmwareFlash_t                                      pfnFlash;
+    zes_pfnFirmwareGetFlashProgress_t                           pfnGetFlashProgress;
 } zes_firmware_dditable_t;
 
 ///////////////////////////////////////////////////////////////////////////////

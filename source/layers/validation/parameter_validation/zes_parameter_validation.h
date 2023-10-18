@@ -21,6 +21,8 @@ namespace validation_layer
     public:
         ze_result_t zesInit ( zes_init_flags_t flags ) override;
         ze_result_t zesDriverGet ( uint32_t* pCount, zes_driver_handle_t* phDrivers ) override;
+        ze_result_t zesDriverGetExtensionProperties ( zes_driver_handle_t hDriver, uint32_t* pCount, zes_driver_extension_properties_t* pExtensionProperties ) override;
+        ze_result_t zesDriverGetExtensionFunctionAddress ( zes_driver_handle_t hDriver, const char* name, void** ppFunctionAddress ) override;
         ze_result_t zesDeviceGet ( zes_driver_handle_t hDriver, uint32_t* pCount, zes_device_handle_t* phDevices ) override;
         ze_result_t zesDeviceGetProperties ( zes_device_handle_t hDevice, zes_device_properties_t* pProperties ) override;
         ze_result_t zesDeviceGetState ( zes_device_handle_t hDevice, zes_device_state_t* pState ) override;
@@ -79,6 +81,7 @@ namespace validation_layer
         ze_result_t zesDeviceEnumFirmwares ( zes_device_handle_t hDevice, uint32_t* pCount, zes_firmware_handle_t* phFirmware ) override;
         ze_result_t zesFirmwareGetProperties ( zes_firmware_handle_t hFirmware, zes_firmware_properties_t* pProperties ) override;
         ze_result_t zesFirmwareFlash ( zes_firmware_handle_t hFirmware, void* pImage, uint32_t size ) override;
+        ze_result_t zesFirmwareGetFlashProgress ( zes_firmware_handle_t hFirmware, uint32_t* pCompletionPercent ) override;
         ze_result_t zesDeviceEnumFrequencyDomains ( zes_device_handle_t hDevice, uint32_t* pCount, zes_freq_handle_t* phFrequency ) override;
         ze_result_t zesFrequencyGetProperties ( zes_freq_handle_t hFrequency, zes_freq_properties_t* pProperties ) override;
         ze_result_t zesFrequencyGetAvailableClocks ( zes_freq_handle_t hFrequency, uint32_t* pCount, double* phFrequency ) override;

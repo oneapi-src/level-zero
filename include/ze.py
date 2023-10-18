@@ -4,7 +4,7 @@
  SPDX-License-Identifier: MIT
 
  @file ze.py
- @version v1.7-r1.7.9
+ @version v1.8-r1.8.0
 
  """
 import platform
@@ -301,6 +301,7 @@ class ze_structure_type_v(IntEnum):
     RTAS_PARALLEL_OPERATION_EXP_PROPERTIES = 0x00020011                     ## ::ze_rtas_parallel_operation_exp_properties_t
     RTAS_DEVICE_EXP_PROPERTIES = 0x00020012                                 ## ::ze_rtas_device_exp_properties_t
     RTAS_GEOMETRY_AABBS_EXP_CB_PARAMS = 0x00020013                          ## ::ze_rtas_geometry_aabbs_exp_cb_params_t
+    COUNTER_BASED_EVENT_POOL_EXP_DESC = 0x00020014                          ## ::ze_event_pool_counter_based_exp_desc_t
 
 class ze_structure_type_t(c_int):
     def __str__(self):
@@ -429,7 +430,8 @@ class ze_api_version_v(IntEnum):
     _1_5 = ZE_MAKE_VERSION( 1, 5 )                                          ## version 1.5
     _1_6 = ZE_MAKE_VERSION( 1, 6 )                                          ## version 1.6
     _1_7 = ZE_MAKE_VERSION( 1, 7 )                                          ## version 1.7
-    CURRENT = ZE_MAKE_VERSION( 1, 7 )                                       ## latest known version
+    _1_8 = ZE_MAKE_VERSION( 1, 8 )                                          ## version 1.8
+    CURRENT = ZE_MAKE_VERSION( 1, 8 )                                       ## latest known version
 
 class ze_api_version_t(c_int):
     def __str__(self):
@@ -2876,7 +2878,7 @@ class ze_device_memory_ext_properties_t(Structure):
                                                                         ## structure (i.e. contains stype and pNext).
         ("type", ze_device_memory_ext_type_t),                          ## [out] The memory type
         ("physicalSize", c_ulonglong),                                  ## [out] Physical memory size in bytes. A value of 0 indicates that this
-                                                                        ## property is not known. However, a call to $sMemoryGetState() will
+                                                                        ## property is not known. However, a call to ::zesMemoryGetState() will
                                                                         ## correctly return the total size of usable memory.
         ("readBandwidth", c_ulong),                                     ## [out] Design bandwidth for reads
         ("writeBandwidth", c_ulong),                                    ## [out] Design bandwidth for writes
@@ -3643,6 +3645,47 @@ class ze_rtas_builder_build_op_exp_desc_t(Structure):
                                                                         ## pointers to geometry infos
         ("numGeometries", c_ulong)                                      ## [in] number of geometries in geometry infos array, can be zero when
                                                                         ## `ppGeometries` is NULL
+    ]
+
+###############################################################################
+## @brief Counter-based Event Pools Extension Name
+ZE_EVENT_POOL_COUNTER_BASED_EXP_NAME = "ZE_experimental_event_pool_counter_based"
+
+###############################################################################
+## @brief Counter-based Event Pools Extension Version(s)
+class ze_event_pool_counter_based_exp_version_v(IntEnum):
+    _1_0 = ZE_MAKE_VERSION( 1, 0 )                                          ## version 1.0
+    CURRENT = ZE_MAKE_VERSION( 1, 0 )                                       ## latest known version
+
+class ze_event_pool_counter_based_exp_version_t(c_int):
+    def __str__(self):
+        return str(ze_event_pool_counter_based_exp_version_v(self.value))
+
+
+###############################################################################
+## @brief Supported event flags for defining counter-based event pools.
+class ze_event_pool_counter_based_exp_flags_v(IntEnum):
+    IMMEDIATE = ZE_BIT(0)                                                   ## Counter-based event pool is used for immediate command lists (default)
+    NON_IMMEDIATE = ZE_BIT(1)                                               ## Counter-based event pool is for non-immediate command lists
+
+class ze_event_pool_counter_based_exp_flags_t(c_int):
+    def __str__(self):
+        return hex(self.value)
+
+
+###############################################################################
+## @brief Event pool descriptor for counter-based events. This structure may be
+##        passed to ::zeEventPoolCreate as pNext member of
+##        ::ze_event_pool_desc_t.
+class ze_event_pool_counter_based_exp_desc_t(Structure):
+    _fields_ = [
+        ("stype", ze_structure_type_t),                                 ## [in] type of this structure
+        ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains stype and pNext).
+        ("flags", ze_event_pool_counter_based_exp_flags_t)              ## [in] mode flags.
+                                                                        ## must be 0 (default) or a valid value of ::ze_event_pool_counter_based_exp_flag_t
+                                                                        ## default behavior is counter-based event pool is only used for
+                                                                        ## immediate command lists.
     ]
 
 ###############################################################################

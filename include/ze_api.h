@@ -5,7 +5,7 @@
  * SPDX-License-Identifier: MIT
  *
  * @file ze_api.h
- * @version v1.7-r1.7.9
+ * @version v1.8-r1.8.0
  *
  */
 #ifndef _ZE_API_H
@@ -330,6 +330,7 @@ typedef enum _ze_structure_type_t
     ZE_STRUCTURE_TYPE_RTAS_PARALLEL_OPERATION_EXP_PROPERTIES = 0x00020011,  ///< ::ze_rtas_parallel_operation_exp_properties_t
     ZE_STRUCTURE_TYPE_RTAS_DEVICE_EXP_PROPERTIES = 0x00020012,              ///< ::ze_rtas_device_exp_properties_t
     ZE_STRUCTURE_TYPE_RTAS_GEOMETRY_AABBS_EXP_CB_PARAMS = 0x00020013,       ///< ::ze_rtas_geometry_aabbs_exp_cb_params_t
+    ZE_STRUCTURE_TYPE_COUNTER_BASED_EVENT_POOL_EXP_DESC = 0x00020014,       ///< ::ze_event_pool_counter_based_exp_desc_t
     ZE_STRUCTURE_TYPE_FORCE_UINT32 = 0x7fffffff
 
 } ze_structure_type_t;
@@ -874,6 +875,10 @@ typedef struct _ze_rtas_builder_instance_geometry_info_exp_t ze_rtas_builder_ins
 /// @brief Forward-declare ze_rtas_builder_build_op_exp_desc_t
 typedef struct _ze_rtas_builder_build_op_exp_desc_t ze_rtas_builder_build_op_exp_desc_t;
 
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Forward-declare ze_event_pool_counter_based_exp_desc_t
+typedef struct _ze_event_pool_counter_based_exp_desc_t ze_event_pool_counter_based_exp_desc_t;
+
 
 #if !defined(__GNUC__)
 #pragma endregion
@@ -976,7 +981,8 @@ typedef enum _ze_api_version_t
     ZE_API_VERSION_1_5 = ZE_MAKE_VERSION( 1, 5 ),                           ///< version 1.5
     ZE_API_VERSION_1_6 = ZE_MAKE_VERSION( 1, 6 ),                           ///< version 1.6
     ZE_API_VERSION_1_7 = ZE_MAKE_VERSION( 1, 7 ),                           ///< version 1.7
-    ZE_API_VERSION_CURRENT = ZE_MAKE_VERSION( 1, 7 ),                       ///< latest known version
+    ZE_API_VERSION_1_8 = ZE_MAKE_VERSION( 1, 8 ),                           ///< version 1.8
+    ZE_API_VERSION_CURRENT = ZE_MAKE_VERSION( 1, 8 ),                       ///< latest known version
     ZE_API_VERSION_FORCE_UINT32 = 0x7fffffff
 
 } ze_api_version_t;
@@ -3705,6 +3711,18 @@ zeEventPoolPutIpcHandle(
 ///       unique event pool handles.
 ///     - The event handle in this process should not be freed with
 ///       ::zeEventPoolDestroy, but rather with ::zeEventPoolCloseIpcHandle.
+///     - If the original event pool has been created for a device containing a
+///       number of sub-devices, then the event pool
+///       returned by this call may be used on a device containing the same
+///       number of sub-devices, or on any of
+///       those sub-devices.
+///     - However, if the original event pool has been created for a sub-device,
+///       then the event pool returned by this call
+///       cannot be used on a device containing any number of sub-devices, and
+///       must be used only in a sub-device. This ensures
+///       functional correctness for any implementation or optimizations the
+///       underlying Level Zero driver may do on
+///       event pools and events.
 ///     - The application may call this function from simultaneous threads.
 /// 
 /// @returns
@@ -8905,7 +8923,7 @@ typedef struct _ze_device_memory_ext_properties_t
                                                                             ///< structure (i.e. contains stype and pNext).
     ze_device_memory_ext_type_t type;                                       ///< [out] The memory type
     uint64_t physicalSize;                                                  ///< [out] Physical memory size in bytes. A value of 0 indicates that this
-                                                                            ///< property is not known. However, a call to $sMemoryGetState() will
+                                                                            ///< property is not known. However, a call to ::zesMemoryGetState() will
                                                                             ///< correctly return the total size of usable memory.
     uint32_t readBandwidth;                                                 ///< [out] Design bandwidth for reads
     uint32_t writeBandwidth;                                                ///< [out] Design bandwidth for writes
@@ -10097,6 +10115,56 @@ ZE_APIEXPORT ze_result_t ZE_APICALL
 zeRTASParallelOperationDestroyExp(
     ze_rtas_parallel_operation_exp_handle_t hParallelOperation              ///< [in][release] handle of parallel operation object to destroy
     );
+
+#if !defined(__GNUC__)
+#pragma endregion
+#endif
+// Intel 'oneAPI' Level-Zero Extension APIs for Counter-based Event Pools
+#if !defined(__GNUC__)
+#pragma region counterbasedeventpool
+#endif
+///////////////////////////////////////////////////////////////////////////////
+#ifndef ZE_EVENT_POOL_COUNTER_BASED_EXP_NAME
+/// @brief Counter-based Event Pools Extension Name
+#define ZE_EVENT_POOL_COUNTER_BASED_EXP_NAME  "ZE_experimental_event_pool_counter_based"
+#endif // ZE_EVENT_POOL_COUNTER_BASED_EXP_NAME
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Counter-based Event Pools Extension Version(s)
+typedef enum _ze_event_pool_counter_based_exp_version_t
+{
+    ZE_EVENT_POOL_COUNTER_BASED_EXP_VERSION_1_0 = ZE_MAKE_VERSION( 1, 0 ),  ///< version 1.0
+    ZE_EVENT_POOL_COUNTER_BASED_EXP_VERSION_CURRENT = ZE_MAKE_VERSION( 1, 0 ),  ///< latest known version
+    ZE_EVENT_POOL_COUNTER_BASED_EXP_VERSION_FORCE_UINT32 = 0x7fffffff
+
+} ze_event_pool_counter_based_exp_version_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Supported event flags for defining counter-based event pools.
+typedef uint32_t ze_event_pool_counter_based_exp_flags_t;
+typedef enum _ze_event_pool_counter_based_exp_flag_t
+{
+    ZE_EVENT_POOL_COUNTER_BASED_EXP_FLAG_IMMEDIATE = ZE_BIT(0),             ///< Counter-based event pool is used for immediate command lists (default)
+    ZE_EVENT_POOL_COUNTER_BASED_EXP_FLAG_NON_IMMEDIATE = ZE_BIT(1),         ///< Counter-based event pool is for non-immediate command lists
+    ZE_EVENT_POOL_COUNTER_BASED_EXP_FLAG_FORCE_UINT32 = 0x7fffffff
+
+} ze_event_pool_counter_based_exp_flag_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Event pool descriptor for counter-based events. This structure may be
+///        passed to ::zeEventPoolCreate as pNext member of
+///        ::ze_event_pool_desc_t.
+typedef struct _ze_event_pool_counter_based_exp_desc_t
+{
+    ze_structure_type_t stype;                                              ///< [in] type of this structure
+    const void* pNext;                                                      ///< [in][optional] must be null or a pointer to an extension-specific
+                                                                            ///< structure (i.e. contains stype and pNext).
+    ze_event_pool_counter_based_exp_flags_t flags;                          ///< [in] mode flags.
+                                                                            ///< must be 0 (default) or a valid value of ::ze_event_pool_counter_based_exp_flag_t
+                                                                            ///< default behavior is counter-based event pool is only used for
+                                                                            ///< immediate command lists.
+
+} ze_event_pool_counter_based_exp_desc_t;
 
 #if !defined(__GNUC__)
 #pragma endregion
