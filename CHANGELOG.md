@@ -1,5 +1,7 @@
 # Level zero loader changelog
 
+## v1.15.1
+* Fix Windows build for Control Flow Guard Mitigation.
 ## v1.15.0
 * Update to spec 1.8.0
 ## v1.14.0
