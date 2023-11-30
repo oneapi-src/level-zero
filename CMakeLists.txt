@@ -81,9 +81,13 @@ if(MSVC)
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /DYNAMICBASE")
     set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} /DYNAMICBASE")
     set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} /guard:cf")
-    # enable Spectre Mitigation
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Qspectre")
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /Qspectre")
+    # enable Spectre Mitigation, not supported by clang-cl
+    if(NOT CMAKE_CXX_COMPILER_ID STREQUAL Clang)
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Qspectre")
+    endif()
+    if(NOT CMAKE_C_COMPILER_ID STREQUAL Clang)
+        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /Qspectre")
+    endif()
 endif()
 
 #CXX compiler support
@@ -111,8 +115,10 @@ if(MSVC)
     # treat warnings as errors
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /WX /W3")
 
-    # enable multi-process compilation
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
+    # enable multi-process compilation, not supported by clang-cl
+    if(NOT CMAKE_CXX_COMPILER_ID STREQUAL Clang)
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
+    endif()
 
     # enable exceptions handling
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /EHsc")
