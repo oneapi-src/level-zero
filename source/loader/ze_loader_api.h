@@ -66,7 +66,7 @@ zelLoaderTranslateHandleInternal(
    zel_handle_type_t handleType,         //Handle type
    void *handleIn,                        //Input: handle to translate from loader handle to driver handle 
    void **handleOut);                      //Output: Pointer to handleOut is set to driver handle if successful
-   
+
 
 #if defined(__cplusplus)
 }

@@ -39,7 +39,24 @@ namespace validation_layer
 
         %endfor
         %endfor
+<%
+    descs = th.get_func_descs(n, tags, obj)
+%>\
+        %if len(descs) == 0:
         return ${X}_RESULT_SUCCESS;
+        %elif len(descs) == 1:
+        return ParameterValidation::validateExtensions(${descs[0]});
+        %else:
+        auto retVal = ${X}_RESULT_SUCCESS;
+        %for i, desc in enumerate(descs):
+        retVal = ParameterValidation::validateExtensions(${desc});
+        %if i < len(descs)-1:
+        if(retVal)
+            return retVal;
+        %endif
+        %endfor
+        return retVal;
+        %endif
     }
 
     %endfor

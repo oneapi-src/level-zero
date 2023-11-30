@@ -1,5 +1,36 @@
 # Level zero loader changelog
 
+## v1.15.1
+* Fix Windows build for Control Flow Guard Mitigation.
+## v1.15.0
+* Update to spec 1.8.0
+## v1.14.0
+* Update to spec 1.7.8
+* Fix intercept layer access to array of handles and return of logs
+* Enable All warnings and warnings as errors to cleanup code
+* Add validation of module extended descriptor
+* Add ZE_ENABLE_LOADER_DEBUG_TRACE for tracking Library Load/Unload errors
+## v1.13.5
+* Updated code generating scripts for updated spec and init functionality
+* Change zeInit to only init on the first call in a process
+## v1.13.1
+* Fix Formatting issues
+## v1.13.0
+* Update to spec 1.7.0
+* Add reference to Tracing Layer in README.md
+* Update dll copyright
+## v1.12.0
+* Update to spec 1.6.10
+## v1.11.0
+* Update to spec 1.6.3
+* Add validation for handle lifetime
+* Improve driver teardown handling
+
+## v1.10.0
+* Update to spec 1.6
+* Added validation for stype and pnext
+
+
 ## v1.9.9
 * Update to spec 1.5.17
 * Fix for calling zeInit in zesInit path

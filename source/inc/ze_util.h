@@ -16,10 +16,26 @@
 ///////////////////////////////////////////////////////////////////////////////
 #if defined(_WIN32)
 #  include <windows.h>
+inline void getLastErrorString(std::string &errorValue) {
+    DWORD errorID = GetLastError();
+    if (errorID) {
+
+        LPSTR tempErrorMessage = nullptr;
+
+        FormatMessageA(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
+            NULL, errorID, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPSTR)&tempErrorMessage, 0, NULL);
+
+        errorValue.assign(tempErrorMessage);
+
+        LocalFree(tempErrorMessage);
+    }
+}
 #  define MAKE_LIBRARY_NAME(NAME, VERSION)    NAME".dll"
 #  define MAKE_LAYER_NAME(NAME)    NAME".dll"
 #  define LOAD_DRIVER_LIBRARY(NAME) LoadLibraryExA(NAME, nullptr, LOAD_LIBRARY_SEARCH_SYSTEM32)
-#  define FREE_DRIVER_LIBRARY(LIB)  if(LIB) FreeLibrary(LIB)
+#  define GET_LIBRARY_ERROR(ERROR_STRING) getLastErrorString(ERROR_STRING)
+#  define FREE_DRIVER_LIBRARY(LIB)  FreeLibrary(LIB)
+#  define FREE_DRIVER_LIBRARY_FAILURE_CHECK(RESULT)  (RESULT) == 0 ? true : false
 #  define GET_FUNCTION_PTR(LIB, FUNC_NAME) GetProcAddress(LIB, FUNC_NAME)
 #  define string_copy_s strncpy_s
 #else
@@ -28,7 +44,9 @@
 #  define MAKE_LIBRARY_NAME(NAME, VERSION)    "lib" NAME ".so." VERSION
 #  define MAKE_LAYER_NAME(NAME)    "lib" NAME ".so." L0_VALIDATION_LAYER_SUPPORTED_VERSION
 #  define LOAD_DRIVER_LIBRARY(NAME) dlopen(NAME, RTLD_LAZY|RTLD_LOCAL)
-#  define FREE_DRIVER_LIBRARY(LIB)  if(LIB) dlclose(LIB)
+#  define GET_LIBRARY_ERROR(ERROR_STRING) ERROR_STRING.assign(dlerror())
+#  define FREE_DRIVER_LIBRARY(LIB)  dlclose(LIB)
+#  define FREE_DRIVER_LIBRARY_FAILURE_CHECK(RESULT)  (RESULT) != 0 ? true : false
 #  define GET_FUNCTION_PTR(LIB, FUNC_NAME) dlsym(LIB, FUNC_NAME)
 #  define string_copy_s strncpy
 #endif

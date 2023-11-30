@@ -10,19 +10,22 @@
  *
  */
 #pragma once
-#include "ze_validation_layer.h"
+#include "zes_api.h"
 
 namespace validation_layer
 {
 
 class ZESValidationEntryPoints {
-
+public:
     virtual ze_result_t zesInit( zes_init_flags_t flags ) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zesDriverGet( uint32_t* pCount, zes_driver_handle_t* phDrivers ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zesDriverGetExtensionProperties( zes_driver_handle_t hDriver, uint32_t* pCount, zes_driver_extension_properties_t* pExtensionProperties ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zesDriverGetExtensionFunctionAddress( zes_driver_handle_t hDriver, const char* name, void** ppFunctionAddress ) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zesDeviceGet( zes_driver_handle_t hDriver, uint32_t* pCount, zes_device_handle_t* phDevices ) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zesDeviceGetProperties( zes_device_handle_t hDevice, zes_device_properties_t* pProperties ) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zesDeviceGetState( zes_device_handle_t hDevice, zes_device_state_t* pState ) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zesDeviceReset( zes_device_handle_t hDevice, ze_bool_t force ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zesDeviceResetExt( zes_device_handle_t hDevice, zes_reset_properties_t* pProperties ) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zesDeviceProcessesGetState( zes_device_handle_t hDevice, uint32_t* pCount, zes_process_state_t* pProcesses ) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zesDevicePciGetProperties( zes_device_handle_t hDevice, zes_pci_properties_t* pProperties ) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zesDevicePciGetState( zes_device_handle_t hDevice, zes_pci_state_t* pState ) {return ZE_RESULT_SUCCESS;}
@@ -65,6 +68,7 @@ class ZESValidationEntryPoints {
     virtual ze_result_t zesFabricPortGetState( zes_fabric_port_handle_t hPort, zes_fabric_port_state_t* pState ) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zesFabricPortGetThroughput( zes_fabric_port_handle_t hPort, zes_fabric_port_throughput_t* pThroughput ) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zesFabricPortGetFabricErrorCounters( zes_fabric_port_handle_t hPort, zes_fabric_port_error_counters_t* pErrors ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zesFabricPortGetMultiPortThroughput( zes_device_handle_t hDevice, uint32_t numPorts, zes_fabric_port_handle_t* phPort, zes_fabric_port_throughput_t** pThroughput ) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zesDeviceEnumFans( zes_device_handle_t hDevice, uint32_t* pCount, zes_fan_handle_t* phFan ) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zesFanGetProperties( zes_fan_handle_t hFan, zes_fan_properties_t* pProperties ) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zesFanGetConfig( zes_fan_handle_t hFan, zes_fan_config_t* pConfig ) {return ZE_RESULT_SUCCESS;}
@@ -75,6 +79,7 @@ class ZESValidationEntryPoints {
     virtual ze_result_t zesDeviceEnumFirmwares( zes_device_handle_t hDevice, uint32_t* pCount, zes_firmware_handle_t* phFirmware ) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zesFirmwareGetProperties( zes_firmware_handle_t hFirmware, zes_firmware_properties_t* pProperties ) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zesFirmwareFlash( zes_firmware_handle_t hFirmware, void* pImage, uint32_t size ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zesFirmwareGetFlashProgress( zes_firmware_handle_t hFirmware, uint32_t* pCompletionPercent ) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zesDeviceEnumFrequencyDomains( zes_device_handle_t hDevice, uint32_t* pCount, zes_freq_handle_t* phFrequency ) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zesFrequencyGetProperties( zes_freq_handle_t hFrequency, zes_freq_properties_t* pProperties ) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zesFrequencyGetAvailableClocks( zes_freq_handle_t hFrequency, uint32_t* pCount, double* phFrequency ) {return ZE_RESULT_SUCCESS;}
@@ -142,5 +147,9 @@ class ZESValidationEntryPoints {
     virtual ze_result_t zesTemperatureGetState( zes_temp_handle_t hTemperature, double* pTemperature ) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zesPowerGetLimitsExt( zes_pwr_handle_t hPower, uint32_t* pCount, zes_power_limit_ext_desc_t* pSustained ) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zesPowerSetLimitsExt( zes_pwr_handle_t hPower, uint32_t* pCount, zes_power_limit_ext_desc_t* pSustained ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zesEngineGetActivityExt( zes_engine_handle_t hEngine, uint32_t* pCount, zes_engine_stats_t* pStats ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zesRasGetStateExp( zes_ras_handle_t hRas, uint32_t* pCount, zes_ras_state_exp_t* pState ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zesRasClearStateExp( zes_ras_handle_t hRas, zes_ras_error_category_exp_t category ) {return ZE_RESULT_SUCCESS;}
+    virtual ~ZESValidationEntryPoints() {}
 };
 }

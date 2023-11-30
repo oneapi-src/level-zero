@@ -28,6 +28,8 @@ namespace loader
     ze_physical_mem_factory_t           ze_physical_mem_factory;
     ze_fabric_vertex_factory_t          ze_fabric_vertex_factory;
     ze_fabric_edge_factory_t            ze_fabric_edge_factory;
+    ze_rtas_builder_exp_factory_t       ze_rtas_builder_exp_factory;
+    ze_rtas_parallel_operation_exp_factory_t    ze_rtas_parallel_operation_exp_factory;
     ///////////////////////////////////////////////////////////////////////////////
     std::unordered_map<ze_image_object_t *, ze_image_handle_t>            image_handle_map;
     std::unordered_map<ze_sampler_object_t *, ze_sampler_handle_t>        sampler_handle_map;
@@ -256,6 +258,32 @@ namespace loader
     }
 
     ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeDriverGetLastErrorDescription
+    __zedlllocal ze_result_t ZE_APICALL
+    zeDriverGetLastErrorDescription(
+        ze_driver_handle_t hDriver,                     ///< [in] handle of the driver instance
+        const char** ppString                           ///< [in,out] pointer to a null-terminated array of characters describing
+                                                        ///< cause of error.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<ze_driver_object_t*>( hDriver )->dditable;
+        auto pfnGetLastErrorDescription = dditable->ze.Driver.pfnGetLastErrorDescription;
+        if( nullptr == pfnGetLastErrorDescription )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hDriver = reinterpret_cast<ze_driver_object_t*>( hDriver )->handle;
+
+        // forward to device-driver
+        result = pfnGetLastErrorDescription( hDriver, ppString );
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
     /// @brief Intercept function for zeDeviceGet
     __zedlllocal ze_result_t ZE_APICALL
     zeDeviceGet(
@@ -293,6 +321,45 @@ namespace loader
             for( size_t i = 0; ( nullptr != phDevices ) && ( i < *pCount ); ++i )
                 phDevices[ i ] = reinterpret_cast<ze_device_handle_t>(
                     ze_device_factory.getInstance( phDevices[ i ], dditable ) );
+        }
+        catch( std::bad_alloc& )
+        {
+            result = ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY;
+        }
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeDeviceGetRootDevice
+    __zedlllocal ze_result_t ZE_APICALL
+    zeDeviceGetRootDevice(
+        ze_device_handle_t hDevice,                     ///< [in] handle of the device object
+        ze_device_handle_t* phRootDevice                ///< [in,out] parent root device.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<ze_device_object_t*>( hDevice )->dditable;
+        auto pfnGetRootDevice = dditable->ze.Device.pfnGetRootDevice;
+        if( nullptr == pfnGetRootDevice )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hDevice = reinterpret_cast<ze_device_object_t*>( hDevice )->handle;
+
+        // forward to device-driver
+        result = pfnGetRootDevice( hDevice, phRootDevice );
+
+        if( ZE_RESULT_SUCCESS != result )
+            return result;
+
+        try
+        {
+            // convert driver handle to loader handle
+            *phRootDevice = reinterpret_cast<ze_device_handle_t>(
+                ze_device_factory.getInstance( *phRootDevice, dditable ) );
         }
         catch( std::bad_alloc& )
         {
@@ -980,8 +1047,8 @@ namespace loader
         uint64_t timeout                                ///< [in] if non-zero, then indicates the maximum time (in nanoseconds) to
                                                         ///< yield before returning ::ZE_RESULT_SUCCESS or ::ZE_RESULT_NOT_READY;
                                                         ///< if zero, then immediately returns the status of the command queue;
-                                                        ///< if UINT64_MAX, then function will not return until complete or device
-                                                        ///< is lost.
+                                                        ///< if `UINT64_MAX`, then function will not return until complete or
+                                                        ///< device is lost.
                                                         ///< Due to external dependencies, timeout may be rounded to the closest
                                                         ///< value allowed by the accuracy of those dependencies.
         )
@@ -1210,6 +1277,37 @@ namespace loader
     }
 
     ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeCommandListHostSynchronize
+    __zedlllocal ze_result_t ZE_APICALL
+    zeCommandListHostSynchronize(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of the immediate command list
+        uint64_t timeout                                ///< [in] if non-zero, then indicates the maximum time (in nanoseconds) to
+                                                        ///< yield before returning ::ZE_RESULT_SUCCESS or ::ZE_RESULT_NOT_READY;
+                                                        ///< if zero, then immediately returns the status of the immediate command list;
+                                                        ///< if `UINT64_MAX`, then function will not return until complete or
+                                                        ///< device is lost.
+                                                        ///< Due to external dependencies, timeout may be rounded to the closest
+                                                        ///< value allowed by the accuracy of those dependencies.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<ze_command_list_object_t*>( hCommandList )->dditable;
+        auto pfnHostSynchronize = dditable->ze.CommandList.pfnHostSynchronize;
+        if( nullptr == pfnHostSynchronize )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hCommandList = reinterpret_cast<ze_command_list_object_t*>( hCommandList )->handle;
+
+        // forward to device-driver
+        result = pfnHostSynchronize( hCommandList, timeout );
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
     /// @brief Intercept function for zeCommandListAppendBarrier
     __zedlllocal ze_result_t ZE_APICALL
     zeCommandListAppendBarrier(
@@ -1408,14 +1506,14 @@ namespace loader
         const ze_copy_region_t* dstRegion,              ///< [in] pointer to destination region to copy to
         uint32_t dstPitch,                              ///< [in] destination pitch in bytes
         uint32_t dstSlicePitch,                         ///< [in] destination slice pitch in bytes. This is required for 3D region
-                                                        ///< copies where ::ze_copy_region_t.depth is not 0, otherwise it's
-                                                        ///< ignored.
+                                                        ///< copies where the `depth` member of ::ze_copy_region_t is not 0,
+                                                        ///< otherwise it's ignored.
         const void* srcptr,                             ///< [in] pointer to source memory to copy from
         const ze_copy_region_t* srcRegion,              ///< [in] pointer to source region to copy from
         uint32_t srcPitch,                              ///< [in] source pitch in bytes
         uint32_t srcSlicePitch,                         ///< [in] source slice pitch in bytes. This is required for 3D region
-                                                        ///< copies where ::ze_copy_region_t.depth is not 0, otherwise it's
-                                                        ///< ignored.
+                                                        ///< copies where the `depth` member of ::ze_copy_region_t is not 0,
+                                                        ///< otherwise it's ignored.
         ze_event_handle_t hSignalEvent,                 ///< [in][optional] handle of the event to signal on completion
         uint32_t numWaitEvents,                         ///< [in][optional] number of events to wait on before launching; must be 0
                                                         ///< if `nullptr == phWaitEvents`
@@ -1911,6 +2009,32 @@ namespace loader
     }
 
     ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeEventPoolPutIpcHandle
+    __zedlllocal ze_result_t ZE_APICALL
+    zeEventPoolPutIpcHandle(
+        ze_context_handle_t hContext,                   ///< [in] handle of the context object associated with the IPC event pool
+                                                        ///< handle
+        ze_ipc_event_pool_handle_t hIpc                 ///< [in] IPC event pool handle
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<ze_context_object_t*>( hContext )->dditable;
+        auto pfnPutIpcHandle = dditable->ze.EventPool.pfnPutIpcHandle;
+        if( nullptr == pfnPutIpcHandle )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hContext = reinterpret_cast<ze_context_object_t*>( hContext )->handle;
+
+        // forward to device-driver
+        result = pfnPutIpcHandle( hContext, hIpc );
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
     /// @brief Intercept function for zeEventPoolOpenIpcHandle
     __zedlllocal ze_result_t ZE_APICALL
     zeEventPoolOpenIpcHandle(
@@ -2074,8 +2198,8 @@ namespace loader
         uint64_t timeout                                ///< [in] if non-zero, then indicates the maximum time (in nanoseconds) to
                                                         ///< yield before returning ::ZE_RESULT_SUCCESS or ::ZE_RESULT_NOT_READY;
                                                         ///< if zero, then operates exactly like ::zeEventQueryStatus;
-                                                        ///< if UINT64_MAX, then function will not return until complete or device
-                                                        ///< is lost.
+                                                        ///< if `UINT64_MAX`, then function will not return until complete or
+                                                        ///< device is lost.
                                                         ///< Due to external dependencies, timeout may be rounded to the closest
                                                         ///< value allowed by the accuracy of those dependencies.
         )
@@ -2327,8 +2451,8 @@ namespace loader
         uint64_t timeout                                ///< [in] if non-zero, then indicates the maximum time (in nanoseconds) to
                                                         ///< yield before returning ::ZE_RESULT_SUCCESS or ::ZE_RESULT_NOT_READY;
                                                         ///< if zero, then operates exactly like ::zeFenceQueryStatus;
-                                                        ///< if UINT64_MAX, then function will not return until complete or device
-                                                        ///< is lost.
+                                                        ///< if `UINT64_MAX`, then function will not return until complete or
+                                                        ///< device is lost.
                                                         ///< Due to external dependencies, timeout may be rounded to the closest
                                                         ///< value allowed by the accuracy of those dependencies.
         )
@@ -2510,10 +2634,10 @@ namespace loader
         ze_context_handle_t hContext,                   ///< [in] handle of the context object
         const ze_device_mem_alloc_desc_t* device_desc,  ///< [in] pointer to device memory allocation descriptor
         const ze_host_mem_alloc_desc_t* host_desc,      ///< [in] pointer to host memory allocation descriptor
-        size_t size,                                    ///< [in] size in bytes to allocate; must be less than or equal to
-                                                        ///< ::ze_device_properties_t.maxMemAllocSize.
+        size_t size,                                    ///< [in] size in bytes to allocate; must be less than or equal to the
+                                                        ///< `maxMemAllocSize` member of ::ze_device_properties_t
         size_t alignment,                               ///< [in] minimum alignment in bytes for the allocation; must be a power of
-                                                        ///< two.
+                                                        ///< two
         ze_device_handle_t hDevice,                     ///< [in][optional] device handle to associate with
         void** pptr                                     ///< [out] pointer to shared allocation
         )
@@ -2544,10 +2668,10 @@ namespace loader
     zeMemAllocDevice(
         ze_context_handle_t hContext,                   ///< [in] handle of the context object
         const ze_device_mem_alloc_desc_t* device_desc,  ///< [in] pointer to device memory allocation descriptor
-        size_t size,                                    ///< [in] size in bytes to allocate; must be less than or equal to
-                                                        ///< ::ze_device_properties_t.maxMemAllocSize.
+        size_t size,                                    ///< [in] size in bytes to allocate; must be less than or equal to the
+                                                        ///< `maxMemAllocSize` member of ::ze_device_properties_t
         size_t alignment,                               ///< [in] minimum alignment in bytes for the allocation; must be a power of
-                                                        ///< two.
+                                                        ///< two
         ze_device_handle_t hDevice,                     ///< [in] handle of the device
         void** pptr                                     ///< [out] pointer to device allocation
         )
@@ -2578,10 +2702,10 @@ namespace loader
     zeMemAllocHost(
         ze_context_handle_t hContext,                   ///< [in] handle of the context object
         const ze_host_mem_alloc_desc_t* host_desc,      ///< [in] pointer to host memory allocation descriptor
-        size_t size,                                    ///< [in] size in bytes to allocate; must be less than or equal to
-                                                        ///< ::ze_device_properties_t.maxMemAllocSize.
+        size_t size,                                    ///< [in] size in bytes to allocate; must be less than or equal to the
+                                                        ///< `maxMemAllocSize` member of ::ze_device_properties_t
         size_t alignment,                               ///< [in] minimum alignment in bytes for the allocation; must be a power of
-                                                        ///< two.
+                                                        ///< two
         void** pptr                                     ///< [out] pointer to host allocation
         )
     {
@@ -2723,6 +2847,83 @@ namespace loader
     }
 
     ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeMemGetIpcHandleFromFileDescriptorExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zeMemGetIpcHandleFromFileDescriptorExp(
+        ze_context_handle_t hContext,                   ///< [in] handle of the context object
+        uint64_t handle,                                ///< [in] file descriptor
+        ze_ipc_mem_handle_t* pIpcHandle                 ///< [out] Returned IPC memory handle
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<ze_context_object_t*>( hContext )->dditable;
+        auto pfnGetIpcHandleFromFileDescriptorExp = dditable->ze.MemExp.pfnGetIpcHandleFromFileDescriptorExp;
+        if( nullptr == pfnGetIpcHandleFromFileDescriptorExp )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hContext = reinterpret_cast<ze_context_object_t*>( hContext )->handle;
+
+        // forward to device-driver
+        result = pfnGetIpcHandleFromFileDescriptorExp( hContext, handle, pIpcHandle );
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeMemGetFileDescriptorFromIpcHandleExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zeMemGetFileDescriptorFromIpcHandleExp(
+        ze_context_handle_t hContext,                   ///< [in] handle of the context object
+        ze_ipc_mem_handle_t ipcHandle,                  ///< [in] IPC memory handle
+        uint64_t* pHandle                               ///< [out] Returned file descriptor
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<ze_context_object_t*>( hContext )->dditable;
+        auto pfnGetFileDescriptorFromIpcHandleExp = dditable->ze.MemExp.pfnGetFileDescriptorFromIpcHandleExp;
+        if( nullptr == pfnGetFileDescriptorFromIpcHandleExp )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hContext = reinterpret_cast<ze_context_object_t*>( hContext )->handle;
+
+        // forward to device-driver
+        result = pfnGetFileDescriptorFromIpcHandleExp( hContext, ipcHandle, pHandle );
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeMemPutIpcHandle
+    __zedlllocal ze_result_t ZE_APICALL
+    zeMemPutIpcHandle(
+        ze_context_handle_t hContext,                   ///< [in] handle of the context object
+        ze_ipc_mem_handle_t handle                      ///< [in] IPC memory handle
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<ze_context_object_t*>( hContext )->dditable;
+        auto pfnPutIpcHandle = dditable->ze.Mem.pfnPutIpcHandle;
+        if( nullptr == pfnPutIpcHandle )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hContext = reinterpret_cast<ze_context_object_t*>( hContext )->handle;
+
+        // forward to device-driver
+        result = pfnPutIpcHandle( hContext, handle );
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
     /// @brief Intercept function for zeMemOpenIpcHandle
     __zedlllocal ze_result_t ZE_APICALL
     zeMemOpenIpcHandle(
@@ -2780,6 +2981,69 @@ namespace loader
     }
 
     ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeMemSetAtomicAccessAttributeExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zeMemSetAtomicAccessAttributeExp(
+        ze_context_handle_t hContext,                   ///< [in] handle of context
+        ze_device_handle_t hDevice,                     ///< [in] device associated with the memory advice
+        const void* ptr,                                ///< [in] Pointer to the start of the memory range
+        size_t size,                                    ///< [in] Size in bytes of the memory range
+        ze_memory_atomic_attr_exp_flags_t attr          ///< [in] Atomic access attributes to set for the specified range.
+                                                        ///< Must be 0 (default) or a valid combination of ::ze_memory_atomic_attr_exp_flag_t.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<ze_context_object_t*>( hContext )->dditable;
+        auto pfnSetAtomicAccessAttributeExp = dditable->ze.MemExp.pfnSetAtomicAccessAttributeExp;
+        if( nullptr == pfnSetAtomicAccessAttributeExp )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hContext = reinterpret_cast<ze_context_object_t*>( hContext )->handle;
+
+        // convert loader handle to driver handle
+        hDevice = reinterpret_cast<ze_device_object_t*>( hDevice )->handle;
+
+        // forward to device-driver
+        result = pfnSetAtomicAccessAttributeExp( hContext, hDevice, ptr, size, attr );
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeMemGetAtomicAccessAttributeExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zeMemGetAtomicAccessAttributeExp(
+        ze_context_handle_t hContext,                   ///< [in] handle of context
+        ze_device_handle_t hDevice,                     ///< [in] device associated with the memory advice
+        const void* ptr,                                ///< [in] Pointer to the start of the memory range
+        size_t size,                                    ///< [in] Size in bytes of the memory range
+        ze_memory_atomic_attr_exp_flags_t* pAttr        ///< [out] Atomic access attributes for the specified range
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<ze_context_object_t*>( hContext )->dditable;
+        auto pfnGetAtomicAccessAttributeExp = dditable->ze.MemExp.pfnGetAtomicAccessAttributeExp;
+        if( nullptr == pfnGetAtomicAccessAttributeExp )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hContext = reinterpret_cast<ze_context_object_t*>( hContext )->handle;
+
+        // convert loader handle to driver handle
+        hDevice = reinterpret_cast<ze_device_object_t*>( hDevice )->handle;
+
+        // forward to device-driver
+        result = pfnGetAtomicAccessAttributeExp( hContext, hDevice, ptr, size, pAttr );
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
     /// @brief Intercept function for zeModuleCreate
     __zedlllocal ze_result_t ZE_APICALL
     zeModuleCreate(
@@ -2807,9 +3071,6 @@ namespace loader
         // forward to device-driver
         result = pfnCreate( hContext, hDevice, desc, phModule, phBuildLog );
 
-        if( ZE_RESULT_SUCCESS != result )
-            return result;
-
         try
         {
             // convert driver handle to loader handle
@@ -2820,6 +3081,9 @@ namespace loader
         {
             result = ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY;
         }
+
+        if( ZE_RESULT_SUCCESS != result )
+            return result;
 
         try
         {
@@ -2879,7 +3143,7 @@ namespace loader
         ze_result_t result = ZE_RESULT_SUCCESS;
 
         // extract driver's function pointer table
-        auto dditable = reinterpret_cast<ze_module_object_t*>( phModules )->dditable;
+        auto dditable = reinterpret_cast<ze_module_object_t*>( phModules[ 0 ] )->dditable;
         auto pfnDynamicLink = dditable->ze.Module.pfnDynamicLink;
         if( nullptr == pfnDynamicLink )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -2893,9 +3157,6 @@ namespace loader
         result = pfnDynamicLink( numModules, phModulesLocal, phLinkLog );
         delete []phModulesLocal;
 
-        if( ZE_RESULT_SUCCESS != result )
-            return result;
-
         try
         {
             // convert driver handle to loader handle
@@ -2907,6 +3168,9 @@ namespace loader
         {
             result = ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY;
         }
+
+        if( ZE_RESULT_SUCCESS != result )
+            return result;
 
         return result;
     }
@@ -4554,7 +4818,7 @@ namespace loader
         ze_result_t result = ZE_RESULT_SUCCESS;
 
         // extract driver's function pointer table
-        auto dditable = reinterpret_cast<ze_module_object_t*>( phModules )->dditable;
+        auto dditable = reinterpret_cast<ze_module_object_t*>( phModules[ 0 ] )->dditable;
         auto pfnInspectLinkageExt = dditable->ze.Module.pfnInspectLinkageExt;
         if( nullptr == pfnInspectLinkageExt )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -4938,6 +5202,328 @@ namespace loader
         return result;
     }
 
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeEventQueryKernelTimestampsExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeEventQueryKernelTimestampsExt(
+        ze_event_handle_t hEvent,                       ///< [in] handle of the event
+        ze_device_handle_t hDevice,                     ///< [in] handle of the device to query
+        uint32_t* pCount,                               ///< [in,out] pointer to the number of event packets available.
+                                                        ///<    - This value is implementation specific.
+                                                        ///<    - if `*pCount` is zero, then the driver shall update the value with
+                                                        ///< the total number of event packets available.
+                                                        ///<    - if `*pCount` is greater than the number of event packets
+                                                        ///< available, the driver shall update the value with the correct value.
+                                                        ///<    - Buffer(s) for query results must be sized by the application to
+                                                        ///< accommodate a minimum of `*pCount` elements.
+        ze_event_query_kernel_timestamps_results_ext_properties_t* pResults ///< [in,out][optional][range(0, *pCount)] pointer to event query
+                                                        ///< properties structure(s).
+                                                        ///<    - This parameter may be null when `*pCount` is zero.
+                                                        ///<    - if `*pCount` is less than the number of event packets available,
+                                                        ///< the driver may only update `*pCount` elements, starting at element zero.
+                                                        ///<    - if `*pCount` is greater than the number of event packets
+                                                        ///< available, the driver may only update the valid elements.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<ze_event_object_t*>( hEvent )->dditable;
+        auto pfnQueryKernelTimestampsExt = dditable->ze.Event.pfnQueryKernelTimestampsExt;
+        if( nullptr == pfnQueryKernelTimestampsExt )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hEvent = reinterpret_cast<ze_event_object_t*>( hEvent )->handle;
+
+        // convert loader handle to driver handle
+        hDevice = reinterpret_cast<ze_device_object_t*>( hDevice )->handle;
+
+        // forward to device-driver
+        result = pfnQueryKernelTimestampsExt( hEvent, hDevice, pCount, pResults );
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeRTASBuilderCreateExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zeRTASBuilderCreateExp(
+        ze_driver_handle_t hDriver,                     ///< [in] handle of driver object
+        const ze_rtas_builder_exp_desc_t* pDescriptor,  ///< [in] pointer to builder descriptor
+        ze_rtas_builder_exp_handle_t* phBuilder         ///< [out] handle of builder object
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<ze_driver_object_t*>( hDriver )->dditable;
+        auto pfnCreateExp = dditable->ze.RTASBuilderExp.pfnCreateExp;
+        if( nullptr == pfnCreateExp )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hDriver = reinterpret_cast<ze_driver_object_t*>( hDriver )->handle;
+
+        // forward to device-driver
+        result = pfnCreateExp( hDriver, pDescriptor, phBuilder );
+
+        if( ZE_RESULT_SUCCESS != result )
+            return result;
+
+        try
+        {
+            // convert driver handle to loader handle
+            *phBuilder = reinterpret_cast<ze_rtas_builder_exp_handle_t>(
+                ze_rtas_builder_exp_factory.getInstance( *phBuilder, dditable ) );
+        }
+        catch( std::bad_alloc& )
+        {
+            result = ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY;
+        }
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeRTASBuilderGetBuildPropertiesExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zeRTASBuilderGetBuildPropertiesExp(
+        ze_rtas_builder_exp_handle_t hBuilder,          ///< [in] handle of builder object
+        const ze_rtas_builder_build_op_exp_desc_t* pBuildOpDescriptor,  ///< [in] pointer to build operation descriptor
+        ze_rtas_builder_exp_properties_t* pProperties   ///< [in,out] query result for builder properties
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<ze_rtas_builder_exp_object_t*>( hBuilder )->dditable;
+        auto pfnGetBuildPropertiesExp = dditable->ze.RTASBuilderExp.pfnGetBuildPropertiesExp;
+        if( nullptr == pfnGetBuildPropertiesExp )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hBuilder = reinterpret_cast<ze_rtas_builder_exp_object_t*>( hBuilder )->handle;
+
+        // forward to device-driver
+        result = pfnGetBuildPropertiesExp( hBuilder, pBuildOpDescriptor, pProperties );
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeDriverRTASFormatCompatibilityCheckExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zeDriverRTASFormatCompatibilityCheckExp(
+        ze_driver_handle_t hDriver,                     ///< [in] handle of driver object
+        ze_rtas_format_exp_t rtasFormatA,               ///< [in] operand A
+        ze_rtas_format_exp_t rtasFormatB                ///< [in] operand B
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<ze_driver_object_t*>( hDriver )->dditable;
+        auto pfnRTASFormatCompatibilityCheckExp = dditable->ze.DriverExp.pfnRTASFormatCompatibilityCheckExp;
+        if( nullptr == pfnRTASFormatCompatibilityCheckExp )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hDriver = reinterpret_cast<ze_driver_object_t*>( hDriver )->handle;
+
+        // forward to device-driver
+        result = pfnRTASFormatCompatibilityCheckExp( hDriver, rtasFormatA, rtasFormatB );
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeRTASBuilderBuildExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zeRTASBuilderBuildExp(
+        ze_rtas_builder_exp_handle_t hBuilder,          ///< [in] handle of builder object
+        const ze_rtas_builder_build_op_exp_desc_t* pBuildOpDescriptor,  ///< [in] pointer to build operation descriptor
+        void* pScratchBuffer,                           ///< [in][range(0, `scratchBufferSizeBytes`)] scratch buffer to be used
+                                                        ///< during acceleration structure construction
+        size_t scratchBufferSizeBytes,                  ///< [in] size of scratch buffer, in bytes
+        void* pRtasBuffer,                              ///< [in] pointer to destination buffer
+        size_t rtasBufferSizeBytes,                     ///< [in] destination buffer size, in bytes
+        ze_rtas_parallel_operation_exp_handle_t hParallelOperation, ///< [in][optional] handle to parallel operation object
+        void* pBuildUserPtr,                            ///< [in][optional] pointer passed to callbacks
+        ze_rtas_aabb_exp_t* pBounds,                    ///< [in,out][optional] pointer to destination address for acceleration
+                                                        ///< structure bounds
+        size_t* pRtasBufferSizeBytes                    ///< [out][optional] updated acceleration structure size requirement, in
+                                                        ///< bytes
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<ze_rtas_builder_exp_object_t*>( hBuilder )->dditable;
+        auto pfnBuildExp = dditable->ze.RTASBuilderExp.pfnBuildExp;
+        if( nullptr == pfnBuildExp )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hBuilder = reinterpret_cast<ze_rtas_builder_exp_object_t*>( hBuilder )->handle;
+
+        // convert loader handle to driver handle
+        hParallelOperation = ( hParallelOperation ) ? reinterpret_cast<ze_rtas_parallel_operation_exp_object_t*>( hParallelOperation )->handle : nullptr;
+
+        // forward to device-driver
+        result = pfnBuildExp( hBuilder, pBuildOpDescriptor, pScratchBuffer, scratchBufferSizeBytes, pRtasBuffer, rtasBufferSizeBytes, hParallelOperation, pBuildUserPtr, pBounds, pRtasBufferSizeBytes );
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeRTASBuilderDestroyExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zeRTASBuilderDestroyExp(
+        ze_rtas_builder_exp_handle_t hBuilder           ///< [in][release] handle of builder object to destroy
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<ze_rtas_builder_exp_object_t*>( hBuilder )->dditable;
+        auto pfnDestroyExp = dditable->ze.RTASBuilderExp.pfnDestroyExp;
+        if( nullptr == pfnDestroyExp )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hBuilder = reinterpret_cast<ze_rtas_builder_exp_object_t*>( hBuilder )->handle;
+
+        // forward to device-driver
+        result = pfnDestroyExp( hBuilder );
+
+        if( ZE_RESULT_SUCCESS != result )
+            return result;
+
+        // release loader handle
+        ze_rtas_builder_exp_factory.release( hBuilder );
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeRTASParallelOperationCreateExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zeRTASParallelOperationCreateExp(
+        ze_driver_handle_t hDriver,                     ///< [in] handle of driver object
+        ze_rtas_parallel_operation_exp_handle_t* phParallelOperation///< [out] handle of parallel operation object
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<ze_driver_object_t*>( hDriver )->dditable;
+        auto pfnCreateExp = dditable->ze.RTASParallelOperationExp.pfnCreateExp;
+        if( nullptr == pfnCreateExp )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hDriver = reinterpret_cast<ze_driver_object_t*>( hDriver )->handle;
+
+        // forward to device-driver
+        result = pfnCreateExp( hDriver, phParallelOperation );
+
+        if( ZE_RESULT_SUCCESS != result )
+            return result;
+
+        try
+        {
+            // convert driver handle to loader handle
+            *phParallelOperation = reinterpret_cast<ze_rtas_parallel_operation_exp_handle_t>(
+                ze_rtas_parallel_operation_exp_factory.getInstance( *phParallelOperation, dditable ) );
+        }
+        catch( std::bad_alloc& )
+        {
+            result = ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY;
+        }
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeRTASParallelOperationGetPropertiesExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zeRTASParallelOperationGetPropertiesExp(
+        ze_rtas_parallel_operation_exp_handle_t hParallelOperation, ///< [in] handle of parallel operation object
+        ze_rtas_parallel_operation_exp_properties_t* pProperties///< [in,out] query result for parallel operation properties
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<ze_rtas_parallel_operation_exp_object_t*>( hParallelOperation )->dditable;
+        auto pfnGetPropertiesExp = dditable->ze.RTASParallelOperationExp.pfnGetPropertiesExp;
+        if( nullptr == pfnGetPropertiesExp )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hParallelOperation = reinterpret_cast<ze_rtas_parallel_operation_exp_object_t*>( hParallelOperation )->handle;
+
+        // forward to device-driver
+        result = pfnGetPropertiesExp( hParallelOperation, pProperties );
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeRTASParallelOperationJoinExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zeRTASParallelOperationJoinExp(
+        ze_rtas_parallel_operation_exp_handle_t hParallelOperation  ///< [in] handle of parallel operation object
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<ze_rtas_parallel_operation_exp_object_t*>( hParallelOperation )->dditable;
+        auto pfnJoinExp = dditable->ze.RTASParallelOperationExp.pfnJoinExp;
+        if( nullptr == pfnJoinExp )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hParallelOperation = reinterpret_cast<ze_rtas_parallel_operation_exp_object_t*>( hParallelOperation )->handle;
+
+        // forward to device-driver
+        result = pfnJoinExp( hParallelOperation );
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeRTASParallelOperationDestroyExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zeRTASParallelOperationDestroyExp(
+        ze_rtas_parallel_operation_exp_handle_t hParallelOperation  ///< [in][release] handle of parallel operation object to destroy
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<ze_rtas_parallel_operation_exp_object_t*>( hParallelOperation )->dditable;
+        auto pfnDestroyExp = dditable->ze.RTASParallelOperationExp.pfnDestroyExp;
+        if( nullptr == pfnDestroyExp )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hParallelOperation = reinterpret_cast<ze_rtas_parallel_operation_exp_object_t*>( hParallelOperation )->handle;
+
+        // forward to device-driver
+        result = pfnDestroyExp( hParallelOperation );
+
+        if( ZE_RESULT_SUCCESS != result )
+            return result;
+
+        // release loader handle
+        ze_rtas_parallel_operation_exp_factory.release( hParallelOperation );
+
+        return result;
+    }
+
 } // namespace loader
 
 #if defined(__cplusplus)
@@ -5030,6 +5616,164 @@ zeGetGlobalProcAddrTable(
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+/// @brief Exported function for filling application's RTASBuilderExp table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+ZE_DLLEXPORT ze_result_t ZE_APICALL
+zeGetRTASBuilderExpProcAddrTable(
+    ze_api_version_t version,                       ///< [in] API version requested
+    ze_rtas_builder_exp_dditable_t* pDdiTable       ///< [in,out] pointer to table of DDI function pointers
+    )
+{
+    if( loader::context->drivers.size() < 1 )
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+
+    if( nullptr == pDdiTable )
+        return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+    if( loader::context->version < version )
+        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+
+    ze_result_t result = ZE_RESULT_SUCCESS;
+
+    // Load the device-driver DDI tables
+    for( auto& drv : loader::context->drivers )
+    {
+        if(drv.initStatus != ZE_RESULT_SUCCESS)
+            continue;
+        auto getTable = reinterpret_cast<ze_pfnGetRTASBuilderExpProcAddrTable_t>(
+            GET_FUNCTION_PTR( drv.handle, "zeGetRTASBuilderExpProcAddrTable") );
+        if(!getTable) 
+            continue; 
+        result = getTable( version, &drv.dditable.ze.RTASBuilderExp);
+    }
+
+
+    if( ZE_RESULT_SUCCESS == result )
+    {
+        if( ( loader::context->drivers.size() > 1 ) || loader::context->forceIntercept )
+        {
+            // return pointers to loader's DDIs
+            pDdiTable->pfnCreateExp                                = loader::zeRTASBuilderCreateExp;
+            pDdiTable->pfnGetBuildPropertiesExp                    = loader::zeRTASBuilderGetBuildPropertiesExp;
+            pDdiTable->pfnBuildExp                                 = loader::zeRTASBuilderBuildExp;
+            pDdiTable->pfnDestroyExp                               = loader::zeRTASBuilderDestroyExp;
+        }
+        else
+        {
+            // return pointers directly to driver's DDIs
+            *pDdiTable = loader::context->drivers.front().dditable.ze.RTASBuilderExp;
+        }
+    }
+
+    // If the validation layer is enabled, then intercept the loader's DDIs
+    if(( ZE_RESULT_SUCCESS == result ) && ( nullptr != loader::context->validationLayer ))
+    {
+        auto getTable = reinterpret_cast<ze_pfnGetRTASBuilderExpProcAddrTable_t>(
+            GET_FUNCTION_PTR(loader::context->validationLayer, "zeGetRTASBuilderExpProcAddrTable") );
+        if(!getTable)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        result = getTable( version, pDdiTable );
+    }
+
+    // If the API tracing layer is enabled, then intercept the loader's DDIs
+    if(( ZE_RESULT_SUCCESS == result ) && ( nullptr != loader::context->tracingLayer ))
+    {
+        auto getTable = reinterpret_cast<ze_pfnGetRTASBuilderExpProcAddrTable_t>(
+            GET_FUNCTION_PTR(loader::context->tracingLayer, "zeGetRTASBuilderExpProcAddrTable") );
+        if(!getTable)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        result = getTable( version, pDdiTable );
+    }
+
+    return result;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Exported function for filling application's RTASParallelOperationExp table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+ZE_DLLEXPORT ze_result_t ZE_APICALL
+zeGetRTASParallelOperationExpProcAddrTable(
+    ze_api_version_t version,                       ///< [in] API version requested
+    ze_rtas_parallel_operation_exp_dditable_t* pDdiTable///< [in,out] pointer to table of DDI function pointers
+    )
+{
+    if( loader::context->drivers.size() < 1 )
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+
+    if( nullptr == pDdiTable )
+        return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+    if( loader::context->version < version )
+        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+
+    ze_result_t result = ZE_RESULT_SUCCESS;
+
+    // Load the device-driver DDI tables
+    for( auto& drv : loader::context->drivers )
+    {
+        if(drv.initStatus != ZE_RESULT_SUCCESS)
+            continue;
+        auto getTable = reinterpret_cast<ze_pfnGetRTASParallelOperationExpProcAddrTable_t>(
+            GET_FUNCTION_PTR( drv.handle, "zeGetRTASParallelOperationExpProcAddrTable") );
+        if(!getTable) 
+            continue; 
+        result = getTable( version, &drv.dditable.ze.RTASParallelOperationExp);
+    }
+
+
+    if( ZE_RESULT_SUCCESS == result )
+    {
+        if( ( loader::context->drivers.size() > 1 ) || loader::context->forceIntercept )
+        {
+            // return pointers to loader's DDIs
+            pDdiTable->pfnCreateExp                                = loader::zeRTASParallelOperationCreateExp;
+            pDdiTable->pfnGetPropertiesExp                         = loader::zeRTASParallelOperationGetPropertiesExp;
+            pDdiTable->pfnJoinExp                                  = loader::zeRTASParallelOperationJoinExp;
+            pDdiTable->pfnDestroyExp                               = loader::zeRTASParallelOperationDestroyExp;
+        }
+        else
+        {
+            // return pointers directly to driver's DDIs
+            *pDdiTable = loader::context->drivers.front().dditable.ze.RTASParallelOperationExp;
+        }
+    }
+
+    // If the validation layer is enabled, then intercept the loader's DDIs
+    if(( ZE_RESULT_SUCCESS == result ) && ( nullptr != loader::context->validationLayer ))
+    {
+        auto getTable = reinterpret_cast<ze_pfnGetRTASParallelOperationExpProcAddrTable_t>(
+            GET_FUNCTION_PTR(loader::context->validationLayer, "zeGetRTASParallelOperationExpProcAddrTable") );
+        if(!getTable)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        result = getTable( version, pDdiTable );
+    }
+
+    // If the API tracing layer is enabled, then intercept the loader's DDIs
+    if(( ZE_RESULT_SUCCESS == result ) && ( nullptr != loader::context->tracingLayer ))
+    {
+        auto getTable = reinterpret_cast<ze_pfnGetRTASParallelOperationExpProcAddrTable_t>(
+            GET_FUNCTION_PTR(loader::context->tracingLayer, "zeGetRTASParallelOperationExpProcAddrTable") );
+        if(!getTable)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        result = getTable( version, pDdiTable );
+    }
+
+    return result;
+}
+
+///////////////////////////////////////////////////////////////////////////////
 /// @brief Exported function for filling application's Driver table
 ///        with current process' addresses
 ///
@@ -5088,6 +5832,7 @@ zeGetDriverProcAddrTable(
             pDdiTable->pfnGetIpcProperties                         = loader::zeDriverGetIpcProperties;
             pDdiTable->pfnGetExtensionProperties                   = loader::zeDriverGetExtensionProperties;
             pDdiTable->pfnGetExtensionFunctionAddress              = loader::zeDriverGetExtensionFunctionAddress;
+            pDdiTable->pfnGetLastErrorDescription                  = loader::zeDriverGetLastErrorDescription;
         }
         else
         {
@@ -5111,6 +5856,82 @@ zeGetDriverProcAddrTable(
     {
         auto getTable = reinterpret_cast<ze_pfnGetDriverProcAddrTable_t>(
             GET_FUNCTION_PTR(loader::context->tracingLayer, "zeGetDriverProcAddrTable") );
+        if(!getTable)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        result = getTable( version, pDdiTable );
+    }
+
+    return result;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Exported function for filling application's DriverExp table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+ZE_DLLEXPORT ze_result_t ZE_APICALL
+zeGetDriverExpProcAddrTable(
+    ze_api_version_t version,                       ///< [in] API version requested
+    ze_driver_exp_dditable_t* pDdiTable             ///< [in,out] pointer to table of DDI function pointers
+    )
+{
+    if( loader::context->drivers.size() < 1 )
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+
+    if( nullptr == pDdiTable )
+        return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+    if( loader::context->version < version )
+        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+
+    ze_result_t result = ZE_RESULT_SUCCESS;
+
+    // Load the device-driver DDI tables
+    for( auto& drv : loader::context->drivers )
+    {
+        if(drv.initStatus != ZE_RESULT_SUCCESS)
+            continue;
+        auto getTable = reinterpret_cast<ze_pfnGetDriverExpProcAddrTable_t>(
+            GET_FUNCTION_PTR( drv.handle, "zeGetDriverExpProcAddrTable") );
+        if(!getTable) 
+            continue; 
+        result = getTable( version, &drv.dditable.ze.DriverExp);
+    }
+
+
+    if( ZE_RESULT_SUCCESS == result )
+    {
+        if( ( loader::context->drivers.size() > 1 ) || loader::context->forceIntercept )
+        {
+            // return pointers to loader's DDIs
+            pDdiTable->pfnRTASFormatCompatibilityCheckExp          = loader::zeDriverRTASFormatCompatibilityCheckExp;
+        }
+        else
+        {
+            // return pointers directly to driver's DDIs
+            *pDdiTable = loader::context->drivers.front().dditable.ze.DriverExp;
+        }
+    }
+
+    // If the validation layer is enabled, then intercept the loader's DDIs
+    if(( ZE_RESULT_SUCCESS == result ) && ( nullptr != loader::context->validationLayer ))
+    {
+        auto getTable = reinterpret_cast<ze_pfnGetDriverExpProcAddrTable_t>(
+            GET_FUNCTION_PTR(loader::context->validationLayer, "zeGetDriverExpProcAddrTable") );
+        if(!getTable)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        result = getTable( version, pDdiTable );
+    }
+
+    // If the API tracing layer is enabled, then intercept the loader's DDIs
+    if(( ZE_RESULT_SUCCESS == result ) && ( nullptr != loader::context->tracingLayer ))
+    {
+        auto getTable = reinterpret_cast<ze_pfnGetDriverExpProcAddrTable_t>(
+            GET_FUNCTION_PTR(loader::context->tracingLayer, "zeGetDriverExpProcAddrTable") );
         if(!getTable)
             return ZE_RESULT_ERROR_UNINITIALIZED;
         result = getTable( version, pDdiTable );
@@ -5190,6 +6011,7 @@ zeGetDeviceProcAddrTable(
             pDdiTable->pfnReserveCacheExt                          = loader::zeDeviceReserveCacheExt;
             pDdiTable->pfnSetCacheAdviceExt                        = loader::zeDeviceSetCacheAdviceExt;
             pDdiTable->pfnPciGetPropertiesExt                      = loader::zeDevicePciGetPropertiesExt;
+            pDdiTable->pfnGetRootDevice                            = loader::zeDeviceGetRootDevice;
         }
         else
         {
@@ -5247,7 +6069,6 @@ zeGetDeviceExpProcAddrTable(
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
-    bool atLeastOneDriverValid = false;
     // Load the device-driver DDI tables
     for( auto& drv : loader::context->drivers )
     {
@@ -5257,9 +6078,7 @@ zeGetDeviceExpProcAddrTable(
             GET_FUNCTION_PTR( drv.handle, "zeGetDeviceExpProcAddrTable") );
         if(!getTable) 
             continue; 
-        auto getTableResult = getTable( version, &drv.dditable.ze.DeviceExp);
-        if(getTableResult == ZE_RESULT_SUCCESS) 
-            atLeastOneDriverValid = true;
+        result = getTable( version, &drv.dditable.ze.DeviceExp);
     }
 
 
@@ -5562,6 +6381,7 @@ zeGetCommandListProcAddrTable(
             pDdiTable->pfnAppendLaunchMultipleKernelsIndirect      = loader::zeCommandListAppendLaunchMultipleKernelsIndirect;
             pDdiTable->pfnAppendImageCopyToMemoryExt               = loader::zeCommandListAppendImageCopyToMemoryExt;
             pDdiTable->pfnAppendImageCopyFromMemoryExt             = loader::zeCommandListAppendImageCopyFromMemoryExt;
+            pDdiTable->pfnHostSynchronize                          = loader::zeCommandListHostSynchronize;
         }
         else
         {
@@ -5653,6 +6473,7 @@ zeGetEventProcAddrTable(
             pDdiTable->pfnQueryStatus                              = loader::zeEventQueryStatus;
             pDdiTable->pfnHostReset                                = loader::zeEventHostReset;
             pDdiTable->pfnQueryKernelTimestamp                     = loader::zeEventQueryKernelTimestamp;
+            pDdiTable->pfnQueryKernelTimestampsExt                 = loader::zeEventQueryKernelTimestampsExt;
         }
         else
         {
@@ -5710,7 +6531,6 @@ zeGetEventExpProcAddrTable(
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
-    bool atLeastOneDriverValid = false;
     // Load the device-driver DDI tables
     for( auto& drv : loader::context->drivers )
     {
@@ -5720,9 +6540,7 @@ zeGetEventExpProcAddrTable(
             GET_FUNCTION_PTR( drv.handle, "zeGetEventExpProcAddrTable") );
         if(!getTable) 
             continue; 
-        auto getTableResult = getTable( version, &drv.dditable.ze.EventExp);
-        if(getTableResult == ZE_RESULT_SUCCESS) 
-            atLeastOneDriverValid = true;
+        result = getTable( version, &drv.dditable.ze.EventExp);
     }
 
 
@@ -5821,6 +6639,7 @@ zeGetEventPoolProcAddrTable(
             pDdiTable->pfnGetIpcHandle                             = loader::zeEventPoolGetIpcHandle;
             pDdiTable->pfnOpenIpcHandle                            = loader::zeEventPoolOpenIpcHandle;
             pDdiTable->pfnCloseIpcHandle                           = loader::zeEventPoolCloseIpcHandle;
+            pDdiTable->pfnPutIpcHandle                             = loader::zeEventPoolPutIpcHandle;
         }
         else
         {
@@ -6056,7 +6875,6 @@ zeGetImageExpProcAddrTable(
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
-    bool atLeastOneDriverValid = false;
     // Load the device-driver DDI tables
     for( auto& drv : loader::context->drivers )
     {
@@ -6066,9 +6884,7 @@ zeGetImageExpProcAddrTable(
             GET_FUNCTION_PTR( drv.handle, "zeGetImageExpProcAddrTable") );
         if(!getTable) 
             continue; 
-        auto getTableResult = getTable( version, &drv.dditable.ze.ImageExp);
-        if(getTableResult == ZE_RESULT_SUCCESS) 
-            atLeastOneDriverValid = true;
+        result = getTable( version, &drv.dditable.ze.ImageExp);
     }
 
 
@@ -6232,7 +7048,6 @@ zeGetKernelExpProcAddrTable(
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
-    bool atLeastOneDriverValid = false;
     // Load the device-driver DDI tables
     for( auto& drv : loader::context->drivers )
     {
@@ -6242,9 +7057,7 @@ zeGetKernelExpProcAddrTable(
             GET_FUNCTION_PTR( drv.handle, "zeGetKernelExpProcAddrTable") );
         if(!getTable) 
             continue; 
-        auto getTableResult = getTable( version, &drv.dditable.ze.KernelExp);
-        if(getTableResult == ZE_RESULT_SUCCESS) 
-            atLeastOneDriverValid = true;
+        result = getTable( version, &drv.dditable.ze.KernelExp);
     }
 
 
@@ -6349,6 +7162,7 @@ zeGetMemProcAddrTable(
             pDdiTable->pfnOpenIpcHandle                            = loader::zeMemOpenIpcHandle;
             pDdiTable->pfnCloseIpcHandle                           = loader::zeMemCloseIpcHandle;
             pDdiTable->pfnFreeExt                                  = loader::zeMemFreeExt;
+            pDdiTable->pfnPutIpcHandle                             = loader::zeMemPutIpcHandle;
         }
         else
         {
@@ -6372,6 +7186,85 @@ zeGetMemProcAddrTable(
     {
         auto getTable = reinterpret_cast<ze_pfnGetMemProcAddrTable_t>(
             GET_FUNCTION_PTR(loader::context->tracingLayer, "zeGetMemProcAddrTable") );
+        if(!getTable)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        result = getTable( version, pDdiTable );
+    }
+
+    return result;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Exported function for filling application's MemExp table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+ZE_DLLEXPORT ze_result_t ZE_APICALL
+zeGetMemExpProcAddrTable(
+    ze_api_version_t version,                       ///< [in] API version requested
+    ze_mem_exp_dditable_t* pDdiTable                ///< [in,out] pointer to table of DDI function pointers
+    )
+{
+    if( loader::context->drivers.size() < 1 )
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+
+    if( nullptr == pDdiTable )
+        return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+    if( loader::context->version < version )
+        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+
+    ze_result_t result = ZE_RESULT_SUCCESS;
+
+    // Load the device-driver DDI tables
+    for( auto& drv : loader::context->drivers )
+    {
+        if(drv.initStatus != ZE_RESULT_SUCCESS)
+            continue;
+        auto getTable = reinterpret_cast<ze_pfnGetMemExpProcAddrTable_t>(
+            GET_FUNCTION_PTR( drv.handle, "zeGetMemExpProcAddrTable") );
+        if(!getTable) 
+            continue; 
+        result = getTable( version, &drv.dditable.ze.MemExp);
+    }
+
+
+    if( ZE_RESULT_SUCCESS == result )
+    {
+        if( ( loader::context->drivers.size() > 1 ) || loader::context->forceIntercept )
+        {
+            // return pointers to loader's DDIs
+            pDdiTable->pfnGetIpcHandleFromFileDescriptorExp        = loader::zeMemGetIpcHandleFromFileDescriptorExp;
+            pDdiTable->pfnGetFileDescriptorFromIpcHandleExp        = loader::zeMemGetFileDescriptorFromIpcHandleExp;
+            pDdiTable->pfnSetAtomicAccessAttributeExp              = loader::zeMemSetAtomicAccessAttributeExp;
+            pDdiTable->pfnGetAtomicAccessAttributeExp              = loader::zeMemGetAtomicAccessAttributeExp;
+        }
+        else
+        {
+            // return pointers directly to driver's DDIs
+            *pDdiTable = loader::context->drivers.front().dditable.ze.MemExp;
+        }
+    }
+
+    // If the validation layer is enabled, then intercept the loader's DDIs
+    if(( ZE_RESULT_SUCCESS == result ) && ( nullptr != loader::context->validationLayer ))
+    {
+        auto getTable = reinterpret_cast<ze_pfnGetMemExpProcAddrTable_t>(
+            GET_FUNCTION_PTR(loader::context->validationLayer, "zeGetMemExpProcAddrTable") );
+        if(!getTable)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        result = getTable( version, pDdiTable );
+    }
+
+    // If the API tracing layer is enabled, then intercept the loader's DDIs
+    if(( ZE_RESULT_SUCCESS == result ) && ( nullptr != loader::context->tracingLayer ))
+    {
+        auto getTable = reinterpret_cast<ze_pfnGetMemExpProcAddrTable_t>(
+            GET_FUNCTION_PTR(loader::context->tracingLayer, "zeGetMemExpProcAddrTable") );
         if(!getTable)
             return ZE_RESULT_ERROR_UNINITIALIZED;
         result = getTable( version, pDdiTable );
@@ -6848,7 +7741,6 @@ zeGetFabricEdgeExpProcAddrTable(
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
-    bool atLeastOneDriverValid = false;
     // Load the device-driver DDI tables
     for( auto& drv : loader::context->drivers )
     {
@@ -6858,9 +7750,7 @@ zeGetFabricEdgeExpProcAddrTable(
             GET_FUNCTION_PTR( drv.handle, "zeGetFabricEdgeExpProcAddrTable") );
         if(!getTable) 
             continue; 
-        auto getTableResult = getTable( version, &drv.dditable.ze.FabricEdgeExp);
-        if(getTableResult == ZE_RESULT_SUCCESS) 
-            atLeastOneDriverValid = true;
+        result = getTable( version, &drv.dditable.ze.FabricEdgeExp);
     }
 
 
@@ -6929,7 +7819,6 @@ zeGetFabricVertexExpProcAddrTable(
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
-    bool atLeastOneDriverValid = false;
     // Load the device-driver DDI tables
     for( auto& drv : loader::context->drivers )
     {
@@ -6939,9 +7828,7 @@ zeGetFabricVertexExpProcAddrTable(
             GET_FUNCTION_PTR( drv.handle, "zeGetFabricVertexExpProcAddrTable") );
         if(!getTable) 
             continue; 
-        auto getTableResult = getTable( version, &drv.dditable.ze.FabricVertexExp);
-        if(getTableResult == ZE_RESULT_SUCCESS) 
-            atLeastOneDriverValid = true;
+        result = getTable( version, &drv.dditable.ze.FabricVertexExp);
     }
 
 

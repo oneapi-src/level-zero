@@ -4,7 +4,7 @@
  SPDX-License-Identifier: MIT
 
  @file zet.py
- @version v1.5-r1.5.17
+ @version v1.8-r1.8.0
 
  """
 import platform
@@ -82,16 +82,21 @@ class zet_debug_session_handle_t(c_void_p):
 ###############################################################################
 ## @brief Defines structure types
 class zet_structure_type_v(IntEnum):
-    METRIC_GROUP_PROPERTIES = 0x1                   ## ::zet_metric_group_properties_t
-    METRIC_PROPERTIES = 0x2                         ## ::zet_metric_properties_t
-    METRIC_STREAMER_DESC = 0x3                      ## ::zet_metric_streamer_desc_t
-    METRIC_QUERY_POOL_DESC = 0x4                    ## ::zet_metric_query_pool_desc_t
-    PROFILE_PROPERTIES = 0x5                        ## ::zet_profile_properties_t
-    DEVICE_DEBUG_PROPERTIES = 0x6                   ## ::zet_device_debug_properties_t
-    DEBUG_MEMORY_SPACE_DESC = 0x7                   ## ::zet_debug_memory_space_desc_t
-    DEBUG_REGSET_PROPERTIES = 0x8                   ## ::zet_debug_regset_properties_t
-    GLOBAL_METRICS_TIMESTAMPS_EXP_PROPERTIES = 0x9  ## ::zet_metric_global_timestamps_resolution_exp_t
-    TRACER_EXP_DESC = 0x00010001                    ## ::zet_tracer_exp_desc_t
+    METRIC_GROUP_PROPERTIES = 0x1                                           ## ::zet_metric_group_properties_t
+    METRIC_PROPERTIES = 0x2                                                 ## ::zet_metric_properties_t
+    METRIC_STREAMER_DESC = 0x3                                              ## ::zet_metric_streamer_desc_t
+    METRIC_QUERY_POOL_DESC = 0x4                                            ## ::zet_metric_query_pool_desc_t
+    PROFILE_PROPERTIES = 0x5                                                ## ::zet_profile_properties_t
+    DEVICE_DEBUG_PROPERTIES = 0x6                                           ## ::zet_device_debug_properties_t
+    DEBUG_MEMORY_SPACE_DESC = 0x7                                           ## ::zet_debug_memory_space_desc_t
+    DEBUG_REGSET_PROPERTIES = 0x8                                           ## ::zet_debug_regset_properties_t
+    GLOBAL_METRICS_TIMESTAMPS_EXP_PROPERTIES = 0x9                          ## ::zet_metric_global_timestamps_resolution_exp_t. Deprecated, use
+                                                                            ## ::ZET_STRUCTURE_TYPE_METRIC_GLOBAL_TIMESTAMPS_RESOLUTION_EXP.
+    METRIC_GLOBAL_TIMESTAMPS_RESOLUTION_EXP = 0x9                           ## ::zet_metric_global_timestamps_resolution_exp_t
+    TRACER_EXP_DESC = 0x00010001                                            ## ::zet_tracer_exp_desc_t
+    METRICS_CALCULATE_EXP_DESC = 0x00010002                                 ## ::zet_metric_calculate_exp_desc_t. Deprecated, use
+                                                                            ## ::ZET_STRUCTURE_TYPE_METRIC_CALCULATE_EXP_DESC.
+    METRIC_CALCULATE_EXP_DESC = 0x00010002                                  ## ::zet_metric_calculate_exp_desc_t
 
 class zet_structure_type_t(c_int):
     def __str__(self):
@@ -103,7 +108,8 @@ class zet_structure_type_t(c_int):
 class zet_base_properties_t(Structure):
     _fields_ = [
         ("stype", zet_structure_type_t),                                ## [in] type of this structure
-        ("pNext", c_void_p)                                             ## [in,out][optional] pointer to extension-specific structure
+        ("pNext", c_void_p)                                             ## [in,out][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains stype and pNext).
     ]
 
 ###############################################################################
@@ -111,17 +117,21 @@ class zet_base_properties_t(Structure):
 class zet_base_desc_t(Structure):
     _fields_ = [
         ("stype", zet_structure_type_t),                                ## [in] type of this structure
-        ("pNext", c_void_p)                                             ## [in][optional] pointer to extension-specific structure
+        ("pNext", c_void_p)                                             ## [in][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains stype and pNext).
     ]
 
 ###############################################################################
 ## @brief Supported value types
 class zet_value_type_v(IntEnum):
-    UINT32 = 0                                      ## 32-bit unsigned-integer
-    UINT64 = 1                                      ## 64-bit unsigned-integer
-    FLOAT32 = 2                                     ## 32-bit floating-point
-    FLOAT64 = 3                                     ## 64-bit floating-point
-    BOOL8 = 4                                       ## 8-bit boolean
+    UINT32 = 0                                                              ## 32-bit unsigned-integer
+    UINT64 = 1                                                              ## 64-bit unsigned-integer
+    FLOAT32 = 2                                                             ## 32-bit floating-point
+    FLOAT64 = 3                                                             ## 64-bit floating-point
+    BOOL8 = 4                                                               ## 8-bit boolean
+    STRING = 5                                                              ## C string
+    UINT8 = 6                                                               ## 8-bit unsigned-integer
+    UINT16 = 7                                                              ## 16-bit unsigned-integer
 
 class zet_value_type_t(c_int):
     def __str__(self):
@@ -160,7 +170,7 @@ class zet_typed_value_t(Structure):
 ###############################################################################
 ## @brief Supported module debug info formats.
 class zet_module_debug_info_format_v(IntEnum):
-    ELF_DWARF = 0                                   ## Format is ELF/DWARF
+    ELF_DWARF = 0                                                           ## Format is ELF/DWARF
 
 class zet_module_debug_info_format_t(c_int):
     def __str__(self):
@@ -170,7 +180,7 @@ class zet_module_debug_info_format_t(c_int):
 ###############################################################################
 ## @brief Supported device debug property flags
 class zet_device_debug_property_flags_v(IntEnum):
-    ATTACH = ZE_BIT(0)                              ## the device supports attaching for debug
+    ATTACH = ZE_BIT(0)                                                      ## the device supports attaching for debug
 
 class zet_device_debug_property_flags_t(c_int):
     def __str__(self):
@@ -182,7 +192,8 @@ class zet_device_debug_property_flags_t(c_int):
 class zet_device_debug_properties_t(Structure):
     _fields_ = [
         ("stype", zet_structure_type_t),                                ## [in] type of this structure
-        ("pNext", c_void_p),                                            ## [in,out][optional] pointer to extension-specific structure
+        ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains stype and pNext).
         ("flags", zet_device_debug_property_flags_t)                    ## [out] returns 0 (none) or a valid combination of
                                                                         ## ::zet_device_debug_property_flag_t
     ]
@@ -197,8 +208,8 @@ class zet_debug_config_t(Structure):
 ###############################################################################
 ## @brief Supported debug event flags.
 class zet_debug_event_flags_v(IntEnum):
-    NEED_ACK = ZE_BIT(0)                            ## The event needs to be acknowledged by calling
-                                                    ## ::zetDebugAcknowledgeEvent.
+    NEED_ACK = ZE_BIT(0)                                                    ## The event needs to be acknowledged by calling
+                                                                            ## ::zetDebugAcknowledgeEvent.
 
 class zet_debug_event_flags_t(c_int):
     def __str__(self):
@@ -208,15 +219,15 @@ class zet_debug_event_flags_t(c_int):
 ###############################################################################
 ## @brief Supported debug event types.
 class zet_debug_event_type_v(IntEnum):
-    INVALID = 0                                     ## The event is invalid
-    DETACHED = 1                                    ## The tool was detached
-    PROCESS_ENTRY = 2                               ## The debuggee process created command queues on the device
-    PROCESS_EXIT = 3                                ## The debuggee process destroyed all command queues on the device
-    MODULE_LOAD = 4                                 ## An in-memory module was loaded onto the device
-    MODULE_UNLOAD = 5                               ## An in-memory module is about to get unloaded from the device
-    THREAD_STOPPED = 6                              ## The thread stopped due to a device exception
-    THREAD_UNAVAILABLE = 7                          ## The thread is not available to be stopped
-    PAGE_FAULT = 8                                  ## A page request could not be completed on the device
+    INVALID = 0                                                             ## The event is invalid
+    DETACHED = 1                                                            ## The tool was detached
+    PROCESS_ENTRY = 2                                                       ## The debuggee process created command queues on the device
+    PROCESS_EXIT = 3                                                        ## The debuggee process destroyed all command queues on the device
+    MODULE_LOAD = 4                                                         ## An in-memory module was loaded onto the device
+    MODULE_UNLOAD = 5                                                       ## An in-memory module is about to get unloaded from the device
+    THREAD_STOPPED = 6                                                      ## The thread stopped due to a device exception
+    THREAD_UNAVAILABLE = 7                                                  ## The thread is not available to be stopped
+    PAGE_FAULT = 8                                                          ## A page request could not be completed on the device
 
 class zet_debug_event_type_t(c_int):
     def __str__(self):
@@ -226,8 +237,8 @@ class zet_debug_event_type_t(c_int):
 ###############################################################################
 ## @brief Supported debug detach reasons.
 class zet_debug_detach_reason_v(IntEnum):
-    INVALID = 0                                     ## The detach reason is not valid
-    HOST_EXIT = 1                                   ## The host process exited
+    INVALID = 0                                                             ## The detach reason is not valid
+    HOST_EXIT = 1                                                           ## The host process exited
 
 class zet_debug_detach_reason_t(c_int):
     def __str__(self):
@@ -263,9 +274,9 @@ class zet_debug_event_info_thread_stopped_t(Structure):
 ###############################################################################
 ## @brief Page fault reasons.
 class zet_debug_page_fault_reason_v(IntEnum):
-    INVALID = 0                                     ## The page fault reason is not valid
-    MAPPING_ERROR = 1                               ## The address is not mapped
-    PERMISSION_ERROR = 2                            ## Invalid access permissions
+    INVALID = 0                                                             ## The page fault reason is not valid
+    MAPPING_ERROR = 1                                                       ## The address is not mapped
+    PERMISSION_ERROR = 2                                                    ## Invalid access permissions
 
 class zet_debug_page_fault_reason_t(c_int):
     def __str__(self):
@@ -305,8 +316,8 @@ class zet_debug_event_t(Structure):
 ###############################################################################
 ## @brief Supported device memory space types.
 class zet_debug_memory_space_type_v(IntEnum):
-    DEFAULT = 0                                     ## default memory space (attribute may be omitted)
-    SLM = 1                                         ## shared local memory space (GPU-only)
+    DEFAULT = 0                                                             ## default memory space (attribute may be omitted)
+    SLM = 1                                                                 ## shared local memory space (GPU-only)
 
 class zet_debug_memory_space_type_t(c_int):
     def __str__(self):
@@ -318,7 +329,8 @@ class zet_debug_memory_space_type_t(c_int):
 class zet_debug_memory_space_desc_t(Structure):
     _fields_ = [
         ("stype", zet_structure_type_t),                                ## [in] type of this structure
-        ("pNext", c_void_p),                                            ## [in][optional] pointer to extension-specific structure
+        ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains stype and pNext).
         ("type", zet_debug_memory_space_type_t),                        ## [in] type of memory space
         ("address", c_ulonglong)                                        ## [in] the virtual address within the memory space
     ]
@@ -326,8 +338,8 @@ class zet_debug_memory_space_desc_t(Structure):
 ###############################################################################
 ## @brief Supported general register set flags.
 class zet_debug_regset_flags_v(IntEnum):
-    READABLE = ZE_BIT(0)                            ## register set is readable
-    WRITEABLE = ZE_BIT(1)                           ## register set is writeable
+    READABLE = ZE_BIT(0)                                                    ## register set is readable
+    WRITEABLE = ZE_BIT(1)                                                   ## register set is writeable
 
 class zet_debug_regset_flags_t(c_int):
     def __str__(self):
@@ -340,7 +352,8 @@ class zet_debug_regset_flags_t(c_int):
 class zet_debug_regset_properties_t(Structure):
     _fields_ = [
         ("stype", zet_structure_type_t),                                ## [in] type of this structure
-        ("pNext", c_void_p),                                            ## [in,out][optional] pointer to extension-specific structure
+        ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains stype and pNext).
         ("type", c_ulong),                                              ## [out] device-specific register set type
         ("version", c_ulong),                                           ## [out] device-specific version of this register set
         ("generalFlags", zet_debug_regset_flags_t),                     ## [out] general register set flags
@@ -361,8 +374,8 @@ ZET_MAX_METRIC_GROUP_DESCRIPTION = 256
 ###############################################################################
 ## @brief Metric group sampling type
 class zet_metric_group_sampling_type_flags_v(IntEnum):
-    EVENT_BASED = ZE_BIT(0)                         ## Event based sampling
-    TIME_BASED = ZE_BIT(1)                          ## Time based sampling
+    EVENT_BASED = ZE_BIT(0)                                                 ## Event based sampling
+    TIME_BASED = ZE_BIT(1)                                                  ## Time based sampling
 
 class zet_metric_group_sampling_type_flags_t(c_int):
     def __str__(self):
@@ -374,7 +387,8 @@ class zet_metric_group_sampling_type_flags_t(c_int):
 class zet_metric_group_properties_t(Structure):
     _fields_ = [
         ("stype", zet_structure_type_t),                                ## [in] type of this structure
-        ("pNext", c_void_p),                                            ## [in,out][optional] pointer to extension-specific structure
+        ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains stype and pNext).
         ("name", c_char * ZET_MAX_METRIC_GROUP_NAME),                   ## [out] metric group name
         ("description", c_char * ZET_MAX_METRIC_GROUP_DESCRIPTION),     ## [out] metric group description
         ("samplingType", zet_metric_group_sampling_type_flags_t),       ## [out] metric group sampling type.
@@ -387,15 +401,17 @@ class zet_metric_group_properties_t(Structure):
 ###############################################################################
 ## @brief Metric types
 class zet_metric_type_v(IntEnum):
-    DURATION = 0                                    ## Metric type: duration
-    EVENT = 1                                       ## Metric type: event
-    EVENT_WITH_RANGE = 2                            ## Metric type: event with range
-    THROUGHPUT = 3                                  ## Metric type: throughput
-    TIMESTAMP = 4                                   ## Metric type: timestamp
-    FLAG = 5                                        ## Metric type: flag
-    RATIO = 6                                       ## Metric type: ratio
-    RAW = 7                                         ## Metric type: raw
-    IP_EXP = 0x7ffffffe                             ## Metric type: instruction pointer
+    DURATION = 0                                                            ## Metric type: duration
+    EVENT = 1                                                               ## Metric type: event
+    EVENT_WITH_RANGE = 2                                                    ## Metric type: event with range
+    THROUGHPUT = 3                                                          ## Metric type: throughput
+    TIMESTAMP = 4                                                           ## Metric type: timestamp
+    FLAG = 5                                                                ## Metric type: flag
+    RATIO = 6                                                               ## Metric type: ratio
+    RAW = 7                                                                 ## Metric type: raw
+    IP_EXP = 0x7ffffffe                                                     ## Metric type: instruction pointer. Deprecated, use
+                                                                            ## ::ZET_METRIC_TYPE_IP.
+    IP = 0x7ffffffe                                                         ## Metric type: instruction pointer
 
 class zet_metric_type_t(c_int):
     def __str__(self):
@@ -405,8 +421,8 @@ class zet_metric_type_t(c_int):
 ###############################################################################
 ## @brief Metric group calculation type
 class zet_metric_group_calculation_type_v(IntEnum):
-    METRIC_VALUES = 0                               ## Calculated metric values from raw data.
-    MAX_METRIC_VALUES = 1                           ## Maximum metric values.
+    METRIC_VALUES = 0                                                       ## Calculated metric values from raw data.
+    MAX_METRIC_VALUES = 1                                                   ## Maximum metric values.
 
 class zet_metric_group_calculation_type_t(c_int):
     def __str__(self):
@@ -434,7 +450,8 @@ ZET_MAX_METRIC_RESULT_UNITS = 256
 class zet_metric_properties_t(Structure):
     _fields_ = [
         ("stype", zet_structure_type_t),                                ## [in] type of this structure
-        ("pNext", c_void_p),                                            ## [in,out][optional] pointer to extension-specific structure
+        ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains stype and pNext).
         ("name", c_char * ZET_MAX_METRIC_NAME),                         ## [out] metric name
         ("description", c_char * ZET_MAX_METRIC_DESCRIPTION),           ## [out] metric description
         ("component", c_char * ZET_MAX_METRIC_COMPONENT),               ## [out] metric component
@@ -449,17 +466,23 @@ class zet_metric_properties_t(Structure):
 class zet_metric_streamer_desc_t(Structure):
     _fields_ = [
         ("stype", zet_structure_type_t),                                ## [in] type of this structure
-        ("pNext", c_void_p),                                            ## [in][optional] pointer to extension-specific structure
+        ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains stype and pNext).
         ("notifyEveryNReports", c_ulong),                               ## [in,out] number of collected reports after which notification event
-                                                                        ## will be signalled
-        ("samplingPeriod", c_ulong)                                     ## [in,out] streamer sampling period in nanoseconds
+                                                                        ## will be signaled. If the requested value is not supported exactly,
+                                                                        ## then the driver may use a value that is the closest supported
+                                                                        ## approximation and shall update this member during ::zetMetricStreamerOpen.
+        ("samplingPeriod", c_ulong)                                     ## [in,out] streamer sampling period in nanoseconds. If the requested
+                                                                        ## value is not supported exactly, then the driver may use a value that
+                                                                        ## is the closest supported approximation and shall update this member
+                                                                        ## during ::zetMetricStreamerOpen.
     ]
 
 ###############################################################################
 ## @brief Metric query pool types
 class zet_metric_query_pool_type_v(IntEnum):
-    PERFORMANCE = 0                                 ## Performance metric query pool.
-    EXECUTION = 1                                   ## Skips workload execution between begin/end calls.
+    PERFORMANCE = 0                                                         ## Performance metric query pool.
+    EXECUTION = 1                                                           ## Skips workload execution between begin/end calls.
 
 class zet_metric_query_pool_type_t(c_int):
     def __str__(self):
@@ -471,7 +494,8 @@ class zet_metric_query_pool_type_t(c_int):
 class zet_metric_query_pool_desc_t(Structure):
     _fields_ = [
         ("stype", zet_structure_type_t),                                ## [in] type of this structure
-        ("pNext", c_void_p),                                            ## [in][optional] pointer to extension-specific structure
+        ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains stype and pNext).
         ("type", zet_metric_query_pool_type_t),                         ## [in] Query pool type.
         ("count", c_ulong)                                              ## [in] Internal slots count within query pool object.
     ]
@@ -479,9 +503,9 @@ class zet_metric_query_pool_desc_t(Structure):
 ###############################################################################
 ## @brief Supportted profile features
 class zet_profile_flags_v(IntEnum):
-    REGISTER_REALLOCATION = ZE_BIT(0)               ## request the compiler attempt to minimize register usage as much as
-                                                    ## possible to allow for instrumentation
-    FREE_REGISTER_INFO = ZE_BIT(1)                  ## request the compiler generate free register info
+    REGISTER_REALLOCATION = ZE_BIT(0)                                       ## request the compiler attempt to minimize register usage as much as
+                                                                            ## possible to allow for instrumentation
+    FREE_REGISTER_INFO = ZE_BIT(1)                                          ## request the compiler generate free register info
 
 class zet_profile_flags_t(c_int):
     def __str__(self):
@@ -493,7 +517,8 @@ class zet_profile_flags_t(c_int):
 class zet_profile_properties_t(Structure):
     _fields_ = [
         ("stype", zet_structure_type_t),                                ## [in] type of this structure
-        ("pNext", c_void_p),                                            ## [in,out][optional] pointer to extension-specific structure
+        ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains stype and pNext).
         ("flags", zet_profile_flags_t),                                 ## [out] indicates which flags were enabled during compilation.
                                                                         ## returns 0 (none) or a combination of ::zet_profile_flag_t
         ("numTokens", c_ulong)                                          ## [out] number of tokens immediately following this structure
@@ -502,7 +527,7 @@ class zet_profile_properties_t(Structure):
 ###############################################################################
 ## @brief Supported profile token types
 class zet_profile_token_type_v(IntEnum):
-    FREE_REGISTER = 0                               ## GRF info
+    FREE_REGISTER = 0                                                       ## GRF info
 
 class zet_profile_token_type_t(c_int):
     def __str__(self):
@@ -537,8 +562,8 @@ ZET_API_TRACING_EXP_NAME = "ZET_experimental_api_tracing"
 ###############################################################################
 ## @brief API Tracing Experimental Extension Version(s)
 class zet_api_tracing_exp_version_v(IntEnum):
-    _1_0 = ZE_MAKE_VERSION( 1, 0 )                  ## version 1.0
-    CURRENT = ZE_MAKE_VERSION( 1, 0 )               ## latest known version
+    _1_0 = ZE_MAKE_VERSION( 1, 0 )                                          ## version 1.0
+    CURRENT = ZE_MAKE_VERSION( 1, 0 )                                       ## latest known version
 
 class zet_api_tracing_exp_version_t(c_int):
     def __str__(self):
@@ -555,7 +580,8 @@ class zet_core_callbacks_t(ze_callbacks_t):
 class zet_tracer_exp_desc_t(Structure):
     _fields_ = [
         ("stype", zet_structure_type_t),                                ## [in] type of this structure
-        ("pNext", c_void_p),                                            ## [in][optional] pointer to extension-specific structure
+        ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains stype and pNext).
         ("pUserData", c_void_p)                                         ## [in] pointer passed to every tracer's callbacks
     ]
 
@@ -566,8 +592,8 @@ ZET_MULTI_METRICS_EXP_NAME = "ZET_experimental_calculate_multiple_metrics"
 ###############################################################################
 ## @brief Calculating Multiple Metrics Experimental Extension Version(s)
 class ze_calculate_multiple_metrics_exp_version_v(IntEnum):
-    _1_0 = ZE_MAKE_VERSION( 1, 0 )                  ## version 1.0
-    CURRENT = ZE_MAKE_VERSION( 1, 0 )               ## latest known version
+    _1_0 = ZE_MAKE_VERSION( 1, 0 )                                          ## version 1.0
+    CURRENT = ZE_MAKE_VERSION( 1, 0 )                                       ## latest known version
 
 class ze_calculate_multiple_metrics_exp_version_t(c_int):
     def __str__(self):
@@ -581,8 +607,8 @@ ZET_GLOBAL_METRICS_TIMESTAMPS_EXP_NAME = "ZET_experimental_global_metric_timesta
 ###############################################################################
 ## @brief Global Metric Timestamps Experimental Extension Version(s)
 class ze_metric_global_timestamps_exp_version_v(IntEnum):
-    _1_0 = ZE_MAKE_VERSION( 1, 0 )                  ## version 1.0
-    CURRENT = ZE_MAKE_VERSION( 1, 0 )               ## latest known version
+    _1_0 = ZE_MAKE_VERSION( 1, 0 )                                          ## version 1.0
+    CURRENT = ZE_MAKE_VERSION( 1, 0 )                                       ## latest known version
 
 class ze_metric_global_timestamps_exp_version_t(c_int):
     def __str__(self):
@@ -594,16 +620,49 @@ class ze_metric_global_timestamps_exp_version_t(c_int):
 ## 
 ## @details
 ##     - This structure may be returned from ::zetMetricGroupGetProperties via
-##       `pNext` member of ::zet_metric_group_properties_t
+##       the `pNext` member of ::zet_metric_group_properties_t.
 ##     - Used for mapping metric timestamps to other timers.
 class zet_metric_global_timestamps_resolution_exp_t(Structure):
     _fields_ = [
-        ("stype", ze_structure_type_t),                                 ## [in] type of this structure
+        ("stype", zet_structure_type_t),                                ## [in] type of this structure
         ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
-                                                                        ## structure (i.e. contains sType and pNext).
-        ("timerResolution", c_ulonglong),                               ## [out] Returns the resolution of device timer in nanoseconds used for
-                                                                        ## timestamps.
+                                                                        ## structure (i.e. contains stype and pNext).
+        ("timerResolution", c_ulonglong),                               ## [out] Returns the resolution of metrics timer (used for timestamps) in
+                                                                        ## cycles/sec.
         ("timestampValidBits", c_ulonglong)                             ## [out] Returns the number of valid bits in the timestamp value.
+    ]
+
+###############################################################################
+## @brief Exporting Metrics Data Experimental Extension Name
+ZET_EXPORT_METRICS_DATA_EXP_NAME = "ZET_experimental_metric_export_data"
+
+###############################################################################
+## @brief Exporting Metrics Data Experimental Extension Version(s)
+class zet_export_metric_data_exp_version_v(IntEnum):
+    _1_0 = ZE_MAKE_VERSION( 1, 0 )                                          ## version 1.0
+    CURRENT = ZE_MAKE_VERSION( 1, 0 )                                       ## latest known version
+
+class zet_export_metric_data_exp_version_t(c_int):
+    def __str__(self):
+        return str(zet_export_metric_data_exp_version_v(self.value))
+
+
+###############################################################################
+## @brief Maximum count of characters in export data element name
+ZET_MAX_METRIC_EXPORT_DATA_ELEMENT_NAME_EXP = 256
+
+###############################################################################
+## @brief Maximum export data element description string size
+ZET_MAX_METRIC_EXPORT_DATA_ELEMENT_DESCRIPTION_EXP = 256
+
+###############################################################################
+## @brief Metrics calculation descriptor
+class zet_metric_calculate_exp_desc_t(Structure):
+    _fields_ = [
+        ("stype", zet_structure_type_t),                                ## [in] type of this structure
+        ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains stype and pNext).
+        ("rawReportSkipCount", c_ulong)                                 ## [in] number of reports to skip during calculation
     ]
 
 ###############################################################################
@@ -776,13 +835,29 @@ if __use_win_types:
 else:
     _zetMetricGroupGetGlobalTimestampsExp_t = CFUNCTYPE( ze_result_t, zet_metric_group_handle_t, ze_bool_t, POINTER(c_ulonglong), POINTER(c_ulonglong) )
 
+###############################################################################
+## @brief Function-pointer for zetMetricGroupGetExportDataExp
+if __use_win_types:
+    _zetMetricGroupGetExportDataExp_t = WINFUNCTYPE( ze_result_t, zet_metric_group_handle_t, POINTER(c_ubyte), c_size_t, POINTER(c_size_t), * )
+else:
+    _zetMetricGroupGetExportDataExp_t = CFUNCTYPE( ze_result_t, zet_metric_group_handle_t, POINTER(c_ubyte), c_size_t, POINTER(c_size_t), * )
+
+###############################################################################
+## @brief Function-pointer for zetMetricGroupCalculateMetricExportDataExp
+if __use_win_types:
+    _zetMetricGroupCalculateMetricExportDataExp_t = WINFUNCTYPE( ze_result_t, ze_driver_handle_t, zet_metric_group_calculation_type_t, c_size_t, POINTER(c_ubyte), POINTER(zet_metric_calculate_exp_desc_t), POINTER(c_ulong), POINTER(c_ulong), POINTER(c_ulong), POINTER(zet_typed_value_t) )
+else:
+    _zetMetricGroupCalculateMetricExportDataExp_t = CFUNCTYPE( ze_result_t, ze_driver_handle_t, zet_metric_group_calculation_type_t, c_size_t, POINTER(c_ubyte), POINTER(zet_metric_calculate_exp_desc_t), POINTER(c_ulong), POINTER(c_ulong), POINTER(c_ulong), POINTER(zet_typed_value_t) )
+
 
 ###############################################################################
 ## @brief Table of MetricGroupExp functions pointers
 class _zet_metric_group_exp_dditable_t(Structure):
     _fields_ = [
         ("pfnCalculateMultipleMetricValuesExp", c_void_p),              ## _zetMetricGroupCalculateMultipleMetricValuesExp_t
-        ("pfnGetGlobalTimestampsExp", c_void_p)                         ## _zetMetricGroupGetGlobalTimestampsExp_t
+        ("pfnGetGlobalTimestampsExp", c_void_p),                        ## _zetMetricGroupGetGlobalTimestampsExp_t
+        ("pfnGetExportDataExp", c_void_p),                              ## _zetMetricGroupGetExportDataExp_t
+        ("pfnCalculateMetricExportDataExp", c_void_p)                   ## _zetMetricGroupCalculateMetricExportDataExp_t
     ]
 
 ###############################################################################
@@ -1145,6 +1220,8 @@ class ZET_DDI:
         # attach function interface to function address
         self.zetMetricGroupCalculateMultipleMetricValuesExp = _zetMetricGroupCalculateMultipleMetricValuesExp_t(self.__dditable.MetricGroupExp.pfnCalculateMultipleMetricValuesExp)
         self.zetMetricGroupGetGlobalTimestampsExp = _zetMetricGroupGetGlobalTimestampsExp_t(self.__dditable.MetricGroupExp.pfnGetGlobalTimestampsExp)
+        self.zetMetricGroupGetExportDataExp = _zetMetricGroupGetExportDataExp_t(self.__dditable.MetricGroupExp.pfnGetExportDataExp)
+        self.zetMetricGroupCalculateMetricExportDataExp = _zetMetricGroupCalculateMetricExportDataExp_t(self.__dditable.MetricGroupExp.pfnCalculateMetricExportDataExp)
 
         # call driver to get function pointers
         _MetricStreamer = _zet_metric_streamer_dditable_t()

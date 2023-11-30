@@ -1,27 +1,25 @@
 /*
  * ***THIS FILE IS GENERATED. ***
- * See param.h.mako for modifications
+ * See handle_lifetime.h.mako for modifications
  *
  * Copyright (C) 2019-2023 Intel Corporation
  *
  * SPDX-License-Identifier: MIT
  *
- * @file ze_parameter_validation.h
+ * @file ze_handle_lifetime.h
  *
  */
 
-#pragma once 
+#pragma once
 #include "ze_entry_points.h"
 
 
 namespace validation_layer
 {
 
-    class ZEParameterValidation : public ZEValidationEntryPoints {
+    class ZEHandleLifetimeValidation : public ZEValidationEntryPoints {
     public:
-        ze_result_t zeInit ( ze_init_flags_t flags ) override;
-        ze_result_t zeDriverGet ( uint32_t* pCount, ze_driver_handle_t* phDrivers ) override;
-        ze_result_t zeDriverGetApiVersion ( ze_driver_handle_t hDriver, ze_api_version_t* version ) override;
+                        ze_result_t zeDriverGetApiVersion ( ze_driver_handle_t hDriver, ze_api_version_t* version ) override;
         ze_result_t zeDriverGetProperties ( ze_driver_handle_t hDriver, ze_driver_properties_t* pDriverProperties ) override;
         ze_result_t zeDriverGetIpcProperties ( ze_driver_handle_t hDriver, ze_driver_ipc_properties_t* pIpcProperties ) override;
         ze_result_t zeDriverGetExtensionProperties ( ze_driver_handle_t hDriver, uint32_t* pCount, ze_driver_extension_properties_t* pExtensionProperties ) override;

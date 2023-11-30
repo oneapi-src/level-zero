@@ -12,7 +12,7 @@ endif()
 
 # This project follows semantic versioning (https://semver.org/). Only set the
 # major and minor version here - patch version is determined dynamically.
-project(level-zero VERSION 1.9)
+project(level-zero VERSION 1.15)
 
 # Patch version corresponds to # of commits on master since last version
 # major/minor tag (e.g., v1.0). If not building in a git repository, then get
@@ -77,9 +77,17 @@ if(MSVC)
     #enabling Control Flow Guard
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /guard:cf")
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /guard:cf")
-    # enable Spectre Mitigation
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Qspectre")
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /Qspectre")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /DYNAMICBASE")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /DYNAMICBASE")
+    set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} /DYNAMICBASE")
+    set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} /guard:cf")
+    # enable Spectre Mitigation, not supported by clang-cl
+    if(NOT CMAKE_CXX_COMPILER_ID STREQUAL Clang)
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Qspectre")
+    endif()
+    if(NOT CMAKE_C_COMPILER_ID STREQUAL Clang)
+        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /Qspectre")
+    endif()
 endif()
 
 #CXX compiler support
@@ -96,6 +104,7 @@ if(NOT MSVC)
     else()
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fpermissive")
     endif()
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Werror -Wnon-virtual-dtor")
 endif()
 
 #MSVC compile flags
@@ -106,8 +115,10 @@ if(MSVC)
     # treat warnings as errors
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /WX /W3")
 
-    # enable multi-process compilation
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
+    # enable multi-process compilation, not supported by clang-cl
+    if(NOT CMAKE_CXX_COMPILER_ID STREQUAL Clang)
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
+    endif()
 
     # enable exceptions handling
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /EHsc")

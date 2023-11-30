@@ -32,15 +32,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnInit( flags );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeInit( flags );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnInit( flags );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -68,15 +72,29 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnGet( pCount, phDrivers );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeDriverGet( pCount, phDrivers );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnGet( pCount, phDrivers );
+
+        if( result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
+            
+            for (size_t i = 0; ( nullptr != phDrivers) && (i < *pCount); ++i){
+                if (phDrivers[i]){
+                    context.handleLifetime->addHandle( phDrivers[i] );
+                    context.handleLifetime->addDependent( pCount, phDrivers[i] );
+                }
+            }
+        }
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -98,15 +116,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnGetApiVersion( hDriver, version );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeDriverGetApiVersion( hDriver, version );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnGetApiVersion( hDriver, version );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -128,15 +150,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnGetProperties( hDriver, pDriverProperties );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeDriverGetProperties( hDriver, pDriverProperties );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnGetProperties( hDriver, pDriverProperties );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -158,15 +184,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnGetIpcProperties( hDriver, pIpcProperties );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeDriverGetIpcProperties( hDriver, pIpcProperties );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnGetIpcProperties( hDriver, pIpcProperties );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -197,15 +227,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnGetExtensionProperties( hDriver, pCount, pExtensionProperties );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeDriverGetExtensionProperties( hDriver, pCount, pExtensionProperties );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnGetExtensionProperties( hDriver, pCount, pExtensionProperties );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -228,15 +262,54 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnGetExtensionFunctionAddress( hDriver, name, ppFunctionAddress );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeDriverGetExtensionFunctionAddress( hDriver, name, ppFunctionAddress );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnGetExtensionFunctionAddress( hDriver, name, ppFunctionAddress );
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeDriverGetLastErrorDescription
+    __zedlllocal ze_result_t ZE_APICALL
+    zeDriverGetLastErrorDescription(
+        ze_driver_handle_t hDriver,                     ///< [in] handle of the driver instance
+        const char** ppString                           ///< [in,out] pointer to a null-terminated array of characters describing
+                                                        ///< cause of error.
+        )
+    {
+        auto pfnGetLastErrorDescription = context.zeDdiTable.Driver.pfnGetLastErrorDescription;
+
+        if( nullptr == pfnGetLastErrorDescription )
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        if( context.enableParameterValidation )
+        {
+            auto result = context.paramValidation->zeParamValidation.zeDriverGetLastErrorDescription( hDriver, ppString );
+            if(result!=ZE_RESULT_SUCCESS) return result;
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeDriverGetLastErrorDescription( hDriver, ppString );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnGetLastErrorDescription( hDriver, ppString );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -265,15 +338,63 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnGet( hDriver, pCount, phDevices );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeDeviceGet( hDriver, pCount, phDevices );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnGet( hDriver, pCount, phDevices );
+
+        if( result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
+            
+            for (size_t i = 0; ( nullptr != phDevices) && (i < *pCount); ++i){
+                if (phDevices[i]){
+                    context.handleLifetime->addHandle( phDevices[i] );
+                    context.handleLifetime->addDependent( hDriver, phDevices[i] );
+                }
+            }
+        }
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeDeviceGetRootDevice
+    __zedlllocal ze_result_t ZE_APICALL
+    zeDeviceGetRootDevice(
+        ze_device_handle_t hDevice,                     ///< [in] handle of the device object
+        ze_device_handle_t* phRootDevice                ///< [in,out] parent root device.
+        )
+    {
+        auto pfnGetRootDevice = context.zeDdiTable.Device.pfnGetRootDevice;
+
+        if( nullptr == pfnGetRootDevice )
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        if( context.enableParameterValidation )
+        {
+            auto result = context.paramValidation->zeParamValidation.zeDeviceGetRootDevice( hDevice, phRootDevice );
+            if(result!=ZE_RESULT_SUCCESS) return result;
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeDeviceGetRootDevice( hDevice, phRootDevice );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnGetRootDevice( hDevice, phRootDevice );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -302,15 +423,29 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnGetSubDevices( hDevice, pCount, phSubdevices );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeDeviceGetSubDevices( hDevice, pCount, phSubdevices );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnGetSubDevices( hDevice, pCount, phSubdevices );
+
+        if( result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
+            
+            for (size_t i = 0; ( nullptr != phSubdevices) && (i < *pCount); ++i){
+                if (phSubdevices[i]){
+                    context.handleLifetime->addHandle( phSubdevices[i] );
+                    context.handleLifetime->addDependent( hDevice, phSubdevices[i] );
+                }
+            }
+        }
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -332,15 +467,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnGetProperties( hDevice, pDeviceProperties );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeDeviceGetProperties( hDevice, pDeviceProperties );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnGetProperties( hDevice, pDeviceProperties );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -362,15 +501,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnGetComputeProperties( hDevice, pComputeProperties );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeDeviceGetComputeProperties( hDevice, pComputeProperties );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnGetComputeProperties( hDevice, pComputeProperties );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -392,15 +535,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnGetModuleProperties( hDevice, pModuleProperties );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeDeviceGetModuleProperties( hDevice, pModuleProperties );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnGetModuleProperties( hDevice, pModuleProperties );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -432,15 +579,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnGetCommandQueueGroupProperties( hDevice, pCount, pCommandQueueGroupProperties );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeDeviceGetCommandQueueGroupProperties( hDevice, pCount, pCommandQueueGroupProperties );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnGetCommandQueueGroupProperties( hDevice, pCount, pCommandQueueGroupProperties );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -471,15 +622,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnGetMemoryProperties( hDevice, pCount, pMemProperties );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeDeviceGetMemoryProperties( hDevice, pCount, pMemProperties );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnGetMemoryProperties( hDevice, pCount, pMemProperties );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -501,15 +656,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnGetMemoryAccessProperties( hDevice, pMemAccessProperties );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeDeviceGetMemoryAccessProperties( hDevice, pMemAccessProperties );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnGetMemoryAccessProperties( hDevice, pMemAccessProperties );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -539,15 +698,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnGetCacheProperties( hDevice, pCount, pCacheProperties );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeDeviceGetCacheProperties( hDevice, pCount, pCacheProperties );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnGetCacheProperties( hDevice, pCount, pCacheProperties );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -569,15 +732,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnGetImageProperties( hDevice, pImageProperties );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeDeviceGetImageProperties( hDevice, pImageProperties );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnGetImageProperties( hDevice, pImageProperties );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -599,15 +766,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnGetExternalMemoryProperties( hDevice, pExternalMemoryProperties );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeDeviceGetExternalMemoryProperties( hDevice, pExternalMemoryProperties );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnGetExternalMemoryProperties( hDevice, pExternalMemoryProperties );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -630,15 +801,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnGetP2PProperties( hDevice, hPeerDevice, pP2PProperties );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeDeviceGetP2PProperties( hDevice, hPeerDevice, pP2PProperties );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnGetP2PProperties( hDevice, hPeerDevice, pP2PProperties );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -661,15 +836,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnCanAccessPeer( hDevice, hPeerDevice, value );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeDeviceCanAccessPeer( hDevice, hPeerDevice, value );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnCanAccessPeer( hDevice, hPeerDevice, value );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -690,15 +869,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnGetStatus( hDevice );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeDeviceGetStatus( hDevice );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnGetStatus( hDevice );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -723,15 +906,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnGetGlobalTimestamps( hDevice, hostTimestamp, deviceTimestamp );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeDeviceGetGlobalTimestamps( hDevice, hostTimestamp, deviceTimestamp );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnGetGlobalTimestamps( hDevice, hostTimestamp, deviceTimestamp );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -754,15 +941,28 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnCreate( hDriver, desc, phContext );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeContextCreate( hDriver, desc, phContext );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnCreate( hDriver, desc, phContext );
+
+        if( result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
+            
+            if (phContext){
+                context.handleLifetime->addHandle( *phContext );
+                context.handleLifetime->addDependent( hDriver, *phContext );
+
+            }
+        }
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -795,15 +995,28 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnCreateEx( hDriver, desc, numDevices, phDevices, phContext );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeContextCreateEx( hDriver, desc, numDevices, phDevices, phContext );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnCreateEx( hDriver, desc, numDevices, phDevices, phContext );
+
+        if( result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
+            
+            if (phContext){
+                context.handleLifetime->addHandle( *phContext );
+                context.handleLifetime->addDependent( hDriver, *phContext );
+
+            }
+        }
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -824,15 +1037,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnDestroy( hContext );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeContextDestroy( hContext );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnDestroy( hContext );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -853,15 +1070,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnGetStatus( hContext );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeContextGetStatus( hContext );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnGetStatus( hContext );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -885,15 +1106,28 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnCreate( hContext, hDevice, desc, phCommandQueue );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeCommandQueueCreate( hContext, hDevice, desc, phCommandQueue );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnCreate( hContext, hDevice, desc, phCommandQueue );
+
+        if( result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
+            
+            if (phCommandQueue){
+                context.handleLifetime->addHandle( *phCommandQueue );
+                context.handleLifetime->addDependent( hContext, *phCommandQueue );
+
+            }
+        }
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -914,15 +1148,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnDestroy( hCommandQueue );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeCommandQueueDestroy( hCommandQueue );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnDestroy( hCommandQueue );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -947,15 +1185,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnExecuteCommandLists( hCommandQueue, numCommandLists, phCommandLists, hFence );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeCommandQueueExecuteCommandLists( hCommandQueue, numCommandLists, phCommandLists, hFence );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnExecuteCommandLists( hCommandQueue, numCommandLists, phCommandLists, hFence );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -966,8 +1208,8 @@ namespace validation_layer
         uint64_t timeout                                ///< [in] if non-zero, then indicates the maximum time (in nanoseconds) to
                                                         ///< yield before returning ::ZE_RESULT_SUCCESS or ::ZE_RESULT_NOT_READY;
                                                         ///< if zero, then immediately returns the status of the command queue;
-                                                        ///< if UINT64_MAX, then function will not return until complete or device
-                                                        ///< is lost.
+                                                        ///< if `UINT64_MAX`, then function will not return until complete or
+                                                        ///< device is lost.
                                                         ///< Due to external dependencies, timeout may be rounded to the closest
                                                         ///< value allowed by the accuracy of those dependencies.
         )
@@ -983,15 +1225,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnSynchronize( hCommandQueue, timeout );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeCommandQueueSynchronize( hCommandQueue, timeout );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnSynchronize( hCommandQueue, timeout );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -1015,15 +1261,28 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnCreate( hContext, hDevice, desc, phCommandList );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeCommandListCreate( hContext, hDevice, desc, phCommandList );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnCreate( hContext, hDevice, desc, phCommandList );
+
+        if( result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
+            
+            if (phCommandList){
+                context.handleLifetime->addHandle( *phCommandList );
+                context.handleLifetime->addDependent( hContext, *phCommandList );
+
+            }
+        }
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -1047,15 +1306,26 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnCreateImmediate( hContext, hDevice, altdesc, phCommandList );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeCommandListCreateImmediate( hContext, hDevice, altdesc, phCommandList );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnCreateImmediate( hContext, hDevice, altdesc, phCommandList );
+
+        if( result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
+            
+            if (phCommandList){
+                context.handleLifetime->addHandle( *phCommandList , false);
+            }
+        }
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -1076,15 +1346,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnDestroy( hCommandList );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeCommandListDestroy( hCommandList );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnDestroy( hCommandList );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -1105,15 +1379,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnClose( hCommandList );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeCommandListClose( hCommandList );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnClose( hCommandList );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -1134,15 +1412,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnReset( hCommandList );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeCommandListReset( hCommandList );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnReset( hCommandList );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -1170,15 +1452,59 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnAppendWriteGlobalTimestamp( hCommandList, dstptr, hSignalEvent, numWaitEvents, phWaitEvents );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeCommandListAppendWriteGlobalTimestamp( hCommandList, dstptr, hSignalEvent, numWaitEvents, phWaitEvents );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnAppendWriteGlobalTimestamp( hCommandList, dstptr, hSignalEvent, numWaitEvents, phWaitEvents );
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeCommandListHostSynchronize
+    __zedlllocal ze_result_t ZE_APICALL
+    zeCommandListHostSynchronize(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of the immediate command list
+        uint64_t timeout                                ///< [in] if non-zero, then indicates the maximum time (in nanoseconds) to
+                                                        ///< yield before returning ::ZE_RESULT_SUCCESS or ::ZE_RESULT_NOT_READY;
+                                                        ///< if zero, then immediately returns the status of the immediate command list;
+                                                        ///< if `UINT64_MAX`, then function will not return until complete or
+                                                        ///< device is lost.
+                                                        ///< Due to external dependencies, timeout may be rounded to the closest
+                                                        ///< value allowed by the accuracy of those dependencies.
+        )
+    {
+        auto pfnHostSynchronize = context.zeDdiTable.CommandList.pfnHostSynchronize;
+
+        if( nullptr == pfnHostSynchronize )
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        if( context.enableParameterValidation )
+        {
+            auto result = context.paramValidation->zeParamValidation.zeCommandListHostSynchronize( hCommandList, timeout );
+            if(result!=ZE_RESULT_SUCCESS) return result;
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeCommandListHostSynchronize( hCommandList, timeout );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnHostSynchronize( hCommandList, timeout );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -1204,15 +1530,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnAppendBarrier( hCommandList, hSignalEvent, numWaitEvents, phWaitEvents );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeCommandListAppendBarrier( hCommandList, hSignalEvent, numWaitEvents, phWaitEvents );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnAppendBarrier( hCommandList, hSignalEvent, numWaitEvents, phWaitEvents );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -1241,15 +1571,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnAppendMemoryRangesBarrier( hCommandList, numRanges, pRangeSizes, pRanges, hSignalEvent, numWaitEvents, phWaitEvents );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeCommandListAppendMemoryRangesBarrier( hCommandList, numRanges, pRangeSizes, pRanges, hSignalEvent, numWaitEvents, phWaitEvents );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnAppendMemoryRangesBarrier( hCommandList, numRanges, pRangeSizes, pRanges, hSignalEvent, numWaitEvents, phWaitEvents );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -1271,15 +1605,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnSystemBarrier( hContext, hDevice );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeContextSystemBarrier( hContext, hDevice );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnSystemBarrier( hContext, hDevice );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -1308,15 +1646,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnAppendMemoryCopy( hCommandList, dstptr, srcptr, size, hSignalEvent, numWaitEvents, phWaitEvents );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeCommandListAppendMemoryCopy( hCommandList, dstptr, srcptr, size, hSignalEvent, numWaitEvents, phWaitEvents );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnAppendMemoryCopy( hCommandList, dstptr, srcptr, size, hSignalEvent, numWaitEvents, phWaitEvents );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -1346,15 +1688,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnAppendMemoryFill( hCommandList, ptr, pattern, pattern_size, size, hSignalEvent, numWaitEvents, phWaitEvents );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeCommandListAppendMemoryFill( hCommandList, ptr, pattern, pattern_size, size, hSignalEvent, numWaitEvents, phWaitEvents );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnAppendMemoryFill( hCommandList, ptr, pattern, pattern_size, size, hSignalEvent, numWaitEvents, phWaitEvents );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -1366,14 +1712,14 @@ namespace validation_layer
         const ze_copy_region_t* dstRegion,              ///< [in] pointer to destination region to copy to
         uint32_t dstPitch,                              ///< [in] destination pitch in bytes
         uint32_t dstSlicePitch,                         ///< [in] destination slice pitch in bytes. This is required for 3D region
-                                                        ///< copies where ::ze_copy_region_t.depth is not 0, otherwise it's
-                                                        ///< ignored.
+                                                        ///< copies where the `depth` member of ::ze_copy_region_t is not 0,
+                                                        ///< otherwise it's ignored.
         const void* srcptr,                             ///< [in] pointer to source memory to copy from
         const ze_copy_region_t* srcRegion,              ///< [in] pointer to source region to copy from
         uint32_t srcPitch,                              ///< [in] source pitch in bytes
         uint32_t srcSlicePitch,                         ///< [in] source slice pitch in bytes. This is required for 3D region
-                                                        ///< copies where ::ze_copy_region_t.depth is not 0, otherwise it's
-                                                        ///< ignored.
+                                                        ///< copies where the `depth` member of ::ze_copy_region_t is not 0,
+                                                        ///< otherwise it's ignored.
         ze_event_handle_t hSignalEvent,                 ///< [in][optional] handle of the event to signal on completion
         uint32_t numWaitEvents,                         ///< [in][optional] number of events to wait on before launching; must be 0
                                                         ///< if `nullptr == phWaitEvents`
@@ -1392,15 +1738,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnAppendMemoryCopyRegion( hCommandList, dstptr, dstRegion, dstPitch, dstSlicePitch, srcptr, srcRegion, srcPitch, srcSlicePitch, hSignalEvent, numWaitEvents, phWaitEvents );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeCommandListAppendMemoryCopyRegion( hCommandList, dstptr, dstRegion, dstPitch, dstSlicePitch, srcptr, srcRegion, srcPitch, srcSlicePitch, hSignalEvent, numWaitEvents, phWaitEvents );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnAppendMemoryCopyRegion( hCommandList, dstptr, dstRegion, dstPitch, dstSlicePitch, srcptr, srcRegion, srcPitch, srcSlicePitch, hSignalEvent, numWaitEvents, phWaitEvents );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -1430,15 +1780,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnAppendMemoryCopyFromContext( hCommandList, dstptr, hContextSrc, srcptr, size, hSignalEvent, numWaitEvents, phWaitEvents );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeCommandListAppendMemoryCopyFromContext( hCommandList, dstptr, hContextSrc, srcptr, size, hSignalEvent, numWaitEvents, phWaitEvents );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnAppendMemoryCopyFromContext( hCommandList, dstptr, hContextSrc, srcptr, size, hSignalEvent, numWaitEvents, phWaitEvents );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -1466,15 +1820,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnAppendImageCopy( hCommandList, hDstImage, hSrcImage, hSignalEvent, numWaitEvents, phWaitEvents );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeCommandListAppendImageCopy( hCommandList, hDstImage, hSrcImage, hSignalEvent, numWaitEvents, phWaitEvents );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnAppendImageCopy( hCommandList, hDstImage, hSrcImage, hSignalEvent, numWaitEvents, phWaitEvents );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -1504,15 +1862,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnAppendImageCopyRegion( hCommandList, hDstImage, hSrcImage, pDstRegion, pSrcRegion, hSignalEvent, numWaitEvents, phWaitEvents );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeCommandListAppendImageCopyRegion( hCommandList, hDstImage, hSrcImage, pDstRegion, pSrcRegion, hSignalEvent, numWaitEvents, phWaitEvents );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnAppendImageCopyRegion( hCommandList, hDstImage, hSrcImage, pDstRegion, pSrcRegion, hSignalEvent, numWaitEvents, phWaitEvents );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -1541,15 +1903,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnAppendImageCopyToMemory( hCommandList, dstptr, hSrcImage, pSrcRegion, hSignalEvent, numWaitEvents, phWaitEvents );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeCommandListAppendImageCopyToMemory( hCommandList, dstptr, hSrcImage, pSrcRegion, hSignalEvent, numWaitEvents, phWaitEvents );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnAppendImageCopyToMemory( hCommandList, dstptr, hSrcImage, pSrcRegion, hSignalEvent, numWaitEvents, phWaitEvents );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -1578,15 +1944,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnAppendImageCopyFromMemory( hCommandList, hDstImage, srcptr, pDstRegion, hSignalEvent, numWaitEvents, phWaitEvents );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeCommandListAppendImageCopyFromMemory( hCommandList, hDstImage, srcptr, pDstRegion, hSignalEvent, numWaitEvents, phWaitEvents );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnAppendImageCopyFromMemory( hCommandList, hDstImage, srcptr, pDstRegion, hSignalEvent, numWaitEvents, phWaitEvents );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -1609,15 +1979,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnAppendMemoryPrefetch( hCommandList, ptr, size );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeCommandListAppendMemoryPrefetch( hCommandList, ptr, size );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnAppendMemoryPrefetch( hCommandList, ptr, size );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -1642,15 +2016,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnAppendMemAdvise( hCommandList, hDevice, ptr, size, advice );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeCommandListAppendMemAdvise( hCommandList, hDevice, ptr, size, advice );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnAppendMemAdvise( hCommandList, hDevice, ptr, size, advice );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -1679,15 +2057,28 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnCreate( hContext, desc, numDevices, phDevices, phEventPool );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeEventPoolCreate( hContext, desc, numDevices, phDevices, phEventPool );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnCreate( hContext, desc, numDevices, phDevices, phEventPool );
+
+        if( result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
+            
+            if (phEventPool){
+                context.handleLifetime->addHandle( *phEventPool );
+                context.handleLifetime->addDependent( hContext, *phEventPool );
+
+            }
+        }
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -1708,15 +2099,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnDestroy( hEventPool );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeEventPoolDestroy( hEventPool );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnDestroy( hEventPool );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -1739,15 +2134,28 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnCreate( hEventPool, desc, phEvent );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeEventCreate( hEventPool, desc, phEvent );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnCreate( hEventPool, desc, phEvent );
+
+        if( result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
+            
+            if (phEvent){
+                context.handleLifetime->addHandle( *phEvent );
+                context.handleLifetime->addDependent( hEventPool, *phEvent );
+
+            }
+        }
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -1768,15 +2176,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnDestroy( hEvent );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeEventDestroy( hEvent );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnDestroy( hEvent );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -1798,15 +2210,58 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnGetIpcHandle( hEventPool, phIpc );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeEventPoolGetIpcHandle( hEventPool, phIpc );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnGetIpcHandle( hEventPool, phIpc );
+
+        if( result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
+            
+        }
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeEventPoolPutIpcHandle
+    __zedlllocal ze_result_t ZE_APICALL
+    zeEventPoolPutIpcHandle(
+        ze_context_handle_t hContext,                   ///< [in] handle of the context object associated with the IPC event pool
+                                                        ///< handle
+        ze_ipc_event_pool_handle_t hIpc                 ///< [in] IPC event pool handle
+        )
+    {
+        auto pfnPutIpcHandle = context.zeDdiTable.EventPool.pfnPutIpcHandle;
+
+        if( nullptr == pfnPutIpcHandle )
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        if( context.enableParameterValidation )
+        {
+            auto result = context.paramValidation->zeParamValidation.zeEventPoolPutIpcHandle( hContext, hIpc );
+            if(result!=ZE_RESULT_SUCCESS) return result;
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeEventPoolPutIpcHandle( hContext, hIpc );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnPutIpcHandle( hContext, hIpc );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -1830,15 +2285,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnOpenIpcHandle( hContext, hIpc, phEventPool );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeEventPoolOpenIpcHandle( hContext, hIpc, phEventPool );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnOpenIpcHandle( hContext, hIpc, phEventPool );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -1859,15 +2318,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnCloseIpcHandle( hEventPool );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeEventPoolCloseIpcHandle( hEventPool );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnCloseIpcHandle( hEventPool );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -1889,15 +2352,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnAppendSignalEvent( hCommandList, hEvent );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeCommandListAppendSignalEvent( hCommandList, hEvent );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnAppendSignalEvent( hCommandList, hEvent );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -1921,15 +2388,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnAppendWaitOnEvents( hCommandList, numEvents, phEvents );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeCommandListAppendWaitOnEvents( hCommandList, numEvents, phEvents );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnAppendWaitOnEvents( hCommandList, numEvents, phEvents );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -1950,15 +2421,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnHostSignal( hEvent );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeEventHostSignal( hEvent );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnHostSignal( hEvent );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -1969,8 +2444,8 @@ namespace validation_layer
         uint64_t timeout                                ///< [in] if non-zero, then indicates the maximum time (in nanoseconds) to
                                                         ///< yield before returning ::ZE_RESULT_SUCCESS or ::ZE_RESULT_NOT_READY;
                                                         ///< if zero, then operates exactly like ::zeEventQueryStatus;
-                                                        ///< if UINT64_MAX, then function will not return until complete or device
-                                                        ///< is lost.
+                                                        ///< if `UINT64_MAX`, then function will not return until complete or
+                                                        ///< device is lost.
                                                         ///< Due to external dependencies, timeout may be rounded to the closest
                                                         ///< value allowed by the accuracy of those dependencies.
         )
@@ -1986,15 +2461,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnHostSynchronize( hEvent, timeout );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeEventHostSynchronize( hEvent, timeout );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnHostSynchronize( hEvent, timeout );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -2015,15 +2494,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnQueryStatus( hEvent );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeEventQueryStatus( hEvent );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnQueryStatus( hEvent );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -2045,15 +2528,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnAppendEventReset( hCommandList, hEvent );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeCommandListAppendEventReset( hCommandList, hEvent );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnAppendEventReset( hCommandList, hEvent );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -2074,15 +2561,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnHostReset( hEvent );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeEventHostReset( hEvent );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnHostReset( hEvent );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -2104,15 +2595,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnQueryKernelTimestamp( hEvent, dstptr );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeEventQueryKernelTimestamp( hEvent, dstptr );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnQueryKernelTimestamp( hEvent, dstptr );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -2145,15 +2640,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnAppendQueryKernelTimestamps( hCommandList, numEvents, phEvents, dstptr, pOffsets, hSignalEvent, numWaitEvents, phWaitEvents );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeCommandListAppendQueryKernelTimestamps( hCommandList, numEvents, phEvents, dstptr, pOffsets, hSignalEvent, numWaitEvents, phWaitEvents );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnAppendQueryKernelTimestamps( hCommandList, numEvents, phEvents, dstptr, pOffsets, hSignalEvent, numWaitEvents, phWaitEvents );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -2176,15 +2675,28 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnCreate( hCommandQueue, desc, phFence );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeFenceCreate( hCommandQueue, desc, phFence );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnCreate( hCommandQueue, desc, phFence );
+
+        if( result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
+            
+            if (phFence){
+                context.handleLifetime->addHandle( *phFence );
+                context.handleLifetime->addDependent( hCommandQueue, *phFence );
+
+            }
+        }
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -2205,15 +2717,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnDestroy( hFence );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeFenceDestroy( hFence );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnDestroy( hFence );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -2224,8 +2740,8 @@ namespace validation_layer
         uint64_t timeout                                ///< [in] if non-zero, then indicates the maximum time (in nanoseconds) to
                                                         ///< yield before returning ::ZE_RESULT_SUCCESS or ::ZE_RESULT_NOT_READY;
                                                         ///< if zero, then operates exactly like ::zeFenceQueryStatus;
-                                                        ///< if UINT64_MAX, then function will not return until complete or device
-                                                        ///< is lost.
+                                                        ///< if `UINT64_MAX`, then function will not return until complete or
+                                                        ///< device is lost.
                                                         ///< Due to external dependencies, timeout may be rounded to the closest
                                                         ///< value allowed by the accuracy of those dependencies.
         )
@@ -2241,15 +2757,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnHostSynchronize( hFence, timeout );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeFenceHostSynchronize( hFence, timeout );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnHostSynchronize( hFence, timeout );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -2270,15 +2790,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnQueryStatus( hFence );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeFenceQueryStatus( hFence );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnQueryStatus( hFence );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -2299,15 +2823,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnReset( hFence );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeFenceReset( hFence );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnReset( hFence );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -2330,15 +2858,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnGetProperties( hDevice, desc, pImageProperties );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeImageGetProperties( hDevice, desc, pImageProperties );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnGetProperties( hDevice, desc, pImageProperties );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -2362,15 +2894,28 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnCreate( hContext, hDevice, desc, phImage );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeImageCreate( hContext, hDevice, desc, phImage );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnCreate( hContext, hDevice, desc, phImage );
+
+        if( result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
+            
+            if (phImage){
+                context.handleLifetime->addHandle( *phImage );
+                context.handleLifetime->addDependent( hContext, *phImage );
+
+            }
+        }
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -2391,15 +2936,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnDestroy( hImage );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeImageDestroy( hImage );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnDestroy( hImage );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -2409,10 +2958,10 @@ namespace validation_layer
         ze_context_handle_t hContext,                   ///< [in] handle of the context object
         const ze_device_mem_alloc_desc_t* device_desc,  ///< [in] pointer to device memory allocation descriptor
         const ze_host_mem_alloc_desc_t* host_desc,      ///< [in] pointer to host memory allocation descriptor
-        size_t size,                                    ///< [in] size in bytes to allocate; must be less than or equal to
-                                                        ///< ::ze_device_properties_t.maxMemAllocSize.
+        size_t size,                                    ///< [in] size in bytes to allocate; must be less than or equal to the
+                                                        ///< `maxMemAllocSize` member of ::ze_device_properties_t
         size_t alignment,                               ///< [in] minimum alignment in bytes for the allocation; must be a power of
-                                                        ///< two.
+                                                        ///< two
         ze_device_handle_t hDevice,                     ///< [in][optional] device handle to associate with
         void** pptr                                     ///< [out] pointer to shared allocation
         )
@@ -2428,15 +2977,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnAllocShared( hContext, device_desc, host_desc, size, alignment, hDevice, pptr );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeMemAllocShared( hContext, device_desc, host_desc, size, alignment, hDevice, pptr );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnAllocShared( hContext, device_desc, host_desc, size, alignment, hDevice, pptr );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -2445,10 +2998,10 @@ namespace validation_layer
     zeMemAllocDevice(
         ze_context_handle_t hContext,                   ///< [in] handle of the context object
         const ze_device_mem_alloc_desc_t* device_desc,  ///< [in] pointer to device memory allocation descriptor
-        size_t size,                                    ///< [in] size in bytes to allocate; must be less than or equal to
-                                                        ///< ::ze_device_properties_t.maxMemAllocSize.
+        size_t size,                                    ///< [in] size in bytes to allocate; must be less than or equal to the
+                                                        ///< `maxMemAllocSize` member of ::ze_device_properties_t
         size_t alignment,                               ///< [in] minimum alignment in bytes for the allocation; must be a power of
-                                                        ///< two.
+                                                        ///< two
         ze_device_handle_t hDevice,                     ///< [in] handle of the device
         void** pptr                                     ///< [out] pointer to device allocation
         )
@@ -2464,15 +3017,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnAllocDevice( hContext, device_desc, size, alignment, hDevice, pptr );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeMemAllocDevice( hContext, device_desc, size, alignment, hDevice, pptr );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnAllocDevice( hContext, device_desc, size, alignment, hDevice, pptr );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -2481,10 +3038,10 @@ namespace validation_layer
     zeMemAllocHost(
         ze_context_handle_t hContext,                   ///< [in] handle of the context object
         const ze_host_mem_alloc_desc_t* host_desc,      ///< [in] pointer to host memory allocation descriptor
-        size_t size,                                    ///< [in] size in bytes to allocate; must be less than or equal to
-                                                        ///< ::ze_device_properties_t.maxMemAllocSize.
+        size_t size,                                    ///< [in] size in bytes to allocate; must be less than or equal to the
+                                                        ///< `maxMemAllocSize` member of ::ze_device_properties_t
         size_t alignment,                               ///< [in] minimum alignment in bytes for the allocation; must be a power of
-                                                        ///< two.
+                                                        ///< two
         void** pptr                                     ///< [out] pointer to host allocation
         )
     {
@@ -2499,15 +3056,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnAllocHost( hContext, host_desc, size, alignment, pptr );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeMemAllocHost( hContext, host_desc, size, alignment, pptr );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnAllocHost( hContext, host_desc, size, alignment, pptr );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -2529,15 +3090,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnFree( hContext, ptr );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeMemFree( hContext, ptr );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnFree( hContext, ptr );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -2561,15 +3126,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnGetAllocProperties( hContext, ptr, pMemAllocProperties, phDevice );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeMemGetAllocProperties( hContext, ptr, pMemAllocProperties, phDevice );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnGetAllocProperties( hContext, ptr, pMemAllocProperties, phDevice );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -2593,15 +3162,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnGetAddressRange( hContext, ptr, pBase, pSize );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeMemGetAddressRange( hContext, ptr, pBase, pSize );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnGetAddressRange( hContext, ptr, pBase, pSize );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -2624,15 +3197,135 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnGetIpcHandle( hContext, ptr, pIpcHandle );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeMemGetIpcHandle( hContext, ptr, pIpcHandle );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnGetIpcHandle( hContext, ptr, pIpcHandle );
+
+        if( result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
+            
+        }
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeMemGetIpcHandleFromFileDescriptorExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zeMemGetIpcHandleFromFileDescriptorExp(
+        ze_context_handle_t hContext,                   ///< [in] handle of the context object
+        uint64_t handle,                                ///< [in] file descriptor
+        ze_ipc_mem_handle_t* pIpcHandle                 ///< [out] Returned IPC memory handle
+        )
+    {
+        auto pfnGetIpcHandleFromFileDescriptorExp = context.zeDdiTable.MemExp.pfnGetIpcHandleFromFileDescriptorExp;
+
+        if( nullptr == pfnGetIpcHandleFromFileDescriptorExp )
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        if( context.enableParameterValidation )
+        {
+            auto result = context.paramValidation->zeParamValidation.zeMemGetIpcHandleFromFileDescriptorExp( hContext, handle, pIpcHandle );
+            if(result!=ZE_RESULT_SUCCESS) return result;
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeMemGetIpcHandleFromFileDescriptorExp( hContext, handle, pIpcHandle );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnGetIpcHandleFromFileDescriptorExp( hContext, handle, pIpcHandle );
+
+        if( result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
+            
+        }
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeMemGetFileDescriptorFromIpcHandleExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zeMemGetFileDescriptorFromIpcHandleExp(
+        ze_context_handle_t hContext,                   ///< [in] handle of the context object
+        ze_ipc_mem_handle_t ipcHandle,                  ///< [in] IPC memory handle
+        uint64_t* pHandle                               ///< [out] Returned file descriptor
+        )
+    {
+        auto pfnGetFileDescriptorFromIpcHandleExp = context.zeDdiTable.MemExp.pfnGetFileDescriptorFromIpcHandleExp;
+
+        if( nullptr == pfnGetFileDescriptorFromIpcHandleExp )
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        if( context.enableParameterValidation )
+        {
+            auto result = context.paramValidation->zeParamValidation.zeMemGetFileDescriptorFromIpcHandleExp( hContext, ipcHandle, pHandle );
+            if(result!=ZE_RESULT_SUCCESS) return result;
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeMemGetFileDescriptorFromIpcHandleExp( hContext, ipcHandle, pHandle );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnGetFileDescriptorFromIpcHandleExp( hContext, ipcHandle, pHandle );
+
+        if( result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
+            
+        }
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeMemPutIpcHandle
+    __zedlllocal ze_result_t ZE_APICALL
+    zeMemPutIpcHandle(
+        ze_context_handle_t hContext,                   ///< [in] handle of the context object
+        ze_ipc_mem_handle_t handle                      ///< [in] IPC memory handle
+        )
+    {
+        auto pfnPutIpcHandle = context.zeDdiTable.Mem.pfnPutIpcHandle;
+
+        if( nullptr == pfnPutIpcHandle )
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        if( context.enableParameterValidation )
+        {
+            auto result = context.paramValidation->zeParamValidation.zeMemPutIpcHandle( hContext, handle );
+            if(result!=ZE_RESULT_SUCCESS) return result;
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeMemPutIpcHandle( hContext, handle );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnPutIpcHandle( hContext, handle );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -2658,15 +3351,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnOpenIpcHandle( hContext, hDevice, handle, flags, pptr );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeMemOpenIpcHandle( hContext, hDevice, handle, flags, pptr );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnOpenIpcHandle( hContext, hDevice, handle, flags, pptr );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -2688,15 +3385,98 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnCloseIpcHandle( hContext, ptr );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeMemCloseIpcHandle( hContext, ptr );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnCloseIpcHandle( hContext, ptr );
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeMemSetAtomicAccessAttributeExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zeMemSetAtomicAccessAttributeExp(
+        ze_context_handle_t hContext,                   ///< [in] handle of context
+        ze_device_handle_t hDevice,                     ///< [in] device associated with the memory advice
+        const void* ptr,                                ///< [in] Pointer to the start of the memory range
+        size_t size,                                    ///< [in] Size in bytes of the memory range
+        ze_memory_atomic_attr_exp_flags_t attr          ///< [in] Atomic access attributes to set for the specified range.
+                                                        ///< Must be 0 (default) or a valid combination of ::ze_memory_atomic_attr_exp_flag_t.
+        )
+    {
+        auto pfnSetAtomicAccessAttributeExp = context.zeDdiTable.MemExp.pfnSetAtomicAccessAttributeExp;
+
+        if( nullptr == pfnSetAtomicAccessAttributeExp )
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        if( context.enableParameterValidation )
+        {
+            auto result = context.paramValidation->zeParamValidation.zeMemSetAtomicAccessAttributeExp( hContext, hDevice, ptr, size, attr );
+            if(result!=ZE_RESULT_SUCCESS) return result;
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeMemSetAtomicAccessAttributeExp( hContext, hDevice, ptr, size, attr );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnSetAtomicAccessAttributeExp( hContext, hDevice, ptr, size, attr );
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeMemGetAtomicAccessAttributeExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zeMemGetAtomicAccessAttributeExp(
+        ze_context_handle_t hContext,                   ///< [in] handle of context
+        ze_device_handle_t hDevice,                     ///< [in] device associated with the memory advice
+        const void* ptr,                                ///< [in] Pointer to the start of the memory range
+        size_t size,                                    ///< [in] Size in bytes of the memory range
+        ze_memory_atomic_attr_exp_flags_t* pAttr        ///< [out] Atomic access attributes for the specified range
+        )
+    {
+        auto pfnGetAtomicAccessAttributeExp = context.zeDdiTable.MemExp.pfnGetAtomicAccessAttributeExp;
+
+        if( nullptr == pfnGetAtomicAccessAttributeExp )
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        if( context.enableParameterValidation )
+        {
+            auto result = context.paramValidation->zeParamValidation.zeMemGetAtomicAccessAttributeExp( hContext, hDevice, ptr, size, pAttr );
+            if(result!=ZE_RESULT_SUCCESS) return result;
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeMemGetAtomicAccessAttributeExp( hContext, hDevice, ptr, size, pAttr );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnGetAtomicAccessAttributeExp( hContext, hDevice, ptr, size, pAttr );
+
+        if( result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
+            
+        }
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -2721,15 +3501,33 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnCreate( hContext, hDevice, desc, phModule, phBuildLog );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeModuleCreate( hContext, hDevice, desc, phModule, phBuildLog );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnCreate( hContext, hDevice, desc, phModule, phBuildLog );
+
+        if( result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
+            
+            if (phModule){
+                context.handleLifetime->addHandle( *phModule );
+                context.handleLifetime->addDependent( hContext, *phModule );
+
+            }
+            if (phBuildLog){
+                context.handleLifetime->addHandle( *phBuildLog );
+                context.handleLifetime->addDependent( hContext, *phBuildLog );
+
+            }
+        }
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -2750,15 +3548,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnDestroy( hModule );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeModuleDestroy( hModule );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnDestroy( hModule );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -2782,15 +3584,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnDynamicLink( numModules, phModules, phLinkLog );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeModuleDynamicLink( numModules, phModules, phLinkLog );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnDynamicLink( numModules, phModules, phLinkLog );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -2811,15 +3617,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnDestroy( hModuleBuildLog );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeModuleBuildLogDestroy( hModuleBuildLog );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnDestroy( hModuleBuildLog );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -2842,15 +3652,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnGetString( hModuleBuildLog, pSize, pBuildLog );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeModuleBuildLogGetString( hModuleBuildLog, pSize, pBuildLog );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnGetString( hModuleBuildLog, pSize, pBuildLog );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -2873,15 +3687,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnGetNativeBinary( hModule, pSize, pModuleNativeBinary );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeModuleGetNativeBinary( hModule, pSize, pModuleNativeBinary );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnGetNativeBinary( hModule, pSize, pModuleNativeBinary );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -2905,15 +3723,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnGetGlobalPointer( hModule, pGlobalName, pSize, pptr );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeModuleGetGlobalPointer( hModule, pGlobalName, pSize, pptr );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnGetGlobalPointer( hModule, pGlobalName, pSize, pptr );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -2942,15 +3764,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnGetKernelNames( hModule, pCount, pNames );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeModuleGetKernelNames( hModule, pCount, pNames );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnGetKernelNames( hModule, pCount, pNames );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -2972,15 +3798,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnGetProperties( hModule, pModuleProperties );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeModuleGetProperties( hModule, pModuleProperties );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnGetProperties( hModule, pModuleProperties );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -3003,15 +3833,28 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnCreate( hModule, desc, phKernel );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeKernelCreate( hModule, desc, phKernel );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnCreate( hModule, desc, phKernel );
+
+        if( result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
+            
+            if (phKernel){
+                context.handleLifetime->addHandle( *phKernel );
+                context.handleLifetime->addDependent( hModule, *phKernel );
+
+            }
+        }
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -3032,15 +3875,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnDestroy( hKernel );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeKernelDestroy( hKernel );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnDestroy( hKernel );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -3063,15 +3910,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnGetFunctionPointer( hModule, pFunctionName, pfnFunction );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeModuleGetFunctionPointer( hModule, pFunctionName, pfnFunction );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnGetFunctionPointer( hModule, pFunctionName, pfnFunction );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -3095,15 +3946,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnSetGroupSize( hKernel, groupSizeX, groupSizeY, groupSizeZ );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeKernelSetGroupSize( hKernel, groupSizeX, groupSizeY, groupSizeZ );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnSetGroupSize( hKernel, groupSizeX, groupSizeY, groupSizeZ );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -3130,15 +3985,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnSuggestGroupSize( hKernel, globalSizeX, globalSizeY, globalSizeZ, groupSizeX, groupSizeY, groupSizeZ );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeKernelSuggestGroupSize( hKernel, globalSizeX, globalSizeY, globalSizeZ, groupSizeX, groupSizeY, groupSizeZ );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnSuggestGroupSize( hKernel, globalSizeX, globalSizeY, globalSizeZ, groupSizeX, groupSizeY, groupSizeZ );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -3160,15 +4019,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnSuggestMaxCooperativeGroupCount( hKernel, totalGroupCount );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeKernelSuggestMaxCooperativeGroupCount( hKernel, totalGroupCount );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnSuggestMaxCooperativeGroupCount( hKernel, totalGroupCount );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -3193,15 +4056,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnSetArgumentValue( hKernel, argIndex, argSize, pArgValue );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeKernelSetArgumentValue( hKernel, argIndex, argSize, pArgValue );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnSetArgumentValue( hKernel, argIndex, argSize, pArgValue );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -3223,15 +4090,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnSetIndirectAccess( hKernel, flags );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeKernelSetIndirectAccess( hKernel, flags );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnSetIndirectAccess( hKernel, flags );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -3253,15 +4124,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnGetIndirectAccess( hKernel, pFlags );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeKernelGetIndirectAccess( hKernel, pFlags );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnGetIndirectAccess( hKernel, pFlags );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -3291,15 +4166,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnGetSourceAttributes( hKernel, pSize, pString );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeKernelGetSourceAttributes( hKernel, pSize, pString );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnGetSourceAttributes( hKernel, pSize, pString );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -3322,15 +4201,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnSetCacheConfig( hKernel, flags );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeKernelSetCacheConfig( hKernel, flags );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnSetCacheConfig( hKernel, flags );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -3352,15 +4235,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnGetProperties( hKernel, pKernelProperties );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeKernelGetProperties( hKernel, pKernelProperties );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnGetProperties( hKernel, pKernelProperties );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -3384,15 +4271,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnGetName( hKernel, pSize, pName );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeKernelGetName( hKernel, pSize, pName );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnGetName( hKernel, pSize, pName );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -3420,15 +4311,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnAppendLaunchKernel( hCommandList, hKernel, pLaunchFuncArgs, hSignalEvent, numWaitEvents, phWaitEvents );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeCommandListAppendLaunchKernel( hCommandList, hKernel, pLaunchFuncArgs, hSignalEvent, numWaitEvents, phWaitEvents );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnAppendLaunchKernel( hCommandList, hKernel, pLaunchFuncArgs, hSignalEvent, numWaitEvents, phWaitEvents );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -3456,15 +4351,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnAppendLaunchCooperativeKernel( hCommandList, hKernel, pLaunchFuncArgs, hSignalEvent, numWaitEvents, phWaitEvents );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeCommandListAppendLaunchCooperativeKernel( hCommandList, hKernel, pLaunchFuncArgs, hSignalEvent, numWaitEvents, phWaitEvents );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnAppendLaunchCooperativeKernel( hCommandList, hKernel, pLaunchFuncArgs, hSignalEvent, numWaitEvents, phWaitEvents );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -3493,15 +4392,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnAppendLaunchKernelIndirect( hCommandList, hKernel, pLaunchArgumentsBuffer, hSignalEvent, numWaitEvents, phWaitEvents );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeCommandListAppendLaunchKernelIndirect( hCommandList, hKernel, pLaunchArgumentsBuffer, hSignalEvent, numWaitEvents, phWaitEvents );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnAppendLaunchKernelIndirect( hCommandList, hKernel, pLaunchArgumentsBuffer, hSignalEvent, numWaitEvents, phWaitEvents );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -3534,15 +4437,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnAppendLaunchMultipleKernelsIndirect( hCommandList, numKernels, phKernels, pCountBuffer, pLaunchArgumentsBuffer, hSignalEvent, numWaitEvents, phWaitEvents );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeCommandListAppendLaunchMultipleKernelsIndirect( hCommandList, numKernels, phKernels, pCountBuffer, pLaunchArgumentsBuffer, hSignalEvent, numWaitEvents, phWaitEvents );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnAppendLaunchMultipleKernelsIndirect( hCommandList, numKernels, phKernels, pCountBuffer, pLaunchArgumentsBuffer, hSignalEvent, numWaitEvents, phWaitEvents );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -3566,15 +4473,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnMakeMemoryResident( hContext, hDevice, ptr, size );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeContextMakeMemoryResident( hContext, hDevice, ptr, size );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnMakeMemoryResident( hContext, hDevice, ptr, size );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -3598,15 +4509,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnEvictMemory( hContext, hDevice, ptr, size );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeContextEvictMemory( hContext, hDevice, ptr, size );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnEvictMemory( hContext, hDevice, ptr, size );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -3629,15 +4544,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnMakeImageResident( hContext, hDevice, hImage );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeContextMakeImageResident( hContext, hDevice, hImage );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnMakeImageResident( hContext, hDevice, hImage );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -3660,15 +4579,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnEvictImage( hContext, hDevice, hImage );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeContextEvictImage( hContext, hDevice, hImage );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnEvictImage( hContext, hDevice, hImage );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -3692,15 +4615,28 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnCreate( hContext, hDevice, desc, phSampler );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeSamplerCreate( hContext, hDevice, desc, phSampler );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnCreate( hContext, hDevice, desc, phSampler );
+
+        if( result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
+            
+            if (phSampler){
+                context.handleLifetime->addHandle( *phSampler );
+                context.handleLifetime->addDependent( hContext, *phSampler );
+
+            }
+        }
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -3721,15 +4657,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnDestroy( hSampler );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeSamplerDestroy( hSampler );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnDestroy( hSampler );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -3754,15 +4694,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnReserve( hContext, pStart, size, pptr );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeVirtualMemReserve( hContext, pStart, size, pptr );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnReserve( hContext, pStart, size, pptr );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -3785,15 +4729,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnFree( hContext, ptr, size );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeVirtualMemFree( hContext, ptr, size );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnFree( hContext, ptr, size );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -3818,15 +4766,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnQueryPageSize( hContext, hDevice, size, pagesize );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeVirtualMemQueryPageSize( hContext, hDevice, size, pagesize );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnQueryPageSize( hContext, hDevice, size, pagesize );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -3850,15 +4802,28 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnCreate( hContext, hDevice, desc, phPhysicalMemory );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zePhysicalMemCreate( hContext, hDevice, desc, phPhysicalMemory );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnCreate( hContext, hDevice, desc, phPhysicalMemory );
+
+        if( result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
+            
+            if (phPhysicalMemory){
+                context.handleLifetime->addHandle( *phPhysicalMemory );
+                context.handleLifetime->addDependent( hContext, *phPhysicalMemory );
+
+            }
+        }
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -3880,15 +4845,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnDestroy( hContext, hPhysicalMemory );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zePhysicalMemDestroy( hContext, hPhysicalMemory );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnDestroy( hContext, hPhysicalMemory );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -3917,15 +4886,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnMap( hContext, ptr, size, hPhysicalMemory, offset, access );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeVirtualMemMap( hContext, ptr, size, hPhysicalMemory, offset, access );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnMap( hContext, ptr, size, hPhysicalMemory, offset, access );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -3948,15 +4921,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnUnmap( hContext, ptr, size );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeVirtualMemUnmap( hContext, ptr, size );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnUnmap( hContext, ptr, size );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -3981,15 +4958,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnSetAccessAttribute( hContext, ptr, size, access );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeVirtualMemSetAccessAttribute( hContext, ptr, size, access );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnSetAccessAttribute( hContext, ptr, size, access );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -4015,15 +4996,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnGetAccessAttribute( hContext, ptr, size, access, outSize );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeVirtualMemGetAccessAttribute( hContext, ptr, size, access, outSize );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnGetAccessAttribute( hContext, ptr, size, access, outSize );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -4047,15 +5032,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnSetGlobalOffsetExp( hKernel, offsetX, offsetY, offsetZ );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeKernelSetGlobalOffsetExp( hKernel, offsetX, offsetY, offsetZ );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnSetGlobalOffsetExp( hKernel, offsetX, offsetY, offsetZ );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -4081,15 +5070,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnReserveCacheExt( hDevice, cacheLevel, cacheReservationSize );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeDeviceReserveCacheExt( hDevice, cacheLevel, cacheReservationSize );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnReserveCacheExt( hDevice, cacheLevel, cacheReservationSize );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -4113,15 +5106,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnSetCacheAdviceExt( hDevice, ptr, regionSize, cacheRegion );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeDeviceSetCacheAdviceExt( hDevice, ptr, regionSize, cacheRegion );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnSetCacheAdviceExt( hDevice, ptr, regionSize, cacheRegion );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -4151,15 +5148,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnQueryTimestampsExp( hEvent, hDevice, pCount, pTimestamps );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeEventQueryTimestampsExp( hEvent, hDevice, pCount, pTimestamps );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnQueryTimestampsExp( hEvent, hDevice, pCount, pTimestamps );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -4181,15 +5182,23 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnGetMemoryPropertiesExp( hImage, pMemoryProperties );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeImageGetMemoryPropertiesExp( hImage, pMemoryProperties );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnGetMemoryPropertiesExp( hImage, pMemoryProperties );
+
+        if( result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
+            
+        }
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -4214,15 +5223,28 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnViewCreateExt( hContext, hDevice, desc, hImage, phImageView );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeImageViewCreateExt( hContext, hDevice, desc, hImage, phImageView );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnViewCreateExt( hContext, hDevice, desc, hImage, phImageView );
+
+        if( result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
+            
+            if (phImageView){
+                context.handleLifetime->addHandle( *phImageView );
+                context.handleLifetime->addDependent( hContext, *phImageView );
+
+            }
+        }
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -4247,15 +5269,28 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnViewCreateExp( hContext, hDevice, desc, hImage, phImageView );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeImageViewCreateExp( hContext, hDevice, desc, hImage, phImageView );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnViewCreateExp( hContext, hDevice, desc, hImage, phImageView );
+
+        if( result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
+            
+            if (phImageView){
+                context.handleLifetime->addHandle( *phImageView );
+                context.handleLifetime->addDependent( hContext, *phImageView );
+
+            }
+        }
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -4277,15 +5312,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnSchedulingHintExp( hKernel, pHint );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeKernelSchedulingHintExp( hKernel, pHint );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnSchedulingHintExp( hKernel, pHint );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -4307,15 +5346,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnPciGetPropertiesExt( hDevice, pPciProperties );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeDevicePciGetPropertiesExt( hDevice, pPciProperties );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnPciGetPropertiesExt( hDevice, pPciProperties );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -4348,15 +5391,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnAppendImageCopyToMemoryExt( hCommandList, dstptr, hSrcImage, pSrcRegion, destRowPitch, destSlicePitch, hSignalEvent, numWaitEvents, phWaitEvents );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeCommandListAppendImageCopyToMemoryExt( hCommandList, dstptr, hSrcImage, pSrcRegion, destRowPitch, destSlicePitch, hSignalEvent, numWaitEvents, phWaitEvents );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnAppendImageCopyToMemoryExt( hCommandList, dstptr, hSrcImage, pSrcRegion, destRowPitch, destSlicePitch, hSignalEvent, numWaitEvents, phWaitEvents );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -4389,15 +5436,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnAppendImageCopyFromMemoryExt( hCommandList, hDstImage, srcptr, pDstRegion, srcRowPitch, srcSlicePitch, hSignalEvent, numWaitEvents, phWaitEvents );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeCommandListAppendImageCopyFromMemoryExt( hCommandList, hDstImage, srcptr, pDstRegion, srcRowPitch, srcSlicePitch, hSignalEvent, numWaitEvents, phWaitEvents );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnAppendImageCopyFromMemoryExt( hCommandList, hDstImage, srcptr, pDstRegion, srcRowPitch, srcSlicePitch, hSignalEvent, numWaitEvents, phWaitEvents );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -4420,15 +5471,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnGetAllocPropertiesExt( hContext, hImage, pImageAllocProperties );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeImageGetAllocPropertiesExt( hContext, hImage, pImageAllocProperties );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnGetAllocPropertiesExt( hContext, hImage, pImageAllocProperties );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -4454,15 +5509,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnInspectLinkageExt( pInspectDesc, numModules, phModules, phLog );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeModuleInspectLinkageExt( pInspectDesc, numModules, phModules, phLog );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnInspectLinkageExt( pInspectDesc, numModules, phModules, phLog );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -4485,15 +5544,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnFreeExt( hContext, pMemFreeDesc, ptr );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeMemFreeExt( hContext, pMemFreeDesc, ptr );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnFreeExt( hContext, pMemFreeDesc, ptr );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -4523,15 +5586,29 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnGetExp( hDriver, pCount, phVertices );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeFabricVertexGetExp( hDriver, pCount, phVertices );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnGetExp( hDriver, pCount, phVertices );
+
+        if( result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
+            
+            for (size_t i = 0; ( nullptr != phVertices) && (i < *pCount); ++i){
+                if (phVertices[i]){
+                    context.handleLifetime->addHandle( phVertices[i] );
+                    context.handleLifetime->addDependent( hDriver, phVertices[i] );
+                }
+            }
+        }
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -4561,15 +5638,29 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnGetSubVerticesExp( hVertex, pCount, phSubvertices );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeFabricVertexGetSubVerticesExp( hVertex, pCount, phSubvertices );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnGetSubVerticesExp( hVertex, pCount, phSubvertices );
+
+        if( result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
+            
+            for (size_t i = 0; ( nullptr != phSubvertices) && (i < *pCount); ++i){
+                if (phSubvertices[i]){
+                    context.handleLifetime->addHandle( phSubvertices[i] );
+                    context.handleLifetime->addDependent( hVertex, phSubvertices[i] );
+                }
+            }
+        }
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -4591,15 +5682,23 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnGetPropertiesExp( hVertex, pVertexProperties );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeFabricVertexGetPropertiesExp( hVertex, pVertexProperties );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnGetPropertiesExp( hVertex, pVertexProperties );
+
+        if( result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
+            
+        }
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -4621,15 +5720,28 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnGetDeviceExp( hVertex, phDevice );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeFabricVertexGetDeviceExp( hVertex, phDevice );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnGetDeviceExp( hVertex, phDevice );
+
+        if( result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
+            
+            if (phDevice){
+                context.handleLifetime->addHandle( *phDevice );
+                context.handleLifetime->addDependent( hVertex, *phDevice );
+
+            }
+        }
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -4651,15 +5763,28 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnGetFabricVertexExp( hDevice, phVertex );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeDeviceGetFabricVertexExp( hDevice, phVertex );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnGetFabricVertexExp( hDevice, phVertex );
+
+        if( result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
+            
+            if (phVertex){
+                context.handleLifetime->addHandle( *phVertex );
+                context.handleLifetime->addDependent( hDevice, *phVertex );
+
+            }
+        }
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -4690,15 +5815,29 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnGetExp( hVertexA, hVertexB, pCount, phEdges );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeFabricEdgeGetExp( hVertexA, hVertexB, pCount, phEdges );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnGetExp( hVertexA, hVertexB, pCount, phEdges );
+
+        if( result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
+            
+            for (size_t i = 0; ( nullptr != phEdges) && (i < *pCount); ++i){
+                if (phEdges[i]){
+                    context.handleLifetime->addHandle( phEdges[i] );
+                    context.handleLifetime->addDependent( hVertexA, phEdges[i] );
+                }
+            }
+        }
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -4721,15 +5860,33 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnGetVerticesExp( hEdge, phVertexA, phVertexB );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeFabricEdgeGetVerticesExp( hEdge, phVertexA, phVertexB );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnGetVerticesExp( hEdge, phVertexA, phVertexB );
+
+        if( result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
+            
+            if (phVertexA){
+                context.handleLifetime->addHandle( *phVertexA );
+                context.handleLifetime->addDependent( hEdge, *phVertexA );
+
+            }
+            if (phVertexB){
+                context.handleLifetime->addHandle( *phVertexB );
+                context.handleLifetime->addDependent( hEdge, *phVertexB );
+
+            }
+        }
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -4751,15 +5908,415 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnGetPropertiesExp( hEdge, pEdgeProperties );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeFabricEdgeGetPropertiesExp( hEdge, pEdgeProperties );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnGetPropertiesExp( hEdge, pEdgeProperties );
+
+        if( result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
+            
+        }
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeEventQueryKernelTimestampsExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeEventQueryKernelTimestampsExt(
+        ze_event_handle_t hEvent,                       ///< [in] handle of the event
+        ze_device_handle_t hDevice,                     ///< [in] handle of the device to query
+        uint32_t* pCount,                               ///< [in,out] pointer to the number of event packets available.
+                                                        ///<    - This value is implementation specific.
+                                                        ///<    - if `*pCount` is zero, then the driver shall update the value with
+                                                        ///< the total number of event packets available.
+                                                        ///<    - if `*pCount` is greater than the number of event packets
+                                                        ///< available, the driver shall update the value with the correct value.
+                                                        ///<    - Buffer(s) for query results must be sized by the application to
+                                                        ///< accommodate a minimum of `*pCount` elements.
+        ze_event_query_kernel_timestamps_results_ext_properties_t* pResults ///< [in,out][optional][range(0, *pCount)] pointer to event query
+                                                        ///< properties structure(s).
+                                                        ///<    - This parameter may be null when `*pCount` is zero.
+                                                        ///<    - if `*pCount` is less than the number of event packets available,
+                                                        ///< the driver may only update `*pCount` elements, starting at element zero.
+                                                        ///<    - if `*pCount` is greater than the number of event packets
+                                                        ///< available, the driver may only update the valid elements.
+        )
+    {
+        auto pfnQueryKernelTimestampsExt = context.zeDdiTable.Event.pfnQueryKernelTimestampsExt;
+
+        if( nullptr == pfnQueryKernelTimestampsExt )
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        if( context.enableParameterValidation )
+        {
+            auto result = context.paramValidation->zeParamValidation.zeEventQueryKernelTimestampsExt( hEvent, hDevice, pCount, pResults );
+            if(result!=ZE_RESULT_SUCCESS) return result;
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeEventQueryKernelTimestampsExt( hEvent, hDevice, pCount, pResults );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnQueryKernelTimestampsExt( hEvent, hDevice, pCount, pResults );
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeRTASBuilderCreateExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zeRTASBuilderCreateExp(
+        ze_driver_handle_t hDriver,                     ///< [in] handle of driver object
+        const ze_rtas_builder_exp_desc_t* pDescriptor,  ///< [in] pointer to builder descriptor
+        ze_rtas_builder_exp_handle_t* phBuilder         ///< [out] handle of builder object
+        )
+    {
+        auto pfnCreateExp = context.zeDdiTable.RTASBuilderExp.pfnCreateExp;
+
+        if( nullptr == pfnCreateExp )
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        if( context.enableParameterValidation )
+        {
+            auto result = context.paramValidation->zeParamValidation.zeRTASBuilderCreateExp( hDriver, pDescriptor, phBuilder );
+            if(result!=ZE_RESULT_SUCCESS) return result;
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeRTASBuilderCreateExp( hDriver, pDescriptor, phBuilder );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnCreateExp( hDriver, pDescriptor, phBuilder );
+
+        if( result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
+            
+            if (phBuilder){
+                context.handleLifetime->addHandle( *phBuilder );
+                context.handleLifetime->addDependent( hDriver, *phBuilder );
+
+            }
+        }
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeRTASBuilderGetBuildPropertiesExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zeRTASBuilderGetBuildPropertiesExp(
+        ze_rtas_builder_exp_handle_t hBuilder,          ///< [in] handle of builder object
+        const ze_rtas_builder_build_op_exp_desc_t* pBuildOpDescriptor,  ///< [in] pointer to build operation descriptor
+        ze_rtas_builder_exp_properties_t* pProperties   ///< [in,out] query result for builder properties
+        )
+    {
+        auto pfnGetBuildPropertiesExp = context.zeDdiTable.RTASBuilderExp.pfnGetBuildPropertiesExp;
+
+        if( nullptr == pfnGetBuildPropertiesExp )
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        if( context.enableParameterValidation )
+        {
+            auto result = context.paramValidation->zeParamValidation.zeRTASBuilderGetBuildPropertiesExp( hBuilder, pBuildOpDescriptor, pProperties );
+            if(result!=ZE_RESULT_SUCCESS) return result;
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeRTASBuilderGetBuildPropertiesExp( hBuilder, pBuildOpDescriptor, pProperties );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnGetBuildPropertiesExp( hBuilder, pBuildOpDescriptor, pProperties );
+
+        if( result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
+            
+        }
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeDriverRTASFormatCompatibilityCheckExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zeDriverRTASFormatCompatibilityCheckExp(
+        ze_driver_handle_t hDriver,                     ///< [in] handle of driver object
+        ze_rtas_format_exp_t rtasFormatA,               ///< [in] operand A
+        ze_rtas_format_exp_t rtasFormatB                ///< [in] operand B
+        )
+    {
+        auto pfnRTASFormatCompatibilityCheckExp = context.zeDdiTable.DriverExp.pfnRTASFormatCompatibilityCheckExp;
+
+        if( nullptr == pfnRTASFormatCompatibilityCheckExp )
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        if( context.enableParameterValidation )
+        {
+            auto result = context.paramValidation->zeParamValidation.zeDriverRTASFormatCompatibilityCheckExp( hDriver, rtasFormatA, rtasFormatB );
+            if(result!=ZE_RESULT_SUCCESS) return result;
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeDriverRTASFormatCompatibilityCheckExp( hDriver, rtasFormatA, rtasFormatB );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnRTASFormatCompatibilityCheckExp( hDriver, rtasFormatA, rtasFormatB );
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeRTASBuilderBuildExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zeRTASBuilderBuildExp(
+        ze_rtas_builder_exp_handle_t hBuilder,          ///< [in] handle of builder object
+        const ze_rtas_builder_build_op_exp_desc_t* pBuildOpDescriptor,  ///< [in] pointer to build operation descriptor
+        void* pScratchBuffer,                           ///< [in][range(0, `scratchBufferSizeBytes`)] scratch buffer to be used
+                                                        ///< during acceleration structure construction
+        size_t scratchBufferSizeBytes,                  ///< [in] size of scratch buffer, in bytes
+        void* pRtasBuffer,                              ///< [in] pointer to destination buffer
+        size_t rtasBufferSizeBytes,                     ///< [in] destination buffer size, in bytes
+        ze_rtas_parallel_operation_exp_handle_t hParallelOperation, ///< [in][optional] handle to parallel operation object
+        void* pBuildUserPtr,                            ///< [in][optional] pointer passed to callbacks
+        ze_rtas_aabb_exp_t* pBounds,                    ///< [in,out][optional] pointer to destination address for acceleration
+                                                        ///< structure bounds
+        size_t* pRtasBufferSizeBytes                    ///< [out][optional] updated acceleration structure size requirement, in
+                                                        ///< bytes
+        )
+    {
+        auto pfnBuildExp = context.zeDdiTable.RTASBuilderExp.pfnBuildExp;
+
+        if( nullptr == pfnBuildExp )
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        if( context.enableParameterValidation )
+        {
+            auto result = context.paramValidation->zeParamValidation.zeRTASBuilderBuildExp( hBuilder, pBuildOpDescriptor, pScratchBuffer, scratchBufferSizeBytes, pRtasBuffer, rtasBufferSizeBytes, hParallelOperation, pBuildUserPtr, pBounds, pRtasBufferSizeBytes );
+            if(result!=ZE_RESULT_SUCCESS) return result;
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeRTASBuilderBuildExp( hBuilder, pBuildOpDescriptor, pScratchBuffer, scratchBufferSizeBytes, pRtasBuffer, rtasBufferSizeBytes, hParallelOperation, pBuildUserPtr, pBounds, pRtasBufferSizeBytes );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnBuildExp( hBuilder, pBuildOpDescriptor, pScratchBuffer, scratchBufferSizeBytes, pRtasBuffer, rtasBufferSizeBytes, hParallelOperation, pBuildUserPtr, pBounds, pRtasBufferSizeBytes );
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeRTASBuilderDestroyExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zeRTASBuilderDestroyExp(
+        ze_rtas_builder_exp_handle_t hBuilder           ///< [in][release] handle of builder object to destroy
+        )
+    {
+        auto pfnDestroyExp = context.zeDdiTable.RTASBuilderExp.pfnDestroyExp;
+
+        if( nullptr == pfnDestroyExp )
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        if( context.enableParameterValidation )
+        {
+            auto result = context.paramValidation->zeParamValidation.zeRTASBuilderDestroyExp( hBuilder );
+            if(result!=ZE_RESULT_SUCCESS) return result;
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeRTASBuilderDestroyExp( hBuilder );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnDestroyExp( hBuilder );
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeRTASParallelOperationCreateExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zeRTASParallelOperationCreateExp(
+        ze_driver_handle_t hDriver,                     ///< [in] handle of driver object
+        ze_rtas_parallel_operation_exp_handle_t* phParallelOperation///< [out] handle of parallel operation object
+        )
+    {
+        auto pfnCreateExp = context.zeDdiTable.RTASParallelOperationExp.pfnCreateExp;
+
+        if( nullptr == pfnCreateExp )
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        if( context.enableParameterValidation )
+        {
+            auto result = context.paramValidation->zeParamValidation.zeRTASParallelOperationCreateExp( hDriver, phParallelOperation );
+            if(result!=ZE_RESULT_SUCCESS) return result;
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeRTASParallelOperationCreateExp( hDriver, phParallelOperation );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnCreateExp( hDriver, phParallelOperation );
+
+        if( result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
+            
+            if (phParallelOperation){
+                context.handleLifetime->addHandle( *phParallelOperation );
+                context.handleLifetime->addDependent( hDriver, *phParallelOperation );
+
+            }
+        }
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeRTASParallelOperationGetPropertiesExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zeRTASParallelOperationGetPropertiesExp(
+        ze_rtas_parallel_operation_exp_handle_t hParallelOperation, ///< [in] handle of parallel operation object
+        ze_rtas_parallel_operation_exp_properties_t* pProperties///< [in,out] query result for parallel operation properties
+        )
+    {
+        auto pfnGetPropertiesExp = context.zeDdiTable.RTASParallelOperationExp.pfnGetPropertiesExp;
+
+        if( nullptr == pfnGetPropertiesExp )
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        if( context.enableParameterValidation )
+        {
+            auto result = context.paramValidation->zeParamValidation.zeRTASParallelOperationGetPropertiesExp( hParallelOperation, pProperties );
+            if(result!=ZE_RESULT_SUCCESS) return result;
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeRTASParallelOperationGetPropertiesExp( hParallelOperation, pProperties );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnGetPropertiesExp( hParallelOperation, pProperties );
+
+        if( result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
+            
+        }
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeRTASParallelOperationJoinExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zeRTASParallelOperationJoinExp(
+        ze_rtas_parallel_operation_exp_handle_t hParallelOperation  ///< [in] handle of parallel operation object
+        )
+    {
+        auto pfnJoinExp = context.zeDdiTable.RTASParallelOperationExp.pfnJoinExp;
+
+        if( nullptr == pfnJoinExp )
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        if( context.enableParameterValidation )
+        {
+            auto result = context.paramValidation->zeParamValidation.zeRTASParallelOperationJoinExp( hParallelOperation );
+            if(result!=ZE_RESULT_SUCCESS) return result;
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeRTASParallelOperationJoinExp( hParallelOperation );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnJoinExp( hParallelOperation );
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeRTASParallelOperationDestroyExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zeRTASParallelOperationDestroyExp(
+        ze_rtas_parallel_operation_exp_handle_t hParallelOperation  ///< [in][release] handle of parallel operation object to destroy
+        )
+    {
+        auto pfnDestroyExp = context.zeDdiTable.RTASParallelOperationExp.pfnDestroyExp;
+
+        if( nullptr == pfnDestroyExp )
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        if( context.enableParameterValidation )
+        {
+            auto result = context.paramValidation->zeParamValidation.zeRTASParallelOperationDestroyExp( hParallelOperation );
+            if(result!=ZE_RESULT_SUCCESS) return result;
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeRTASParallelOperationDestroyExp( hParallelOperation );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnDestroyExp( hParallelOperation );
+        return result;
     }
 
 } // namespace validation_layer
@@ -4795,6 +6352,86 @@ zeGetGlobalProcAddrTable(
 
     dditable.pfnInit                                     = pDdiTable->pfnInit;
     pDdiTable->pfnInit                                   = validation_layer::zeInit;
+
+    return result;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Exported function for filling application's RTASBuilderExp table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+ZE_DLLEXPORT ze_result_t ZE_APICALL
+zeGetRTASBuilderExpProcAddrTable(
+    ze_api_version_t version,                       ///< [in] API version requested
+    ze_rtas_builder_exp_dditable_t* pDdiTable       ///< [in,out] pointer to table of DDI function pointers
+    )
+{
+    auto& dditable = validation_layer::context.zeDdiTable.RTASBuilderExp;
+
+    if( nullptr == pDdiTable )
+        return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+    if (ZE_MAJOR_VERSION(validation_layer::context.version) != ZE_MAJOR_VERSION(version) ||
+        ZE_MINOR_VERSION(validation_layer::context.version) > ZE_MINOR_VERSION(version))
+        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+
+    ze_result_t result = ZE_RESULT_SUCCESS;
+
+    dditable.pfnCreateExp                                = pDdiTable->pfnCreateExp;
+    pDdiTable->pfnCreateExp                              = validation_layer::zeRTASBuilderCreateExp;
+
+    dditable.pfnGetBuildPropertiesExp                    = pDdiTable->pfnGetBuildPropertiesExp;
+    pDdiTable->pfnGetBuildPropertiesExp                  = validation_layer::zeRTASBuilderGetBuildPropertiesExp;
+
+    dditable.pfnBuildExp                                 = pDdiTable->pfnBuildExp;
+    pDdiTable->pfnBuildExp                               = validation_layer::zeRTASBuilderBuildExp;
+
+    dditable.pfnDestroyExp                               = pDdiTable->pfnDestroyExp;
+    pDdiTable->pfnDestroyExp                             = validation_layer::zeRTASBuilderDestroyExp;
+
+    return result;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Exported function for filling application's RTASParallelOperationExp table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+ZE_DLLEXPORT ze_result_t ZE_APICALL
+zeGetRTASParallelOperationExpProcAddrTable(
+    ze_api_version_t version,                       ///< [in] API version requested
+    ze_rtas_parallel_operation_exp_dditable_t* pDdiTable///< [in,out] pointer to table of DDI function pointers
+    )
+{
+    auto& dditable = validation_layer::context.zeDdiTable.RTASParallelOperationExp;
+
+    if( nullptr == pDdiTable )
+        return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+    if (ZE_MAJOR_VERSION(validation_layer::context.version) != ZE_MAJOR_VERSION(version) ||
+        ZE_MINOR_VERSION(validation_layer::context.version) > ZE_MINOR_VERSION(version))
+        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+
+    ze_result_t result = ZE_RESULT_SUCCESS;
+
+    dditable.pfnCreateExp                                = pDdiTable->pfnCreateExp;
+    pDdiTable->pfnCreateExp                              = validation_layer::zeRTASParallelOperationCreateExp;
+
+    dditable.pfnGetPropertiesExp                         = pDdiTable->pfnGetPropertiesExp;
+    pDdiTable->pfnGetPropertiesExp                       = validation_layer::zeRTASParallelOperationGetPropertiesExp;
+
+    dditable.pfnJoinExp                                  = pDdiTable->pfnJoinExp;
+    pDdiTable->pfnJoinExp                                = validation_layer::zeRTASParallelOperationJoinExp;
+
+    dditable.pfnDestroyExp                               = pDdiTable->pfnDestroyExp;
+    pDdiTable->pfnDestroyExp                             = validation_layer::zeRTASParallelOperationDestroyExp;
 
     return result;
 }
@@ -4841,6 +6478,40 @@ zeGetDriverProcAddrTable(
 
     dditable.pfnGetExtensionFunctionAddress              = pDdiTable->pfnGetExtensionFunctionAddress;
     pDdiTable->pfnGetExtensionFunctionAddress            = validation_layer::zeDriverGetExtensionFunctionAddress;
+
+    dditable.pfnGetLastErrorDescription                  = pDdiTable->pfnGetLastErrorDescription;
+    pDdiTable->pfnGetLastErrorDescription                = validation_layer::zeDriverGetLastErrorDescription;
+
+    return result;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Exported function for filling application's DriverExp table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+ZE_DLLEXPORT ze_result_t ZE_APICALL
+zeGetDriverExpProcAddrTable(
+    ze_api_version_t version,                       ///< [in] API version requested
+    ze_driver_exp_dditable_t* pDdiTable             ///< [in,out] pointer to table of DDI function pointers
+    )
+{
+    auto& dditable = validation_layer::context.zeDdiTable.DriverExp;
+
+    if( nullptr == pDdiTable )
+        return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+    if (ZE_MAJOR_VERSION(validation_layer::context.version) != ZE_MAJOR_VERSION(version) ||
+        ZE_MINOR_VERSION(validation_layer::context.version) > ZE_MINOR_VERSION(version))
+        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+
+    ze_result_t result = ZE_RESULT_SUCCESS;
+
+    dditable.pfnRTASFormatCompatibilityCheckExp          = pDdiTable->pfnRTASFormatCompatibilityCheckExp;
+    pDdiTable->pfnRTASFormatCompatibilityCheckExp        = validation_layer::zeDriverRTASFormatCompatibilityCheckExp;
 
     return result;
 }
@@ -4923,6 +6594,9 @@ zeGetDeviceProcAddrTable(
 
     dditable.pfnPciGetPropertiesExt                      = pDdiTable->pfnPciGetPropertiesExt;
     pDdiTable->pfnPciGetPropertiesExt                    = validation_layer::zeDevicePciGetPropertiesExt;
+
+    dditable.pfnGetRootDevice                            = pDdiTable->pfnGetRootDevice;
+    pDdiTable->pfnGetRootDevice                          = validation_layer::zeDeviceGetRootDevice;
 
     return result;
 }
@@ -5162,6 +6836,9 @@ zeGetCommandListProcAddrTable(
     dditable.pfnAppendImageCopyFromMemoryExt             = pDdiTable->pfnAppendImageCopyFromMemoryExt;
     pDdiTable->pfnAppendImageCopyFromMemoryExt           = validation_layer::zeCommandListAppendImageCopyFromMemoryExt;
 
+    dditable.pfnHostSynchronize                          = pDdiTable->pfnHostSynchronize;
+    pDdiTable->pfnHostSynchronize                        = validation_layer::zeCommandListHostSynchronize;
+
     return result;
 }
 
@@ -5210,6 +6887,9 @@ zeGetEventProcAddrTable(
 
     dditable.pfnQueryKernelTimestamp                     = pDdiTable->pfnQueryKernelTimestamp;
     pDdiTable->pfnQueryKernelTimestamp                   = validation_layer::zeEventQueryKernelTimestamp;
+
+    dditable.pfnQueryKernelTimestampsExt                 = pDdiTable->pfnQueryKernelTimestampsExt;
+    pDdiTable->pfnQueryKernelTimestampsExt               = validation_layer::zeEventQueryKernelTimestampsExt;
 
     return result;
 }
@@ -5284,6 +6964,9 @@ zeGetEventPoolProcAddrTable(
 
     dditable.pfnCloseIpcHandle                           = pDdiTable->pfnCloseIpcHandle;
     pDdiTable->pfnCloseIpcHandle                         = validation_layer::zeEventPoolCloseIpcHandle;
+
+    dditable.pfnPutIpcHandle                             = pDdiTable->pfnPutIpcHandle;
+    pDdiTable->pfnPutIpcHandle                           = validation_layer::zeEventPoolPutIpcHandle;
 
     return result;
 }
@@ -5560,6 +7243,49 @@ zeGetMemProcAddrTable(
 
     dditable.pfnFreeExt                                  = pDdiTable->pfnFreeExt;
     pDdiTable->pfnFreeExt                                = validation_layer::zeMemFreeExt;
+
+    dditable.pfnPutIpcHandle                             = pDdiTable->pfnPutIpcHandle;
+    pDdiTable->pfnPutIpcHandle                           = validation_layer::zeMemPutIpcHandle;
+
+    return result;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Exported function for filling application's MemExp table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+ZE_DLLEXPORT ze_result_t ZE_APICALL
+zeGetMemExpProcAddrTable(
+    ze_api_version_t version,                       ///< [in] API version requested
+    ze_mem_exp_dditable_t* pDdiTable                ///< [in,out] pointer to table of DDI function pointers
+    )
+{
+    auto& dditable = validation_layer::context.zeDdiTable.MemExp;
+
+    if( nullptr == pDdiTable )
+        return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+    if (ZE_MAJOR_VERSION(validation_layer::context.version) != ZE_MAJOR_VERSION(version) ||
+        ZE_MINOR_VERSION(validation_layer::context.version) > ZE_MINOR_VERSION(version))
+        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+
+    ze_result_t result = ZE_RESULT_SUCCESS;
+
+    dditable.pfnGetIpcHandleFromFileDescriptorExp        = pDdiTable->pfnGetIpcHandleFromFileDescriptorExp;
+    pDdiTable->pfnGetIpcHandleFromFileDescriptorExp      = validation_layer::zeMemGetIpcHandleFromFileDescriptorExp;
+
+    dditable.pfnGetFileDescriptorFromIpcHandleExp        = pDdiTable->pfnGetFileDescriptorFromIpcHandleExp;
+    pDdiTable->pfnGetFileDescriptorFromIpcHandleExp      = validation_layer::zeMemGetFileDescriptorFromIpcHandleExp;
+
+    dditable.pfnSetAtomicAccessAttributeExp              = pDdiTable->pfnSetAtomicAccessAttributeExp;
+    pDdiTable->pfnSetAtomicAccessAttributeExp            = validation_layer::zeMemSetAtomicAccessAttributeExp;
+
+    dditable.pfnGetAtomicAccessAttributeExp              = pDdiTable->pfnGetAtomicAccessAttributeExp;
+    pDdiTable->pfnGetAtomicAccessAttributeExp            = validation_layer::zeMemGetAtomicAccessAttributeExp;
 
     return result;
 }

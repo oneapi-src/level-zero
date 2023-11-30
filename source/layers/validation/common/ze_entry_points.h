@@ -10,13 +10,13 @@
  *
  */
 #pragma once
-#include "ze_validation_layer.h"
+#include "ze_api.h"
 
 namespace validation_layer
 {
 
 class ZEValidationEntryPoints {
-
+public:
     virtual ze_result_t zeInit( ze_init_flags_t flags ) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zeDriverGet( uint32_t* pCount, ze_driver_handle_t* phDrivers ) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zeDriverGetApiVersion( ze_driver_handle_t hDriver, ze_api_version_t* version ) {return ZE_RESULT_SUCCESS;}
@@ -24,7 +24,9 @@ class ZEValidationEntryPoints {
     virtual ze_result_t zeDriverGetIpcProperties( ze_driver_handle_t hDriver, ze_driver_ipc_properties_t* pIpcProperties ) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zeDriverGetExtensionProperties( ze_driver_handle_t hDriver, uint32_t* pCount, ze_driver_extension_properties_t* pExtensionProperties ) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zeDriverGetExtensionFunctionAddress( ze_driver_handle_t hDriver, const char* name, void** ppFunctionAddress ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zeDriverGetLastErrorDescription( ze_driver_handle_t hDriver, const char** ppString ) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zeDeviceGet( ze_driver_handle_t hDriver, uint32_t* pCount, ze_device_handle_t* phDevices ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zeDeviceGetRootDevice( ze_device_handle_t hDevice, ze_device_handle_t* phRootDevice ) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zeDeviceGetSubDevices( ze_device_handle_t hDevice, uint32_t* pCount, ze_device_handle_t* phSubdevices ) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zeDeviceGetProperties( ze_device_handle_t hDevice, ze_device_properties_t* pDeviceProperties ) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zeDeviceGetComputeProperties( ze_device_handle_t hDevice, ze_device_compute_properties_t* pComputeProperties ) {return ZE_RESULT_SUCCESS;}
@@ -53,6 +55,7 @@ class ZEValidationEntryPoints {
     virtual ze_result_t zeCommandListClose( ze_command_list_handle_t hCommandList ) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zeCommandListReset( ze_command_list_handle_t hCommandList ) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zeCommandListAppendWriteGlobalTimestamp( ze_command_list_handle_t hCommandList, uint64_t* dstptr, ze_event_handle_t hSignalEvent, uint32_t numWaitEvents, ze_event_handle_t* phWaitEvents ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zeCommandListHostSynchronize( ze_command_list_handle_t hCommandList, uint64_t timeout ) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zeCommandListAppendBarrier( ze_command_list_handle_t hCommandList, ze_event_handle_t hSignalEvent, uint32_t numWaitEvents, ze_event_handle_t* phWaitEvents ) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zeCommandListAppendMemoryRangesBarrier( ze_command_list_handle_t hCommandList, uint32_t numRanges, const size_t* pRangeSizes, const void** pRanges, ze_event_handle_t hSignalEvent, uint32_t numWaitEvents, ze_event_handle_t* phWaitEvents ) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zeContextSystemBarrier( ze_context_handle_t hContext, ze_device_handle_t hDevice ) {return ZE_RESULT_SUCCESS;}
@@ -71,6 +74,7 @@ class ZEValidationEntryPoints {
     virtual ze_result_t zeEventCreate( ze_event_pool_handle_t hEventPool, const ze_event_desc_t* desc, ze_event_handle_t* phEvent ) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zeEventDestroy( ze_event_handle_t hEvent ) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zeEventPoolGetIpcHandle( ze_event_pool_handle_t hEventPool, ze_ipc_event_pool_handle_t* phIpc ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zeEventPoolPutIpcHandle( ze_context_handle_t hContext, ze_ipc_event_pool_handle_t hIpc ) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zeEventPoolOpenIpcHandle( ze_context_handle_t hContext, ze_ipc_event_pool_handle_t hIpc, ze_event_pool_handle_t* phEventPool ) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zeEventPoolCloseIpcHandle( ze_event_pool_handle_t hEventPool ) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zeCommandListAppendSignalEvent( ze_command_list_handle_t hCommandList, ze_event_handle_t hEvent ) {return ZE_RESULT_SUCCESS;}
@@ -97,8 +101,13 @@ class ZEValidationEntryPoints {
     virtual ze_result_t zeMemGetAllocProperties( ze_context_handle_t hContext, const void* ptr, ze_memory_allocation_properties_t* pMemAllocProperties, ze_device_handle_t* phDevice ) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zeMemGetAddressRange( ze_context_handle_t hContext, const void* ptr, void** pBase, size_t* pSize ) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zeMemGetIpcHandle( ze_context_handle_t hContext, const void* ptr, ze_ipc_mem_handle_t* pIpcHandle ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zeMemGetIpcHandleFromFileDescriptorExp( ze_context_handle_t hContext, uint64_t handle, ze_ipc_mem_handle_t* pIpcHandle ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zeMemGetFileDescriptorFromIpcHandleExp( ze_context_handle_t hContext, ze_ipc_mem_handle_t ipcHandle, uint64_t* pHandle ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zeMemPutIpcHandle( ze_context_handle_t hContext, ze_ipc_mem_handle_t handle ) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zeMemOpenIpcHandle( ze_context_handle_t hContext, ze_device_handle_t hDevice, ze_ipc_mem_handle_t handle, ze_ipc_memory_flags_t flags, void** pptr ) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zeMemCloseIpcHandle( ze_context_handle_t hContext, const void* ptr ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zeMemSetAtomicAccessAttributeExp( ze_context_handle_t hContext, ze_device_handle_t hDevice, const void* ptr, size_t size, ze_memory_atomic_attr_exp_flags_t attr ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zeMemGetAtomicAccessAttributeExp( ze_context_handle_t hContext, ze_device_handle_t hDevice, const void* ptr, size_t size, ze_memory_atomic_attr_exp_flags_t* pAttr ) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zeModuleCreate( ze_context_handle_t hContext, ze_device_handle_t hDevice, const ze_module_desc_t* desc, ze_module_handle_t* phModule, ze_module_build_log_handle_t* phBuildLog ) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zeModuleDestroy( ze_module_handle_t hModule ) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zeModuleDynamicLink( uint32_t numModules, ze_module_handle_t* phModules, ze_module_build_log_handle_t* phLinkLog ) {return ZE_RESULT_SUCCESS;}
@@ -162,5 +171,16 @@ class ZEValidationEntryPoints {
     virtual ze_result_t zeFabricEdgeGetExp( ze_fabric_vertex_handle_t hVertexA, ze_fabric_vertex_handle_t hVertexB, uint32_t* pCount, ze_fabric_edge_handle_t* phEdges ) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zeFabricEdgeGetVerticesExp( ze_fabric_edge_handle_t hEdge, ze_fabric_vertex_handle_t* phVertexA, ze_fabric_vertex_handle_t* phVertexB ) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zeFabricEdgeGetPropertiesExp( ze_fabric_edge_handle_t hEdge, ze_fabric_edge_exp_properties_t* pEdgeProperties ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zeEventQueryKernelTimestampsExt( ze_event_handle_t hEvent, ze_device_handle_t hDevice, uint32_t* pCount, ze_event_query_kernel_timestamps_results_ext_properties_t* pResults ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zeRTASBuilderCreateExp( ze_driver_handle_t hDriver, const ze_rtas_builder_exp_desc_t* pDescriptor, ze_rtas_builder_exp_handle_t* phBuilder ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zeRTASBuilderGetBuildPropertiesExp( ze_rtas_builder_exp_handle_t hBuilder, const ze_rtas_builder_build_op_exp_desc_t* pBuildOpDescriptor, ze_rtas_builder_exp_properties_t* pProperties ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zeDriverRTASFormatCompatibilityCheckExp( ze_driver_handle_t hDriver, ze_rtas_format_exp_t rtasFormatA, ze_rtas_format_exp_t rtasFormatB ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zeRTASBuilderBuildExp( ze_rtas_builder_exp_handle_t hBuilder, const ze_rtas_builder_build_op_exp_desc_t* pBuildOpDescriptor, void* pScratchBuffer, size_t scratchBufferSizeBytes, void* pRtasBuffer, size_t rtasBufferSizeBytes, ze_rtas_parallel_operation_exp_handle_t hParallelOperation, void* pBuildUserPtr, ze_rtas_aabb_exp_t* pBounds, size_t* pRtasBufferSizeBytes ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zeRTASBuilderDestroyExp( ze_rtas_builder_exp_handle_t hBuilder ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zeRTASParallelOperationCreateExp( ze_driver_handle_t hDriver, ze_rtas_parallel_operation_exp_handle_t* phParallelOperation ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zeRTASParallelOperationGetPropertiesExp( ze_rtas_parallel_operation_exp_handle_t hParallelOperation, ze_rtas_parallel_operation_exp_properties_t* pProperties ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zeRTASParallelOperationJoinExp( ze_rtas_parallel_operation_exp_handle_t hParallelOperation ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zeRTASParallelOperationDestroyExp( ze_rtas_parallel_operation_exp_handle_t hParallelOperation ) {return ZE_RESULT_SUCCESS;}
+    virtual ~ZEValidationEntryPoints() {}
 };
 }

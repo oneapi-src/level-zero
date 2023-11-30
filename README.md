@@ -5,6 +5,7 @@ This repository contains the following components of oneAPI:
 - Copies of the Level Zero Specification API C/C++ header files
 - Level Zero Loader
 - Level Zero Validation Layer
+- Level Zero Tracing Layer
 
 This project is part of the larger [oneAPI](https://www.oneapi.com/) project.
 
@@ -71,6 +72,13 @@ docker run \
       - < docker/build-ubuntu.Dockerfile) \
   cmake --build . --config Release
 ```
+
+# Debug Trace
+The Level Zero Loader has the ability to print warnings and errors which occur within the internals of the Level Zero Loader itself.
+
+To enable this debug tracing feature, set the environment variable `ZE_ENABLE_LOADER_DEBUG_TRACE=1`.
+
+This will enforce the Loader to print all errors whether fatal or non-fatal to stderr with the PREFIX `ZE_LOADER_DEBUG_TRACE:`.
 
 # Contributing
 

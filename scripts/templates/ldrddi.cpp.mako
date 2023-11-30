@@ -116,7 +116,11 @@ namespace loader
         %for i, item in enumerate(th.get_loader_prologue(n, tags, obj, meta)):
         %if 0 == i:
         // extract driver's function pointer table
+        %if 'range' in item:
+        auto dditable = reinterpret_cast<${item['obj']}*>( ${item['name']}[ 0 ] )->dditable;
+        %else:
         auto dditable = reinterpret_cast<${item['obj']}*>( ${item['name']} )->dditable;
+        %endif
         auto ${th.make_pfn_name(n, tags, obj)} = dditable->${n}.${th.get_table_name(n, tags, obj)}.${th.make_pfn_name(n, tags, obj)};
         if( nullptr == ${th.make_pfn_name(n, tags, obj)} )
             return ${X}_RESULT_ERROR_UNINITIALIZED;
@@ -181,9 +185,11 @@ namespace loader
         del add_local%>
         %for i, item in enumerate(th.get_loader_epilogue(n, tags, obj, meta)):
         %if 0 == i:
+        %if not re.match(r"\w+ModuleDynamicLink$", th.make_func_name(n, tags, obj)) and not re.match(r"\w+ModuleCreate$", th.make_func_name(n, tags, obj)):
         if( ${X}_RESULT_SUCCESS != result )
             return result;
 
+        %endif
         %endif
         %if item['release']:
         // release loader handle
@@ -225,6 +231,13 @@ namespace loader
         }
         %endif
 
+        %if 0 == i:
+        %if re.match(r"\w+ModuleDynamicLink$", th.make_func_name(n, tags, obj)) or re.match(r"\w+ModuleCreate$", th.make_func_name(n, tags, obj)):
+        if( ${X}_RESULT_SUCCESS != result )
+            return result;
+
+        %endif
+        %endif
         %endfor
         %endif
         return result;
@@ -268,7 +281,9 @@ ${tbl['export']['name']}(
 
     ${x}_result_t result = ${X}_RESULT_SUCCESS;
 
+    %if tbl['experimental'] is False: #//Experimental Tables may not be implemented in driver
     bool atLeastOneDriverValid = false;
+    %endif
     // Load the device-driver DDI tables
     for( auto& drv : loader::context->drivers )
     {
@@ -286,12 +301,14 @@ ${tbl['export']['name']}(
         %else:
             continue; 
         %endif
+        %if tbl['experimental'] is False: #//Experimental Tables may not be implemented in driver
         auto getTableResult = getTable( version, &drv.dditable.${n}.${tbl['name']});
         if(getTableResult == ZE_RESULT_SUCCESS) 
             atLeastOneDriverValid = true;
-        %if tbl['experimental'] is False:
         else
             drv.initStatus = getTableResult;
+        %else:
+        result = getTable( version, &drv.dditable.${n}.${tbl['name']});
         %endif
     }
 

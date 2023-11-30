@@ -17,7 +17,7 @@ Level Zero Loader will read this environment settings when either `zeInit` or `z
 By default, no validation modes will be enabled. The individual validation modes must be enabled with the following environment settings:
 
 - `ZE_ENABLE_PARAMETER_VALIDATION`
-- `ZE_ENABLE_HANDLE_LIFETIME`  (Not yet Implemeneted)
+- `ZE_ENABLE_HANDLE_LIFETIME`
 - `ZE_ENABLE_MEMORY_TRACKER` (Not yet Implemeneted)
 - `ZE_ENABLE_THREADING_VALIDATION` (Not yet Implemeneted)
 
@@ -37,7 +37,7 @@ Parameter Validation mode maintains no internal state.  It performs the followin
 
 If a check fails, the appropriate error code is returned and the driver API is not called.
 
-### `ZE_ENABLE_HANDLE_LIFETIME`  (Not yet Implemeneted)
+### `ZE_ENABLE_HANDLE_LIFETIME`
 
 This mode maintains an internal mapping of each handle type to a state structure.
 

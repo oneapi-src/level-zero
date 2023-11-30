@@ -1,91 +1,71 @@
 /*
  * ***THIS FILE IS GENERATED. ***
- * See valddi.cpp.mako for modifications
+ * See handle_lifetime.cpp.mako for modifications
  *
  * Copyright (C) 2019-2023 Intel Corporation
  *
  * SPDX-License-Identifier: MIT
  *
- * @file zet_parameter_validation.cpp
+ * @file zet_handle_lifetime.cpp
  *
  */
 #include "ze_validation_layer.h"
-#include "ze_parameter_validation.h"
+#include "ze_handle_lifetime.h"
 
 namespace validation_layer
 {
-
     ze_result_t
-    ZETParameterValidation::zetModuleGetDebugInfo(
+    ZETHandleLifetimeValidation::zetModuleGetDebugInfo(
         zet_module_handle_t hModule,                    ///< [in] handle of the module
         zet_module_debug_info_format_t format,          ///< [in] debug info format requested
         size_t* pSize,                                  ///< [in,out] size of debug info in bytes
         uint8_t* pDebugInfo                             ///< [in,out][optional] byte pointer to debug info
         )
-    {
-        if( nullptr == hModule )
-            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
-
-        if( ZET_MODULE_DEBUG_INFO_FORMAT_ELF_DWARF < format )
-            return ZE_RESULT_ERROR_INVALID_ENUMERATION;
-
-        if( nullptr == pSize )
-            return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
-
+    { 
+        
+        if ( !context.handleLifetime->isHandleValid( hModule )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
         return ZE_RESULT_SUCCESS;
     }
-
-
     ze_result_t
-    ZETParameterValidation::zetDeviceGetDebugProperties(
+    ZETHandleLifetimeValidation::zetDeviceGetDebugProperties(
         zet_device_handle_t hDevice,                    ///< [in] device handle
         zet_device_debug_properties_t* pDebugProperties ///< [in,out] query result for debug properties
         )
-    {
-        if( nullptr == hDevice )
-            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
-
-        if( nullptr == pDebugProperties )
-            return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
-
-        return ParameterValidation::validateExtensions(pDebugProperties);
+    { 
+        
+        if ( !context.handleLifetime->isHandleValid( hDevice )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        return ZE_RESULT_SUCCESS;
     }
-
-
     ze_result_t
-    ZETParameterValidation::zetDebugAttach(
+    ZETHandleLifetimeValidation::zetDebugAttach(
         zet_device_handle_t hDevice,                    ///< [in] device handle
         const zet_debug_config_t* config,               ///< [in] the debug configuration
         zet_debug_session_handle_t* phDebug             ///< [out] debug session handle
         )
-    {
-        if( nullptr == hDevice )
-            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
-
-        if( nullptr == config )
-            return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
-
-        if( nullptr == phDebug )
-            return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
-
+    { 
+        
+        if ( !context.handleLifetime->isHandleValid( hDevice )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
         return ZE_RESULT_SUCCESS;
     }
-
-
     ze_result_t
-    ZETParameterValidation::zetDebugDetach(
+    ZETHandleLifetimeValidation::zetDebugDetach(
         zet_debug_session_handle_t hDebug               ///< [in][release] debug session handle
         )
-    {
-        if( nullptr == hDebug )
-            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
-
+    { 
+        
+        if ( !context.handleLifetime->isHandleValid( hDebug )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
         return ZE_RESULT_SUCCESS;
     }
-
-
     ze_result_t
-    ZETParameterValidation::zetDebugReadEvent(
+    ZETHandleLifetimeValidation::zetDebugReadEvent(
         zet_debug_session_handle_t hDebug,              ///< [in] debug session handle
         uint64_t timeout,                               ///< [in] if non-zero, then indicates the maximum time (in milliseconds) to
                                                         ///< yield before returning ::ZE_RESULT_SUCCESS or ::ZE_RESULT_NOT_READY;
@@ -96,111 +76,81 @@ namespace validation_layer
                                                         ///< value allowed by the accuracy of those dependencies.
         zet_debug_event_t* event                        ///< [in,out] a pointer to a ::zet_debug_event_t.
         )
-    {
-        if( nullptr == hDebug )
-            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
-
-        if( nullptr == event )
-            return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
-
+    { 
+        
+        if ( !context.handleLifetime->isHandleValid( hDebug )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
         return ZE_RESULT_SUCCESS;
     }
-
-
     ze_result_t
-    ZETParameterValidation::zetDebugAcknowledgeEvent(
+    ZETHandleLifetimeValidation::zetDebugAcknowledgeEvent(
         zet_debug_session_handle_t hDebug,              ///< [in] debug session handle
         const zet_debug_event_t* event                  ///< [in] a pointer to a ::zet_debug_event_t.
         )
-    {
-        if( nullptr == hDebug )
-            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
-
-        if( nullptr == event )
-            return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
-
+    { 
+        
+        if ( !context.handleLifetime->isHandleValid( hDebug )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
         return ZE_RESULT_SUCCESS;
     }
-
-
     ze_result_t
-    ZETParameterValidation::zetDebugInterrupt(
+    ZETHandleLifetimeValidation::zetDebugInterrupt(
         zet_debug_session_handle_t hDebug,              ///< [in] debug session handle
         ze_device_thread_t thread                       ///< [in] the thread to interrupt
         )
-    {
-        if( nullptr == hDebug )
-            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
-
+    { 
+        
+        if ( !context.handleLifetime->isHandleValid( hDebug )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
         return ZE_RESULT_SUCCESS;
     }
-
-
     ze_result_t
-    ZETParameterValidation::zetDebugResume(
+    ZETHandleLifetimeValidation::zetDebugResume(
         zet_debug_session_handle_t hDebug,              ///< [in] debug session handle
         ze_device_thread_t thread                       ///< [in] the thread to resume
         )
-    {
-        if( nullptr == hDebug )
-            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
-
+    { 
+        
+        if ( !context.handleLifetime->isHandleValid( hDebug )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
         return ZE_RESULT_SUCCESS;
     }
-
-
     ze_result_t
-    ZETParameterValidation::zetDebugReadMemory(
+    ZETHandleLifetimeValidation::zetDebugReadMemory(
         zet_debug_session_handle_t hDebug,              ///< [in] debug session handle
         ze_device_thread_t thread,                      ///< [in] the thread identifier.
         const zet_debug_memory_space_desc_t* desc,      ///< [in] memory space descriptor
         size_t size,                                    ///< [in] the number of bytes to read
         void* buffer                                    ///< [in,out] a buffer to hold a copy of the memory
         )
-    {
-        if( nullptr == hDebug )
-            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
-
-        if( nullptr == desc )
-            return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
-
-        if( nullptr == buffer )
-            return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
-
-        if( ZET_DEBUG_MEMORY_SPACE_TYPE_SLM < desc->type )
-            return ZE_RESULT_ERROR_INVALID_ENUMERATION;
-
-        return ParameterValidation::validateExtensions(desc);
+    { 
+        
+        if ( !context.handleLifetime->isHandleValid( hDebug )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        return ZE_RESULT_SUCCESS;
     }
-
-
     ze_result_t
-    ZETParameterValidation::zetDebugWriteMemory(
+    ZETHandleLifetimeValidation::zetDebugWriteMemory(
         zet_debug_session_handle_t hDebug,              ///< [in] debug session handle
         ze_device_thread_t thread,                      ///< [in] the thread identifier.
         const zet_debug_memory_space_desc_t* desc,      ///< [in] memory space descriptor
         size_t size,                                    ///< [in] the number of bytes to write
         const void* buffer                              ///< [in] a buffer holding the pattern to write
         )
-    {
-        if( nullptr == hDebug )
-            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
-
-        if( nullptr == desc )
-            return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
-
-        if( nullptr == buffer )
-            return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
-
-        if( ZET_DEBUG_MEMORY_SPACE_TYPE_SLM < desc->type )
-            return ZE_RESULT_ERROR_INVALID_ENUMERATION;
-
-        return ParameterValidation::validateExtensions(desc);
+    { 
+        
+        if ( !context.handleLifetime->isHandleValid( hDebug )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        return ZE_RESULT_SUCCESS;
     }
-
-
     ze_result_t
-    ZETParameterValidation::zetDebugGetRegisterSetProperties(
+    ZETHandleLifetimeValidation::zetDebugGetRegisterSetProperties(
         zet_device_handle_t hDevice,                    ///< [in] device handle
         uint32_t* pCount,                               ///< [in,out] pointer to the number of register set properties.
                                                         ///< if count is zero, then the driver shall update the value with the
@@ -213,19 +163,15 @@ namespace validation_layer
                                                         ///< if count is less than the number of register set properties available,
                                                         ///< then driver shall only retrieve that number of register set properties.
         )
-    {
-        if( nullptr == hDevice )
-            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
-
-        if( nullptr == pCount )
-            return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
-
-        return ParameterValidation::validateExtensions(pRegisterSetProperties);
+    { 
+        
+        if ( !context.handleLifetime->isHandleValid( hDevice )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        return ZE_RESULT_SUCCESS;
     }
-
-
     ze_result_t
-    ZETParameterValidation::zetDebugGetThreadRegisterSetProperties(
+    ZETHandleLifetimeValidation::zetDebugGetThreadRegisterSetProperties(
         zet_debug_session_handle_t hDebug,              ///< [in] debug session handle
         ze_device_thread_t thread,                      ///< [in] the thread identifier specifying a single stopped thread
         uint32_t* pCount,                               ///< [in,out] pointer to the number of register set properties.
@@ -239,19 +185,15 @@ namespace validation_layer
                                                         ///< if count is less than the number of register set properties available,
                                                         ///< then driver shall only retrieve that number of register set properties.
         )
-    {
-        if( nullptr == hDebug )
-            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
-
-        if( nullptr == pCount )
-            return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
-
-        return ParameterValidation::validateExtensions(pRegisterSetProperties);
+    { 
+        
+        if ( !context.handleLifetime->isHandleValid( hDebug )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        return ZE_RESULT_SUCCESS;
     }
-
-
     ze_result_t
-    ZETParameterValidation::zetDebugReadRegisters(
+    ZETHandleLifetimeValidation::zetDebugReadRegisters(
         zet_debug_session_handle_t hDebug,              ///< [in] debug session handle
         ze_device_thread_t thread,                      ///< [in] the thread identifier
         uint32_t type,                                  ///< [in] register set type
@@ -263,16 +205,15 @@ namespace validation_layer
                                                         ///< for the type
         void* pRegisterValues                           ///< [in,out][optional][range(0, count)] buffer of register values
         )
-    {
-        if( nullptr == hDebug )
-            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
-
+    { 
+        
+        if ( !context.handleLifetime->isHandleValid( hDebug )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
         return ZE_RESULT_SUCCESS;
     }
-
-
     ze_result_t
-    ZETParameterValidation::zetDebugWriteRegisters(
+    ZETHandleLifetimeValidation::zetDebugWriteRegisters(
         zet_debug_session_handle_t hDebug,              ///< [in] debug session handle
         ze_device_thread_t thread,                      ///< [in] the thread identifier
         uint32_t type,                                  ///< [in] register set type
@@ -284,16 +225,15 @@ namespace validation_layer
                                                         ///< ::zet_debug_register_group_properties_t for the type
         void* pRegisterValues                           ///< [in,out][optional][range(0, count)] buffer of register values
         )
-    {
-        if( nullptr == hDebug )
-            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
-
+    { 
+        
+        if ( !context.handleLifetime->isHandleValid( hDebug )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
         return ZE_RESULT_SUCCESS;
     }
-
-
     ze_result_t
-    ZETParameterValidation::zetMetricGroupGet(
+    ZETHandleLifetimeValidation::zetMetricGroupGet(
         zet_device_handle_t hDevice,                    ///< [in] handle of the device
         uint32_t* pCount,                               ///< [in,out] pointer to the number of metric groups.
                                                         ///< if count is zero, then the driver shall update the value with the
@@ -305,35 +245,27 @@ namespace validation_layer
                                                         ///< if count is less than the number of metric groups available, then
                                                         ///< driver shall only retrieve that number of metric groups.
         )
-    {
-        if( nullptr == hDevice )
-            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
-
-        if( nullptr == pCount )
-            return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
-
+    { 
+        
+        if ( !context.handleLifetime->isHandleValid( hDevice )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
         return ZE_RESULT_SUCCESS;
     }
-
-
     ze_result_t
-    ZETParameterValidation::zetMetricGroupGetProperties(
+    ZETHandleLifetimeValidation::zetMetricGroupGetProperties(
         zet_metric_group_handle_t hMetricGroup,         ///< [in] handle of the metric group
         zet_metric_group_properties_t* pProperties      ///< [in,out] metric group properties
         )
-    {
-        if( nullptr == hMetricGroup )
-            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
-
-        if( nullptr == pProperties )
-            return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
-
-        return ParameterValidation::validateExtensions(pProperties);
+    { 
+        
+        if ( !context.handleLifetime->isHandleValid( hMetricGroup )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        return ZE_RESULT_SUCCESS;
     }
-
-
     ze_result_t
-    ZETParameterValidation::zetMetricGroupCalculateMetricValues(
+    ZETHandleLifetimeValidation::zetMetricGroupCalculateMetricValues(
         zet_metric_group_handle_t hMetricGroup,         ///< [in] handle of the metric group
         zet_metric_group_calculation_type_t type,       ///< [in] calculation type to be applied on raw data
         size_t rawDataSize,                             ///< [in] size in bytes of raw data buffer
@@ -348,25 +280,15 @@ namespace validation_layer
                                                         ///< if count is less than the number available in the raw data buffer,
                                                         ///< then driver shall only calculate that number of metric values.
         )
-    {
-        if( nullptr == hMetricGroup )
-            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
-
-        if( ZET_METRIC_GROUP_CALCULATION_TYPE_MAX_METRIC_VALUES < type )
-            return ZE_RESULT_ERROR_INVALID_ENUMERATION;
-
-        if( nullptr == pRawData )
-            return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
-
-        if( nullptr == pMetricValueCount )
-            return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
-
+    { 
+        
+        if ( !context.handleLifetime->isHandleValid( hMetricGroup )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
         return ZE_RESULT_SUCCESS;
     }
-
-
     ze_result_t
-    ZETParameterValidation::zetMetricGet(
+    ZETHandleLifetimeValidation::zetMetricGet(
         zet_metric_group_handle_t hMetricGroup,         ///< [in] handle of the metric group
         uint32_t* pCount,                               ///< [in,out] pointer to the number of metrics.
                                                         ///< if count is zero, then the driver shall update the value with the
@@ -377,35 +299,27 @@ namespace validation_layer
                                                         ///< if count is less than the number of metrics available, then driver
                                                         ///< shall only retrieve that number of metrics.
         )
-    {
-        if( nullptr == hMetricGroup )
-            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
-
-        if( nullptr == pCount )
-            return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
-
+    { 
+        
+        if ( !context.handleLifetime->isHandleValid( hMetricGroup )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
         return ZE_RESULT_SUCCESS;
     }
-
-
     ze_result_t
-    ZETParameterValidation::zetMetricGetProperties(
+    ZETHandleLifetimeValidation::zetMetricGetProperties(
         zet_metric_handle_t hMetric,                    ///< [in] handle of the metric
         zet_metric_properties_t* pProperties            ///< [in,out] metric properties
         )
-    {
-        if( nullptr == hMetric )
-            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
-
-        if( nullptr == pProperties )
-            return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
-
-        return ParameterValidation::validateExtensions(pProperties);
+    { 
+        
+        if ( !context.handleLifetime->isHandleValid( hMetric )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        return ZE_RESULT_SUCCESS;
     }
-
-
     ze_result_t
-    ZETParameterValidation::zetContextActivateMetricGroups(
+    ZETHandleLifetimeValidation::zetContextActivateMetricGroups(
         zet_context_handle_t hContext,                  ///< [in] handle of the context object
         zet_device_handle_t hDevice,                    ///< [in] handle of the device
         uint32_t count,                                 ///< [in] metric group count to activate; must be 0 if `nullptr ==
@@ -415,22 +329,23 @@ namespace validation_layer
                                                         ///< all metrics groups must come from a different domains.
                                                         ///< metric query and metric stream must use activated metric groups.
         )
-    {
-        if( nullptr == hContext )
-            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
-
-        if( nullptr == hDevice )
-            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
-
-        if( (nullptr == phMetricGroups) && (0 < count) )
-            return ZE_RESULT_ERROR_INVALID_SIZE;
-
+    { 
+        
+        if ( !context.handleLifetime->isHandleValid( hContext )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        if ( !context.handleLifetime->isHandleValid( hDevice )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        for (size_t i = 0; ( nullptr != phMetricGroups) && (i < count); ++i){
+            if (!context.handleLifetime->isHandleValid( phMetricGroups[i] )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+            }
+        }
         return ZE_RESULT_SUCCESS;
     }
-
-
     ze_result_t
-    ZETParameterValidation::zetMetricStreamerOpen(
+    ZETHandleLifetimeValidation::zetMetricStreamerOpen(
         zet_context_handle_t hContext,                  ///< [in] handle of the context object
         zet_device_handle_t hDevice,                    ///< [in] handle of the device
         zet_metric_group_handle_t hMetricGroup,         ///< [in] handle of the metric group
@@ -438,57 +353,54 @@ namespace validation_layer
         ze_event_handle_t hNotificationEvent,           ///< [in][optional] event used for report availability notification
         zet_metric_streamer_handle_t* phMetricStreamer  ///< [out] handle of metric streamer
         )
-    {
-        if( nullptr == hContext )
-            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
-
-        if( nullptr == hDevice )
-            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
-
-        if( nullptr == hMetricGroup )
-            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
-
-        if( nullptr == desc )
-            return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
-
-        if( nullptr == phMetricStreamer )
-            return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
-
-        return ParameterValidation::validateExtensions(desc);
+    { 
+        
+        if ( !context.handleLifetime->isHandleValid( hContext )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        if ( !context.handleLifetime->isHandleValid( hDevice )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        if ( !context.handleLifetime->isHandleValid( hMetricGroup )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        if (hNotificationEvent && !context.handleLifetime->isHandleValid( hNotificationEvent )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        return ZE_RESULT_SUCCESS;
     }
-
-
     ze_result_t
-    ZETParameterValidation::zetCommandListAppendMetricStreamerMarker(
+    ZETHandleLifetimeValidation::zetCommandListAppendMetricStreamerMarker(
         zet_command_list_handle_t hCommandList,         ///< [in] handle of the command list
         zet_metric_streamer_handle_t hMetricStreamer,   ///< [in] handle of the metric streamer
         uint32_t value                                  ///< [in] streamer marker value
         )
-    {
-        if( nullptr == hCommandList )
-            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
-
-        if( nullptr == hMetricStreamer )
-            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
-
+    { 
+        
+        if ( !context.handleLifetime->isHandleValid( hCommandList )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        if (!context.handleLifetime->isOpen( hCommandList )){
+            return ZE_RESULT_ERROR_INVALID_ARGUMENT;
+        }
+        if ( !context.handleLifetime->isHandleValid( hMetricStreamer )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
         return ZE_RESULT_SUCCESS;
     }
-
-
     ze_result_t
-    ZETParameterValidation::zetMetricStreamerClose(
+    ZETHandleLifetimeValidation::zetMetricStreamerClose(
         zet_metric_streamer_handle_t hMetricStreamer    ///< [in][release] handle of the metric streamer
         )
-    {
-        if( nullptr == hMetricStreamer )
-            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
-
+    { 
+        
+        if ( !context.handleLifetime->isHandleValid( hMetricStreamer )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
         return ZE_RESULT_SUCCESS;
     }
-
-
     ze_result_t
-    ZETParameterValidation::zetMetricStreamerReadData(
+    ZETHandleLifetimeValidation::zetMetricStreamerReadData(
         zet_metric_streamer_handle_t hMetricStreamer,   ///< [in] handle of the metric streamer
         uint32_t maxReportCount,                        ///< [in] the maximum number of reports the application wants to receive.
                                                         ///< if `UINT32_MAX`, then function will retrieve all reports available
@@ -502,153 +414,150 @@ namespace validation_layer
         uint8_t* pRawData                               ///< [in,out][optional][range(0, *pRawDataSize)] buffer containing streamer
                                                         ///< reports in raw format
         )
-    {
-        if( nullptr == hMetricStreamer )
-            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
-
-        if( nullptr == pRawDataSize )
-            return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
-
+    { 
+        
+        if ( !context.handleLifetime->isHandleValid( hMetricStreamer )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
         return ZE_RESULT_SUCCESS;
     }
-
-
     ze_result_t
-    ZETParameterValidation::zetMetricQueryPoolCreate(
+    ZETHandleLifetimeValidation::zetMetricQueryPoolCreate(
         zet_context_handle_t hContext,                  ///< [in] handle of the context object
         zet_device_handle_t hDevice,                    ///< [in] handle of the device
         zet_metric_group_handle_t hMetricGroup,         ///< [in] metric group associated with the query object.
         const zet_metric_query_pool_desc_t* desc,       ///< [in] metric query pool descriptor
         zet_metric_query_pool_handle_t* phMetricQueryPool   ///< [out] handle of metric query pool
         )
-    {
-        if( nullptr == hContext )
-            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
-
-        if( nullptr == hDevice )
-            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
-
-        if( nullptr == hMetricGroup )
-            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
-
-        if( nullptr == desc )
-            return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
-
-        if( nullptr == phMetricQueryPool )
-            return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
-
-        if( ZET_METRIC_QUERY_POOL_TYPE_EXECUTION < desc->type )
-            return ZE_RESULT_ERROR_INVALID_ENUMERATION;
-
-        return ParameterValidation::validateExtensions(desc);
-    }
-
-
-    ze_result_t
-    ZETParameterValidation::zetMetricQueryPoolDestroy(
-        zet_metric_query_pool_handle_t hMetricQueryPool ///< [in][release] handle of the metric query pool
-        )
-    {
-        if( nullptr == hMetricQueryPool )
-            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
-
+    { 
+        
+        if ( !context.handleLifetime->isHandleValid( hContext )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        if ( !context.handleLifetime->isHandleValid( hDevice )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        if ( !context.handleLifetime->isHandleValid( hMetricGroup )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
         return ZE_RESULT_SUCCESS;
     }
-
-
     ze_result_t
-    ZETParameterValidation::zetMetricQueryCreate(
+    ZETHandleLifetimeValidation::zetMetricQueryPoolDestroy(
+        zet_metric_query_pool_handle_t hMetricQueryPool ///< [in][release] handle of the metric query pool
+        )
+    { 
+        
+        if (hMetricQueryPool && context.handleLifetime->isHandleValid( hMetricQueryPool )){
+            if (context.handleLifetime->hasDependents( hMetricQueryPool )){
+                return ZE_RESULT_ERROR_HANDLE_OBJECT_IN_USE;
+            }
+            context.handleLifetime->removeDependent( hMetricQueryPool);
+            context.handleLifetime->removeHandle( hMetricQueryPool );
+        } else if (!context.handleLifetime->isHandleValid( hMetricQueryPool )) {
+            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    ze_result_t
+    ZETHandleLifetimeValidation::zetMetricQueryCreate(
         zet_metric_query_pool_handle_t hMetricQueryPool,///< [in] handle of the metric query pool
         uint32_t index,                                 ///< [in] index of the query within the pool
         zet_metric_query_handle_t* phMetricQuery        ///< [out] handle of metric query
         )
-    {
-        if( nullptr == hMetricQueryPool )
-            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
-
-        if( nullptr == phMetricQuery )
-            return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
-
+    { 
+        
+        if ( !context.handleLifetime->isHandleValid( hMetricQueryPool )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
         return ZE_RESULT_SUCCESS;
     }
-
-
     ze_result_t
-    ZETParameterValidation::zetMetricQueryDestroy(
+    ZETHandleLifetimeValidation::zetMetricQueryDestroy(
         zet_metric_query_handle_t hMetricQuery          ///< [in][release] handle of metric query
         )
-    {
-        if( nullptr == hMetricQuery )
+    { 
+        
+        if (hMetricQuery && context.handleLifetime->isHandleValid( hMetricQuery )){
+            if (context.handleLifetime->hasDependents( hMetricQuery )){
+                return ZE_RESULT_ERROR_HANDLE_OBJECT_IN_USE;
+            }
+            context.handleLifetime->removeDependent( hMetricQuery);
+            context.handleLifetime->removeHandle( hMetricQuery );
+        } else if (!context.handleLifetime->isHandleValid( hMetricQuery )) {
             return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
-
+        }
         return ZE_RESULT_SUCCESS;
     }
-
-
     ze_result_t
-    ZETParameterValidation::zetMetricQueryReset(
+    ZETHandleLifetimeValidation::zetMetricQueryReset(
         zet_metric_query_handle_t hMetricQuery          ///< [in] handle of metric query
         )
-    {
-        if( nullptr == hMetricQuery )
-            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
-
+    { 
+        
+        if ( !context.handleLifetime->isHandleValid( hMetricQuery )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
         return ZE_RESULT_SUCCESS;
     }
-
-
     ze_result_t
-    ZETParameterValidation::zetCommandListAppendMetricQueryBegin(
+    ZETHandleLifetimeValidation::zetCommandListAppendMetricQueryBegin(
         zet_command_list_handle_t hCommandList,         ///< [in] handle of the command list
         zet_metric_query_handle_t hMetricQuery          ///< [in] handle of the metric query
         )
-    {
-        if( nullptr == hCommandList )
-            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
-
-        if( nullptr == hMetricQuery )
-            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
-
+    { 
+        
+        if ( !context.handleLifetime->isHandleValid( hCommandList )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        if (!context.handleLifetime->isOpen( hCommandList )){
+            return ZE_RESULT_ERROR_INVALID_ARGUMENT;
+        }
+        if ( !context.handleLifetime->isHandleValid( hMetricQuery )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
         return ZE_RESULT_SUCCESS;
     }
-
-
     ze_result_t
-    ZETParameterValidation::zetCommandListAppendMetricQueryEnd(
+    ZETHandleLifetimeValidation::zetCommandListAppendMetricQueryEnd(
         zet_command_list_handle_t hCommandList,         ///< [in] handle of the command list
         zet_metric_query_handle_t hMetricQuery,         ///< [in] handle of the metric query
         ze_event_handle_t hSignalEvent,                 ///< [in][optional] handle of the event to signal on completion
         uint32_t numWaitEvents,                         ///< [in] must be zero
         ze_event_handle_t* phWaitEvents                 ///< [in][mbz] must be nullptr
         )
-    {
-        if( nullptr == hCommandList )
-            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
-
-        if( nullptr == hMetricQuery )
-            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
-
-        if( (nullptr == phWaitEvents) && (0 < numWaitEvents) )
-            return ZE_RESULT_ERROR_INVALID_SIZE;
-
+    { 
+        
+        if ( !context.handleLifetime->isHandleValid( hCommandList )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        if (!context.handleLifetime->isOpen( hCommandList )){
+            return ZE_RESULT_ERROR_INVALID_ARGUMENT;
+        }
+        if ( !context.handleLifetime->isHandleValid( hMetricQuery )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        if (hSignalEvent && !context.handleLifetime->isHandleValid( hSignalEvent )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
         return ZE_RESULT_SUCCESS;
     }
-
-
     ze_result_t
-    ZETParameterValidation::zetCommandListAppendMetricMemoryBarrier(
+    ZETHandleLifetimeValidation::zetCommandListAppendMetricMemoryBarrier(
         zet_command_list_handle_t hCommandList          ///< [in] handle of the command list
         )
-    {
-        if( nullptr == hCommandList )
-            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
-
+    { 
+        
+        if ( !context.handleLifetime->isHandleValid( hCommandList )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        if (!context.handleLifetime->isOpen( hCommandList )){
+            return ZE_RESULT_ERROR_INVALID_ARGUMENT;
+        }
         return ZE_RESULT_SUCCESS;
     }
-
-
     ze_result_t
-    ZETParameterValidation::zetMetricQueryGetData(
+    ZETHandleLifetimeValidation::zetMetricQueryGetData(
         zet_metric_query_handle_t hMetricQuery,         ///< [in] handle of the metric query
         size_t* pRawDataSize,                           ///< [in,out] pointer to size in bytes of raw data requested to read.
                                                         ///< if size is zero, then the driver will update the value with the total
@@ -660,115 +569,93 @@ namespace validation_layer
         uint8_t* pRawData                               ///< [in,out][optional][range(0, *pRawDataSize)] buffer containing query
                                                         ///< reports in raw format
         )
-    {
-        if( nullptr == hMetricQuery )
-            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
-
-        if( nullptr == pRawDataSize )
-            return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
-
+    { 
+        
+        if ( !context.handleLifetime->isHandleValid( hMetricQuery )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
         return ZE_RESULT_SUCCESS;
     }
-
-
     ze_result_t
-    ZETParameterValidation::zetKernelGetProfileInfo(
+    ZETHandleLifetimeValidation::zetKernelGetProfileInfo(
         zet_kernel_handle_t hKernel,                    ///< [in] handle to kernel
         zet_profile_properties_t* pProfileProperties    ///< [out] pointer to profile properties
         )
-    {
-        if( nullptr == hKernel )
-            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
-
-        if( nullptr == pProfileProperties )
-            return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
-
-        return ParameterValidation::validateExtensions(pProfileProperties);
+    { 
+        
+        if ( !context.handleLifetime->isHandleValid( hKernel )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        return ZE_RESULT_SUCCESS;
     }
-
-
     ze_result_t
-    ZETParameterValidation::zetTracerExpCreate(
+    ZETHandleLifetimeValidation::zetTracerExpCreate(
         zet_context_handle_t hContext,                  ///< [in] handle of the context object
         const zet_tracer_exp_desc_t* desc,              ///< [in] pointer to tracer descriptor
         zet_tracer_exp_handle_t* phTracer               ///< [out] pointer to handle of tracer object created
         )
-    {
-        if( nullptr == hContext )
-            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
-
-        if( nullptr == desc )
-            return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
-
-        if( nullptr == desc->pUserData )
-            return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
-
-        if( nullptr == phTracer )
-            return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
-
-        return ParameterValidation::validateExtensions(desc);
+    { 
+        
+        if ( !context.handleLifetime->isHandleValid( hContext )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        return ZE_RESULT_SUCCESS;
     }
-
-
     ze_result_t
-    ZETParameterValidation::zetTracerExpDestroy(
+    ZETHandleLifetimeValidation::zetTracerExpDestroy(
         zet_tracer_exp_handle_t hTracer                 ///< [in][release] handle of tracer object to destroy
         )
-    {
-        if( nullptr == hTracer )
+    { 
+        
+        if (hTracer && context.handleLifetime->isHandleValid( hTracer )){
+            if (context.handleLifetime->hasDependents( hTracer )){
+                return ZE_RESULT_ERROR_HANDLE_OBJECT_IN_USE;
+            }
+            context.handleLifetime->removeDependent( hTracer);
+            context.handleLifetime->removeHandle( hTracer );
+        } else if (!context.handleLifetime->isHandleValid( hTracer )) {
             return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
-
+        }
         return ZE_RESULT_SUCCESS;
     }
-
-
     ze_result_t
-    ZETParameterValidation::zetTracerExpSetPrologues(
+    ZETHandleLifetimeValidation::zetTracerExpSetPrologues(
         zet_tracer_exp_handle_t hTracer,                ///< [in] handle of the tracer
         zet_core_callbacks_t* pCoreCbs                  ///< [in] pointer to table of 'core' callback function pointers
         )
-    {
-        if( nullptr == hTracer )
-            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
-
-        if( nullptr == pCoreCbs )
-            return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
-
+    { 
+        
+        if ( !context.handleLifetime->isHandleValid( hTracer )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
         return ZE_RESULT_SUCCESS;
     }
-
-
     ze_result_t
-    ZETParameterValidation::zetTracerExpSetEpilogues(
+    ZETHandleLifetimeValidation::zetTracerExpSetEpilogues(
         zet_tracer_exp_handle_t hTracer,                ///< [in] handle of the tracer
         zet_core_callbacks_t* pCoreCbs                  ///< [in] pointer to table of 'core' callback function pointers
         )
-    {
-        if( nullptr == hTracer )
-            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
-
-        if( nullptr == pCoreCbs )
-            return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
-
+    { 
+        
+        if ( !context.handleLifetime->isHandleValid( hTracer )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
         return ZE_RESULT_SUCCESS;
     }
-
-
     ze_result_t
-    ZETParameterValidation::zetTracerExpSetEnabled(
+    ZETHandleLifetimeValidation::zetTracerExpSetEnabled(
         zet_tracer_exp_handle_t hTracer,                ///< [in] handle of the tracer
         ze_bool_t enable                                ///< [in] enable the tracer if true; disable if false
         )
-    {
-        if( nullptr == hTracer )
-            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
-
+    { 
+        
+        if ( !context.handleLifetime->isHandleValid( hTracer )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
         return ZE_RESULT_SUCCESS;
     }
-
-
     ze_result_t
-    ZETParameterValidation::zetMetricGroupCalculateMultipleMetricValuesExp(
+    ZETHandleLifetimeValidation::zetMetricGroupCalculateMultipleMetricValuesExp(
         zet_metric_group_handle_t hMetricGroup,         ///< [in] handle of the metric group
         zet_metric_group_calculation_type_t type,       ///< [in] calculation type to be applied on raw data
         size_t rawDataSize,                             ///< [in] size in bytes of raw data buffer
@@ -793,49 +680,29 @@ namespace validation_layer
                                                         ///< if count is less than the number available in the raw data buffer,
                                                         ///< then driver shall only calculate that number of metric values.
         )
-    {
-        if( nullptr == hMetricGroup )
-            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
-
-        if( ZET_METRIC_GROUP_CALCULATION_TYPE_MAX_METRIC_VALUES < type )
-            return ZE_RESULT_ERROR_INVALID_ENUMERATION;
-
-        if( nullptr == pRawData )
-            return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
-
-        if( nullptr == pSetCount )
-            return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
-
-        if( nullptr == pTotalMetricValueCount )
-            return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
-
+    { 
+        
+        if ( !context.handleLifetime->isHandleValid( hMetricGroup )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
         return ZE_RESULT_SUCCESS;
     }
-
-
     ze_result_t
-    ZETParameterValidation::zetMetricGroupGetGlobalTimestampsExp(
+    ZETHandleLifetimeValidation::zetMetricGroupGetGlobalTimestampsExp(
         zet_metric_group_handle_t hMetricGroup,         ///< [in] handle of the metric group
         ze_bool_t synchronizedWithHost,                 ///< [in] Returns the timestamps synchronized to the host or the device.
         uint64_t* globalTimestamp,                      ///< [out] Device timestamp.
         uint64_t* metricTimestamp                       ///< [out] Metric timestamp.
         )
-    {
-        if( nullptr == hMetricGroup )
-            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
-
-        if( nullptr == globalTimestamp )
-            return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
-
-        if( nullptr == metricTimestamp )
-            return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
-
+    { 
+        
+        if ( !context.handleLifetime->isHandleValid( hMetricGroup )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
         return ZE_RESULT_SUCCESS;
     }
-
-
     ze_result_t
-    ZETParameterValidation::zetMetricGroupGetExportDataExp(
+    ZETHandleLifetimeValidation::zetMetricGroupGetExportDataExp(
         zet_metric_group_handle_t hMetricGroup,         ///< [in] handle of the metric group
         const uint8_t* pRawData,                        ///< [in] buffer of raw data
         size_t rawDataSize,                             ///< [in] size in bytes of raw data buffer
@@ -846,22 +713,15 @@ namespace validation_layer
                                                         ///< value with the actual number of bytes necessary to store the exported data.
         uint8_t * pExportData                           ///< [in,out][optional][range(0, *pExportDataSize)] buffer of exported data.
         )
-    {
-        if( nullptr == hMetricGroup )
-            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
-
-        if( nullptr == pRawData )
-            return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
-
-        if( nullptr == pExportDataSize )
-            return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
-
+    { 
+        
+        if ( !context.handleLifetime->isHandleValid( hMetricGroup )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
         return ZE_RESULT_SUCCESS;
     }
-
-
     ze_result_t
-    ZETParameterValidation::zetMetricGroupCalculateMetricExportDataExp(
+    ZETHandleLifetimeValidation::zetMetricGroupCalculateMetricExportDataExp(
         ze_driver_handle_t hDriver,                     ///< [in] handle of the driver instance
         zet_metric_group_calculation_type_t type,       ///< [in] calculation type to be applied on raw data
         size_t exportDataSize,                          ///< [in] size in bytes of exported data buffer
@@ -887,26 +747,11 @@ namespace validation_layer
                                                         ///< if count is less than the number available in the raw data buffer,
                                                         ///< then driver shall only calculate that number of metric values.
         )
-    {
-        if( nullptr == hDriver )
-            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
-
-        if( ZET_METRIC_GROUP_CALCULATION_TYPE_MAX_METRIC_VALUES < type )
-            return ZE_RESULT_ERROR_INVALID_ENUMERATION;
-
-        if( nullptr == pExportData )
-            return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
-
-        if( nullptr == pCalculateDescriptor )
-            return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
-
-        if( nullptr == pSetCount )
-            return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
-
-        if( nullptr == pTotalMetricValueCount )
-            return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
-
-        return ParameterValidation::validateExtensions(pCalculateDescriptor);
+    { 
+        
+        if ( !context.handleLifetime->isHandleValid( hDriver )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        return ZE_RESULT_SUCCESS;
     }
-
 }

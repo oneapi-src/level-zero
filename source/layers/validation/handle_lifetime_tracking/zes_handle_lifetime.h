@@ -1,27 +1,25 @@
 /*
  * ***THIS FILE IS GENERATED. ***
- * See param.h.mako for modifications
+ * See handle_lifetime.h.mako for modifications
  *
  * Copyright (C) 2019-2023 Intel Corporation
  *
  * SPDX-License-Identifier: MIT
  *
- * @file zes_parameter_validation.h
+ * @file zes_handle_lifetime.h
  *
  */
 
-#pragma once 
+#pragma once
 #include "zes_entry_points.h"
 
 
 namespace validation_layer
 {
 
-    class ZESParameterValidation : public ZESValidationEntryPoints {
+    class ZESHandleLifetimeValidation : public ZESValidationEntryPoints {
     public:
-        ze_result_t zesInit ( zes_init_flags_t flags ) override;
-        ze_result_t zesDriverGet ( uint32_t* pCount, zes_driver_handle_t* phDrivers ) override;
-        ze_result_t zesDriverGetExtensionProperties ( zes_driver_handle_t hDriver, uint32_t* pCount, zes_driver_extension_properties_t* pExtensionProperties ) override;
+                        ze_result_t zesDriverGetExtensionProperties ( zes_driver_handle_t hDriver, uint32_t* pCount, zes_driver_extension_properties_t* pExtensionProperties ) override;
         ze_result_t zesDriverGetExtensionFunctionAddress ( zes_driver_handle_t hDriver, const char* name, void** ppFunctionAddress ) override;
         ze_result_t zesDeviceGet ( zes_driver_handle_t hDriver, uint32_t* pCount, zes_device_handle_t* phDevices ) override;
         ze_result_t zesDeviceGetProperties ( zes_device_handle_t hDevice, zes_device_properties_t* pProperties ) override;

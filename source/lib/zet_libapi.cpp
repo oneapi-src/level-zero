@@ -44,6 +44,10 @@ zetModuleGetDebugInfo(
     uint8_t* pDebugInfo                             ///< [in,out][optional] byte pointer to debug info
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetDebugInfo = ze_lib::context->zetDdiTable.Module.pfnGetDebugInfo;
     if( nullptr == pfnGetDebugInfo ) {
         if(!ze_lib::context->isInitialized)
@@ -74,6 +78,10 @@ zetDeviceGetDebugProperties(
     zet_device_debug_properties_t* pDebugProperties ///< [in,out] query result for debug properties
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetDebugProperties = ze_lib::context->zetDdiTable.Device.pfnGetDebugProperties;
     if( nullptr == pfnGetDebugProperties ) {
         if(!ze_lib::context->isInitialized)
@@ -116,6 +124,10 @@ zetDebugAttach(
     zet_debug_session_handle_t* phDebug             ///< [out] debug session handle
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnAttach = ze_lib::context->zetDdiTable.Debug.pfnAttach;
     if( nullptr == pfnAttach ) {
         if(!ze_lib::context->isInitialized)
@@ -143,6 +155,10 @@ zetDebugDetach(
     zet_debug_session_handle_t hDebug               ///< [in][release] debug session handle
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnDetach = ze_lib::context->zetDdiTable.Debug.pfnDetach;
     if( nullptr == pfnDetach ) {
         if(!ze_lib::context->isInitialized)
@@ -175,13 +191,17 @@ zetDebugReadEvent(
     uint64_t timeout,                               ///< [in] if non-zero, then indicates the maximum time (in milliseconds) to
                                                     ///< yield before returning ::ZE_RESULT_SUCCESS or ::ZE_RESULT_NOT_READY;
                                                     ///< if zero, then immediately returns the status of the event;
-                                                    ///< if UINT64_MAX, then function will not return until complete or device
-                                                    ///< is lost.
+                                                    ///< if `UINT64_MAX`, then function will not return until complete or
+                                                    ///< device is lost.
                                                     ///< Due to external dependencies, timeout may be rounded to the closest
                                                     ///< value allowed by the accuracy of those dependencies.
     zet_debug_event_t* event                        ///< [in,out] a pointer to a ::zet_debug_event_t.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnReadEvent = ze_lib::context->zetDdiTable.Debug.pfnReadEvent;
     if( nullptr == pfnReadEvent ) {
         if(!ze_lib::context->isInitialized)
@@ -212,6 +232,10 @@ zetDebugAcknowledgeEvent(
     const zet_debug_event_t* event                  ///< [in] a pointer to a ::zet_debug_event_t.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnAcknowledgeEvent = ze_lib::context->zetDdiTable.Debug.pfnAcknowledgeEvent;
     if( nullptr == pfnAcknowledgeEvent ) {
         if(!ze_lib::context->isInitialized)
@@ -242,6 +266,10 @@ zetDebugInterrupt(
     ze_device_thread_t thread                       ///< [in] the thread to interrupt
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnInterrupt = ze_lib::context->zetDdiTable.Debug.pfnInterrupt;
     if( nullptr == pfnInterrupt ) {
         if(!ze_lib::context->isInitialized)
@@ -272,6 +300,10 @@ zetDebugResume(
     ze_device_thread_t thread                       ///< [in] the thread to resume
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnResume = ze_lib::context->zetDdiTable.Debug.pfnResume;
     if( nullptr == pfnResume ) {
         if(!ze_lib::context->isInitialized)
@@ -315,6 +347,10 @@ zetDebugReadMemory(
     void* buffer                                    ///< [in,out] a buffer to hold a copy of the memory
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnReadMemory = ze_lib::context->zetDdiTable.Debug.pfnReadMemory;
     if( nullptr == pfnReadMemory ) {
         if(!ze_lib::context->isInitialized)
@@ -358,6 +394,10 @@ zetDebugWriteMemory(
     const void* buffer                              ///< [in] a buffer holding the pattern to write
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnWriteMemory = ze_lib::context->zetDdiTable.Debug.pfnWriteMemory;
     if( nullptr == pfnWriteMemory ) {
         if(!ze_lib::context->isInitialized)
@@ -397,6 +437,10 @@ zetDebugGetRegisterSetProperties(
                                                     ///< then driver shall only retrieve that number of register set properties.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetRegisterSetProperties = ze_lib::context->zetDdiTable.Debug.pfnGetRegisterSetProperties;
     if( nullptr == pfnGetRegisterSetProperties ) {
         if(!ze_lib::context->isInitialized)
@@ -441,6 +485,10 @@ zetDebugGetThreadRegisterSetProperties(
                                                     ///< then driver shall only retrieve that number of register set properties.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetThreadRegisterSetProperties = ze_lib::context->zetDdiTable.Debug.pfnGetThreadRegisterSetProperties;
     if( nullptr == pfnGetThreadRegisterSetProperties ) {
         if(!ze_lib::context->isInitialized)
@@ -471,12 +519,18 @@ zetDebugReadRegisters(
     ze_device_thread_t thread,                      ///< [in] the thread identifier
     uint32_t type,                                  ///< [in] register set type
     uint32_t start,                                 ///< [in] the starting offset into the register state area; must be less
-                                                    ///< than ::zet_debug_regset_properties_t.count for the type
-    uint32_t count,                                 ///< [in] the number of registers to read; start+count must be <=
-                                                    ///< zet_debug_register_group_properties_t.count for the type
+                                                    ///< than the `count` member of ::zet_debug_regset_properties_t for the
+                                                    ///< type
+    uint32_t count,                                 ///< [in] the number of registers to read; start+count must be less than or
+                                                    ///< equal to the `count` member of ::zet_debug_register_group_properties_t
+                                                    ///< for the type
     void* pRegisterValues                           ///< [in,out][optional][range(0, count)] buffer of register values
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnReadRegisters = ze_lib::context->zetDdiTable.Debug.pfnReadRegisters;
     if( nullptr == pfnReadRegisters ) {
         if(!ze_lib::context->isInitialized)
@@ -507,12 +561,18 @@ zetDebugWriteRegisters(
     ze_device_thread_t thread,                      ///< [in] the thread identifier
     uint32_t type,                                  ///< [in] register set type
     uint32_t start,                                 ///< [in] the starting offset into the register state area; must be less
-                                                    ///< than ::zet_debug_regset_properties_t.count for the type
-    uint32_t count,                                 ///< [in] the number of registers to write; start+count must be <=
-                                                    ///< zet_debug_register_group_properties_t.count for the type
+                                                    ///< than the `count` member of ::zet_debug_regset_properties_t for the
+                                                    ///< type
+    uint32_t count,                                 ///< [in] the number of registers to write; start+count must be less than
+                                                    ///< or equal to the `count` member of
+                                                    ///< ::zet_debug_register_group_properties_t for the type
     void* pRegisterValues                           ///< [in,out][optional][range(0, count)] buffer of register values
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnWriteRegisters = ze_lib::context->zetDdiTable.Debug.pfnWriteRegisters;
     if( nullptr == pfnWriteRegisters ) {
         if(!ze_lib::context->isInitialized)
@@ -554,6 +614,10 @@ zetMetricGroupGet(
                                                     ///< driver shall only retrieve that number of metric groups.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGet = ze_lib::context->zetDdiTable.MetricGroup.pfnGet;
     if( nullptr == pfnGet ) {
         if(!ze_lib::context->isInitialized)
@@ -587,6 +651,10 @@ zetMetricGroupGetProperties(
     zet_metric_group_properties_t* pProperties      ///< [in,out] metric group properties
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetProperties = ze_lib::context->zetDdiTable.MetricGroup.pfnGetProperties;
     if( nullptr == pfnGetProperties ) {
         if(!ze_lib::context->isInitialized)
@@ -634,6 +702,10 @@ zetMetricGroupCalculateMetricValues(
                                                     ///< then driver shall only calculate that number of metric values.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnCalculateMetricValues = ze_lib::context->zetDdiTable.MetricGroup.pfnCalculateMetricValues;
     if( nullptr == pfnCalculateMetricValues ) {
         if(!ze_lib::context->isInitialized)
@@ -674,6 +746,10 @@ zetMetricGet(
                                                     ///< shall only retrieve that number of metrics.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGet = ze_lib::context->zetDdiTable.Metric.pfnGet;
     if( nullptr == pfnGet ) {
         if(!ze_lib::context->isInitialized)
@@ -707,6 +783,10 @@ zetMetricGetProperties(
     zet_metric_properties_t* pProperties            ///< [in,out] metric properties
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetProperties = ze_lib::context->zetDdiTable.Metric.pfnGetProperties;
     if( nullptr == pfnGetProperties ) {
         if(!ze_lib::context->isInitialized)
@@ -758,6 +838,10 @@ zetContextActivateMetricGroups(
                                                     ///< metric query and metric stream must use activated metric groups.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnActivateMetricGroups = ze_lib::context->zetDdiTable.Context.pfnActivateMetricGroups;
     if( nullptr == pfnActivateMetricGroups ) {
         if(!ze_lib::context->isInitialized)
@@ -806,6 +890,10 @@ zetMetricStreamerOpen(
     zet_metric_streamer_handle_t* phMetricStreamer  ///< [out] handle of metric streamer
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnOpen = ze_lib::context->zetDdiTable.MetricStreamer.pfnOpen;
     if( nullptr == pfnOpen ) {
         if(!ze_lib::context->isInitialized)
@@ -846,6 +934,10 @@ zetCommandListAppendMetricStreamerMarker(
     uint32_t value                                  ///< [in] streamer marker value
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnAppendMetricStreamerMarker = ze_lib::context->zetDdiTable.CommandList.pfnAppendMetricStreamerMarker;
     if( nullptr == pfnAppendMetricStreamerMarker ) {
         if(!ze_lib::context->isInitialized)
@@ -877,6 +969,10 @@ zetMetricStreamerClose(
     zet_metric_streamer_handle_t hMetricStreamer    ///< [in][release] handle of the metric streamer
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnClose = ze_lib::context->zetDdiTable.MetricStreamer.pfnClose;
     if( nullptr == pfnClose ) {
         if(!ze_lib::context->isInitialized)
@@ -904,12 +1000,13 @@ zetMetricStreamerClose(
 ///         + `nullptr == hMetricStreamer`
 ///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
 ///         + `nullptr == pRawDataSize`
-///     - ::ZE_RESULT_WARNING_DROPPED_DATA - "Metric streamer data may have been dropped. Reduce sampling period."
+///     - ::ZE_RESULT_WARNING_DROPPED_DATA
+///         + Metric streamer data may have been dropped. Reduce sampling period.
 ze_result_t ZE_APICALL
 zetMetricStreamerReadData(
     zet_metric_streamer_handle_t hMetricStreamer,   ///< [in] handle of the metric streamer
     uint32_t maxReportCount,                        ///< [in] the maximum number of reports the application wants to receive.
-                                                    ///< if UINT32_MAX, then function will retrieve all reports available
+                                                    ///< if `UINT32_MAX`, then function will retrieve all reports available
     size_t* pRawDataSize,                           ///< [in,out] pointer to size in bytes of raw data requested to read.
                                                     ///< if size is zero, then the driver will update the value with the total
                                                     ///< size in bytes needed for all reports available.
@@ -921,6 +1018,10 @@ zetMetricStreamerReadData(
                                                     ///< reports in raw format
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnReadData = ze_lib::context->zetDdiTable.MetricStreamer.pfnReadData;
     if( nullptr == pfnReadData ) {
         if(!ze_lib::context->isInitialized)
@@ -963,6 +1064,10 @@ zetMetricQueryPoolCreate(
     zet_metric_query_pool_handle_t* phMetricQueryPool   ///< [out] handle of metric query pool
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnCreate = ze_lib::context->zetDdiTable.MetricQueryPool.pfnCreate;
     if( nullptr == pfnCreate ) {
         if(!ze_lib::context->isInitialized)
@@ -1000,6 +1105,10 @@ zetMetricQueryPoolDestroy(
     zet_metric_query_pool_handle_t hMetricQueryPool ///< [in][release] handle of the metric query pool
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnDestroy = ze_lib::context->zetDdiTable.MetricQueryPool.pfnDestroy;
     if( nullptr == pfnDestroy ) {
         if(!ze_lib::context->isInitialized)
@@ -1035,6 +1144,10 @@ zetMetricQueryCreate(
     zet_metric_query_handle_t* phMetricQuery        ///< [out] handle of metric query
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnCreate = ze_lib::context->zetDdiTable.MetricQuery.pfnCreate;
     if( nullptr == pfnCreate ) {
         if(!ze_lib::context->isInitialized)
@@ -1070,6 +1183,10 @@ zetMetricQueryDestroy(
     zet_metric_query_handle_t hMetricQuery          ///< [in][release] handle of metric query
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnDestroy = ze_lib::context->zetDdiTable.MetricQuery.pfnDestroy;
     if( nullptr == pfnDestroy ) {
         if(!ze_lib::context->isInitialized)
@@ -1082,7 +1199,7 @@ zetMetricQueryDestroy(
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Resets a metric query object back to inital state.
+/// @brief Resets a metric query object back to initial state.
 /// 
 /// @details
 ///     - The application must ensure the device is not currently referencing
@@ -1103,6 +1220,10 @@ zetMetricQueryReset(
     zet_metric_query_handle_t hMetricQuery          ///< [in] handle of metric query
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnReset = ze_lib::context->zetDdiTable.MetricQuery.pfnReset;
     if( nullptr == pfnReset ) {
         if(!ze_lib::context->isInitialized)
@@ -1142,6 +1263,10 @@ zetCommandListAppendMetricQueryBegin(
     zet_metric_query_handle_t hMetricQuery          ///< [in] handle of the metric query
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnAppendMetricQueryBegin = ze_lib::context->zetDdiTable.CommandList.pfnAppendMetricQueryBegin;
     if( nullptr == pfnAppendMetricQueryBegin ) {
         if(!ze_lib::context->isInitialized)
@@ -1195,6 +1320,10 @@ zetCommandListAppendMetricQueryEnd(
     ze_event_handle_t* phWaitEvents                 ///< [in][mbz] must be nullptr
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnAppendMetricQueryEnd = ze_lib::context->zetDdiTable.CommandList.pfnAppendMetricQueryEnd;
     if( nullptr == pfnAppendMetricQueryEnd ) {
         if(!ze_lib::context->isInitialized)
@@ -1226,6 +1355,10 @@ zetCommandListAppendMetricMemoryBarrier(
     zet_command_list_handle_t hCommandList          ///< [in] handle of the command list
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnAppendMetricMemoryBarrier = ze_lib::context->zetDdiTable.CommandList.pfnAppendMetricMemoryBarrier;
     if( nullptr == pfnAppendMetricMemoryBarrier ) {
         if(!ze_lib::context->isInitialized)
@@ -1267,6 +1400,10 @@ zetMetricQueryGetData(
                                                     ///< reports in raw format
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetData = ze_lib::context->zetDdiTable.MetricQuery.pfnGetData;
     if( nullptr == pfnGetData ) {
         if(!ze_lib::context->isInitialized)
@@ -1305,6 +1442,10 @@ zetKernelGetProfileInfo(
     zet_profile_properties_t* pProfileProperties    ///< [out] pointer to profile properties
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetProfileInfo = ze_lib::context->zetDdiTable.Kernel.pfnGetProfileInfo;
     if( nullptr == pfnGetProfileInfo ) {
         if(!ze_lib::context->isInitialized)
@@ -1345,6 +1486,10 @@ zetTracerExpCreate(
     zet_tracer_exp_handle_t* phTracer               ///< [out] pointer to handle of tracer object created
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnCreate = ze_lib::context->zetDdiTable.TracerExp.pfnCreate;
     if( nullptr == pfnCreate ) {
         if(!ze_lib::context->isInitialized)
@@ -1381,6 +1526,10 @@ zetTracerExpDestroy(
     zet_tracer_exp_handle_t hTracer                 ///< [in][release] handle of tracer object to destroy
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnDestroy = ze_lib::context->zetDdiTable.TracerExp.pfnDestroy;
     if( nullptr == pfnDestroy ) {
         if(!ze_lib::context->isInitialized)
@@ -1420,6 +1569,10 @@ zetTracerExpSetPrologues(
     zet_core_callbacks_t* pCoreCbs                  ///< [in] pointer to table of 'core' callback function pointers
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnSetPrologues = ze_lib::context->zetDdiTable.TracerExp.pfnSetPrologues;
     if( nullptr == pfnSetPrologues ) {
         if(!ze_lib::context->isInitialized)
@@ -1459,6 +1612,10 @@ zetTracerExpSetEpilogues(
     zet_core_callbacks_t* pCoreCbs                  ///< [in] pointer to table of 'core' callback function pointers
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnSetEpilogues = ze_lib::context->zetDdiTable.TracerExp.pfnSetEpilogues;
     if( nullptr == pfnSetEpilogues ) {
         if(!ze_lib::context->isInitialized)
@@ -1491,6 +1648,10 @@ zetTracerExpSetEnabled(
     ze_bool_t enable                                ///< [in] enable the tracer if true; disable if false
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnSetEnabled = ze_lib::context->zetDdiTable.TracerExp.pfnSetEnabled;
     if( nullptr == pfnSetEnabled ) {
         if(!ze_lib::context->isInitialized)
@@ -1557,6 +1718,10 @@ zetMetricGroupCalculateMultipleMetricValuesExp(
                                                     ///< then driver shall only calculate that number of metric values.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnCalculateMultipleMetricValuesExp = ze_lib::context->zetDdiTable.MetricGroupExp.pfnCalculateMultipleMetricValuesExp;
     if( nullptr == pfnCalculateMultipleMetricValuesExp ) {
         if(!ze_lib::context->isInitialized)
@@ -1596,6 +1761,10 @@ zetMetricGroupGetGlobalTimestampsExp(
     uint64_t* metricTimestamp                       ///< [out] Metric timestamp.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetGlobalTimestampsExp = ze_lib::context->zetDdiTable.MetricGroupExp.pfnGetGlobalTimestampsExp;
     if( nullptr == pfnGetGlobalTimestampsExp ) {
         if(!ze_lib::context->isInitialized)
@@ -1605,6 +1774,128 @@ zetMetricGroupGetGlobalTimestampsExp(
     }
 
     return pfnGetGlobalTimestampsExp( hMetricGroup, synchronizedWithHost, globalTimestamp, metricTimestamp );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Export Metrics Data for system independent calculation.
+/// 
+/// @details
+///     - This function exports raw data and necessary information to perform
+///       metrics calculation of collected data in a different system than where
+///       data was collected, which may or may not have accelerators.
+///     - Implementations can choose to describe the data arrangement of the
+///       exported data, using any mechanism which allows users to read and
+///       process them.
+///     - The application may call this function from simultaneous threads.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hMetricGroup`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == pRawData`
+///         + `nullptr == pExportDataSize`
+ze_result_t ZE_APICALL
+zetMetricGroupGetExportDataExp(
+    zet_metric_group_handle_t hMetricGroup,         ///< [in] handle of the metric group
+    const uint8_t* pRawData,                        ///< [in] buffer of raw data
+    size_t rawDataSize,                             ///< [in] size in bytes of raw data buffer
+    size_t* pExportDataSize,                        ///< [in,out] size in bytes of export data buffer
+                                                    ///< if size is zero, then the driver shall update the value with the
+                                                    ///< number of bytes necessary to store the exported data.
+                                                    ///< if size is greater than required, then the driver shall update the
+                                                    ///< value with the actual number of bytes necessary to store the exported data.
+    uint8_t * pExportData                           ///< [in,out][optional][range(0, *pExportDataSize)] buffer of exported data.
+    )
+{
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
+    auto pfnGetExportDataExp = ze_lib::context->zetDdiTable.MetricGroupExp.pfnGetExportDataExp;
+    if( nullptr == pfnGetExportDataExp ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    return pfnGetExportDataExp( hMetricGroup, pRawData, rawDataSize, pExportDataSize, pExportData );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Calculate one or more sets of metric values from exported raw data.
+/// 
+/// @details
+///     - Calculate metrics values using exported data returned by
+///       ::zetMetricGroupGetExportDataExp.
+///     - This function is similar to
+///       ::zetMetricGroupCalculateMultipleMetricValuesExp except it would
+///       calculate from exported metric data.
+///     - This function could be used to calculate metrics on a system different
+///       from where the metric raw data was collected.
+///     - The application may call this function from simultaneous threads.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hDriver`
+///     - ::ZE_RESULT_ERROR_INVALID_ENUMERATION
+///         + `::ZET_METRIC_GROUP_CALCULATION_TYPE_MAX_METRIC_VALUES < type`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == pExportData`
+///         + `nullptr == pCalculateDescriptor`
+///         + `nullptr == pSetCount`
+///         + `nullptr == pTotalMetricValueCount`
+ze_result_t ZE_APICALL
+zetMetricGroupCalculateMetricExportDataExp(
+    ze_driver_handle_t hDriver,                     ///< [in] handle of the driver instance
+    zet_metric_group_calculation_type_t type,       ///< [in] calculation type to be applied on raw data
+    size_t exportDataSize,                          ///< [in] size in bytes of exported data buffer
+    const uint8_t* pExportData,                     ///< [in][range(0, exportDataSize)] buffer of exported data to calculate
+    zet_metric_calculate_exp_desc_t* pCalculateDescriptor,  ///< [in] descriptor specifying calculation specific parameters
+    uint32_t* pSetCount,                            ///< [in,out] pointer to number of metric sets.
+                                                    ///< if count is zero, then the driver shall update the value with the
+                                                    ///< total number of metric sets to be calculated.
+                                                    ///< if count is greater than the number available in the raw data buffer,
+                                                    ///< then the driver shall update the value with the actual number of
+                                                    ///< metric sets to be calculated.
+    uint32_t* pTotalMetricValueCount,               ///< [in,out] pointer to number of the total number of metric values
+                                                    ///< calculated, for all metric sets.
+                                                    ///< if count is zero, then the driver shall update the value with the
+                                                    ///< total number of metric values to be calculated.
+                                                    ///< if count is greater than the number available in the raw data buffer,
+                                                    ///< then the driver shall update the value with the actual number of
+                                                    ///< metric values to be calculated.
+    uint32_t* pMetricCounts,                        ///< [in,out][optional][range(0, *pSetCount)] buffer of metric counts per
+                                                    ///< metric set.
+    zet_typed_value_t* pMetricValues                ///< [in,out][optional][range(0, *pTotalMetricValueCount)] buffer of
+                                                    ///< calculated metrics.
+                                                    ///< if count is less than the number available in the raw data buffer,
+                                                    ///< then driver shall only calculate that number of metric values.
+    )
+{
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
+    auto pfnCalculateMetricExportDataExp = ze_lib::context->zetDdiTable.MetricGroupExp.pfnCalculateMetricExportDataExp;
+    if( nullptr == pfnCalculateMetricExportDataExp ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    return pfnCalculateMetricExportDataExp( hDriver, type, exportDataSize, pExportData, pCalculateDescriptor, pSetCount, pTotalMetricValueCount, pMetricCounts, pMetricValues );
 }
 
 } // extern "C"

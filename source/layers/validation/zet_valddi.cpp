@@ -34,15 +34,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnGetDebugInfo( hModule, format, pSize, pDebugInfo );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zetHandleLifetime.zetModuleGetDebugInfo( hModule, format, pSize, pDebugInfo );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnGetDebugInfo( hModule, format, pSize, pDebugInfo );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -64,15 +68,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnGetDebugProperties( hDevice, pDebugProperties );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zetHandleLifetime.zetDeviceGetDebugProperties( hDevice, pDebugProperties );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnGetDebugProperties( hDevice, pDebugProperties );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -95,15 +103,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnAttach( hDevice, config, phDebug );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zetHandleLifetime.zetDebugAttach( hDevice, config, phDebug );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnAttach( hDevice, config, phDebug );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -124,15 +136,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnDetach( hDebug );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zetHandleLifetime.zetDebugDetach( hDebug );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnDetach( hDebug );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -143,8 +159,8 @@ namespace validation_layer
         uint64_t timeout,                               ///< [in] if non-zero, then indicates the maximum time (in milliseconds) to
                                                         ///< yield before returning ::ZE_RESULT_SUCCESS or ::ZE_RESULT_NOT_READY;
                                                         ///< if zero, then immediately returns the status of the event;
-                                                        ///< if UINT64_MAX, then function will not return until complete or device
-                                                        ///< is lost.
+                                                        ///< if `UINT64_MAX`, then function will not return until complete or
+                                                        ///< device is lost.
                                                         ///< Due to external dependencies, timeout may be rounded to the closest
                                                         ///< value allowed by the accuracy of those dependencies.
         zet_debug_event_t* event                        ///< [in,out] a pointer to a ::zet_debug_event_t.
@@ -161,15 +177,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnReadEvent( hDebug, timeout, event );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zetHandleLifetime.zetDebugReadEvent( hDebug, timeout, event );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnReadEvent( hDebug, timeout, event );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -191,15 +211,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnAcknowledgeEvent( hDebug, event );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zetHandleLifetime.zetDebugAcknowledgeEvent( hDebug, event );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnAcknowledgeEvent( hDebug, event );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -221,15 +245,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnInterrupt( hDebug, thread );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zetHandleLifetime.zetDebugInterrupt( hDebug, thread );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnInterrupt( hDebug, thread );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -251,15 +279,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnResume( hDebug, thread );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zetHandleLifetime.zetDebugResume( hDebug, thread );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnResume( hDebug, thread );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -284,15 +316,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnReadMemory( hDebug, thread, desc, size, buffer );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zetHandleLifetime.zetDebugReadMemory( hDebug, thread, desc, size, buffer );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnReadMemory( hDebug, thread, desc, size, buffer );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -317,15 +353,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnWriteMemory( hDebug, thread, desc, size, buffer );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zetHandleLifetime.zetDebugWriteMemory( hDebug, thread, desc, size, buffer );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnWriteMemory( hDebug, thread, desc, size, buffer );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -356,15 +396,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnGetRegisterSetProperties( hDevice, pCount, pRegisterSetProperties );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zetHandleLifetime.zetDebugGetRegisterSetProperties( hDevice, pCount, pRegisterSetProperties );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnGetRegisterSetProperties( hDevice, pCount, pRegisterSetProperties );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -396,15 +440,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnGetThreadRegisterSetProperties( hDebug, thread, pCount, pRegisterSetProperties );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zetHandleLifetime.zetDebugGetThreadRegisterSetProperties( hDebug, thread, pCount, pRegisterSetProperties );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnGetThreadRegisterSetProperties( hDebug, thread, pCount, pRegisterSetProperties );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -415,9 +463,11 @@ namespace validation_layer
         ze_device_thread_t thread,                      ///< [in] the thread identifier
         uint32_t type,                                  ///< [in] register set type
         uint32_t start,                                 ///< [in] the starting offset into the register state area; must be less
-                                                        ///< than ::zet_debug_regset_properties_t.count for the type
-        uint32_t count,                                 ///< [in] the number of registers to read; start+count must be <=
-                                                        ///< zet_debug_register_group_properties_t.count for the type
+                                                        ///< than the `count` member of ::zet_debug_regset_properties_t for the
+                                                        ///< type
+        uint32_t count,                                 ///< [in] the number of registers to read; start+count must be less than or
+                                                        ///< equal to the `count` member of ::zet_debug_register_group_properties_t
+                                                        ///< for the type
         void* pRegisterValues                           ///< [in,out][optional][range(0, count)] buffer of register values
         )
     {
@@ -432,15 +482,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnReadRegisters( hDebug, thread, type, start, count, pRegisterValues );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zetHandleLifetime.zetDebugReadRegisters( hDebug, thread, type, start, count, pRegisterValues );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnReadRegisters( hDebug, thread, type, start, count, pRegisterValues );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -451,9 +505,11 @@ namespace validation_layer
         ze_device_thread_t thread,                      ///< [in] the thread identifier
         uint32_t type,                                  ///< [in] register set type
         uint32_t start,                                 ///< [in] the starting offset into the register state area; must be less
-                                                        ///< than ::zet_debug_regset_properties_t.count for the type
-        uint32_t count,                                 ///< [in] the number of registers to write; start+count must be <=
-                                                        ///< zet_debug_register_group_properties_t.count for the type
+                                                        ///< than the `count` member of ::zet_debug_regset_properties_t for the
+                                                        ///< type
+        uint32_t count,                                 ///< [in] the number of registers to write; start+count must be less than
+                                                        ///< or equal to the `count` member of
+                                                        ///< ::zet_debug_register_group_properties_t for the type
         void* pRegisterValues                           ///< [in,out][optional][range(0, count)] buffer of register values
         )
     {
@@ -468,15 +524,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnWriteRegisters( hDebug, thread, type, start, count, pRegisterValues );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zetHandleLifetime.zetDebugWriteRegisters( hDebug, thread, type, start, count, pRegisterValues );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnWriteRegisters( hDebug, thread, type, start, count, pRegisterValues );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -506,15 +566,29 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnGet( hDevice, pCount, phMetricGroups );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zetHandleLifetime.zetMetricGroupGet( hDevice, pCount, phMetricGroups );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnGet( hDevice, pCount, phMetricGroups );
+
+        if( result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
+            
+            for (size_t i = 0; ( nullptr != phMetricGroups) && (i < *pCount); ++i){
+                if (phMetricGroups[i]){
+                    context.handleLifetime->addHandle( phMetricGroups[i] );
+                    context.handleLifetime->addDependent( hDevice, phMetricGroups[i] );
+                }
+            }
+        }
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -536,15 +610,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnGetProperties( hMetricGroup, pProperties );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zetHandleLifetime.zetMetricGroupGetProperties( hMetricGroup, pProperties );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnGetProperties( hMetricGroup, pProperties );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -577,15 +655,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnCalculateMetricValues( hMetricGroup, type, rawDataSize, pRawData, pMetricValueCount, pMetricValues );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zetHandleLifetime.zetMetricGroupCalculateMetricValues( hMetricGroup, type, rawDataSize, pRawData, pMetricValueCount, pMetricValues );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnCalculateMetricValues( hMetricGroup, type, rawDataSize, pRawData, pMetricValueCount, pMetricValues );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -614,15 +696,29 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnGet( hMetricGroup, pCount, phMetrics );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zetHandleLifetime.zetMetricGet( hMetricGroup, pCount, phMetrics );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnGet( hMetricGroup, pCount, phMetrics );
+
+        if( result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
+            
+            for (size_t i = 0; ( nullptr != phMetrics) && (i < *pCount); ++i){
+                if (phMetrics[i]){
+                    context.handleLifetime->addHandle( phMetrics[i] );
+                    context.handleLifetime->addDependent( hMetricGroup, phMetrics[i] );
+                }
+            }
+        }
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -644,15 +740,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnGetProperties( hMetric, pProperties );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zetHandleLifetime.zetMetricGetProperties( hMetric, pProperties );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnGetProperties( hMetric, pProperties );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -680,15 +780,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnActivateMetricGroups( hContext, hDevice, count, phMetricGroups );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zetHandleLifetime.zetContextActivateMetricGroups( hContext, hDevice, count, phMetricGroups );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnActivateMetricGroups( hContext, hDevice, count, phMetricGroups );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -714,15 +818,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnOpen( hContext, hDevice, hMetricGroup, desc, hNotificationEvent, phMetricStreamer );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zetHandleLifetime.zetMetricStreamerOpen( hContext, hDevice, hMetricGroup, desc, hNotificationEvent, phMetricStreamer );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnOpen( hContext, hDevice, hMetricGroup, desc, hNotificationEvent, phMetricStreamer );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -745,15 +853,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnAppendMetricStreamerMarker( hCommandList, hMetricStreamer, value );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zetHandleLifetime.zetCommandListAppendMetricStreamerMarker( hCommandList, hMetricStreamer, value );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnAppendMetricStreamerMarker( hCommandList, hMetricStreamer, value );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -774,15 +886,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnClose( hMetricStreamer );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zetHandleLifetime.zetMetricStreamerClose( hMetricStreamer );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnClose( hMetricStreamer );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -791,7 +907,7 @@ namespace validation_layer
     zetMetricStreamerReadData(
         zet_metric_streamer_handle_t hMetricStreamer,   ///< [in] handle of the metric streamer
         uint32_t maxReportCount,                        ///< [in] the maximum number of reports the application wants to receive.
-                                                        ///< if UINT32_MAX, then function will retrieve all reports available
+                                                        ///< if `UINT32_MAX`, then function will retrieve all reports available
         size_t* pRawDataSize,                           ///< [in,out] pointer to size in bytes of raw data requested to read.
                                                         ///< if size is zero, then the driver will update the value with the total
                                                         ///< size in bytes needed for all reports available.
@@ -814,15 +930,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnReadData( hMetricStreamer, maxReportCount, pRawDataSize, pRawData );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zetHandleLifetime.zetMetricStreamerReadData( hMetricStreamer, maxReportCount, pRawDataSize, pRawData );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnReadData( hMetricStreamer, maxReportCount, pRawDataSize, pRawData );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -847,15 +967,28 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnCreate( hContext, hDevice, hMetricGroup, desc, phMetricQueryPool );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zetHandleLifetime.zetMetricQueryPoolCreate( hContext, hDevice, hMetricGroup, desc, phMetricQueryPool );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnCreate( hContext, hDevice, hMetricGroup, desc, phMetricQueryPool );
+
+        if( result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
+            
+            if (phMetricQueryPool){
+                context.handleLifetime->addHandle( *phMetricQueryPool );
+                context.handleLifetime->addDependent( hContext, *phMetricQueryPool );
+
+            }
+        }
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -876,15 +1009,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnDestroy( hMetricQueryPool );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zetHandleLifetime.zetMetricQueryPoolDestroy( hMetricQueryPool );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnDestroy( hMetricQueryPool );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -907,15 +1044,28 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnCreate( hMetricQueryPool, index, phMetricQuery );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zetHandleLifetime.zetMetricQueryCreate( hMetricQueryPool, index, phMetricQuery );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnCreate( hMetricQueryPool, index, phMetricQuery );
+
+        if( result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
+            
+            if (phMetricQuery){
+                context.handleLifetime->addHandle( *phMetricQuery );
+                context.handleLifetime->addDependent( hMetricQueryPool, *phMetricQuery );
+
+            }
+        }
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -936,15 +1086,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnDestroy( hMetricQuery );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zetHandleLifetime.zetMetricQueryDestroy( hMetricQuery );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnDestroy( hMetricQuery );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -965,15 +1119,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnReset( hMetricQuery );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zetHandleLifetime.zetMetricQueryReset( hMetricQuery );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnReset( hMetricQuery );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -995,15 +1153,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnAppendMetricQueryBegin( hCommandList, hMetricQuery );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zetHandleLifetime.zetCommandListAppendMetricQueryBegin( hCommandList, hMetricQuery );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnAppendMetricQueryBegin( hCommandList, hMetricQuery );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -1028,15 +1190,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnAppendMetricQueryEnd( hCommandList, hMetricQuery, hSignalEvent, numWaitEvents, phWaitEvents );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zetHandleLifetime.zetCommandListAppendMetricQueryEnd( hCommandList, hMetricQuery, hSignalEvent, numWaitEvents, phWaitEvents );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnAppendMetricQueryEnd( hCommandList, hMetricQuery, hSignalEvent, numWaitEvents, phWaitEvents );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -1057,15 +1223,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnAppendMetricMemoryBarrier( hCommandList );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zetHandleLifetime.zetCommandListAppendMetricMemoryBarrier( hCommandList );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnAppendMetricMemoryBarrier( hCommandList );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -1095,15 +1265,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnGetData( hMetricQuery, pRawDataSize, pRawData );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zetHandleLifetime.zetMetricQueryGetData( hMetricQuery, pRawDataSize, pRawData );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnGetData( hMetricQuery, pRawDataSize, pRawData );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -1125,15 +1299,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnGetProfileInfo( hKernel, pProfileProperties );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zetHandleLifetime.zetKernelGetProfileInfo( hKernel, pProfileProperties );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnGetProfileInfo( hKernel, pProfileProperties );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -1156,15 +1334,28 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnCreate( hContext, desc, phTracer );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zetHandleLifetime.zetTracerExpCreate( hContext, desc, phTracer );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnCreate( hContext, desc, phTracer );
+
+        if( result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
+            
+            if (phTracer){
+                context.handleLifetime->addHandle( *phTracer );
+                context.handleLifetime->addDependent( hContext, *phTracer );
+
+            }
+        }
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -1185,15 +1376,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnDestroy( hTracer );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zetHandleLifetime.zetTracerExpDestroy( hTracer );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnDestroy( hTracer );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -1215,15 +1410,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnSetPrologues( hTracer, pCoreCbs );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zetHandleLifetime.zetTracerExpSetPrologues( hTracer, pCoreCbs );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnSetPrologues( hTracer, pCoreCbs );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -1245,15 +1444,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnSetEpilogues( hTracer, pCoreCbs );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zetHandleLifetime.zetTracerExpSetEpilogues( hTracer, pCoreCbs );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnSetEpilogues( hTracer, pCoreCbs );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -1275,15 +1478,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnSetEnabled( hTracer, enable );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zetHandleLifetime.zetTracerExpSetEnabled( hTracer, enable );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnSetEnabled( hTracer, enable );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -1326,15 +1533,19 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnCalculateMultipleMetricValuesExp( hMetricGroup, type, rawDataSize, pRawData, pSetCount, pTotalMetricValueCount, pMetricCounts, pMetricValues );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zetHandleLifetime.zetMetricGroupCalculateMultipleMetricValuesExp( hMetricGroup, type, rawDataSize, pRawData, pSetCount, pTotalMetricValueCount, pMetricCounts, pMetricValues );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnCalculateMultipleMetricValuesExp( hMetricGroup, type, rawDataSize, pRawData, pSetCount, pTotalMetricValueCount, pMetricCounts, pMetricValues );
+        return result;
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -1358,15 +1569,124 @@ namespace validation_layer
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        if( context.enableHandleLifetime ){ 
-            //Unimplemented
-        }
 
         if( context.enableThreadingValidation ){ 
             //Unimplemented
         }
 
-        return pfnGetGlobalTimestampsExp( hMetricGroup, synchronizedWithHost, globalTimestamp, metricTimestamp );
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zetHandleLifetime.zetMetricGroupGetGlobalTimestampsExp( hMetricGroup, synchronizedWithHost, globalTimestamp, metricTimestamp );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnGetGlobalTimestampsExp( hMetricGroup, synchronizedWithHost, globalTimestamp, metricTimestamp );
+
+        if( result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
+            
+        }
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zetMetricGroupGetExportDataExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zetMetricGroupGetExportDataExp(
+        zet_metric_group_handle_t hMetricGroup,         ///< [in] handle of the metric group
+        const uint8_t* pRawData,                        ///< [in] buffer of raw data
+        size_t rawDataSize,                             ///< [in] size in bytes of raw data buffer
+        size_t* pExportDataSize,                        ///< [in,out] size in bytes of export data buffer
+                                                        ///< if size is zero, then the driver shall update the value with the
+                                                        ///< number of bytes necessary to store the exported data.
+                                                        ///< if size is greater than required, then the driver shall update the
+                                                        ///< value with the actual number of bytes necessary to store the exported data.
+        uint8_t * pExportData                           ///< [in,out][optional][range(0, *pExportDataSize)] buffer of exported data.
+        )
+    {
+        auto pfnGetExportDataExp = context.zetDdiTable.MetricGroupExp.pfnGetExportDataExp;
+
+        if( nullptr == pfnGetExportDataExp )
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        if( context.enableParameterValidation )
+        {
+            auto result = context.paramValidation->zetParamValidation.zetMetricGroupGetExportDataExp( hMetricGroup, pRawData, rawDataSize, pExportDataSize, pExportData );
+            if(result!=ZE_RESULT_SUCCESS) return result;
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zetHandleLifetime.zetMetricGroupGetExportDataExp( hMetricGroup, pRawData, rawDataSize, pExportDataSize, pExportData );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnGetExportDataExp( hMetricGroup, pRawData, rawDataSize, pExportDataSize, pExportData );
+
+        if( result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
+            
+        }
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zetMetricGroupCalculateMetricExportDataExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zetMetricGroupCalculateMetricExportDataExp(
+        ze_driver_handle_t hDriver,                     ///< [in] handle of the driver instance
+        zet_metric_group_calculation_type_t type,       ///< [in] calculation type to be applied on raw data
+        size_t exportDataSize,                          ///< [in] size in bytes of exported data buffer
+        const uint8_t* pExportData,                     ///< [in][range(0, exportDataSize)] buffer of exported data to calculate
+        zet_metric_calculate_exp_desc_t* pCalculateDescriptor,  ///< [in] descriptor specifying calculation specific parameters
+        uint32_t* pSetCount,                            ///< [in,out] pointer to number of metric sets.
+                                                        ///< if count is zero, then the driver shall update the value with the
+                                                        ///< total number of metric sets to be calculated.
+                                                        ///< if count is greater than the number available in the raw data buffer,
+                                                        ///< then the driver shall update the value with the actual number of
+                                                        ///< metric sets to be calculated.
+        uint32_t* pTotalMetricValueCount,               ///< [in,out] pointer to number of the total number of metric values
+                                                        ///< calculated, for all metric sets.
+                                                        ///< if count is zero, then the driver shall update the value with the
+                                                        ///< total number of metric values to be calculated.
+                                                        ///< if count is greater than the number available in the raw data buffer,
+                                                        ///< then the driver shall update the value with the actual number of
+                                                        ///< metric values to be calculated.
+        uint32_t* pMetricCounts,                        ///< [in,out][optional][range(0, *pSetCount)] buffer of metric counts per
+                                                        ///< metric set.
+        zet_typed_value_t* pMetricValues                ///< [in,out][optional][range(0, *pTotalMetricValueCount)] buffer of
+                                                        ///< calculated metrics.
+                                                        ///< if count is less than the number available in the raw data buffer,
+                                                        ///< then driver shall only calculate that number of metric values.
+        )
+    {
+        auto pfnCalculateMetricExportDataExp = context.zetDdiTable.MetricGroupExp.pfnCalculateMetricExportDataExp;
+
+        if( nullptr == pfnCalculateMetricExportDataExp )
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        if( context.enableParameterValidation )
+        {
+            auto result = context.paramValidation->zetParamValidation.zetMetricGroupCalculateMetricExportDataExp( hDriver, type, exportDataSize, pExportData, pCalculateDescriptor, pSetCount, pTotalMetricValueCount, pMetricCounts, pMetricValues );
+            if(result!=ZE_RESULT_SUCCESS) return result;
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zetHandleLifetime.zetMetricGroupCalculateMetricExportDataExp( hDriver, type, exportDataSize, pExportData, pCalculateDescriptor, pSetCount, pTotalMetricValueCount, pMetricCounts, pMetricValues );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnCalculateMetricExportDataExp( hDriver, type, exportDataSize, pExportData, pCalculateDescriptor, pSetCount, pTotalMetricValueCount, pMetricCounts, pMetricValues );
+        return result;
     }
 
 } // namespace validation_layer
@@ -1704,6 +2024,12 @@ zetGetMetricGroupExpProcAddrTable(
 
     dditable.pfnGetGlobalTimestampsExp                   = pDdiTable->pfnGetGlobalTimestampsExp;
     pDdiTable->pfnGetGlobalTimestampsExp                 = validation_layer::zetMetricGroupGetGlobalTimestampsExp;
+
+    dditable.pfnGetExportDataExp                         = pDdiTable->pfnGetExportDataExp;
+    pDdiTable->pfnGetExportDataExp                       = validation_layer::zetMetricGroupGetExportDataExp;
+
+    dditable.pfnCalculateMetricExportDataExp             = pDdiTable->pfnCalculateMetricExportDataExp;
+    pDdiTable->pfnCalculateMetricExportDataExp           = validation_layer::zetMetricGroupCalculateMetricExportDataExp;
 
     return result;
 }

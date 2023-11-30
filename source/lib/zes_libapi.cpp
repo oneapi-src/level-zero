@@ -57,6 +57,10 @@ zesInit(
     if( ZE_RESULT_SUCCESS != result )
         return result;
 
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnInit = ze_lib::context->zesDdiTable.Global.pfnInit;
     if( nullptr == pfnInit ) {
         if(!ze_lib::context->isInitialized)
@@ -101,6 +105,10 @@ zesDriverGet(
                                                     ///< loader shall only retrieve that number of sysman drivers.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGet = ze_lib::context->zesDdiTable.Driver.pfnGet;
     if( nullptr == pfnGet ) {
         if(!ze_lib::context->isInitialized)
@@ -113,14 +121,102 @@ zesDriverGet(
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+/// @brief Retrieves extension properties
+/// 
+/// @details
+///     - The application may call this function from simultaneous threads.
+///     - The implementation of this function should be lock-free.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hDriver`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == pCount`
+ze_result_t ZE_APICALL
+zesDriverGetExtensionProperties(
+    zes_driver_handle_t hDriver,                    ///< [in] handle of the driver instance
+    uint32_t* pCount,                               ///< [in,out] pointer to the number of extension properties.
+                                                    ///< if count is zero, then the driver shall update the value with the
+                                                    ///< total number of extension properties available.
+                                                    ///< if count is greater than the number of extension properties available,
+                                                    ///< then the driver shall update the value with the correct number of
+                                                    ///< extension properties available.
+    zes_driver_extension_properties_t* pExtensionProperties ///< [in,out][optional][range(0, *pCount)] array of query results for
+                                                    ///< extension properties.
+                                                    ///< if count is less than the number of extension properties available,
+                                                    ///< then driver shall only retrieve that number of extension properties.
+    )
+{
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
+    auto pfnGetExtensionProperties = ze_lib::context->zesDdiTable.Driver.pfnGetExtensionProperties;
+    if( nullptr == pfnGetExtensionProperties ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    return pfnGetExtensionProperties( hDriver, pCount, pExtensionProperties );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Retrieves function pointer for vendor-specific or experimental
+///        extensions
+/// 
+/// @details
+///     - The application may call this function from simultaneous threads.
+///     - The implementation of this function should be lock-free.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hDriver`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == name`
+///         + `nullptr == ppFunctionAddress`
+ze_result_t ZE_APICALL
+zesDriverGetExtensionFunctionAddress(
+    zes_driver_handle_t hDriver,                    ///< [in] handle of the driver instance
+    const char* name,                               ///< [in] extension function name
+    void** ppFunctionAddress                        ///< [out] pointer to function pointer
+    )
+{
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
+    auto pfnGetExtensionFunctionAddress = ze_lib::context->zesDdiTable.Driver.pfnGetExtensionFunctionAddress;
+    if( nullptr == pfnGetExtensionFunctionAddress ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    return pfnGetExtensionFunctionAddress( hDriver, name, ppFunctionAddress );
+}
+
+///////////////////////////////////////////////////////////////////////////////
 /// @brief Retrieves sysman devices within a sysman driver
 /// 
 /// @details
 ///     - Multiple calls to this function will return identical sysman device
 ///       handles, in the same order.
 ///     - The number and order of handles returned from this function is NOT
-///       affected by the ::ZE_AFFINITY_MASK or ::ZE_ENABLE_PCI_ID_DEVICE_ORDER
-///       environment variables.
+///       affected by the ::ZE_AFFINITY_MASK, ::ZE_ENABLE_PCI_ID_DEVICE_ORDER,
+///       or ::ZE_FLAT_DEVICE_HIERARCHY environment variables.
 ///     - The application may call this function from simultaneous threads.
 ///     - The implementation of this function should be lock-free.
 /// 
@@ -148,6 +244,10 @@ zesDeviceGet(
                                                     ///< driver shall only retrieve that number of sysman devices.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGet = ze_lib::context->zesDdiTable.Device.pfnGet;
     if( nullptr == pfnGet ) {
         if(!ze_lib::context->isInitialized)
@@ -182,6 +282,10 @@ zesDeviceGetProperties(
     zes_device_properties_t* pProperties            ///< [in,out] Structure that will contain information about the device.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetProperties = ze_lib::context->zesDdiTable.Device.pfnGetProperties;
     if( nullptr == pfnGetProperties ) {
         if(!ze_lib::context->isInitialized)
@@ -217,6 +321,10 @@ zesDeviceGetState(
     zes_device_state_t* pState                      ///< [in,out] Structure that will contain information about the device.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetState = ze_lib::context->zesDdiTable.Device.pfnGetState;
     if( nullptr == pfnGetState ) {
         if(!ze_lib::context->isInitialized)
@@ -238,8 +346,9 @@ zesDeviceGetState(
 ///       this function.
 ///     - If the force argument is specified, all applications using the device
 ///       will be forcibly killed.
-///     - The function will block until the device has restarted or a timeout
-///       occurred waiting for the reset to complete.
+///     - The function will block until the device has restarted or an
+///       implementation defined timeout occurred waiting for the reset to
+///       complete.
 /// 
 /// @returns
 ///     - ::ZE_RESULT_SUCCESS
@@ -251,8 +360,10 @@ zesDeviceGetState(
 ///         + `nullptr == hDevice`
 ///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
 ///         + User does not have permissions to perform this operation.
-///     - ::ZE_RESULT_ERROR_HANDLE_OBJECT_IN_USE - "Reset cannot be performed because applications are using this device."
-///     - ::ZE_RESULT_ERROR_UNKNOWN - "There were problems unloading the device driver, performing a bus reset or reloading the device driver."
+///     - ::ZE_RESULT_ERROR_HANDLE_OBJECT_IN_USE
+///         + Reset cannot be performed because applications are using this device.
+///     - ::ZE_RESULT_ERROR_UNKNOWN
+///         + There were problems unloading the device driver, performing a bus reset or reloading the device driver.
 ze_result_t ZE_APICALL
 zesDeviceReset(
     zes_device_handle_t hDevice,                    ///< [in] Sysman handle for the device
@@ -260,6 +371,10 @@ zesDeviceReset(
                                                     ///< device will be forcibly killed.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnReset = ze_lib::context->zesDdiTable.Device.pfnReset;
     if( nullptr == pfnReset ) {
         if(!ze_lib::context->isInitialized)
@@ -269,6 +384,57 @@ zesDeviceReset(
     }
 
     return pfnReset( hDevice, force );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Reset device extension
+/// 
+/// @details
+///     - Performs a PCI bus reset of the device. This will result in all
+///       current device state being lost.
+///     - Prior to calling this function, user is responsible for closing
+///       applications using the device unless force argument is specified.
+///     - If the force argument is specified, all applications using the device
+///       will be forcibly killed.
+///     - The function will block until the device has restarted or a
+///       implementation specific timeout occurred waiting for the reset to
+///       complete.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hDevice`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == pProperties`
+///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
+///         + User does not have permissions to perform this operation.
+///     - ::ZE_RESULT_ERROR_HANDLE_OBJECT_IN_USE
+///         + Reset cannot be performed because applications are using this device.
+///     - ::ZE_RESULT_ERROR_UNKNOWN
+///         + There were problems unloading the device driver, performing a bus reset or reloading the device driver.
+ze_result_t ZE_APICALL
+zesDeviceResetExt(
+    zes_device_handle_t hDevice,                    ///< [in] Sysman handle for the device
+    zes_reset_properties_t* pProperties             ///< [in] Device reset properties to apply
+    )
+{
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
+    auto pfnResetExt = ze_lib::context->zesDdiTable.Device.pfnResetExt;
+    if( nullptr == pfnResetExt ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    return pfnResetExt( hDevice, pProperties );
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -312,6 +478,10 @@ zesDeviceProcessesGetState(
                                                     ///< number of processes. In this case, the return code will ::ZE_RESULT_ERROR_INVALID_SIZE.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnProcessesGetState = ze_lib::context->zesDdiTable.Device.pfnProcessesGetState;
     if( nullptr == pfnProcessesGetState ) {
         if(!ze_lib::context->isInitialized)
@@ -346,6 +516,10 @@ zesDevicePciGetProperties(
     zes_pci_properties_t* pProperties               ///< [in,out] Will contain the PCI properties.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnPciGetProperties = ze_lib::context->zesDdiTable.Device.pfnPciGetProperties;
     if( nullptr == pfnPciGetProperties ) {
         if(!ze_lib::context->isInitialized)
@@ -380,6 +554,10 @@ zesDevicePciGetState(
     zes_pci_state_t* pState                         ///< [in,out] Will contain the PCI properties.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnPciGetState = ze_lib::context->zesDdiTable.Device.pfnPciGetState;
     if( nullptr == pfnPciGetState ) {
         if(!ze_lib::context->isInitialized)
@@ -422,6 +600,10 @@ zesDevicePciGetBars(
                                                     ///< driver shall only retrieve information about that number of PCI bars.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnPciGetBars = ze_lib::context->zesDdiTable.Device.pfnPciGetBars;
     if( nullptr == pfnPciGetBars ) {
         if(!ze_lib::context->isInitialized)
@@ -458,6 +640,10 @@ zesDevicePciGetStats(
     zes_pci_stats_t* pStats                         ///< [in,out] Will contain a snapshot of the latest stats.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnPciGetStats = ze_lib::context->zesDdiTable.Device.pfnPciGetStats;
     if( nullptr == pfnPciGetStats ) {
         if(!ze_lib::context->isInitialized)
@@ -492,6 +678,10 @@ zesDeviceSetOverclockWaiver(
     zes_device_handle_t hDevice                     ///< [in] Sysman handle of the device.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnSetOverclockWaiver = ze_lib::context->zesDdiTable.Device.pfnSetOverclockWaiver;
     if( nullptr == pfnSetOverclockWaiver ) {
         if(!ze_lib::context->isInitialized)
@@ -530,6 +720,10 @@ zesDeviceGetOverclockDomains(
                                                     ///< doesn't support overclocking.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetOverclockDomains = ze_lib::context->zesDdiTable.Device.pfnGetOverclockDomains;
     if( nullptr == pfnGetOverclockDomains ) {
         if(!ze_lib::context->isInitialized)
@@ -572,6 +766,10 @@ zesDeviceGetOverclockControls(
                                                     ///< ::zes_overclock_control_t).
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetOverclockControls = ze_lib::context->zesDdiTable.Device.pfnGetOverclockControls;
     if( nullptr == pfnGetOverclockControls ) {
         if(!ze_lib::context->isInitialized)
@@ -608,6 +806,10 @@ zesDeviceResetOverclockSettings(
                                                     ///< manufacturing state
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnResetOverclockSettings = ze_lib::context->zesDdiTable.Device.pfnResetOverclockSettings;
     if( nullptr == pfnResetOverclockSettings ) {
         if(!ze_lib::context->isInitialized)
@@ -653,6 +855,10 @@ zesDeviceReadOverclockState(
     ze_bool_t* pPendingReset                        ///< [out] Pending reset 0 =manufacturing state, 1= shipped state)..
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnReadOverclockState = ze_lib::context->zesDdiTable.Device.pfnReadOverclockState;
     if( nullptr == pfnReadOverclockState ) {
         if(!ze_lib::context->isInitialized)
@@ -697,6 +903,10 @@ zesDeviceEnumOverclockDomains(
                                                     ///< component handles.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnEnumOverclockDomains = ze_lib::context->zesDdiTable.Device.pfnEnumOverclockDomains;
     if( nullptr == pfnEnumOverclockDomains ) {
         if(!ze_lib::context->isInitialized)
@@ -733,6 +943,10 @@ zesOverclockGetDomainProperties(
     zes_overclock_properties_t* pDomainProperties   ///< [in,out] The overclock properties for the specified domain.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetDomainProperties = ze_lib::context->zesDdiTable.Overclock.pfnGetDomainProperties;
     if( nullptr == pfnGetDomainProperties ) {
         if(!ze_lib::context->isInitialized)
@@ -769,6 +983,10 @@ zesOverclockGetDomainVFProperties(
     zes_vf_property_t* pVFProperties                ///< [in,out] The VF min,max,step for a specified domain.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetDomainVFProperties = ze_lib::context->zesDdiTable.Overclock.pfnGetDomainVFProperties;
     if( nullptr == pfnGetDomainVFProperties ) {
         if(!ze_lib::context->isInitialized)
@@ -808,6 +1026,10 @@ zesOverclockGetDomainControlProperties(
     zes_control_property_t* pControlProperties      ///< [in,out] overclock control values.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetDomainControlProperties = ze_lib::context->zesDdiTable.Overclock.pfnGetDomainControlProperties;
     if( nullptr == pfnGetDomainControlProperties ) {
         if(!ze_lib::context->isInitialized)
@@ -847,6 +1069,10 @@ zesOverclockGetControlCurrentValue(
     double* pValue                                  ///< [in,out] Getting overclock control value for the specified control.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetControlCurrentValue = ze_lib::context->zesDdiTable.Overclock.pfnGetControlCurrentValue;
     if( nullptr == pfnGetControlCurrentValue ) {
         if(!ze_lib::context->isInitialized)
@@ -887,6 +1113,10 @@ zesOverclockGetControlPendingValue(
                                                     ///< format of the value depend on the control type.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetControlPendingValue = ze_lib::context->zesDdiTable.Overclock.pfnGetControlPendingValue;
     if( nullptr == pfnGetControlPendingValue ) {
         if(!ze_lib::context->isInitialized)
@@ -928,6 +1158,10 @@ zesOverclockSetControlUserValue(
     zes_pending_action_t* pPendingAction            ///< [out] Pending overclock setting.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnSetControlUserValue = ze_lib::context->zesDdiTable.Overclock.pfnSetControlUserValue;
     if( nullptr == pfnSetControlUserValue ) {
         if(!ze_lib::context->isInitialized)
@@ -969,6 +1203,10 @@ zesOverclockGetControlState(
     zes_pending_action_t* pPendingAction            ///< [out] Pending overclock setting.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetControlState = ze_lib::context->zesDdiTable.Overclock.pfnGetControlState;
     if( nullptr == pfnGetControlState ) {
         if(!ze_lib::context->isInitialized)
@@ -1013,6 +1251,10 @@ zesOverclockGetVFPointValues(
                                                     ///< units from the custom V-F curve at the specified zero-based index 
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetVFPointValues = ze_lib::context->zesDdiTable.Overclock.pfnGetVFPointValues;
     if( nullptr == pfnGetVFPointValues ) {
         if(!ze_lib::context->isInitialized)
@@ -1052,6 +1294,10 @@ zesOverclockSetVFPointValues(
                                                     ///< custom V-F curve at the specified zero-based index 
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnSetVFPointValues = ze_lib::context->zesDdiTable.Overclock.pfnSetVFPointValues;
     if( nullptr == pfnSetVFPointValues ) {
         if(!ze_lib::context->isInitialized)
@@ -1096,6 +1342,10 @@ zesDeviceEnumDiagnosticTestSuites(
                                                     ///< component handles.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnEnumDiagnosticTestSuites = ze_lib::context->zesDdiTable.Device.pfnEnumDiagnosticTestSuites;
     if( nullptr == pfnEnumDiagnosticTestSuites ) {
         if(!ze_lib::context->isInitialized)
@@ -1131,6 +1381,10 @@ zesDiagnosticsGetProperties(
                                                     ///< suite
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetProperties = ze_lib::context->zesDdiTable.Diagnostics.pfnGetProperties;
     if( nullptr == pfnGetProperties ) {
         if(!ze_lib::context->isInitialized)
@@ -1144,12 +1398,12 @@ zesDiagnosticsGetProperties(
 
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief Get individual tests that can be run separately. Not all test suites
-///        permit running individual tests - check
-///        ::zes_diag_properties_t.haveTests
+///        permit running individual tests, check the `haveTests` member of
+///        ::zes_diag_properties_t.
 /// 
 /// @details
 ///     - The list of available tests is returned in order of increasing test
-///       index ::zes_diag_test_t.index.
+///       index (see the `index` member of ::zes_diag_test_t).
 ///     - The application may call this function from simultaneous threads.
 ///     - The implementation of this function should be lock-free.
 /// 
@@ -1172,11 +1426,15 @@ zesDiagnosticsGetTests(
                                                     ///< if count is greater than the number of tests that are available, then
                                                     ///< the driver shall update the value with the correct number of tests.
     zes_diag_test_t* pTests                         ///< [in,out][optional][range(0, *pCount)] array of information about
-                                                    ///< individual tests sorted by increasing value of ::zes_diag_test_t.index.
+                                                    ///< individual tests sorted by increasing value of the `index` member of ::zes_diag_test_t.
                                                     ///< if count is less than the number of tests that are available, then the
                                                     ///< driver shall only retrieve that number of tests.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetTests = ze_lib::context->zesDdiTable.Diagnostics.pfnGetTests;
     if( nullptr == pfnGetTests ) {
         if(!ze_lib::context->isInitialized)
@@ -1196,8 +1454,8 @@ zesDiagnosticsGetTests(
 ///       information. Gracefully close any running workloads before initiating.
 ///     - To run all tests in a test suite, set start =
 ///       ::ZES_DIAG_FIRST_TEST_INDEX and end = ::ZES_DIAG_LAST_TEST_INDEX.
-///     - If the test suite permits running individual tests,
-///       ::zes_diag_properties_t.haveTests will be true. In this case, the
+///     - If the test suite permits running individual tests, the `haveTests`
+///       member of ::zes_diag_properties_t will be true. In this case, the
 ///       function ::zesDiagnosticsGetTests() can be called to get the list of
 ///       tests and corresponding indices that can be supplied to the arguments
 ///       start and end in this function.
@@ -1226,6 +1484,10 @@ zesDiagnosticsRunTests(
     zes_diag_result_t* pResult                      ///< [in,out] The result of the diagnostics
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnRunTests = ze_lib::context->zesDdiTable.Diagnostics.pfnRunTests;
     if( nullptr == pfnRunTests ) {
         if(!ze_lib::context->isInitialized)
@@ -1260,6 +1522,10 @@ zesDeviceEccAvailable(
     ze_bool_t* pAvailable                           ///< [out] ECC functionality is available (true)/unavailable (false).
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnEccAvailable = ze_lib::context->zesDdiTable.Device.pfnEccAvailable;
     if( nullptr == pfnEccAvailable ) {
         if(!ze_lib::context->isInitialized)
@@ -1294,6 +1560,10 @@ zesDeviceEccConfigurable(
     ze_bool_t* pConfigurable                        ///< [out] ECC can be enabled/disabled (true)/enabled/disabled (false).
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnEccConfigurable = ze_lib::context->zesDdiTable.Device.pfnEccConfigurable;
     if( nullptr == pfnEccConfigurable ) {
         if(!ze_lib::context->isInitialized)
@@ -1328,6 +1598,10 @@ zesDeviceGetEccState(
     zes_device_ecc_properties_t* pState             ///< [out] ECC state, pending state, and pending action for state change.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetEccState = ze_lib::context->zesDdiTable.Device.pfnGetEccState;
     if( nullptr == pfnGetEccState ) {
         if(!ze_lib::context->isInitialized)
@@ -1370,6 +1644,10 @@ zesDeviceSetEccState(
     zes_device_ecc_properties_t* pState             ///< [out] ECC state, pending state, and pending action for state change.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnSetEccState = ze_lib::context->zesDdiTable.Device.pfnSetEccState;
     if( nullptr == pfnSetEccState ) {
         if(!ze_lib::context->isInitialized)
@@ -1414,6 +1692,10 @@ zesDeviceEnumEngineGroups(
                                                     ///< component handles.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnEnumEngineGroups = ze_lib::context->zesDdiTable.Device.pfnEnumEngineGroups;
     if( nullptr == pfnEnumEngineGroups ) {
         if(!ze_lib::context->isInitialized)
@@ -1448,6 +1730,10 @@ zesEngineGetProperties(
     zes_engine_properties_t* pProperties            ///< [in,out] The properties for the specified engine group.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetProperties = ze_lib::context->zesDdiTable.Engine.pfnGetProperties;
     if( nullptr == pfnGetProperties ) {
         if(!ze_lib::context->isInitialized)
@@ -1460,9 +1746,11 @@ zesEngineGetProperties(
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Get the activity stats for an engine group
+/// @brief Get the activity stats for an engine group.
 /// 
 /// @details
+///     - This function also returns the engine activity inside a Virtual
+///       Machine (VM), in the presence of hardware virtualization (SRIOV)
 ///     - The application may call this function from simultaneous threads.
 ///     - The implementation of this function should be lock-free.
 /// 
@@ -1483,6 +1771,10 @@ zesEngineGetActivity(
                                                     ///< counters.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetActivity = ze_lib::context->zesDdiTable.Engine.pfnGetActivity;
     if( nullptr == pfnGetActivity ) {
         if(!ze_lib::context->isInitialized)
@@ -1517,6 +1809,10 @@ zesDeviceEventRegister(
     zes_event_type_flags_t events                   ///< [in] List of events to listen to.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnEventRegister = ze_lib::context->zesDdiTable.Device.pfnEventRegister;
     if( nullptr == pfnEventRegister ) {
         if(!ze_lib::context->isInitialized)
@@ -1557,7 +1853,7 @@ zesDriverEventListen(
     uint32_t timeout,                               ///< [in] if non-zero, then indicates the maximum time (in milliseconds) to
                                                     ///< yield before returning ::ZE_RESULT_SUCCESS or ::ZE_RESULT_NOT_READY;
                                                     ///< if zero, then will check status and return immediately;
-                                                    ///< if UINT32_MAX, then function will not return until events arrive.
+                                                    ///< if `UINT32_MAX`, then function will not return until events arrive.
     uint32_t count,                                 ///< [in] Number of device handles in phDevices.
     zes_device_handle_t* phDevices,                 ///< [in][range(0, count)] Device handles to listen to for events. Only
                                                     ///< devices from the provided driver handle can be specified in this list.
@@ -1573,6 +1869,10 @@ zesDriverEventListen(
                                                     ///< entry will be zero.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnEventListen = ze_lib::context->zesDdiTable.Driver.pfnEventListen;
     if( nullptr == pfnEventListen ) {
         if(!ze_lib::context->isInitialized)
@@ -1613,7 +1913,7 @@ zesDriverEventListenEx(
     uint64_t timeout,                               ///< [in] if non-zero, then indicates the maximum time (in milliseconds) to
                                                     ///< yield before returning ::ZE_RESULT_SUCCESS or ::ZE_RESULT_NOT_READY;
                                                     ///< if zero, then will check status and return immediately;
-                                                    ///< if UINT64_MAX, then function will not return until events arrive.
+                                                    ///< if `UINT64_MAX`, then function will not return until events arrive.
     uint32_t count,                                 ///< [in] Number of device handles in phDevices.
     zes_device_handle_t* phDevices,                 ///< [in][range(0, count)] Device handles to listen to for events. Only
                                                     ///< devices from the provided driver handle can be specified in this list.
@@ -1629,6 +1929,10 @@ zesDriverEventListenEx(
                                                     ///< entry will be zero.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnEventListenEx = ze_lib::context->zesDdiTable.Driver.pfnEventListenEx;
     if( nullptr == pfnEventListenEx ) {
         if(!ze_lib::context->isInitialized)
@@ -1673,6 +1977,10 @@ zesDeviceEnumFabricPorts(
                                                     ///< component handles.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnEnumFabricPorts = ze_lib::context->zesDdiTable.Device.pfnEnumFabricPorts;
     if( nullptr == pfnEnumFabricPorts ) {
         if(!ze_lib::context->isInitialized)
@@ -1707,6 +2015,10 @@ zesFabricPortGetProperties(
     zes_fabric_port_properties_t* pProperties       ///< [in,out] Will contain properties of the Fabric Port.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetProperties = ze_lib::context->zesDdiTable.FabricPort.pfnGetProperties;
     if( nullptr == pfnGetProperties ) {
         if(!ze_lib::context->isInitialized)
@@ -1742,6 +2054,10 @@ zesFabricPortGetLinkType(
                                                     ///< port.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetLinkType = ze_lib::context->zesDdiTable.FabricPort.pfnGetLinkType;
     if( nullptr == pfnGetLinkType ) {
         if(!ze_lib::context->isInitialized)
@@ -1776,6 +2092,10 @@ zesFabricPortGetConfig(
     zes_fabric_port_config_t* pConfig               ///< [in,out] Will contain configuration of the Fabric Port.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetConfig = ze_lib::context->zesDdiTable.FabricPort.pfnGetConfig;
     if( nullptr == pfnGetConfig ) {
         if(!ze_lib::context->isInitialized)
@@ -1812,6 +2132,10 @@ zesFabricPortSetConfig(
     const zes_fabric_port_config_t* pConfig         ///< [in] Contains new configuration of the Fabric Port.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnSetConfig = ze_lib::context->zesDdiTable.FabricPort.pfnSetConfig;
     if( nullptr == pfnSetConfig ) {
         if(!ze_lib::context->isInitialized)
@@ -1847,6 +2171,10 @@ zesFabricPortGetState(
     zes_fabric_port_state_t* pState                 ///< [in,out] Will contain the current state of the Fabric Port
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetState = ze_lib::context->zesDdiTable.FabricPort.pfnGetState;
     if( nullptr == pfnGetState ) {
         if(!ze_lib::context->isInitialized)
@@ -1883,6 +2211,10 @@ zesFabricPortGetThroughput(
     zes_fabric_port_throughput_t* pThroughput       ///< [in,out] Will contain the Fabric port throughput counters.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetThroughput = ze_lib::context->zesDdiTable.FabricPort.pfnGetThroughput;
     if( nullptr == pfnGetThroughput ) {
         if(!ze_lib::context->isInitialized)
@@ -1900,6 +2232,9 @@ zesFabricPortGetThroughput(
 /// @details
 ///     - The application may call this function from simultaneous threads.
 ///     - The implementation of this function should be lock-free.
+///     - The memory backing the arrays for phPorts and ppThroughputs must be
+///       allocated in system memory by the user who is also responsible for
+///       releasing them when they are no longer needed.
 /// 
 /// @returns
 ///     - ::ZE_RESULT_SUCCESS
@@ -1919,6 +2254,10 @@ zesFabricPortGetFabricErrorCounters(
     zes_fabric_port_error_counters_t* pErrors       ///< [in,out] Will contain the Fabric port Error counters.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetFabricErrorCounters = ze_lib::context->zesDdiTable.FabricPort.pfnGetFabricErrorCounters;
     if( nullptr == pfnGetFabricErrorCounters ) {
         if(!ze_lib::context->isInitialized)
@@ -1928,6 +2267,49 @@ zesFabricPortGetFabricErrorCounters(
     }
 
     return pfnGetFabricErrorCounters( hPort, pErrors );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Get Fabric port throughput from multiple ports in a single call
+/// 
+/// @details
+///     - The application may call this function from simultaneous threads.
+///     - The implementation of this function should be lock-free.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hDevice`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == phPort`
+///         + `nullptr == pThroughput`
+ze_result_t ZE_APICALL
+zesFabricPortGetMultiPortThroughput(
+    zes_device_handle_t hDevice,                    ///< [in] Sysman handle of the device.
+    uint32_t numPorts,                              ///< [in] Number of ports enumerated in function ::zesDeviceEnumFabricPorts
+    zes_fabric_port_handle_t* phPort,               ///< [in][range(0, numPorts)] array of fabric port handles provided by user
+                                                    ///< to gather throughput values. 
+    zes_fabric_port_throughput_t** pThroughput      ///< [out][range(0, numPorts)] array of fabric port throughput counters
+                                                    ///< from multiple ports of type ::zes_fabric_port_throughput_t.
+    )
+{
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
+    auto pfnGetMultiPortThroughput = ze_lib::context->zesDdiTable.FabricPort.pfnGetMultiPortThroughput;
+    if( nullptr == pfnGetMultiPortThroughput ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    return pfnGetMultiPortThroughput( hDevice, numPorts, phPort, pThroughput );
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1963,6 +2345,10 @@ zesDeviceEnumFans(
                                                     ///< component handles.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnEnumFans = ze_lib::context->zesDdiTable.Device.pfnEnumFans;
     if( nullptr == pfnEnumFans ) {
         if(!ze_lib::context->isInitialized)
@@ -1997,6 +2383,10 @@ zesFanGetProperties(
     zes_fan_properties_t* pProperties               ///< [in,out] Will contain the properties of the fan.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetProperties = ze_lib::context->zesDdiTable.Fan.pfnGetProperties;
     if( nullptr == pfnGetProperties ) {
         if(!ze_lib::context->isInitialized)
@@ -2032,6 +2422,10 @@ zesFanGetConfig(
     zes_fan_config_t* pConfig                       ///< [in,out] Will contain the current configuration of the fan.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetConfig = ze_lib::context->zesDdiTable.Fan.pfnGetConfig;
     if( nullptr == pfnGetConfig ) {
         if(!ze_lib::context->isInitialized)
@@ -2066,6 +2460,10 @@ zesFanSetDefaultMode(
     zes_fan_handle_t hFan                           ///< [in] Handle for the component.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnSetDefaultMode = ze_lib::context->zesDdiTable.Fan.pfnSetDefaultMode;
     if( nullptr == pfnSetDefaultMode ) {
         if(!ze_lib::context->isInitialized)
@@ -2098,13 +2496,17 @@ zesFanSetDefaultMode(
 ///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
 ///         + User does not have permissions to make these modifications.
 ///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
-///         + Fixing the fan speed not supported by the hardware or the fan speed units are not supported. See ::zes_fan_properties_t.supportedModes and ::zes_fan_properties_t.supportedUnits.
+///         + Fixing the fan speed not supported by the hardware or the fan speed units are not supported. See the `supportedModes` and `supportedUnits` members of ::zes_fan_properties_t.
 ze_result_t ZE_APICALL
 zesFanSetFixedSpeedMode(
     zes_fan_handle_t hFan,                          ///< [in] Handle for the component.
     const zes_fan_speed_t* speed                    ///< [in] The fixed fan speed setting
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnSetFixedSpeedMode = ze_lib::context->zesDdiTable.Fan.pfnSetFixedSpeedMode;
     if( nullptr == pfnSetFixedSpeedMode ) {
         if(!ze_lib::context->isInitialized)
@@ -2139,13 +2541,17 @@ zesFanSetFixedSpeedMode(
 ///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
 ///         + The temperature/speed pairs in the array are not sorted on temperature from lowest to highest.
 ///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
-///         + Fan speed table not supported by the hardware or the fan speed units are not supported. See ::zes_fan_properties_t.supportedModes and ::zes_fan_properties_t.supportedUnits.
+///         + Fan speed table not supported by the hardware or the fan speed units are not supported. See the `supportedModes` and `supportedUnits` members of ::zes_fan_properties_t.
 ze_result_t ZE_APICALL
 zesFanSetSpeedTableMode(
     zes_fan_handle_t hFan,                          ///< [in] Handle for the component.
     const zes_fan_speed_table_t* speedTable         ///< [in] A table containing temperature/speed pairs.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnSetSpeedTableMode = ze_lib::context->zesDdiTable.Fan.pfnSetSpeedTableMode;
     if( nullptr == pfnSetSpeedTableMode ) {
         if(!ze_lib::context->isInitialized)
@@ -2177,7 +2583,7 @@ zesFanSetSpeedTableMode(
 ///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
 ///         + `nullptr == pSpeed`
 ///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
-///         + The requested fan speed units are not supported. See ::zes_fan_properties_t.supportedUnits.
+///         + The requested fan speed units are not supported. See the `supportedUnits` member of ::zes_fan_properties_t.
 ze_result_t ZE_APICALL
 zesFanGetState(
     zes_fan_handle_t hFan,                          ///< [in] Handle for the component.
@@ -2187,6 +2593,10 @@ zesFanGetState(
                                                     ///< measured.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetState = ze_lib::context->zesDdiTable.Fan.pfnGetState;
     if( nullptr == pfnGetState ) {
         if(!ze_lib::context->isInitialized)
@@ -2231,6 +2641,10 @@ zesDeviceEnumFirmwares(
                                                     ///< component handles.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnEnumFirmwares = ze_lib::context->zesDdiTable.Device.pfnEnumFirmwares;
     if( nullptr == pfnEnumFirmwares ) {
         if(!ze_lib::context->isInitialized)
@@ -2266,6 +2680,10 @@ zesFirmwareGetProperties(
                                                     ///< firmware
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetProperties = ze_lib::context->zesDdiTable.Firmware.pfnGetProperties;
     if( nullptr == pfnGetProperties ) {
         if(!ze_lib::context->isInitialized)
@@ -2281,8 +2699,12 @@ zesFirmwareGetProperties(
 /// @brief Flash a new firmware image
 /// 
 /// @details
+///     - Any running workload must be gracefully closed before invoking this
+///       function.
 ///     - The application may call this function from simultaneous threads.
 ///     - The implementation of this function should be lock-free.
+///     - This is a non-blocking call. Application may call
+///       ::zesFirmwareGetFlashProgress to get completion status.
 /// 
 /// @returns
 ///     - ::ZE_RESULT_SUCCESS
@@ -2303,6 +2725,10 @@ zesFirmwareFlash(
     uint32_t size                                   ///< [in] Size of the flash image.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnFlash = ze_lib::context->zesDdiTable.Firmware.pfnFlash;
     if( nullptr == pfnFlash ) {
         if(!ze_lib::context->isInitialized)
@@ -2312,6 +2738,44 @@ zesFirmwareFlash(
     }
 
     return pfnFlash( hFirmware, pImage, size );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Get Firmware Flash Progress
+/// 
+/// @details
+///     - The application may call this function from simultaneous threads.
+///     - The implementation of this function should be lock-free.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hFirmware`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == pCompletionPercent`
+ze_result_t ZE_APICALL
+zesFirmwareGetFlashProgress(
+    zes_firmware_handle_t hFirmware,                ///< [in] Handle for the component.
+    uint32_t* pCompletionPercent                    ///< [in,out] Pointer to the Completion Percentage of Firmware Update
+    )
+{
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
+    auto pfnGetFlashProgress = ze_lib::context->zesDdiTable.Firmware.pfnGetFlashProgress;
+    if( nullptr == pfnGetFlashProgress ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    return pfnGetFlashProgress( hFirmware, pCompletionPercent );
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -2347,6 +2811,10 @@ zesDeviceEnumFrequencyDomains(
                                                     ///< component handles.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnEnumFrequencyDomains = ze_lib::context->zesDdiTable.Device.pfnEnumFrequencyDomains;
     if( nullptr == pfnEnumFrequencyDomains ) {
         if(!ze_lib::context->isInitialized)
@@ -2381,6 +2849,10 @@ zesFrequencyGetProperties(
     zes_freq_properties_t* pProperties              ///< [in,out] The frequency properties for the specified domain.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetProperties = ze_lib::context->zesDdiTable.Frequency.pfnGetProperties;
     if( nullptr == pfnGetProperties ) {
         if(!ze_lib::context->isInitialized)
@@ -2426,6 +2898,10 @@ zesFrequencyGetAvailableClocks(
                                                     ///< then the driver shall only retrieve that number of frequencies.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetAvailableClocks = ze_lib::context->zesDdiTable.Frequency.pfnGetAvailableClocks;
     if( nullptr == pfnGetAvailableClocks ) {
         if(!ze_lib::context->isInitialized)
@@ -2461,6 +2937,10 @@ zesFrequencyGetRange(
                                                     ///< specified domain.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetRange = ze_lib::context->zesDdiTable.Frequency.pfnGetRange;
     if( nullptr == pfnGetRange ) {
         if(!ze_lib::context->isInitialized)
@@ -2498,6 +2978,10 @@ zesFrequencySetRange(
                                                     ///< specified domain.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnSetRange = ze_lib::context->zesDdiTable.Frequency.pfnSetRange;
     if( nullptr == pfnSetRange ) {
         if(!ze_lib::context->isInitialized)
@@ -2533,6 +3017,10 @@ zesFrequencyGetState(
     zes_freq_state_t* pState                        ///< [in,out] Frequency state for the specified domain.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetState = ze_lib::context->zesDdiTable.Frequency.pfnGetState;
     if( nullptr == pfnGetState ) {
         if(!ze_lib::context->isInitialized)
@@ -2568,6 +3056,10 @@ zesFrequencyGetThrottleTime(
                                                     ///< specified domain.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetThrottleTime = ze_lib::context->zesDdiTable.Frequency.pfnGetThrottleTime;
     if( nullptr == pfnGetThrottleTime ) {
         if(!ze_lib::context->isInitialized)
@@ -2585,6 +3077,7 @@ zesFrequencyGetThrottleTime(
 /// @details
 ///     - The application may call this function from simultaneous threads.
 ///     - The implementation of this function should be lock-free.
+///     - [DEPRECATED] No longer supported.
 /// 
 /// @returns
 ///     - ::ZE_RESULT_SUCCESS
@@ -2599,10 +3092,13 @@ zesFrequencyGetThrottleTime(
 ze_result_t ZE_APICALL
 zesFrequencyOcGetCapabilities(
     zes_freq_handle_t hFrequency,                   ///< [in] Handle for the component.
-    zes_oc_capabilities_t* pOcCapabilities          ///< [in,out] Pointer to the capabilities structure
-                                                    ///< ::zes_oc_capabilities_t.
+    zes_oc_capabilities_t* pOcCapabilities          ///< [in,out] Pointer to the capabilities structure.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnOcGetCapabilities = ze_lib::context->zesDdiTable.Frequency.pfnOcGetCapabilities;
     if( nullptr == pfnOcGetCapabilities ) {
         if(!ze_lib::context->isInitialized)
@@ -2621,6 +3117,7 @@ zesFrequencyOcGetCapabilities(
 /// @details
 ///     - The application may call this function from simultaneous threads.
 ///     - The implementation of this function should be lock-free.
+///     - [DEPRECATED] No longer supported.
 /// 
 /// @returns
 ///     - ::ZE_RESULT_SUCCESS
@@ -2633,11 +3130,11 @@ zesFrequencyOcGetCapabilities(
 ///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
 ///         + `nullptr == pCurrentOcFrequency`
 ///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
-///         + Overclocking is not supported on this frequency domain (::zes_oc_capabilities_t.isOcSupported)
-///         + The specified voltage and/or frequency overclock settings exceed the hardware values (see ::zes_oc_capabilities_t.maxOcFrequency, ::zes_oc_capabilities_t.maxOcVoltage, ::zes_oc_capabilities_t.minOcVoltageOffset, ::zes_oc_capabilities_t.maxOcVoltageOffset).
-///         + Requested voltage overclock is very high but ::zes_oc_capabilities_t.isHighVoltModeEnabled is not enabled for the device.
+///         + Overclocking is not supported on this frequency domain (see the `isOcSupported` member of ::zes_oc_capabilities_t).
+///         + The specified voltage and/or frequency overclock settings exceed the hardware values (see the `maxOcFrequency`, `maxOcVoltage`, `minOcVoltageOffset` and `maxOcVoltageOffset` members of ::zes_oc_capabilities_t).
+///         + Requested voltage overclock is very high but the `isHighVoltModeEnabled` member of ::zes_oc_capabilities_t is not enabled for the device.
 ///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
-///         + Overclocking feature is locked on this frequency domain
+///         + Overclocking feature is locked on this frequency domain.
 ///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
 ///         + User does not have permissions to make these modifications.
 ze_result_t ZE_APICALL
@@ -2645,9 +3142,14 @@ zesFrequencyOcGetFrequencyTarget(
     zes_freq_handle_t hFrequency,                   ///< [in] Handle for the component.
     double* pCurrentOcFrequency                     ///< [out] Overclocking Frequency in MHz, if extended moded is supported,
                                                     ///< will returned in 1 Mhz granularity, else, in multiples of 50 Mhz. This
-                                                    ///< cannot be greater than ::zes_oc_capabilities_t.maxOcFrequency.
+                                                    ///< cannot be greater than the `maxOcFrequency` member of
+                                                    ///< ::zes_oc_capabilities_t.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnOcGetFrequencyTarget = ze_lib::context->zesDdiTable.Frequency.pfnOcGetFrequencyTarget;
     if( nullptr == pfnOcGetFrequencyTarget ) {
         if(!ze_lib::context->isInitialized)
@@ -2666,6 +3168,7 @@ zesFrequencyOcGetFrequencyTarget(
 /// @details
 ///     - The application may call this function from simultaneous threads.
 ///     - The implementation of this function should be lock-free.
+///     - [DEPRECATED] No longer supported.
 /// 
 /// @returns
 ///     - ::ZE_RESULT_SUCCESS
@@ -2676,11 +3179,11 @@ zesFrequencyOcGetFrequencyTarget(
 ///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
 ///         + `nullptr == hFrequency`
 ///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
-///         + Overclocking is not supported on this frequency domain (::zes_oc_capabilities_t.isOcSupported)
-///         + The specified voltage and/or frequency overclock settings exceed the hardware values (see ::zes_oc_capabilities_t.maxOcFrequency, ::zes_oc_capabilities_t.maxOcVoltage, ::zes_oc_capabilities_t.minOcVoltageOffset, ::zes_oc_capabilities_t.maxOcVoltageOffset).
-///         + Requested voltage overclock is very high but ::zes_oc_capabilities_t.isHighVoltModeEnabled is not enabled for the device.
+///         + Overclocking is not supported on this frequency domain (see the `isOcSupported` member of ::zes_oc_capabilities_t).
+///         + The specified voltage and/or frequency overclock settings exceed the hardware values (see the `maxOcFrequency`, `maxOcVoltage`, `minOcVoltageOffset` and `maxOcVoltageOffset` members of ::zes_oc_capabilities_t).
+///         + Requested voltage overclock is very high but the `isHighVoltModeEnabled` member of ::zes_oc_capabilities_t is not enabled for the device.
 ///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
-///         + Overclocking feature is locked on this frequency domain
+///         + Overclocking feature is locked on this frequency domain.
 ///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
 ///         + User does not have permissions to make these modifications.
 ze_result_t ZE_APICALL
@@ -2688,9 +3191,14 @@ zesFrequencyOcSetFrequencyTarget(
     zes_freq_handle_t hFrequency,                   ///< [in] Handle for the component.
     double CurrentOcFrequency                       ///< [in] Overclocking Frequency in MHz, if extended moded is supported, it
                                                     ///< could be set in 1 Mhz granularity, else, in multiples of 50 Mhz. This
-                                                    ///< cannot be greater than ::zes_oc_capabilities_t.maxOcFrequency.
+                                                    ///< cannot be greater than the `maxOcFrequency` member of
+                                                    ///< ::zes_oc_capabilities_t.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnOcSetFrequencyTarget = ze_lib::context->zesDdiTable.Frequency.pfnOcSetFrequencyTarget;
     if( nullptr == pfnOcSetFrequencyTarget ) {
         if(!ze_lib::context->isInitialized)
@@ -2708,6 +3216,7 @@ zesFrequencyOcSetFrequencyTarget(
 /// @details
 ///     - The application may call this function from simultaneous threads.
 ///     - The implementation of this function should be lock-free.
+///     - [DEPRECATED] No longer supported.
 /// 
 /// @returns
 ///     - ::ZE_RESULT_SUCCESS
@@ -2721,24 +3230,28 @@ zesFrequencyOcSetFrequencyTarget(
 ///         + `nullptr == pCurrentVoltageTarget`
 ///         + `nullptr == pCurrentVoltageOffset`
 ///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
-///         + Overclocking is not supported on this frequency domain (::zes_oc_capabilities_t.isOcSupported)
-///         + The specified voltage and/or frequency overclock settings exceed the hardware values (see ::zes_oc_capabilities_t.maxOcFrequency, ::zes_oc_capabilities_t.maxOcVoltage, ::zes_oc_capabilities_t.minOcVoltageOffset, ::zes_oc_capabilities_t.maxOcVoltageOffset).
-///         + Requested voltage overclock is very high but ::zes_oc_capabilities_t.isHighVoltModeEnabled is not enabled for the device.
+///         + Overclocking is not supported on this frequency domain (see the `isOcSupported` member of ::zes_oc_capabilities_t).
+///         + The specified voltage and/or frequency overclock settings exceed the hardware values (see the `maxOcFrequency`, `maxOcVoltage`, `minOcVoltageOffset` and `maxOcVoltageOffset` members of ::zes_oc_capabilities_t).
+///         + Requested voltage overclock is very high but the `isHighVoltModeEnabled` member of ::zes_oc_capabilities_t is not enabled for the device.
 ///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
-///         + Overclocking feature is locked on this frequency domain
+///         + Overclocking feature is locked on this frequency domain.
 ///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
 ///         + User does not have permissions to make these modifications.
 ze_result_t ZE_APICALL
 zesFrequencyOcGetVoltageTarget(
     zes_freq_handle_t hFrequency,                   ///< [in] Handle for the component.
-    double* pCurrentVoltageTarget,                  ///< [out] Overclock voltage in Volts. This cannot be greater than
-                                                    ///< ::zes_oc_capabilities_t.maxOcVoltage.
+    double* pCurrentVoltageTarget,                  ///< [out] Overclock voltage in Volts. This cannot be greater than the
+                                                    ///< `maxOcVoltage` member of ::zes_oc_capabilities_t.
     double* pCurrentVoltageOffset                   ///< [out] This voltage offset is applied to all points on the
-                                                    ///< voltage/frequency curve, include the new overclock voltageTarget. It
-                                                    ///< can be in the range (::zes_oc_capabilities_t.minOcVoltageOffset,
-                                                    ///< ::zes_oc_capabilities_t.maxOcVoltageOffset).
+                                                    ///< voltage/frequency curve, including the new overclock voltageTarget.
+                                                    ///< Valid range is between the `minOcVoltageOffset` and
+                                                    ///< `maxOcVoltageOffset` members of ::zes_oc_capabilities_t.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnOcGetVoltageTarget = ze_lib::context->zesDdiTable.Frequency.pfnOcGetVoltageTarget;
     if( nullptr == pfnOcGetVoltageTarget ) {
         if(!ze_lib::context->isInitialized)
@@ -2756,6 +3269,7 @@ zesFrequencyOcGetVoltageTarget(
 /// @details
 ///     - The application may call this function from simultaneous threads.
 ///     - The implementation of this function should be lock-free.
+///     - [DEPRECATED] No longer supported.
 /// 
 /// @returns
 ///     - ::ZE_RESULT_SUCCESS
@@ -2766,24 +3280,28 @@ zesFrequencyOcGetVoltageTarget(
 ///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
 ///         + `nullptr == hFrequency`
 ///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
-///         + Overclocking is not supported on this frequency domain (::zes_oc_capabilities_t.isOcSupported)
-///         + The specified voltage and/or frequency overclock settings exceed the hardware values (see ::zes_oc_capabilities_t.maxOcFrequency, ::zes_oc_capabilities_t.maxOcVoltage, ::zes_oc_capabilities_t.minOcVoltageOffset, ::zes_oc_capabilities_t.maxOcVoltageOffset).
-///         + Requested voltage overclock is very high but ::zes_oc_capabilities_t.isHighVoltModeEnabled is not enabled for the device.
+///         + Overclocking is not supported on this frequency domain (see the `isOcSupported` member of ::zes_oc_capabilities_t).
+///         + The specified voltage and/or frequency overclock settings exceed the hardware values (see the `maxOcFrequency`, `maxOcVoltage`, `minOcVoltageOffset` and `maxOcVoltageOffset` members of ::zes_oc_capabilities_t).
+///         + Requested voltage overclock is very high but the `isHighVoltModeEnabled` member of ::zes_oc_capabilities_t is not enabled for the device.
 ///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
-///         + Overclocking feature is locked on this frequency domain
+///         + Overclocking feature is locked on this frequency domain.
 ///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
 ///         + User does not have permissions to make these modifications.
 ze_result_t ZE_APICALL
 zesFrequencyOcSetVoltageTarget(
     zes_freq_handle_t hFrequency,                   ///< [in] Handle for the component.
-    double CurrentVoltageTarget,                    ///< [in] Overclock voltage in Volts. This cannot be greater than
-                                                    ///< ::zes_oc_capabilities_t.maxOcVoltage.
+    double CurrentVoltageTarget,                    ///< [in] Overclock voltage in Volts. This cannot be greater than the
+                                                    ///< `maxOcVoltage` member of ::zes_oc_capabilities_t.
     double CurrentVoltageOffset                     ///< [in] This voltage offset is applied to all points on the
-                                                    ///< voltage/frequency curve, include the new overclock voltageTarget. It
-                                                    ///< can be in the range (::zes_oc_capabilities_t.minOcVoltageOffset,
-                                                    ///< ::zes_oc_capabilities_t.maxOcVoltageOffset).
+                                                    ///< voltage/frequency curve, include the new overclock voltageTarget.
+                                                    ///< Valid range is between the `minOcVoltageOffset` and
+                                                    ///< `maxOcVoltageOffset` members of ::zes_oc_capabilities_t.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnOcSetVoltageTarget = ze_lib::context->zesDdiTable.Frequency.pfnOcSetVoltageTarget;
     if( nullptr == pfnOcSetVoltageTarget ) {
         if(!ze_lib::context->isInitialized)
@@ -2801,6 +3319,7 @@ zesFrequencyOcSetVoltageTarget(
 /// @details
 ///     - The application may call this function from simultaneous threads.
 ///     - The implementation of this function should be lock-free.
+///     - [DEPRECATED] No longer supported.
 /// 
 /// @returns
 ///     - ::ZE_RESULT_SUCCESS
@@ -2813,11 +3332,11 @@ zesFrequencyOcSetVoltageTarget(
 ///     - ::ZE_RESULT_ERROR_INVALID_ENUMERATION
 ///         + `::ZES_OC_MODE_FIXED < CurrentOcMode`
 ///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
-///         + Overclocking is not supported on this frequency domain (::zes_oc_capabilities_t.isOcSupported)
-///         + The specified voltage and/or frequency overclock settings exceed the hardware values (see ::zes_oc_capabilities_t.maxOcFrequency, ::zes_oc_capabilities_t.maxOcVoltage, ::zes_oc_capabilities_t.minOcVoltageOffset, ::zes_oc_capabilities_t.maxOcVoltageOffset).
-///         + Requested voltage overclock is very high but ::zes_oc_capabilities_t.isHighVoltModeEnabled is not enabled for the device.
+///         + Overclocking is not supported on this frequency domain (see the `isOcSupported` member of ::zes_oc_capabilities_t).
+///         + The specified voltage and/or frequency overclock settings exceed the hardware values (see the `maxOcFrequency`, `maxOcVoltage`, `minOcVoltageOffset` and `maxOcVoltageOffset` members of ::zes_oc_capabilities_t).
+///         + Requested voltage overclock is very high but the `isHighVoltModeEnabled` member of ::zes_oc_capabilities_t is not enabled for the device.
 ///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
-///         + Overclocking feature is locked on this frequency domain
+///         + Overclocking feature is locked on this frequency domain.
 ///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
 ///         + User does not have permissions to make these modifications.
 ze_result_t ZE_APICALL
@@ -2826,6 +3345,10 @@ zesFrequencyOcSetMode(
     zes_oc_mode_t CurrentOcMode                     ///< [in] Current Overclocking Mode ::zes_oc_mode_t.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnOcSetMode = ze_lib::context->zesDdiTable.Frequency.pfnOcSetMode;
     if( nullptr == pfnOcSetMode ) {
         if(!ze_lib::context->isInitialized)
@@ -2843,6 +3366,7 @@ zesFrequencyOcSetMode(
 /// @details
 ///     - The application may call this function from simultaneous threads.
 ///     - The implementation of this function should be lock-free.
+///     - [DEPRECATED] No longer supported.
 /// 
 /// @returns
 ///     - ::ZE_RESULT_SUCCESS
@@ -2855,11 +3379,11 @@ zesFrequencyOcSetMode(
 ///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
 ///         + `nullptr == pCurrentOcMode`
 ///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
-///         + Overclocking is not supported on this frequency domain (::zes_oc_capabilities_t.isOcSupported)
-///         + The specified voltage and/or frequency overclock settings exceed the hardware values (see ::zes_oc_capabilities_t.maxOcFrequency, ::zes_oc_capabilities_t.maxOcVoltage, ::zes_oc_capabilities_t.minOcVoltageOffset, ::zes_oc_capabilities_t.maxOcVoltageOffset).
-///         + Requested voltage overclock is very high but ::zes_oc_capabilities_t.isHighVoltModeEnabled is not enabled for the device.
+///         + Overclocking is not supported on this frequency domain (see the `isOcSupported` member of ::zes_oc_capabilities_t).
+///         + The specified voltage and/or frequency overclock settings exceed the hardware values (see the `maxOcFrequency`, `maxOcVoltage`, `minOcVoltageOffset` and `maxOcVoltageOffset` members of ::zes_oc_capabilities_t).
+///         + Requested voltage overclock is very high but the `isHighVoltModeEnabled` member of ::zes_oc_capabilities_t is not enabled for the device.
 ///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
-///         + Overclocking feature is locked on this frequency domain
+///         + Overclocking feature is locked on this frequency domain.
 ///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
 ///         + User does not have permissions to make these modifications.
 ze_result_t ZE_APICALL
@@ -2868,6 +3392,10 @@ zesFrequencyOcGetMode(
     zes_oc_mode_t* pCurrentOcMode                   ///< [out] Current Overclocking Mode ::zes_oc_mode_t.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnOcGetMode = ze_lib::context->zesDdiTable.Frequency.pfnOcGetMode;
     if( nullptr == pfnOcGetMode ) {
         if(!ze_lib::context->isInitialized)
@@ -2885,6 +3413,7 @@ zesFrequencyOcGetMode(
 /// @details
 ///     - The application may call this function from simultaneous threads.
 ///     - The implementation of this function should be lock-free.
+///     - [DEPRECATED] No longer supported.
 /// 
 /// @returns
 ///     - ::ZE_RESULT_SUCCESS
@@ -2897,8 +3426,8 @@ zesFrequencyOcGetMode(
 ///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
 ///         + `nullptr == pOcIccMax`
 ///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
-///         + Overclocking is not supported on this frequency domain (::zes_oc_capabilities_t.isOcSupported)
-///         + Capability ::zes_oc_capabilities_t.isIccMaxSupported is false for this frequency domain
+///         + Overclocking is not supported on this frequency domain (see the `isOcSupported` member of ::zes_oc_capabilities_t).
+///         + Capability the `isIccMaxSupported` member of ::zes_oc_capabilities_t is false for this frequency domain.
 ze_result_t ZE_APICALL
 zesFrequencyOcGetIccMax(
     zes_freq_handle_t hFrequency,                   ///< [in] Handle for the component.
@@ -2906,6 +3435,10 @@ zesFrequencyOcGetIccMax(
                                                     ///< successful return.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnOcGetIccMax = ze_lib::context->zesDdiTable.Frequency.pfnOcGetIccMax;
     if( nullptr == pfnOcGetIccMax ) {
         if(!ze_lib::context->isInitialized)
@@ -2924,6 +3457,7 @@ zesFrequencyOcGetIccMax(
 ///     - Setting ocIccMax to 0.0 will return the value to the factory default.
 ///     - The application may call this function from simultaneous threads.
 ///     - The implementation of this function should be lock-free.
+///     - [DEPRECATED] No longer supported.
 /// 
 /// @returns
 ///     - ::ZE_RESULT_SUCCESS
@@ -2934,12 +3468,12 @@ zesFrequencyOcGetIccMax(
 ///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
 ///         + `nullptr == hFrequency`
 ///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
-///         + Overclocking is not supported on this frequency domain (::zes_oc_capabilities_t.isOcSupported)
-///         + Capability ::zes_oc_capabilities_t.isIccMaxSupported is false for this frequency domain
+///         + Overclocking is not supported on this frequency domain (see the `isOcSupported` member of ::zes_oc_capabilities_t).
+///         + The `isIccMaxSupported` member of ::zes_oc_capabilities_t is false for this frequency domain.
 ///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
-///         + Overclocking feature is locked on this frequency domain
+///         + Overclocking feature is locked on this frequency domain.
 ///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
-///         + The specified current limit is too low or too high
+///         + The specified current limit is too low or too high.
 ///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
 ///         + User does not have permissions to make these modifications.
 ze_result_t ZE_APICALL
@@ -2948,6 +3482,10 @@ zesFrequencyOcSetIccMax(
     double ocIccMax                                 ///< [in] The new maximum current limit in Amperes.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnOcSetIccMax = ze_lib::context->zesDdiTable.Frequency.pfnOcSetIccMax;
     if( nullptr == pfnOcSetIccMax ) {
         if(!ze_lib::context->isInitialized)
@@ -2965,6 +3503,7 @@ zesFrequencyOcSetIccMax(
 /// @details
 ///     - The application may call this function from simultaneous threads.
 ///     - The implementation of this function should be lock-free.
+///     - [DEPRECATED] No longer supported.
 /// 
 /// @returns
 ///     - ::ZE_RESULT_SUCCESS
@@ -2977,7 +3516,7 @@ zesFrequencyOcSetIccMax(
 ///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
 ///         + `nullptr == pOcTjMax`
 ///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
-///         + Overclocking is not supported on this frequency domain (::zes_oc_capabilities_t.isOcSupported)
+///         + Overclocking is not supported on this frequency domain (see the `isOcSupported` member of ::zes_oc_capabilities_t).
 ze_result_t ZE_APICALL
 zesFrequencyOcGetTjMax(
     zes_freq_handle_t hFrequency,                   ///< [in] Handle for the component.
@@ -2985,6 +3524,10 @@ zesFrequencyOcGetTjMax(
                                                     ///< on successful return.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnOcGetTjMax = ze_lib::context->zesDdiTable.Frequency.pfnOcGetTjMax;
     if( nullptr == pfnOcGetTjMax ) {
         if(!ze_lib::context->isInitialized)
@@ -3003,6 +3546,7 @@ zesFrequencyOcGetTjMax(
 ///     - Setting ocTjMax to 0.0 will return the value to the factory default.
 ///     - The application may call this function from simultaneous threads.
 ///     - The implementation of this function should be lock-free.
+///     - [DEPRECATED] No longer supported.
 /// 
 /// @returns
 ///     - ::ZE_RESULT_SUCCESS
@@ -3013,12 +3557,12 @@ zesFrequencyOcGetTjMax(
 ///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
 ///         + `nullptr == hFrequency`
 ///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
-///         + Overclocking is not supported on this frequency domain (::zes_oc_capabilities_t.isOcSupported)
-///         + Capability ::zes_oc_capabilities_t.isTjMaxSupported is false for this frequency domain
+///         + Overclocking is not supported on this frequency domain (see the `isOcSupported` member of ::zes_oc_capabilities_t).
+///         + The `isTjMaxSupported` member of ::zes_oc_capabilities_t is false for this frequency domain.
 ///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
-///         + Overclocking feature is locked on this frequency domain
+///         + Overclocking feature is locked on this frequency domain.
 ///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
-///         + The specified temperature limit is too high
+///         + The specified temperature limit is too high.
 ///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
 ///         + User does not have permissions to make these modifications.
 ze_result_t ZE_APICALL
@@ -3027,6 +3571,10 @@ zesFrequencyOcSetTjMax(
     double ocTjMax                                  ///< [in] The new maximum temperature limit in degrees Celsius.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnOcSetTjMax = ze_lib::context->zesDdiTable.Frequency.pfnOcSetTjMax;
     if( nullptr == pfnOcSetTjMax ) {
         if(!ze_lib::context->isInitialized)
@@ -3071,6 +3619,10 @@ zesDeviceEnumLeds(
                                                     ///< component handles.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnEnumLeds = ze_lib::context->zesDdiTable.Device.pfnEnumLeds;
     if( nullptr == pfnEnumLeds ) {
         if(!ze_lib::context->isInitialized)
@@ -3105,6 +3657,10 @@ zesLedGetProperties(
     zes_led_properties_t* pProperties               ///< [in,out] Will contain the properties of the LED.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetProperties = ze_lib::context->zesDdiTable.Led.pfnGetProperties;
     if( nullptr == pfnGetProperties ) {
         if(!ze_lib::context->isInitialized)
@@ -3139,6 +3695,10 @@ zesLedGetState(
     zes_led_state_t* pState                         ///< [in,out] Will contain the current state of the LED.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetState = ze_lib::context->zesDdiTable.Led.pfnGetState;
     if( nullptr == pfnGetState ) {
         if(!ze_lib::context->isInitialized)
@@ -3173,6 +3733,10 @@ zesLedSetState(
     ze_bool_t enable                                ///< [in] Set to TRUE to turn the LED on, FALSE to turn off.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnSetState = ze_lib::context->zesDdiTable.Led.pfnSetState;
     if( nullptr == pfnSetState ) {
         if(!ze_lib::context->isInitialized)
@@ -3204,13 +3768,17 @@ zesLedSetState(
 ///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
 ///         + User does not have permissions to make these modifications.
 ///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
-///         + This LED doesn't not support color changes. See ::zes_led_properties_t.haveRGB.
+///         + This LED doesn't not support color changes. See the `haveRGB` member of ::zes_led_properties_t.
 ze_result_t ZE_APICALL
 zesLedSetColor(
     zes_led_handle_t hLed,                          ///< [in] Handle for the component.
     const zes_led_color_t* pColor                   ///< [in] New color of the LED.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnSetColor = ze_lib::context->zesDdiTable.Led.pfnSetColor;
     if( nullptr == pfnSetColor ) {
         if(!ze_lib::context->isInitialized)
@@ -3255,6 +3823,10 @@ zesDeviceEnumMemoryModules(
                                                     ///< component handles.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnEnumMemoryModules = ze_lib::context->zesDdiTable.Device.pfnEnumMemoryModules;
     if( nullptr == pfnEnumMemoryModules ) {
         if(!ze_lib::context->isInitialized)
@@ -3289,6 +3861,10 @@ zesMemoryGetProperties(
     zes_mem_properties_t* pProperties               ///< [in,out] Will contain memory properties.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetProperties = ze_lib::context->zesDdiTable.Memory.pfnGetProperties;
     if( nullptr == pfnGetProperties ) {
         if(!ze_lib::context->isInitialized)
@@ -3323,6 +3899,10 @@ zesMemoryGetState(
     zes_mem_state_t* pState                         ///< [in,out] Will contain the current health and allocated memory.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetState = ze_lib::context->zesDdiTable.Memory.pfnGetState;
     if( nullptr == pfnGetState ) {
         if(!ze_lib::context->isInitialized)
@@ -3360,6 +3940,10 @@ zesMemoryGetBandwidth(
                                                     ///< to memory, as well as the current maximum bandwidth.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetBandwidth = ze_lib::context->zesDdiTable.Memory.pfnGetBandwidth;
     if( nullptr == pfnGetBandwidth ) {
         if(!ze_lib::context->isInitialized)
@@ -3406,6 +3990,10 @@ zesDeviceEnumPerformanceFactorDomains(
                                                     ///< component handles.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnEnumPerformanceFactorDomains = ze_lib::context->zesDdiTable.Device.pfnEnumPerformanceFactorDomains;
     if( nullptr == pfnEnumPerformanceFactorDomains ) {
         if(!ze_lib::context->isInitialized)
@@ -3441,6 +4029,10 @@ zesPerformanceFactorGetProperties(
                                                     ///< Factor domain.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetProperties = ze_lib::context->zesDdiTable.PerformanceFactor.pfnGetProperties;
     if( nullptr == pfnGetProperties ) {
         if(!ze_lib::context->isInitialized)
@@ -3476,6 +4068,10 @@ zesPerformanceFactorGetConfig(
                                                     ///< hardware (may not be the same as the requested Performance Factor).
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetConfig = ze_lib::context->zesDdiTable.PerformanceFactor.pfnGetConfig;
     if( nullptr == pfnGetConfig ) {
         if(!ze_lib::context->isInitialized)
@@ -3513,6 +4109,10 @@ zesPerformanceFactorSetConfig(
     double factor                                   ///< [in] The new Performance Factor.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnSetConfig = ze_lib::context->zesDdiTable.PerformanceFactor.pfnSetConfig;
     if( nullptr == pfnSetConfig ) {
         if(!ze_lib::context->isInitialized)
@@ -3557,6 +4157,10 @@ zesDeviceEnumPowerDomains(
                                                     ///< component handles.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnEnumPowerDomains = ze_lib::context->zesDdiTable.Device.pfnEnumPowerDomains;
     if( nullptr == pfnEnumPowerDomains ) {
         if(!ze_lib::context->isInitialized)
@@ -3574,6 +4178,7 @@ zesDeviceEnumPowerDomains(
 /// @details
 ///     - The application may call this function from simultaneous threads.
 ///     - The implementation of this function should be lock-free.
+///     - [DEPRECATED] No longer supported.
 /// 
 /// @returns
 ///     - ::ZE_RESULT_SUCCESS
@@ -3593,6 +4198,10 @@ zesDeviceGetCardPowerDomain(
     zes_pwr_handle_t* phPower                       ///< [in,out] power domain handle for the entire PCIe card.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetCardPowerDomain = ze_lib::context->zesDdiTable.Device.pfnGetCardPowerDomain;
     if( nullptr == pfnGetCardPowerDomain ) {
         if(!ze_lib::context->isInitialized)
@@ -3627,6 +4236,10 @@ zesPowerGetProperties(
     zes_power_properties_t* pProperties             ///< [in,out] Structure that will contain property data.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetProperties = ze_lib::context->zesDdiTable.Power.pfnGetProperties;
     if( nullptr == pfnGetProperties ) {
         if(!ze_lib::context->isInitialized)
@@ -3662,6 +4275,10 @@ zesPowerGetEnergyCounter(
                                                     ///< timestamp when the last counter value was measured.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetEnergyCounter = ze_lib::context->zesDdiTable.Power.pfnGetEnergyCounter;
     if( nullptr == pfnGetEnergyCounter ) {
         if(!ze_lib::context->isInitialized)
@@ -3679,8 +4296,7 @@ zesPowerGetEnergyCounter(
 /// @details
 ///     - The application may call this function from simultaneous threads.
 ///     - The implementation of this function should be lock-free.
-///     - Note: This function is deprecated and replaced by
-///       ::zesPowerGetLimitsExt.
+///     - [DEPRECATED] Use ::zesPowerGetLimitsExt.
 /// 
 /// @returns
 ///     - ::ZE_RESULT_SUCCESS
@@ -3701,6 +4317,10 @@ zesPowerGetLimits(
                                                     ///< power limits will not be returned.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetLimits = ze_lib::context->zesDdiTable.Power.pfnGetLimits;
     if( nullptr == pfnGetLimits ) {
         if(!ze_lib::context->isInitialized)
@@ -3718,8 +4338,7 @@ zesPowerGetLimits(
 /// @details
 ///     - The application may call this function from simultaneous threads.
 ///     - The implementation of this function should be lock-free.
-///     - Note: This function is deprecated and replaced by
-///       ::zesPowerSetLimitsExt.
+///     - [DEPRECATED] Use ::zesPowerSetLimitsExt.
 /// 
 /// @returns
 ///     - ::ZE_RESULT_SUCCESS
@@ -3744,6 +4363,10 @@ zesPowerSetLimits(
                                                     ///< be made to the peak power limits.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnSetLimits = ze_lib::context->zesDdiTable.Power.pfnSetLimits;
     if( nullptr == pfnSetLimits ) {
         if(!ze_lib::context->isInitialized)
@@ -3773,7 +4396,7 @@ zesPowerSetLimits(
 ///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
 ///         + `nullptr == pThreshold`
 ///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
-///         + Energy threshold not supported on this power domain (check ::zes_power_properties_t.isEnergyThresholdSupported).
+///         + Energy threshold not supported on this power domain (check the `isEnergyThresholdSupported` member of ::zes_power_properties_t).
 ///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
 ///         + User does not have permissions to request this feature.
 ze_result_t ZE_APICALL
@@ -3783,6 +4406,10 @@ zesPowerGetEnergyThreshold(
                                                     ///< enabled/energy threshold/process ID.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetEnergyThreshold = ze_lib::context->zesDdiTable.Power.pfnGetEnergyThreshold;
     if( nullptr == pfnGetEnergyThreshold ) {
         if(!ze_lib::context->isInitialized)
@@ -3824,7 +4451,7 @@ zesPowerGetEnergyThreshold(
 ///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
 ///         + `nullptr == hPower`
 ///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
-///         + Energy threshold not supported on this power domain (check ::zes_power_properties_t.isEnergyThresholdSupported).
+///         + Energy threshold not supported on this power domain (check the `isEnergyThresholdSupported` member of ::zes_power_properties_t).
 ///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
 ///         + User does not have permissions to request this feature.
 ///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
@@ -3835,6 +4462,10 @@ zesPowerSetEnergyThreshold(
     double threshold                                ///< [in] The energy threshold to be set in joules.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnSetEnergyThreshold = ze_lib::context->zesDdiTable.Power.pfnSetEnergyThreshold;
     if( nullptr == pfnSetEnergyThreshold ) {
         if(!ze_lib::context->isInitialized)
@@ -3879,6 +4510,10 @@ zesDeviceEnumPsus(
                                                     ///< component handles.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnEnumPsus = ze_lib::context->zesDdiTable.Device.pfnEnumPsus;
     if( nullptr == pfnEnumPsus ) {
         if(!ze_lib::context->isInitialized)
@@ -3913,6 +4548,10 @@ zesPsuGetProperties(
     zes_psu_properties_t* pProperties               ///< [in,out] Will contain the properties of the power supply.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetProperties = ze_lib::context->zesDdiTable.Psu.pfnGetProperties;
     if( nullptr == pfnGetProperties ) {
         if(!ze_lib::context->isInitialized)
@@ -3947,6 +4586,10 @@ zesPsuGetState(
     zes_psu_state_t* pState                         ///< [in,out] Will contain the current state of the power supply.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetState = ze_lib::context->zesDdiTable.Psu.pfnGetState;
     if( nullptr == pfnGetState ) {
         if(!ze_lib::context->isInitialized)
@@ -4001,6 +4644,10 @@ zesDeviceEnumRasErrorSets(
                                                     ///< component handles.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnEnumRasErrorSets = ze_lib::context->zesDdiTable.Device.pfnEnumRasErrorSets;
     if( nullptr == pfnEnumRasErrorSets ) {
         if(!ze_lib::context->isInitialized)
@@ -4037,6 +4684,10 @@ zesRasGetProperties(
     zes_ras_properties_t* pProperties               ///< [in,out] Structure describing RAS properties
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetProperties = ze_lib::context->zesDdiTable.Ras.pfnGetProperties;
     if( nullptr == pfnGetProperties ) {
         if(!ze_lib::context->isInitialized)
@@ -4081,6 +4732,10 @@ zesRasGetConfig(
                                                     ///< thresholds used to trigger events
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetConfig = ze_lib::context->zesDdiTable.Ras.pfnGetConfig;
     if( nullptr == pfnGetConfig ) {
         if(!ze_lib::context->isInitialized)
@@ -4130,6 +4785,10 @@ zesRasSetConfig(
     const zes_ras_config_t* pConfig                 ///< [in] Change the RAS configuration - thresholds used to trigger events
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnSetConfig = ze_lib::context->zesDdiTable.Ras.pfnSetConfig;
     if( nullptr == pfnSetConfig ) {
         if(!ze_lib::context->isInitialized)
@@ -4170,6 +4829,10 @@ zesRasGetState(
     zes_ras_state_t* pState                         ///< [in,out] Breakdown of where errors have occurred
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetState = ze_lib::context->zesDdiTable.Ras.pfnGetState;
     if( nullptr == pfnGetState ) {
         if(!ze_lib::context->isInitialized)
@@ -4189,8 +4852,8 @@ zesRasGetState(
 ///       or more accelerator engines.
 ///     - If an application wishes to change the scheduler behavior for all
 ///       accelerator engines of a specific type (e.g. compute), it should
-///       select all the handles where the structure member
-///       ::zes_sched_properties_t.engines contains that type.
+///       select all the handles where the `engines` member
+///       ::zes_sched_properties_t contains that type.
 ///     - The application may call this function from simultaneous threads.
 ///     - The implementation of this function should be lock-free.
 /// 
@@ -4220,6 +4883,10 @@ zesDeviceEnumSchedulers(
                                                     ///< component handles.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnEnumSchedulers = ze_lib::context->zesDdiTable.Device.pfnEnumSchedulers;
     if( nullptr == pfnEnumSchedulers ) {
         if(!ze_lib::context->isInitialized)
@@ -4254,6 +4921,10 @@ zesSchedulerGetProperties(
     zes_sched_properties_t* pProperties             ///< [in,out] Structure that will contain property data.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetProperties = ze_lib::context->zesDdiTable.Scheduler.pfnGetProperties;
     if( nullptr == pfnGetProperties ) {
         if(!ze_lib::context->isInitialized)
@@ -4290,6 +4961,10 @@ zesSchedulerGetCurrentMode(
     zes_sched_mode_t* pMode                         ///< [in,out] Will contain the current scheduler mode.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetCurrentMode = ze_lib::context->zesDdiTable.Scheduler.pfnGetCurrentMode;
     if( nullptr == pfnGetCurrentMode ) {
         if(!ze_lib::context->isInitialized)
@@ -4328,6 +5003,10 @@ zesSchedulerGetTimeoutModeProperties(
     zes_sched_timeout_properties_t* pConfig         ///< [in,out] Will contain the current parameters for this mode.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetTimeoutModeProperties = ze_lib::context->zesDdiTable.Scheduler.pfnGetTimeoutModeProperties;
     if( nullptr == pfnGetTimeoutModeProperties ) {
         if(!ze_lib::context->isInitialized)
@@ -4366,6 +5045,10 @@ zesSchedulerGetTimesliceModeProperties(
     zes_sched_timeslice_properties_t* pConfig       ///< [in,out] Will contain the current parameters for this mode.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetTimesliceModeProperties = ze_lib::context->zesDdiTable.Scheduler.pfnGetTimesliceModeProperties;
     if( nullptr == pfnGetTimesliceModeProperties ) {
         if(!ze_lib::context->isInitialized)
@@ -4412,6 +5095,10 @@ zesSchedulerSetTimeoutMode(
                                                     ///< apply the new scheduler mode.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnSetTimeoutMode = ze_lib::context->zesDdiTable.Scheduler.pfnSetTimeoutMode;
     if( nullptr == pfnSetTimeoutMode ) {
         if(!ze_lib::context->isInitialized)
@@ -4457,6 +5144,10 @@ zesSchedulerSetTimesliceMode(
                                                     ///< apply the new scheduler mode.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnSetTimesliceMode = ze_lib::context->zesDdiTable.Scheduler.pfnSetTimesliceMode;
     if( nullptr == pfnSetTimesliceMode ) {
         if(!ze_lib::context->isInitialized)
@@ -4500,6 +5191,10 @@ zesSchedulerSetExclusiveMode(
                                                     ///< apply the new scheduler mode.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnSetExclusiveMode = ze_lib::context->zesDdiTable.Scheduler.pfnSetExclusiveMode;
     if( nullptr == pfnSetExclusiveMode ) {
         if(!ze_lib::context->isInitialized)
@@ -4522,6 +5217,7 @@ zesSchedulerSetExclusiveMode(
 ///       without enforcing any scheduler fairness policies.
 ///     - The application may call this function from simultaneous threads.
 ///     - The implementation of this function should be lock-free.
+///     - [DEPRECATED] No longer supported.
 /// 
 /// @returns
 ///     - ::ZE_RESULT_SUCCESS
@@ -4544,6 +5240,10 @@ zesSchedulerSetComputeUnitDebugMode(
                                                     ///< apply the new scheduler mode.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnSetComputeUnitDebugMode = ze_lib::context->zesDdiTable.Scheduler.pfnSetComputeUnitDebugMode;
     if( nullptr == pfnSetComputeUnitDebugMode ) {
         if(!ze_lib::context->isInitialized)
@@ -4588,6 +5288,10 @@ zesDeviceEnumStandbyDomains(
                                                     ///< component handles.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnEnumStandbyDomains = ze_lib::context->zesDdiTable.Device.pfnEnumStandbyDomains;
     if( nullptr == pfnEnumStandbyDomains ) {
         if(!ze_lib::context->isInitialized)
@@ -4622,6 +5326,10 @@ zesStandbyGetProperties(
     zes_standby_properties_t* pProperties           ///< [in,out] Will contain the standby hardware properties.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetProperties = ze_lib::context->zesDdiTable.Standby.pfnGetProperties;
     if( nullptr == pfnGetProperties ) {
         if(!ze_lib::context->isInitialized)
@@ -4656,6 +5364,10 @@ zesStandbyGetMode(
     zes_standby_promo_mode_t* pMode                 ///< [in,out] Will contain the current standby mode.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetMode = ze_lib::context->zesDdiTable.Standby.pfnGetMode;
     if( nullptr == pfnGetMode ) {
         if(!ze_lib::context->isInitialized)
@@ -4692,6 +5404,10 @@ zesStandbySetMode(
     zes_standby_promo_mode_t mode                   ///< [in] New standby mode.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnSetMode = ze_lib::context->zesDdiTable.Standby.pfnSetMode;
     if( nullptr == pfnSetMode ) {
         if(!ze_lib::context->isInitialized)
@@ -4736,6 +5452,10 @@ zesDeviceEnumTemperatureSensors(
                                                     ///< component handles.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnEnumTemperatureSensors = ze_lib::context->zesDdiTable.Device.pfnEnumTemperatureSensors;
     if( nullptr == pfnEnumTemperatureSensors ) {
         if(!ze_lib::context->isInitialized)
@@ -4770,6 +5490,10 @@ zesTemperatureGetProperties(
     zes_temp_properties_t* pProperties              ///< [in,out] Will contain the temperature sensor properties.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetProperties = ze_lib::context->zesDdiTable.Temperature.pfnGetProperties;
     if( nullptr == pfnGetProperties ) {
         if(!ze_lib::context->isInitialized)
@@ -4800,8 +5524,8 @@ zesTemperatureGetProperties(
 ///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
 ///         + `nullptr == pConfig`
 ///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
-///         + Temperature thresholds are not supported on this temperature sensor. Generally this is only supported for temperature sensor ::ZES_TEMP_SENSORS_GLOBAL
-///         + One or both of the thresholds is not supported - check ::zes_temp_properties_t.isThreshold1Supported and ::zes_temp_properties_t.isThreshold2Supported
+///         + Temperature thresholds are not supported on this temperature sensor. Generally this is only supported for temperature sensor ::ZES_TEMP_SENSORS_GLOBAL.
+///         + One or both of the thresholds is not supported. Check the `isThreshold1Supported` and `isThreshold2Supported` members of ::zes_temp_properties_t.
 ///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
 ///         + User does not have permissions to request this feature.
 ze_result_t ZE_APICALL
@@ -4810,6 +5534,10 @@ zesTemperatureGetConfig(
     zes_temp_config_t* pConfig                      ///< [in,out] Returns current configuration.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetConfig = ze_lib::context->zesDdiTable.Temperature.pfnGetConfig;
     if( nullptr == pfnGetConfig ) {
         if(!ze_lib::context->isInitialized)
@@ -4852,9 +5580,9 @@ zesTemperatureGetConfig(
 ///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
 ///         + `nullptr == pConfig`
 ///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
-///         + Temperature thresholds are not supported on this temperature sensor. Generally they are only supported for temperature sensor ::ZES_TEMP_SENSORS_GLOBAL
-///         + Enabling the critical temperature event is not supported - check ::zes_temp_properties_t.isCriticalTempSupported
-///         + One or both of the thresholds is not supported - check ::zes_temp_properties_t.isThreshold1Supported and ::zes_temp_properties_t.isThreshold2Supported
+///         + Temperature thresholds are not supported on this temperature sensor. Generally they are only supported for temperature sensor ::ZES_TEMP_SENSORS_GLOBAL.
+///         + Enabling the critical temperature event is not supported. Check the `isCriticalTempSupported` member of ::zes_temp_properties_t.
+///         + One or both of the thresholds is not supported. Check the `isThreshold1Supported` and `isThreshold2Supported` members of ::zes_temp_properties_t.
 ///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
 ///         + User does not have permissions to request this feature.
 ///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
@@ -4867,6 +5595,10 @@ zesTemperatureSetConfig(
     const zes_temp_config_t* pConfig                ///< [in] New configuration.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnSetConfig = ze_lib::context->zesDdiTable.Temperature.pfnSetConfig;
     if( nullptr == pfnSetConfig ) {
         if(!ze_lib::context->isInitialized)
@@ -4902,6 +5634,10 @@ zesTemperatureGetState(
                                                     ///< in degrees Celsius.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetState = ze_lib::context->zesDdiTable.Temperature.pfnGetState;
     if( nullptr == pfnGetState ) {
         if(!ze_lib::context->isInitialized)
@@ -4946,6 +5682,10 @@ zesPowerGetLimitsExt(
                                                     ///< number of components.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGetLimitsExt = ze_lib::context->zesDdiTable.Power.pfnGetLimitsExt;
     if( nullptr == pfnGetLimitsExt ) {
         if(!ze_lib::context->isInitialized)
@@ -4993,6 +5733,10 @@ zesPowerSetLimitsExt(
     zes_power_limit_ext_desc_t* pSustained          ///< [in][optional][range(0, *pCount)] Array of power limit descriptors.
     )
 {
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnSetLimitsExt = ze_lib::context->zesDdiTable.Power.pfnSetLimitsExt;
     if( nullptr == pfnSetLimitsExt ) {
         if(!ze_lib::context->isInitialized)
@@ -5002,6 +5746,152 @@ zesPowerSetLimitsExt(
     }
 
     return pfnSetLimitsExt( hPower, pCount, pSustained );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Get activity stats for Physical Function (PF) and each Virtual
+///        Function (VF) associated with engine group.
+/// 
+/// @details
+///     - The application may call this function from simultaneous threads.
+///     - The implementation of this function should be lock-free.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hEngine`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == pCount`
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE - "Engine activity extension is not supported in the environment."
+ze_result_t ZE_APICALL
+zesEngineGetActivityExt(
+    zes_engine_handle_t hEngine,                    ///< [in] Handle for the component.
+    uint32_t* pCount,                               ///< [in,out] Pointer to the number of VF engine stats descriptors.
+                                                    ///<  - if count is zero, the driver shall update the value with the total
+                                                    ///< number of engine stats available.
+                                                    ///<  - if count is greater than the total number of engine stats
+                                                    ///< available, the driver shall update the value with the correct number
+                                                    ///< of engine stats available.
+                                                    ///<  - The count returned is the sum of number of VF instances currently
+                                                    ///< available and the PF instance.
+    zes_engine_stats_t* pStats                      ///< [in,out][optional][range(0, *pCount)] array of engine group activity counters.
+                                                    ///<  - if count is less than the total number of engine stats available,
+                                                    ///< then driver shall only retrieve that number of stats.
+                                                    ///<  - the implementation shall populate the vector with engine stat for
+                                                    ///< PF at index 0 of the vector followed by user provided pCount-1 number
+                                                    ///< of VF engine stats.
+    )
+{
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
+    auto pfnGetActivityExt = ze_lib::context->zesDdiTable.Engine.pfnGetActivityExt;
+    if( nullptr == pfnGetActivityExt ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    return pfnGetActivityExt( hEngine, pCount, pStats );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Ras Get State
+/// 
+/// @details
+///     - This function retrieves error counters for different RAS error
+///       categories.
+///     - The application may call this function from simultaneous threads.
+///     - The implementation of this function should be lock-free.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hRas`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == pCount`
+ze_result_t ZE_APICALL
+zesRasGetStateExp(
+    zes_ras_handle_t hRas,                          ///< [in] Handle for the component.
+    uint32_t* pCount,                               ///< [in,out] pointer to the number of RAS state structures that can be retrieved.
+                                                    ///< if count is zero, then the driver shall update the value with the
+                                                    ///< total number of error categories for which state can be retrieved.
+                                                    ///< if count is greater than the number of RAS states available, then the
+                                                    ///< driver shall update the value with the correct number of RAS states available.
+    zes_ras_state_exp_t* pState                     ///< [in,out][optional][range(0, *pCount)] array of query results for RAS
+                                                    ///< error states for different categories.
+                                                    ///< if count is less than the number of RAS states available, then driver
+                                                    ///< shall only retrieve that number of RAS states.
+    )
+{
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
+    auto pfnGetStateExp = ze_lib::context->zesDdiTable.RasExp.pfnGetStateExp;
+    if( nullptr == pfnGetStateExp ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    return pfnGetStateExp( hRas, pCount, pState );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Ras Clear State
+/// 
+/// @details
+///     - This function clears error counters for a RAS error category.
+///     - Clearing errors will affect other threads/applications - the counter
+///       values will start from zero.
+///     - Clearing errors requires write permissions.
+///     - The application should not call this function from simultaneous
+///       threads.
+///     - The implementation of this function should be lock-free.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hRas`
+///     - ::ZE_RESULT_ERROR_INVALID_ENUMERATION
+///         + `::ZES_RAS_ERROR_CATEGORY_EXP_L3FABRIC_ERRORS < category`
+///     - ::ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS
+///         + Don't have permissions to clear error counters.
+ze_result_t ZE_APICALL
+zesRasClearStateExp(
+    zes_ras_handle_t hRas,                          ///< [in] Handle for the component.
+    zes_ras_error_category_exp_t category           ///< [in] category for which error counter is to be cleared.
+    )
+{
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
+    auto pfnClearStateExp = ze_lib::context->zesDdiTable.RasExp.pfnClearStateExp;
+    if( nullptr == pfnClearStateExp ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    return pfnClearStateExp( hRas, category );
 }
 
 } // extern "C"

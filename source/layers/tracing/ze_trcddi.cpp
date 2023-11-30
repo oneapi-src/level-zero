@@ -277,6 +277,42 @@ namespace tracing_layer
     }
 
     ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeDriverGetLastErrorDescription
+    __zedlllocal ze_result_t ZE_APICALL
+    zeDriverGetLastErrorDescription(
+        ze_driver_handle_t hDriver,                     ///< [in] handle of the driver instance
+        const char** ppString                           ///< [in,out] pointer to a null-terminated array of characters describing
+                                                        ///< cause of error.
+        )
+    {
+        auto pfnGetLastErrorDescription = context.zeDdiTable.Driver.pfnGetLastErrorDescription;
+
+        if( nullptr == pfnGetLastErrorDescription)
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.Driver.pfnGetLastErrorDescription, hDriver, ppString);
+
+        // capture parameters
+        ze_driver_get_last_error_description_params_t tracerParams = {
+            &hDriver,
+            &ppString
+        };
+
+        tracing_layer::APITracerCallbackDataImp<ze_pfnDriverGetLastErrorDescriptionCb_t> apiCallbackData;
+
+        ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnDriverGetLastErrorDescriptionCb_t, Driver, pfnGetLastErrorDescriptionCb);
+
+
+        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.Driver.pfnGetLastErrorDescription,
+                                                  &tracerParams,
+                                                  apiCallbackData.apiOrdinal,
+                                                  apiCallbackData.prologCallbacks,
+                                                  apiCallbackData.epilogCallbacks,
+                                                  *tracerParams.phDriver,
+                                                  *tracerParams.pppString);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
     /// @brief Intercept function for zeDeviceGet
     __zedlllocal ze_result_t ZE_APICALL
     zeDeviceGet(
@@ -318,6 +354,41 @@ namespace tracing_layer
                                                   *tracerParams.phDriver,
                                                   *tracerParams.ppCount,
                                                   *tracerParams.pphDevices);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeDeviceGetRootDevice
+    __zedlllocal ze_result_t ZE_APICALL
+    zeDeviceGetRootDevice(
+        ze_device_handle_t hDevice,                     ///< [in] handle of the device object
+        ze_device_handle_t* phRootDevice                ///< [in,out] parent root device.
+        )
+    {
+        auto pfnGetRootDevice = context.zeDdiTable.Device.pfnGetRootDevice;
+
+        if( nullptr == pfnGetRootDevice)
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.Device.pfnGetRootDevice, hDevice, phRootDevice);
+
+        // capture parameters
+        ze_device_get_root_device_params_t tracerParams = {
+            &hDevice,
+            &phRootDevice
+        };
+
+        tracing_layer::APITracerCallbackDataImp<ze_pfnDeviceGetRootDeviceCb_t> apiCallbackData;
+
+        ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnDeviceGetRootDeviceCb_t, Device, pfnGetRootDeviceCb);
+
+
+        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.Device.pfnGetRootDevice,
+                                                  &tracerParams,
+                                                  apiCallbackData.apiOrdinal,
+                                                  apiCallbackData.prologCallbacks,
+                                                  apiCallbackData.epilogCallbacks,
+                                                  *tracerParams.phDevice,
+                                                  *tracerParams.pphRootDevice);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -1137,8 +1208,8 @@ namespace tracing_layer
         uint64_t timeout                                ///< [in] if non-zero, then indicates the maximum time (in nanoseconds) to
                                                         ///< yield before returning ::ZE_RESULT_SUCCESS or ::ZE_RESULT_NOT_READY;
                                                         ///< if zero, then immediately returns the status of the command queue;
-                                                        ///< if UINT64_MAX, then function will not return until complete or device
-                                                        ///< is lost.
+                                                        ///< if `UINT64_MAX`, then function will not return until complete or
+                                                        ///< device is lost.
                                                         ///< Due to external dependencies, timeout may be rounded to the closest
                                                         ///< value allowed by the accuracy of those dependencies.
         )
@@ -1396,6 +1467,47 @@ namespace tracing_layer
     }
 
     ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeCommandListHostSynchronize
+    __zedlllocal ze_result_t ZE_APICALL
+    zeCommandListHostSynchronize(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of the immediate command list
+        uint64_t timeout                                ///< [in] if non-zero, then indicates the maximum time (in nanoseconds) to
+                                                        ///< yield before returning ::ZE_RESULT_SUCCESS or ::ZE_RESULT_NOT_READY;
+                                                        ///< if zero, then immediately returns the status of the immediate command list;
+                                                        ///< if `UINT64_MAX`, then function will not return until complete or
+                                                        ///< device is lost.
+                                                        ///< Due to external dependencies, timeout may be rounded to the closest
+                                                        ///< value allowed by the accuracy of those dependencies.
+        )
+    {
+        auto pfnHostSynchronize = context.zeDdiTable.CommandList.pfnHostSynchronize;
+
+        if( nullptr == pfnHostSynchronize)
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.CommandList.pfnHostSynchronize, hCommandList, timeout);
+
+        // capture parameters
+        ze_command_list_host_synchronize_params_t tracerParams = {
+            &hCommandList,
+            &timeout
+        };
+
+        tracing_layer::APITracerCallbackDataImp<ze_pfnCommandListHostSynchronizeCb_t> apiCallbackData;
+
+        ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnCommandListHostSynchronizeCb_t, CommandList, pfnHostSynchronizeCb);
+
+
+        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.CommandList.pfnHostSynchronize,
+                                                  &tracerParams,
+                                                  apiCallbackData.apiOrdinal,
+                                                  apiCallbackData.prologCallbacks,
+                                                  apiCallbackData.epilogCallbacks,
+                                                  *tracerParams.phCommandList,
+                                                  *tracerParams.ptimeout);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
     /// @brief Intercept function for zeCommandListAppendBarrier
     __zedlllocal ze_result_t ZE_APICALL
     zeCommandListAppendBarrier(
@@ -1641,14 +1753,14 @@ namespace tracing_layer
         const ze_copy_region_t* dstRegion,              ///< [in] pointer to destination region to copy to
         uint32_t dstPitch,                              ///< [in] destination pitch in bytes
         uint32_t dstSlicePitch,                         ///< [in] destination slice pitch in bytes. This is required for 3D region
-                                                        ///< copies where ::ze_copy_region_t.depth is not 0, otherwise it's
-                                                        ///< ignored.
+                                                        ///< copies where the `depth` member of ::ze_copy_region_t is not 0,
+                                                        ///< otherwise it's ignored.
         const void* srcptr,                             ///< [in] pointer to source memory to copy from
         const ze_copy_region_t* srcRegion,              ///< [in] pointer to source region to copy from
         uint32_t srcPitch,                              ///< [in] source pitch in bytes
         uint32_t srcSlicePitch,                         ///< [in] source slice pitch in bytes. This is required for 3D region
-                                                        ///< copies where ::ze_copy_region_t.depth is not 0, otherwise it's
-                                                        ///< ignored.
+                                                        ///< copies where the `depth` member of ::ze_copy_region_t is not 0,
+                                                        ///< otherwise it's ignored.
         ze_event_handle_t hSignalEvent,                 ///< [in][optional] handle of the event to signal on completion
         uint32_t numWaitEvents,                         ///< [in][optional] number of events to wait on before launching; must be 0
                                                         ///< if `nullptr == phWaitEvents`
@@ -2234,6 +2346,42 @@ namespace tracing_layer
     }
 
     ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeEventPoolPutIpcHandle
+    __zedlllocal ze_result_t ZE_APICALL
+    zeEventPoolPutIpcHandle(
+        ze_context_handle_t hContext,                   ///< [in] handle of the context object associated with the IPC event pool
+                                                        ///< handle
+        ze_ipc_event_pool_handle_t hIpc                 ///< [in] IPC event pool handle
+        )
+    {
+        auto pfnPutIpcHandle = context.zeDdiTable.EventPool.pfnPutIpcHandle;
+
+        if( nullptr == pfnPutIpcHandle)
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.EventPool.pfnPutIpcHandle, hContext, hIpc);
+
+        // capture parameters
+        ze_event_pool_put_ipc_handle_params_t tracerParams = {
+            &hContext,
+            &hIpc
+        };
+
+        tracing_layer::APITracerCallbackDataImp<ze_pfnEventPoolPutIpcHandleCb_t> apiCallbackData;
+
+        ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnEventPoolPutIpcHandleCb_t, EventPool, pfnPutIpcHandleCb);
+
+
+        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.EventPool.pfnPutIpcHandle,
+                                                  &tracerParams,
+                                                  apiCallbackData.apiOrdinal,
+                                                  apiCallbackData.prologCallbacks,
+                                                  apiCallbackData.epilogCallbacks,
+                                                  *tracerParams.phContext,
+                                                  *tracerParams.phIpc);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
     /// @brief Intercept function for zeEventPoolOpenIpcHandle
     __zedlllocal ze_result_t ZE_APICALL
     zeEventPoolOpenIpcHandle(
@@ -2418,8 +2566,8 @@ namespace tracing_layer
         uint64_t timeout                                ///< [in] if non-zero, then indicates the maximum time (in nanoseconds) to
                                                         ///< yield before returning ::ZE_RESULT_SUCCESS or ::ZE_RESULT_NOT_READY;
                                                         ///< if zero, then operates exactly like ::zeEventQueryStatus;
-                                                        ///< if UINT64_MAX, then function will not return until complete or device
-                                                        ///< is lost.
+                                                        ///< if `UINT64_MAX`, then function will not return until complete or
+                                                        ///< device is lost.
                                                         ///< Due to external dependencies, timeout may be rounded to the closest
                                                         ///< value allowed by the accuracy of those dependencies.
         )
@@ -2721,8 +2869,8 @@ namespace tracing_layer
         uint64_t timeout                                ///< [in] if non-zero, then indicates the maximum time (in nanoseconds) to
                                                         ///< yield before returning ::ZE_RESULT_SUCCESS or ::ZE_RESULT_NOT_READY;
                                                         ///< if zero, then operates exactly like ::zeFenceQueryStatus;
-                                                        ///< if UINT64_MAX, then function will not return until complete or device
-                                                        ///< is lost.
+                                                        ///< if `UINT64_MAX`, then function will not return until complete or
+                                                        ///< device is lost.
                                                         ///< Due to external dependencies, timeout may be rounded to the closest
                                                         ///< value allowed by the accuracy of those dependencies.
         )
@@ -2936,10 +3084,10 @@ namespace tracing_layer
         ze_context_handle_t hContext,                   ///< [in] handle of the context object
         const ze_device_mem_alloc_desc_t* device_desc,  ///< [in] pointer to device memory allocation descriptor
         const ze_host_mem_alloc_desc_t* host_desc,      ///< [in] pointer to host memory allocation descriptor
-        size_t size,                                    ///< [in] size in bytes to allocate; must be less than or equal to
-                                                        ///< ::ze_device_properties_t.maxMemAllocSize.
+        size_t size,                                    ///< [in] size in bytes to allocate; must be less than or equal to the
+                                                        ///< `maxMemAllocSize` member of ::ze_device_properties_t
         size_t alignment,                               ///< [in] minimum alignment in bytes for the allocation; must be a power of
-                                                        ///< two.
+                                                        ///< two
         ze_device_handle_t hDevice,                     ///< [in][optional] device handle to associate with
         void** pptr                                     ///< [out] pointer to shared allocation
         )
@@ -2987,10 +3135,10 @@ namespace tracing_layer
     zeMemAllocDevice(
         ze_context_handle_t hContext,                   ///< [in] handle of the context object
         const ze_device_mem_alloc_desc_t* device_desc,  ///< [in] pointer to device memory allocation descriptor
-        size_t size,                                    ///< [in] size in bytes to allocate; must be less than or equal to
-                                                        ///< ::ze_device_properties_t.maxMemAllocSize.
+        size_t size,                                    ///< [in] size in bytes to allocate; must be less than or equal to the
+                                                        ///< `maxMemAllocSize` member of ::ze_device_properties_t
         size_t alignment,                               ///< [in] minimum alignment in bytes for the allocation; must be a power of
-                                                        ///< two.
+                                                        ///< two
         ze_device_handle_t hDevice,                     ///< [in] handle of the device
         void** pptr                                     ///< [out] pointer to device allocation
         )
@@ -3036,10 +3184,10 @@ namespace tracing_layer
     zeMemAllocHost(
         ze_context_handle_t hContext,                   ///< [in] handle of the context object
         const ze_host_mem_alloc_desc_t* host_desc,      ///< [in] pointer to host memory allocation descriptor
-        size_t size,                                    ///< [in] size in bytes to allocate; must be less than or equal to
-                                                        ///< ::ze_device_properties_t.maxMemAllocSize.
+        size_t size,                                    ///< [in] size in bytes to allocate; must be less than or equal to the
+                                                        ///< `maxMemAllocSize` member of ::ze_device_properties_t
         size_t alignment,                               ///< [in] minimum alignment in bytes for the allocation; must be a power of
-                                                        ///< two.
+                                                        ///< two
         void** pptr                                     ///< [out] pointer to host allocation
         )
     {
@@ -3232,6 +3380,117 @@ namespace tracing_layer
     }
 
     ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeMemGetIpcHandleFromFileDescriptorExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zeMemGetIpcHandleFromFileDescriptorExp(
+        ze_context_handle_t hContext,                   ///< [in] handle of the context object
+        uint64_t handle,                                ///< [in] file descriptor
+        ze_ipc_mem_handle_t* pIpcHandle                 ///< [out] Returned IPC memory handle
+        )
+    {
+        auto pfnGetIpcHandleFromFileDescriptorExp = context.zeDdiTable.MemExp.pfnGetIpcHandleFromFileDescriptorExp;
+
+        if( nullptr == pfnGetIpcHandleFromFileDescriptorExp)
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.MemExp.pfnGetIpcHandleFromFileDescriptorExp, hContext, handle, pIpcHandle);
+
+        // capture parameters
+        ze_mem_get_ipc_handle_from_file_descriptor_exp_params_t tracerParams = {
+            &hContext,
+            &handle,
+            &pIpcHandle
+        };
+
+        tracing_layer::APITracerCallbackDataImp<ze_pfnMemGetIpcHandleFromFileDescriptorExpCb_t> apiCallbackData;
+
+        ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnMemGetIpcHandleFromFileDescriptorExpCb_t, Mem, pfnGetIpcHandleFromFileDescriptorExpCb);
+
+
+        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.MemExp.pfnGetIpcHandleFromFileDescriptorExp,
+                                                  &tracerParams,
+                                                  apiCallbackData.apiOrdinal,
+                                                  apiCallbackData.prologCallbacks,
+                                                  apiCallbackData.epilogCallbacks,
+                                                  *tracerParams.phContext,
+                                                  *tracerParams.phandle,
+                                                  *tracerParams.ppIpcHandle);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeMemGetFileDescriptorFromIpcHandleExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zeMemGetFileDescriptorFromIpcHandleExp(
+        ze_context_handle_t hContext,                   ///< [in] handle of the context object
+        ze_ipc_mem_handle_t ipcHandle,                  ///< [in] IPC memory handle
+        uint64_t* pHandle                               ///< [out] Returned file descriptor
+        )
+    {
+        auto pfnGetFileDescriptorFromIpcHandleExp = context.zeDdiTable.MemExp.pfnGetFileDescriptorFromIpcHandleExp;
+
+        if( nullptr == pfnGetFileDescriptorFromIpcHandleExp)
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.MemExp.pfnGetFileDescriptorFromIpcHandleExp, hContext, ipcHandle, pHandle);
+
+        // capture parameters
+        ze_mem_get_file_descriptor_from_ipc_handle_exp_params_t tracerParams = {
+            &hContext,
+            &ipcHandle,
+            &pHandle
+        };
+
+        tracing_layer::APITracerCallbackDataImp<ze_pfnMemGetFileDescriptorFromIpcHandleExpCb_t> apiCallbackData;
+
+        ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnMemGetFileDescriptorFromIpcHandleExpCb_t, Mem, pfnGetFileDescriptorFromIpcHandleExpCb);
+
+
+        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.MemExp.pfnGetFileDescriptorFromIpcHandleExp,
+                                                  &tracerParams,
+                                                  apiCallbackData.apiOrdinal,
+                                                  apiCallbackData.prologCallbacks,
+                                                  apiCallbackData.epilogCallbacks,
+                                                  *tracerParams.phContext,
+                                                  *tracerParams.pipcHandle,
+                                                  *tracerParams.ppHandle);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeMemPutIpcHandle
+    __zedlllocal ze_result_t ZE_APICALL
+    zeMemPutIpcHandle(
+        ze_context_handle_t hContext,                   ///< [in] handle of the context object
+        ze_ipc_mem_handle_t handle                      ///< [in] IPC memory handle
+        )
+    {
+        auto pfnPutIpcHandle = context.zeDdiTable.Mem.pfnPutIpcHandle;
+
+        if( nullptr == pfnPutIpcHandle)
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.Mem.pfnPutIpcHandle, hContext, handle);
+
+        // capture parameters
+        ze_mem_put_ipc_handle_params_t tracerParams = {
+            &hContext,
+            &handle
+        };
+
+        tracing_layer::APITracerCallbackDataImp<ze_pfnMemPutIpcHandleCb_t> apiCallbackData;
+
+        ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnMemPutIpcHandleCb_t, Mem, pfnPutIpcHandleCb);
+
+
+        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.Mem.pfnPutIpcHandle,
+                                                  &tracerParams,
+                                                  apiCallbackData.apiOrdinal,
+                                                  apiCallbackData.prologCallbacks,
+                                                  apiCallbackData.epilogCallbacks,
+                                                  *tracerParams.phContext,
+                                                  *tracerParams.phandle);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
     /// @brief Intercept function for zeMemOpenIpcHandle
     __zedlllocal ze_result_t ZE_APICALL
     zeMemOpenIpcHandle(
@@ -3309,6 +3568,95 @@ namespace tracing_layer
                                                   apiCallbackData.epilogCallbacks,
                                                   *tracerParams.phContext,
                                                   *tracerParams.pptr);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeMemSetAtomicAccessAttributeExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zeMemSetAtomicAccessAttributeExp(
+        ze_context_handle_t hContext,                   ///< [in] handle of context
+        ze_device_handle_t hDevice,                     ///< [in] device associated with the memory advice
+        const void* ptr,                                ///< [in] Pointer to the start of the memory range
+        size_t size,                                    ///< [in] Size in bytes of the memory range
+        ze_memory_atomic_attr_exp_flags_t attr          ///< [in] Atomic access attributes to set for the specified range.
+                                                        ///< Must be 0 (default) or a valid combination of ::ze_memory_atomic_attr_exp_flag_t.
+        )
+    {
+        auto pfnSetAtomicAccessAttributeExp = context.zeDdiTable.MemExp.pfnSetAtomicAccessAttributeExp;
+
+        if( nullptr == pfnSetAtomicAccessAttributeExp)
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.MemExp.pfnSetAtomicAccessAttributeExp, hContext, hDevice, ptr, size, attr);
+
+        // capture parameters
+        ze_mem_set_atomic_access_attribute_exp_params_t tracerParams = {
+            &hContext,
+            &hDevice,
+            &ptr,
+            &size,
+            &attr
+        };
+
+        tracing_layer::APITracerCallbackDataImp<ze_pfnMemSetAtomicAccessAttributeExpCb_t> apiCallbackData;
+
+        ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnMemSetAtomicAccessAttributeExpCb_t, Mem, pfnSetAtomicAccessAttributeExpCb);
+
+
+        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.MemExp.pfnSetAtomicAccessAttributeExp,
+                                                  &tracerParams,
+                                                  apiCallbackData.apiOrdinal,
+                                                  apiCallbackData.prologCallbacks,
+                                                  apiCallbackData.epilogCallbacks,
+                                                  *tracerParams.phContext,
+                                                  *tracerParams.phDevice,
+                                                  *tracerParams.pptr,
+                                                  *tracerParams.psize,
+                                                  *tracerParams.pattr);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeMemGetAtomicAccessAttributeExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zeMemGetAtomicAccessAttributeExp(
+        ze_context_handle_t hContext,                   ///< [in] handle of context
+        ze_device_handle_t hDevice,                     ///< [in] device associated with the memory advice
+        const void* ptr,                                ///< [in] Pointer to the start of the memory range
+        size_t size,                                    ///< [in] Size in bytes of the memory range
+        ze_memory_atomic_attr_exp_flags_t* pAttr        ///< [out] Atomic access attributes for the specified range
+        )
+    {
+        auto pfnGetAtomicAccessAttributeExp = context.zeDdiTable.MemExp.pfnGetAtomicAccessAttributeExp;
+
+        if( nullptr == pfnGetAtomicAccessAttributeExp)
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.MemExp.pfnGetAtomicAccessAttributeExp, hContext, hDevice, ptr, size, pAttr);
+
+        // capture parameters
+        ze_mem_get_atomic_access_attribute_exp_params_t tracerParams = {
+            &hContext,
+            &hDevice,
+            &ptr,
+            &size,
+            &pAttr
+        };
+
+        tracing_layer::APITracerCallbackDataImp<ze_pfnMemGetAtomicAccessAttributeExpCb_t> apiCallbackData;
+
+        ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnMemGetAtomicAccessAttributeExpCb_t, Mem, pfnGetAtomicAccessAttributeExpCb);
+
+
+        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.MemExp.pfnGetAtomicAccessAttributeExp,
+                                                  &tracerParams,
+                                                  apiCallbackData.apiOrdinal,
+                                                  apiCallbackData.prologCallbacks,
+                                                  apiCallbackData.epilogCallbacks,
+                                                  *tracerParams.phContext,
+                                                  *tracerParams.phDevice,
+                                                  *tracerParams.pptr,
+                                                  *tracerParams.psize,
+                                                  *tracerParams.ppAttr);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -5883,6 +6231,402 @@ namespace tracing_layer
                                                   *tracerParams.ppEdgeProperties);
     }
 
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeEventQueryKernelTimestampsExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeEventQueryKernelTimestampsExt(
+        ze_event_handle_t hEvent,                       ///< [in] handle of the event
+        ze_device_handle_t hDevice,                     ///< [in] handle of the device to query
+        uint32_t* pCount,                               ///< [in,out] pointer to the number of event packets available.
+                                                        ///<    - This value is implementation specific.
+                                                        ///<    - if `*pCount` is zero, then the driver shall update the value with
+                                                        ///< the total number of event packets available.
+                                                        ///<    - if `*pCount` is greater than the number of event packets
+                                                        ///< available, the driver shall update the value with the correct value.
+                                                        ///<    - Buffer(s) for query results must be sized by the application to
+                                                        ///< accommodate a minimum of `*pCount` elements.
+        ze_event_query_kernel_timestamps_results_ext_properties_t* pResults ///< [in,out][optional][range(0, *pCount)] pointer to event query
+                                                        ///< properties structure(s).
+                                                        ///<    - This parameter may be null when `*pCount` is zero.
+                                                        ///<    - if `*pCount` is less than the number of event packets available,
+                                                        ///< the driver may only update `*pCount` elements, starting at element zero.
+                                                        ///<    - if `*pCount` is greater than the number of event packets
+                                                        ///< available, the driver may only update the valid elements.
+        )
+    {
+        auto pfnQueryKernelTimestampsExt = context.zeDdiTable.Event.pfnQueryKernelTimestampsExt;
+
+        if( nullptr == pfnQueryKernelTimestampsExt)
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.Event.pfnQueryKernelTimestampsExt, hEvent, hDevice, pCount, pResults);
+
+        // capture parameters
+        ze_event_query_kernel_timestamps_ext_params_t tracerParams = {
+            &hEvent,
+            &hDevice,
+            &pCount,
+            &pResults
+        };
+
+        tracing_layer::APITracerCallbackDataImp<ze_pfnEventQueryKernelTimestampsExtCb_t> apiCallbackData;
+
+        ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnEventQueryKernelTimestampsExtCb_t, Event, pfnQueryKernelTimestampsExtCb);
+
+
+        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.Event.pfnQueryKernelTimestampsExt,
+                                                  &tracerParams,
+                                                  apiCallbackData.apiOrdinal,
+                                                  apiCallbackData.prologCallbacks,
+                                                  apiCallbackData.epilogCallbacks,
+                                                  *tracerParams.phEvent,
+                                                  *tracerParams.phDevice,
+                                                  *tracerParams.ppCount,
+                                                  *tracerParams.ppResults);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeRTASBuilderCreateExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zeRTASBuilderCreateExp(
+        ze_driver_handle_t hDriver,                     ///< [in] handle of driver object
+        const ze_rtas_builder_exp_desc_t* pDescriptor,  ///< [in] pointer to builder descriptor
+        ze_rtas_builder_exp_handle_t* phBuilder         ///< [out] handle of builder object
+        )
+    {
+        auto pfnCreateExp = context.zeDdiTable.RTASBuilderExp.pfnCreateExp;
+
+        if( nullptr == pfnCreateExp)
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.RTASBuilderExp.pfnCreateExp, hDriver, pDescriptor, phBuilder);
+
+        // capture parameters
+        ze_rtas_builder_create_exp_params_t tracerParams = {
+            &hDriver,
+            &pDescriptor,
+            &phBuilder
+        };
+
+        tracing_layer::APITracerCallbackDataImp<ze_pfnRTASBuilderCreateExpCb_t> apiCallbackData;
+
+        ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnRTASBuilderCreateExpCb_t, RTASBuilder, pfnCreateExpCb);
+
+
+        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.RTASBuilderExp.pfnCreateExp,
+                                                  &tracerParams,
+                                                  apiCallbackData.apiOrdinal,
+                                                  apiCallbackData.prologCallbacks,
+                                                  apiCallbackData.epilogCallbacks,
+                                                  *tracerParams.phDriver,
+                                                  *tracerParams.ppDescriptor,
+                                                  *tracerParams.pphBuilder);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeRTASBuilderGetBuildPropertiesExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zeRTASBuilderGetBuildPropertiesExp(
+        ze_rtas_builder_exp_handle_t hBuilder,          ///< [in] handle of builder object
+        const ze_rtas_builder_build_op_exp_desc_t* pBuildOpDescriptor,  ///< [in] pointer to build operation descriptor
+        ze_rtas_builder_exp_properties_t* pProperties   ///< [in,out] query result for builder properties
+        )
+    {
+        auto pfnGetBuildPropertiesExp = context.zeDdiTable.RTASBuilderExp.pfnGetBuildPropertiesExp;
+
+        if( nullptr == pfnGetBuildPropertiesExp)
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.RTASBuilderExp.pfnGetBuildPropertiesExp, hBuilder, pBuildOpDescriptor, pProperties);
+
+        // capture parameters
+        ze_rtas_builder_get_build_properties_exp_params_t tracerParams = {
+            &hBuilder,
+            &pBuildOpDescriptor,
+            &pProperties
+        };
+
+        tracing_layer::APITracerCallbackDataImp<ze_pfnRTASBuilderGetBuildPropertiesExpCb_t> apiCallbackData;
+
+        ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnRTASBuilderGetBuildPropertiesExpCb_t, RTASBuilder, pfnGetBuildPropertiesExpCb);
+
+
+        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.RTASBuilderExp.pfnGetBuildPropertiesExp,
+                                                  &tracerParams,
+                                                  apiCallbackData.apiOrdinal,
+                                                  apiCallbackData.prologCallbacks,
+                                                  apiCallbackData.epilogCallbacks,
+                                                  *tracerParams.phBuilder,
+                                                  *tracerParams.ppBuildOpDescriptor,
+                                                  *tracerParams.ppProperties);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeDriverRTASFormatCompatibilityCheckExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zeDriverRTASFormatCompatibilityCheckExp(
+        ze_driver_handle_t hDriver,                     ///< [in] handle of driver object
+        ze_rtas_format_exp_t rtasFormatA,               ///< [in] operand A
+        ze_rtas_format_exp_t rtasFormatB                ///< [in] operand B
+        )
+    {
+        auto pfnRTASFormatCompatibilityCheckExp = context.zeDdiTable.DriverExp.pfnRTASFormatCompatibilityCheckExp;
+
+        if( nullptr == pfnRTASFormatCompatibilityCheckExp)
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.DriverExp.pfnRTASFormatCompatibilityCheckExp, hDriver, rtasFormatA, rtasFormatB);
+
+        // capture parameters
+        ze_driver_rtas_format_compatibility_check_exp_params_t tracerParams = {
+            &hDriver,
+            &rtasFormatA,
+            &rtasFormatB
+        };
+
+        tracing_layer::APITracerCallbackDataImp<ze_pfnDriverRTASFormatCompatibilityCheckExpCb_t> apiCallbackData;
+
+        ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnDriverRTASFormatCompatibilityCheckExpCb_t, Driver, pfnRTASFormatCompatibilityCheckExpCb);
+
+
+        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.DriverExp.pfnRTASFormatCompatibilityCheckExp,
+                                                  &tracerParams,
+                                                  apiCallbackData.apiOrdinal,
+                                                  apiCallbackData.prologCallbacks,
+                                                  apiCallbackData.epilogCallbacks,
+                                                  *tracerParams.phDriver,
+                                                  *tracerParams.prtasFormatA,
+                                                  *tracerParams.prtasFormatB);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeRTASBuilderBuildExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zeRTASBuilderBuildExp(
+        ze_rtas_builder_exp_handle_t hBuilder,          ///< [in] handle of builder object
+        const ze_rtas_builder_build_op_exp_desc_t* pBuildOpDescriptor,  ///< [in] pointer to build operation descriptor
+        void* pScratchBuffer,                           ///< [in][range(0, `scratchBufferSizeBytes`)] scratch buffer to be used
+                                                        ///< during acceleration structure construction
+        size_t scratchBufferSizeBytes,                  ///< [in] size of scratch buffer, in bytes
+        void* pRtasBuffer,                              ///< [in] pointer to destination buffer
+        size_t rtasBufferSizeBytes,                     ///< [in] destination buffer size, in bytes
+        ze_rtas_parallel_operation_exp_handle_t hParallelOperation, ///< [in][optional] handle to parallel operation object
+        void* pBuildUserPtr,                            ///< [in][optional] pointer passed to callbacks
+        ze_rtas_aabb_exp_t* pBounds,                    ///< [in,out][optional] pointer to destination address for acceleration
+                                                        ///< structure bounds
+        size_t* pRtasBufferSizeBytes                    ///< [out][optional] updated acceleration structure size requirement, in
+                                                        ///< bytes
+        )
+    {
+        auto pfnBuildExp = context.zeDdiTable.RTASBuilderExp.pfnBuildExp;
+
+        if( nullptr == pfnBuildExp)
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.RTASBuilderExp.pfnBuildExp, hBuilder, pBuildOpDescriptor, pScratchBuffer, scratchBufferSizeBytes, pRtasBuffer, rtasBufferSizeBytes, hParallelOperation, pBuildUserPtr, pBounds, pRtasBufferSizeBytes);
+
+        // capture parameters
+        ze_rtas_builder_build_exp_params_t tracerParams = {
+            &hBuilder,
+            &pBuildOpDescriptor,
+            &pScratchBuffer,
+            &scratchBufferSizeBytes,
+            &pRtasBuffer,
+            &rtasBufferSizeBytes,
+            &hParallelOperation,
+            &pBuildUserPtr,
+            &pBounds,
+            &pRtasBufferSizeBytes
+        };
+
+        tracing_layer::APITracerCallbackDataImp<ze_pfnRTASBuilderBuildExpCb_t> apiCallbackData;
+
+        ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnRTASBuilderBuildExpCb_t, RTASBuilder, pfnBuildExpCb);
+
+
+        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.RTASBuilderExp.pfnBuildExp,
+                                                  &tracerParams,
+                                                  apiCallbackData.apiOrdinal,
+                                                  apiCallbackData.prologCallbacks,
+                                                  apiCallbackData.epilogCallbacks,
+                                                  *tracerParams.phBuilder,
+                                                  *tracerParams.ppBuildOpDescriptor,
+                                                  *tracerParams.ppScratchBuffer,
+                                                  *tracerParams.pscratchBufferSizeBytes,
+                                                  *tracerParams.ppRtasBuffer,
+                                                  *tracerParams.prtasBufferSizeBytes,
+                                                  *tracerParams.phParallelOperation,
+                                                  *tracerParams.ppBuildUserPtr,
+                                                  *tracerParams.ppBounds,
+                                                  *tracerParams.ppRtasBufferSizeBytes);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeRTASBuilderDestroyExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zeRTASBuilderDestroyExp(
+        ze_rtas_builder_exp_handle_t hBuilder           ///< [in][release] handle of builder object to destroy
+        )
+    {
+        auto pfnDestroyExp = context.zeDdiTable.RTASBuilderExp.pfnDestroyExp;
+
+        if( nullptr == pfnDestroyExp)
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.RTASBuilderExp.pfnDestroyExp, hBuilder);
+
+        // capture parameters
+        ze_rtas_builder_destroy_exp_params_t tracerParams = {
+            &hBuilder
+        };
+
+        tracing_layer::APITracerCallbackDataImp<ze_pfnRTASBuilderDestroyExpCb_t> apiCallbackData;
+
+        ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnRTASBuilderDestroyExpCb_t, RTASBuilder, pfnDestroyExpCb);
+
+
+        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.RTASBuilderExp.pfnDestroyExp,
+                                                  &tracerParams,
+                                                  apiCallbackData.apiOrdinal,
+                                                  apiCallbackData.prologCallbacks,
+                                                  apiCallbackData.epilogCallbacks,
+                                                  *tracerParams.phBuilder);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeRTASParallelOperationCreateExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zeRTASParallelOperationCreateExp(
+        ze_driver_handle_t hDriver,                     ///< [in] handle of driver object
+        ze_rtas_parallel_operation_exp_handle_t* phParallelOperation///< [out] handle of parallel operation object
+        )
+    {
+        auto pfnCreateExp = context.zeDdiTable.RTASParallelOperationExp.pfnCreateExp;
+
+        if( nullptr == pfnCreateExp)
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.RTASParallelOperationExp.pfnCreateExp, hDriver, phParallelOperation);
+
+        // capture parameters
+        ze_rtas_parallel_operation_create_exp_params_t tracerParams = {
+            &hDriver,
+            &phParallelOperation
+        };
+
+        tracing_layer::APITracerCallbackDataImp<ze_pfnRTASParallelOperationCreateExpCb_t> apiCallbackData;
+
+        ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnRTASParallelOperationCreateExpCb_t, RTASParallelOperation, pfnCreateExpCb);
+
+
+        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.RTASParallelOperationExp.pfnCreateExp,
+                                                  &tracerParams,
+                                                  apiCallbackData.apiOrdinal,
+                                                  apiCallbackData.prologCallbacks,
+                                                  apiCallbackData.epilogCallbacks,
+                                                  *tracerParams.phDriver,
+                                                  *tracerParams.pphParallelOperation);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeRTASParallelOperationGetPropertiesExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zeRTASParallelOperationGetPropertiesExp(
+        ze_rtas_parallel_operation_exp_handle_t hParallelOperation, ///< [in] handle of parallel operation object
+        ze_rtas_parallel_operation_exp_properties_t* pProperties///< [in,out] query result for parallel operation properties
+        )
+    {
+        auto pfnGetPropertiesExp = context.zeDdiTable.RTASParallelOperationExp.pfnGetPropertiesExp;
+
+        if( nullptr == pfnGetPropertiesExp)
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.RTASParallelOperationExp.pfnGetPropertiesExp, hParallelOperation, pProperties);
+
+        // capture parameters
+        ze_rtas_parallel_operation_get_properties_exp_params_t tracerParams = {
+            &hParallelOperation,
+            &pProperties
+        };
+
+        tracing_layer::APITracerCallbackDataImp<ze_pfnRTASParallelOperationGetPropertiesExpCb_t> apiCallbackData;
+
+        ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnRTASParallelOperationGetPropertiesExpCb_t, RTASParallelOperation, pfnGetPropertiesExpCb);
+
+
+        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.RTASParallelOperationExp.pfnGetPropertiesExp,
+                                                  &tracerParams,
+                                                  apiCallbackData.apiOrdinal,
+                                                  apiCallbackData.prologCallbacks,
+                                                  apiCallbackData.epilogCallbacks,
+                                                  *tracerParams.phParallelOperation,
+                                                  *tracerParams.ppProperties);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeRTASParallelOperationJoinExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zeRTASParallelOperationJoinExp(
+        ze_rtas_parallel_operation_exp_handle_t hParallelOperation  ///< [in] handle of parallel operation object
+        )
+    {
+        auto pfnJoinExp = context.zeDdiTable.RTASParallelOperationExp.pfnJoinExp;
+
+        if( nullptr == pfnJoinExp)
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.RTASParallelOperationExp.pfnJoinExp, hParallelOperation);
+
+        // capture parameters
+        ze_rtas_parallel_operation_join_exp_params_t tracerParams = {
+            &hParallelOperation
+        };
+
+        tracing_layer::APITracerCallbackDataImp<ze_pfnRTASParallelOperationJoinExpCb_t> apiCallbackData;
+
+        ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnRTASParallelOperationJoinExpCb_t, RTASParallelOperation, pfnJoinExpCb);
+
+
+        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.RTASParallelOperationExp.pfnJoinExp,
+                                                  &tracerParams,
+                                                  apiCallbackData.apiOrdinal,
+                                                  apiCallbackData.prologCallbacks,
+                                                  apiCallbackData.epilogCallbacks,
+                                                  *tracerParams.phParallelOperation);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeRTASParallelOperationDestroyExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zeRTASParallelOperationDestroyExp(
+        ze_rtas_parallel_operation_exp_handle_t hParallelOperation  ///< [in][release] handle of parallel operation object to destroy
+        )
+    {
+        auto pfnDestroyExp = context.zeDdiTable.RTASParallelOperationExp.pfnDestroyExp;
+
+        if( nullptr == pfnDestroyExp)
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.RTASParallelOperationExp.pfnDestroyExp, hParallelOperation);
+
+        // capture parameters
+        ze_rtas_parallel_operation_destroy_exp_params_t tracerParams = {
+            &hParallelOperation
+        };
+
+        tracing_layer::APITracerCallbackDataImp<ze_pfnRTASParallelOperationDestroyExpCb_t> apiCallbackData;
+
+        ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnRTASParallelOperationDestroyExpCb_t, RTASParallelOperation, pfnDestroyExpCb);
+
+
+        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.RTASParallelOperationExp.pfnDestroyExp,
+                                                  &tracerParams,
+                                                  apiCallbackData.apiOrdinal,
+                                                  apiCallbackData.prologCallbacks,
+                                                  apiCallbackData.epilogCallbacks,
+                                                  *tracerParams.phParallelOperation);
+    }
+
 } // namespace tracing_layer
 
 #if defined(__cplusplus)
@@ -5916,6 +6660,86 @@ zeGetGlobalProcAddrTable(
 
     dditable.pfnInit                                     = pDdiTable->pfnInit;
     pDdiTable->pfnInit                                   = tracing_layer::zeInit;
+
+    return result;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Exported function for filling application's RTASBuilderExp table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+ZE_DLLEXPORT ze_result_t ZE_APICALL
+zeGetRTASBuilderExpProcAddrTable(
+    ze_api_version_t version,                       ///< [in] API version requested
+    ze_rtas_builder_exp_dditable_t* pDdiTable       ///< [in,out] pointer to table of DDI function pointers
+    )
+{
+    auto& dditable = tracing_layer::context.zeDdiTable.RTASBuilderExp;
+
+    if( nullptr == pDdiTable )
+        return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+    if (ZE_MAJOR_VERSION(tracing_layer::context.version) != ZE_MAJOR_VERSION(version) ||
+        ZE_MINOR_VERSION(tracing_layer::context.version) > ZE_MINOR_VERSION(version))
+        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+
+    ze_result_t result = ZE_RESULT_SUCCESS;
+
+    dditable.pfnCreateExp                                = pDdiTable->pfnCreateExp;
+    pDdiTable->pfnCreateExp                              = tracing_layer::zeRTASBuilderCreateExp;
+
+    dditable.pfnGetBuildPropertiesExp                    = pDdiTable->pfnGetBuildPropertiesExp;
+    pDdiTable->pfnGetBuildPropertiesExp                  = tracing_layer::zeRTASBuilderGetBuildPropertiesExp;
+
+    dditable.pfnBuildExp                                 = pDdiTable->pfnBuildExp;
+    pDdiTable->pfnBuildExp                               = tracing_layer::zeRTASBuilderBuildExp;
+
+    dditable.pfnDestroyExp                               = pDdiTable->pfnDestroyExp;
+    pDdiTable->pfnDestroyExp                             = tracing_layer::zeRTASBuilderDestroyExp;
+
+    return result;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Exported function for filling application's RTASParallelOperationExp table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+ZE_DLLEXPORT ze_result_t ZE_APICALL
+zeGetRTASParallelOperationExpProcAddrTable(
+    ze_api_version_t version,                       ///< [in] API version requested
+    ze_rtas_parallel_operation_exp_dditable_t* pDdiTable///< [in,out] pointer to table of DDI function pointers
+    )
+{
+    auto& dditable = tracing_layer::context.zeDdiTable.RTASParallelOperationExp;
+
+    if( nullptr == pDdiTable )
+        return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+    if (ZE_MAJOR_VERSION(tracing_layer::context.version) != ZE_MAJOR_VERSION(version) ||
+        ZE_MINOR_VERSION(tracing_layer::context.version) > ZE_MINOR_VERSION(version))
+        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+
+    ze_result_t result = ZE_RESULT_SUCCESS;
+
+    dditable.pfnCreateExp                                = pDdiTable->pfnCreateExp;
+    pDdiTable->pfnCreateExp                              = tracing_layer::zeRTASParallelOperationCreateExp;
+
+    dditable.pfnGetPropertiesExp                         = pDdiTable->pfnGetPropertiesExp;
+    pDdiTable->pfnGetPropertiesExp                       = tracing_layer::zeRTASParallelOperationGetPropertiesExp;
+
+    dditable.pfnJoinExp                                  = pDdiTable->pfnJoinExp;
+    pDdiTable->pfnJoinExp                                = tracing_layer::zeRTASParallelOperationJoinExp;
+
+    dditable.pfnDestroyExp                               = pDdiTable->pfnDestroyExp;
+    pDdiTable->pfnDestroyExp                             = tracing_layer::zeRTASParallelOperationDestroyExp;
 
     return result;
 }
@@ -5962,6 +6786,40 @@ zeGetDriverProcAddrTable(
 
     dditable.pfnGetExtensionFunctionAddress              = pDdiTable->pfnGetExtensionFunctionAddress;
     pDdiTable->pfnGetExtensionFunctionAddress            = tracing_layer::zeDriverGetExtensionFunctionAddress;
+
+    dditable.pfnGetLastErrorDescription                  = pDdiTable->pfnGetLastErrorDescription;
+    pDdiTable->pfnGetLastErrorDescription                = tracing_layer::zeDriverGetLastErrorDescription;
+
+    return result;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Exported function for filling application's DriverExp table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+ZE_DLLEXPORT ze_result_t ZE_APICALL
+zeGetDriverExpProcAddrTable(
+    ze_api_version_t version,                       ///< [in] API version requested
+    ze_driver_exp_dditable_t* pDdiTable             ///< [in,out] pointer to table of DDI function pointers
+    )
+{
+    auto& dditable = tracing_layer::context.zeDdiTable.DriverExp;
+
+    if( nullptr == pDdiTable )
+        return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+    if (ZE_MAJOR_VERSION(tracing_layer::context.version) != ZE_MAJOR_VERSION(version) ||
+        ZE_MINOR_VERSION(tracing_layer::context.version) > ZE_MINOR_VERSION(version))
+        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+
+    ze_result_t result = ZE_RESULT_SUCCESS;
+
+    dditable.pfnRTASFormatCompatibilityCheckExp          = pDdiTable->pfnRTASFormatCompatibilityCheckExp;
+    pDdiTable->pfnRTASFormatCompatibilityCheckExp        = tracing_layer::zeDriverRTASFormatCompatibilityCheckExp;
 
     return result;
 }
@@ -6044,6 +6902,9 @@ zeGetDeviceProcAddrTable(
 
     dditable.pfnPciGetPropertiesExt                      = pDdiTable->pfnPciGetPropertiesExt;
     pDdiTable->pfnPciGetPropertiesExt                    = tracing_layer::zeDevicePciGetPropertiesExt;
+
+    dditable.pfnGetRootDevice                            = pDdiTable->pfnGetRootDevice;
+    pDdiTable->pfnGetRootDevice                          = tracing_layer::zeDeviceGetRootDevice;
 
     return result;
 }
@@ -6283,6 +7144,9 @@ zeGetCommandListProcAddrTable(
     dditable.pfnAppendImageCopyFromMemoryExt             = pDdiTable->pfnAppendImageCopyFromMemoryExt;
     pDdiTable->pfnAppendImageCopyFromMemoryExt           = tracing_layer::zeCommandListAppendImageCopyFromMemoryExt;
 
+    dditable.pfnHostSynchronize                          = pDdiTable->pfnHostSynchronize;
+    pDdiTable->pfnHostSynchronize                        = tracing_layer::zeCommandListHostSynchronize;
+
     return result;
 }
 
@@ -6331,6 +7195,9 @@ zeGetEventProcAddrTable(
 
     dditable.pfnQueryKernelTimestamp                     = pDdiTable->pfnQueryKernelTimestamp;
     pDdiTable->pfnQueryKernelTimestamp                   = tracing_layer::zeEventQueryKernelTimestamp;
+
+    dditable.pfnQueryKernelTimestampsExt                 = pDdiTable->pfnQueryKernelTimestampsExt;
+    pDdiTable->pfnQueryKernelTimestampsExt               = tracing_layer::zeEventQueryKernelTimestampsExt;
 
     return result;
 }
@@ -6405,6 +7272,9 @@ zeGetEventPoolProcAddrTable(
 
     dditable.pfnCloseIpcHandle                           = pDdiTable->pfnCloseIpcHandle;
     pDdiTable->pfnCloseIpcHandle                         = tracing_layer::zeEventPoolCloseIpcHandle;
+
+    dditable.pfnPutIpcHandle                             = pDdiTable->pfnPutIpcHandle;
+    pDdiTable->pfnPutIpcHandle                           = tracing_layer::zeEventPoolPutIpcHandle;
 
     return result;
 }
@@ -6681,6 +7551,49 @@ zeGetMemProcAddrTable(
 
     dditable.pfnFreeExt                                  = pDdiTable->pfnFreeExt;
     pDdiTable->pfnFreeExt                                = tracing_layer::zeMemFreeExt;
+
+    dditable.pfnPutIpcHandle                             = pDdiTable->pfnPutIpcHandle;
+    pDdiTable->pfnPutIpcHandle                           = tracing_layer::zeMemPutIpcHandle;
+
+    return result;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Exported function for filling application's MemExp table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+ZE_DLLEXPORT ze_result_t ZE_APICALL
+zeGetMemExpProcAddrTable(
+    ze_api_version_t version,                       ///< [in] API version requested
+    ze_mem_exp_dditable_t* pDdiTable                ///< [in,out] pointer to table of DDI function pointers
+    )
+{
+    auto& dditable = tracing_layer::context.zeDdiTable.MemExp;
+
+    if( nullptr == pDdiTable )
+        return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+    if (ZE_MAJOR_VERSION(tracing_layer::context.version) != ZE_MAJOR_VERSION(version) ||
+        ZE_MINOR_VERSION(tracing_layer::context.version) > ZE_MINOR_VERSION(version))
+        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+
+    ze_result_t result = ZE_RESULT_SUCCESS;
+
+    dditable.pfnGetIpcHandleFromFileDescriptorExp        = pDdiTable->pfnGetIpcHandleFromFileDescriptorExp;
+    pDdiTable->pfnGetIpcHandleFromFileDescriptorExp      = tracing_layer::zeMemGetIpcHandleFromFileDescriptorExp;
+
+    dditable.pfnGetFileDescriptorFromIpcHandleExp        = pDdiTable->pfnGetFileDescriptorFromIpcHandleExp;
+    pDdiTable->pfnGetFileDescriptorFromIpcHandleExp      = tracing_layer::zeMemGetFileDescriptorFromIpcHandleExp;
+
+    dditable.pfnSetAtomicAccessAttributeExp              = pDdiTable->pfnSetAtomicAccessAttributeExp;
+    pDdiTable->pfnSetAtomicAccessAttributeExp            = tracing_layer::zeMemSetAtomicAccessAttributeExp;
+
+    dditable.pfnGetAtomicAccessAttributeExp              = pDdiTable->pfnGetAtomicAccessAttributeExp;
+    pDdiTable->pfnGetAtomicAccessAttributeExp            = tracing_layer::zeMemGetAtomicAccessAttributeExp;
 
     return result;
 }

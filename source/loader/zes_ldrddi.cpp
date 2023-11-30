@@ -121,6 +121,66 @@ namespace loader
     }
 
     ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesDriverGetExtensionProperties
+    __zedlllocal ze_result_t ZE_APICALL
+    zesDriverGetExtensionProperties(
+        zes_driver_handle_t hDriver,                    ///< [in] handle of the driver instance
+        uint32_t* pCount,                               ///< [in,out] pointer to the number of extension properties.
+                                                        ///< if count is zero, then the driver shall update the value with the
+                                                        ///< total number of extension properties available.
+                                                        ///< if count is greater than the number of extension properties available,
+                                                        ///< then the driver shall update the value with the correct number of
+                                                        ///< extension properties available.
+        zes_driver_extension_properties_t* pExtensionProperties ///< [in,out][optional][range(0, *pCount)] array of query results for
+                                                        ///< extension properties.
+                                                        ///< if count is less than the number of extension properties available,
+                                                        ///< then driver shall only retrieve that number of extension properties.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_driver_object_t*>( hDriver )->dditable;
+        auto pfnGetExtensionProperties = dditable->zes.Driver.pfnGetExtensionProperties;
+        if( nullptr == pfnGetExtensionProperties )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hDriver = reinterpret_cast<zes_driver_object_t*>( hDriver )->handle;
+
+        // forward to device-driver
+        result = pfnGetExtensionProperties( hDriver, pCount, pExtensionProperties );
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesDriverGetExtensionFunctionAddress
+    __zedlllocal ze_result_t ZE_APICALL
+    zesDriverGetExtensionFunctionAddress(
+        zes_driver_handle_t hDriver,                    ///< [in] handle of the driver instance
+        const char* name,                               ///< [in] extension function name
+        void** ppFunctionAddress                        ///< [out] pointer to function pointer
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_driver_object_t*>( hDriver )->dditable;
+        auto pfnGetExtensionFunctionAddress = dditable->zes.Driver.pfnGetExtensionFunctionAddress;
+        if( nullptr == pfnGetExtensionFunctionAddress )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hDriver = reinterpret_cast<zes_driver_object_t*>( hDriver )->handle;
+
+        // forward to device-driver
+        result = pfnGetExtensionFunctionAddress( hDriver, name, ppFunctionAddress );
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
     /// @brief Intercept function for zesDeviceGet
     __zedlllocal ze_result_t ZE_APICALL
     zesDeviceGet(
@@ -240,6 +300,31 @@ namespace loader
 
         // forward to device-driver
         result = pfnReset( hDevice, force );
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesDeviceResetExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zesDeviceResetExt(
+        zes_device_handle_t hDevice,                    ///< [in] Sysman handle for the device
+        zes_reset_properties_t* pProperties             ///< [in] Device reset properties to apply
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_device_object_t*>( hDevice )->dditable;
+        auto pfnResetExt = dditable->zes.Device.pfnResetExt;
+        if( nullptr == pfnResetExt )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hDevice = reinterpret_cast<zes_device_object_t*>( hDevice )->handle;
+
+        // forward to device-driver
+        result = pfnResetExt( hDevice, pProperties );
 
         return result;
     }
@@ -899,7 +984,7 @@ namespace loader
                                                         ///< if count is greater than the number of tests that are available, then
                                                         ///< the driver shall update the value with the correct number of tests.
         zes_diag_test_t* pTests                         ///< [in,out][optional][range(0, *pCount)] array of information about
-                                                        ///< individual tests sorted by increasing value of ::zes_diag_test_t.index.
+                                                        ///< individual tests sorted by increasing value of the `index` member of ::zes_diag_test_t.
                                                         ///< if count is less than the number of tests that are available, then the
                                                         ///< driver shall only retrieve that number of tests.
         )
@@ -1185,7 +1270,7 @@ namespace loader
         uint32_t timeout,                               ///< [in] if non-zero, then indicates the maximum time (in milliseconds) to
                                                         ///< yield before returning ::ZE_RESULT_SUCCESS or ::ZE_RESULT_NOT_READY;
                                                         ///< if zero, then will check status and return immediately;
-                                                        ///< if UINT32_MAX, then function will not return until events arrive.
+                                                        ///< if `UINT32_MAX`, then function will not return until events arrive.
         uint32_t count,                                 ///< [in] Number of device handles in phDevices.
         zes_device_handle_t* phDevices,                 ///< [in][range(0, count)] Device handles to listen to for events. Only
                                                         ///< devices from the provided driver handle can be specified in this list.
@@ -1232,7 +1317,7 @@ namespace loader
         uint64_t timeout,                               ///< [in] if non-zero, then indicates the maximum time (in milliseconds) to
                                                         ///< yield before returning ::ZE_RESULT_SUCCESS or ::ZE_RESULT_NOT_READY;
                                                         ///< if zero, then will check status and return immediately;
-                                                        ///< if UINT64_MAX, then function will not return until events arrive.
+                                                        ///< if `UINT64_MAX`, then function will not return until events arrive.
         uint32_t count,                                 ///< [in] Number of device handles in phDevices.
         zes_device_handle_t* phDevices,                 ///< [in][range(0, count)] Device handles to listen to for events. Only
                                                         ///< devices from the provided driver handle can be specified in this list.
@@ -1493,6 +1578,41 @@ namespace loader
 
         // forward to device-driver
         result = pfnGetFabricErrorCounters( hPort, pErrors );
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesFabricPortGetMultiPortThroughput
+    __zedlllocal ze_result_t ZE_APICALL
+    zesFabricPortGetMultiPortThroughput(
+        zes_device_handle_t hDevice,                    ///< [in] Sysman handle of the device.
+        uint32_t numPorts,                              ///< [in] Number of ports enumerated in function ::zesDeviceEnumFabricPorts
+        zes_fabric_port_handle_t* phPort,               ///< [in][range(0, numPorts)] array of fabric port handles provided by user
+                                                        ///< to gather throughput values. 
+        zes_fabric_port_throughput_t** pThroughput      ///< [out][range(0, numPorts)] array of fabric port throughput counters
+                                                        ///< from multiple ports of type ::zes_fabric_port_throughput_t.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_device_object_t*>( hDevice )->dditable;
+        auto pfnGetMultiPortThroughput = dditable->zes.FabricPort.pfnGetMultiPortThroughput;
+        if( nullptr == pfnGetMultiPortThroughput )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hDevice = reinterpret_cast<zes_device_object_t*>( hDevice )->handle;
+
+        // convert loader handles to driver handles
+        auto phPortLocal = new zes_fabric_port_handle_t [numPorts];
+        for( size_t i = 0; ( nullptr != phPort ) && ( i < numPorts ); ++i )
+            phPortLocal[ i ] = reinterpret_cast<zes_fabric_port_object_t*>( phPort[ i ] )->handle;
+
+        // forward to device-driver
+        result = pfnGetMultiPortThroughput( hDevice, numPorts, phPortLocal, pThroughput );
+        delete []phPortLocal;
 
         return result;
     }
@@ -1802,6 +1922,31 @@ namespace loader
     }
 
     ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesFirmwareGetFlashProgress
+    __zedlllocal ze_result_t ZE_APICALL
+    zesFirmwareGetFlashProgress(
+        zes_firmware_handle_t hFirmware,                ///< [in] Handle for the component.
+        uint32_t* pCompletionPercent                    ///< [in,out] Pointer to the Completion Percentage of Firmware Update
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_firmware_object_t*>( hFirmware )->dditable;
+        auto pfnGetFlashProgress = dditable->zes.Firmware.pfnGetFlashProgress;
+        if( nullptr == pfnGetFlashProgress )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hFirmware = reinterpret_cast<zes_firmware_object_t*>( hFirmware )->handle;
+
+        // forward to device-driver
+        result = pfnGetFlashProgress( hFirmware, pCompletionPercent );
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
     /// @brief Intercept function for zesDeviceEnumFrequencyDomains
     __zedlllocal ze_result_t ZE_APICALL
     zesDeviceEnumFrequencyDomains(
@@ -2017,8 +2162,7 @@ namespace loader
     __zedlllocal ze_result_t ZE_APICALL
     zesFrequencyOcGetCapabilities(
         zes_freq_handle_t hFrequency,                   ///< [in] Handle for the component.
-        zes_oc_capabilities_t* pOcCapabilities          ///< [in,out] Pointer to the capabilities structure
-                                                        ///< ::zes_oc_capabilities_t.
+        zes_oc_capabilities_t* pOcCapabilities          ///< [in,out] Pointer to the capabilities structure.
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
@@ -2045,7 +2189,8 @@ namespace loader
         zes_freq_handle_t hFrequency,                   ///< [in] Handle for the component.
         double* pCurrentOcFrequency                     ///< [out] Overclocking Frequency in MHz, if extended moded is supported,
                                                         ///< will returned in 1 Mhz granularity, else, in multiples of 50 Mhz. This
-                                                        ///< cannot be greater than ::zes_oc_capabilities_t.maxOcFrequency.
+                                                        ///< cannot be greater than the `maxOcFrequency` member of
+                                                        ///< ::zes_oc_capabilities_t.
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
@@ -2072,7 +2217,8 @@ namespace loader
         zes_freq_handle_t hFrequency,                   ///< [in] Handle for the component.
         double CurrentOcFrequency                       ///< [in] Overclocking Frequency in MHz, if extended moded is supported, it
                                                         ///< could be set in 1 Mhz granularity, else, in multiples of 50 Mhz. This
-                                                        ///< cannot be greater than ::zes_oc_capabilities_t.maxOcFrequency.
+                                                        ///< cannot be greater than the `maxOcFrequency` member of
+                                                        ///< ::zes_oc_capabilities_t.
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
@@ -2097,12 +2243,12 @@ namespace loader
     __zedlllocal ze_result_t ZE_APICALL
     zesFrequencyOcGetVoltageTarget(
         zes_freq_handle_t hFrequency,                   ///< [in] Handle for the component.
-        double* pCurrentVoltageTarget,                  ///< [out] Overclock voltage in Volts. This cannot be greater than
-                                                        ///< ::zes_oc_capabilities_t.maxOcVoltage.
+        double* pCurrentVoltageTarget,                  ///< [out] Overclock voltage in Volts. This cannot be greater than the
+                                                        ///< `maxOcVoltage` member of ::zes_oc_capabilities_t.
         double* pCurrentVoltageOffset                   ///< [out] This voltage offset is applied to all points on the
-                                                        ///< voltage/frequency curve, include the new overclock voltageTarget. It
-                                                        ///< can be in the range (::zes_oc_capabilities_t.minOcVoltageOffset,
-                                                        ///< ::zes_oc_capabilities_t.maxOcVoltageOffset).
+                                                        ///< voltage/frequency curve, including the new overclock voltageTarget.
+                                                        ///< Valid range is between the `minOcVoltageOffset` and
+                                                        ///< `maxOcVoltageOffset` members of ::zes_oc_capabilities_t.
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
@@ -2127,12 +2273,12 @@ namespace loader
     __zedlllocal ze_result_t ZE_APICALL
     zesFrequencyOcSetVoltageTarget(
         zes_freq_handle_t hFrequency,                   ///< [in] Handle for the component.
-        double CurrentVoltageTarget,                    ///< [in] Overclock voltage in Volts. This cannot be greater than
-                                                        ///< ::zes_oc_capabilities_t.maxOcVoltage.
+        double CurrentVoltageTarget,                    ///< [in] Overclock voltage in Volts. This cannot be greater than the
+                                                        ///< `maxOcVoltage` member of ::zes_oc_capabilities_t.
         double CurrentVoltageOffset                     ///< [in] This voltage offset is applied to all points on the
-                                                        ///< voltage/frequency curve, include the new overclock voltageTarget. It
-                                                        ///< can be in the range (::zes_oc_capabilities_t.minOcVoltageOffset,
-                                                        ///< ::zes_oc_capabilities_t.maxOcVoltageOffset).
+                                                        ///< voltage/frequency curve, include the new overclock voltageTarget.
+                                                        ///< Valid range is between the `minOcVoltageOffset` and
+                                                        ///< `maxOcVoltageOffset` members of ::zes_oc_capabilities_t.
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
@@ -3805,6 +3951,102 @@ namespace loader
         return result;
     }
 
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesEngineGetActivityExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zesEngineGetActivityExt(
+        zes_engine_handle_t hEngine,                    ///< [in] Handle for the component.
+        uint32_t* pCount,                               ///< [in,out] Pointer to the number of VF engine stats descriptors.
+                                                        ///<  - if count is zero, the driver shall update the value with the total
+                                                        ///< number of engine stats available.
+                                                        ///<  - if count is greater than the total number of engine stats
+                                                        ///< available, the driver shall update the value with the correct number
+                                                        ///< of engine stats available.
+                                                        ///<  - The count returned is the sum of number of VF instances currently
+                                                        ///< available and the PF instance.
+        zes_engine_stats_t* pStats                      ///< [in,out][optional][range(0, *pCount)] array of engine group activity counters.
+                                                        ///<  - if count is less than the total number of engine stats available,
+                                                        ///< then driver shall only retrieve that number of stats.
+                                                        ///<  - the implementation shall populate the vector with engine stat for
+                                                        ///< PF at index 0 of the vector followed by user provided pCount-1 number
+                                                        ///< of VF engine stats.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_engine_object_t*>( hEngine )->dditable;
+        auto pfnGetActivityExt = dditable->zes.Engine.pfnGetActivityExt;
+        if( nullptr == pfnGetActivityExt )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hEngine = reinterpret_cast<zes_engine_object_t*>( hEngine )->handle;
+
+        // forward to device-driver
+        result = pfnGetActivityExt( hEngine, pCount, pStats );
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesRasGetStateExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zesRasGetStateExp(
+        zes_ras_handle_t hRas,                          ///< [in] Handle for the component.
+        uint32_t* pCount,                               ///< [in,out] pointer to the number of RAS state structures that can be retrieved.
+                                                        ///< if count is zero, then the driver shall update the value with the
+                                                        ///< total number of error categories for which state can be retrieved.
+                                                        ///< if count is greater than the number of RAS states available, then the
+                                                        ///< driver shall update the value with the correct number of RAS states available.
+        zes_ras_state_exp_t* pState                     ///< [in,out][optional][range(0, *pCount)] array of query results for RAS
+                                                        ///< error states for different categories.
+                                                        ///< if count is less than the number of RAS states available, then driver
+                                                        ///< shall only retrieve that number of RAS states.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_ras_object_t*>( hRas )->dditable;
+        auto pfnGetStateExp = dditable->zes.RasExp.pfnGetStateExp;
+        if( nullptr == pfnGetStateExp )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hRas = reinterpret_cast<zes_ras_object_t*>( hRas )->handle;
+
+        // forward to device-driver
+        result = pfnGetStateExp( hRas, pCount, pState );
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesRasClearStateExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zesRasClearStateExp(
+        zes_ras_handle_t hRas,                          ///< [in] Handle for the component.
+        zes_ras_error_category_exp_t category           ///< [in] category for which error counter is to be cleared.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_ras_object_t*>( hRas )->dditable;
+        auto pfnClearStateExp = dditable->zes.RasExp.pfnClearStateExp;
+        if( nullptr == pfnClearStateExp )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hRas = reinterpret_cast<zes_ras_object_t*>( hRas )->handle;
+
+        // forward to device-driver
+        result = pfnClearStateExp( hRas, category );
+
+        return result;
+    }
+
 } // namespace loader
 
 #if defined(__cplusplus)
@@ -3979,6 +4221,7 @@ zesGetDeviceProcAddrTable(
             pDdiTable->pfnResetOverclockSettings                   = loader::zesDeviceResetOverclockSettings;
             pDdiTable->pfnReadOverclockState                       = loader::zesDeviceReadOverclockState;
             pDdiTable->pfnEnumOverclockDomains                     = loader::zesDeviceEnumOverclockDomains;
+            pDdiTable->pfnResetExt                                 = loader::zesDeviceResetExt;
         }
         else
         {
@@ -4056,6 +4299,8 @@ zesGetDriverProcAddrTable(
             pDdiTable->pfnEventListen                              = loader::zesDriverEventListen;
             pDdiTable->pfnEventListenEx                            = loader::zesDriverEventListenEx;
             pDdiTable->pfnGet                                      = loader::zesDriverGet;
+            pDdiTable->pfnGetExtensionProperties                   = loader::zesDriverGetExtensionProperties;
+            pDdiTable->pfnGetExtensionFunctionAddress              = loader::zesDriverGetExtensionFunctionAddress;
         }
         else
         {
@@ -4209,6 +4454,7 @@ zesGetEngineProcAddrTable(
             // return pointers to loader's DDIs
             pDdiTable->pfnGetProperties                            = loader::zesEngineGetProperties;
             pDdiTable->pfnGetActivity                              = loader::zesEngineGetActivity;
+            pDdiTable->pfnGetActivityExt                           = loader::zesEngineGetActivityExt;
         }
         else
         {
@@ -4290,6 +4536,7 @@ zesGetFabricPortProcAddrTable(
             pDdiTable->pfnGetState                                 = loader::zesFabricPortGetState;
             pDdiTable->pfnGetThroughput                            = loader::zesFabricPortGetThroughput;
             pDdiTable->pfnGetFabricErrorCounters                   = loader::zesFabricPortGetFabricErrorCounters;
+            pDdiTable->pfnGetMultiPortThroughput                   = loader::zesFabricPortGetMultiPortThroughput;
         }
         else
         {
@@ -4446,6 +4693,7 @@ zesGetFirmwareProcAddrTable(
             // return pointers to loader's DDIs
             pDdiTable->pfnGetProperties                            = loader::zesFirmwareGetProperties;
             pDdiTable->pfnFlash                                    = loader::zesFirmwareFlash;
+            pDdiTable->pfnGetFlashProgress                         = loader::zesFirmwareGetFlashProgress;
         }
         else
         {
@@ -5105,6 +5353,73 @@ zesGetRasProcAddrTable(
     {
         auto getTable = reinterpret_cast<zes_pfnGetRasProcAddrTable_t>(
             GET_FUNCTION_PTR(loader::context->validationLayer, "zesGetRasProcAddrTable") );
+        if(!getTable)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        result = getTable( version, pDdiTable );
+    }
+
+    return result;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Exported function for filling application's RasExp table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+ZE_DLLEXPORT ze_result_t ZE_APICALL
+zesGetRasExpProcAddrTable(
+    ze_api_version_t version,                       ///< [in] API version requested
+    zes_ras_exp_dditable_t* pDdiTable               ///< [in,out] pointer to table of DDI function pointers
+    )
+{
+    if( loader::context->drivers.size() < 1 )
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+
+    if( nullptr == pDdiTable )
+        return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+    if( loader::context->version < version )
+        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+
+    ze_result_t result = ZE_RESULT_SUCCESS;
+
+    // Load the device-driver DDI tables
+    for( auto& drv : loader::context->drivers )
+    {
+        if(drv.initStatus != ZE_RESULT_SUCCESS)
+            continue;
+        auto getTable = reinterpret_cast<zes_pfnGetRasExpProcAddrTable_t>(
+            GET_FUNCTION_PTR( drv.handle, "zesGetRasExpProcAddrTable") );
+        if(!getTable) 
+            continue; 
+        result = getTable( version, &drv.dditable.zes.RasExp);
+    }
+
+
+    if( ZE_RESULT_SUCCESS == result )
+    {
+        if( ( loader::context->drivers.size() > 1 ) || loader::context->forceIntercept )
+        {
+            // return pointers to loader's DDIs
+            pDdiTable->pfnGetStateExp                              = loader::zesRasGetStateExp;
+            pDdiTable->pfnClearStateExp                            = loader::zesRasClearStateExp;
+        }
+        else
+        {
+            // return pointers directly to driver's DDIs
+            *pDdiTable = loader::context->drivers.front().dditable.zes.RasExp;
+        }
+    }
+
+    // If the validation layer is enabled, then intercept the loader's DDIs
+    if(( ZE_RESULT_SUCCESS == result ) && ( nullptr != loader::context->validationLayer ))
+    {
+        auto getTable = reinterpret_cast<zes_pfnGetRasExpProcAddrTable_t>(
+            GET_FUNCTION_PTR(loader::context->validationLayer, "zesGetRasExpProcAddrTable") );
         if(!getTable)
             return ZE_RESULT_ERROR_UNINITIALIZED;
         result = getTable( version, pDdiTable );

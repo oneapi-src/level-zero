@@ -10,13 +10,13 @@
  *
  */
 #pragma once
-#include "ze_validation_layer.h"
+#include "zet_api.h"
 
 namespace validation_layer
 {
 
 class ZETValidationEntryPoints {
-
+public:
     virtual ze_result_t zetModuleGetDebugInfo( zet_module_handle_t hModule, zet_module_debug_info_format_t format, size_t* pSize, uint8_t* pDebugInfo ) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zetDeviceGetDebugProperties( zet_device_handle_t hDevice, zet_device_debug_properties_t* pDebugProperties ) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zetDebugAttach( zet_device_handle_t hDevice, const zet_debug_config_t* config, zet_debug_session_handle_t* phDebug ) {return ZE_RESULT_SUCCESS;}
@@ -58,5 +58,8 @@ class ZETValidationEntryPoints {
     virtual ze_result_t zetTracerExpSetEnabled( zet_tracer_exp_handle_t hTracer, ze_bool_t enable ) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zetMetricGroupCalculateMultipleMetricValuesExp( zet_metric_group_handle_t hMetricGroup, zet_metric_group_calculation_type_t type, size_t rawDataSize, const uint8_t* pRawData, uint32_t* pSetCount, uint32_t* pTotalMetricValueCount, uint32_t* pMetricCounts, zet_typed_value_t* pMetricValues ) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zetMetricGroupGetGlobalTimestampsExp( zet_metric_group_handle_t hMetricGroup, ze_bool_t synchronizedWithHost, uint64_t* globalTimestamp, uint64_t* metricTimestamp ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zetMetricGroupGetExportDataExp( zet_metric_group_handle_t hMetricGroup, const uint8_t* pRawData, size_t rawDataSize, size_t* pExportDataSize, uint8_t * pExportData ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zetMetricGroupCalculateMetricExportDataExp( ze_driver_handle_t hDriver, zet_metric_group_calculation_type_t type, size_t exportDataSize, const uint8_t* pExportData, zet_metric_calculate_exp_desc_t* pCalculateDescriptor, uint32_t* pSetCount, uint32_t* pTotalMetricValueCount, uint32_t* pMetricCounts, zet_typed_value_t* pMetricValues ) {return ZE_RESULT_SUCCESS;}
+    virtual ~ZETValidationEntryPoints() {}
 };
 }

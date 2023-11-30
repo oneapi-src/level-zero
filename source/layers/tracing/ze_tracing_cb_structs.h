@@ -26,6 +26,26 @@ typedef struct _zel_global_callbacks_t
 } zel_global_callbacks_t;
 
 ///////////////////////////////////////////////////////////////////////////////
+/// @brief Table of RTASBuilder callback functions pointers
+typedef struct _zel_rtas_builder_callbacks_t
+{
+    ze_pfnRTASBuilderCreateExpCb_t                                  pfnCreateExpCb;
+    ze_pfnRTASBuilderGetBuildPropertiesExpCb_t                      pfnGetBuildPropertiesExpCb;
+    ze_pfnRTASBuilderBuildExpCb_t                                   pfnBuildExpCb;
+    ze_pfnRTASBuilderDestroyExpCb_t                                 pfnDestroyExpCb;
+} zel_rtas_builder_callbacks_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Table of RTASParallelOperation callback functions pointers
+typedef struct _zel_rtas_parallel_operation_callbacks_t
+{
+    ze_pfnRTASParallelOperationCreateExpCb_t                        pfnCreateExpCb;
+    ze_pfnRTASParallelOperationGetPropertiesExpCb_t                 pfnGetPropertiesExpCb;
+    ze_pfnRTASParallelOperationJoinExpCb_t                          pfnJoinExpCb;
+    ze_pfnRTASParallelOperationDestroyExpCb_t                       pfnDestroyExpCb;
+} zel_rtas_parallel_operation_callbacks_t;
+
+///////////////////////////////////////////////////////////////////////////////
 /// @brief Table of Driver callback functions pointers
 typedef struct _zel_driver_callbacks_t
 {
@@ -35,6 +55,8 @@ typedef struct _zel_driver_callbacks_t
     ze_pfnDriverGetIpcPropertiesCb_t                                pfnGetIpcPropertiesCb;
     ze_pfnDriverGetExtensionPropertiesCb_t                          pfnGetExtensionPropertiesCb;
     ze_pfnDriverGetExtensionFunctionAddressCb_t                     pfnGetExtensionFunctionAddressCb;
+    ze_pfnDriverGetLastErrorDescriptionCb_t                         pfnGetLastErrorDescriptionCb;
+    ze_pfnDriverRTASFormatCompatibilityCheckExpCb_t                 pfnRTASFormatCompatibilityCheckExpCb;
 } zel_driver_callbacks_t;
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -60,6 +82,7 @@ typedef struct _zel_device_callbacks_t
     ze_pfnDeviceSetCacheAdviceExtCb_t                               pfnSetCacheAdviceExtCb;
     ze_pfnDevicePciGetPropertiesExtCb_t                             pfnPciGetPropertiesExtCb;
     ze_pfnDeviceGetFabricVertexExpCb_t                              pfnGetFabricVertexExpCb;
+    ze_pfnDeviceGetRootDeviceCb_t                                   pfnGetRootDeviceCb;
 } zel_device_callbacks_t;
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -119,6 +142,7 @@ typedef struct _zel_command_list_callbacks_t
     ze_pfnCommandListAppendLaunchMultipleKernelsIndirectCb_t        pfnAppendLaunchMultipleKernelsIndirectCb;
     ze_pfnCommandListAppendImageCopyToMemoryExtCb_t                 pfnAppendImageCopyToMemoryExtCb;
     ze_pfnCommandListAppendImageCopyFromMemoryExtCb_t               pfnAppendImageCopyFromMemoryExtCb;
+    ze_pfnCommandListHostSynchronizeCb_t                            pfnHostSynchronizeCb;
 } zel_command_list_callbacks_t;
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -133,6 +157,7 @@ typedef struct _zel_event_callbacks_t
     ze_pfnEventHostResetCb_t                                        pfnHostResetCb;
     ze_pfnEventQueryKernelTimestampCb_t                             pfnQueryKernelTimestampCb;
     ze_pfnEventQueryTimestampsExpCb_t                               pfnQueryTimestampsExpCb;
+    ze_pfnEventQueryKernelTimestampsExtCb_t                         pfnQueryKernelTimestampsExtCb;
 } zel_event_callbacks_t;
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -144,6 +169,7 @@ typedef struct _zel_event_pool_callbacks_t
     ze_pfnEventPoolGetIpcHandleCb_t                                 pfnGetIpcHandleCb;
     ze_pfnEventPoolOpenIpcHandleCb_t                                pfnOpenIpcHandleCb;
     ze_pfnEventPoolCloseIpcHandleCb_t                               pfnCloseIpcHandleCb;
+    ze_pfnEventPoolPutIpcHandleCb_t                                 pfnPutIpcHandleCb;
 } zel_event_pool_callbacks_t;
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -204,6 +230,11 @@ typedef struct _zel_mem_callbacks_t
     ze_pfnMemOpenIpcHandleCb_t                                      pfnOpenIpcHandleCb;
     ze_pfnMemCloseIpcHandleCb_t                                     pfnCloseIpcHandleCb;
     ze_pfnMemFreeExtCb_t                                            pfnFreeExtCb;
+    ze_pfnMemGetIpcHandleFromFileDescriptorExpCb_t                  pfnGetIpcHandleFromFileDescriptorExpCb;
+    ze_pfnMemGetFileDescriptorFromIpcHandleExpCb_t                  pfnGetFileDescriptorFromIpcHandleExpCb;
+    ze_pfnMemPutIpcHandleCb_t                                       pfnPutIpcHandleCb;
+    ze_pfnMemSetAtomicAccessAttributeExpCb_t                        pfnSetAtomicAccessAttributeExpCb;
+    ze_pfnMemGetAtomicAccessAttributeExpCb_t                        pfnGetAtomicAccessAttributeExpCb;
 } zel_mem_callbacks_t;
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -282,6 +313,8 @@ typedef struct _zel_fabric_vertex_callbacks_t
 typedef struct _zel_all_core_callbacks_t
 {
     zel_global_callbacks_t              Global;
+    zel_rtas_builder_callbacks_t        RTASBuilder;
+    zel_rtas_parallel_operation_callbacks_t RTASParallelOperation;
     zel_driver_callbacks_t              Driver;
     zel_device_callbacks_t              Device;
     zel_context_callbacks_t             Context;

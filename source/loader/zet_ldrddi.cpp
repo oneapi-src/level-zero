@@ -156,8 +156,8 @@ namespace loader
         uint64_t timeout,                               ///< [in] if non-zero, then indicates the maximum time (in milliseconds) to
                                                         ///< yield before returning ::ZE_RESULT_SUCCESS or ::ZE_RESULT_NOT_READY;
                                                         ///< if zero, then immediately returns the status of the event;
-                                                        ///< if UINT64_MAX, then function will not return until complete or device
-                                                        ///< is lost.
+                                                        ///< if `UINT64_MAX`, then function will not return until complete or
+                                                        ///< device is lost.
                                                         ///< Due to external dependencies, timeout may be rounded to the closest
                                                         ///< value allowed by the accuracy of those dependencies.
         zet_debug_event_t* event                        ///< [in,out] a pointer to a ::zet_debug_event_t.
@@ -388,9 +388,11 @@ namespace loader
         ze_device_thread_t thread,                      ///< [in] the thread identifier
         uint32_t type,                                  ///< [in] register set type
         uint32_t start,                                 ///< [in] the starting offset into the register state area; must be less
-                                                        ///< than ::zet_debug_regset_properties_t.count for the type
-        uint32_t count,                                 ///< [in] the number of registers to read; start+count must be <=
-                                                        ///< zet_debug_register_group_properties_t.count for the type
+                                                        ///< than the `count` member of ::zet_debug_regset_properties_t for the
+                                                        ///< type
+        uint32_t count,                                 ///< [in] the number of registers to read; start+count must be less than or
+                                                        ///< equal to the `count` member of ::zet_debug_register_group_properties_t
+                                                        ///< for the type
         void* pRegisterValues                           ///< [in,out][optional][range(0, count)] buffer of register values
         )
     {
@@ -419,9 +421,11 @@ namespace loader
         ze_device_thread_t thread,                      ///< [in] the thread identifier
         uint32_t type,                                  ///< [in] register set type
         uint32_t start,                                 ///< [in] the starting offset into the register state area; must be less
-                                                        ///< than ::zet_debug_regset_properties_t.count for the type
-        uint32_t count,                                 ///< [in] the number of registers to write; start+count must be <=
-                                                        ///< zet_debug_register_group_properties_t.count for the type
+                                                        ///< than the `count` member of ::zet_debug_regset_properties_t for the
+                                                        ///< type
+        uint32_t count,                                 ///< [in] the number of registers to write; start+count must be less than
+                                                        ///< or equal to the `count` member of
+                                                        ///< ::zet_debug_register_group_properties_t for the type
         void* pRegisterValues                           ///< [in,out][optional][range(0, count)] buffer of register values
         )
     {
@@ -780,7 +784,7 @@ namespace loader
     zetMetricStreamerReadData(
         zet_metric_streamer_handle_t hMetricStreamer,   ///< [in] handle of the metric streamer
         uint32_t maxReportCount,                        ///< [in] the maximum number of reports the application wants to receive.
-                                                        ///< if UINT32_MAX, then function will retrieve all reports available
+                                                        ///< if `UINT32_MAX`, then function will retrieve all reports available
         size_t* pRawDataSize,                           ///< [in,out] pointer to size in bytes of raw data requested to read.
                                                         ///< if size is zero, then the driver will update the value with the total
                                                         ///< size in bytes needed for all reports available.
@@ -1339,6 +1343,85 @@ namespace loader
 
         // forward to device-driver
         result = pfnGetGlobalTimestampsExp( hMetricGroup, synchronizedWithHost, globalTimestamp, metricTimestamp );
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zetMetricGroupGetExportDataExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zetMetricGroupGetExportDataExp(
+        zet_metric_group_handle_t hMetricGroup,         ///< [in] handle of the metric group
+        const uint8_t* pRawData,                        ///< [in] buffer of raw data
+        size_t rawDataSize,                             ///< [in] size in bytes of raw data buffer
+        size_t* pExportDataSize,                        ///< [in,out] size in bytes of export data buffer
+                                                        ///< if size is zero, then the driver shall update the value with the
+                                                        ///< number of bytes necessary to store the exported data.
+                                                        ///< if size is greater than required, then the driver shall update the
+                                                        ///< value with the actual number of bytes necessary to store the exported data.
+        uint8_t * pExportData                           ///< [in,out][optional][range(0, *pExportDataSize)] buffer of exported data.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zet_metric_group_object_t*>( hMetricGroup )->dditable;
+        auto pfnGetExportDataExp = dditable->zet.MetricGroupExp.pfnGetExportDataExp;
+        if( nullptr == pfnGetExportDataExp )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hMetricGroup = reinterpret_cast<zet_metric_group_object_t*>( hMetricGroup )->handle;
+
+        // forward to device-driver
+        result = pfnGetExportDataExp( hMetricGroup, pRawData, rawDataSize, pExportDataSize, pExportData );
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zetMetricGroupCalculateMetricExportDataExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zetMetricGroupCalculateMetricExportDataExp(
+        ze_driver_handle_t hDriver,                     ///< [in] handle of the driver instance
+        zet_metric_group_calculation_type_t type,       ///< [in] calculation type to be applied on raw data
+        size_t exportDataSize,                          ///< [in] size in bytes of exported data buffer
+        const uint8_t* pExportData,                     ///< [in][range(0, exportDataSize)] buffer of exported data to calculate
+        zet_metric_calculate_exp_desc_t* pCalculateDescriptor,  ///< [in] descriptor specifying calculation specific parameters
+        uint32_t* pSetCount,                            ///< [in,out] pointer to number of metric sets.
+                                                        ///< if count is zero, then the driver shall update the value with the
+                                                        ///< total number of metric sets to be calculated.
+                                                        ///< if count is greater than the number available in the raw data buffer,
+                                                        ///< then the driver shall update the value with the actual number of
+                                                        ///< metric sets to be calculated.
+        uint32_t* pTotalMetricValueCount,               ///< [in,out] pointer to number of the total number of metric values
+                                                        ///< calculated, for all metric sets.
+                                                        ///< if count is zero, then the driver shall update the value with the
+                                                        ///< total number of metric values to be calculated.
+                                                        ///< if count is greater than the number available in the raw data buffer,
+                                                        ///< then the driver shall update the value with the actual number of
+                                                        ///< metric values to be calculated.
+        uint32_t* pMetricCounts,                        ///< [in,out][optional][range(0, *pSetCount)] buffer of metric counts per
+                                                        ///< metric set.
+        zet_typed_value_t* pMetricValues                ///< [in,out][optional][range(0, *pTotalMetricValueCount)] buffer of
+                                                        ///< calculated metrics.
+                                                        ///< if count is less than the number available in the raw data buffer,
+                                                        ///< then driver shall only calculate that number of metric values.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<ze_driver_object_t*>( hDriver )->dditable;
+        auto pfnCalculateMetricExportDataExp = dditable->zet.MetricGroupExp.pfnCalculateMetricExportDataExp;
+        if( nullptr == pfnCalculateMetricExportDataExp )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hDriver = reinterpret_cast<ze_driver_object_t*>( hDriver )->handle;
+
+        // forward to device-driver
+        result = pfnCalculateMetricExportDataExp( hDriver, type, exportDataSize, pExportData, pCalculateDescriptor, pSetCount, pTotalMetricValueCount, pMetricCounts, pMetricValues );
 
         return result;
     }
@@ -1992,7 +2075,6 @@ zetGetMetricGroupExpProcAddrTable(
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
-    bool atLeastOneDriverValid = false;
     // Load the device-driver DDI tables
     for( auto& drv : loader::context->drivers )
     {
@@ -2002,9 +2084,7 @@ zetGetMetricGroupExpProcAddrTable(
             GET_FUNCTION_PTR( drv.handle, "zetGetMetricGroupExpProcAddrTable") );
         if(!getTable) 
             continue; 
-        auto getTableResult = getTable( version, &drv.dditable.zet.MetricGroupExp);
-        if(getTableResult == ZE_RESULT_SUCCESS) 
-            atLeastOneDriverValid = true;
+        result = getTable( version, &drv.dditable.zet.MetricGroupExp);
     }
 
 
@@ -2015,6 +2095,8 @@ zetGetMetricGroupExpProcAddrTable(
             // return pointers to loader's DDIs
             pDdiTable->pfnCalculateMultipleMetricValuesExp         = loader::zetMetricGroupCalculateMultipleMetricValuesExp;
             pDdiTable->pfnGetGlobalTimestampsExp                   = loader::zetMetricGroupGetGlobalTimestampsExp;
+            pDdiTable->pfnGetExportDataExp                         = loader::zetMetricGroupGetExportDataExp;
+            pDdiTable->pfnCalculateMetricExportDataExp             = loader::zetMetricGroupCalculateMetricExportDataExp;
         }
         else
         {
