@@ -15,7 +15,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 #if defined(_WIN32)
-#  include <Windows.h>
+#  include <windows.h>
 inline void getLastErrorString(std::string &errorValue) {
     DWORD errorID = GetLastError();
     if (errorID) {
