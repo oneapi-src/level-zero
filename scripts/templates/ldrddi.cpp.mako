@@ -361,7 +361,13 @@ ${tbl['export']['name']}(
             GET_FUNCTION_PTR(loader::context->tracingLayer, "${tbl['export']['name']}") );
         if(!getTable)
             return ${X}_RESULT_ERROR_UNINITIALIZED;
-        result = getTable( version, pDdiTable );
+        ${tbl['type']} dditable;
+        memcpy(&dditable, pDdiTable, sizeof(${tbl['type']}));
+        result = getTable( version, &dditable );
+        loader::context->tracing_dditable.${n}.${tbl['name']} = dditable;
+        if ( loader::context->tracingLayerEnabled ) {
+            result = getTable( version, pDdiTable );
+        }
     }
 
     %endif

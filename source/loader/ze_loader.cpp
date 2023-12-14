@@ -324,25 +324,25 @@ namespace loader
             }
         }
 
-        if( getenv_tobool( "ZE_ENABLE_TRACING_LAYER" ) )
+        if (getenv_tobool( "ZE_ENABLE_TRACING_LAYER" )) {
+            tracingLayerEnabled = true;
+        }
+        std::string tracingLayerLibraryPath = create_library_path(MAKE_LAYER_NAME( "ze_tracing_layer" ), loaderLibraryPath.c_str());
+        tracingLayer = LOAD_DRIVER_LIBRARY( tracingLayerLibraryPath.c_str() );
+        if(tracingLayer)
         {
-            std::string tracingLayerLibraryPath = create_library_path(MAKE_LAYER_NAME( "ze_tracing_layer" ), loaderLibraryPath.c_str());
-            tracingLayer = LOAD_DRIVER_LIBRARY( tracingLayerLibraryPath.c_str() );
-            if(tracingLayer)
+            auto getVersion = reinterpret_cast<getVersion_t>(
+                GET_FUNCTION_PTR(tracingLayer, "zelLoaderGetVersion"));
+            zel_component_version_t compVersion;
+            if(getVersion && ZE_RESULT_SUCCESS == getVersion(&compVersion))
             {   
-                auto getVersion = reinterpret_cast<getVersion_t>(
-                    GET_FUNCTION_PTR(tracingLayer, "zelLoaderGetVersion"));
-                zel_component_version_t compVersion;
-                if(getVersion && ZE_RESULT_SUCCESS == getVersion(&compVersion))
-                {   
-                    compVersions.push_back(compVersion);
-                }
-            } else if (debugTraceEnabled) {
-                GET_LIBRARY_ERROR(loadLibraryErrorValue);
-                std::string errorMessage = "Load Library of " + std::string(MAKE_LAYER_NAME( "ze_tracing_layer" )) + " failed with ";
-                debug_trace_message(errorMessage, loadLibraryErrorValue);
-                loadLibraryErrorValue.clear();
+                compVersions.push_back(compVersion);
             }
+        } else if (debugTraceEnabled) {
+            GET_LIBRARY_ERROR(loadLibraryErrorValue);
+            std::string errorMessage = "Load Library of " + std::string(MAKE_LAYER_NAME( "ze_tracing_layer" )) + " failed with ";
+            debug_trace_message(errorMessage, loadLibraryErrorValue);
+            loadLibraryErrorValue.clear();
         }
 
         if( getenv_tobool( "ZET_ENABLE_API_TRACING_EXP" ) ) {

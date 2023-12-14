@@ -5609,7 +5609,13 @@ zeGetGlobalProcAddrTable(
             GET_FUNCTION_PTR(loader::context->tracingLayer, "zeGetGlobalProcAddrTable") );
         if(!getTable)
             return ZE_RESULT_ERROR_UNINITIALIZED;
-        result = getTable( version, pDdiTable );
+        ze_global_dditable_t dditable;
+        memcpy(&dditable, pDdiTable, sizeof(ze_global_dditable_t));
+        result = getTable( version, &dditable );
+        loader::context->tracing_dditable.ze.Global = dditable;
+        if ( loader::context->tracingLayerEnabled ) {
+            result = getTable( version, pDdiTable );
+        }
     }
 
     return result;
@@ -5688,7 +5694,13 @@ zeGetRTASBuilderExpProcAddrTable(
             GET_FUNCTION_PTR(loader::context->tracingLayer, "zeGetRTASBuilderExpProcAddrTable") );
         if(!getTable)
             return ZE_RESULT_ERROR_UNINITIALIZED;
-        result = getTable( version, pDdiTable );
+        ze_rtas_builder_exp_dditable_t dditable;
+        memcpy(&dditable, pDdiTable, sizeof(ze_rtas_builder_exp_dditable_t));
+        result = getTable( version, &dditable );
+        loader::context->tracing_dditable.ze.RTASBuilderExp = dditable;
+        if ( loader::context->tracingLayerEnabled ) {
+            result = getTable( version, pDdiTable );
+        }
     }
 
     return result;
@@ -5767,7 +5779,13 @@ zeGetRTASParallelOperationExpProcAddrTable(
             GET_FUNCTION_PTR(loader::context->tracingLayer, "zeGetRTASParallelOperationExpProcAddrTable") );
         if(!getTable)
             return ZE_RESULT_ERROR_UNINITIALIZED;
-        result = getTable( version, pDdiTable );
+        ze_rtas_parallel_operation_exp_dditable_t dditable;
+        memcpy(&dditable, pDdiTable, sizeof(ze_rtas_parallel_operation_exp_dditable_t));
+        result = getTable( version, &dditable );
+        loader::context->tracing_dditable.ze.RTASParallelOperationExp = dditable;
+        if ( loader::context->tracingLayerEnabled ) {
+            result = getTable( version, pDdiTable );
+        }
     }
 
     return result;
@@ -5858,7 +5876,13 @@ zeGetDriverProcAddrTable(
             GET_FUNCTION_PTR(loader::context->tracingLayer, "zeGetDriverProcAddrTable") );
         if(!getTable)
             return ZE_RESULT_ERROR_UNINITIALIZED;
-        result = getTable( version, pDdiTable );
+        ze_driver_dditable_t dditable;
+        memcpy(&dditable, pDdiTable, sizeof(ze_driver_dditable_t));
+        result = getTable( version, &dditable );
+        loader::context->tracing_dditable.ze.Driver = dditable;
+        if ( loader::context->tracingLayerEnabled ) {
+            result = getTable( version, pDdiTable );
+        }
     }
 
     return result;
@@ -5934,7 +5958,13 @@ zeGetDriverExpProcAddrTable(
             GET_FUNCTION_PTR(loader::context->tracingLayer, "zeGetDriverExpProcAddrTable") );
         if(!getTable)
             return ZE_RESULT_ERROR_UNINITIALIZED;
-        result = getTable( version, pDdiTable );
+        ze_driver_exp_dditable_t dditable;
+        memcpy(&dditable, pDdiTable, sizeof(ze_driver_exp_dditable_t));
+        result = getTable( version, &dditable );
+        loader::context->tracing_dditable.ze.DriverExp = dditable;
+        if ( loader::context->tracingLayerEnabled ) {
+            result = getTable( version, pDdiTable );
+        }
     }
 
     return result;
@@ -6037,7 +6067,13 @@ zeGetDeviceProcAddrTable(
             GET_FUNCTION_PTR(loader::context->tracingLayer, "zeGetDeviceProcAddrTable") );
         if(!getTable)
             return ZE_RESULT_ERROR_UNINITIALIZED;
-        result = getTable( version, pDdiTable );
+        ze_device_dditable_t dditable;
+        memcpy(&dditable, pDdiTable, sizeof(ze_device_dditable_t));
+        result = getTable( version, &dditable );
+        loader::context->tracing_dditable.ze.Device = dditable;
+        if ( loader::context->tracingLayerEnabled ) {
+            result = getTable( version, pDdiTable );
+        }
     }
 
     return result;
@@ -6113,7 +6149,13 @@ zeGetDeviceExpProcAddrTable(
             GET_FUNCTION_PTR(loader::context->tracingLayer, "zeGetDeviceExpProcAddrTable") );
         if(!getTable)
             return ZE_RESULT_ERROR_UNINITIALIZED;
-        result = getTable( version, pDdiTable );
+        ze_device_exp_dditable_t dditable;
+        memcpy(&dditable, pDdiTable, sizeof(ze_device_exp_dditable_t));
+        result = getTable( version, &dditable );
+        loader::context->tracing_dditable.ze.DeviceExp = dditable;
+        if ( loader::context->tracingLayerEnabled ) {
+            result = getTable( version, pDdiTable );
+        }
     }
 
     return result;
@@ -6206,7 +6248,13 @@ zeGetContextProcAddrTable(
             GET_FUNCTION_PTR(loader::context->tracingLayer, "zeGetContextProcAddrTable") );
         if(!getTable)
             return ZE_RESULT_ERROR_UNINITIALIZED;
-        result = getTable( version, pDdiTable );
+        ze_context_dditable_t dditable;
+        memcpy(&dditable, pDdiTable, sizeof(ze_context_dditable_t));
+        result = getTable( version, &dditable );
+        loader::context->tracing_dditable.ze.Context = dditable;
+        if ( loader::context->tracingLayerEnabled ) {
+            result = getTable( version, pDdiTable );
+        }
     }
 
     return result;
@@ -6294,7 +6342,13 @@ zeGetCommandQueueProcAddrTable(
             GET_FUNCTION_PTR(loader::context->tracingLayer, "zeGetCommandQueueProcAddrTable") );
         if(!getTable)
             return ZE_RESULT_ERROR_UNINITIALIZED;
-        result = getTable( version, pDdiTable );
+        ze_command_queue_dditable_t dditable;
+        memcpy(&dditable, pDdiTable, sizeof(ze_command_queue_dditable_t));
+        result = getTable( version, &dditable );
+        loader::context->tracing_dditable.ze.CommandQueue = dditable;
+        if ( loader::context->tracingLayerEnabled ) {
+            result = getTable( version, pDdiTable );
+        }
     }
 
     return result;
@@ -6407,7 +6461,13 @@ zeGetCommandListProcAddrTable(
             GET_FUNCTION_PTR(loader::context->tracingLayer, "zeGetCommandListProcAddrTable") );
         if(!getTable)
             return ZE_RESULT_ERROR_UNINITIALIZED;
-        result = getTable( version, pDdiTable );
+        ze_command_list_dditable_t dditable;
+        memcpy(&dditable, pDdiTable, sizeof(ze_command_list_dditable_t));
+        result = getTable( version, &dditable );
+        loader::context->tracing_dditable.ze.CommandList = dditable;
+        if ( loader::context->tracingLayerEnabled ) {
+            result = getTable( version, pDdiTable );
+        }
     }
 
     return result;
@@ -6499,7 +6559,13 @@ zeGetEventProcAddrTable(
             GET_FUNCTION_PTR(loader::context->tracingLayer, "zeGetEventProcAddrTable") );
         if(!getTable)
             return ZE_RESULT_ERROR_UNINITIALIZED;
-        result = getTable( version, pDdiTable );
+        ze_event_dditable_t dditable;
+        memcpy(&dditable, pDdiTable, sizeof(ze_event_dditable_t));
+        result = getTable( version, &dditable );
+        loader::context->tracing_dditable.ze.Event = dditable;
+        if ( loader::context->tracingLayerEnabled ) {
+            result = getTable( version, pDdiTable );
+        }
     }
 
     return result;
@@ -6575,7 +6641,13 @@ zeGetEventExpProcAddrTable(
             GET_FUNCTION_PTR(loader::context->tracingLayer, "zeGetEventExpProcAddrTable") );
         if(!getTable)
             return ZE_RESULT_ERROR_UNINITIALIZED;
-        result = getTable( version, pDdiTable );
+        ze_event_exp_dditable_t dditable;
+        memcpy(&dditable, pDdiTable, sizeof(ze_event_exp_dditable_t));
+        result = getTable( version, &dditable );
+        loader::context->tracing_dditable.ze.EventExp = dditable;
+        if ( loader::context->tracingLayerEnabled ) {
+            result = getTable( version, pDdiTable );
+        }
     }
 
     return result;
@@ -6665,7 +6737,13 @@ zeGetEventPoolProcAddrTable(
             GET_FUNCTION_PTR(loader::context->tracingLayer, "zeGetEventPoolProcAddrTable") );
         if(!getTable)
             return ZE_RESULT_ERROR_UNINITIALIZED;
-        result = getTable( version, pDdiTable );
+        ze_event_pool_dditable_t dditable;
+        memcpy(&dditable, pDdiTable, sizeof(ze_event_pool_dditable_t));
+        result = getTable( version, &dditable );
+        loader::context->tracing_dditable.ze.EventPool = dditable;
+        if ( loader::context->tracingLayerEnabled ) {
+            result = getTable( version, pDdiTable );
+        }
     }
 
     return result;
@@ -6754,7 +6832,13 @@ zeGetFenceProcAddrTable(
             GET_FUNCTION_PTR(loader::context->tracingLayer, "zeGetFenceProcAddrTable") );
         if(!getTable)
             return ZE_RESULT_ERROR_UNINITIALIZED;
-        result = getTable( version, pDdiTable );
+        ze_fence_dditable_t dditable;
+        memcpy(&dditable, pDdiTable, sizeof(ze_fence_dditable_t));
+        result = getTable( version, &dditable );
+        loader::context->tracing_dditable.ze.Fence = dditable;
+        if ( loader::context->tracingLayerEnabled ) {
+            result = getTable( version, pDdiTable );
+        }
     }
 
     return result;
@@ -6843,7 +6927,13 @@ zeGetImageProcAddrTable(
             GET_FUNCTION_PTR(loader::context->tracingLayer, "zeGetImageProcAddrTable") );
         if(!getTable)
             return ZE_RESULT_ERROR_UNINITIALIZED;
-        result = getTable( version, pDdiTable );
+        ze_image_dditable_t dditable;
+        memcpy(&dditable, pDdiTable, sizeof(ze_image_dditable_t));
+        result = getTable( version, &dditable );
+        loader::context->tracing_dditable.ze.Image = dditable;
+        if ( loader::context->tracingLayerEnabled ) {
+            result = getTable( version, pDdiTable );
+        }
     }
 
     return result;
@@ -6920,7 +7010,13 @@ zeGetImageExpProcAddrTable(
             GET_FUNCTION_PTR(loader::context->tracingLayer, "zeGetImageExpProcAddrTable") );
         if(!getTable)
             return ZE_RESULT_ERROR_UNINITIALIZED;
-        result = getTable( version, pDdiTable );
+        ze_image_exp_dditable_t dditable;
+        memcpy(&dditable, pDdiTable, sizeof(ze_image_exp_dditable_t));
+        result = getTable( version, &dditable );
+        loader::context->tracing_dditable.ze.ImageExp = dditable;
+        if ( loader::context->tracingLayerEnabled ) {
+            result = getTable( version, pDdiTable );
+        }
     }
 
     return result;
@@ -7016,7 +7112,13 @@ zeGetKernelProcAddrTable(
             GET_FUNCTION_PTR(loader::context->tracingLayer, "zeGetKernelProcAddrTable") );
         if(!getTable)
             return ZE_RESULT_ERROR_UNINITIALIZED;
-        result = getTable( version, pDdiTable );
+        ze_kernel_dditable_t dditable;
+        memcpy(&dditable, pDdiTable, sizeof(ze_kernel_dditable_t));
+        result = getTable( version, &dditable );
+        loader::context->tracing_dditable.ze.Kernel = dditable;
+        if ( loader::context->tracingLayerEnabled ) {
+            result = getTable( version, pDdiTable );
+        }
     }
 
     return result;
@@ -7093,7 +7195,13 @@ zeGetKernelExpProcAddrTable(
             GET_FUNCTION_PTR(loader::context->tracingLayer, "zeGetKernelExpProcAddrTable") );
         if(!getTable)
             return ZE_RESULT_ERROR_UNINITIALIZED;
-        result = getTable( version, pDdiTable );
+        ze_kernel_exp_dditable_t dditable;
+        memcpy(&dditable, pDdiTable, sizeof(ze_kernel_exp_dditable_t));
+        result = getTable( version, &dditable );
+        loader::context->tracing_dditable.ze.KernelExp = dditable;
+        if ( loader::context->tracingLayerEnabled ) {
+            result = getTable( version, pDdiTable );
+        }
     }
 
     return result;
@@ -7188,7 +7296,13 @@ zeGetMemProcAddrTable(
             GET_FUNCTION_PTR(loader::context->tracingLayer, "zeGetMemProcAddrTable") );
         if(!getTable)
             return ZE_RESULT_ERROR_UNINITIALIZED;
-        result = getTable( version, pDdiTable );
+        ze_mem_dditable_t dditable;
+        memcpy(&dditable, pDdiTable, sizeof(ze_mem_dditable_t));
+        result = getTable( version, &dditable );
+        loader::context->tracing_dditable.ze.Mem = dditable;
+        if ( loader::context->tracingLayerEnabled ) {
+            result = getTable( version, pDdiTable );
+        }
     }
 
     return result;
@@ -7267,7 +7381,13 @@ zeGetMemExpProcAddrTable(
             GET_FUNCTION_PTR(loader::context->tracingLayer, "zeGetMemExpProcAddrTable") );
         if(!getTable)
             return ZE_RESULT_ERROR_UNINITIALIZED;
-        result = getTable( version, pDdiTable );
+        ze_mem_exp_dditable_t dditable;
+        memcpy(&dditable, pDdiTable, sizeof(ze_mem_exp_dditable_t));
+        result = getTable( version, &dditable );
+        loader::context->tracing_dditable.ze.MemExp = dditable;
+        if ( loader::context->tracingLayerEnabled ) {
+            result = getTable( version, pDdiTable );
+        }
     }
 
     return result;
@@ -7360,7 +7480,13 @@ zeGetModuleProcAddrTable(
             GET_FUNCTION_PTR(loader::context->tracingLayer, "zeGetModuleProcAddrTable") );
         if(!getTable)
             return ZE_RESULT_ERROR_UNINITIALIZED;
-        result = getTable( version, pDdiTable );
+        ze_module_dditable_t dditable;
+        memcpy(&dditable, pDdiTable, sizeof(ze_module_dditable_t));
+        result = getTable( version, &dditable );
+        loader::context->tracing_dditable.ze.Module = dditable;
+        if ( loader::context->tracingLayerEnabled ) {
+            result = getTable( version, pDdiTable );
+        }
     }
 
     return result;
@@ -7446,7 +7572,13 @@ zeGetModuleBuildLogProcAddrTable(
             GET_FUNCTION_PTR(loader::context->tracingLayer, "zeGetModuleBuildLogProcAddrTable") );
         if(!getTable)
             return ZE_RESULT_ERROR_UNINITIALIZED;
-        result = getTable( version, pDdiTable );
+        ze_module_build_log_dditable_t dditable;
+        memcpy(&dditable, pDdiTable, sizeof(ze_module_build_log_dditable_t));
+        result = getTable( version, &dditable );
+        loader::context->tracing_dditable.ze.ModuleBuildLog = dditable;
+        if ( loader::context->tracingLayerEnabled ) {
+            result = getTable( version, pDdiTable );
+        }
     }
 
     return result;
@@ -7532,7 +7664,13 @@ zeGetPhysicalMemProcAddrTable(
             GET_FUNCTION_PTR(loader::context->tracingLayer, "zeGetPhysicalMemProcAddrTable") );
         if(!getTable)
             return ZE_RESULT_ERROR_UNINITIALIZED;
-        result = getTable( version, pDdiTable );
+        ze_physical_mem_dditable_t dditable;
+        memcpy(&dditable, pDdiTable, sizeof(ze_physical_mem_dditable_t));
+        result = getTable( version, &dditable );
+        loader::context->tracing_dditable.ze.PhysicalMem = dditable;
+        if ( loader::context->tracingLayerEnabled ) {
+            result = getTable( version, pDdiTable );
+        }
     }
 
     return result;
@@ -7618,7 +7756,13 @@ zeGetSamplerProcAddrTable(
             GET_FUNCTION_PTR(loader::context->tracingLayer, "zeGetSamplerProcAddrTable") );
         if(!getTable)
             return ZE_RESULT_ERROR_UNINITIALIZED;
-        result = getTable( version, pDdiTable );
+        ze_sampler_dditable_t dditable;
+        memcpy(&dditable, pDdiTable, sizeof(ze_sampler_dditable_t));
+        result = getTable( version, &dditable );
+        loader::context->tracing_dditable.ze.Sampler = dditable;
+        if ( loader::context->tracingLayerEnabled ) {
+            result = getTable( version, pDdiTable );
+        }
     }
 
     return result;
@@ -7709,7 +7853,13 @@ zeGetVirtualMemProcAddrTable(
             GET_FUNCTION_PTR(loader::context->tracingLayer, "zeGetVirtualMemProcAddrTable") );
         if(!getTable)
             return ZE_RESULT_ERROR_UNINITIALIZED;
-        result = getTable( version, pDdiTable );
+        ze_virtual_mem_dditable_t dditable;
+        memcpy(&dditable, pDdiTable, sizeof(ze_virtual_mem_dditable_t));
+        result = getTable( version, &dditable );
+        loader::context->tracing_dditable.ze.VirtualMem = dditable;
+        if ( loader::context->tracingLayerEnabled ) {
+            result = getTable( version, pDdiTable );
+        }
     }
 
     return result;
@@ -7787,7 +7937,13 @@ zeGetFabricEdgeExpProcAddrTable(
             GET_FUNCTION_PTR(loader::context->tracingLayer, "zeGetFabricEdgeExpProcAddrTable") );
         if(!getTable)
             return ZE_RESULT_ERROR_UNINITIALIZED;
-        result = getTable( version, pDdiTable );
+        ze_fabric_edge_exp_dditable_t dditable;
+        memcpy(&dditable, pDdiTable, sizeof(ze_fabric_edge_exp_dditable_t));
+        result = getTable( version, &dditable );
+        loader::context->tracing_dditable.ze.FabricEdgeExp = dditable;
+        if ( loader::context->tracingLayerEnabled ) {
+            result = getTable( version, pDdiTable );
+        }
     }
 
     return result;
@@ -7866,7 +8022,13 @@ zeGetFabricVertexExpProcAddrTable(
             GET_FUNCTION_PTR(loader::context->tracingLayer, "zeGetFabricVertexExpProcAddrTable") );
         if(!getTable)
             return ZE_RESULT_ERROR_UNINITIALIZED;
-        result = getTable( version, pDdiTable );
+        ze_fabric_vertex_exp_dditable_t dditable;
+        memcpy(&dditable, pDdiTable, sizeof(ze_fabric_vertex_exp_dditable_t));
+        result = getTable( version, &dditable );
+        loader::context->tracing_dditable.ze.FabricVertexExp = dditable;
+        if ( loader::context->tracingLayerEnabled ) {
+            result = getTable( version, pDdiTable );
+        }
     }
 
     return result;

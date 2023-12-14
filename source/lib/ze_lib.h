@@ -19,6 +19,7 @@
 #include "ze_util.h"
 #include <vector>
 #include <mutex>
+#include <atomic>
 
 namespace ze_lib
 {
@@ -38,16 +39,23 @@ namespace ze_lib
         ze_result_t Init(ze_init_flags_t flags, bool sysmanOnly);
 
         ze_result_t zeInit();
-        ze_dditable_t   zeDdiTable = {};
+        std::atomic<ze_dditable_t *>  zeDdiTable = {nullptr};
 
         ze_result_t zetInit();
-        zet_dditable_t  zetDdiTable = {};
+        std::atomic<zet_dditable_t *> zetDdiTable = {nullptr};
 
         ze_result_t zesInit();
-        zes_dditable_t  zesDdiTable = {};
+        std::atomic<zes_dditable_t *> zesDdiTable = {nullptr};
 
         ze_result_t zelTracingInit();
         zel_tracing_dditable_t  zelTracingDdiTable = {};
+        std::atomic<ze_dditable_t *> pTracingZeDdiTable = {nullptr};
+        std::atomic<zet_dditable_t *> pTracingZetDdiTable = {nullptr};
+        std::atomic<zes_dditable_t *> pTracingZesDdiTable = {nullptr};
+        ze_dditable_t initialzeDdiTable;
+        zet_dditable_t initialzetDdiTable;
+        zes_dditable_t initialzesDdiTable;
+        std::atomic_uint32_t tracingLayerEnableCounter;
 
         HMODULE tracing_lib = nullptr;
         bool isInitialized = false;

@@ -8,6 +8,7 @@
 #pragma once
 #include <vector>
 #include <map>
+#include <atomic>
 
 #include "ze_ddi.h"
 #include "zet_ddi.h"
@@ -58,6 +59,8 @@ namespace loader
         ~context_t();
         bool intercept_enabled = false;
         bool debugTraceEnabled = false;
+        bool tracingLayerEnabled = false;
+        dditable_t tracing_dditable = {};
     };
 
     extern context_t *context;

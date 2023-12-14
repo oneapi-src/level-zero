@@ -49,6 +49,17 @@ zeLoaderGetTracingHandle()
     return loader::context->tracingLayer;
 }
 
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Internal function for Setting the ddi tables for the Tracing Layer.
+///
+ZE_DLLEXPORT ze_result_t ZE_APICALL
+zelLoaderTracingLayerInit(std::atomic<ze_dditable_t *> &zeDdiTable, std::atomic<zet_dditable_t *> &zetDdiTable, std::atomic<zes_dditable_t *> &zesDdiTable) {
+    zeDdiTable.store(&loader::context->tracing_dditable.ze);
+    zetDdiTable.store(&loader::context->tracing_dditable.zet);
+    zesDdiTable.store(&loader::context->tracing_dditable.zes);
+    return ZE_RESULT_SUCCESS;
+}
+
 ZE_DLLEXPORT ze_result_t ZE_APICALL
 zelLoaderGetVersionsInternal(
    size_t *num_elems,                     //Pointer to num versions to get.  

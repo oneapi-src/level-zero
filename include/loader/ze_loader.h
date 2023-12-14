@@ -70,6 +70,18 @@ zelLoaderTranslateHandle(
 ZE_DLLEXPORT ze_result_t ZE_APICALL
 zelSetDriverTeardown();
 
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Exported function for Enabling the Tracing Layer During Runtime.
+///
+ZE_DLLEXPORT ze_result_t ZE_APICALL
+zelEnableTracingLayer();
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Exported function for Disabling the Tracing Layer During Runtime.
+///
+ZE_DLLEXPORT ze_result_t ZE_APICALL
+zelDisableTracingLayer();
+
 #if defined(__cplusplus)
 } // extern "C"
 #endif

@@ -35,9 +35,18 @@ To solve this issue, `zelLoaderTranslateHandle` is used to retrieve the raw driv
 - __**handleOut__ Output location to store the translated handle
 
 
+### zelEnableTracingLayer
 
+When a user wants to enable the Tracing Layer for API Tracing, one usually set `ZE_ENABLE_TRACING_LAYER=1` before the call to zeInit(), however if one wanted to enable and disable tracing during runtime, the only way previously would be to enable tracing with the tracers disabled. This causes a performance hit due to the tracing layer intercepts.
 
+To resolve this, the tracing layer additionally can be enabled thru this new api `zelEnableTracingLayer`. This will enable the api tracing layer until the program exits or the user calls `zelDisableTracingLayer`.
 
+This call enables the tracing layer for all calls to the Loader after this call completes for all initialized drivers.
 
+### zelDisableTracingLayer
 
+Disables the tracing layer intercepts at runtime by restoring the previous call path thru the loader before tracing was enabled.
 
+This does not unload the tracing layer library such that one can call `zelEnableTracingLayer` and `zelDisableTracingLayer` as many times one needs to during the application.
+
+NOTE: The each call to `zelEnableTracingLayer` tracks a reference count of how many calls to enable have been seen. The Tracing Layer intercepts will not be removed until the reference count has reached 0 indicating that all users of the tracing layer have called `zelDisableTracingLayer`.

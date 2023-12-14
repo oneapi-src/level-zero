@@ -61,7 +61,7 @@ zesInit(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnInit = ze_lib::context->zesDdiTable.Global.pfnInit;
+    auto pfnInit = ze_lib::context->zesDdiTable.load()->Global.pfnInit;
     if( nullptr == pfnInit ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -109,7 +109,7 @@ zesDriverGet(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnGet = ze_lib::context->zesDdiTable.Driver.pfnGet;
+    auto pfnGet = ze_lib::context->zesDdiTable.load()->Driver.pfnGet;
     if( nullptr == pfnGet ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -156,7 +156,7 @@ zesDriverGetExtensionProperties(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnGetExtensionProperties = ze_lib::context->zesDdiTable.Driver.pfnGetExtensionProperties;
+    auto pfnGetExtensionProperties = ze_lib::context->zesDdiTable.load()->Driver.pfnGetExtensionProperties;
     if( nullptr == pfnGetExtensionProperties ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -197,7 +197,7 @@ zesDriverGetExtensionFunctionAddress(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnGetExtensionFunctionAddress = ze_lib::context->zesDdiTable.Driver.pfnGetExtensionFunctionAddress;
+    auto pfnGetExtensionFunctionAddress = ze_lib::context->zesDdiTable.load()->Driver.pfnGetExtensionFunctionAddress;
     if( nullptr == pfnGetExtensionFunctionAddress ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -248,7 +248,7 @@ zesDeviceGet(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnGet = ze_lib::context->zesDdiTable.Device.pfnGet;
+    auto pfnGet = ze_lib::context->zesDdiTable.load()->Device.pfnGet;
     if( nullptr == pfnGet ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -286,7 +286,7 @@ zesDeviceGetProperties(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnGetProperties = ze_lib::context->zesDdiTable.Device.pfnGetProperties;
+    auto pfnGetProperties = ze_lib::context->zesDdiTable.load()->Device.pfnGetProperties;
     if( nullptr == pfnGetProperties ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -325,7 +325,7 @@ zesDeviceGetState(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnGetState = ze_lib::context->zesDdiTable.Device.pfnGetState;
+    auto pfnGetState = ze_lib::context->zesDdiTable.load()->Device.pfnGetState;
     if( nullptr == pfnGetState ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -375,7 +375,7 @@ zesDeviceReset(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnReset = ze_lib::context->zesDdiTable.Device.pfnReset;
+    auto pfnReset = ze_lib::context->zesDdiTable.load()->Device.pfnReset;
     if( nullptr == pfnReset ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -426,7 +426,7 @@ zesDeviceResetExt(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnResetExt = ze_lib::context->zesDdiTable.Device.pfnResetExt;
+    auto pfnResetExt = ze_lib::context->zesDdiTable.load()->Device.pfnResetExt;
     if( nullptr == pfnResetExt ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -482,7 +482,7 @@ zesDeviceProcessesGetState(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnProcessesGetState = ze_lib::context->zesDdiTable.Device.pfnProcessesGetState;
+    auto pfnProcessesGetState = ze_lib::context->zesDdiTable.load()->Device.pfnProcessesGetState;
     if( nullptr == pfnProcessesGetState ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -520,7 +520,7 @@ zesDevicePciGetProperties(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnPciGetProperties = ze_lib::context->zesDdiTable.Device.pfnPciGetProperties;
+    auto pfnPciGetProperties = ze_lib::context->zesDdiTable.load()->Device.pfnPciGetProperties;
     if( nullptr == pfnPciGetProperties ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -558,7 +558,7 @@ zesDevicePciGetState(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnPciGetState = ze_lib::context->zesDdiTable.Device.pfnPciGetState;
+    auto pfnPciGetState = ze_lib::context->zesDdiTable.load()->Device.pfnPciGetState;
     if( nullptr == pfnPciGetState ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -604,7 +604,7 @@ zesDevicePciGetBars(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnPciGetBars = ze_lib::context->zesDdiTable.Device.pfnPciGetBars;
+    auto pfnPciGetBars = ze_lib::context->zesDdiTable.load()->Device.pfnPciGetBars;
     if( nullptr == pfnPciGetBars ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -644,7 +644,7 @@ zesDevicePciGetStats(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnPciGetStats = ze_lib::context->zesDdiTable.Device.pfnPciGetStats;
+    auto pfnPciGetStats = ze_lib::context->zesDdiTable.load()->Device.pfnPciGetStats;
     if( nullptr == pfnPciGetStats ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -682,7 +682,7 @@ zesDeviceSetOverclockWaiver(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnSetOverclockWaiver = ze_lib::context->zesDdiTable.Device.pfnSetOverclockWaiver;
+    auto pfnSetOverclockWaiver = ze_lib::context->zesDdiTable.load()->Device.pfnSetOverclockWaiver;
     if( nullptr == pfnSetOverclockWaiver ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -724,7 +724,7 @@ zesDeviceGetOverclockDomains(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnGetOverclockDomains = ze_lib::context->zesDdiTable.Device.pfnGetOverclockDomains;
+    auto pfnGetOverclockDomains = ze_lib::context->zesDdiTable.load()->Device.pfnGetOverclockDomains;
     if( nullptr == pfnGetOverclockDomains ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -770,7 +770,7 @@ zesDeviceGetOverclockControls(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnGetOverclockControls = ze_lib::context->zesDdiTable.Device.pfnGetOverclockControls;
+    auto pfnGetOverclockControls = ze_lib::context->zesDdiTable.load()->Device.pfnGetOverclockControls;
     if( nullptr == pfnGetOverclockControls ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -810,7 +810,7 @@ zesDeviceResetOverclockSettings(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnResetOverclockSettings = ze_lib::context->zesDdiTable.Device.pfnResetOverclockSettings;
+    auto pfnResetOverclockSettings = ze_lib::context->zesDdiTable.load()->Device.pfnResetOverclockSettings;
     if( nullptr == pfnResetOverclockSettings ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -859,7 +859,7 @@ zesDeviceReadOverclockState(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnReadOverclockState = ze_lib::context->zesDdiTable.Device.pfnReadOverclockState;
+    auto pfnReadOverclockState = ze_lib::context->zesDdiTable.load()->Device.pfnReadOverclockState;
     if( nullptr == pfnReadOverclockState ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -907,7 +907,7 @@ zesDeviceEnumOverclockDomains(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnEnumOverclockDomains = ze_lib::context->zesDdiTable.Device.pfnEnumOverclockDomains;
+    auto pfnEnumOverclockDomains = ze_lib::context->zesDdiTable.load()->Device.pfnEnumOverclockDomains;
     if( nullptr == pfnEnumOverclockDomains ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -947,7 +947,7 @@ zesOverclockGetDomainProperties(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnGetDomainProperties = ze_lib::context->zesDdiTable.Overclock.pfnGetDomainProperties;
+    auto pfnGetDomainProperties = ze_lib::context->zesDdiTable.load()->Overclock.pfnGetDomainProperties;
     if( nullptr == pfnGetDomainProperties ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -987,7 +987,7 @@ zesOverclockGetDomainVFProperties(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnGetDomainVFProperties = ze_lib::context->zesDdiTable.Overclock.pfnGetDomainVFProperties;
+    auto pfnGetDomainVFProperties = ze_lib::context->zesDdiTable.load()->Overclock.pfnGetDomainVFProperties;
     if( nullptr == pfnGetDomainVFProperties ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1030,7 +1030,7 @@ zesOverclockGetDomainControlProperties(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnGetDomainControlProperties = ze_lib::context->zesDdiTable.Overclock.pfnGetDomainControlProperties;
+    auto pfnGetDomainControlProperties = ze_lib::context->zesDdiTable.load()->Overclock.pfnGetDomainControlProperties;
     if( nullptr == pfnGetDomainControlProperties ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1073,7 +1073,7 @@ zesOverclockGetControlCurrentValue(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnGetControlCurrentValue = ze_lib::context->zesDdiTable.Overclock.pfnGetControlCurrentValue;
+    auto pfnGetControlCurrentValue = ze_lib::context->zesDdiTable.load()->Overclock.pfnGetControlCurrentValue;
     if( nullptr == pfnGetControlCurrentValue ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1117,7 +1117,7 @@ zesOverclockGetControlPendingValue(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnGetControlPendingValue = ze_lib::context->zesDdiTable.Overclock.pfnGetControlPendingValue;
+    auto pfnGetControlPendingValue = ze_lib::context->zesDdiTable.load()->Overclock.pfnGetControlPendingValue;
     if( nullptr == pfnGetControlPendingValue ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1162,7 +1162,7 @@ zesOverclockSetControlUserValue(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnSetControlUserValue = ze_lib::context->zesDdiTable.Overclock.pfnSetControlUserValue;
+    auto pfnSetControlUserValue = ze_lib::context->zesDdiTable.load()->Overclock.pfnSetControlUserValue;
     if( nullptr == pfnSetControlUserValue ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1207,7 +1207,7 @@ zesOverclockGetControlState(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnGetControlState = ze_lib::context->zesDdiTable.Overclock.pfnGetControlState;
+    auto pfnGetControlState = ze_lib::context->zesDdiTable.load()->Overclock.pfnGetControlState;
     if( nullptr == pfnGetControlState ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1255,7 +1255,7 @@ zesOverclockGetVFPointValues(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnGetVFPointValues = ze_lib::context->zesDdiTable.Overclock.pfnGetVFPointValues;
+    auto pfnGetVFPointValues = ze_lib::context->zesDdiTable.load()->Overclock.pfnGetVFPointValues;
     if( nullptr == pfnGetVFPointValues ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1298,7 +1298,7 @@ zesOverclockSetVFPointValues(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnSetVFPointValues = ze_lib::context->zesDdiTable.Overclock.pfnSetVFPointValues;
+    auto pfnSetVFPointValues = ze_lib::context->zesDdiTable.load()->Overclock.pfnSetVFPointValues;
     if( nullptr == pfnSetVFPointValues ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1346,7 +1346,7 @@ zesDeviceEnumDiagnosticTestSuites(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnEnumDiagnosticTestSuites = ze_lib::context->zesDdiTable.Device.pfnEnumDiagnosticTestSuites;
+    auto pfnEnumDiagnosticTestSuites = ze_lib::context->zesDdiTable.load()->Device.pfnEnumDiagnosticTestSuites;
     if( nullptr == pfnEnumDiagnosticTestSuites ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1385,7 +1385,7 @@ zesDiagnosticsGetProperties(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnGetProperties = ze_lib::context->zesDdiTable.Diagnostics.pfnGetProperties;
+    auto pfnGetProperties = ze_lib::context->zesDdiTable.load()->Diagnostics.pfnGetProperties;
     if( nullptr == pfnGetProperties ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1435,7 +1435,7 @@ zesDiagnosticsGetTests(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnGetTests = ze_lib::context->zesDdiTable.Diagnostics.pfnGetTests;
+    auto pfnGetTests = ze_lib::context->zesDdiTable.load()->Diagnostics.pfnGetTests;
     if( nullptr == pfnGetTests ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1488,7 +1488,7 @@ zesDiagnosticsRunTests(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnRunTests = ze_lib::context->zesDdiTable.Diagnostics.pfnRunTests;
+    auto pfnRunTests = ze_lib::context->zesDdiTable.load()->Diagnostics.pfnRunTests;
     if( nullptr == pfnRunTests ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1526,7 +1526,7 @@ zesDeviceEccAvailable(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnEccAvailable = ze_lib::context->zesDdiTable.Device.pfnEccAvailable;
+    auto pfnEccAvailable = ze_lib::context->zesDdiTable.load()->Device.pfnEccAvailable;
     if( nullptr == pfnEccAvailable ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1564,7 +1564,7 @@ zesDeviceEccConfigurable(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnEccConfigurable = ze_lib::context->zesDdiTable.Device.pfnEccConfigurable;
+    auto pfnEccConfigurable = ze_lib::context->zesDdiTable.load()->Device.pfnEccConfigurable;
     if( nullptr == pfnEccConfigurable ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1602,7 +1602,7 @@ zesDeviceGetEccState(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnGetEccState = ze_lib::context->zesDdiTable.Device.pfnGetEccState;
+    auto pfnGetEccState = ze_lib::context->zesDdiTable.load()->Device.pfnGetEccState;
     if( nullptr == pfnGetEccState ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1648,7 +1648,7 @@ zesDeviceSetEccState(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnSetEccState = ze_lib::context->zesDdiTable.Device.pfnSetEccState;
+    auto pfnSetEccState = ze_lib::context->zesDdiTable.load()->Device.pfnSetEccState;
     if( nullptr == pfnSetEccState ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1696,7 +1696,7 @@ zesDeviceEnumEngineGroups(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnEnumEngineGroups = ze_lib::context->zesDdiTable.Device.pfnEnumEngineGroups;
+    auto pfnEnumEngineGroups = ze_lib::context->zesDdiTable.load()->Device.pfnEnumEngineGroups;
     if( nullptr == pfnEnumEngineGroups ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1734,7 +1734,7 @@ zesEngineGetProperties(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnGetProperties = ze_lib::context->zesDdiTable.Engine.pfnGetProperties;
+    auto pfnGetProperties = ze_lib::context->zesDdiTable.load()->Engine.pfnGetProperties;
     if( nullptr == pfnGetProperties ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1775,7 +1775,7 @@ zesEngineGetActivity(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnGetActivity = ze_lib::context->zesDdiTable.Engine.pfnGetActivity;
+    auto pfnGetActivity = ze_lib::context->zesDdiTable.load()->Engine.pfnGetActivity;
     if( nullptr == pfnGetActivity ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1813,7 +1813,7 @@ zesDeviceEventRegister(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnEventRegister = ze_lib::context->zesDdiTable.Device.pfnEventRegister;
+    auto pfnEventRegister = ze_lib::context->zesDdiTable.load()->Device.pfnEventRegister;
     if( nullptr == pfnEventRegister ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1873,7 +1873,7 @@ zesDriverEventListen(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnEventListen = ze_lib::context->zesDdiTable.Driver.pfnEventListen;
+    auto pfnEventListen = ze_lib::context->zesDdiTable.load()->Driver.pfnEventListen;
     if( nullptr == pfnEventListen ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1933,7 +1933,7 @@ zesDriverEventListenEx(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnEventListenEx = ze_lib::context->zesDdiTable.Driver.pfnEventListenEx;
+    auto pfnEventListenEx = ze_lib::context->zesDdiTable.load()->Driver.pfnEventListenEx;
     if( nullptr == pfnEventListenEx ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1981,7 +1981,7 @@ zesDeviceEnumFabricPorts(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnEnumFabricPorts = ze_lib::context->zesDdiTable.Device.pfnEnumFabricPorts;
+    auto pfnEnumFabricPorts = ze_lib::context->zesDdiTable.load()->Device.pfnEnumFabricPorts;
     if( nullptr == pfnEnumFabricPorts ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -2019,7 +2019,7 @@ zesFabricPortGetProperties(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnGetProperties = ze_lib::context->zesDdiTable.FabricPort.pfnGetProperties;
+    auto pfnGetProperties = ze_lib::context->zesDdiTable.load()->FabricPort.pfnGetProperties;
     if( nullptr == pfnGetProperties ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -2058,7 +2058,7 @@ zesFabricPortGetLinkType(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnGetLinkType = ze_lib::context->zesDdiTable.FabricPort.pfnGetLinkType;
+    auto pfnGetLinkType = ze_lib::context->zesDdiTable.load()->FabricPort.pfnGetLinkType;
     if( nullptr == pfnGetLinkType ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -2096,7 +2096,7 @@ zesFabricPortGetConfig(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnGetConfig = ze_lib::context->zesDdiTable.FabricPort.pfnGetConfig;
+    auto pfnGetConfig = ze_lib::context->zesDdiTable.load()->FabricPort.pfnGetConfig;
     if( nullptr == pfnGetConfig ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -2136,7 +2136,7 @@ zesFabricPortSetConfig(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnSetConfig = ze_lib::context->zesDdiTable.FabricPort.pfnSetConfig;
+    auto pfnSetConfig = ze_lib::context->zesDdiTable.load()->FabricPort.pfnSetConfig;
     if( nullptr == pfnSetConfig ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -2175,7 +2175,7 @@ zesFabricPortGetState(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnGetState = ze_lib::context->zesDdiTable.FabricPort.pfnGetState;
+    auto pfnGetState = ze_lib::context->zesDdiTable.load()->FabricPort.pfnGetState;
     if( nullptr == pfnGetState ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -2215,7 +2215,7 @@ zesFabricPortGetThroughput(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnGetThroughput = ze_lib::context->zesDdiTable.FabricPort.pfnGetThroughput;
+    auto pfnGetThroughput = ze_lib::context->zesDdiTable.load()->FabricPort.pfnGetThroughput;
     if( nullptr == pfnGetThroughput ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -2258,7 +2258,7 @@ zesFabricPortGetFabricErrorCounters(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnGetFabricErrorCounters = ze_lib::context->zesDdiTable.FabricPort.pfnGetFabricErrorCounters;
+    auto pfnGetFabricErrorCounters = ze_lib::context->zesDdiTable.load()->FabricPort.pfnGetFabricErrorCounters;
     if( nullptr == pfnGetFabricErrorCounters ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -2301,7 +2301,7 @@ zesFabricPortGetMultiPortThroughput(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnGetMultiPortThroughput = ze_lib::context->zesDdiTable.FabricPort.pfnGetMultiPortThroughput;
+    auto pfnGetMultiPortThroughput = ze_lib::context->zesDdiTable.load()->FabricPort.pfnGetMultiPortThroughput;
     if( nullptr == pfnGetMultiPortThroughput ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -2349,7 +2349,7 @@ zesDeviceEnumFans(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnEnumFans = ze_lib::context->zesDdiTable.Device.pfnEnumFans;
+    auto pfnEnumFans = ze_lib::context->zesDdiTable.load()->Device.pfnEnumFans;
     if( nullptr == pfnEnumFans ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -2387,7 +2387,7 @@ zesFanGetProperties(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnGetProperties = ze_lib::context->zesDdiTable.Fan.pfnGetProperties;
+    auto pfnGetProperties = ze_lib::context->zesDdiTable.load()->Fan.pfnGetProperties;
     if( nullptr == pfnGetProperties ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -2426,7 +2426,7 @@ zesFanGetConfig(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnGetConfig = ze_lib::context->zesDdiTable.Fan.pfnGetConfig;
+    auto pfnGetConfig = ze_lib::context->zesDdiTable.load()->Fan.pfnGetConfig;
     if( nullptr == pfnGetConfig ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -2464,7 +2464,7 @@ zesFanSetDefaultMode(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnSetDefaultMode = ze_lib::context->zesDdiTable.Fan.pfnSetDefaultMode;
+    auto pfnSetDefaultMode = ze_lib::context->zesDdiTable.load()->Fan.pfnSetDefaultMode;
     if( nullptr == pfnSetDefaultMode ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -2507,7 +2507,7 @@ zesFanSetFixedSpeedMode(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnSetFixedSpeedMode = ze_lib::context->zesDdiTable.Fan.pfnSetFixedSpeedMode;
+    auto pfnSetFixedSpeedMode = ze_lib::context->zesDdiTable.load()->Fan.pfnSetFixedSpeedMode;
     if( nullptr == pfnSetFixedSpeedMode ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -2552,7 +2552,7 @@ zesFanSetSpeedTableMode(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnSetSpeedTableMode = ze_lib::context->zesDdiTable.Fan.pfnSetSpeedTableMode;
+    auto pfnSetSpeedTableMode = ze_lib::context->zesDdiTable.load()->Fan.pfnSetSpeedTableMode;
     if( nullptr == pfnSetSpeedTableMode ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -2597,7 +2597,7 @@ zesFanGetState(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnGetState = ze_lib::context->zesDdiTable.Fan.pfnGetState;
+    auto pfnGetState = ze_lib::context->zesDdiTable.load()->Fan.pfnGetState;
     if( nullptr == pfnGetState ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -2645,7 +2645,7 @@ zesDeviceEnumFirmwares(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnEnumFirmwares = ze_lib::context->zesDdiTable.Device.pfnEnumFirmwares;
+    auto pfnEnumFirmwares = ze_lib::context->zesDdiTable.load()->Device.pfnEnumFirmwares;
     if( nullptr == pfnEnumFirmwares ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -2684,7 +2684,7 @@ zesFirmwareGetProperties(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnGetProperties = ze_lib::context->zesDdiTable.Firmware.pfnGetProperties;
+    auto pfnGetProperties = ze_lib::context->zesDdiTable.load()->Firmware.pfnGetProperties;
     if( nullptr == pfnGetProperties ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -2729,7 +2729,7 @@ zesFirmwareFlash(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnFlash = ze_lib::context->zesDdiTable.Firmware.pfnFlash;
+    auto pfnFlash = ze_lib::context->zesDdiTable.load()->Firmware.pfnFlash;
     if( nullptr == pfnFlash ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -2767,7 +2767,7 @@ zesFirmwareGetFlashProgress(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnGetFlashProgress = ze_lib::context->zesDdiTable.Firmware.pfnGetFlashProgress;
+    auto pfnGetFlashProgress = ze_lib::context->zesDdiTable.load()->Firmware.pfnGetFlashProgress;
     if( nullptr == pfnGetFlashProgress ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -2815,7 +2815,7 @@ zesDeviceEnumFrequencyDomains(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnEnumFrequencyDomains = ze_lib::context->zesDdiTable.Device.pfnEnumFrequencyDomains;
+    auto pfnEnumFrequencyDomains = ze_lib::context->zesDdiTable.load()->Device.pfnEnumFrequencyDomains;
     if( nullptr == pfnEnumFrequencyDomains ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -2853,7 +2853,7 @@ zesFrequencyGetProperties(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnGetProperties = ze_lib::context->zesDdiTable.Frequency.pfnGetProperties;
+    auto pfnGetProperties = ze_lib::context->zesDdiTable.load()->Frequency.pfnGetProperties;
     if( nullptr == pfnGetProperties ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -2902,7 +2902,7 @@ zesFrequencyGetAvailableClocks(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnGetAvailableClocks = ze_lib::context->zesDdiTable.Frequency.pfnGetAvailableClocks;
+    auto pfnGetAvailableClocks = ze_lib::context->zesDdiTable.load()->Frequency.pfnGetAvailableClocks;
     if( nullptr == pfnGetAvailableClocks ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -2941,7 +2941,7 @@ zesFrequencyGetRange(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnGetRange = ze_lib::context->zesDdiTable.Frequency.pfnGetRange;
+    auto pfnGetRange = ze_lib::context->zesDdiTable.load()->Frequency.pfnGetRange;
     if( nullptr == pfnGetRange ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -2982,7 +2982,7 @@ zesFrequencySetRange(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnSetRange = ze_lib::context->zesDdiTable.Frequency.pfnSetRange;
+    auto pfnSetRange = ze_lib::context->zesDdiTable.load()->Frequency.pfnSetRange;
     if( nullptr == pfnSetRange ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -3021,7 +3021,7 @@ zesFrequencyGetState(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnGetState = ze_lib::context->zesDdiTable.Frequency.pfnGetState;
+    auto pfnGetState = ze_lib::context->zesDdiTable.load()->Frequency.pfnGetState;
     if( nullptr == pfnGetState ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -3060,7 +3060,7 @@ zesFrequencyGetThrottleTime(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnGetThrottleTime = ze_lib::context->zesDdiTable.Frequency.pfnGetThrottleTime;
+    auto pfnGetThrottleTime = ze_lib::context->zesDdiTable.load()->Frequency.pfnGetThrottleTime;
     if( nullptr == pfnGetThrottleTime ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -3099,7 +3099,7 @@ zesFrequencyOcGetCapabilities(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnOcGetCapabilities = ze_lib::context->zesDdiTable.Frequency.pfnOcGetCapabilities;
+    auto pfnOcGetCapabilities = ze_lib::context->zesDdiTable.load()->Frequency.pfnOcGetCapabilities;
     if( nullptr == pfnOcGetCapabilities ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -3150,7 +3150,7 @@ zesFrequencyOcGetFrequencyTarget(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnOcGetFrequencyTarget = ze_lib::context->zesDdiTable.Frequency.pfnOcGetFrequencyTarget;
+    auto pfnOcGetFrequencyTarget = ze_lib::context->zesDdiTable.load()->Frequency.pfnOcGetFrequencyTarget;
     if( nullptr == pfnOcGetFrequencyTarget ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -3199,7 +3199,7 @@ zesFrequencyOcSetFrequencyTarget(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnOcSetFrequencyTarget = ze_lib::context->zesDdiTable.Frequency.pfnOcSetFrequencyTarget;
+    auto pfnOcSetFrequencyTarget = ze_lib::context->zesDdiTable.load()->Frequency.pfnOcSetFrequencyTarget;
     if( nullptr == pfnOcSetFrequencyTarget ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -3252,7 +3252,7 @@ zesFrequencyOcGetVoltageTarget(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnOcGetVoltageTarget = ze_lib::context->zesDdiTable.Frequency.pfnOcGetVoltageTarget;
+    auto pfnOcGetVoltageTarget = ze_lib::context->zesDdiTable.load()->Frequency.pfnOcGetVoltageTarget;
     if( nullptr == pfnOcGetVoltageTarget ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -3302,7 +3302,7 @@ zesFrequencyOcSetVoltageTarget(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnOcSetVoltageTarget = ze_lib::context->zesDdiTable.Frequency.pfnOcSetVoltageTarget;
+    auto pfnOcSetVoltageTarget = ze_lib::context->zesDdiTable.load()->Frequency.pfnOcSetVoltageTarget;
     if( nullptr == pfnOcSetVoltageTarget ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -3349,7 +3349,7 @@ zesFrequencyOcSetMode(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnOcSetMode = ze_lib::context->zesDdiTable.Frequency.pfnOcSetMode;
+    auto pfnOcSetMode = ze_lib::context->zesDdiTable.load()->Frequency.pfnOcSetMode;
     if( nullptr == pfnOcSetMode ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -3396,7 +3396,7 @@ zesFrequencyOcGetMode(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnOcGetMode = ze_lib::context->zesDdiTable.Frequency.pfnOcGetMode;
+    auto pfnOcGetMode = ze_lib::context->zesDdiTable.load()->Frequency.pfnOcGetMode;
     if( nullptr == pfnOcGetMode ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -3439,7 +3439,7 @@ zesFrequencyOcGetIccMax(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnOcGetIccMax = ze_lib::context->zesDdiTable.Frequency.pfnOcGetIccMax;
+    auto pfnOcGetIccMax = ze_lib::context->zesDdiTable.load()->Frequency.pfnOcGetIccMax;
     if( nullptr == pfnOcGetIccMax ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -3486,7 +3486,7 @@ zesFrequencyOcSetIccMax(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnOcSetIccMax = ze_lib::context->zesDdiTable.Frequency.pfnOcSetIccMax;
+    auto pfnOcSetIccMax = ze_lib::context->zesDdiTable.load()->Frequency.pfnOcSetIccMax;
     if( nullptr == pfnOcSetIccMax ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -3528,7 +3528,7 @@ zesFrequencyOcGetTjMax(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnOcGetTjMax = ze_lib::context->zesDdiTable.Frequency.pfnOcGetTjMax;
+    auto pfnOcGetTjMax = ze_lib::context->zesDdiTable.load()->Frequency.pfnOcGetTjMax;
     if( nullptr == pfnOcGetTjMax ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -3575,7 +3575,7 @@ zesFrequencyOcSetTjMax(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnOcSetTjMax = ze_lib::context->zesDdiTable.Frequency.pfnOcSetTjMax;
+    auto pfnOcSetTjMax = ze_lib::context->zesDdiTable.load()->Frequency.pfnOcSetTjMax;
     if( nullptr == pfnOcSetTjMax ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -3623,7 +3623,7 @@ zesDeviceEnumLeds(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnEnumLeds = ze_lib::context->zesDdiTable.Device.pfnEnumLeds;
+    auto pfnEnumLeds = ze_lib::context->zesDdiTable.load()->Device.pfnEnumLeds;
     if( nullptr == pfnEnumLeds ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -3661,7 +3661,7 @@ zesLedGetProperties(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnGetProperties = ze_lib::context->zesDdiTable.Led.pfnGetProperties;
+    auto pfnGetProperties = ze_lib::context->zesDdiTable.load()->Led.pfnGetProperties;
     if( nullptr == pfnGetProperties ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -3699,7 +3699,7 @@ zesLedGetState(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnGetState = ze_lib::context->zesDdiTable.Led.pfnGetState;
+    auto pfnGetState = ze_lib::context->zesDdiTable.load()->Led.pfnGetState;
     if( nullptr == pfnGetState ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -3737,7 +3737,7 @@ zesLedSetState(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnSetState = ze_lib::context->zesDdiTable.Led.pfnSetState;
+    auto pfnSetState = ze_lib::context->zesDdiTable.load()->Led.pfnSetState;
     if( nullptr == pfnSetState ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -3779,7 +3779,7 @@ zesLedSetColor(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnSetColor = ze_lib::context->zesDdiTable.Led.pfnSetColor;
+    auto pfnSetColor = ze_lib::context->zesDdiTable.load()->Led.pfnSetColor;
     if( nullptr == pfnSetColor ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -3827,7 +3827,7 @@ zesDeviceEnumMemoryModules(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnEnumMemoryModules = ze_lib::context->zesDdiTable.Device.pfnEnumMemoryModules;
+    auto pfnEnumMemoryModules = ze_lib::context->zesDdiTable.load()->Device.pfnEnumMemoryModules;
     if( nullptr == pfnEnumMemoryModules ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -3865,7 +3865,7 @@ zesMemoryGetProperties(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnGetProperties = ze_lib::context->zesDdiTable.Memory.pfnGetProperties;
+    auto pfnGetProperties = ze_lib::context->zesDdiTable.load()->Memory.pfnGetProperties;
     if( nullptr == pfnGetProperties ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -3903,7 +3903,7 @@ zesMemoryGetState(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnGetState = ze_lib::context->zesDdiTable.Memory.pfnGetState;
+    auto pfnGetState = ze_lib::context->zesDdiTable.load()->Memory.pfnGetState;
     if( nullptr == pfnGetState ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -3944,7 +3944,7 @@ zesMemoryGetBandwidth(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnGetBandwidth = ze_lib::context->zesDdiTable.Memory.pfnGetBandwidth;
+    auto pfnGetBandwidth = ze_lib::context->zesDdiTable.load()->Memory.pfnGetBandwidth;
     if( nullptr == pfnGetBandwidth ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -3994,7 +3994,7 @@ zesDeviceEnumPerformanceFactorDomains(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnEnumPerformanceFactorDomains = ze_lib::context->zesDdiTable.Device.pfnEnumPerformanceFactorDomains;
+    auto pfnEnumPerformanceFactorDomains = ze_lib::context->zesDdiTable.load()->Device.pfnEnumPerformanceFactorDomains;
     if( nullptr == pfnEnumPerformanceFactorDomains ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -4033,7 +4033,7 @@ zesPerformanceFactorGetProperties(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnGetProperties = ze_lib::context->zesDdiTable.PerformanceFactor.pfnGetProperties;
+    auto pfnGetProperties = ze_lib::context->zesDdiTable.load()->PerformanceFactor.pfnGetProperties;
     if( nullptr == pfnGetProperties ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -4072,7 +4072,7 @@ zesPerformanceFactorGetConfig(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnGetConfig = ze_lib::context->zesDdiTable.PerformanceFactor.pfnGetConfig;
+    auto pfnGetConfig = ze_lib::context->zesDdiTable.load()->PerformanceFactor.pfnGetConfig;
     if( nullptr == pfnGetConfig ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -4113,7 +4113,7 @@ zesPerformanceFactorSetConfig(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnSetConfig = ze_lib::context->zesDdiTable.PerformanceFactor.pfnSetConfig;
+    auto pfnSetConfig = ze_lib::context->zesDdiTable.load()->PerformanceFactor.pfnSetConfig;
     if( nullptr == pfnSetConfig ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -4161,7 +4161,7 @@ zesDeviceEnumPowerDomains(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnEnumPowerDomains = ze_lib::context->zesDdiTable.Device.pfnEnumPowerDomains;
+    auto pfnEnumPowerDomains = ze_lib::context->zesDdiTable.load()->Device.pfnEnumPowerDomains;
     if( nullptr == pfnEnumPowerDomains ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -4202,7 +4202,7 @@ zesDeviceGetCardPowerDomain(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnGetCardPowerDomain = ze_lib::context->zesDdiTable.Device.pfnGetCardPowerDomain;
+    auto pfnGetCardPowerDomain = ze_lib::context->zesDdiTable.load()->Device.pfnGetCardPowerDomain;
     if( nullptr == pfnGetCardPowerDomain ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -4240,7 +4240,7 @@ zesPowerGetProperties(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnGetProperties = ze_lib::context->zesDdiTable.Power.pfnGetProperties;
+    auto pfnGetProperties = ze_lib::context->zesDdiTable.load()->Power.pfnGetProperties;
     if( nullptr == pfnGetProperties ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -4279,7 +4279,7 @@ zesPowerGetEnergyCounter(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnGetEnergyCounter = ze_lib::context->zesDdiTable.Power.pfnGetEnergyCounter;
+    auto pfnGetEnergyCounter = ze_lib::context->zesDdiTable.load()->Power.pfnGetEnergyCounter;
     if( nullptr == pfnGetEnergyCounter ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -4321,7 +4321,7 @@ zesPowerGetLimits(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnGetLimits = ze_lib::context->zesDdiTable.Power.pfnGetLimits;
+    auto pfnGetLimits = ze_lib::context->zesDdiTable.load()->Power.pfnGetLimits;
     if( nullptr == pfnGetLimits ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -4367,7 +4367,7 @@ zesPowerSetLimits(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnSetLimits = ze_lib::context->zesDdiTable.Power.pfnSetLimits;
+    auto pfnSetLimits = ze_lib::context->zesDdiTable.load()->Power.pfnSetLimits;
     if( nullptr == pfnSetLimits ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -4410,7 +4410,7 @@ zesPowerGetEnergyThreshold(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnGetEnergyThreshold = ze_lib::context->zesDdiTable.Power.pfnGetEnergyThreshold;
+    auto pfnGetEnergyThreshold = ze_lib::context->zesDdiTable.load()->Power.pfnGetEnergyThreshold;
     if( nullptr == pfnGetEnergyThreshold ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -4466,7 +4466,7 @@ zesPowerSetEnergyThreshold(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnSetEnergyThreshold = ze_lib::context->zesDdiTable.Power.pfnSetEnergyThreshold;
+    auto pfnSetEnergyThreshold = ze_lib::context->zesDdiTable.load()->Power.pfnSetEnergyThreshold;
     if( nullptr == pfnSetEnergyThreshold ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -4514,7 +4514,7 @@ zesDeviceEnumPsus(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnEnumPsus = ze_lib::context->zesDdiTable.Device.pfnEnumPsus;
+    auto pfnEnumPsus = ze_lib::context->zesDdiTable.load()->Device.pfnEnumPsus;
     if( nullptr == pfnEnumPsus ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -4552,7 +4552,7 @@ zesPsuGetProperties(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnGetProperties = ze_lib::context->zesDdiTable.Psu.pfnGetProperties;
+    auto pfnGetProperties = ze_lib::context->zesDdiTable.load()->Psu.pfnGetProperties;
     if( nullptr == pfnGetProperties ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -4590,7 +4590,7 @@ zesPsuGetState(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnGetState = ze_lib::context->zesDdiTable.Psu.pfnGetState;
+    auto pfnGetState = ze_lib::context->zesDdiTable.load()->Psu.pfnGetState;
     if( nullptr == pfnGetState ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -4648,7 +4648,7 @@ zesDeviceEnumRasErrorSets(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnEnumRasErrorSets = ze_lib::context->zesDdiTable.Device.pfnEnumRasErrorSets;
+    auto pfnEnumRasErrorSets = ze_lib::context->zesDdiTable.load()->Device.pfnEnumRasErrorSets;
     if( nullptr == pfnEnumRasErrorSets ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -4688,7 +4688,7 @@ zesRasGetProperties(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnGetProperties = ze_lib::context->zesDdiTable.Ras.pfnGetProperties;
+    auto pfnGetProperties = ze_lib::context->zesDdiTable.load()->Ras.pfnGetProperties;
     if( nullptr == pfnGetProperties ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -4736,7 +4736,7 @@ zesRasGetConfig(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnGetConfig = ze_lib::context->zesDdiTable.Ras.pfnGetConfig;
+    auto pfnGetConfig = ze_lib::context->zesDdiTable.load()->Ras.pfnGetConfig;
     if( nullptr == pfnGetConfig ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -4789,7 +4789,7 @@ zesRasSetConfig(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnSetConfig = ze_lib::context->zesDdiTable.Ras.pfnSetConfig;
+    auto pfnSetConfig = ze_lib::context->zesDdiTable.load()->Ras.pfnSetConfig;
     if( nullptr == pfnSetConfig ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -4833,7 +4833,7 @@ zesRasGetState(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnGetState = ze_lib::context->zesDdiTable.Ras.pfnGetState;
+    auto pfnGetState = ze_lib::context->zesDdiTable.load()->Ras.pfnGetState;
     if( nullptr == pfnGetState ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -4887,7 +4887,7 @@ zesDeviceEnumSchedulers(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnEnumSchedulers = ze_lib::context->zesDdiTable.Device.pfnEnumSchedulers;
+    auto pfnEnumSchedulers = ze_lib::context->zesDdiTable.load()->Device.pfnEnumSchedulers;
     if( nullptr == pfnEnumSchedulers ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -4925,7 +4925,7 @@ zesSchedulerGetProperties(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnGetProperties = ze_lib::context->zesDdiTable.Scheduler.pfnGetProperties;
+    auto pfnGetProperties = ze_lib::context->zesDdiTable.load()->Scheduler.pfnGetProperties;
     if( nullptr == pfnGetProperties ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -4965,7 +4965,7 @@ zesSchedulerGetCurrentMode(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnGetCurrentMode = ze_lib::context->zesDdiTable.Scheduler.pfnGetCurrentMode;
+    auto pfnGetCurrentMode = ze_lib::context->zesDdiTable.load()->Scheduler.pfnGetCurrentMode;
     if( nullptr == pfnGetCurrentMode ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -5007,7 +5007,7 @@ zesSchedulerGetTimeoutModeProperties(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnGetTimeoutModeProperties = ze_lib::context->zesDdiTable.Scheduler.pfnGetTimeoutModeProperties;
+    auto pfnGetTimeoutModeProperties = ze_lib::context->zesDdiTable.load()->Scheduler.pfnGetTimeoutModeProperties;
     if( nullptr == pfnGetTimeoutModeProperties ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -5049,7 +5049,7 @@ zesSchedulerGetTimesliceModeProperties(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnGetTimesliceModeProperties = ze_lib::context->zesDdiTable.Scheduler.pfnGetTimesliceModeProperties;
+    auto pfnGetTimesliceModeProperties = ze_lib::context->zesDdiTable.load()->Scheduler.pfnGetTimesliceModeProperties;
     if( nullptr == pfnGetTimesliceModeProperties ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -5099,7 +5099,7 @@ zesSchedulerSetTimeoutMode(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnSetTimeoutMode = ze_lib::context->zesDdiTable.Scheduler.pfnSetTimeoutMode;
+    auto pfnSetTimeoutMode = ze_lib::context->zesDdiTable.load()->Scheduler.pfnSetTimeoutMode;
     if( nullptr == pfnSetTimeoutMode ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -5148,7 +5148,7 @@ zesSchedulerSetTimesliceMode(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnSetTimesliceMode = ze_lib::context->zesDdiTable.Scheduler.pfnSetTimesliceMode;
+    auto pfnSetTimesliceMode = ze_lib::context->zesDdiTable.load()->Scheduler.pfnSetTimesliceMode;
     if( nullptr == pfnSetTimesliceMode ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -5195,7 +5195,7 @@ zesSchedulerSetExclusiveMode(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnSetExclusiveMode = ze_lib::context->zesDdiTable.Scheduler.pfnSetExclusiveMode;
+    auto pfnSetExclusiveMode = ze_lib::context->zesDdiTable.load()->Scheduler.pfnSetExclusiveMode;
     if( nullptr == pfnSetExclusiveMode ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -5244,7 +5244,7 @@ zesSchedulerSetComputeUnitDebugMode(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnSetComputeUnitDebugMode = ze_lib::context->zesDdiTable.Scheduler.pfnSetComputeUnitDebugMode;
+    auto pfnSetComputeUnitDebugMode = ze_lib::context->zesDdiTable.load()->Scheduler.pfnSetComputeUnitDebugMode;
     if( nullptr == pfnSetComputeUnitDebugMode ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -5292,7 +5292,7 @@ zesDeviceEnumStandbyDomains(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnEnumStandbyDomains = ze_lib::context->zesDdiTable.Device.pfnEnumStandbyDomains;
+    auto pfnEnumStandbyDomains = ze_lib::context->zesDdiTable.load()->Device.pfnEnumStandbyDomains;
     if( nullptr == pfnEnumStandbyDomains ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -5330,7 +5330,7 @@ zesStandbyGetProperties(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnGetProperties = ze_lib::context->zesDdiTable.Standby.pfnGetProperties;
+    auto pfnGetProperties = ze_lib::context->zesDdiTable.load()->Standby.pfnGetProperties;
     if( nullptr == pfnGetProperties ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -5368,7 +5368,7 @@ zesStandbyGetMode(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnGetMode = ze_lib::context->zesDdiTable.Standby.pfnGetMode;
+    auto pfnGetMode = ze_lib::context->zesDdiTable.load()->Standby.pfnGetMode;
     if( nullptr == pfnGetMode ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -5408,7 +5408,7 @@ zesStandbySetMode(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnSetMode = ze_lib::context->zesDdiTable.Standby.pfnSetMode;
+    auto pfnSetMode = ze_lib::context->zesDdiTable.load()->Standby.pfnSetMode;
     if( nullptr == pfnSetMode ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -5456,7 +5456,7 @@ zesDeviceEnumTemperatureSensors(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnEnumTemperatureSensors = ze_lib::context->zesDdiTable.Device.pfnEnumTemperatureSensors;
+    auto pfnEnumTemperatureSensors = ze_lib::context->zesDdiTable.load()->Device.pfnEnumTemperatureSensors;
     if( nullptr == pfnEnumTemperatureSensors ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -5494,7 +5494,7 @@ zesTemperatureGetProperties(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnGetProperties = ze_lib::context->zesDdiTable.Temperature.pfnGetProperties;
+    auto pfnGetProperties = ze_lib::context->zesDdiTable.load()->Temperature.pfnGetProperties;
     if( nullptr == pfnGetProperties ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -5538,7 +5538,7 @@ zesTemperatureGetConfig(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnGetConfig = ze_lib::context->zesDdiTable.Temperature.pfnGetConfig;
+    auto pfnGetConfig = ze_lib::context->zesDdiTable.load()->Temperature.pfnGetConfig;
     if( nullptr == pfnGetConfig ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -5599,7 +5599,7 @@ zesTemperatureSetConfig(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnSetConfig = ze_lib::context->zesDdiTable.Temperature.pfnSetConfig;
+    auto pfnSetConfig = ze_lib::context->zesDdiTable.load()->Temperature.pfnSetConfig;
     if( nullptr == pfnSetConfig ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -5638,7 +5638,7 @@ zesTemperatureGetState(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnGetState = ze_lib::context->zesDdiTable.Temperature.pfnGetState;
+    auto pfnGetState = ze_lib::context->zesDdiTable.load()->Temperature.pfnGetState;
     if( nullptr == pfnGetState ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -5686,7 +5686,7 @@ zesPowerGetLimitsExt(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnGetLimitsExt = ze_lib::context->zesDdiTable.Power.pfnGetLimitsExt;
+    auto pfnGetLimitsExt = ze_lib::context->zesDdiTable.load()->Power.pfnGetLimitsExt;
     if( nullptr == pfnGetLimitsExt ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -5737,7 +5737,7 @@ zesPowerSetLimitsExt(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnSetLimitsExt = ze_lib::context->zesDdiTable.Power.pfnSetLimitsExt;
+    auto pfnSetLimitsExt = ze_lib::context->zesDdiTable.load()->Power.pfnSetLimitsExt;
     if( nullptr == pfnSetLimitsExt ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -5790,7 +5790,7 @@ zesEngineGetActivityExt(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnGetActivityExt = ze_lib::context->zesDdiTable.Engine.pfnGetActivityExt;
+    auto pfnGetActivityExt = ze_lib::context->zesDdiTable.load()->Engine.pfnGetActivityExt;
     if( nullptr == pfnGetActivityExt ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -5838,7 +5838,7 @@ zesRasGetStateExp(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnGetStateExp = ze_lib::context->zesDdiTable.RasExp.pfnGetStateExp;
+    auto pfnGetStateExp = ze_lib::context->zesDdiTable.load()->RasExp.pfnGetStateExp;
     if( nullptr == pfnGetStateExp ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -5883,7 +5883,7 @@ zesRasClearStateExp(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnClearStateExp = ze_lib::context->zesDdiTable.RasExp.pfnClearStateExp;
+    auto pfnClearStateExp = ze_lib::context->zesDdiTable.load()->RasExp.pfnClearStateExp;
     if( nullptr == pfnClearStateExp ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;

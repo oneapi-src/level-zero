@@ -35,7 +35,7 @@ namespace ${x}_lib
         {
             auto getTable = reinterpret_cast<${tbl['pfn']}>(
                 GET_FUNCTION_PTR(loader, "${tbl['export']['name']}") );
-            result = getTable( ${X}_API_VERSION_CURRENT, &${n}DdiTable.${tbl['name']} );
+            result = getTable( ${X}_API_VERSION_CURRENT, &initial${n}DdiTable.${tbl['name']} );
         }
 
     %endfor
@@ -49,7 +49,7 @@ namespace ${x}_lib
     %for tbl in th.get_pfntables(specs, meta, n, tags):
         if( ${X}_RESULT_SUCCESS == result )
         {
-            result = ${tbl['export']['name']}( ${X}_API_VERSION_CURRENT, &${n}DdiTable.${tbl['name']} );
+            result = ${tbl['export']['name']}( ${X}_API_VERSION_CURRENT, &initial${n}DdiTable.${tbl['name']} );
         }
 
     %endfor

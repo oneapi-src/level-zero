@@ -55,7 +55,7 @@ zeInit(
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
 
-        auto pfnInit = ze_lib::context->zeDdiTable.Global.pfnInit;
+        auto pfnInit = ze_lib::context->zeDdiTable.load()->Global.pfnInit;
         if( nullptr == pfnInit ) {
             if(!ze_lib::context->isInitialized)
                 return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -114,7 +114,7 @@ zeDriverGet(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnGet = ze_lib::context->zeDdiTable.Driver.pfnGet;
+    auto pfnGet = ze_lib::context->zeDdiTable.load()->Driver.pfnGet;
     if( nullptr == pfnGet ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -152,7 +152,7 @@ zeDriverGetApiVersion(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnGetApiVersion = ze_lib::context->zeDdiTable.Driver.pfnGetApiVersion;
+    auto pfnGetApiVersion = ze_lib::context->zeDdiTable.load()->Driver.pfnGetApiVersion;
     if( nullptr == pfnGetApiVersion ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -194,7 +194,7 @@ zeDriverGetProperties(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnGetProperties = ze_lib::context->zeDdiTable.Driver.pfnGetProperties;
+    auto pfnGetProperties = ze_lib::context->zeDdiTable.load()->Driver.pfnGetProperties;
     if( nullptr == pfnGetProperties ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -232,7 +232,7 @@ zeDriverGetIpcProperties(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnGetIpcProperties = ze_lib::context->zeDdiTable.Driver.pfnGetIpcProperties;
+    auto pfnGetIpcProperties = ze_lib::context->zeDdiTable.load()->Driver.pfnGetIpcProperties;
     if( nullptr == pfnGetIpcProperties ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -283,7 +283,7 @@ zeDriverGetExtensionProperties(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnGetExtensionProperties = ze_lib::context->zeDdiTable.Driver.pfnGetExtensionProperties;
+    auto pfnGetExtensionProperties = ze_lib::context->zeDdiTable.load()->Driver.pfnGetExtensionProperties;
     if( nullptr == pfnGetExtensionProperties ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -324,7 +324,7 @@ zeDriverGetExtensionFunctionAddress(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnGetExtensionFunctionAddress = ze_lib::context->zeDdiTable.Driver.pfnGetExtensionFunctionAddress;
+    auto pfnGetExtensionFunctionAddress = ze_lib::context->zeDdiTable.load()->Driver.pfnGetExtensionFunctionAddress;
     if( nullptr == pfnGetExtensionFunctionAddress ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -369,7 +369,7 @@ zeDriverGetLastErrorDescription(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnGetLastErrorDescription = ze_lib::context->zeDdiTable.Driver.pfnGetLastErrorDescription;
+    auto pfnGetLastErrorDescription = ze_lib::context->zeDdiTable.load()->Driver.pfnGetLastErrorDescription;
     if( nullptr == pfnGetLastErrorDescription ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -419,7 +419,7 @@ zeDeviceGet(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnGet = ze_lib::context->zeDdiTable.Device.pfnGet;
+    auto pfnGet = ze_lib::context->zeDdiTable.load()->Device.pfnGet;
     if( nullptr == pfnGet ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -465,7 +465,7 @@ zeDeviceGetRootDevice(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnGetRootDevice = ze_lib::context->zeDdiTable.Device.pfnGetRootDevice;
+    auto pfnGetRootDevice = ze_lib::context->zeDdiTable.load()->Device.pfnGetRootDevice;
     if( nullptr == pfnGetRootDevice ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -520,7 +520,7 @@ zeDeviceGetSubDevices(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnGetSubDevices = ze_lib::context->zeDdiTable.Device.pfnGetSubDevices;
+    auto pfnGetSubDevices = ze_lib::context->zeDdiTable.load()->Device.pfnGetSubDevices;
     if( nullptr == pfnGetSubDevices ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -562,7 +562,7 @@ zeDeviceGetProperties(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnGetProperties = ze_lib::context->zeDdiTable.Device.pfnGetProperties;
+    auto pfnGetProperties = ze_lib::context->zeDdiTable.load()->Device.pfnGetProperties;
     if( nullptr == pfnGetProperties ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -604,7 +604,7 @@ zeDeviceGetComputeProperties(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnGetComputeProperties = ze_lib::context->zeDdiTable.Device.pfnGetComputeProperties;
+    auto pfnGetComputeProperties = ze_lib::context->zeDdiTable.load()->Device.pfnGetComputeProperties;
     if( nullptr == pfnGetComputeProperties ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -642,7 +642,7 @@ zeDeviceGetModuleProperties(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnGetModuleProperties = ze_lib::context->zeDdiTable.Device.pfnGetModuleProperties;
+    auto pfnGetModuleProperties = ze_lib::context->zeDdiTable.load()->Device.pfnGetModuleProperties;
     if( nullptr == pfnGetModuleProperties ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -700,7 +700,7 @@ zeDeviceGetCommandQueueGroupProperties(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnGetCommandQueueGroupProperties = ze_lib::context->zeDdiTable.Device.pfnGetCommandQueueGroupProperties;
+    auto pfnGetCommandQueueGroupProperties = ze_lib::context->zeDdiTable.load()->Device.pfnGetCommandQueueGroupProperties;
     if( nullptr == pfnGetCommandQueueGroupProperties ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -757,7 +757,7 @@ zeDeviceGetMemoryProperties(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnGetMemoryProperties = ze_lib::context->zeDdiTable.Device.pfnGetMemoryProperties;
+    auto pfnGetMemoryProperties = ze_lib::context->zeDdiTable.load()->Device.pfnGetMemoryProperties;
     if( nullptr == pfnGetMemoryProperties ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -799,7 +799,7 @@ zeDeviceGetMemoryAccessProperties(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnGetMemoryAccessProperties = ze_lib::context->zeDdiTable.Device.pfnGetMemoryAccessProperties;
+    auto pfnGetMemoryAccessProperties = ze_lib::context->zeDdiTable.load()->Device.pfnGetMemoryAccessProperties;
     if( nullptr == pfnGetMemoryAccessProperties ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -849,7 +849,7 @@ zeDeviceGetCacheProperties(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnGetCacheProperties = ze_lib::context->zeDdiTable.Device.pfnGetCacheProperties;
+    auto pfnGetCacheProperties = ze_lib::context->zeDdiTable.load()->Device.pfnGetCacheProperties;
     if( nullptr == pfnGetCacheProperties ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -888,7 +888,7 @@ zeDeviceGetImageProperties(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnGetImageProperties = ze_lib::context->zeDdiTable.Device.pfnGetImageProperties;
+    auto pfnGetImageProperties = ze_lib::context->zeDdiTable.load()->Device.pfnGetImageProperties;
     if( nullptr == pfnGetImageProperties ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -926,7 +926,7 @@ zeDeviceGetExternalMemoryProperties(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnGetExternalMemoryProperties = ze_lib::context->zeDdiTable.Device.pfnGetExternalMemoryProperties;
+    auto pfnGetExternalMemoryProperties = ze_lib::context->zeDdiTable.load()->Device.pfnGetExternalMemoryProperties;
     if( nullptr == pfnGetExternalMemoryProperties ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -967,7 +967,7 @@ zeDeviceGetP2PProperties(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnGetP2PProperties = ze_lib::context->zeDdiTable.Device.pfnGetP2PProperties;
+    auto pfnGetP2PProperties = ze_lib::context->zeDdiTable.load()->Device.pfnGetP2PProperties;
     if( nullptr == pfnGetP2PProperties ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1021,7 +1021,7 @@ zeDeviceCanAccessPeer(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnCanAccessPeer = ze_lib::context->zeDdiTable.Device.pfnCanAccessPeer;
+    auto pfnCanAccessPeer = ze_lib::context->zeDdiTable.load()->Device.pfnCanAccessPeer;
     if( nullptr == pfnCanAccessPeer ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1063,7 +1063,7 @@ zeDeviceGetStatus(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnGetStatus = ze_lib::context->zeDdiTable.Device.pfnGetStatus;
+    auto pfnGetStatus = ze_lib::context->zeDdiTable.load()->Device.pfnGetStatus;
     if( nullptr == pfnGetStatus ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1106,7 +1106,7 @@ zeDeviceGetGlobalTimestamps(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnGetGlobalTimestamps = ze_lib::context->zeDdiTable.Device.pfnGetGlobalTimestamps;
+    auto pfnGetGlobalTimestamps = ze_lib::context->zeDdiTable.load()->Device.pfnGetGlobalTimestamps;
     if( nullptr == pfnGetGlobalTimestamps ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1150,7 +1150,7 @@ zeContextCreate(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnCreate = ze_lib::context->zeDdiTable.Context.pfnCreate;
+    auto pfnCreate = ze_lib::context->zeDdiTable.load()->Context.pfnCreate;
     if( nullptr == pfnCreate ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1206,7 +1206,7 @@ zeContextCreateEx(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnCreateEx = ze_lib::context->zeDdiTable.Context.pfnCreateEx;
+    auto pfnCreateEx = ze_lib::context->zeDdiTable.load()->Context.pfnCreateEx;
     if( nullptr == pfnCreateEx ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1247,7 +1247,7 @@ zeContextDestroy(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnDestroy = ze_lib::context->zeDdiTable.Context.pfnDestroy;
+    auto pfnDestroy = ze_lib::context->zeDdiTable.load()->Context.pfnDestroy;
     if( nullptr == pfnDestroy ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1287,7 +1287,7 @@ zeContextGetStatus(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnGetStatus = ze_lib::context->zeDdiTable.Context.pfnGetStatus;
+    auto pfnGetStatus = ze_lib::context->zeDdiTable.load()->Context.pfnGetStatus;
     if( nullptr == pfnGetStatus ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1341,7 +1341,7 @@ zeCommandQueueCreate(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnCreate = ze_lib::context->zeDdiTable.CommandQueue.pfnCreate;
+    auto pfnCreate = ze_lib::context->zeDdiTable.load()->CommandQueue.pfnCreate;
     if( nullptr == pfnCreate ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1388,7 +1388,7 @@ zeCommandQueueDestroy(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnDestroy = ze_lib::context->zeDdiTable.CommandQueue.pfnDestroy;
+    auto pfnDestroy = ze_lib::context->zeDdiTable.load()->CommandQueue.pfnDestroy;
     if( nullptr == pfnDestroy ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1452,7 +1452,7 @@ zeCommandQueueExecuteCommandLists(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnExecuteCommandLists = ze_lib::context->zeDdiTable.CommandQueue.pfnExecuteCommandLists;
+    auto pfnExecuteCommandLists = ze_lib::context->zeDdiTable.load()->CommandQueue.pfnExecuteCommandLists;
     if( nullptr == pfnExecuteCommandLists ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1496,7 +1496,7 @@ zeCommandQueueSynchronize(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnSynchronize = ze_lib::context->zeDdiTable.CommandQueue.pfnSynchronize;
+    auto pfnSynchronize = ze_lib::context->zeDdiTable.load()->CommandQueue.pfnSynchronize;
     if( nullptr == pfnSynchronize ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1545,7 +1545,7 @@ zeCommandListCreate(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnCreate = ze_lib::context->zeDdiTable.CommandList.pfnCreate;
+    auto pfnCreate = ze_lib::context->zeDdiTable.load()->CommandList.pfnCreate;
     if( nullptr == pfnCreate ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1602,7 +1602,7 @@ zeCommandListCreateImmediate(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnCreateImmediate = ze_lib::context->zeDdiTable.CommandList.pfnCreateImmediate;
+    auto pfnCreateImmediate = ze_lib::context->zeDdiTable.load()->CommandList.pfnCreateImmediate;
     if( nullptr == pfnCreateImmediate ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1643,7 +1643,7 @@ zeCommandListDestroy(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnDestroy = ze_lib::context->zeDdiTable.CommandList.pfnDestroy;
+    auto pfnDestroy = ze_lib::context->zeDdiTable.load()->CommandList.pfnDestroy;
     if( nullptr == pfnDestroy ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1679,7 +1679,7 @@ zeCommandListClose(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnClose = ze_lib::context->zeDdiTable.CommandList.pfnClose;
+    auto pfnClose = ze_lib::context->zeDdiTable.load()->CommandList.pfnClose;
     if( nullptr == pfnClose ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1718,7 +1718,7 @@ zeCommandListReset(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnReset = ze_lib::context->zeDdiTable.CommandList.pfnReset;
+    auto pfnReset = ze_lib::context->zeDdiTable.load()->CommandList.pfnReset;
     if( nullptr == pfnReset ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1777,7 +1777,7 @@ zeCommandListAppendWriteGlobalTimestamp(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnAppendWriteGlobalTimestamp = ze_lib::context->zeDdiTable.CommandList.pfnAppendWriteGlobalTimestamp;
+    auto pfnAppendWriteGlobalTimestamp = ze_lib::context->zeDdiTable.load()->CommandList.pfnAppendWriteGlobalTimestamp;
     if( nullptr == pfnAppendWriteGlobalTimestamp ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1830,7 +1830,7 @@ zeCommandListHostSynchronize(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnHostSynchronize = ze_lib::context->zeDdiTable.CommandList.pfnHostSynchronize;
+    auto pfnHostSynchronize = ze_lib::context->zeDdiTable.load()->CommandList.pfnHostSynchronize;
     if( nullptr == pfnHostSynchronize ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1888,7 +1888,7 @@ zeCommandListAppendBarrier(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnAppendBarrier = ze_lib::context->zeDdiTable.CommandList.pfnAppendBarrier;
+    auto pfnAppendBarrier = ze_lib::context->zeDdiTable.load()->CommandList.pfnAppendBarrier;
     if( nullptr == pfnAppendBarrier ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1946,7 +1946,7 @@ zeCommandListAppendMemoryRangesBarrier(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnAppendMemoryRangesBarrier = ze_lib::context->zeDdiTable.CommandList.pfnAppendMemoryRangesBarrier;
+    auto pfnAppendMemoryRangesBarrier = ze_lib::context->zeDdiTable.load()->CommandList.pfnAppendMemoryRangesBarrier;
     if( nullptr == pfnAppendMemoryRangesBarrier ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1989,7 +1989,7 @@ zeContextSystemBarrier(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnSystemBarrier = ze_lib::context->zeDdiTable.Context.pfnSystemBarrier;
+    auto pfnSystemBarrier = ze_lib::context->zeDdiTable.load()->Context.pfnSystemBarrier;
     if( nullptr == pfnSystemBarrier ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -2055,7 +2055,7 @@ zeCommandListAppendMemoryCopy(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnAppendMemoryCopy = ze_lib::context->zeDdiTable.CommandList.pfnAppendMemoryCopy;
+    auto pfnAppendMemoryCopy = ze_lib::context->zeDdiTable.load()->CommandList.pfnAppendMemoryCopy;
     if( nullptr == pfnAppendMemoryCopy ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -2125,7 +2125,7 @@ zeCommandListAppendMemoryFill(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnAppendMemoryFill = ze_lib::context->zeDdiTable.CommandList.pfnAppendMemoryFill;
+    auto pfnAppendMemoryFill = ze_lib::context->zeDdiTable.load()->CommandList.pfnAppendMemoryFill;
     if( nullptr == pfnAppendMemoryFill ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -2200,7 +2200,7 @@ zeCommandListAppendMemoryCopyRegion(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnAppendMemoryCopyRegion = ze_lib::context->zeDdiTable.CommandList.pfnAppendMemoryCopyRegion;
+    auto pfnAppendMemoryCopyRegion = ze_lib::context->zeDdiTable.load()->CommandList.pfnAppendMemoryCopyRegion;
     if( nullptr == pfnAppendMemoryCopyRegion ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -2262,7 +2262,7 @@ zeCommandListAppendMemoryCopyFromContext(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnAppendMemoryCopyFromContext = ze_lib::context->zeDdiTable.CommandList.pfnAppendMemoryCopyFromContext;
+    auto pfnAppendMemoryCopyFromContext = ze_lib::context->zeDdiTable.load()->CommandList.pfnAppendMemoryCopyFromContext;
     if( nullptr == pfnAppendMemoryCopyFromContext ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -2320,7 +2320,7 @@ zeCommandListAppendImageCopy(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnAppendImageCopy = ze_lib::context->zeDdiTable.CommandList.pfnAppendImageCopy;
+    auto pfnAppendImageCopy = ze_lib::context->zeDdiTable.load()->CommandList.pfnAppendImageCopy;
     if( nullptr == pfnAppendImageCopy ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -2380,7 +2380,7 @@ zeCommandListAppendImageCopyRegion(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnAppendImageCopyRegion = ze_lib::context->zeDdiTable.CommandList.pfnAppendImageCopyRegion;
+    auto pfnAppendImageCopyRegion = ze_lib::context->zeDdiTable.load()->CommandList.pfnAppendImageCopyRegion;
     if( nullptr == pfnAppendImageCopyRegion ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -2445,7 +2445,7 @@ zeCommandListAppendImageCopyToMemory(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnAppendImageCopyToMemory = ze_lib::context->zeDdiTable.CommandList.pfnAppendImageCopyToMemory;
+    auto pfnAppendImageCopyToMemory = ze_lib::context->zeDdiTable.load()->CommandList.pfnAppendImageCopyToMemory;
     if( nullptr == pfnAppendImageCopyToMemory ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -2510,7 +2510,7 @@ zeCommandListAppendImageCopyFromMemory(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnAppendImageCopyFromMemory = ze_lib::context->zeDdiTable.CommandList.pfnAppendImageCopyFromMemory;
+    auto pfnAppendImageCopyFromMemory = ze_lib::context->zeDdiTable.load()->CommandList.pfnAppendImageCopyFromMemory;
     if( nullptr == pfnAppendImageCopyFromMemory ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -2571,7 +2571,7 @@ zeCommandListAppendMemoryPrefetch(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnAppendMemoryPrefetch = ze_lib::context->zeDdiTable.CommandList.pfnAppendMemoryPrefetch;
+    auto pfnAppendMemoryPrefetch = ze_lib::context->zeDdiTable.load()->CommandList.pfnAppendMemoryPrefetch;
     if( nullptr == pfnAppendMemoryPrefetch ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -2632,7 +2632,7 @@ zeCommandListAppendMemAdvise(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnAppendMemAdvise = ze_lib::context->zeDdiTable.CommandList.pfnAppendMemAdvise;
+    auto pfnAppendMemAdvise = ze_lib::context->zeDdiTable.load()->CommandList.pfnAppendMemAdvise;
     if( nullptr == pfnAppendMemAdvise ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -2685,7 +2685,7 @@ zeEventPoolCreate(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnCreate = ze_lib::context->zeDdiTable.EventPool.pfnCreate;
+    auto pfnCreate = ze_lib::context->zeDdiTable.load()->EventPool.pfnCreate;
     if( nullptr == pfnCreate ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -2728,7 +2728,7 @@ zeEventPoolDestroy(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnDestroy = ze_lib::context->zeDdiTable.EventPool.pfnDestroy;
+    auto pfnDestroy = ze_lib::context->zeDdiTable.load()->EventPool.pfnDestroy;
     if( nullptr == pfnDestroy ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -2781,7 +2781,7 @@ zeEventCreate(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnCreate = ze_lib::context->zeDdiTable.Event.pfnCreate;
+    auto pfnCreate = ze_lib::context->zeDdiTable.load()->Event.pfnCreate;
     if( nullptr == pfnCreate ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -2827,7 +2827,7 @@ zeEventDestroy(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnDestroy = ze_lib::context->zeDdiTable.Event.pfnDestroy;
+    auto pfnDestroy = ze_lib::context->zeDdiTable.load()->Event.pfnDestroy;
     if( nullptr == pfnDestroy ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -2867,7 +2867,7 @@ zeEventPoolGetIpcHandle(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnGetIpcHandle = ze_lib::context->zeDdiTable.EventPool.pfnGetIpcHandle;
+    auto pfnGetIpcHandle = ze_lib::context->zeDdiTable.load()->EventPool.pfnGetIpcHandle;
     if( nullptr == pfnGetIpcHandle ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -2913,7 +2913,7 @@ zeEventPoolPutIpcHandle(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnPutIpcHandle = ze_lib::context->zeDdiTable.EventPool.pfnPutIpcHandle;
+    auto pfnPutIpcHandle = ze_lib::context->zeDdiTable.load()->EventPool.pfnPutIpcHandle;
     if( nullptr == pfnPutIpcHandle ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -2969,7 +2969,7 @@ zeEventPoolOpenIpcHandle(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnOpenIpcHandle = ze_lib::context->zeDdiTable.EventPool.pfnOpenIpcHandle;
+    auto pfnOpenIpcHandle = ze_lib::context->zeDdiTable.load()->EventPool.pfnOpenIpcHandle;
     if( nullptr == pfnOpenIpcHandle ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -3006,7 +3006,7 @@ zeEventPoolCloseIpcHandle(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnCloseIpcHandle = ze_lib::context->zeDdiTable.EventPool.pfnCloseIpcHandle;
+    auto pfnCloseIpcHandle = ze_lib::context->zeDdiTable.load()->EventPool.pfnCloseIpcHandle;
     if( nullptr == pfnCloseIpcHandle ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -3059,7 +3059,7 @@ zeCommandListAppendSignalEvent(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnAppendSignalEvent = ze_lib::context->zeDdiTable.CommandList.pfnAppendSignalEvent;
+    auto pfnAppendSignalEvent = ze_lib::context->zeDdiTable.load()->CommandList.pfnAppendSignalEvent;
     if( nullptr == pfnAppendSignalEvent ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -3105,7 +3105,7 @@ zeCommandListAppendWaitOnEvents(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnAppendWaitOnEvents = ze_lib::context->zeDdiTable.CommandList.pfnAppendWaitOnEvents;
+    auto pfnAppendWaitOnEvents = ze_lib::context->zeDdiTable.load()->CommandList.pfnAppendWaitOnEvents;
     if( nullptr == pfnAppendWaitOnEvents ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -3150,7 +3150,7 @@ zeEventHostSignal(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnHostSignal = ze_lib::context->zeDdiTable.Event.pfnHostSignal;
+    auto pfnHostSignal = ze_lib::context->zeDdiTable.load()->Event.pfnHostSignal;
     if( nullptr == pfnHostSignal ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -3199,7 +3199,7 @@ zeEventHostSynchronize(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnHostSynchronize = ze_lib::context->zeDdiTable.Event.pfnHostSynchronize;
+    auto pfnHostSynchronize = ze_lib::context->zeDdiTable.load()->Event.pfnHostSynchronize;
     if( nullptr == pfnHostSynchronize ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -3242,7 +3242,7 @@ zeEventQueryStatus(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnQueryStatus = ze_lib::context->zeDdiTable.Event.pfnQueryStatus;
+    auto pfnQueryStatus = ze_lib::context->zeDdiTable.load()->Event.pfnQueryStatus;
     if( nullptr == pfnQueryStatus ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -3290,7 +3290,7 @@ zeCommandListAppendEventReset(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnAppendEventReset = ze_lib::context->zeDdiTable.CommandList.pfnAppendEventReset;
+    auto pfnAppendEventReset = ze_lib::context->zeDdiTable.load()->CommandList.pfnAppendEventReset;
     if( nullptr == pfnAppendEventReset ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -3330,7 +3330,7 @@ zeEventHostReset(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnHostReset = ze_lib::context->zeDdiTable.Event.pfnHostReset;
+    auto pfnHostReset = ze_lib::context->zeDdiTable.load()->Event.pfnHostReset;
     if( nullptr == pfnHostReset ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -3376,7 +3376,7 @@ zeEventQueryKernelTimestamp(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnQueryKernelTimestamp = ze_lib::context->zeDdiTable.Event.pfnQueryKernelTimestamp;
+    auto pfnQueryKernelTimestamp = ze_lib::context->zeDdiTable.load()->Event.pfnQueryKernelTimestamp;
     if( nullptr == pfnQueryKernelTimestamp ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -3443,7 +3443,7 @@ zeCommandListAppendQueryKernelTimestamps(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnAppendQueryKernelTimestamps = ze_lib::context->zeDdiTable.CommandList.pfnAppendQueryKernelTimestamps;
+    auto pfnAppendQueryKernelTimestamps = ze_lib::context->zeDdiTable.load()->CommandList.pfnAppendQueryKernelTimestamps;
     if( nullptr == pfnAppendQueryKernelTimestamps ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -3493,7 +3493,7 @@ zeFenceCreate(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnCreate = ze_lib::context->zeDdiTable.Fence.pfnCreate;
+    auto pfnCreate = ze_lib::context->zeDdiTable.load()->Fence.pfnCreate;
     if( nullptr == pfnCreate ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -3538,7 +3538,7 @@ zeFenceDestroy(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnDestroy = ze_lib::context->zeDdiTable.Fence.pfnDestroy;
+    auto pfnDestroy = ze_lib::context->zeDdiTable.load()->Fence.pfnDestroy;
     if( nullptr == pfnDestroy ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -3587,7 +3587,7 @@ zeFenceHostSynchronize(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnHostSynchronize = ze_lib::context->zeDdiTable.Fence.pfnHostSynchronize;
+    auto pfnHostSynchronize = ze_lib::context->zeDdiTable.load()->Fence.pfnHostSynchronize;
     if( nullptr == pfnHostSynchronize ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -3629,7 +3629,7 @@ zeFenceQueryStatus(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnQueryStatus = ze_lib::context->zeDdiTable.Fence.pfnQueryStatus;
+    auto pfnQueryStatus = ze_lib::context->zeDdiTable.load()->Fence.pfnQueryStatus;
     if( nullptr == pfnQueryStatus ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -3668,7 +3668,7 @@ zeFenceReset(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnReset = ze_lib::context->zeDdiTable.Fence.pfnReset;
+    auto pfnReset = ze_lib::context->zeDdiTable.load()->Fence.pfnReset;
     if( nullptr == pfnReset ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -3711,7 +3711,7 @@ zeImageGetProperties(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnGetProperties = ze_lib::context->zeDdiTable.Image.pfnGetProperties;
+    auto pfnGetProperties = ze_lib::context->zeDdiTable.load()->Image.pfnGetProperties;
     if( nullptr == pfnGetProperties ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -3763,7 +3763,7 @@ zeImageCreate(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnCreate = ze_lib::context->zeDdiTable.Image.pfnCreate;
+    auto pfnCreate = ze_lib::context->zeDdiTable.load()->Image.pfnCreate;
     if( nullptr == pfnCreate ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -3804,7 +3804,7 @@ zeImageDestroy(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnDestroy = ze_lib::context->zeDdiTable.Image.pfnDestroy;
+    auto pfnDestroy = ze_lib::context->zeDdiTable.load()->Image.pfnDestroy;
     if( nullptr == pfnDestroy ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -3874,7 +3874,7 @@ zeMemAllocShared(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnAllocShared = ze_lib::context->zeDdiTable.Mem.pfnAllocShared;
+    auto pfnAllocShared = ze_lib::context->zeDdiTable.load()->Mem.pfnAllocShared;
     if( nullptr == pfnAllocShared ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -3932,7 +3932,7 @@ zeMemAllocDevice(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnAllocDevice = ze_lib::context->zeDdiTable.Mem.pfnAllocDevice;
+    auto pfnAllocDevice = ze_lib::context->zeDdiTable.load()->Mem.pfnAllocDevice;
     if( nullptr == pfnAllocDevice ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -3990,7 +3990,7 @@ zeMemAllocHost(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnAllocHost = ze_lib::context->zeDdiTable.Mem.pfnAllocHost;
+    auto pfnAllocHost = ze_lib::context->zeDdiTable.load()->Mem.pfnAllocHost;
     if( nullptr == pfnAllocHost ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -4034,7 +4034,7 @@ zeMemFree(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnFree = ze_lib::context->zeDdiTable.Mem.pfnFree;
+    auto pfnFree = ze_lib::context->zeDdiTable.load()->Mem.pfnFree;
     if( nullptr == pfnFree ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -4079,7 +4079,7 @@ zeMemGetAllocProperties(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnGetAllocProperties = ze_lib::context->zeDdiTable.Mem.pfnGetAllocProperties;
+    auto pfnGetAllocProperties = ze_lib::context->zeDdiTable.load()->Mem.pfnGetAllocProperties;
     if( nullptr == pfnGetAllocProperties ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -4118,7 +4118,7 @@ zeMemGetAddressRange(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnGetAddressRange = ze_lib::context->zeDdiTable.Mem.pfnGetAddressRange;
+    auto pfnGetAddressRange = ze_lib::context->zeDdiTable.load()->Mem.pfnGetAddressRange;
     if( nullptr == pfnGetAddressRange ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -4163,7 +4163,7 @@ zeMemGetIpcHandle(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnGetIpcHandle = ze_lib::context->zeDdiTable.Mem.pfnGetIpcHandle;
+    auto pfnGetIpcHandle = ze_lib::context->zeDdiTable.load()->Mem.pfnGetIpcHandle;
     if( nullptr == pfnGetIpcHandle ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -4206,7 +4206,7 @@ zeMemGetIpcHandleFromFileDescriptorExp(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnGetIpcHandleFromFileDescriptorExp = ze_lib::context->zeDdiTable.MemExp.pfnGetIpcHandleFromFileDescriptorExp;
+    auto pfnGetIpcHandleFromFileDescriptorExp = ze_lib::context->zeDdiTable.load()->MemExp.pfnGetIpcHandleFromFileDescriptorExp;
     if( nullptr == pfnGetIpcHandleFromFileDescriptorExp ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -4247,7 +4247,7 @@ zeMemGetFileDescriptorFromIpcHandleExp(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnGetFileDescriptorFromIpcHandleExp = ze_lib::context->zeDdiTable.MemExp.pfnGetFileDescriptorFromIpcHandleExp;
+    auto pfnGetFileDescriptorFromIpcHandleExp = ze_lib::context->zeDdiTable.load()->MemExp.pfnGetFileDescriptorFromIpcHandleExp;
     if( nullptr == pfnGetFileDescriptorFromIpcHandleExp ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -4292,7 +4292,7 @@ zeMemPutIpcHandle(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnPutIpcHandle = ze_lib::context->zeDdiTable.Mem.pfnPutIpcHandle;
+    auto pfnPutIpcHandle = ze_lib::context->zeDdiTable.load()->Mem.pfnPutIpcHandle;
     if( nullptr == pfnPutIpcHandle ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -4344,7 +4344,7 @@ zeMemOpenIpcHandle(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnOpenIpcHandle = ze_lib::context->zeDdiTable.Mem.pfnOpenIpcHandle;
+    auto pfnOpenIpcHandle = ze_lib::context->zeDdiTable.load()->Mem.pfnOpenIpcHandle;
     if( nullptr == pfnOpenIpcHandle ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -4385,7 +4385,7 @@ zeMemCloseIpcHandle(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnCloseIpcHandle = ze_lib::context->zeDdiTable.Mem.pfnCloseIpcHandle;
+    auto pfnCloseIpcHandle = ze_lib::context->zeDdiTable.load()->Mem.pfnCloseIpcHandle;
     if( nullptr == pfnCloseIpcHandle ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -4446,7 +4446,7 @@ zeMemSetAtomicAccessAttributeExp(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnSetAtomicAccessAttributeExp = ze_lib::context->zeDdiTable.MemExp.pfnSetAtomicAccessAttributeExp;
+    auto pfnSetAtomicAccessAttributeExp = ze_lib::context->zeDdiTable.load()->MemExp.pfnSetAtomicAccessAttributeExp;
     if( nullptr == pfnSetAtomicAccessAttributeExp ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -4491,7 +4491,7 @@ zeMemGetAtomicAccessAttributeExp(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnGetAtomicAccessAttributeExp = ze_lib::context->zeDdiTable.MemExp.pfnGetAtomicAccessAttributeExp;
+    auto pfnGetAtomicAccessAttributeExp = ze_lib::context->zeDdiTable.load()->MemExp.pfnGetAtomicAccessAttributeExp;
     if( nullptr == pfnGetAtomicAccessAttributeExp ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -4550,7 +4550,7 @@ zeModuleCreate(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnCreate = ze_lib::context->zeDdiTable.Module.pfnCreate;
+    auto pfnCreate = ze_lib::context->zeDdiTable.load()->Module.pfnCreate;
     if( nullptr == pfnCreate ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -4593,7 +4593,7 @@ zeModuleDestroy(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnDestroy = ze_lib::context->zeDdiTable.Module.pfnDestroy;
+    auto pfnDestroy = ze_lib::context->zeDdiTable.load()->Module.pfnDestroy;
     if( nullptr == pfnDestroy ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -4658,7 +4658,7 @@ zeModuleDynamicLink(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnDynamicLink = ze_lib::context->zeDdiTable.Module.pfnDynamicLink;
+    auto pfnDynamicLink = ze_lib::context->zeDdiTable.load()->Module.pfnDynamicLink;
     if( nullptr == pfnDynamicLink ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -4699,7 +4699,7 @@ zeModuleBuildLogDestroy(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnDestroy = ze_lib::context->zeDdiTable.ModuleBuildLog.pfnDestroy;
+    auto pfnDestroy = ze_lib::context->zeDdiTable.load()->ModuleBuildLog.pfnDestroy;
     if( nullptr == pfnDestroy ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -4740,7 +4740,7 @@ zeModuleBuildLogGetString(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnGetString = ze_lib::context->zeDdiTable.ModuleBuildLog.pfnGetString;
+    auto pfnGetString = ze_lib::context->zeDdiTable.load()->ModuleBuildLog.pfnGetString;
     if( nullptr == pfnGetString ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -4787,7 +4787,7 @@ zeModuleGetNativeBinary(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnGetNativeBinary = ze_lib::context->zeDdiTable.Module.pfnGetNativeBinary;
+    auto pfnGetNativeBinary = ze_lib::context->zeDdiTable.load()->Module.pfnGetNativeBinary;
     if( nullptr == pfnGetNativeBinary ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -4832,7 +4832,7 @@ zeModuleGetGlobalPointer(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnGetGlobalPointer = ze_lib::context->zeDdiTable.Module.pfnGetGlobalPointer;
+    auto pfnGetGlobalPointer = ze_lib::context->zeDdiTable.load()->Module.pfnGetGlobalPointer;
     if( nullptr == pfnGetGlobalPointer ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -4877,7 +4877,7 @@ zeModuleGetKernelNames(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnGetKernelNames = ze_lib::context->zeDdiTable.Module.pfnGetKernelNames;
+    auto pfnGetKernelNames = ze_lib::context->zeDdiTable.load()->Module.pfnGetKernelNames;
     if( nullptr == pfnGetKernelNames ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -4915,7 +4915,7 @@ zeModuleGetProperties(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnGetProperties = ze_lib::context->zeDdiTable.Module.pfnGetProperties;
+    auto pfnGetProperties = ze_lib::context->zeDdiTable.load()->Module.pfnGetProperties;
     if( nullptr == pfnGetProperties ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -4962,7 +4962,7 @@ zeKernelCreate(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnCreate = ze_lib::context->zeDdiTable.Kernel.pfnCreate;
+    auto pfnCreate = ze_lib::context->zeDdiTable.load()->Kernel.pfnCreate;
     if( nullptr == pfnCreate ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -5003,7 +5003,7 @@ zeKernelDestroy(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnDestroy = ze_lib::context->zeDdiTable.Kernel.pfnDestroy;
+    auto pfnDestroy = ze_lib::context->zeDdiTable.load()->Kernel.pfnDestroy;
     if( nullptr == pfnDestroy ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -5049,7 +5049,7 @@ zeModuleGetFunctionPointer(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnGetFunctionPointer = ze_lib::context->zeDdiTable.Module.pfnGetFunctionPointer;
+    auto pfnGetFunctionPointer = ze_lib::context->zeDdiTable.load()->Module.pfnGetFunctionPointer;
     if( nullptr == pfnGetFunctionPointer ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -5091,7 +5091,7 @@ zeKernelSetGroupSize(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnSetGroupSize = ze_lib::context->zeDdiTable.Kernel.pfnSetGroupSize;
+    auto pfnSetGroupSize = ze_lib::context->zeDdiTable.load()->Kernel.pfnSetGroupSize;
     if( nullptr == pfnSetGroupSize ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -5140,7 +5140,7 @@ zeKernelSuggestGroupSize(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnSuggestGroupSize = ze_lib::context->zeDdiTable.Kernel.pfnSuggestGroupSize;
+    auto pfnSuggestGroupSize = ze_lib::context->zeDdiTable.load()->Kernel.pfnSuggestGroupSize;
     if( nullptr == pfnSuggestGroupSize ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -5178,7 +5178,7 @@ zeKernelSuggestMaxCooperativeGroupCount(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnSuggestMaxCooperativeGroupCount = ze_lib::context->zeDdiTable.Kernel.pfnSuggestMaxCooperativeGroupCount;
+    auto pfnSuggestMaxCooperativeGroupCount = ze_lib::context->zeDdiTable.load()->Kernel.pfnSuggestMaxCooperativeGroupCount;
     if( nullptr == pfnSuggestMaxCooperativeGroupCount ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -5222,7 +5222,7 @@ zeKernelSetArgumentValue(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnSetArgumentValue = ze_lib::context->zeDdiTable.Kernel.pfnSetArgumentValue;
+    auto pfnSetArgumentValue = ze_lib::context->zeDdiTable.load()->Kernel.pfnSetArgumentValue;
     if( nullptr == pfnSetArgumentValue ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -5264,7 +5264,7 @@ zeKernelSetIndirectAccess(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnSetIndirectAccess = ze_lib::context->zeDdiTable.Kernel.pfnSetIndirectAccess;
+    auto pfnSetIndirectAccess = ze_lib::context->zeDdiTable.load()->Kernel.pfnSetIndirectAccess;
     if( nullptr == pfnSetIndirectAccess ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -5303,7 +5303,7 @@ zeKernelGetIndirectAccess(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnGetIndirectAccess = ze_lib::context->zeDdiTable.Kernel.pfnGetIndirectAccess;
+    auto pfnGetIndirectAccess = ze_lib::context->zeDdiTable.load()->Kernel.pfnGetIndirectAccess;
     if( nullptr == pfnGetIndirectAccess ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -5351,7 +5351,7 @@ zeKernelGetSourceAttributes(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnGetSourceAttributes = ze_lib::context->zeDdiTable.Kernel.pfnGetSourceAttributes;
+    auto pfnGetSourceAttributes = ze_lib::context->zeDdiTable.load()->Kernel.pfnGetSourceAttributes;
     if( nullptr == pfnGetSourceAttributes ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -5394,7 +5394,7 @@ zeKernelSetCacheConfig(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnSetCacheConfig = ze_lib::context->zeDdiTable.Kernel.pfnSetCacheConfig;
+    auto pfnSetCacheConfig = ze_lib::context->zeDdiTable.load()->Kernel.pfnSetCacheConfig;
     if( nullptr == pfnSetCacheConfig ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -5432,7 +5432,7 @@ zeKernelGetProperties(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnGetProperties = ze_lib::context->zeDdiTable.Kernel.pfnGetProperties;
+    auto pfnGetProperties = ze_lib::context->zeDdiTable.load()->Kernel.pfnGetProperties;
     if( nullptr == pfnGetProperties ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -5475,7 +5475,7 @@ zeKernelGetName(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnGetName = ze_lib::context->zeDdiTable.Kernel.pfnGetName;
+    auto pfnGetName = ze_lib::context->zeDdiTable.load()->Kernel.pfnGetName;
     if( nullptr == pfnGetName ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -5530,7 +5530,7 @@ zeCommandListAppendLaunchKernel(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnAppendLaunchKernel = ze_lib::context->zeDdiTable.CommandList.pfnAppendLaunchKernel;
+    auto pfnAppendLaunchKernel = ze_lib::context->zeDdiTable.load()->CommandList.pfnAppendLaunchKernel;
     if( nullptr == pfnAppendLaunchKernel ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -5589,7 +5589,7 @@ zeCommandListAppendLaunchCooperativeKernel(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnAppendLaunchCooperativeKernel = ze_lib::context->zeDdiTable.CommandList.pfnAppendLaunchCooperativeKernel;
+    auto pfnAppendLaunchCooperativeKernel = ze_lib::context->zeDdiTable.load()->CommandList.pfnAppendLaunchCooperativeKernel;
     if( nullptr == pfnAppendLaunchCooperativeKernel ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -5650,7 +5650,7 @@ zeCommandListAppendLaunchKernelIndirect(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnAppendLaunchKernelIndirect = ze_lib::context->zeDdiTable.CommandList.pfnAppendLaunchKernelIndirect;
+    auto pfnAppendLaunchKernelIndirect = ze_lib::context->zeDdiTable.load()->CommandList.pfnAppendLaunchKernelIndirect;
     if( nullptr == pfnAppendLaunchKernelIndirect ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -5718,7 +5718,7 @@ zeCommandListAppendLaunchMultipleKernelsIndirect(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnAppendLaunchMultipleKernelsIndirect = ze_lib::context->zeDdiTable.CommandList.pfnAppendLaunchMultipleKernelsIndirect;
+    auto pfnAppendLaunchMultipleKernelsIndirect = ze_lib::context->zeDdiTable.load()->CommandList.pfnAppendLaunchMultipleKernelsIndirect;
     if( nullptr == pfnAppendLaunchMultipleKernelsIndirect ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -5761,7 +5761,7 @@ zeContextMakeMemoryResident(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnMakeMemoryResident = ze_lib::context->zeDdiTable.Context.pfnMakeMemoryResident;
+    auto pfnMakeMemoryResident = ze_lib::context->zeDdiTable.load()->Context.pfnMakeMemoryResident;
     if( nullptr == pfnMakeMemoryResident ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -5806,7 +5806,7 @@ zeContextEvictMemory(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnEvictMemory = ze_lib::context->zeDdiTable.Context.pfnEvictMemory;
+    auto pfnEvictMemory = ze_lib::context->zeDdiTable.load()->Context.pfnEvictMemory;
     if( nullptr == pfnEvictMemory ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -5847,7 +5847,7 @@ zeContextMakeImageResident(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnMakeImageResident = ze_lib::context->zeDdiTable.Context.pfnMakeImageResident;
+    auto pfnMakeImageResident = ze_lib::context->zeDdiTable.load()->Context.pfnMakeImageResident;
     if( nullptr == pfnMakeImageResident ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -5890,7 +5890,7 @@ zeContextEvictImage(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnEvictImage = ze_lib::context->zeDdiTable.Context.pfnEvictImage;
+    auto pfnEvictImage = ze_lib::context->zeDdiTable.load()->Context.pfnEvictImage;
     if( nullptr == pfnEvictImage ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -5937,7 +5937,7 @@ zeSamplerCreate(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnCreate = ze_lib::context->zeDdiTable.Sampler.pfnCreate;
+    auto pfnCreate = ze_lib::context->zeDdiTable.load()->Sampler.pfnCreate;
     if( nullptr == pfnCreate ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -5978,7 +5978,7 @@ zeSamplerDestroy(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnDestroy = ze_lib::context->zeDdiTable.Sampler.pfnDestroy;
+    auto pfnDestroy = ze_lib::context->zeDdiTable.load()->Sampler.pfnDestroy;
     if( nullptr == pfnDestroy ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -6030,7 +6030,7 @@ zeVirtualMemReserve(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnReserve = ze_lib::context->zeDdiTable.VirtualMem.pfnReserve;
+    auto pfnReserve = ze_lib::context->zeDdiTable.load()->VirtualMem.pfnReserve;
     if( nullptr == pfnReserve ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -6075,7 +6075,7 @@ zeVirtualMemFree(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnFree = ze_lib::context->zeDdiTable.VirtualMem.pfnFree;
+    auto pfnFree = ze_lib::context->zeDdiTable.load()->VirtualMem.pfnFree;
     if( nullptr == pfnFree ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -6120,7 +6120,7 @@ zeVirtualMemQueryPageSize(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnQueryPageSize = ze_lib::context->zeDdiTable.VirtualMem.pfnQueryPageSize;
+    auto pfnQueryPageSize = ze_lib::context->zeDdiTable.load()->VirtualMem.pfnQueryPageSize;
     if( nullptr == pfnQueryPageSize ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -6170,7 +6170,7 @@ zePhysicalMemCreate(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnCreate = ze_lib::context->zeDdiTable.PhysicalMem.pfnCreate;
+    auto pfnCreate = ze_lib::context->zeDdiTable.load()->PhysicalMem.pfnCreate;
     if( nullptr == pfnCreate ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -6211,7 +6211,7 @@ zePhysicalMemDestroy(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnDestroy = ze_lib::context->zeDdiTable.PhysicalMem.pfnDestroy;
+    auto pfnDestroy = ze_lib::context->zeDdiTable.load()->PhysicalMem.pfnDestroy;
     if( nullptr == pfnDestroy ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -6271,7 +6271,7 @@ zeVirtualMemMap(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnMap = ze_lib::context->zeDdiTable.VirtualMem.pfnMap;
+    auto pfnMap = ze_lib::context->zeDdiTable.load()->VirtualMem.pfnMap;
     if( nullptr == pfnMap ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -6318,7 +6318,7 @@ zeVirtualMemUnmap(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnUnmap = ze_lib::context->zeDdiTable.VirtualMem.pfnUnmap;
+    auto pfnUnmap = ze_lib::context->zeDdiTable.load()->VirtualMem.pfnUnmap;
     if( nullptr == pfnUnmap ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -6367,7 +6367,7 @@ zeVirtualMemSetAccessAttribute(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnSetAccessAttribute = ze_lib::context->zeDdiTable.VirtualMem.pfnSetAccessAttribute;
+    auto pfnSetAccessAttribute = ze_lib::context->zeDdiTable.load()->VirtualMem.pfnSetAccessAttribute;
     if( nullptr == pfnSetAccessAttribute ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -6419,7 +6419,7 @@ zeVirtualMemGetAccessAttribute(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnGetAccessAttribute = ze_lib::context->zeDdiTable.VirtualMem.pfnGetAccessAttribute;
+    auto pfnGetAccessAttribute = ze_lib::context->zeDdiTable.load()->VirtualMem.pfnGetAccessAttribute;
     if( nullptr == pfnGetAccessAttribute ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -6460,7 +6460,7 @@ zeKernelSetGlobalOffsetExp(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnSetGlobalOffsetExp = ze_lib::context->zeDdiTable.KernelExp.pfnSetGlobalOffsetExp;
+    auto pfnSetGlobalOffsetExp = ze_lib::context->zeDdiTable.load()->KernelExp.pfnSetGlobalOffsetExp;
     if( nullptr == pfnSetGlobalOffsetExp ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -6504,7 +6504,7 @@ zeDeviceReserveCacheExt(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnReserveCacheExt = ze_lib::context->zeDdiTable.Device.pfnReserveCacheExt;
+    auto pfnReserveCacheExt = ze_lib::context->zeDdiTable.load()->Device.pfnReserveCacheExt;
     if( nullptr == pfnReserveCacheExt ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -6546,7 +6546,7 @@ zeDeviceSetCacheAdviceExt(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnSetCacheAdviceExt = ze_lib::context->zeDdiTable.Device.pfnSetCacheAdviceExt;
+    auto pfnSetCacheAdviceExt = ze_lib::context->zeDdiTable.load()->Device.pfnSetCacheAdviceExt;
     if( nullptr == pfnSetCacheAdviceExt ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -6605,7 +6605,7 @@ zeEventQueryTimestampsExp(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnQueryTimestampsExp = ze_lib::context->zeDdiTable.EventExp.pfnQueryTimestampsExp;
+    auto pfnQueryTimestampsExp = ze_lib::context->zeDdiTable.load()->EventExp.pfnQueryTimestampsExp;
     if( nullptr == pfnQueryTimestampsExp ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -6649,7 +6649,7 @@ zeImageGetMemoryPropertiesExp(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnGetMemoryPropertiesExp = ze_lib::context->zeDdiTable.ImageExp.pfnGetMemoryPropertiesExp;
+    auto pfnGetMemoryPropertiesExp = ze_lib::context->zeDdiTable.load()->ImageExp.pfnGetMemoryPropertiesExp;
     if( nullptr == pfnGetMemoryPropertiesExp ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -6710,7 +6710,7 @@ zeImageViewCreateExt(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnViewCreateExt = ze_lib::context->zeDdiTable.Image.pfnViewCreateExt;
+    auto pfnViewCreateExt = ze_lib::context->zeDdiTable.load()->Image.pfnViewCreateExt;
     if( nullptr == pfnViewCreateExt ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -6774,7 +6774,7 @@ zeImageViewCreateExp(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnViewCreateExp = ze_lib::context->zeDdiTable.ImageExp.pfnViewCreateExp;
+    auto pfnViewCreateExp = ze_lib::context->zeDdiTable.load()->ImageExp.pfnViewCreateExp;
     if( nullptr == pfnViewCreateExp ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -6821,7 +6821,7 @@ zeKernelSchedulingHintExp(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnSchedulingHintExp = ze_lib::context->zeDdiTable.KernelExp.pfnSchedulingHintExp;
+    auto pfnSchedulingHintExp = ze_lib::context->zeDdiTable.load()->KernelExp.pfnSchedulingHintExp;
     if( nullptr == pfnSchedulingHintExp ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -6863,7 +6863,7 @@ zeDevicePciGetPropertiesExt(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnPciGetPropertiesExt = ze_lib::context->zeDdiTable.Device.pfnPciGetPropertiesExt;
+    auto pfnPciGetPropertiesExt = ze_lib::context->zeDdiTable.load()->Device.pfnPciGetPropertiesExt;
     if( nullptr == pfnPciGetPropertiesExt ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -6942,7 +6942,7 @@ zeCommandListAppendImageCopyToMemoryExt(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnAppendImageCopyToMemoryExt = ze_lib::context->zeDdiTable.CommandList.pfnAppendImageCopyToMemoryExt;
+    auto pfnAppendImageCopyToMemoryExt = ze_lib::context->zeDdiTable.load()->CommandList.pfnAppendImageCopyToMemoryExt;
     if( nullptr == pfnAppendImageCopyToMemoryExt ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -7021,7 +7021,7 @@ zeCommandListAppendImageCopyFromMemoryExt(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnAppendImageCopyFromMemoryExt = ze_lib::context->zeDdiTable.CommandList.pfnAppendImageCopyFromMemoryExt;
+    auto pfnAppendImageCopyFromMemoryExt = ze_lib::context->zeDdiTable.load()->CommandList.pfnAppendImageCopyFromMemoryExt;
     if( nullptr == pfnAppendImageCopyFromMemoryExt ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -7060,7 +7060,7 @@ zeImageGetAllocPropertiesExt(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnGetAllocPropertiesExt = ze_lib::context->zeDdiTable.Image.pfnGetAllocPropertiesExt;
+    auto pfnGetAllocPropertiesExt = ze_lib::context->zeDdiTable.load()->Image.pfnGetAllocPropertiesExt;
     if( nullptr == pfnGetAllocPropertiesExt ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -7108,7 +7108,7 @@ zeModuleInspectLinkageExt(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnInspectLinkageExt = ze_lib::context->zeDdiTable.Module.pfnInspectLinkageExt;
+    auto pfnInspectLinkageExt = ze_lib::context->zeDdiTable.load()->Module.pfnInspectLinkageExt;
     if( nullptr == pfnInspectLinkageExt ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -7153,7 +7153,7 @@ zeMemFreeExt(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnFreeExt = ze_lib::context->zeDdiTable.Mem.pfnFreeExt;
+    auto pfnFreeExt = ze_lib::context->zeDdiTable.load()->Mem.pfnFreeExt;
     if( nullptr == pfnFreeExt ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -7201,7 +7201,7 @@ zeFabricVertexGetExp(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnGetExp = ze_lib::context->zeDdiTable.FabricVertexExp.pfnGetExp;
+    auto pfnGetExp = ze_lib::context->zeDdiTable.load()->FabricVertexExp.pfnGetExp;
     if( nullptr == pfnGetExp ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -7251,7 +7251,7 @@ zeFabricVertexGetSubVerticesExp(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnGetSubVerticesExp = ze_lib::context->zeDdiTable.FabricVertexExp.pfnGetSubVerticesExp;
+    auto pfnGetSubVerticesExp = ze_lib::context->zeDdiTable.load()->FabricVertexExp.pfnGetSubVerticesExp;
     if( nullptr == pfnGetSubVerticesExp ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -7289,7 +7289,7 @@ zeFabricVertexGetPropertiesExp(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnGetPropertiesExp = ze_lib::context->zeDdiTable.FabricVertexExp.pfnGetPropertiesExp;
+    auto pfnGetPropertiesExp = ze_lib::context->zeDdiTable.load()->FabricVertexExp.pfnGetPropertiesExp;
     if( nullptr == pfnGetPropertiesExp ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -7331,7 +7331,7 @@ zeFabricVertexGetDeviceExp(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnGetDeviceExp = ze_lib::context->zeDdiTable.FabricVertexExp.pfnGetDeviceExp;
+    auto pfnGetDeviceExp = ze_lib::context->zeDdiTable.load()->FabricVertexExp.pfnGetDeviceExp;
     if( nullptr == pfnGetDeviceExp ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -7371,7 +7371,7 @@ zeDeviceGetFabricVertexExp(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnGetFabricVertexExp = ze_lib::context->zeDdiTable.DeviceExp.pfnGetFabricVertexExp;
+    auto pfnGetFabricVertexExp = ze_lib::context->zeDdiTable.load()->DeviceExp.pfnGetFabricVertexExp;
     if( nullptr == pfnGetFabricVertexExp ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -7421,7 +7421,7 @@ zeFabricEdgeGetExp(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnGetExp = ze_lib::context->zeDdiTable.FabricEdgeExp.pfnGetExp;
+    auto pfnGetExp = ze_lib::context->zeDdiTable.load()->FabricEdgeExp.pfnGetExp;
     if( nullptr == pfnGetExp ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -7463,7 +7463,7 @@ zeFabricEdgeGetVerticesExp(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnGetVerticesExp = ze_lib::context->zeDdiTable.FabricEdgeExp.pfnGetVerticesExp;
+    auto pfnGetVerticesExp = ze_lib::context->zeDdiTable.load()->FabricEdgeExp.pfnGetVerticesExp;
     if( nullptr == pfnGetVerticesExp ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -7501,7 +7501,7 @@ zeFabricEdgeGetPropertiesExp(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnGetPropertiesExp = ze_lib::context->zeDdiTable.FabricEdgeExp.pfnGetPropertiesExp;
+    auto pfnGetPropertiesExp = ze_lib::context->zeDdiTable.load()->FabricEdgeExp.pfnGetPropertiesExp;
     if( nullptr == pfnGetPropertiesExp ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -7573,7 +7573,7 @@ zeEventQueryKernelTimestampsExt(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnQueryKernelTimestampsExt = ze_lib::context->zeDdiTable.Event.pfnQueryKernelTimestampsExt;
+    auto pfnQueryKernelTimestampsExt = ze_lib::context->zeDdiTable.load()->Event.pfnQueryKernelTimestampsExt;
     if( nullptr == pfnQueryKernelTimestampsExt ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -7617,7 +7617,7 @@ zeRTASBuilderCreateExp(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnCreateExp = ze_lib::context->zeDdiTable.RTASBuilderExp.pfnCreateExp;
+    auto pfnCreateExp = ze_lib::context->zeDdiTable.load()->RTASBuilderExp.pfnCreateExp;
     if( nullptr == pfnCreateExp ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -7661,7 +7661,7 @@ zeRTASBuilderGetBuildPropertiesExp(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnGetBuildPropertiesExp = ze_lib::context->zeDdiTable.RTASBuilderExp.pfnGetBuildPropertiesExp;
+    auto pfnGetBuildPropertiesExp = ze_lib::context->zeDdiTable.load()->RTASBuilderExp.pfnGetBuildPropertiesExp;
     if( nullptr == pfnGetBuildPropertiesExp ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -7705,7 +7705,7 @@ zeDriverRTASFormatCompatibilityCheckExp(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnRTASFormatCompatibilityCheckExp = ze_lib::context->zeDdiTable.DriverExp.pfnRTASFormatCompatibilityCheckExp;
+    auto pfnRTASFormatCompatibilityCheckExp = ze_lib::context->zeDdiTable.load()->DriverExp.pfnRTASFormatCompatibilityCheckExp;
     if( nullptr == pfnRTASFormatCompatibilityCheckExp ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -7809,7 +7809,7 @@ zeRTASBuilderBuildExp(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnBuildExp = ze_lib::context->zeDdiTable.RTASBuilderExp.pfnBuildExp;
+    auto pfnBuildExp = ze_lib::context->zeDdiTable.load()->RTASBuilderExp.pfnBuildExp;
     if( nullptr == pfnBuildExp ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -7848,7 +7848,7 @@ zeRTASBuilderDestroyExp(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnDestroyExp = ze_lib::context->zeDdiTable.RTASBuilderExp.pfnDestroyExp;
+    auto pfnDestroyExp = ze_lib::context->zeDdiTable.load()->RTASBuilderExp.pfnDestroyExp;
     if( nullptr == pfnDestroyExp ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -7889,7 +7889,7 @@ zeRTASParallelOperationCreateExp(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnCreateExp = ze_lib::context->zeDdiTable.RTASParallelOperationExp.pfnCreateExp;
+    auto pfnCreateExp = ze_lib::context->zeDdiTable.load()->RTASParallelOperationExp.pfnCreateExp;
     if( nullptr == pfnCreateExp ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -7933,7 +7933,7 @@ zeRTASParallelOperationGetPropertiesExp(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnGetPropertiesExp = ze_lib::context->zeDdiTable.RTASParallelOperationExp.pfnGetPropertiesExp;
+    auto pfnGetPropertiesExp = ze_lib::context->zeDdiTable.load()->RTASParallelOperationExp.pfnGetPropertiesExp;
     if( nullptr == pfnGetPropertiesExp ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -7968,7 +7968,7 @@ zeRTASParallelOperationJoinExp(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnJoinExp = ze_lib::context->zeDdiTable.RTASParallelOperationExp.pfnJoinExp;
+    auto pfnJoinExp = ze_lib::context->zeDdiTable.load()->RTASParallelOperationExp.pfnJoinExp;
     if( nullptr == pfnJoinExp ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -8008,7 +8008,7 @@ zeRTASParallelOperationDestroyExp(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnDestroyExp = ze_lib::context->zeDdiTable.RTASParallelOperationExp.pfnDestroyExp;
+    auto pfnDestroyExp = ze_lib::context->zeDdiTable.load()->RTASParallelOperationExp.pfnDestroyExp;
     if( nullptr == pfnDestroyExp ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;

@@ -39,7 +39,7 @@ void print_loader_versions(){
 //////////////////////////////////////////////////////////////////////////
 int main( int argc, char *argv[] )
 {
-
+    bool tracing_runtime_enabled = false;
     if( argparse( argc, argv, "-null", "--enable_null_driver" ) )
     {
         putenv_safe( const_cast<char *>( "ZE_ENABLE_NULL_DRIVER=1" ) );
@@ -57,6 +57,10 @@ int main( int argc, char *argv[] )
     {
         putenv_safe( const_cast<char *>( "ZE_ENABLE_TRACING_LAYER=1" ) );
     }
+    if( argparse( argc, argv, "-tracerun", "--enable_tracing_layer_runtime" ) )
+    {
+        tracing_runtime_enabled = true;
+    }
 
     ze_result_t status;
     const ze_device_type_t type = ZE_DEVICE_TYPE_GPU;
@@ -67,6 +71,15 @@ int main( int argc, char *argv[] )
     {
 
         print_loader_versions();
+
+        if (tracing_runtime_enabled) {
+            std::cout << "Enabling Tracing Layer after init" << std::endl;
+            status = zelEnableTracingLayer();
+            if(status != ZE_RESULT_SUCCESS) {
+                std::cout << "zelEnableTracingLayer Failed with return code: " << to_string(status) << std::endl;
+                exit(1);
+            }
+        }
 
         uint32_t driverCount = 0;
         status = zeDriverGet(&driverCount, nullptr);
@@ -153,6 +166,15 @@ int main( int argc, char *argv[] )
     zeCommandListDestroy(command_list);
     zeEventDestroy(event);
     zeEventPoolDestroy(event_pool);
+
+    if (tracing_runtime_enabled) {
+        std::cout << "Disable Tracing Layer after init" << std::endl;
+        status = zelDisableTracingLayer();
+        if(status != ZE_RESULT_SUCCESS) {
+            std::cout << "zelDisableTracingLayer Failed with return code: " << to_string(status) << std::endl;
+            exit(1);
+        }
+    }
 
     return 0;
 }

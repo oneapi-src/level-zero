@@ -25,140 +25,140 @@ namespace ze_lib
         {
             auto getTable = reinterpret_cast<zes_pfnGetGlobalProcAddrTable_t>(
                 GET_FUNCTION_PTR(loader, "zesGetGlobalProcAddrTable") );
-            result = getTable( ZE_API_VERSION_CURRENT, &zesDdiTable.Global );
+            result = getTable( ZE_API_VERSION_CURRENT, &initialzesDdiTable.Global );
         }
 
         if( ZE_RESULT_SUCCESS == result )
         {
             auto getTable = reinterpret_cast<zes_pfnGetDeviceProcAddrTable_t>(
                 GET_FUNCTION_PTR(loader, "zesGetDeviceProcAddrTable") );
-            result = getTable( ZE_API_VERSION_CURRENT, &zesDdiTable.Device );
+            result = getTable( ZE_API_VERSION_CURRENT, &initialzesDdiTable.Device );
         }
 
         if( ZE_RESULT_SUCCESS == result )
         {
             auto getTable = reinterpret_cast<zes_pfnGetDriverProcAddrTable_t>(
                 GET_FUNCTION_PTR(loader, "zesGetDriverProcAddrTable") );
-            result = getTable( ZE_API_VERSION_CURRENT, &zesDdiTable.Driver );
+            result = getTable( ZE_API_VERSION_CURRENT, &initialzesDdiTable.Driver );
         }
 
         if( ZE_RESULT_SUCCESS == result )
         {
             auto getTable = reinterpret_cast<zes_pfnGetDiagnosticsProcAddrTable_t>(
                 GET_FUNCTION_PTR(loader, "zesGetDiagnosticsProcAddrTable") );
-            result = getTable( ZE_API_VERSION_CURRENT, &zesDdiTable.Diagnostics );
+            result = getTable( ZE_API_VERSION_CURRENT, &initialzesDdiTable.Diagnostics );
         }
 
         if( ZE_RESULT_SUCCESS == result )
         {
             auto getTable = reinterpret_cast<zes_pfnGetEngineProcAddrTable_t>(
                 GET_FUNCTION_PTR(loader, "zesGetEngineProcAddrTable") );
-            result = getTable( ZE_API_VERSION_CURRENT, &zesDdiTable.Engine );
+            result = getTable( ZE_API_VERSION_CURRENT, &initialzesDdiTable.Engine );
         }
 
         if( ZE_RESULT_SUCCESS == result )
         {
             auto getTable = reinterpret_cast<zes_pfnGetFabricPortProcAddrTable_t>(
                 GET_FUNCTION_PTR(loader, "zesGetFabricPortProcAddrTable") );
-            result = getTable( ZE_API_VERSION_CURRENT, &zesDdiTable.FabricPort );
+            result = getTable( ZE_API_VERSION_CURRENT, &initialzesDdiTable.FabricPort );
         }
 
         if( ZE_RESULT_SUCCESS == result )
         {
             auto getTable = reinterpret_cast<zes_pfnGetFanProcAddrTable_t>(
                 GET_FUNCTION_PTR(loader, "zesGetFanProcAddrTable") );
-            result = getTable( ZE_API_VERSION_CURRENT, &zesDdiTable.Fan );
+            result = getTable( ZE_API_VERSION_CURRENT, &initialzesDdiTable.Fan );
         }
 
         if( ZE_RESULT_SUCCESS == result )
         {
             auto getTable = reinterpret_cast<zes_pfnGetFirmwareProcAddrTable_t>(
                 GET_FUNCTION_PTR(loader, "zesGetFirmwareProcAddrTable") );
-            result = getTable( ZE_API_VERSION_CURRENT, &zesDdiTable.Firmware );
+            result = getTable( ZE_API_VERSION_CURRENT, &initialzesDdiTable.Firmware );
         }
 
         if( ZE_RESULT_SUCCESS == result )
         {
             auto getTable = reinterpret_cast<zes_pfnGetFrequencyProcAddrTable_t>(
                 GET_FUNCTION_PTR(loader, "zesGetFrequencyProcAddrTable") );
-            result = getTable( ZE_API_VERSION_CURRENT, &zesDdiTable.Frequency );
+            result = getTable( ZE_API_VERSION_CURRENT, &initialzesDdiTable.Frequency );
         }
 
         if( ZE_RESULT_SUCCESS == result )
         {
             auto getTable = reinterpret_cast<zes_pfnGetLedProcAddrTable_t>(
                 GET_FUNCTION_PTR(loader, "zesGetLedProcAddrTable") );
-            result = getTable( ZE_API_VERSION_CURRENT, &zesDdiTable.Led );
+            result = getTable( ZE_API_VERSION_CURRENT, &initialzesDdiTable.Led );
         }
 
         if( ZE_RESULT_SUCCESS == result )
         {
             auto getTable = reinterpret_cast<zes_pfnGetMemoryProcAddrTable_t>(
                 GET_FUNCTION_PTR(loader, "zesGetMemoryProcAddrTable") );
-            result = getTable( ZE_API_VERSION_CURRENT, &zesDdiTable.Memory );
+            result = getTable( ZE_API_VERSION_CURRENT, &initialzesDdiTable.Memory );
         }
 
         if( ZE_RESULT_SUCCESS == result )
         {
             auto getTable = reinterpret_cast<zes_pfnGetOverclockProcAddrTable_t>(
                 GET_FUNCTION_PTR(loader, "zesGetOverclockProcAddrTable") );
-            result = getTable( ZE_API_VERSION_CURRENT, &zesDdiTable.Overclock );
+            result = getTable( ZE_API_VERSION_CURRENT, &initialzesDdiTable.Overclock );
         }
 
         if( ZE_RESULT_SUCCESS == result )
         {
             auto getTable = reinterpret_cast<zes_pfnGetPerformanceFactorProcAddrTable_t>(
                 GET_FUNCTION_PTR(loader, "zesGetPerformanceFactorProcAddrTable") );
-            result = getTable( ZE_API_VERSION_CURRENT, &zesDdiTable.PerformanceFactor );
+            result = getTable( ZE_API_VERSION_CURRENT, &initialzesDdiTable.PerformanceFactor );
         }
 
         if( ZE_RESULT_SUCCESS == result )
         {
             auto getTable = reinterpret_cast<zes_pfnGetPowerProcAddrTable_t>(
                 GET_FUNCTION_PTR(loader, "zesGetPowerProcAddrTable") );
-            result = getTable( ZE_API_VERSION_CURRENT, &zesDdiTable.Power );
+            result = getTable( ZE_API_VERSION_CURRENT, &initialzesDdiTable.Power );
         }
 
         if( ZE_RESULT_SUCCESS == result )
         {
             auto getTable = reinterpret_cast<zes_pfnGetPsuProcAddrTable_t>(
                 GET_FUNCTION_PTR(loader, "zesGetPsuProcAddrTable") );
-            result = getTable( ZE_API_VERSION_CURRENT, &zesDdiTable.Psu );
+            result = getTable( ZE_API_VERSION_CURRENT, &initialzesDdiTable.Psu );
         }
 
         if( ZE_RESULT_SUCCESS == result )
         {
             auto getTable = reinterpret_cast<zes_pfnGetRasProcAddrTable_t>(
                 GET_FUNCTION_PTR(loader, "zesGetRasProcAddrTable") );
-            result = getTable( ZE_API_VERSION_CURRENT, &zesDdiTable.Ras );
+            result = getTable( ZE_API_VERSION_CURRENT, &initialzesDdiTable.Ras );
         }
 
         if( ZE_RESULT_SUCCESS == result )
         {
             auto getTable = reinterpret_cast<zes_pfnGetRasExpProcAddrTable_t>(
                 GET_FUNCTION_PTR(loader, "zesGetRasExpProcAddrTable") );
-            result = getTable( ZE_API_VERSION_CURRENT, &zesDdiTable.RasExp );
+            result = getTable( ZE_API_VERSION_CURRENT, &initialzesDdiTable.RasExp );
         }
 
         if( ZE_RESULT_SUCCESS == result )
         {
             auto getTable = reinterpret_cast<zes_pfnGetSchedulerProcAddrTable_t>(
                 GET_FUNCTION_PTR(loader, "zesGetSchedulerProcAddrTable") );
-            result = getTable( ZE_API_VERSION_CURRENT, &zesDdiTable.Scheduler );
+            result = getTable( ZE_API_VERSION_CURRENT, &initialzesDdiTable.Scheduler );
         }
 
         if( ZE_RESULT_SUCCESS == result )
         {
             auto getTable = reinterpret_cast<zes_pfnGetStandbyProcAddrTable_t>(
                 GET_FUNCTION_PTR(loader, "zesGetStandbyProcAddrTable") );
-            result = getTable( ZE_API_VERSION_CURRENT, &zesDdiTable.Standby );
+            result = getTable( ZE_API_VERSION_CURRENT, &initialzesDdiTable.Standby );
         }
 
         if( ZE_RESULT_SUCCESS == result )
         {
             auto getTable = reinterpret_cast<zes_pfnGetTemperatureProcAddrTable_t>(
                 GET_FUNCTION_PTR(loader, "zesGetTemperatureProcAddrTable") );
-            result = getTable( ZE_API_VERSION_CURRENT, &zesDdiTable.Temperature );
+            result = getTable( ZE_API_VERSION_CURRENT, &initialzesDdiTable.Temperature );
         }
 
         return result;
@@ -170,102 +170,102 @@ namespace ze_lib
 
         if( ZE_RESULT_SUCCESS == result )
         {
-            result = zesGetGlobalProcAddrTable( ZE_API_VERSION_CURRENT, &zesDdiTable.Global );
+            result = zesGetGlobalProcAddrTable( ZE_API_VERSION_CURRENT, &initialzesDdiTable.Global );
         }
 
         if( ZE_RESULT_SUCCESS == result )
         {
-            result = zesGetDeviceProcAddrTable( ZE_API_VERSION_CURRENT, &zesDdiTable.Device );
+            result = zesGetDeviceProcAddrTable( ZE_API_VERSION_CURRENT, &initialzesDdiTable.Device );
         }
 
         if( ZE_RESULT_SUCCESS == result )
         {
-            result = zesGetDriverProcAddrTable( ZE_API_VERSION_CURRENT, &zesDdiTable.Driver );
+            result = zesGetDriverProcAddrTable( ZE_API_VERSION_CURRENT, &initialzesDdiTable.Driver );
         }
 
         if( ZE_RESULT_SUCCESS == result )
         {
-            result = zesGetDiagnosticsProcAddrTable( ZE_API_VERSION_CURRENT, &zesDdiTable.Diagnostics );
+            result = zesGetDiagnosticsProcAddrTable( ZE_API_VERSION_CURRENT, &initialzesDdiTable.Diagnostics );
         }
 
         if( ZE_RESULT_SUCCESS == result )
         {
-            result = zesGetEngineProcAddrTable( ZE_API_VERSION_CURRENT, &zesDdiTable.Engine );
+            result = zesGetEngineProcAddrTable( ZE_API_VERSION_CURRENT, &initialzesDdiTable.Engine );
         }
 
         if( ZE_RESULT_SUCCESS == result )
         {
-            result = zesGetFabricPortProcAddrTable( ZE_API_VERSION_CURRENT, &zesDdiTable.FabricPort );
+            result = zesGetFabricPortProcAddrTable( ZE_API_VERSION_CURRENT, &initialzesDdiTable.FabricPort );
         }
 
         if( ZE_RESULT_SUCCESS == result )
         {
-            result = zesGetFanProcAddrTable( ZE_API_VERSION_CURRENT, &zesDdiTable.Fan );
+            result = zesGetFanProcAddrTable( ZE_API_VERSION_CURRENT, &initialzesDdiTable.Fan );
         }
 
         if( ZE_RESULT_SUCCESS == result )
         {
-            result = zesGetFirmwareProcAddrTable( ZE_API_VERSION_CURRENT, &zesDdiTable.Firmware );
+            result = zesGetFirmwareProcAddrTable( ZE_API_VERSION_CURRENT, &initialzesDdiTable.Firmware );
         }
 
         if( ZE_RESULT_SUCCESS == result )
         {
-            result = zesGetFrequencyProcAddrTable( ZE_API_VERSION_CURRENT, &zesDdiTable.Frequency );
+            result = zesGetFrequencyProcAddrTable( ZE_API_VERSION_CURRENT, &initialzesDdiTable.Frequency );
         }
 
         if( ZE_RESULT_SUCCESS == result )
         {
-            result = zesGetLedProcAddrTable( ZE_API_VERSION_CURRENT, &zesDdiTable.Led );
+            result = zesGetLedProcAddrTable( ZE_API_VERSION_CURRENT, &initialzesDdiTable.Led );
         }
 
         if( ZE_RESULT_SUCCESS == result )
         {
-            result = zesGetMemoryProcAddrTable( ZE_API_VERSION_CURRENT, &zesDdiTable.Memory );
+            result = zesGetMemoryProcAddrTable( ZE_API_VERSION_CURRENT, &initialzesDdiTable.Memory );
         }
 
         if( ZE_RESULT_SUCCESS == result )
         {
-            result = zesGetOverclockProcAddrTable( ZE_API_VERSION_CURRENT, &zesDdiTable.Overclock );
+            result = zesGetOverclockProcAddrTable( ZE_API_VERSION_CURRENT, &initialzesDdiTable.Overclock );
         }
 
         if( ZE_RESULT_SUCCESS == result )
         {
-            result = zesGetPerformanceFactorProcAddrTable( ZE_API_VERSION_CURRENT, &zesDdiTable.PerformanceFactor );
+            result = zesGetPerformanceFactorProcAddrTable( ZE_API_VERSION_CURRENT, &initialzesDdiTable.PerformanceFactor );
         }
 
         if( ZE_RESULT_SUCCESS == result )
         {
-            result = zesGetPowerProcAddrTable( ZE_API_VERSION_CURRENT, &zesDdiTable.Power );
+            result = zesGetPowerProcAddrTable( ZE_API_VERSION_CURRENT, &initialzesDdiTable.Power );
         }
 
         if( ZE_RESULT_SUCCESS == result )
         {
-            result = zesGetPsuProcAddrTable( ZE_API_VERSION_CURRENT, &zesDdiTable.Psu );
+            result = zesGetPsuProcAddrTable( ZE_API_VERSION_CURRENT, &initialzesDdiTable.Psu );
         }
 
         if( ZE_RESULT_SUCCESS == result )
         {
-            result = zesGetRasProcAddrTable( ZE_API_VERSION_CURRENT, &zesDdiTable.Ras );
+            result = zesGetRasProcAddrTable( ZE_API_VERSION_CURRENT, &initialzesDdiTable.Ras );
         }
 
         if( ZE_RESULT_SUCCESS == result )
         {
-            result = zesGetRasExpProcAddrTable( ZE_API_VERSION_CURRENT, &zesDdiTable.RasExp );
+            result = zesGetRasExpProcAddrTable( ZE_API_VERSION_CURRENT, &initialzesDdiTable.RasExp );
         }
 
         if( ZE_RESULT_SUCCESS == result )
         {
-            result = zesGetSchedulerProcAddrTable( ZE_API_VERSION_CURRENT, &zesDdiTable.Scheduler );
+            result = zesGetSchedulerProcAddrTable( ZE_API_VERSION_CURRENT, &initialzesDdiTable.Scheduler );
         }
 
         if( ZE_RESULT_SUCCESS == result )
         {
-            result = zesGetStandbyProcAddrTable( ZE_API_VERSION_CURRENT, &zesDdiTable.Standby );
+            result = zesGetStandbyProcAddrTable( ZE_API_VERSION_CURRENT, &initialzesDdiTable.Standby );
         }
 
         if( ZE_RESULT_SUCCESS == result )
         {
-            result = zesGetTemperatureProcAddrTable( ZE_API_VERSION_CURRENT, &zesDdiTable.Temperature );
+            result = zesGetTemperatureProcAddrTable( ZE_API_VERSION_CURRENT, &initialzesDdiTable.Temperature );
         }
 
         return result;

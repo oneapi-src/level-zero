@@ -67,6 +67,13 @@ namespace ze_lib
 
 #endif
 
+        if ( ZE_RESULT_SUCCESS == result )
+        {
+            ze_lib::context->zeDdiTable.exchange(&ze_lib::context->initialzeDdiTable);
+            ze_lib::context->zetDdiTable.exchange(&ze_lib::context->initialzetDdiTable);
+            ze_lib::context->zesDdiTable.exchange(&ze_lib::context->initialzesDdiTable);
+        }
+
         if( ZE_RESULT_SUCCESS == result )
         {
             result = zeInit();
@@ -85,6 +92,11 @@ namespace ze_lib
         if( ZE_RESULT_SUCCESS == result )
         {
             result = zelTracingInit();
+        }
+
+        if( ZE_RESULT_SUCCESS == result )
+        {
+            result = zelLoaderTracingLayerInit(this->pTracingZeDdiTable, this->pTracingZetDdiTable, this->pTracingZesDdiTable);
         }
 
         if( ZE_RESULT_SUCCESS == result && !sysmanOnly)
@@ -137,7 +149,6 @@ zelLoaderTranslateHandle(
 
 ze_result_t ZE_APICALL
 zelSetDriverTeardown()
-
 {
     ze_result_t result = ZE_RESULT_SUCCESS;
     if (!ze_lib::destruction) {
@@ -146,7 +157,26 @@ zelSetDriverTeardown()
     return result;
 }
 
+ze_result_t ZE_APICALL
+zelEnableTracingLayer()
+{
+    if (ze_lib::context->tracingLayerEnableCounter.fetch_add(1) == 0) {
+        ze_lib::context->zeDdiTable.exchange(ze_lib::context->pTracingZeDdiTable);
+        ze_lib::context->zetDdiTable.exchange(ze_lib::context->pTracingZetDdiTable);
+        ze_lib::context->zesDdiTable.exchange(ze_lib::context->pTracingZesDdiTable);
+    }
+    return ZE_RESULT_SUCCESS;
+}
 
-
+ze_result_t ZE_APICALL
+zelDisableTracingLayer()
+{
+    if (ze_lib::context->tracingLayerEnableCounter.fetch_sub(1) <= 1) {
+        ze_lib::context->zeDdiTable.exchange(&ze_lib::context->initialzeDdiTable);
+        ze_lib::context->zetDdiTable.exchange(&ze_lib::context->initialzetDdiTable);
+        ze_lib::context->zesDdiTable.exchange(&ze_lib::context->initialzesDdiTable);
+    }
+    return ZE_RESULT_SUCCESS;
+}
 
 } //extern "c"

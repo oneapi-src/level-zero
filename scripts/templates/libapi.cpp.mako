@@ -69,7 +69,7 @@ ${th.make_func_name(n, tags, obj)}(
         return ${X}_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto ${th.make_pfn_name(n, tags, obj)} = ${x}_lib::context->${n}DdiTable.${th.get_table_name(n, tags, obj)}.${th.make_pfn_name(n, tags, obj)};
+    auto ${th.make_pfn_name(n, tags, obj)} = ${x}_lib::context->${n}DdiTable.load()->${th.get_table_name(n, tags, obj)}.${th.make_pfn_name(n, tags, obj)};
     if( nullptr == ${th.make_pfn_name(n, tags, obj)} ) {
         if(!ze_lib::context->isInitialized)
             return ${X}_RESULT_ERROR_UNINITIALIZED;
@@ -89,7 +89,7 @@ ${th.make_func_name(n, tags, obj)}(
             return ${X}_RESULT_ERROR_UNINITIALIZED;
         }
 
-        auto ${th.make_pfn_name(n, tags, obj)} = ${x}_lib::context->${n}DdiTable.${th.get_table_name(n, tags, obj)}.${th.make_pfn_name(n, tags, obj)};
+        auto ${th.make_pfn_name(n, tags, obj)} = ${x}_lib::context->${n}DdiTable.load()->${th.get_table_name(n, tags, obj)}.${th.make_pfn_name(n, tags, obj)};
         if( nullptr == ${th.make_pfn_name(n, tags, obj)} ) {
             if(!ze_lib::context->isInitialized)
                 return ${X}_RESULT_ERROR_UNINITIALIZED;
@@ -113,7 +113,13 @@ ${th.make_func_name(n, tags, obj)}(
         return ${X}_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto ${th.make_pfn_name(n, tags, obj)} = ${x}_lib::context->${n}DdiTable.${th.get_table_name(n, tags, obj)}.${th.make_pfn_name(n, tags, obj)};
+%if re.match("DriverGet", obj['name']):
+    if (${x}_lib::context->${n}DdiTable == nullptr) {
+        return ${X}_RESULT_ERROR_UNINITIALIZED;
+    }
+
+%endif
+    auto ${th.make_pfn_name(n, tags, obj)} = ${x}_lib::context->${n}DdiTable.load()->${th.get_table_name(n, tags, obj)}.${th.make_pfn_name(n, tags, obj)};
     if( nullptr == ${th.make_pfn_name(n, tags, obj)} ) {
         if(!ze_lib::context->isInitialized)
             return ${X}_RESULT_ERROR_UNINITIALIZED;
