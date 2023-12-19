@@ -1,5 +1,11 @@
 # Level zero loader changelog
 
+## v1.15.7
+* Fix build when using clang-cl on Windows
+* set RUNTIME DESTINATION in install for layer libraries
+* added github actions runs on latest windows
+* Windows.h replaced with windows.h
+* Added support for enabling/disabling tracing layer during runtime
 ## v1.15.1
 * Fix Windows build for Control Flow Guard Mitigation.
 ## v1.15.0
