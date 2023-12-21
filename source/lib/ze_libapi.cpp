@@ -114,6 +114,10 @@ zeDriverGet(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
+    if (ze_lib::context->zeDdiTable == nullptr) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
     auto pfnGet = ze_lib::context->zeDdiTable.load()->Driver.pfnGet;
     if( nullptr == pfnGet ) {
         if(!ze_lib::context->isInitialized)
