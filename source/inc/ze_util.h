@@ -136,3 +136,21 @@ inline bool getenv_tobool( const char* name )
         return false;
     return ( 0 == strcmp( "1", env ) );
 }
+
+
+inline const char * getenv_string ( const char* name ){
+
+    const char* env = nullptr;
+
+#if defined(_WIN32)
+    char buffer[1024];
+    auto rc = GetEnvironmentVariable(name, buffer, 1024);
+    if (0 != rc && rc <= 1024) {
+        env = buffer;
+    }
+#else
+    env = getenv(name);
+#endif
+
+    return env;
+}

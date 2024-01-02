@@ -22,6 +22,8 @@ add_subdirectory(lib)
 add_subdirectory(loader)
 add_subdirectory(layers)
 add_subdirectory(drivers)
+add_subdirectory(utils)
+target_include_directories(${TARGET_LOADER_NAME} PRIVATE utils)
 
 set_target_properties(${TARGET_LOADER_NAME} PROPERTIES
     VERSION "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH}"
@@ -42,6 +44,9 @@ endif()
 if(WIN32)
     target_link_libraries (${TARGET_LOADER_NAME} cfgmgr32.lib)
 endif()
+
+# Link against utility sublibrary
+target_link_libraries(${TARGET_LOADER_NAME} utils)
 
 install(TARGETS ze_loader
     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}

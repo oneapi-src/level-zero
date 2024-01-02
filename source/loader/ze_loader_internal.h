@@ -22,7 +22,8 @@
 #include "zes_ldrddi.h"
 
 #include "loader/ze_loader.h"
-
+#include "logging.h"
+#include "spdlog/spdlog.h"
 namespace loader
 {
     //////////////////////////////////////////////////////////////////////////
@@ -62,6 +63,7 @@ namespace loader
         bool debugTraceEnabled = false;
         bool tracingLayerEnabled = false;
         dditable_t tracing_dditable = {};
+        std::shared_ptr<Logger> zel_logger;
     };
 
     extern context_t *context;
