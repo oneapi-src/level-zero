@@ -1,4 +1,4 @@
-# Copyright (C) 2020-2021 Intel Corporation
+# Copyright (C) 2020-2024 Intel Corporation
 # SPDX-License-Identifier: MIT
 
 cmake_minimum_required(VERSION 3.2.0 FATAL_ERROR)
@@ -153,6 +153,10 @@ set(TARGET_LOADER_NAME ze_loader)
 
 add_subdirectory(source)
 add_subdirectory(samples)
+
+if(BUILD_L0_LOADER_TESTS)
+	add_subdirectory(test)
+endif()
 
 include("os_release_info.cmake")
 get_os_release_info(os_name os_version os_codename)
