@@ -165,7 +165,10 @@ template <>
 inline ze_result_t ParameterValidation::validateExtensions(ze_device_module_properties_t *descriptor) {
     
     std::vector<ze_structure_type_t> baseTypes = {ZE_STRUCTURE_TYPE_DEVICE_MODULE_PROPERTIES};
-    std::vector<ze_structure_type_t> types = {};
+    std::vector<ze_structure_type_t> types = {
+        ZE_STRUCTURE_TYPE_FLOAT_ATOMIC_EXT_PROPERTIES,
+        ZE_STRUCTURE_TYPE_SCHEDULING_HINT_EXP_PROPERTIES,
+        ZE_STRUCTURE_TYPE_DEVICE_RAYTRACING_EXT_PROPERTIES};
 
     return validateStructureTypes<ze_structure_type_t, ze_base_properties_t>(descriptor, baseTypes, types);
 }
