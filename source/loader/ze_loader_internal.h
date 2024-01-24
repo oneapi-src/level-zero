@@ -46,6 +46,7 @@ namespace loader
 
         HMODULE validationLayer = nullptr;
         HMODULE tracingLayer = nullptr;
+        bool driverEnvironmentQueried = false;
 
         bool forceIntercept = false;
         std::vector<zel_component_version_t> compVersions;

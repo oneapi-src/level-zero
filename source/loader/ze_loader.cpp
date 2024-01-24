@@ -250,6 +250,9 @@ namespace loader
     ///////////////////////////////////////////////////////////////////////////////
     ze_result_t context_t::init()
     {
+        if (driverEnvironmentQueried) {
+            return ZE_RESULT_SUCCESS;
+        }
         debugTraceEnabled = getenv_tobool( "ZE_ENABLE_LOADER_DEBUG_TRACE" );
         auto discoveredDrivers = discoverEnabledDrivers();
         std::string loadLibraryErrorValue;
@@ -353,6 +356,8 @@ namespace loader
 
         if(forceIntercept || drivers.size() > 1)
              intercept_enabled = true;
+
+        driverEnvironmentQueried = true;
 
         return ZE_RESULT_SUCCESS;
     };
