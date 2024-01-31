@@ -1,5 +1,10 @@
 # Level zero loader changelog
 
+## v1.15.13
+* Enable for zesInit to run with zeInit without duplicate init
+* Addressed OpenSSF Token Permissions
+* Fix for missing extension types in the validation layer
+* Added structure for Loader validation testing
 ## v1.15.8
 * Fix build when using clang-cl on Windows
 * set RUNTIME DESTINATION in install for layer libraries
