@@ -532,6 +532,38 @@ zelTracerCommandQueueSynchronizeRegisterCallback(
 
 
 ZE_DLLEXPORT ze_result_t ZE_APICALL
+zelTracerCommandQueueGetOrdinalRegisterCallback(
+    zel_tracer_handle_t hTracer,
+    zel_tracer_reg_t callback_type,
+    ze_pfnCommandQueueGetOrdinalCb_t pfnGetOrdinalCb
+    ) {
+
+    ze_result_t result;
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    if (result == ZE_RESULT_SUCCESS)
+        cbs.CommandQueue.pfnGetOrdinalCb = pfnGetOrdinalCb;
+
+    return result;
+}
+
+
+ZE_DLLEXPORT ze_result_t ZE_APICALL
+zelTracerCommandQueueGetIndexRegisterCallback(
+    zel_tracer_handle_t hTracer,
+    zel_tracer_reg_t callback_type,
+    ze_pfnCommandQueueGetIndexCb_t pfnGetIndexCb
+    ) {
+
+    ze_result_t result;
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    if (result == ZE_RESULT_SUCCESS)
+        cbs.CommandQueue.pfnGetIndexCb = pfnGetIndexCb;
+
+    return result;
+}
+
+
+ZE_DLLEXPORT ze_result_t ZE_APICALL
 zelTracerCommandListCreateRegisterCallback(
     zel_tracer_handle_t hTracer,
     zel_tracer_reg_t callback_type,
@@ -638,6 +670,86 @@ zelTracerCommandListHostSynchronizeRegisterCallback(
     auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.CommandList.pfnHostSynchronizeCb = pfnHostSynchronizeCb;
+
+    return result;
+}
+
+
+ZE_DLLEXPORT ze_result_t ZE_APICALL
+zelTracerCommandListGetDeviceHandleRegisterCallback(
+    zel_tracer_handle_t hTracer,
+    zel_tracer_reg_t callback_type,
+    ze_pfnCommandListGetDeviceHandleCb_t pfnGetDeviceHandleCb
+    ) {
+
+    ze_result_t result;
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    if (result == ZE_RESULT_SUCCESS)
+        cbs.CommandList.pfnGetDeviceHandleCb = pfnGetDeviceHandleCb;
+
+    return result;
+}
+
+
+ZE_DLLEXPORT ze_result_t ZE_APICALL
+zelTracerCommandListGetContextHandleRegisterCallback(
+    zel_tracer_handle_t hTracer,
+    zel_tracer_reg_t callback_type,
+    ze_pfnCommandListGetContextHandleCb_t pfnGetContextHandleCb
+    ) {
+
+    ze_result_t result;
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    if (result == ZE_RESULT_SUCCESS)
+        cbs.CommandList.pfnGetContextHandleCb = pfnGetContextHandleCb;
+
+    return result;
+}
+
+
+ZE_DLLEXPORT ze_result_t ZE_APICALL
+zelTracerCommandListGetOrdinalRegisterCallback(
+    zel_tracer_handle_t hTracer,
+    zel_tracer_reg_t callback_type,
+    ze_pfnCommandListGetOrdinalCb_t pfnGetOrdinalCb
+    ) {
+
+    ze_result_t result;
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    if (result == ZE_RESULT_SUCCESS)
+        cbs.CommandList.pfnGetOrdinalCb = pfnGetOrdinalCb;
+
+    return result;
+}
+
+
+ZE_DLLEXPORT ze_result_t ZE_APICALL
+zelTracerCommandListImmediateGetIndexRegisterCallback(
+    zel_tracer_handle_t hTracer,
+    zel_tracer_reg_t callback_type,
+    ze_pfnCommandListImmediateGetIndexCb_t pfnImmediateGetIndexCb
+    ) {
+
+    ze_result_t result;
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    if (result == ZE_RESULT_SUCCESS)
+        cbs.CommandList.pfnImmediateGetIndexCb = pfnImmediateGetIndexCb;
+
+    return result;
+}
+
+
+ZE_DLLEXPORT ze_result_t ZE_APICALL
+zelTracerCommandListIsImmediateRegisterCallback(
+    zel_tracer_handle_t hTracer,
+    zel_tracer_reg_t callback_type,
+    ze_pfnCommandListIsImmediateCb_t pfnIsImmediateCb
+    ) {
+
+    ze_result_t result;
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    if (result == ZE_RESULT_SUCCESS)
+        cbs.CommandList.pfnIsImmediateCb = pfnIsImmediateCb;
 
     return result;
 }
@@ -1118,6 +1230,86 @@ zelTracerCommandListAppendQueryKernelTimestampsRegisterCallback(
     auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.CommandList.pfnAppendQueryKernelTimestampsCb = pfnAppendQueryKernelTimestampsCb;
+
+    return result;
+}
+
+
+ZE_DLLEXPORT ze_result_t ZE_APICALL
+zelTracerEventGetEventPoolRegisterCallback(
+    zel_tracer_handle_t hTracer,
+    zel_tracer_reg_t callback_type,
+    ze_pfnEventGetEventPoolCb_t pfnGetEventPoolCb
+    ) {
+
+    ze_result_t result;
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    if (result == ZE_RESULT_SUCCESS)
+        cbs.Event.pfnGetEventPoolCb = pfnGetEventPoolCb;
+
+    return result;
+}
+
+
+ZE_DLLEXPORT ze_result_t ZE_APICALL
+zelTracerEventGetSignalScopeRegisterCallback(
+    zel_tracer_handle_t hTracer,
+    zel_tracer_reg_t callback_type,
+    ze_pfnEventGetSignalScopeCb_t pfnGetSignalScopeCb
+    ) {
+
+    ze_result_t result;
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    if (result == ZE_RESULT_SUCCESS)
+        cbs.Event.pfnGetSignalScopeCb = pfnGetSignalScopeCb;
+
+    return result;
+}
+
+
+ZE_DLLEXPORT ze_result_t ZE_APICALL
+zelTracerEventGetWaitScopeRegisterCallback(
+    zel_tracer_handle_t hTracer,
+    zel_tracer_reg_t callback_type,
+    ze_pfnEventGetWaitScopeCb_t pfnGetWaitScopeCb
+    ) {
+
+    ze_result_t result;
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    if (result == ZE_RESULT_SUCCESS)
+        cbs.Event.pfnGetWaitScopeCb = pfnGetWaitScopeCb;
+
+    return result;
+}
+
+
+ZE_DLLEXPORT ze_result_t ZE_APICALL
+zelTracerEventPoolGetContextHandleRegisterCallback(
+    zel_tracer_handle_t hTracer,
+    zel_tracer_reg_t callback_type,
+    ze_pfnEventPoolGetContextHandleCb_t pfnGetContextHandleCb
+    ) {
+
+    ze_result_t result;
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    if (result == ZE_RESULT_SUCCESS)
+        cbs.EventPool.pfnGetContextHandleCb = pfnGetContextHandleCb;
+
+    return result;
+}
+
+
+ZE_DLLEXPORT ze_result_t ZE_APICALL
+zelTracerEventPoolGetFlagsRegisterCallback(
+    zel_tracer_handle_t hTracer,
+    zel_tracer_reg_t callback_type,
+    ze_pfnEventPoolGetFlagsCb_t pfnGetFlagsCb
+    ) {
+
+    ze_result_t result;
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    if (result == ZE_RESULT_SUCCESS)
+        cbs.EventPool.pfnGetFlagsCb = pfnGetFlagsCb;
 
     return result;
 }
@@ -2638,6 +2830,134 @@ zelTracerRTASParallelOperationDestroyExpRegisterCallback(
     auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
     if (result == ZE_RESULT_SUCCESS)
         cbs.RTASParallelOperation.pfnDestroyExpCb = pfnDestroyExpCb;
+
+    return result;
+}
+
+
+ZE_DLLEXPORT ze_result_t ZE_APICALL
+zelTracerMemGetPitchFor2dImageRegisterCallback(
+    zel_tracer_handle_t hTracer,
+    zel_tracer_reg_t callback_type,
+    ze_pfnMemGetPitchFor2dImageCb_t pfnGetPitchFor2dImageCb
+    ) {
+
+    ze_result_t result;
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    if (result == ZE_RESULT_SUCCESS)
+        cbs.Mem.pfnGetPitchFor2dImageCb = pfnGetPitchFor2dImageCb;
+
+    return result;
+}
+
+
+ZE_DLLEXPORT ze_result_t ZE_APICALL
+zelTracerImageGetDeviceOffsetExpRegisterCallback(
+    zel_tracer_handle_t hTracer,
+    zel_tracer_reg_t callback_type,
+    ze_pfnImageGetDeviceOffsetExpCb_t pfnGetDeviceOffsetExpCb
+    ) {
+
+    ze_result_t result;
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    if (result == ZE_RESULT_SUCCESS)
+        cbs.Image.pfnGetDeviceOffsetExpCb = pfnGetDeviceOffsetExpCb;
+
+    return result;
+}
+
+
+ZE_DLLEXPORT ze_result_t ZE_APICALL
+zelTracerCommandListCreateCloneExpRegisterCallback(
+    zel_tracer_handle_t hTracer,
+    zel_tracer_reg_t callback_type,
+    ze_pfnCommandListCreateCloneExpCb_t pfnCreateCloneExpCb
+    ) {
+
+    ze_result_t result;
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    if (result == ZE_RESULT_SUCCESS)
+        cbs.CommandList.pfnCreateCloneExpCb = pfnCreateCloneExpCb;
+
+    return result;
+}
+
+
+ZE_DLLEXPORT ze_result_t ZE_APICALL
+zelTracerCommandListImmediateAppendCommandListsExpRegisterCallback(
+    zel_tracer_handle_t hTracer,
+    zel_tracer_reg_t callback_type,
+    ze_pfnCommandListImmediateAppendCommandListsExpCb_t pfnImmediateAppendCommandListsExpCb
+    ) {
+
+    ze_result_t result;
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    if (result == ZE_RESULT_SUCCESS)
+        cbs.CommandList.pfnImmediateAppendCommandListsExpCb = pfnImmediateAppendCommandListsExpCb;
+
+    return result;
+}
+
+
+ZE_DLLEXPORT ze_result_t ZE_APICALL
+zelTracerCommandListGetNextCommandIdExpRegisterCallback(
+    zel_tracer_handle_t hTracer,
+    zel_tracer_reg_t callback_type,
+    ze_pfnCommandListGetNextCommandIdExpCb_t pfnGetNextCommandIdExpCb
+    ) {
+
+    ze_result_t result;
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    if (result == ZE_RESULT_SUCCESS)
+        cbs.CommandList.pfnGetNextCommandIdExpCb = pfnGetNextCommandIdExpCb;
+
+    return result;
+}
+
+
+ZE_DLLEXPORT ze_result_t ZE_APICALL
+zelTracerCommandListUpdateMutableCommandsExpRegisterCallback(
+    zel_tracer_handle_t hTracer,
+    zel_tracer_reg_t callback_type,
+    ze_pfnCommandListUpdateMutableCommandsExpCb_t pfnUpdateMutableCommandsExpCb
+    ) {
+
+    ze_result_t result;
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    if (result == ZE_RESULT_SUCCESS)
+        cbs.CommandList.pfnUpdateMutableCommandsExpCb = pfnUpdateMutableCommandsExpCb;
+
+    return result;
+}
+
+
+ZE_DLLEXPORT ze_result_t ZE_APICALL
+zelTracerCommandListUpdateMutableCommandSignalEventExpRegisterCallback(
+    zel_tracer_handle_t hTracer,
+    zel_tracer_reg_t callback_type,
+    ze_pfnCommandListUpdateMutableCommandSignalEventExpCb_t pfnUpdateMutableCommandSignalEventExpCb
+    ) {
+
+    ze_result_t result;
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    if (result == ZE_RESULT_SUCCESS)
+        cbs.CommandList.pfnUpdateMutableCommandSignalEventExpCb = pfnUpdateMutableCommandSignalEventExpCb;
+
+    return result;
+}
+
+
+ZE_DLLEXPORT ze_result_t ZE_APICALL
+zelTracerCommandListUpdateMutableCommandWaitEventsExpRegisterCallback(
+    zel_tracer_handle_t hTracer,
+    zel_tracer_reg_t callback_type,
+    ze_pfnCommandListUpdateMutableCommandWaitEventsExpCb_t pfnUpdateMutableCommandWaitEventsExpCb
+    ) {
+
+    ze_result_t result;
+    auto& cbs = tracing_layer::APITracer::fromHandle(hTracer)->getProEpilogues(callback_type, result);
+    if (result == ZE_RESULT_SUCCESS)
+        cbs.CommandList.pfnUpdateMutableCommandWaitEventsExpCb = pfnUpdateMutableCommandWaitEventsExpCb;
 
     return result;
 }

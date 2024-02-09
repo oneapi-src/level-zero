@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (C) 2019-2022 Intel Corporation
+ * Copyright (C) 2019-2024 Intel Corporation
  *
  * SPDX-License-Identifier: MIT
  *
@@ -37,9 +37,23 @@ namespace ze_lib
 
         if( ZE_RESULT_SUCCESS == result )
         {
+            auto getTable = reinterpret_cast<zes_pfnGetDeviceExpProcAddrTable_t>(
+                GET_FUNCTION_PTR(loader, "zesGetDeviceExpProcAddrTable") );
+            result = getTable( ZE_API_VERSION_CURRENT, &initialzesDdiTable.DeviceExp );
+        }
+
+        if( ZE_RESULT_SUCCESS == result )
+        {
             auto getTable = reinterpret_cast<zes_pfnGetDriverProcAddrTable_t>(
                 GET_FUNCTION_PTR(loader, "zesGetDriverProcAddrTable") );
             result = getTable( ZE_API_VERSION_CURRENT, &initialzesDdiTable.Driver );
+        }
+
+        if( ZE_RESULT_SUCCESS == result )
+        {
+            auto getTable = reinterpret_cast<zes_pfnGetDriverExpProcAddrTable_t>(
+                GET_FUNCTION_PTR(loader, "zesGetDriverExpProcAddrTable") );
+            result = getTable( ZE_API_VERSION_CURRENT, &initialzesDdiTable.DriverExp );
         }
 
         if( ZE_RESULT_SUCCESS == result )
@@ -75,6 +89,13 @@ namespace ze_lib
             auto getTable = reinterpret_cast<zes_pfnGetFirmwareProcAddrTable_t>(
                 GET_FUNCTION_PTR(loader, "zesGetFirmwareProcAddrTable") );
             result = getTable( ZE_API_VERSION_CURRENT, &initialzesDdiTable.Firmware );
+        }
+
+        if( ZE_RESULT_SUCCESS == result )
+        {
+            auto getTable = reinterpret_cast<zes_pfnGetFirmwareExpProcAddrTable_t>(
+                GET_FUNCTION_PTR(loader, "zesGetFirmwareExpProcAddrTable") );
+            result = getTable( ZE_API_VERSION_CURRENT, &initialzesDdiTable.FirmwareExp );
         }
 
         if( ZE_RESULT_SUCCESS == result )
@@ -161,6 +182,13 @@ namespace ze_lib
             result = getTable( ZE_API_VERSION_CURRENT, &initialzesDdiTable.Temperature );
         }
 
+        if( ZE_RESULT_SUCCESS == result )
+        {
+            auto getTable = reinterpret_cast<zes_pfnGetVFManagementExpProcAddrTable_t>(
+                GET_FUNCTION_PTR(loader, "zesGetVFManagementExpProcAddrTable") );
+            result = getTable( ZE_API_VERSION_CURRENT, &initialzesDdiTable.VFManagementExp );
+        }
+
         return result;
     }
 #else
@@ -180,7 +208,17 @@ namespace ze_lib
 
         if( ZE_RESULT_SUCCESS == result )
         {
+            result = zesGetDeviceExpProcAddrTable( ZE_API_VERSION_CURRENT, &initialzesDdiTable.DeviceExp );
+        }
+
+        if( ZE_RESULT_SUCCESS == result )
+        {
             result = zesGetDriverProcAddrTable( ZE_API_VERSION_CURRENT, &initialzesDdiTable.Driver );
+        }
+
+        if( ZE_RESULT_SUCCESS == result )
+        {
+            result = zesGetDriverExpProcAddrTable( ZE_API_VERSION_CURRENT, &initialzesDdiTable.DriverExp );
         }
 
         if( ZE_RESULT_SUCCESS == result )
@@ -206,6 +244,11 @@ namespace ze_lib
         if( ZE_RESULT_SUCCESS == result )
         {
             result = zesGetFirmwareProcAddrTable( ZE_API_VERSION_CURRENT, &initialzesDdiTable.Firmware );
+        }
+
+        if( ZE_RESULT_SUCCESS == result )
+        {
+            result = zesGetFirmwareExpProcAddrTable( ZE_API_VERSION_CURRENT, &initialzesDdiTable.FirmwareExp );
         }
 
         if( ZE_RESULT_SUCCESS == result )
@@ -266,6 +309,11 @@ namespace ze_lib
         if( ZE_RESULT_SUCCESS == result )
         {
             result = zesGetTemperatureProcAddrTable( ZE_API_VERSION_CURRENT, &initialzesDdiTable.Temperature );
+        }
+
+        if( ZE_RESULT_SUCCESS == result )
+        {
+            result = zesGetVFManagementExpProcAddrTable( ZE_API_VERSION_CURRENT, &initialzesDdiTable.VFManagementExp );
         }
 
         return result;

@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (C) 2019-2022 Intel Corporation
+ * Copyright (C) 2019-2024 Intel Corporation
  *
  * SPDX-License-Identifier: MIT
  *
@@ -20,6 +20,13 @@ namespace ze_lib
     __zedlllocal ze_result_t context_t::zetInit()
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
+
+        if( ZE_RESULT_SUCCESS == result )
+        {
+            auto getTable = reinterpret_cast<zet_pfnGetMetricProgrammableExpProcAddrTable_t>(
+                GET_FUNCTION_PTR(loader, "zetGetMetricProgrammableExpProcAddrTable") );
+            result = getTable( ZE_API_VERSION_CURRENT, &initialzetDdiTable.MetricProgrammableExp );
+        }
 
         if( ZE_RESULT_SUCCESS == result )
         {
@@ -68,6 +75,13 @@ namespace ze_lib
             auto getTable = reinterpret_cast<zet_pfnGetMetricProcAddrTable_t>(
                 GET_FUNCTION_PTR(loader, "zetGetMetricProcAddrTable") );
             result = getTable( ZE_API_VERSION_CURRENT, &initialzetDdiTable.Metric );
+        }
+
+        if( ZE_RESULT_SUCCESS == result )
+        {
+            auto getTable = reinterpret_cast<zet_pfnGetMetricExpProcAddrTable_t>(
+                GET_FUNCTION_PTR(loader, "zetGetMetricExpProcAddrTable") );
+            result = getTable( ZE_API_VERSION_CURRENT, &initialzetDdiTable.MetricExp );
         }
 
         if( ZE_RESULT_SUCCESS == result )
@@ -121,6 +135,11 @@ namespace ze_lib
 
         if( ZE_RESULT_SUCCESS == result )
         {
+            result = zetGetMetricProgrammableExpProcAddrTable( ZE_API_VERSION_CURRENT, &initialzetDdiTable.MetricProgrammableExp );
+        }
+
+        if( ZE_RESULT_SUCCESS == result )
+        {
             result = zetGetDeviceProcAddrTable( ZE_API_VERSION_CURRENT, &initialzetDdiTable.Device );
         }
 
@@ -152,6 +171,11 @@ namespace ze_lib
         if( ZE_RESULT_SUCCESS == result )
         {
             result = zetGetMetricProcAddrTable( ZE_API_VERSION_CURRENT, &initialzetDdiTable.Metric );
+        }
+
+        if( ZE_RESULT_SUCCESS == result )
+        {
+            result = zetGetMetricExpProcAddrTable( ZE_API_VERSION_CURRENT, &initialzetDdiTable.MetricExp );
         }
 
         if( ZE_RESULT_SUCCESS == result )

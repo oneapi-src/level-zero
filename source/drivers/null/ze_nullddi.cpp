@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (C) 2019-2022 Intel Corporation
+ * Copyright (C) 2019-2024 Intel Corporation
  *
  * SPDX-License-Identifier: MIT
  *
@@ -881,6 +881,54 @@ namespace driver
     }
 
     ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeCommandQueueGetOrdinal
+    __zedlllocal ze_result_t ZE_APICALL
+    zeCommandQueueGetOrdinal(
+        ze_command_queue_handle_t hCommandQueue,        ///< [in] handle of the command queue
+        uint32_t* pOrdinal                              ///< [out] command queue group ordinal
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnGetOrdinal = context.zeDdiTable.CommandQueue.pfnGetOrdinal;
+        if( nullptr != pfnGetOrdinal )
+        {
+            result = pfnGetOrdinal( hCommandQueue, pOrdinal );
+        }
+        else
+        {
+            // generic implementation
+        }
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeCommandQueueGetIndex
+    __zedlllocal ze_result_t ZE_APICALL
+    zeCommandQueueGetIndex(
+        ze_command_queue_handle_t hCommandQueue,        ///< [in] handle of the command queue
+        uint32_t* pIndex                                ///< [out] command queue index within the group
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnGetIndex = context.zeDdiTable.CommandQueue.pfnGetIndex;
+        if( nullptr != pfnGetIndex )
+        {
+            result = pfnGetIndex( hCommandQueue, pIndex );
+        }
+        else
+        {
+            // generic implementation
+        }
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
     /// @brief Intercept function for zeCommandListCreate
     __zedlllocal ze_result_t ZE_APICALL
     zeCommandListCreate(
@@ -1057,6 +1105,132 @@ namespace driver
         if( nullptr != pfnHostSynchronize )
         {
             result = pfnHostSynchronize( hCommandList, timeout );
+        }
+        else
+        {
+            // generic implementation
+        }
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeCommandListGetDeviceHandle
+    __zedlllocal ze_result_t ZE_APICALL
+    zeCommandListGetDeviceHandle(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
+        ze_device_handle_t* phDevice                    ///< [out] handle of the device on which the command list was created
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnGetDeviceHandle = context.zeDdiTable.CommandList.pfnGetDeviceHandle;
+        if( nullptr != pfnGetDeviceHandle )
+        {
+            result = pfnGetDeviceHandle( hCommandList, phDevice );
+        }
+        else
+        {
+            // generic implementation
+            *phDevice = reinterpret_cast<ze_device_handle_t>( context.get() );
+
+        }
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeCommandListGetContextHandle
+    __zedlllocal ze_result_t ZE_APICALL
+    zeCommandListGetContextHandle(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
+        ze_context_handle_t* phContext                  ///< [out] handle of the context on which the command list was created
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnGetContextHandle = context.zeDdiTable.CommandList.pfnGetContextHandle;
+        if( nullptr != pfnGetContextHandle )
+        {
+            result = pfnGetContextHandle( hCommandList, phContext );
+        }
+        else
+        {
+            // generic implementation
+            *phContext = reinterpret_cast<ze_context_handle_t>( context.get() );
+
+        }
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeCommandListGetOrdinal
+    __zedlllocal ze_result_t ZE_APICALL
+    zeCommandListGetOrdinal(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
+        uint32_t* pOrdinal                              ///< [out] command queue group ordinal to which command list is submitted
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnGetOrdinal = context.zeDdiTable.CommandList.pfnGetOrdinal;
+        if( nullptr != pfnGetOrdinal )
+        {
+            result = pfnGetOrdinal( hCommandList, pOrdinal );
+        }
+        else
+        {
+            // generic implementation
+        }
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeCommandListImmediateGetIndex
+    __zedlllocal ze_result_t ZE_APICALL
+    zeCommandListImmediateGetIndex(
+        ze_command_list_handle_t hCommandListImmediate, ///< [in] handle of the immediate command list
+        uint32_t* pIndex                                ///< [out] command queue index within the group to which the immediate
+                                                        ///< command list is submitted
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnImmediateGetIndex = context.zeDdiTable.CommandList.pfnImmediateGetIndex;
+        if( nullptr != pfnImmediateGetIndex )
+        {
+            result = pfnImmediateGetIndex( hCommandListImmediate, pIndex );
+        }
+        else
+        {
+            // generic implementation
+        }
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeCommandListIsImmediate
+    __zedlllocal ze_result_t ZE_APICALL
+    zeCommandListIsImmediate(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
+        ze_bool_t* pIsImmediate                         ///< [out] Boolean indicating whether the command list is an immediate
+                                                        ///< command list (true) or not (false)
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnIsImmediate = context.zeDdiTable.CommandList.pfnIsImmediate;
+        if( nullptr != pfnIsImmediate )
+        {
+            result = pfnIsImmediate( hCommandList, pIsImmediate );
         }
         else
         {
@@ -1892,6 +2066,135 @@ namespace driver
         if( nullptr != pfnAppendQueryKernelTimestamps )
         {
             result = pfnAppendQueryKernelTimestamps( hCommandList, numEvents, phEvents, dstptr, pOffsets, hSignalEvent, numWaitEvents, phWaitEvents );
+        }
+        else
+        {
+            // generic implementation
+        }
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeEventGetEventPool
+    __zedlllocal ze_result_t ZE_APICALL
+    zeEventGetEventPool(
+        ze_event_handle_t hEvent,                       ///< [in] handle of the event
+        ze_event_pool_handle_t* phEventPool             ///< [out] handle of the event pool for the event
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnGetEventPool = context.zeDdiTable.Event.pfnGetEventPool;
+        if( nullptr != pfnGetEventPool )
+        {
+            result = pfnGetEventPool( hEvent, phEventPool );
+        }
+        else
+        {
+            // generic implementation
+            *phEventPool = reinterpret_cast<ze_event_pool_handle_t>( context.get() );
+
+        }
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeEventGetSignalScope
+    __zedlllocal ze_result_t ZE_APICALL
+    zeEventGetSignalScope(
+        ze_event_handle_t hEvent,                       ///< [in] handle of the event
+        ze_event_scope_flags_t* pSignalScope            ///< [out] signal event scope. This is the scope of relevant cache
+                                                        ///< hierarchies that are flushed on a signal action before the event is
+                                                        ///< triggered. May be 0 or a valid combination of ::ze_event_scope_flag_t.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnGetSignalScope = context.zeDdiTable.Event.pfnGetSignalScope;
+        if( nullptr != pfnGetSignalScope )
+        {
+            result = pfnGetSignalScope( hEvent, pSignalScope );
+        }
+        else
+        {
+            // generic implementation
+        }
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeEventGetWaitScope
+    __zedlllocal ze_result_t ZE_APICALL
+    zeEventGetWaitScope(
+        ze_event_handle_t hEvent,                       ///< [in] handle of the event
+        ze_event_scope_flags_t* pWaitScope              ///< [out] wait event scope. This is the scope of relevant cache
+                                                        ///< hierarchies invalidated on a wait action after the event is complete.
+                                                        ///< May be 0 or a valid combination of ::ze_event_scope_flag_t.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnGetWaitScope = context.zeDdiTable.Event.pfnGetWaitScope;
+        if( nullptr != pfnGetWaitScope )
+        {
+            result = pfnGetWaitScope( hEvent, pWaitScope );
+        }
+        else
+        {
+            // generic implementation
+        }
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeEventPoolGetContextHandle
+    __zedlllocal ze_result_t ZE_APICALL
+    zeEventPoolGetContextHandle(
+        ze_event_pool_handle_t hEventPool,              ///< [in] handle of the event pool
+        ze_context_handle_t* phContext                  ///< [out] handle of the context on which the event pool was created
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnGetContextHandle = context.zeDdiTable.EventPool.pfnGetContextHandle;
+        if( nullptr != pfnGetContextHandle )
+        {
+            result = pfnGetContextHandle( hEventPool, phContext );
+        }
+        else
+        {
+            // generic implementation
+            *phContext = reinterpret_cast<ze_context_handle_t>( context.get() );
+
+        }
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeEventPoolGetFlags
+    __zedlllocal ze_result_t ZE_APICALL
+    zeEventPoolGetFlags(
+        ze_event_pool_handle_t hEventPool,              ///< [in] handle of the event pool
+        ze_event_pool_flags_t* pFlags                   ///< [out] creation flags used to create the event pool; may be 0 or a
+                                                        ///< valid combination of ::ze_event_pool_flag_t
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnGetFlags = context.zeDdiTable.EventPool.pfnGetFlags;
+        if( nullptr != pfnGetFlags )
+        {
+            result = pfnGetFlags( hEventPool, pFlags );
         }
         else
         {
@@ -4476,6 +4779,220 @@ namespace driver
         return result;
     }
 
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeMemGetPitchFor2dImage
+    __zedlllocal ze_result_t ZE_APICALL
+    zeMemGetPitchFor2dImage(
+        ze_context_handle_t hContext,                   ///< [in] handle of the context object
+        ze_device_handle_t hDevice,                     ///< [in] handle of the device
+        size_t imageWidth,                              ///< [in] imageWidth
+        size_t imageHeight,                             ///< [in] imageHeight
+        unsigned int elementSizeInBytes,                ///< [in] Element size in bytes
+        size_t * rowPitch                               ///< [out] rowPitch
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnGetPitchFor2dImage = context.zeDdiTable.Mem.pfnGetPitchFor2dImage;
+        if( nullptr != pfnGetPitchFor2dImage )
+        {
+            result = pfnGetPitchFor2dImage( hContext, hDevice, imageWidth, imageHeight, elementSizeInBytes, rowPitch );
+        }
+        else
+        {
+            // generic implementation
+        }
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeImageGetDeviceOffsetExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zeImageGetDeviceOffsetExp(
+        ze_image_handle_t hImage,                       ///< [in] handle of the image
+        uint64_t* pDeviceOffset                         ///< [out] bindless device offset for image
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnGetDeviceOffsetExp = context.zeDdiTable.ImageExp.pfnGetDeviceOffsetExp;
+        if( nullptr != pfnGetDeviceOffsetExp )
+        {
+            result = pfnGetDeviceOffsetExp( hImage, pDeviceOffset );
+        }
+        else
+        {
+            // generic implementation
+        }
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeCommandListCreateCloneExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zeCommandListCreateCloneExp(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle to source command list (the command list to clone)
+        ze_command_list_handle_t* phClonedCommandList   ///< [out] pointer to handle of the cloned command list
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnCreateCloneExp = context.zeDdiTable.CommandListExp.pfnCreateCloneExp;
+        if( nullptr != pfnCreateCloneExp )
+        {
+            result = pfnCreateCloneExp( hCommandList, phClonedCommandList );
+        }
+        else
+        {
+            // generic implementation
+            *phClonedCommandList = reinterpret_cast<ze_command_list_handle_t>( context.get() );
+
+        }
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeCommandListImmediateAppendCommandListsExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zeCommandListImmediateAppendCommandListsExp(
+        ze_command_list_handle_t hCommandListImmediate, ///< [in] handle of the immediate command list
+        uint32_t numCommandLists,                       ///< [in] number of command lists
+        ze_command_list_handle_t* phCommandLists,       ///< [in][range(0, numCommandLists)] handles of command lists
+        ze_event_handle_t hSignalEvent,                 ///< [in][optional] handle of the event to signal on completion
+                                                        ///<    - if not null, this event is signaled after the completion of all
+                                                        ///< appended command lists
+        uint32_t numWaitEvents,                         ///< [in][optional] number of events to wait on before executing appended
+                                                        ///< command lists; must be 0 if nullptr == phWaitEvents
+        ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
+                                                        ///< on before executing appended command lists.
+                                                        ///<    - if not null, all wait events must be satisfied prior to the start
+                                                        ///< of any appended command list(s)
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnImmediateAppendCommandListsExp = context.zeDdiTable.CommandListExp.pfnImmediateAppendCommandListsExp;
+        if( nullptr != pfnImmediateAppendCommandListsExp )
+        {
+            result = pfnImmediateAppendCommandListsExp( hCommandListImmediate, numCommandLists, phCommandLists, hSignalEvent, numWaitEvents, phWaitEvents );
+        }
+        else
+        {
+            // generic implementation
+        }
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeCommandListGetNextCommandIdExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zeCommandListGetNextCommandIdExp(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
+        const ze_mutable_command_id_exp_desc_t* desc,   ///< [in] pointer to mutable command identifier descriptor
+        uint64_t* pCommandId                            ///< [out] pointer to mutable command identifier to be written
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnGetNextCommandIdExp = context.zeDdiTable.CommandListExp.pfnGetNextCommandIdExp;
+        if( nullptr != pfnGetNextCommandIdExp )
+        {
+            result = pfnGetNextCommandIdExp( hCommandList, desc, pCommandId );
+        }
+        else
+        {
+            // generic implementation
+        }
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeCommandListUpdateMutableCommandsExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zeCommandListUpdateMutableCommandsExp(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
+        const ze_mutable_commands_exp_desc_t* desc      ///< [in] pointer to mutable commands descriptor; multiple descriptors may
+                                                        ///< be chained via `pNext` member
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnUpdateMutableCommandsExp = context.zeDdiTable.CommandListExp.pfnUpdateMutableCommandsExp;
+        if( nullptr != pfnUpdateMutableCommandsExp )
+        {
+            result = pfnUpdateMutableCommandsExp( hCommandList, desc );
+        }
+        else
+        {
+            // generic implementation
+        }
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeCommandListUpdateMutableCommandSignalEventExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zeCommandListUpdateMutableCommandSignalEventExp(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
+        uint64_t commandId,                             ///< [in] command identifier
+        ze_event_handle_t hSignalEvent                  ///< [in][optional] handle of the event to signal on completion
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnUpdateMutableCommandSignalEventExp = context.zeDdiTable.CommandListExp.pfnUpdateMutableCommandSignalEventExp;
+        if( nullptr != pfnUpdateMutableCommandSignalEventExp )
+        {
+            result = pfnUpdateMutableCommandSignalEventExp( hCommandList, commandId, hSignalEvent );
+        }
+        else
+        {
+            // generic implementation
+        }
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeCommandListUpdateMutableCommandWaitEventsExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zeCommandListUpdateMutableCommandWaitEventsExp(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
+        uint64_t commandId,                             ///< [in] command identifier
+        uint32_t numWaitEvents,                         ///< [in][optional] the number of wait events
+        ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
+                                                        ///< on before launching
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnUpdateMutableCommandWaitEventsExp = context.zeDdiTable.CommandListExp.pfnUpdateMutableCommandWaitEventsExp;
+        if( nullptr != pfnUpdateMutableCommandWaitEventsExp )
+        {
+            result = pfnUpdateMutableCommandWaitEventsExp( hCommandList, commandId, numWaitEvents, phWaitEvents );
+        }
+        else
+        {
+            // generic implementation
+        }
+
+        return result;
+    }
+
 } // namespace driver
 
 #if defined(__cplusplus)
@@ -4804,6 +5321,10 @@ zeGetCommandQueueProcAddrTable(
 
     pDdiTable->pfnSynchronize                            = driver::zeCommandQueueSynchronize;
 
+    pDdiTable->pfnGetOrdinal                             = driver::zeCommandQueueGetOrdinal;
+
+    pDdiTable->pfnGetIndex                               = driver::zeCommandQueueGetIndex;
+
     return result;
 }
 
@@ -4887,6 +5408,53 @@ zeGetCommandListProcAddrTable(
 
     pDdiTable->pfnHostSynchronize                        = driver::zeCommandListHostSynchronize;
 
+    pDdiTable->pfnGetDeviceHandle                        = driver::zeCommandListGetDeviceHandle;
+
+    pDdiTable->pfnGetContextHandle                       = driver::zeCommandListGetContextHandle;
+
+    pDdiTable->pfnGetOrdinal                             = driver::zeCommandListGetOrdinal;
+
+    pDdiTable->pfnImmediateGetIndex                      = driver::zeCommandListImmediateGetIndex;
+
+    pDdiTable->pfnIsImmediate                            = driver::zeCommandListIsImmediate;
+
+    return result;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Exported function for filling application's CommandListExp table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+ZE_DLLEXPORT ze_result_t ZE_APICALL
+zeGetCommandListExpProcAddrTable(
+    ze_api_version_t version,                       ///< [in] API version requested
+    ze_command_list_exp_dditable_t* pDdiTable       ///< [in,out] pointer to table of DDI function pointers
+    )
+{
+    if( nullptr == pDdiTable )
+        return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+    if( driver::context.version < version )
+        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+
+    ze_result_t result = ZE_RESULT_SUCCESS;
+
+    pDdiTable->pfnCreateCloneExp                         = driver::zeCommandListCreateCloneExp;
+
+    pDdiTable->pfnImmediateAppendCommandListsExp         = driver::zeCommandListImmediateAppendCommandListsExp;
+
+    pDdiTable->pfnGetNextCommandIdExp                    = driver::zeCommandListGetNextCommandIdExp;
+
+    pDdiTable->pfnUpdateMutableCommandsExp               = driver::zeCommandListUpdateMutableCommandsExp;
+
+    pDdiTable->pfnUpdateMutableCommandSignalEventExp     = driver::zeCommandListUpdateMutableCommandSignalEventExp;
+
+    pDdiTable->pfnUpdateMutableCommandWaitEventsExp      = driver::zeCommandListUpdateMutableCommandWaitEventsExp;
+
     return result;
 }
 
@@ -4927,6 +5495,12 @@ zeGetEventProcAddrTable(
     pDdiTable->pfnQueryKernelTimestamp                   = driver::zeEventQueryKernelTimestamp;
 
     pDdiTable->pfnQueryKernelTimestampsExt               = driver::zeEventQueryKernelTimestampsExt;
+
+    pDdiTable->pfnGetEventPool                           = driver::zeEventGetEventPool;
+
+    pDdiTable->pfnGetSignalScope                         = driver::zeEventGetSignalScope;
+
+    pDdiTable->pfnGetWaitScope                           = driver::zeEventGetWaitScope;
 
     return result;
 }
@@ -4991,6 +5565,10 @@ zeGetEventPoolProcAddrTable(
     pDdiTable->pfnCloseIpcHandle                         = driver::zeEventPoolCloseIpcHandle;
 
     pDdiTable->pfnPutIpcHandle                           = driver::zeEventPoolPutIpcHandle;
+
+    pDdiTable->pfnGetContextHandle                       = driver::zeEventPoolGetContextHandle;
+
+    pDdiTable->pfnGetFlags                               = driver::zeEventPoolGetFlags;
 
     return result;
 }
@@ -5090,6 +5668,8 @@ zeGetImageExpProcAddrTable(
     pDdiTable->pfnGetMemoryPropertiesExp                 = driver::zeImageGetMemoryPropertiesExp;
 
     pDdiTable->pfnViewCreateExp                          = driver::zeImageViewCreateExp;
+
+    pDdiTable->pfnGetDeviceOffsetExp                     = driver::zeImageGetDeviceOffsetExp;
 
     return result;
 }
@@ -5215,6 +5795,8 @@ zeGetMemProcAddrTable(
     pDdiTable->pfnFreeExt                                = driver::zeMemFreeExt;
 
     pDdiTable->pfnPutIpcHandle                           = driver::zeMemPutIpcHandle;
+
+    pDdiTable->pfnGetPitchFor2dImage                     = driver::zeMemGetPitchFor2dImage;
 
     return result;
 }

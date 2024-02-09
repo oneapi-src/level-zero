@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (C) 2019-2022 Intel Corporation
+ * Copyright (C) 2019-2024 Intel Corporation
  *
  * SPDX-License-Identifier: MIT
  *
@@ -1896,6 +1896,525 @@ zetMetricGroupCalculateMetricExportDataExp(
     }
 
     return pfnCalculateMetricExportDataExp( hDriver, type, exportDataSize, pExportData, pCalculateDescriptor, pSetCount, pTotalMetricValueCount, pMetricCounts, pMetricValues );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Query and get the available metric programmable handles.
+/// 
+/// @details
+///     - Query the available programmable handles using *pCount = 0.
+///     - Returns all programmable metric handles available in the device.
+///     - The application may call this function from simultaneous threads.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hDevice`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == pCount`
+ze_result_t ZE_APICALL
+zetMetricProgrammableGetExp(
+    zet_device_handle_t hDevice,                    ///< [in] handle of the device
+    uint32_t* pCount,                               ///< [in,out] pointer to the number of metric programmable handles.
+                                                    ///< if count is zero, then the driver shall update the value with the
+                                                    ///< total number of metric programmable handles available.
+                                                    ///< if count is greater than the number of metric programmable handles
+                                                    ///< available, then the driver shall update the value with the correct
+                                                    ///< number of metric programmable handles available.
+    zet_metric_programmable_exp_handle_t* phMetricProgrammables ///< [in,out][optional][range(0, *pCount)] array of handle of metric programmables.
+                                                    ///< if count is less than the number of metric programmables available,
+                                                    ///< then driver shall only retrieve that number of metric programmables.
+    )
+{
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
+    auto pfnGetExp = ze_lib::context->zetDdiTable.load()->MetricProgrammableExp.pfnGetExp;
+    if( nullptr == pfnGetExp ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    return pfnGetExp( hDevice, pCount, phMetricProgrammables );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Get the properties of the metric programmable.
+/// 
+/// @details
+///     - Returns the properties of the metric programmable.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hMetricProgrammable`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == pProperties`
+ze_result_t ZE_APICALL
+zetMetricProgrammableGetPropertiesExp(
+    zet_metric_programmable_exp_handle_t hMetricProgrammable,   ///< [in] handle of the metric programmable
+    zet_metric_programmable_exp_properties_t* pProperties   ///< [in,out] properties of the metric programmable
+    )
+{
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
+    auto pfnGetPropertiesExp = ze_lib::context->zetDdiTable.load()->MetricProgrammableExp.pfnGetPropertiesExp;
+    if( nullptr == pfnGetPropertiesExp ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    return pfnGetPropertiesExp( hMetricProgrammable, pProperties );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Get the information about the parameters of the metric programmable.
+/// 
+/// @details
+///     - Returns information about the parameters of the metric programmable
+///       handle.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hMetricProgrammable`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == pParameterCount`
+///         + `nullptr == pParameterInfo`
+ze_result_t ZE_APICALL
+zetMetricProgrammableGetParamInfoExp(
+    zet_metric_programmable_exp_handle_t hMetricProgrammable,   ///< [in] handle of the metric programmable
+    uint32_t* pParameterCount,                      ///< [in,out] count of the parameters to retrieve parameter info.
+                                                    ///< if value pParameterCount is greater than count of parameters
+                                                    ///< available, then pParameterCount will be updated with count of
+                                                    ///< parameters available.
+                                                    ///< The count of parameters available can be queried using ::zetMetricProgrammableGetPropertiesExp.
+    zet_metric_programmable_param_info_exp_t* pParameterInfo///< [in,out][range(1, *pParameterCount)] array of parameter info.
+                                                    ///< if parameterCount is less than the number of parameters available,
+                                                    ///< then driver shall only retrieve that number of parameter info.
+    )
+{
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
+    auto pfnGetParamInfoExp = ze_lib::context->zetDdiTable.load()->MetricProgrammableExp.pfnGetParamInfoExp;
+    if( nullptr == pfnGetParamInfoExp ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    return pfnGetParamInfoExp( hMetricProgrammable, pParameterCount, pParameterInfo );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Get the information about the parameter value of the metric
+///        programmable.
+/// 
+/// @details
+///     - Returns the value-information about the parameter at the specific
+///       ordinal of the metric programmable handle.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hMetricProgrammable`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == pValueInfoCount`
+///         + `nullptr == pValueInfo`
+ze_result_t ZE_APICALL
+zetMetricProgrammableGetParamValueInfoExp(
+    zet_metric_programmable_exp_handle_t hMetricProgrammable,   ///< [in] handle of the metric programmable
+    uint32_t parameterOrdinal,                      ///< [in] ordinal of the parameter in the metric programmable
+    uint32_t* pValueInfoCount,                      ///< [in,out] count of parameter value information to retrieve.
+                                                    ///< if value at pValueInfoCount is greater than count of value info
+                                                    ///< available, then pValueInfoCount will be updated with count of value
+                                                    ///< info available.
+                                                    ///< The count of parameter value info available can be queried using ::zetMetricProgrammableGetParamInfoExp.
+    zet_metric_programmable_param_value_info_exp_t* pValueInfo  ///< [in,out][range(1, *pValueInfoCount)] array of parameter value info.
+                                                    ///< if pValueInfoCount is less than the number of value info available,
+                                                    ///< then driver shall only retrieve that number of value info.
+    )
+{
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
+    auto pfnGetParamValueInfoExp = ze_lib::context->zetDdiTable.load()->MetricProgrammableExp.pfnGetParamValueInfoExp;
+    if( nullptr == pfnGetParamValueInfoExp ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    return pfnGetParamValueInfoExp( hMetricProgrammable, parameterOrdinal, pValueInfoCount, pValueInfo );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Create metric handles by applying parameter values on the metric
+///        programmable handle.
+/// 
+/// @details
+///     - Multiple parameter values could be used to prepare a metric.
+///     - If parameterCount = 0, the default value of the metric programmable
+///       would be used for all parameters.
+///     - The implementation can post-fix a C string to the metric name and
+///       description, based on the parmeter values chosen.
+///     - ::zetMetricProgrammableGetParamInfoExp() returns a list of parameters
+///       in a defined order.
+///     - Therefore, the list of values passed in to the API should respect the
+///       same order such that the desired parameter is set with expected value
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hMetricProgrammable`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == pParameterValues`
+///         + `nullptr == pName`
+///         + `nullptr == pDescription`
+///         + `nullptr == pMetricHandleCount`
+ze_result_t ZE_APICALL
+zetMetricCreateFromProgrammableExp(
+    zet_metric_programmable_exp_handle_t hMetricProgrammable,   ///< [in] handle of the metric programmable
+    zet_metric_programmable_param_value_exp_t* pParameterValues,///< [in] list of parameter values to be set.
+    uint32_t parameterCount,                        ///< [in] Count of parameters to set.
+    const char* pName,                              ///< [in] pointer to metric name to be used. Must point to a
+                                                    ///< null-terminated character array no longer than ::ZET_MAX_METRIC_NAME.
+    const char* pDescription,                       ///< [in] pointer to metric description to be used. Must point to a
+                                                    ///< null-terminated character array no longer than
+                                                    ///< ::ZET_MAX_METRIC_DESCRIPTION.
+    uint32_t* pMetricHandleCount,                   ///< [in,out] Pointer to the number of metric handles.
+                                                    ///< if count is zero, then the driver shall update the value with the
+                                                    ///< number of metric handles available for this programmable.
+                                                    ///< if count is greater than the number of metric handles available, then
+                                                    ///< the driver shall update the value with the correct number of metric
+                                                    ///< handles available.
+    zet_metric_handle_t* phMetricHandles            ///< [in,out][optional][range(0,*pMetricHandleCount)] array of handle of metrics.
+                                                    ///< if count is less than the number of metrics available, then driver
+                                                    ///< shall only retrieve that number of metric handles.
+    )
+{
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
+    auto pfnCreateFromProgrammableExp = ze_lib::context->zetDdiTable.load()->MetricExp.pfnCreateFromProgrammableExp;
+    if( nullptr == pfnCreateFromProgrammableExp ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    return pfnCreateFromProgrammableExp( hMetricProgrammable, pParameterValues, parameterCount, pName, pDescription, pMetricHandleCount, phMetricHandles );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Create metric group handle.
+/// 
+/// @details
+///     - Metrics from ::zetMetricCreateFromProgrammableExp() could be added to
+///       the created metric group.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hDevice`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == pName`
+///         + `nullptr == pDescription`
+///         + `nullptr == phMetricGroup`
+///     - ::ZE_RESULT_ERROR_INVALID_ENUMERATION
+///         + `0x3 < samplingType`
+ze_result_t ZE_APICALL
+zetMetricGroupCreateExp(
+    zet_device_handle_t hDevice,                    ///< [in] handle of the device
+    const char* pName,                              ///< [in] pointer to metric group name. Must point to a null-terminated
+                                                    ///< character array no longer than ::ZET_MAX_METRIC_GROUP_NAME.
+    const char* pDescription,                       ///< [in] pointer to metric group description. Must point to a
+                                                    ///< null-terminated character array no longer than
+                                                    ///< ::ZET_MAX_METRIC_GROUP_DESCRIPTION.
+    zet_metric_group_sampling_type_flags_t samplingType,///< [in] Sampling type for the metric group.
+    zet_metric_group_handle_t* phMetricGroup        ///< [in,out] Created Metric group handle
+    )
+{
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
+    auto pfnCreateExp = ze_lib::context->zetDdiTable.load()->MetricGroupExp.pfnCreateExp;
+    if( nullptr == pfnCreateExp ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    return pfnCreateExp( hDevice, pName, pDescription, samplingType, phMetricGroup );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Add a metric handle to the metric group handle created using
+///        ::zetMetricGroupCreateExp.
+/// 
+/// @details
+///     - Reasons for failing to add the metric could be queried using
+///       pErrorString
+///     - Multiple additions of same metric would add the metric only once to
+///       the hMetricGroup
+///     - Metric handles from multiple domains may be used in a single metric
+///       group.
+///     - Metric handles from different sourceIds (refer
+///       ::zet_metric_programmable_exp_properties_t) are not allowed in a
+///       single metric group.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hMetricGroup`
+///         + `nullptr == hMetric`
+///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
+///         + If a Metric handle from a pre-defined metric group is requested to be added.
+///     - ::ZE_RESULT_ERROR_HANDLE_OBJECT_IN_USE
+///         + If the metric group is currently activated.
+ze_result_t ZE_APICALL
+zetMetricGroupAddMetricExp(
+    zet_metric_group_handle_t hMetricGroup,         ///< [in] Handle of the metric group
+    zet_metric_handle_t hMetric,                    ///< [in] Metric to be added to the group.
+    size_t * pErrorStringSize,                      ///< [in,out][optional] Size of the error string to query, if an error was
+                                                    ///< reported during adding the metric handle.
+                                                    ///< if *pErrorStringSize is zero, then the driver shall update the value
+                                                    ///< with the size of the error string in bytes.
+    char* pErrorString                              ///< [in,out][optional][range(0, *pErrorStringSize)] Error string.
+                                                    ///< if *pErrorStringSize is less than the length of the error string
+                                                    ///< available, then driver shall only retrieve that length of error string.
+    )
+{
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
+    auto pfnAddMetricExp = ze_lib::context->zetDdiTable.load()->MetricGroupExp.pfnAddMetricExp;
+    if( nullptr == pfnAddMetricExp ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    return pfnAddMetricExp( hMetricGroup, hMetric, pErrorStringSize, pErrorString );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Remove a metric from the metric group handle created using
+///        ::zetMetricGroupCreateExp.
+/// 
+/// @details
+///     - Remove an already added metric handle from the metric group.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hMetricGroup`
+///         + `nullptr == hMetric`
+///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
+///         + If trying to remove a metric not previously added to the metric group
+///         + If the input metric group is a pre-defined metric group
+///     - ::ZE_RESULT_ERROR_HANDLE_OBJECT_IN_USE
+///         + If the metric group is currently activated
+ze_result_t ZE_APICALL
+zetMetricGroupRemoveMetricExp(
+    zet_metric_group_handle_t hMetricGroup,         ///< [in] Handle of the metric group
+    zet_metric_handle_t hMetric                     ///< [in] Metric handle to be removed from the metric group.
+    )
+{
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
+    auto pfnRemoveMetricExp = ze_lib::context->zetDdiTable.load()->MetricGroupExp.pfnRemoveMetricExp;
+    if( nullptr == pfnRemoveMetricExp ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    return pfnRemoveMetricExp( hMetricGroup, hMetric );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Closes a created metric group using ::zetMetricGroupCreateExp, so that
+///        it can be activated.
+/// 
+/// @details
+///     - Finalizes the ::zetMetricGroupAddMetricExp and
+///       ::zetMetricGroupRemoveMetricExp operations on the metric group.
+///     - This is a necessary step before activation of the created metric
+///       group.
+///     - Add / Remove of metrics is possible after ::zetMetricGroupCloseExp.
+///       However, a call to ::zetMetricGroupCloseExp is necessary after
+///       modifying the metric group.
+///     - Implementations could choose to add new metrics to the group during
+///       ::zetMetricGroupCloseExp, which are related and might add value to the
+///       metrics already added by the application
+///     - Applications can query the list of metrics in the metric group using
+///       ::zetMetricGet
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hMetricGroup`
+///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
+///         + If the input metric group is a pre-defined metric group
+///     - ::ZE_RESULT_ERROR_HANDLE_OBJECT_IN_USE
+///         + If the metric group is currently activated
+ze_result_t ZE_APICALL
+zetMetricGroupCloseExp(
+    zet_metric_group_handle_t hMetricGroup          ///< [in] Handle of the metric group
+    )
+{
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
+    auto pfnCloseExp = ze_lib::context->zetDdiTable.load()->MetricGroupExp.pfnCloseExp;
+    if( nullptr == pfnCloseExp ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    return pfnCloseExp( hMetricGroup );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Destroy a metric group created using ::zetMetricGroupCreateExp.
+/// 
+/// @details
+///     - Metric handles created using ::zetMetricCreateFromProgrammableExp and
+///       are part of the metricGroup are not destroyed.
+///     - It is necessary to call ::zetMetricDestroyExp for each of the metric
+///       handles (created from ::zetMetricCreateFromProgrammableExp) to destroy
+///       them.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hMetricGroup`
+///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
+///         + If trying to destroy a pre-defined metric group
+///     - ::ZE_RESULT_ERROR_HANDLE_OBJECT_IN_USE
+///         + If trying to destroy an activated metric group
+ze_result_t ZE_APICALL
+zetMetricGroupDestroyExp(
+    zet_metric_group_handle_t hMetricGroup          ///< [in] Handle of the metric group to destroy
+    )
+{
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
+    auto pfnDestroyExp = ze_lib::context->zetDdiTable.load()->MetricGroupExp.pfnDestroyExp;
+    if( nullptr == pfnDestroyExp ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    return pfnDestroyExp( hMetricGroup );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Destroy a metric created using ::zetMetricCreateFromProgrammableExp.
+/// 
+/// @details
+///     - If a metric is added to a metric group, the metric has to be removed
+///       using ::zetMetricGroupRemoveMetricExp before it can be destroyed.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hMetric`
+///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
+///         + If trying to destroy a metric from pre-defined metric group
+///     - ::ZE_RESULT_ERROR_HANDLE_OBJECT_IN_USE
+///         + If trying to destroy a metric currently added to a metric group
+ze_result_t ZE_APICALL
+zetMetricDestroyExp(
+    zet_metric_handle_t hMetric                     ///< [in] Handle of the metric to destroy
+    )
+{
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
+    auto pfnDestroyExp = ze_lib::context->zetDdiTable.load()->MetricExp.pfnDestroyExp;
+    if( nullptr == pfnDestroyExp ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    return pfnDestroyExp( hMetric );
 }
 
 } // extern "C"

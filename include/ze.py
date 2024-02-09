@@ -4,7 +4,7 @@
  SPDX-License-Identifier: MIT
 
  @file ze.py
- @version v1.8-r1.8.0
+ @version v1.9-r1.9.1
 
  """
 import platform
@@ -302,6 +302,17 @@ class ze_structure_type_v(IntEnum):
     RTAS_DEVICE_EXP_PROPERTIES = 0x00020012                                 ## ::ze_rtas_device_exp_properties_t
     RTAS_GEOMETRY_AABBS_EXP_CB_PARAMS = 0x00020013                          ## ::ze_rtas_geometry_aabbs_exp_cb_params_t
     COUNTER_BASED_EVENT_POOL_EXP_DESC = 0x00020014                          ## ::ze_event_pool_counter_based_exp_desc_t
+    MUTABLE_COMMAND_LIST_EXP_PROPERTIES = 0x00020015                        ## ::ze_mutable_command_list_exp_properties_t
+    MUTABLE_COMMAND_LIST_EXP_DESC = 0x00020016                              ## ::ze_mutable_command_list_exp_desc_t
+    MUTABLE_COMMAND_ID_EXP_DESC = 0x00020017                                ## ::ze_mutable_command_id_exp_desc_t
+    MUTABLE_COMMANDS_EXP_DESC = 0x00020018                                  ## ::ze_mutable_commands_exp_desc_t
+    MUTABLE_KERNEL_ARGUMENT_EXP_DESC = 0x00020019                           ## ::ze_mutable_kernel_argument_exp_desc_t
+    MUTABLE_GROUP_COUNT_EXP_DESC = 0x0002001A                               ## ::ze_mutable_group_count_exp_desc_t
+    MUTABLE_GROUP_SIZE_EXP_DESC = 0x0002001B                                ## ::ze_mutable_group_size_exp_desc_t
+    MUTABLE_GLOBAL_OFFSET_EXP_DESC = 0x0002001C                             ## ::ze_mutable_global_offset_exp_desc_t
+    PITCHED_ALLOC_DEVICE_EXP_PROPERTIES = 0x0002001D                        ## ::ze_device_pitched_alloc_exp_properties_t
+    BINDLESS_IMAGE_EXP_DESC = 0x0002001E                                    ## ::ze_image_bindless_exp_desc_t
+    PITCHED_IMAGE_EXP_DESC = 0x0002001F                                     ## ::ze_image_pitched_exp_desc_t
 
 class ze_structure_type_t(c_int):
     def __str__(self):
@@ -981,6 +992,8 @@ class ze_command_list_flags_v(IntEnum):
                                                                             ## application is allowed to pass signal and wait events to each appended
                                                                             ## command to implement
                                                                             ## more complex dependency graphs. Cannot be combined with ::ZE_COMMAND_LIST_FLAG_RELAXED_ORDERING.
+    EXP_CLONEABLE = ZE_BIT(4)                                               ## this command list may be cloned using ::zeCommandListCreateCloneExp
+                                                                            ## after ::zeCommandListClose.
 
 class ze_command_list_flags_t(c_int):
     def __str__(self):
@@ -3689,6 +3702,240 @@ class ze_event_pool_counter_based_exp_desc_t(Structure):
     ]
 
 ###############################################################################
+## @brief Image Memory Properties Extension Name
+ZE_BINDLESS_IMAGE_EXP_NAME = "ZE_experimental_bindless_image"
+
+###############################################################################
+## @brief Bindless Image Extension Version(s)
+class ze_bindless_image_exp_version_v(IntEnum):
+    _1_0 = ZE_MAKE_VERSION( 1, 0 )                                          ## version 1.0
+    CURRENT = ZE_MAKE_VERSION( 1, 0 )                                       ## latest known version
+
+class ze_bindless_image_exp_version_t(c_int):
+    def __str__(self):
+        return str(ze_bindless_image_exp_version_v(self.value))
+
+
+###############################################################################
+## @brief Image flags for Bindless images
+class ze_image_bindless_exp_flags_v(IntEnum):
+    BINDLESS = ZE_BIT(0)                                                    ## Bindless images are created with ::zeImageCreate. The image handle
+                                                                            ## created with this flag is valid on both host and device.
+
+class ze_image_bindless_exp_flags_t(c_int):
+    def __str__(self):
+        return hex(self.value)
+
+
+###############################################################################
+## @brief Image descriptor for bindless images. This structure may be passed to
+##        ::zeImageCreate via pNext member of ::ze_image_desc_t.
+class ze_image_bindless_exp_desc_t(Structure):
+    _fields_ = [
+        ("stype", ze_structure_type_t),                                 ## [in] type of this structure
+        ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains stype and pNext).
+        ("flags", ze_image_bindless_exp_flags_t)                        ## [in] image flags.
+                                                                        ## must be 0 (default) or a valid value of ::ze_image_bindless_exp_flag_t
+                                                                        ## default behavior is bindless images are not used when creating handles
+                                                                        ## via ::zeImageCreate.
+                                                                        ## When the flag is passed to ::zeImageCreate, then only the memory for
+                                                                        ## the image is allocated.
+                                                                        ## Additional image handles can be created with ::zeImageViewCreateExt.
+    ]
+
+###############################################################################
+## @brief Image descriptor for bindless images created from pitched allocations.
+##        This structure may be passed to ::zeImageCreate via pNext member of
+##        ::ze_image_desc_t.
+class ze_image_pitched_exp_desc_t(Structure):
+    _fields_ = [
+        ("stype", ze_structure_type_t),                                 ## [in] type of this structure
+        ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains stype and pNext).
+        ("ptr", c_void_p)                                               ## [in] pointer to pitched device allocation allocated using ::zeMemAllocDevice
+    ]
+
+###############################################################################
+## @brief Device specific properties for pitched allocations
+## 
+## @details
+##     - This structure may be passed to ::zeDeviceGetImageProperties via the
+##       pNext member of ::ze_device_image_properties_t.
+class ze_device_pitched_alloc_exp_properties_t(Structure):
+    _fields_ = [
+        ("stype", ze_structure_type_t),                                 ## [in] type of this structure
+        ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains stype and pNext).
+        ("maxImageLinearWidth", c_size_t),                              ## [out] Maximum image linear width.
+        ("maxImageLinearHeight", c_size_t)                              ## [out] Maximum image linear height.
+    ]
+
+###############################################################################
+## @brief Command List Clone Extension Name
+ZE_COMMAND_LIST_CLONE_EXP_NAME = "ZE_experimental_command_list_clone"
+
+###############################################################################
+## @brief Command List Clone Extension Version(s)
+class ze_command_list_clone_exp_version_v(IntEnum):
+    _1_0 = ZE_MAKE_VERSION( 1, 0 )                                          ## version 1.0
+    CURRENT = ZE_MAKE_VERSION( 1, 0 )                                       ## latest known version
+
+class ze_command_list_clone_exp_version_t(c_int):
+    def __str__(self):
+        return str(ze_command_list_clone_exp_version_v(self.value))
+
+
+###############################################################################
+## @brief Immediate Command List Append Extension Name
+ZE_IMMEDIATE_COMMAND_LIST_APPEND_EXP_NAME = "ZE_experimental_immediate_command_list_append"
+
+###############################################################################
+## @brief Immediate Command List Append Extension Version(s)
+class ze_immediate_command_list_append_exp_version_v(IntEnum):
+    _1_0 = ZE_MAKE_VERSION( 1, 0 )                                          ## version 1.0
+    CURRENT = ZE_MAKE_VERSION( 1, 0 )                                       ## latest known version
+
+class ze_immediate_command_list_append_exp_version_t(c_int):
+    def __str__(self):
+        return str(ze_immediate_command_list_append_exp_version_v(self.value))
+
+
+###############################################################################
+## @brief Mutable Command List Extension Name
+ZE_MUTABLE_COMMAND_LIST_EXP_NAME = "ZE_experimental_mutable_command_list"
+
+###############################################################################
+## @brief Mutable Command List Extension Version(s)
+class ze_mutable_command_list_exp_version_v(IntEnum):
+    _1_0 = ZE_MAKE_VERSION( 1, 0 )                                          ## version 1.0
+    CURRENT = ZE_MAKE_VERSION( 1, 0 )                                       ## latest known version
+
+class ze_mutable_command_list_exp_version_t(c_int):
+    def __str__(self):
+        return str(ze_mutable_command_list_exp_version_v(self.value))
+
+
+###############################################################################
+## @brief Mutable command flags
+class ze_mutable_command_exp_flags_v(IntEnum):
+    KERNEL_ARGUMENTS = ZE_BIT(0)                                            ## kernel arguments
+    GROUP_COUNT = ZE_BIT(1)                                                 ## kernel group count
+    GROUP_SIZE = ZE_BIT(2)                                                  ## kernel group size
+    GLOBAL_OFFSET = ZE_BIT(3)                                               ## kernel global offset
+    SIGNAL_EVENT = ZE_BIT(4)                                                ## command signal event
+    WAIT_EVENTS = ZE_BIT(5)                                                 ## command wait events
+
+class ze_mutable_command_exp_flags_t(c_int):
+    def __str__(self):
+        return hex(self.value)
+
+
+###############################################################################
+## @brief Mutable command identifier descriptor
+class ze_mutable_command_id_exp_desc_t(Structure):
+    _fields_ = [
+        ("stype", ze_structure_type_t),                                 ## [in] type of this structure
+        ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains stype and pNext).
+        ("flags", ze_mutable_command_exp_flags_t)                       ## [in] mutable command flags.
+                                                                        ##  - must be 0 (default, equivalent to setting all flags), or a valid
+                                                                        ## combination of ::ze_mutable_command_exp_flag_t
+    ]
+
+###############################################################################
+## @brief Mutable command list flags
+class ze_mutable_command_list_exp_flags_v(IntEnum):
+    RESERVED = ZE_BIT(0)                                                    ## reserved
+
+class ze_mutable_command_list_exp_flags_t(c_int):
+    def __str__(self):
+        return hex(self.value)
+
+
+###############################################################################
+## @brief Mutable command list properties
+class ze_mutable_command_list_exp_properties_t(Structure):
+    _fields_ = [
+        ("stype", ze_structure_type_t),                                 ## [in] type of this structure
+        ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains stype and pNext).
+        ("mutableCommandListFlags", ze_mutable_command_list_exp_flags_t),   ## [out] mutable command list flags
+        ("mutableCommandFlags", ze_mutable_command_exp_flags_t)         ## [out] mutable command flags
+    ]
+
+###############################################################################
+## @brief Mutable command list descriptor
+class ze_mutable_command_list_exp_desc_t(Structure):
+    _fields_ = [
+        ("stype", ze_structure_type_t),                                 ## [in] type of this structure
+        ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains stype and pNext).
+        ("flags", ze_mutable_command_list_exp_flags_t)                  ## [in] mutable command list flags.
+                                                                        ##  - must be 0 (default) or a valid combination of ::ze_mutable_command_list_exp_flag_t
+    ]
+
+###############################################################################
+## @brief Mutable commands descriptor
+class ze_mutable_commands_exp_desc_t(Structure):
+    _fields_ = [
+        ("stype", ze_structure_type_t),                                 ## [in] type of this structure
+        ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains stype and pNext).
+        ("flags", c_ulong)                                              ## [in] must be 0, this field is reserved for future use
+    ]
+
+###############################################################################
+## @brief Mutable kernel argument descriptor
+class ze_mutable_kernel_argument_exp_desc_t(Structure):
+    _fields_ = [
+        ("stype", ze_structure_type_t),                                 ## [in] type of this structure
+        ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains stype and pNext).
+        ("commandId", c_ulonglong),                                     ## [in] command identifier
+        ("argIndex", c_ulong),                                          ## [in] kernel argument index
+        ("argSize", c_size_t),                                          ## [in] kernel argument size
+        ("pArgValue", c_void_p)                                         ## [in] pointer to kernel argument value
+    ]
+
+###############################################################################
+## @brief Mutable kernel group count descriptor
+class ze_mutable_group_count_exp_desc_t(Structure):
+    _fields_ = [
+        ("stype", ze_structure_type_t),                                 ## [in] type of this structure
+        ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains stype and pNext).
+        ("commandId", c_ulonglong),                                     ## [in] command identifier
+        ("pGroupCount", POINTER(ze_group_count_t))                      ## [in] pointer to group count
+    ]
+
+###############################################################################
+## @brief Mutable kernel group size descriptor
+class ze_mutable_group_size_exp_desc_t(Structure):
+    _fields_ = [
+        ("stype", ze_structure_type_t),                                 ## [in] type of this structure
+        ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains stype and pNext).
+        ("commandId", c_ulonglong),                                     ## [in] command identifier
+        ("groupSizeX", c_ulong),                                        ## [in] group size for X dimension to use for the kernel
+        ("groupSizeY", c_ulong),                                        ## [in] group size for Y dimension to use for the kernel
+        ("groupSizeZ", c_ulong)                                         ## [in] group size for Z dimension to use for the kernel
+    ]
+
+###############################################################################
+## @brief Mutable kernel global offset descriptor
+class ze_mutable_global_offset_exp_desc_t(Structure):
+    _fields_ = [
+        ("stype", ze_structure_type_t),                                 ## [in] type of this structure
+        ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains stype and pNext).
+        ("commandId", c_ulonglong),                                     ## [in] command identifier
+        ("offsetX", c_ulong),                                           ## [in] global offset for X dimension to use for this kernel
+        ("offsetY", c_ulong),                                           ## [in] global offset for Y dimension to use for this kernel
+        ("offsetZ", c_ulong)                                            ## [in] global offset for Z dimension to use for this kernel
+    ]
+
+###############################################################################
 __use_win_types = "Windows" == platform.uname()[0]
 
 ###############################################################################
@@ -4143,6 +4390,20 @@ if __use_win_types:
 else:
     _zeCommandQueueSynchronize_t = CFUNCTYPE( ze_result_t, ze_command_queue_handle_t, c_ulonglong )
 
+###############################################################################
+## @brief Function-pointer for zeCommandQueueGetOrdinal
+if __use_win_types:
+    _zeCommandQueueGetOrdinal_t = WINFUNCTYPE( ze_result_t, ze_command_queue_handle_t, POINTER(c_ulong) )
+else:
+    _zeCommandQueueGetOrdinal_t = CFUNCTYPE( ze_result_t, ze_command_queue_handle_t, POINTER(c_ulong) )
+
+###############################################################################
+## @brief Function-pointer for zeCommandQueueGetIndex
+if __use_win_types:
+    _zeCommandQueueGetIndex_t = WINFUNCTYPE( ze_result_t, ze_command_queue_handle_t, POINTER(c_ulong) )
+else:
+    _zeCommandQueueGetIndex_t = CFUNCTYPE( ze_result_t, ze_command_queue_handle_t, POINTER(c_ulong) )
+
 
 ###############################################################################
 ## @brief Table of CommandQueue functions pointers
@@ -4151,7 +4412,9 @@ class _ze_command_queue_dditable_t(Structure):
         ("pfnCreate", c_void_p),                                        ## _zeCommandQueueCreate_t
         ("pfnDestroy", c_void_p),                                       ## _zeCommandQueueDestroy_t
         ("pfnExecuteCommandLists", c_void_p),                           ## _zeCommandQueueExecuteCommandLists_t
-        ("pfnSynchronize", c_void_p)                                    ## _zeCommandQueueSynchronize_t
+        ("pfnSynchronize", c_void_p),                                   ## _zeCommandQueueSynchronize_t
+        ("pfnGetOrdinal", c_void_p),                                    ## _zeCommandQueueGetOrdinal_t
+        ("pfnGetIndex", c_void_p)                                       ## _zeCommandQueueGetIndex_t
     ]
 
 ###############################################################################
@@ -4357,6 +4620,41 @@ if __use_win_types:
 else:
     _zeCommandListHostSynchronize_t = CFUNCTYPE( ze_result_t, ze_command_list_handle_t, c_ulonglong )
 
+###############################################################################
+## @brief Function-pointer for zeCommandListGetDeviceHandle
+if __use_win_types:
+    _zeCommandListGetDeviceHandle_t = WINFUNCTYPE( ze_result_t, ze_command_list_handle_t, POINTER(ze_device_handle_t) )
+else:
+    _zeCommandListGetDeviceHandle_t = CFUNCTYPE( ze_result_t, ze_command_list_handle_t, POINTER(ze_device_handle_t) )
+
+###############################################################################
+## @brief Function-pointer for zeCommandListGetContextHandle
+if __use_win_types:
+    _zeCommandListGetContextHandle_t = WINFUNCTYPE( ze_result_t, ze_command_list_handle_t, POINTER(ze_context_handle_t) )
+else:
+    _zeCommandListGetContextHandle_t = CFUNCTYPE( ze_result_t, ze_command_list_handle_t, POINTER(ze_context_handle_t) )
+
+###############################################################################
+## @brief Function-pointer for zeCommandListGetOrdinal
+if __use_win_types:
+    _zeCommandListGetOrdinal_t = WINFUNCTYPE( ze_result_t, ze_command_list_handle_t, POINTER(c_ulong) )
+else:
+    _zeCommandListGetOrdinal_t = CFUNCTYPE( ze_result_t, ze_command_list_handle_t, POINTER(c_ulong) )
+
+###############################################################################
+## @brief Function-pointer for zeCommandListImmediateGetIndex
+if __use_win_types:
+    _zeCommandListImmediateGetIndex_t = WINFUNCTYPE( ze_result_t, ze_command_list_handle_t, POINTER(c_ulong) )
+else:
+    _zeCommandListImmediateGetIndex_t = CFUNCTYPE( ze_result_t, ze_command_list_handle_t, POINTER(c_ulong) )
+
+###############################################################################
+## @brief Function-pointer for zeCommandListIsImmediate
+if __use_win_types:
+    _zeCommandListIsImmediate_t = WINFUNCTYPE( ze_result_t, ze_command_list_handle_t, POINTER(ze_bool_t) )
+else:
+    _zeCommandListIsImmediate_t = CFUNCTYPE( ze_result_t, ze_command_list_handle_t, POINTER(ze_bool_t) )
+
 
 ###############################################################################
 ## @brief Table of CommandList functions pointers
@@ -4390,7 +4688,67 @@ class _ze_command_list_dditable_t(Structure):
         ("pfnAppendLaunchMultipleKernelsIndirect", c_void_p),           ## _zeCommandListAppendLaunchMultipleKernelsIndirect_t
         ("pfnAppendImageCopyToMemoryExt", c_void_p),                    ## _zeCommandListAppendImageCopyToMemoryExt_t
         ("pfnAppendImageCopyFromMemoryExt", c_void_p),                  ## _zeCommandListAppendImageCopyFromMemoryExt_t
-        ("pfnHostSynchronize", c_void_p)                                ## _zeCommandListHostSynchronize_t
+        ("pfnHostSynchronize", c_void_p),                               ## _zeCommandListHostSynchronize_t
+        ("pfnGetDeviceHandle", c_void_p),                               ## _zeCommandListGetDeviceHandle_t
+        ("pfnGetContextHandle", c_void_p),                              ## _zeCommandListGetContextHandle_t
+        ("pfnGetOrdinal", c_void_p),                                    ## _zeCommandListGetOrdinal_t
+        ("pfnImmediateGetIndex", c_void_p),                             ## _zeCommandListImmediateGetIndex_t
+        ("pfnIsImmediate", c_void_p)                                    ## _zeCommandListIsImmediate_t
+    ]
+
+###############################################################################
+## @brief Function-pointer for zeCommandListCreateCloneExp
+if __use_win_types:
+    _zeCommandListCreateCloneExp_t = WINFUNCTYPE( ze_result_t, ze_command_list_handle_t, POINTER(ze_command_list_handle_t) )
+else:
+    _zeCommandListCreateCloneExp_t = CFUNCTYPE( ze_result_t, ze_command_list_handle_t, POINTER(ze_command_list_handle_t) )
+
+###############################################################################
+## @brief Function-pointer for zeCommandListImmediateAppendCommandListsExp
+if __use_win_types:
+    _zeCommandListImmediateAppendCommandListsExp_t = WINFUNCTYPE( ze_result_t, ze_command_list_handle_t, c_ulong, POINTER(ze_command_list_handle_t), ze_event_handle_t, c_ulong, POINTER(ze_event_handle_t) )
+else:
+    _zeCommandListImmediateAppendCommandListsExp_t = CFUNCTYPE( ze_result_t, ze_command_list_handle_t, c_ulong, POINTER(ze_command_list_handle_t), ze_event_handle_t, c_ulong, POINTER(ze_event_handle_t) )
+
+###############################################################################
+## @brief Function-pointer for zeCommandListGetNextCommandIdExp
+if __use_win_types:
+    _zeCommandListGetNextCommandIdExp_t = WINFUNCTYPE( ze_result_t, ze_command_list_handle_t, POINTER(ze_mutable_command_id_exp_desc_t), POINTER(c_ulonglong) )
+else:
+    _zeCommandListGetNextCommandIdExp_t = CFUNCTYPE( ze_result_t, ze_command_list_handle_t, POINTER(ze_mutable_command_id_exp_desc_t), POINTER(c_ulonglong) )
+
+###############################################################################
+## @brief Function-pointer for zeCommandListUpdateMutableCommandsExp
+if __use_win_types:
+    _zeCommandListUpdateMutableCommandsExp_t = WINFUNCTYPE( ze_result_t, ze_command_list_handle_t, POINTER(ze_mutable_commands_exp_desc_t) )
+else:
+    _zeCommandListUpdateMutableCommandsExp_t = CFUNCTYPE( ze_result_t, ze_command_list_handle_t, POINTER(ze_mutable_commands_exp_desc_t) )
+
+###############################################################################
+## @brief Function-pointer for zeCommandListUpdateMutableCommandSignalEventExp
+if __use_win_types:
+    _zeCommandListUpdateMutableCommandSignalEventExp_t = WINFUNCTYPE( ze_result_t, ze_command_list_handle_t, c_ulonglong, ze_event_handle_t )
+else:
+    _zeCommandListUpdateMutableCommandSignalEventExp_t = CFUNCTYPE( ze_result_t, ze_command_list_handle_t, c_ulonglong, ze_event_handle_t )
+
+###############################################################################
+## @brief Function-pointer for zeCommandListUpdateMutableCommandWaitEventsExp
+if __use_win_types:
+    _zeCommandListUpdateMutableCommandWaitEventsExp_t = WINFUNCTYPE( ze_result_t, ze_command_list_handle_t, c_ulonglong, c_ulong, POINTER(ze_event_handle_t) )
+else:
+    _zeCommandListUpdateMutableCommandWaitEventsExp_t = CFUNCTYPE( ze_result_t, ze_command_list_handle_t, c_ulonglong, c_ulong, POINTER(ze_event_handle_t) )
+
+
+###############################################################################
+## @brief Table of CommandListExp functions pointers
+class _ze_command_list_exp_dditable_t(Structure):
+    _fields_ = [
+        ("pfnCreateCloneExp", c_void_p),                                ## _zeCommandListCreateCloneExp_t
+        ("pfnImmediateAppendCommandListsExp", c_void_p),                ## _zeCommandListImmediateAppendCommandListsExp_t
+        ("pfnGetNextCommandIdExp", c_void_p),                           ## _zeCommandListGetNextCommandIdExp_t
+        ("pfnUpdateMutableCommandsExp", c_void_p),                      ## _zeCommandListUpdateMutableCommandsExp_t
+        ("pfnUpdateMutableCommandSignalEventExp", c_void_p),            ## _zeCommandListUpdateMutableCommandSignalEventExp_t
+        ("pfnUpdateMutableCommandWaitEventsExp", c_void_p)              ## _zeCommandListUpdateMutableCommandWaitEventsExp_t
     ]
 
 ###############################################################################
@@ -4454,13 +4812,163 @@ if __use_win_types:
 else:
     _zeImageViewCreateExp_t = CFUNCTYPE( ze_result_t, ze_context_handle_t, ze_device_handle_t, POINTER(ze_image_desc_t), ze_image_handle_t, POINTER(ze_image_handle_t) )
 
+###############################################################################
+## @brief Function-pointer for zeImageGetDeviceOffsetExp
+if __use_win_types:
+    _zeImageGetDeviceOffsetExp_t = WINFUNCTYPE( ze_result_t, ze_image_handle_t, POINTER(c_ulonglong) )
+else:
+    _zeImageGetDeviceOffsetExp_t = CFUNCTYPE( ze_result_t, ze_image_handle_t, POINTER(c_ulonglong) )
+
 
 ###############################################################################
 ## @brief Table of ImageExp functions pointers
 class _ze_image_exp_dditable_t(Structure):
     _fields_ = [
         ("pfnGetMemoryPropertiesExp", c_void_p),                        ## _zeImageGetMemoryPropertiesExp_t
-        ("pfnViewCreateExp", c_void_p)                                  ## _zeImageViewCreateExp_t
+        ("pfnViewCreateExp", c_void_p),                                 ## _zeImageViewCreateExp_t
+        ("pfnGetDeviceOffsetExp", c_void_p)                             ## _zeImageGetDeviceOffsetExp_t
+    ]
+
+###############################################################################
+## @brief Function-pointer for zeMemAllocShared
+if __use_win_types:
+    _zeMemAllocShared_t = WINFUNCTYPE( ze_result_t, ze_context_handle_t, POINTER(ze_device_mem_alloc_desc_t), POINTER(ze_host_mem_alloc_desc_t), c_size_t, c_size_t, ze_device_handle_t, POINTER(c_void_p) )
+else:
+    _zeMemAllocShared_t = CFUNCTYPE( ze_result_t, ze_context_handle_t, POINTER(ze_device_mem_alloc_desc_t), POINTER(ze_host_mem_alloc_desc_t), c_size_t, c_size_t, ze_device_handle_t, POINTER(c_void_p) )
+
+###############################################################################
+## @brief Function-pointer for zeMemAllocDevice
+if __use_win_types:
+    _zeMemAllocDevice_t = WINFUNCTYPE( ze_result_t, ze_context_handle_t, POINTER(ze_device_mem_alloc_desc_t), c_size_t, c_size_t, ze_device_handle_t, POINTER(c_void_p) )
+else:
+    _zeMemAllocDevice_t = CFUNCTYPE( ze_result_t, ze_context_handle_t, POINTER(ze_device_mem_alloc_desc_t), c_size_t, c_size_t, ze_device_handle_t, POINTER(c_void_p) )
+
+###############################################################################
+## @brief Function-pointer for zeMemAllocHost
+if __use_win_types:
+    _zeMemAllocHost_t = WINFUNCTYPE( ze_result_t, ze_context_handle_t, POINTER(ze_host_mem_alloc_desc_t), c_size_t, c_size_t, POINTER(c_void_p) )
+else:
+    _zeMemAllocHost_t = CFUNCTYPE( ze_result_t, ze_context_handle_t, POINTER(ze_host_mem_alloc_desc_t), c_size_t, c_size_t, POINTER(c_void_p) )
+
+###############################################################################
+## @brief Function-pointer for zeMemFree
+if __use_win_types:
+    _zeMemFree_t = WINFUNCTYPE( ze_result_t, ze_context_handle_t, c_void_p )
+else:
+    _zeMemFree_t = CFUNCTYPE( ze_result_t, ze_context_handle_t, c_void_p )
+
+###############################################################################
+## @brief Function-pointer for zeMemGetAllocProperties
+if __use_win_types:
+    _zeMemGetAllocProperties_t = WINFUNCTYPE( ze_result_t, ze_context_handle_t, c_void_p, POINTER(ze_memory_allocation_properties_t), POINTER(ze_device_handle_t) )
+else:
+    _zeMemGetAllocProperties_t = CFUNCTYPE( ze_result_t, ze_context_handle_t, c_void_p, POINTER(ze_memory_allocation_properties_t), POINTER(ze_device_handle_t) )
+
+###############################################################################
+## @brief Function-pointer for zeMemGetAddressRange
+if __use_win_types:
+    _zeMemGetAddressRange_t = WINFUNCTYPE( ze_result_t, ze_context_handle_t, c_void_p, POINTER(c_void_p), POINTER(c_size_t) )
+else:
+    _zeMemGetAddressRange_t = CFUNCTYPE( ze_result_t, ze_context_handle_t, c_void_p, POINTER(c_void_p), POINTER(c_size_t) )
+
+###############################################################################
+## @brief Function-pointer for zeMemGetIpcHandle
+if __use_win_types:
+    _zeMemGetIpcHandle_t = WINFUNCTYPE( ze_result_t, ze_context_handle_t, c_void_p, POINTER(ze_ipc_mem_handle_t) )
+else:
+    _zeMemGetIpcHandle_t = CFUNCTYPE( ze_result_t, ze_context_handle_t, c_void_p, POINTER(ze_ipc_mem_handle_t) )
+
+###############################################################################
+## @brief Function-pointer for zeMemOpenIpcHandle
+if __use_win_types:
+    _zeMemOpenIpcHandle_t = WINFUNCTYPE( ze_result_t, ze_context_handle_t, ze_device_handle_t, ze_ipc_mem_handle_t, ze_ipc_memory_flags_t, POINTER(c_void_p) )
+else:
+    _zeMemOpenIpcHandle_t = CFUNCTYPE( ze_result_t, ze_context_handle_t, ze_device_handle_t, ze_ipc_mem_handle_t, ze_ipc_memory_flags_t, POINTER(c_void_p) )
+
+###############################################################################
+## @brief Function-pointer for zeMemCloseIpcHandle
+if __use_win_types:
+    _zeMemCloseIpcHandle_t = WINFUNCTYPE( ze_result_t, ze_context_handle_t, c_void_p )
+else:
+    _zeMemCloseIpcHandle_t = CFUNCTYPE( ze_result_t, ze_context_handle_t, c_void_p )
+
+###############################################################################
+## @brief Function-pointer for zeMemFreeExt
+if __use_win_types:
+    _zeMemFreeExt_t = WINFUNCTYPE( ze_result_t, ze_context_handle_t, POINTER(ze_memory_free_ext_desc_t), c_void_p )
+else:
+    _zeMemFreeExt_t = CFUNCTYPE( ze_result_t, ze_context_handle_t, POINTER(ze_memory_free_ext_desc_t), c_void_p )
+
+###############################################################################
+## @brief Function-pointer for zeMemPutIpcHandle
+if __use_win_types:
+    _zeMemPutIpcHandle_t = WINFUNCTYPE( ze_result_t, ze_context_handle_t, ze_ipc_mem_handle_t )
+else:
+    _zeMemPutIpcHandle_t = CFUNCTYPE( ze_result_t, ze_context_handle_t, ze_ipc_mem_handle_t )
+
+###############################################################################
+## @brief Function-pointer for zeMemGetPitchFor2dImage
+if __use_win_types:
+    _zeMemGetPitchFor2dImage_t = WINFUNCTYPE( ze_result_t, ze_context_handle_t, ze_device_handle_t, c_size_t, c_size_t, c_int, * )
+else:
+    _zeMemGetPitchFor2dImage_t = CFUNCTYPE( ze_result_t, ze_context_handle_t, ze_device_handle_t, c_size_t, c_size_t, c_int, * )
+
+
+###############################################################################
+## @brief Table of Mem functions pointers
+class _ze_mem_dditable_t(Structure):
+    _fields_ = [
+        ("pfnAllocShared", c_void_p),                                   ## _zeMemAllocShared_t
+        ("pfnAllocDevice", c_void_p),                                   ## _zeMemAllocDevice_t
+        ("pfnAllocHost", c_void_p),                                     ## _zeMemAllocHost_t
+        ("pfnFree", c_void_p),                                          ## _zeMemFree_t
+        ("pfnGetAllocProperties", c_void_p),                            ## _zeMemGetAllocProperties_t
+        ("pfnGetAddressRange", c_void_p),                               ## _zeMemGetAddressRange_t
+        ("pfnGetIpcHandle", c_void_p),                                  ## _zeMemGetIpcHandle_t
+        ("pfnOpenIpcHandle", c_void_p),                                 ## _zeMemOpenIpcHandle_t
+        ("pfnCloseIpcHandle", c_void_p),                                ## _zeMemCloseIpcHandle_t
+        ("pfnFreeExt", c_void_p),                                       ## _zeMemFreeExt_t
+        ("pfnPutIpcHandle", c_void_p),                                  ## _zeMemPutIpcHandle_t
+        ("pfnGetPitchFor2dImage", c_void_p)                             ## _zeMemGetPitchFor2dImage_t
+    ]
+
+###############################################################################
+## @brief Function-pointer for zeMemGetIpcHandleFromFileDescriptorExp
+if __use_win_types:
+    _zeMemGetIpcHandleFromFileDescriptorExp_t = WINFUNCTYPE( ze_result_t, ze_context_handle_t, c_ulonglong, POINTER(ze_ipc_mem_handle_t) )
+else:
+    _zeMemGetIpcHandleFromFileDescriptorExp_t = CFUNCTYPE( ze_result_t, ze_context_handle_t, c_ulonglong, POINTER(ze_ipc_mem_handle_t) )
+
+###############################################################################
+## @brief Function-pointer for zeMemGetFileDescriptorFromIpcHandleExp
+if __use_win_types:
+    _zeMemGetFileDescriptorFromIpcHandleExp_t = WINFUNCTYPE( ze_result_t, ze_context_handle_t, ze_ipc_mem_handle_t, POINTER(c_ulonglong) )
+else:
+    _zeMemGetFileDescriptorFromIpcHandleExp_t = CFUNCTYPE( ze_result_t, ze_context_handle_t, ze_ipc_mem_handle_t, POINTER(c_ulonglong) )
+
+###############################################################################
+## @brief Function-pointer for zeMemSetAtomicAccessAttributeExp
+if __use_win_types:
+    _zeMemSetAtomicAccessAttributeExp_t = WINFUNCTYPE( ze_result_t, ze_context_handle_t, ze_device_handle_t, c_void_p, c_size_t, ze_memory_atomic_attr_exp_flags_t )
+else:
+    _zeMemSetAtomicAccessAttributeExp_t = CFUNCTYPE( ze_result_t, ze_context_handle_t, ze_device_handle_t, c_void_p, c_size_t, ze_memory_atomic_attr_exp_flags_t )
+
+###############################################################################
+## @brief Function-pointer for zeMemGetAtomicAccessAttributeExp
+if __use_win_types:
+    _zeMemGetAtomicAccessAttributeExp_t = WINFUNCTYPE( ze_result_t, ze_context_handle_t, ze_device_handle_t, c_void_p, c_size_t, POINTER(ze_memory_atomic_attr_exp_flags_t) )
+else:
+    _zeMemGetAtomicAccessAttributeExp_t = CFUNCTYPE( ze_result_t, ze_context_handle_t, ze_device_handle_t, c_void_p, c_size_t, POINTER(ze_memory_atomic_attr_exp_flags_t) )
+
+
+###############################################################################
+## @brief Table of MemExp functions pointers
+class _ze_mem_exp_dditable_t(Structure):
+    _fields_ = [
+        ("pfnGetIpcHandleFromFileDescriptorExp", c_void_p),             ## _zeMemGetIpcHandleFromFileDescriptorExp_t
+        ("pfnGetFileDescriptorFromIpcHandleExp", c_void_p),             ## _zeMemGetFileDescriptorFromIpcHandleExp_t
+        ("pfnSetAtomicAccessAttributeExp", c_void_p),                   ## _zeMemSetAtomicAccessAttributeExp_t
+        ("pfnGetAtomicAccessAttributeExp", c_void_p)                    ## _zeMemGetAtomicAccessAttributeExp_t
     ]
 
 ###############################################################################
@@ -4552,6 +5060,20 @@ if __use_win_types:
 else:
     _zeEventPoolPutIpcHandle_t = CFUNCTYPE( ze_result_t, ze_context_handle_t, ze_ipc_event_pool_handle_t )
 
+###############################################################################
+## @brief Function-pointer for zeEventPoolGetContextHandle
+if __use_win_types:
+    _zeEventPoolGetContextHandle_t = WINFUNCTYPE( ze_result_t, ze_event_pool_handle_t, POINTER(ze_context_handle_t) )
+else:
+    _zeEventPoolGetContextHandle_t = CFUNCTYPE( ze_result_t, ze_event_pool_handle_t, POINTER(ze_context_handle_t) )
+
+###############################################################################
+## @brief Function-pointer for zeEventPoolGetFlags
+if __use_win_types:
+    _zeEventPoolGetFlags_t = WINFUNCTYPE( ze_result_t, ze_event_pool_handle_t, POINTER(ze_event_pool_flags_t) )
+else:
+    _zeEventPoolGetFlags_t = CFUNCTYPE( ze_result_t, ze_event_pool_handle_t, POINTER(ze_event_pool_flags_t) )
+
 
 ###############################################################################
 ## @brief Table of EventPool functions pointers
@@ -4562,7 +5084,9 @@ class _ze_event_pool_dditable_t(Structure):
         ("pfnGetIpcHandle", c_void_p),                                  ## _zeEventPoolGetIpcHandle_t
         ("pfnOpenIpcHandle", c_void_p),                                 ## _zeEventPoolOpenIpcHandle_t
         ("pfnCloseIpcHandle", c_void_p),                                ## _zeEventPoolCloseIpcHandle_t
-        ("pfnPutIpcHandle", c_void_p)                                   ## _zeEventPoolPutIpcHandle_t
+        ("pfnPutIpcHandle", c_void_p),                                  ## _zeEventPoolPutIpcHandle_t
+        ("pfnGetContextHandle", c_void_p),                              ## _zeEventPoolGetContextHandle_t
+        ("pfnGetFlags", c_void_p)                                       ## _zeEventPoolGetFlags_t
     ]
 
 ###############################################################################
@@ -4621,6 +5145,27 @@ if __use_win_types:
 else:
     _zeEventQueryKernelTimestampsExt_t = CFUNCTYPE( ze_result_t, ze_event_handle_t, ze_device_handle_t, POINTER(c_ulong), POINTER(ze_event_query_kernel_timestamps_results_ext_properties_t) )
 
+###############################################################################
+## @brief Function-pointer for zeEventGetEventPool
+if __use_win_types:
+    _zeEventGetEventPool_t = WINFUNCTYPE( ze_result_t, ze_event_handle_t, POINTER(ze_event_pool_handle_t) )
+else:
+    _zeEventGetEventPool_t = CFUNCTYPE( ze_result_t, ze_event_handle_t, POINTER(ze_event_pool_handle_t) )
+
+###############################################################################
+## @brief Function-pointer for zeEventGetSignalScope
+if __use_win_types:
+    _zeEventGetSignalScope_t = WINFUNCTYPE( ze_result_t, ze_event_handle_t, POINTER(ze_event_scope_flags_t) )
+else:
+    _zeEventGetSignalScope_t = CFUNCTYPE( ze_result_t, ze_event_handle_t, POINTER(ze_event_scope_flags_t) )
+
+###############################################################################
+## @brief Function-pointer for zeEventGetWaitScope
+if __use_win_types:
+    _zeEventGetWaitScope_t = WINFUNCTYPE( ze_result_t, ze_event_handle_t, POINTER(ze_event_scope_flags_t) )
+else:
+    _zeEventGetWaitScope_t = CFUNCTYPE( ze_result_t, ze_event_handle_t, POINTER(ze_event_scope_flags_t) )
+
 
 ###############################################################################
 ## @brief Table of Event functions pointers
@@ -4633,7 +5178,10 @@ class _ze_event_dditable_t(Structure):
         ("pfnQueryStatus", c_void_p),                                   ## _zeEventQueryStatus_t
         ("pfnHostReset", c_void_p),                                     ## _zeEventHostReset_t
         ("pfnQueryKernelTimestamp", c_void_p),                          ## _zeEventQueryKernelTimestamp_t
-        ("pfnQueryKernelTimestampsExt", c_void_p)                       ## _zeEventQueryKernelTimestampsExt_t
+        ("pfnQueryKernelTimestampsExt", c_void_p),                      ## _zeEventQueryKernelTimestampsExt_t
+        ("pfnGetEventPool", c_void_p),                                  ## _zeEventGetEventPool_t
+        ("pfnGetSignalScope", c_void_p),                                ## _zeEventGetSignalScope_t
+        ("pfnGetWaitScope", c_void_p)                                   ## _zeEventGetWaitScope_t
     ]
 
 ###############################################################################
@@ -4926,140 +5474,6 @@ class _ze_physical_mem_dditable_t(Structure):
     ]
 
 ###############################################################################
-## @brief Function-pointer for zeMemAllocShared
-if __use_win_types:
-    _zeMemAllocShared_t = WINFUNCTYPE( ze_result_t, ze_context_handle_t, POINTER(ze_device_mem_alloc_desc_t), POINTER(ze_host_mem_alloc_desc_t), c_size_t, c_size_t, ze_device_handle_t, POINTER(c_void_p) )
-else:
-    _zeMemAllocShared_t = CFUNCTYPE( ze_result_t, ze_context_handle_t, POINTER(ze_device_mem_alloc_desc_t), POINTER(ze_host_mem_alloc_desc_t), c_size_t, c_size_t, ze_device_handle_t, POINTER(c_void_p) )
-
-###############################################################################
-## @brief Function-pointer for zeMemAllocDevice
-if __use_win_types:
-    _zeMemAllocDevice_t = WINFUNCTYPE( ze_result_t, ze_context_handle_t, POINTER(ze_device_mem_alloc_desc_t), c_size_t, c_size_t, ze_device_handle_t, POINTER(c_void_p) )
-else:
-    _zeMemAllocDevice_t = CFUNCTYPE( ze_result_t, ze_context_handle_t, POINTER(ze_device_mem_alloc_desc_t), c_size_t, c_size_t, ze_device_handle_t, POINTER(c_void_p) )
-
-###############################################################################
-## @brief Function-pointer for zeMemAllocHost
-if __use_win_types:
-    _zeMemAllocHost_t = WINFUNCTYPE( ze_result_t, ze_context_handle_t, POINTER(ze_host_mem_alloc_desc_t), c_size_t, c_size_t, POINTER(c_void_p) )
-else:
-    _zeMemAllocHost_t = CFUNCTYPE( ze_result_t, ze_context_handle_t, POINTER(ze_host_mem_alloc_desc_t), c_size_t, c_size_t, POINTER(c_void_p) )
-
-###############################################################################
-## @brief Function-pointer for zeMemFree
-if __use_win_types:
-    _zeMemFree_t = WINFUNCTYPE( ze_result_t, ze_context_handle_t, c_void_p )
-else:
-    _zeMemFree_t = CFUNCTYPE( ze_result_t, ze_context_handle_t, c_void_p )
-
-###############################################################################
-## @brief Function-pointer for zeMemGetAllocProperties
-if __use_win_types:
-    _zeMemGetAllocProperties_t = WINFUNCTYPE( ze_result_t, ze_context_handle_t, c_void_p, POINTER(ze_memory_allocation_properties_t), POINTER(ze_device_handle_t) )
-else:
-    _zeMemGetAllocProperties_t = CFUNCTYPE( ze_result_t, ze_context_handle_t, c_void_p, POINTER(ze_memory_allocation_properties_t), POINTER(ze_device_handle_t) )
-
-###############################################################################
-## @brief Function-pointer for zeMemGetAddressRange
-if __use_win_types:
-    _zeMemGetAddressRange_t = WINFUNCTYPE( ze_result_t, ze_context_handle_t, c_void_p, POINTER(c_void_p), POINTER(c_size_t) )
-else:
-    _zeMemGetAddressRange_t = CFUNCTYPE( ze_result_t, ze_context_handle_t, c_void_p, POINTER(c_void_p), POINTER(c_size_t) )
-
-###############################################################################
-## @brief Function-pointer for zeMemGetIpcHandle
-if __use_win_types:
-    _zeMemGetIpcHandle_t = WINFUNCTYPE( ze_result_t, ze_context_handle_t, c_void_p, POINTER(ze_ipc_mem_handle_t) )
-else:
-    _zeMemGetIpcHandle_t = CFUNCTYPE( ze_result_t, ze_context_handle_t, c_void_p, POINTER(ze_ipc_mem_handle_t) )
-
-###############################################################################
-## @brief Function-pointer for zeMemOpenIpcHandle
-if __use_win_types:
-    _zeMemOpenIpcHandle_t = WINFUNCTYPE( ze_result_t, ze_context_handle_t, ze_device_handle_t, ze_ipc_mem_handle_t, ze_ipc_memory_flags_t, POINTER(c_void_p) )
-else:
-    _zeMemOpenIpcHandle_t = CFUNCTYPE( ze_result_t, ze_context_handle_t, ze_device_handle_t, ze_ipc_mem_handle_t, ze_ipc_memory_flags_t, POINTER(c_void_p) )
-
-###############################################################################
-## @brief Function-pointer for zeMemCloseIpcHandle
-if __use_win_types:
-    _zeMemCloseIpcHandle_t = WINFUNCTYPE( ze_result_t, ze_context_handle_t, c_void_p )
-else:
-    _zeMemCloseIpcHandle_t = CFUNCTYPE( ze_result_t, ze_context_handle_t, c_void_p )
-
-###############################################################################
-## @brief Function-pointer for zeMemFreeExt
-if __use_win_types:
-    _zeMemFreeExt_t = WINFUNCTYPE( ze_result_t, ze_context_handle_t, POINTER(ze_memory_free_ext_desc_t), c_void_p )
-else:
-    _zeMemFreeExt_t = CFUNCTYPE( ze_result_t, ze_context_handle_t, POINTER(ze_memory_free_ext_desc_t), c_void_p )
-
-###############################################################################
-## @brief Function-pointer for zeMemPutIpcHandle
-if __use_win_types:
-    _zeMemPutIpcHandle_t = WINFUNCTYPE( ze_result_t, ze_context_handle_t, ze_ipc_mem_handle_t )
-else:
-    _zeMemPutIpcHandle_t = CFUNCTYPE( ze_result_t, ze_context_handle_t, ze_ipc_mem_handle_t )
-
-
-###############################################################################
-## @brief Table of Mem functions pointers
-class _ze_mem_dditable_t(Structure):
-    _fields_ = [
-        ("pfnAllocShared", c_void_p),                                   ## _zeMemAllocShared_t
-        ("pfnAllocDevice", c_void_p),                                   ## _zeMemAllocDevice_t
-        ("pfnAllocHost", c_void_p),                                     ## _zeMemAllocHost_t
-        ("pfnFree", c_void_p),                                          ## _zeMemFree_t
-        ("pfnGetAllocProperties", c_void_p),                            ## _zeMemGetAllocProperties_t
-        ("pfnGetAddressRange", c_void_p),                               ## _zeMemGetAddressRange_t
-        ("pfnGetIpcHandle", c_void_p),                                  ## _zeMemGetIpcHandle_t
-        ("pfnOpenIpcHandle", c_void_p),                                 ## _zeMemOpenIpcHandle_t
-        ("pfnCloseIpcHandle", c_void_p),                                ## _zeMemCloseIpcHandle_t
-        ("pfnFreeExt", c_void_p),                                       ## _zeMemFreeExt_t
-        ("pfnPutIpcHandle", c_void_p)                                   ## _zeMemPutIpcHandle_t
-    ]
-
-###############################################################################
-## @brief Function-pointer for zeMemGetIpcHandleFromFileDescriptorExp
-if __use_win_types:
-    _zeMemGetIpcHandleFromFileDescriptorExp_t = WINFUNCTYPE( ze_result_t, ze_context_handle_t, c_ulonglong, POINTER(ze_ipc_mem_handle_t) )
-else:
-    _zeMemGetIpcHandleFromFileDescriptorExp_t = CFUNCTYPE( ze_result_t, ze_context_handle_t, c_ulonglong, POINTER(ze_ipc_mem_handle_t) )
-
-###############################################################################
-## @brief Function-pointer for zeMemGetFileDescriptorFromIpcHandleExp
-if __use_win_types:
-    _zeMemGetFileDescriptorFromIpcHandleExp_t = WINFUNCTYPE( ze_result_t, ze_context_handle_t, ze_ipc_mem_handle_t, POINTER(c_ulonglong) )
-else:
-    _zeMemGetFileDescriptorFromIpcHandleExp_t = CFUNCTYPE( ze_result_t, ze_context_handle_t, ze_ipc_mem_handle_t, POINTER(c_ulonglong) )
-
-###############################################################################
-## @brief Function-pointer for zeMemSetAtomicAccessAttributeExp
-if __use_win_types:
-    _zeMemSetAtomicAccessAttributeExp_t = WINFUNCTYPE( ze_result_t, ze_context_handle_t, ze_device_handle_t, c_void_p, c_size_t, ze_memory_atomic_attr_exp_flags_t )
-else:
-    _zeMemSetAtomicAccessAttributeExp_t = CFUNCTYPE( ze_result_t, ze_context_handle_t, ze_device_handle_t, c_void_p, c_size_t, ze_memory_atomic_attr_exp_flags_t )
-
-###############################################################################
-## @brief Function-pointer for zeMemGetAtomicAccessAttributeExp
-if __use_win_types:
-    _zeMemGetAtomicAccessAttributeExp_t = WINFUNCTYPE( ze_result_t, ze_context_handle_t, ze_device_handle_t, c_void_p, c_size_t, POINTER(ze_memory_atomic_attr_exp_flags_t) )
-else:
-    _zeMemGetAtomicAccessAttributeExp_t = CFUNCTYPE( ze_result_t, ze_context_handle_t, ze_device_handle_t, c_void_p, c_size_t, POINTER(ze_memory_atomic_attr_exp_flags_t) )
-
-
-###############################################################################
-## @brief Table of MemExp functions pointers
-class _ze_mem_exp_dditable_t(Structure):
-    _fields_ = [
-        ("pfnGetIpcHandleFromFileDescriptorExp", c_void_p),             ## _zeMemGetIpcHandleFromFileDescriptorExp_t
-        ("pfnGetFileDescriptorFromIpcHandleExp", c_void_p),             ## _zeMemGetFileDescriptorFromIpcHandleExp_t
-        ("pfnSetAtomicAccessAttributeExp", c_void_p),                   ## _zeMemSetAtomicAccessAttributeExp_t
-        ("pfnGetAtomicAccessAttributeExp", c_void_p)                    ## _zeMemGetAtomicAccessAttributeExp_t
-    ]
-
-###############################################################################
 ## @brief Function-pointer for zeVirtualMemReserve
 if __use_win_types:
     _zeVirtualMemReserve_t = WINFUNCTYPE( ze_result_t, ze_context_handle_t, c_void_p, c_size_t, POINTER(c_void_p) )
@@ -5205,8 +5619,11 @@ class _ze_dditable_t(Structure):
         ("Context", _ze_context_dditable_t),
         ("CommandQueue", _ze_command_queue_dditable_t),
         ("CommandList", _ze_command_list_dditable_t),
+        ("CommandListExp", _ze_command_list_exp_dditable_t),
         ("Image", _ze_image_dditable_t),
         ("ImageExp", _ze_image_exp_dditable_t),
+        ("Mem", _ze_mem_dditable_t),
+        ("MemExp", _ze_mem_exp_dditable_t),
         ("Fence", _ze_fence_dditable_t),
         ("EventPool", _ze_event_pool_dditable_t),
         ("Event", _ze_event_dditable_t),
@@ -5217,8 +5634,6 @@ class _ze_dditable_t(Structure):
         ("KernelExp", _ze_kernel_exp_dditable_t),
         ("Sampler", _ze_sampler_dditable_t),
         ("PhysicalMem", _ze_physical_mem_dditable_t),
-        ("Mem", _ze_mem_dditable_t),
-        ("MemExp", _ze_mem_exp_dditable_t),
         ("VirtualMem", _ze_virtual_mem_dditable_t),
         ("FabricVertexExp", _ze_fabric_vertex_exp_dditable_t),
         ("FabricEdgeExp", _ze_fabric_edge_exp_dditable_t)
@@ -5367,6 +5782,8 @@ class ZE_DDI:
         self.zeCommandQueueDestroy = _zeCommandQueueDestroy_t(self.__dditable.CommandQueue.pfnDestroy)
         self.zeCommandQueueExecuteCommandLists = _zeCommandQueueExecuteCommandLists_t(self.__dditable.CommandQueue.pfnExecuteCommandLists)
         self.zeCommandQueueSynchronize = _zeCommandQueueSynchronize_t(self.__dditable.CommandQueue.pfnSynchronize)
+        self.zeCommandQueueGetOrdinal = _zeCommandQueueGetOrdinal_t(self.__dditable.CommandQueue.pfnGetOrdinal)
+        self.zeCommandQueueGetIndex = _zeCommandQueueGetIndex_t(self.__dditable.CommandQueue.pfnGetIndex)
 
         # call driver to get function pointers
         _CommandList = _ze_command_list_dditable_t()
@@ -5405,6 +5822,26 @@ class ZE_DDI:
         self.zeCommandListAppendImageCopyToMemoryExt = _zeCommandListAppendImageCopyToMemoryExt_t(self.__dditable.CommandList.pfnAppendImageCopyToMemoryExt)
         self.zeCommandListAppendImageCopyFromMemoryExt = _zeCommandListAppendImageCopyFromMemoryExt_t(self.__dditable.CommandList.pfnAppendImageCopyFromMemoryExt)
         self.zeCommandListHostSynchronize = _zeCommandListHostSynchronize_t(self.__dditable.CommandList.pfnHostSynchronize)
+        self.zeCommandListGetDeviceHandle = _zeCommandListGetDeviceHandle_t(self.__dditable.CommandList.pfnGetDeviceHandle)
+        self.zeCommandListGetContextHandle = _zeCommandListGetContextHandle_t(self.__dditable.CommandList.pfnGetContextHandle)
+        self.zeCommandListGetOrdinal = _zeCommandListGetOrdinal_t(self.__dditable.CommandList.pfnGetOrdinal)
+        self.zeCommandListImmediateGetIndex = _zeCommandListImmediateGetIndex_t(self.__dditable.CommandList.pfnImmediateGetIndex)
+        self.zeCommandListIsImmediate = _zeCommandListIsImmediate_t(self.__dditable.CommandList.pfnIsImmediate)
+
+        # call driver to get function pointers
+        _CommandListExp = _ze_command_list_exp_dditable_t()
+        r = ze_result_v(self.__dll.zeGetCommandListExpProcAddrTable(version, byref(_CommandListExp)))
+        if r != ze_result_v.SUCCESS:
+            raise Exception(r)
+        self.__dditable.CommandListExp = _CommandListExp
+
+        # attach function interface to function address
+        self.zeCommandListCreateCloneExp = _zeCommandListCreateCloneExp_t(self.__dditable.CommandListExp.pfnCreateCloneExp)
+        self.zeCommandListImmediateAppendCommandListsExp = _zeCommandListImmediateAppendCommandListsExp_t(self.__dditable.CommandListExp.pfnImmediateAppendCommandListsExp)
+        self.zeCommandListGetNextCommandIdExp = _zeCommandListGetNextCommandIdExp_t(self.__dditable.CommandListExp.pfnGetNextCommandIdExp)
+        self.zeCommandListUpdateMutableCommandsExp = _zeCommandListUpdateMutableCommandsExp_t(self.__dditable.CommandListExp.pfnUpdateMutableCommandsExp)
+        self.zeCommandListUpdateMutableCommandSignalEventExp = _zeCommandListUpdateMutableCommandSignalEventExp_t(self.__dditable.CommandListExp.pfnUpdateMutableCommandSignalEventExp)
+        self.zeCommandListUpdateMutableCommandWaitEventsExp = _zeCommandListUpdateMutableCommandWaitEventsExp_t(self.__dditable.CommandListExp.pfnUpdateMutableCommandWaitEventsExp)
 
         # call driver to get function pointers
         _Image = _ze_image_dditable_t()
@@ -5430,6 +5867,41 @@ class ZE_DDI:
         # attach function interface to function address
         self.zeImageGetMemoryPropertiesExp = _zeImageGetMemoryPropertiesExp_t(self.__dditable.ImageExp.pfnGetMemoryPropertiesExp)
         self.zeImageViewCreateExp = _zeImageViewCreateExp_t(self.__dditable.ImageExp.pfnViewCreateExp)
+        self.zeImageGetDeviceOffsetExp = _zeImageGetDeviceOffsetExp_t(self.__dditable.ImageExp.pfnGetDeviceOffsetExp)
+
+        # call driver to get function pointers
+        _Mem = _ze_mem_dditable_t()
+        r = ze_result_v(self.__dll.zeGetMemProcAddrTable(version, byref(_Mem)))
+        if r != ze_result_v.SUCCESS:
+            raise Exception(r)
+        self.__dditable.Mem = _Mem
+
+        # attach function interface to function address
+        self.zeMemAllocShared = _zeMemAllocShared_t(self.__dditable.Mem.pfnAllocShared)
+        self.zeMemAllocDevice = _zeMemAllocDevice_t(self.__dditable.Mem.pfnAllocDevice)
+        self.zeMemAllocHost = _zeMemAllocHost_t(self.__dditable.Mem.pfnAllocHost)
+        self.zeMemFree = _zeMemFree_t(self.__dditable.Mem.pfnFree)
+        self.zeMemGetAllocProperties = _zeMemGetAllocProperties_t(self.__dditable.Mem.pfnGetAllocProperties)
+        self.zeMemGetAddressRange = _zeMemGetAddressRange_t(self.__dditable.Mem.pfnGetAddressRange)
+        self.zeMemGetIpcHandle = _zeMemGetIpcHandle_t(self.__dditable.Mem.pfnGetIpcHandle)
+        self.zeMemOpenIpcHandle = _zeMemOpenIpcHandle_t(self.__dditable.Mem.pfnOpenIpcHandle)
+        self.zeMemCloseIpcHandle = _zeMemCloseIpcHandle_t(self.__dditable.Mem.pfnCloseIpcHandle)
+        self.zeMemFreeExt = _zeMemFreeExt_t(self.__dditable.Mem.pfnFreeExt)
+        self.zeMemPutIpcHandle = _zeMemPutIpcHandle_t(self.__dditable.Mem.pfnPutIpcHandle)
+        self.zeMemGetPitchFor2dImage = _zeMemGetPitchFor2dImage_t(self.__dditable.Mem.pfnGetPitchFor2dImage)
+
+        # call driver to get function pointers
+        _MemExp = _ze_mem_exp_dditable_t()
+        r = ze_result_v(self.__dll.zeGetMemExpProcAddrTable(version, byref(_MemExp)))
+        if r != ze_result_v.SUCCESS:
+            raise Exception(r)
+        self.__dditable.MemExp = _MemExp
+
+        # attach function interface to function address
+        self.zeMemGetIpcHandleFromFileDescriptorExp = _zeMemGetIpcHandleFromFileDescriptorExp_t(self.__dditable.MemExp.pfnGetIpcHandleFromFileDescriptorExp)
+        self.zeMemGetFileDescriptorFromIpcHandleExp = _zeMemGetFileDescriptorFromIpcHandleExp_t(self.__dditable.MemExp.pfnGetFileDescriptorFromIpcHandleExp)
+        self.zeMemSetAtomicAccessAttributeExp = _zeMemSetAtomicAccessAttributeExp_t(self.__dditable.MemExp.pfnSetAtomicAccessAttributeExp)
+        self.zeMemGetAtomicAccessAttributeExp = _zeMemGetAtomicAccessAttributeExp_t(self.__dditable.MemExp.pfnGetAtomicAccessAttributeExp)
 
         # call driver to get function pointers
         _Fence = _ze_fence_dditable_t()
@@ -5459,6 +5931,8 @@ class ZE_DDI:
         self.zeEventPoolOpenIpcHandle = _zeEventPoolOpenIpcHandle_t(self.__dditable.EventPool.pfnOpenIpcHandle)
         self.zeEventPoolCloseIpcHandle = _zeEventPoolCloseIpcHandle_t(self.__dditable.EventPool.pfnCloseIpcHandle)
         self.zeEventPoolPutIpcHandle = _zeEventPoolPutIpcHandle_t(self.__dditable.EventPool.pfnPutIpcHandle)
+        self.zeEventPoolGetContextHandle = _zeEventPoolGetContextHandle_t(self.__dditable.EventPool.pfnGetContextHandle)
+        self.zeEventPoolGetFlags = _zeEventPoolGetFlags_t(self.__dditable.EventPool.pfnGetFlags)
 
         # call driver to get function pointers
         _Event = _ze_event_dditable_t()
@@ -5476,6 +5950,9 @@ class ZE_DDI:
         self.zeEventHostReset = _zeEventHostReset_t(self.__dditable.Event.pfnHostReset)
         self.zeEventQueryKernelTimestamp = _zeEventQueryKernelTimestamp_t(self.__dditable.Event.pfnQueryKernelTimestamp)
         self.zeEventQueryKernelTimestampsExt = _zeEventQueryKernelTimestampsExt_t(self.__dditable.Event.pfnQueryKernelTimestampsExt)
+        self.zeEventGetEventPool = _zeEventGetEventPool_t(self.__dditable.Event.pfnGetEventPool)
+        self.zeEventGetSignalScope = _zeEventGetSignalScope_t(self.__dditable.Event.pfnGetSignalScope)
+        self.zeEventGetWaitScope = _zeEventGetWaitScope_t(self.__dditable.Event.pfnGetWaitScope)
 
         # call driver to get function pointers
         _EventExp = _ze_event_exp_dditable_t()
@@ -5569,39 +6046,6 @@ class ZE_DDI:
         # attach function interface to function address
         self.zePhysicalMemCreate = _zePhysicalMemCreate_t(self.__dditable.PhysicalMem.pfnCreate)
         self.zePhysicalMemDestroy = _zePhysicalMemDestroy_t(self.__dditable.PhysicalMem.pfnDestroy)
-
-        # call driver to get function pointers
-        _Mem = _ze_mem_dditable_t()
-        r = ze_result_v(self.__dll.zeGetMemProcAddrTable(version, byref(_Mem)))
-        if r != ze_result_v.SUCCESS:
-            raise Exception(r)
-        self.__dditable.Mem = _Mem
-
-        # attach function interface to function address
-        self.zeMemAllocShared = _zeMemAllocShared_t(self.__dditable.Mem.pfnAllocShared)
-        self.zeMemAllocDevice = _zeMemAllocDevice_t(self.__dditable.Mem.pfnAllocDevice)
-        self.zeMemAllocHost = _zeMemAllocHost_t(self.__dditable.Mem.pfnAllocHost)
-        self.zeMemFree = _zeMemFree_t(self.__dditable.Mem.pfnFree)
-        self.zeMemGetAllocProperties = _zeMemGetAllocProperties_t(self.__dditable.Mem.pfnGetAllocProperties)
-        self.zeMemGetAddressRange = _zeMemGetAddressRange_t(self.__dditable.Mem.pfnGetAddressRange)
-        self.zeMemGetIpcHandle = _zeMemGetIpcHandle_t(self.__dditable.Mem.pfnGetIpcHandle)
-        self.zeMemOpenIpcHandle = _zeMemOpenIpcHandle_t(self.__dditable.Mem.pfnOpenIpcHandle)
-        self.zeMemCloseIpcHandle = _zeMemCloseIpcHandle_t(self.__dditable.Mem.pfnCloseIpcHandle)
-        self.zeMemFreeExt = _zeMemFreeExt_t(self.__dditable.Mem.pfnFreeExt)
-        self.zeMemPutIpcHandle = _zeMemPutIpcHandle_t(self.__dditable.Mem.pfnPutIpcHandle)
-
-        # call driver to get function pointers
-        _MemExp = _ze_mem_exp_dditable_t()
-        r = ze_result_v(self.__dll.zeGetMemExpProcAddrTable(version, byref(_MemExp)))
-        if r != ze_result_v.SUCCESS:
-            raise Exception(r)
-        self.__dditable.MemExp = _MemExp
-
-        # attach function interface to function address
-        self.zeMemGetIpcHandleFromFileDescriptorExp = _zeMemGetIpcHandleFromFileDescriptorExp_t(self.__dditable.MemExp.pfnGetIpcHandleFromFileDescriptorExp)
-        self.zeMemGetFileDescriptorFromIpcHandleExp = _zeMemGetFileDescriptorFromIpcHandleExp_t(self.__dditable.MemExp.pfnGetFileDescriptorFromIpcHandleExp)
-        self.zeMemSetAtomicAccessAttributeExp = _zeMemSetAtomicAccessAttributeExp_t(self.__dditable.MemExp.pfnSetAtomicAccessAttributeExp)
-        self.zeMemGetAtomicAccessAttributeExp = _zeMemGetAtomicAccessAttributeExp_t(self.__dditable.MemExp.pfnGetAtomicAccessAttributeExp)
 
         # call driver to get function pointers
         _VirtualMem = _ze_virtual_mem_dditable_t()

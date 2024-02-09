@@ -49,6 +49,8 @@ public:
     virtual ze_result_t zeCommandQueueDestroy( ze_command_queue_handle_t hCommandQueue ) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zeCommandQueueExecuteCommandLists( ze_command_queue_handle_t hCommandQueue, uint32_t numCommandLists, ze_command_list_handle_t* phCommandLists, ze_fence_handle_t hFence ) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zeCommandQueueSynchronize( ze_command_queue_handle_t hCommandQueue, uint64_t timeout ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zeCommandQueueGetOrdinal( ze_command_queue_handle_t hCommandQueue, uint32_t* pOrdinal ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zeCommandQueueGetIndex( ze_command_queue_handle_t hCommandQueue, uint32_t* pIndex ) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zeCommandListCreate( ze_context_handle_t hContext, ze_device_handle_t hDevice, const ze_command_list_desc_t* desc, ze_command_list_handle_t* phCommandList ) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zeCommandListCreateImmediate( ze_context_handle_t hContext, ze_device_handle_t hDevice, const ze_command_queue_desc_t* altdesc, ze_command_list_handle_t* phCommandList ) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zeCommandListDestroy( ze_command_list_handle_t hCommandList ) {return ZE_RESULT_SUCCESS;}
@@ -56,6 +58,11 @@ public:
     virtual ze_result_t zeCommandListReset( ze_command_list_handle_t hCommandList ) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zeCommandListAppendWriteGlobalTimestamp( ze_command_list_handle_t hCommandList, uint64_t* dstptr, ze_event_handle_t hSignalEvent, uint32_t numWaitEvents, ze_event_handle_t* phWaitEvents ) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zeCommandListHostSynchronize( ze_command_list_handle_t hCommandList, uint64_t timeout ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zeCommandListGetDeviceHandle( ze_command_list_handle_t hCommandList, ze_device_handle_t* phDevice ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zeCommandListGetContextHandle( ze_command_list_handle_t hCommandList, ze_context_handle_t* phContext ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zeCommandListGetOrdinal( ze_command_list_handle_t hCommandList, uint32_t* pOrdinal ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zeCommandListImmediateGetIndex( ze_command_list_handle_t hCommandListImmediate, uint32_t* pIndex ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zeCommandListIsImmediate( ze_command_list_handle_t hCommandList, ze_bool_t* pIsImmediate ) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zeCommandListAppendBarrier( ze_command_list_handle_t hCommandList, ze_event_handle_t hSignalEvent, uint32_t numWaitEvents, ze_event_handle_t* phWaitEvents ) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zeCommandListAppendMemoryRangesBarrier( ze_command_list_handle_t hCommandList, uint32_t numRanges, const size_t* pRangeSizes, const void** pRanges, ze_event_handle_t hSignalEvent, uint32_t numWaitEvents, ze_event_handle_t* phWaitEvents ) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zeContextSystemBarrier( ze_context_handle_t hContext, ze_device_handle_t hDevice ) {return ZE_RESULT_SUCCESS;}
@@ -86,6 +93,11 @@ public:
     virtual ze_result_t zeEventHostReset( ze_event_handle_t hEvent ) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zeEventQueryKernelTimestamp( ze_event_handle_t hEvent, ze_kernel_timestamp_result_t* dstptr ) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zeCommandListAppendQueryKernelTimestamps( ze_command_list_handle_t hCommandList, uint32_t numEvents, ze_event_handle_t* phEvents, void* dstptr, const size_t* pOffsets, ze_event_handle_t hSignalEvent, uint32_t numWaitEvents, ze_event_handle_t* phWaitEvents ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zeEventGetEventPool( ze_event_handle_t hEvent, ze_event_pool_handle_t* phEventPool ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zeEventGetSignalScope( ze_event_handle_t hEvent, ze_event_scope_flags_t* pSignalScope ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zeEventGetWaitScope( ze_event_handle_t hEvent, ze_event_scope_flags_t* pWaitScope ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zeEventPoolGetContextHandle( ze_event_pool_handle_t hEventPool, ze_context_handle_t* phContext ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zeEventPoolGetFlags( ze_event_pool_handle_t hEventPool, ze_event_pool_flags_t* pFlags ) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zeFenceCreate( ze_command_queue_handle_t hCommandQueue, const ze_fence_desc_t* desc, ze_fence_handle_t* phFence ) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zeFenceDestroy( ze_fence_handle_t hFence ) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zeFenceHostSynchronize( ze_fence_handle_t hFence, uint64_t timeout ) {return ZE_RESULT_SUCCESS;}
@@ -181,6 +193,14 @@ public:
     virtual ze_result_t zeRTASParallelOperationGetPropertiesExp( ze_rtas_parallel_operation_exp_handle_t hParallelOperation, ze_rtas_parallel_operation_exp_properties_t* pProperties ) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zeRTASParallelOperationJoinExp( ze_rtas_parallel_operation_exp_handle_t hParallelOperation ) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zeRTASParallelOperationDestroyExp( ze_rtas_parallel_operation_exp_handle_t hParallelOperation ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zeMemGetPitchFor2dImage( ze_context_handle_t hContext, ze_device_handle_t hDevice, size_t imageWidth, size_t imageHeight, unsigned int elementSizeInBytes, size_t * rowPitch ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zeImageGetDeviceOffsetExp( ze_image_handle_t hImage, uint64_t* pDeviceOffset ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zeCommandListCreateCloneExp( ze_command_list_handle_t hCommandList, ze_command_list_handle_t* phClonedCommandList ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zeCommandListImmediateAppendCommandListsExp( ze_command_list_handle_t hCommandListImmediate, uint32_t numCommandLists, ze_command_list_handle_t* phCommandLists, ze_event_handle_t hSignalEvent, uint32_t numWaitEvents, ze_event_handle_t* phWaitEvents ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zeCommandListGetNextCommandIdExp( ze_command_list_handle_t hCommandList, const ze_mutable_command_id_exp_desc_t* desc, uint64_t* pCommandId ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zeCommandListUpdateMutableCommandsExp( ze_command_list_handle_t hCommandList, const ze_mutable_commands_exp_desc_t* desc ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zeCommandListUpdateMutableCommandSignalEventExp( ze_command_list_handle_t hCommandList, uint64_t commandId, ze_event_handle_t hSignalEvent ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zeCommandListUpdateMutableCommandWaitEventsExp( ze_command_list_handle_t hCommandList, uint64_t commandId, uint32_t numWaitEvents, ze_event_handle_t* phWaitEvents ) {return ZE_RESULT_SUCCESS;}
     virtual ~ZEValidationEntryPoints() {}
 };
 }

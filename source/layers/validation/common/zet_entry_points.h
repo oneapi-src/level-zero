@@ -60,6 +60,17 @@ public:
     virtual ze_result_t zetMetricGroupGetGlobalTimestampsExp( zet_metric_group_handle_t hMetricGroup, ze_bool_t synchronizedWithHost, uint64_t* globalTimestamp, uint64_t* metricTimestamp ) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zetMetricGroupGetExportDataExp( zet_metric_group_handle_t hMetricGroup, const uint8_t* pRawData, size_t rawDataSize, size_t* pExportDataSize, uint8_t * pExportData ) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zetMetricGroupCalculateMetricExportDataExp( ze_driver_handle_t hDriver, zet_metric_group_calculation_type_t type, size_t exportDataSize, const uint8_t* pExportData, zet_metric_calculate_exp_desc_t* pCalculateDescriptor, uint32_t* pSetCount, uint32_t* pTotalMetricValueCount, uint32_t* pMetricCounts, zet_typed_value_t* pMetricValues ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zetMetricProgrammableGetExp( zet_device_handle_t hDevice, uint32_t* pCount, zet_metric_programmable_exp_handle_t* phMetricProgrammables ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zetMetricProgrammableGetPropertiesExp( zet_metric_programmable_exp_handle_t hMetricProgrammable, zet_metric_programmable_exp_properties_t* pProperties ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zetMetricProgrammableGetParamInfoExp( zet_metric_programmable_exp_handle_t hMetricProgrammable, uint32_t* pParameterCount, zet_metric_programmable_param_info_exp_t* pParameterInfo ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zetMetricProgrammableGetParamValueInfoExp( zet_metric_programmable_exp_handle_t hMetricProgrammable, uint32_t parameterOrdinal, uint32_t* pValueInfoCount, zet_metric_programmable_param_value_info_exp_t* pValueInfo ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zetMetricCreateFromProgrammableExp( zet_metric_programmable_exp_handle_t hMetricProgrammable, zet_metric_programmable_param_value_exp_t* pParameterValues, uint32_t parameterCount, const char* pName, const char* pDescription, uint32_t* pMetricHandleCount, zet_metric_handle_t* phMetricHandles ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zetMetricGroupCreateExp( zet_device_handle_t hDevice, const char* pName, const char* pDescription, zet_metric_group_sampling_type_flags_t samplingType, zet_metric_group_handle_t* phMetricGroup ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zetMetricGroupAddMetricExp( zet_metric_group_handle_t hMetricGroup, zet_metric_handle_t hMetric, size_t * pErrorStringSize, char* pErrorString ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zetMetricGroupRemoveMetricExp( zet_metric_group_handle_t hMetricGroup, zet_metric_handle_t hMetric ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zetMetricGroupCloseExp( zet_metric_group_handle_t hMetricGroup ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zetMetricGroupDestroyExp( zet_metric_group_handle_t hMetricGroup ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zetMetricDestroyExp( zet_metric_handle_t hMetric ) {return ZE_RESULT_SUCCESS;}
     virtual ~ZETValidationEntryPoints() {}
 };
 }

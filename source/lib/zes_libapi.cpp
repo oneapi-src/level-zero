@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (C) 2019-2022 Intel Corporation
+ * Copyright (C) 2019-2024 Intel Corporation
  *
  * SPDX-License-Identifier: MIT
  *
@@ -49,7 +49,7 @@ zesInit(
     )
 {
     static ze_result_t result = ZE_RESULT_SUCCESS;
-    std::call_once(ze_lib::context->initOnceSysMan, [flags]() {
+    std::call_once(ze_lib::context->initOnce, [flags]() {
         result = ze_lib::context->Init(flags, true);
 
     });
@@ -1806,7 +1806,7 @@ zesEngineGetActivity(
 ///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
 ///         + `nullptr == hDevice`
 ///     - ::ZE_RESULT_ERROR_INVALID_ENUMERATION
-///         + `0x7fff < events`
+///         + `0xffff < events`
 ze_result_t ZE_APICALL
 zesDeviceEventRegister(
     zes_device_handle_t hDevice,                    ///< [in] The device handle.
@@ -2783,6 +2783,48 @@ zesFirmwareGetFlashProgress(
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+/// @brief Get Firmware Console Logs
+/// 
+/// @details
+///     - The caller may pass nullptr for pFirmwareLog and set pSize to zero
+///       when querying only for size.
+///     - The caller must provide memory for Firmware log.
+///     - The application may call this function from simultaneous threads.
+///     - The implementation of this function should be lock-free.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hFirmware`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == pSize`
+ze_result_t ZE_APICALL
+zesFirmwareGetConsoleLogs(
+    zes_firmware_handle_t hFirmware,                ///< [in] Handle for the component.
+    size_t* pSize,                                  ///< [in,out] size of firmware log
+    char* pFirmwareLog                              ///< [in,out][optional] pointer to null-terminated string of the log.
+    )
+{
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
+    auto pfnGetConsoleLogs = ze_lib::context->zesDdiTable.load()->Firmware.pfnGetConsoleLogs;
+    if( nullptr == pfnGetConsoleLogs ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    return pfnGetConsoleLogs( hFirmware, pSize, pFirmwareLog );
+}
+
+///////////////////////////////////////////////////////////////////////////////
 /// @brief Get handle of frequency domains
 /// 
 /// @details
@@ -2960,6 +3002,9 @@ zesFrequencyGetRange(
 /// @brief Set frequency range between which the hardware can operate.
 /// 
 /// @details
+///     - The application may call this function with the frequency range min
+///       and max values set to `-1` to request the frequency be (re)set to the
+///       default values.
 ///     - The application may call this function from simultaneous threads.
 ///     - The implementation of this function should be lock-free.
 /// 
@@ -5896,6 +5941,445 @@ zesRasClearStateExp(
     }
 
     return pfnClearStateExp( hRas, category );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Get the firmware security version number of the currently running
+///        firmware
+/// 
+/// @details
+///     - The application should create a character array of size
+///       ::ZES_STRING_PROPERTY_SIZE and reference it for the `pVersion`
+///       parameter.
+///     - The application may call this function from simultaneous threads.
+///     - The implementation of this function should be lock-free.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hFirmware`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == pVersion`
+ze_result_t ZE_APICALL
+zesFirmwareGetSecurityVersionExp(
+    zes_firmware_handle_t hFirmware,                ///< [in] Handle for the component.
+    char* pVersion                                  ///< [in,out] NULL terminated string value. The string "unknown" will be
+                                                    ///< returned if this property cannot be determined.
+    )
+{
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
+    auto pfnGetSecurityVersionExp = ze_lib::context->zesDdiTable.load()->FirmwareExp.pfnGetSecurityVersionExp;
+    if( nullptr == pfnGetSecurityVersionExp ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    return pfnGetSecurityVersionExp( hFirmware, pVersion );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Set the firmware security version number
+/// 
+/// @details
+///     - The application may call this function from simultaneous threads.
+///     - The implementation of this function should be lock-free.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hFirmware`
+ze_result_t ZE_APICALL
+zesFirmwareSetSecurityVersionExp(
+    zes_firmware_handle_t hFirmware                 ///< [in] Handle for the component.
+    )
+{
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
+    auto pfnSetSecurityVersionExp = ze_lib::context->zesDdiTable.load()->FirmwareExp.pfnSetSecurityVersionExp;
+    if( nullptr == pfnSetSecurityVersionExp ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    return pfnSetSecurityVersionExp( hFirmware );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Retrieves sub device properties for the given sysman device handle
+/// 
+/// @details
+///     - The application may call this function from simultaneous threads.
+///     - The implementation of this function should be lock-free.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hDevice`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == pCount`
+ze_result_t ZE_APICALL
+zesDeviceGetSubDevicePropertiesExp(
+    zes_device_handle_t hDevice,                    ///< [in] Sysman handle of the device.
+    uint32_t* pCount,                               ///< [in,out] pointer to the number of sub devices.
+                                                    ///< if count is zero, then the driver shall update the value with the
+                                                    ///< total number of sub devices currently attached to the device.
+                                                    ///< if count is greater than the number of sub devices currently attached
+                                                    ///< to the device, then the driver shall update the value with the correct
+                                                    ///< number of sub devices.
+    zes_subdevice_exp_properties_t* pSubdeviceProps ///< [in,out][optional][range(0, *pCount)] array of sub device property structures.
+                                                    ///< if count is less than the number of sysman sub devices available, then
+                                                    ///< the driver shall only retrieve that number of sub device property structures.
+    )
+{
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
+    auto pfnGetSubDevicePropertiesExp = ze_lib::context->zesDdiTable.load()->DeviceExp.pfnGetSubDevicePropertiesExp;
+    if( nullptr == pfnGetSubDevicePropertiesExp ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    return pfnGetSubDevicePropertiesExp( hDevice, pCount, pSubdeviceProps );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Retrieves sysman device and subdevice index for the given UUID and
+///        sysman driver
+/// 
+/// @details
+///     - The application may call this function from simultaneous threads.
+///     - The implementation of this function should be lock-free.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hDriver`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == phDevice`
+///         + `nullptr == onSubdevice`
+///         + `nullptr == subdeviceId`
+ze_result_t ZE_APICALL
+zesDriverGetDeviceByUuidExp(
+    zes_driver_handle_t hDriver,                    ///< [in] handle of the sysman driver instance
+    zes_uuid_t uuid,                                ///< [in] universal unique identifier.
+    zes_device_handle_t* phDevice,                  ///< [out] Sysman handle of the device.
+    ze_bool_t* onSubdevice,                         ///< [out] True if the UUID belongs to the sub-device; false means that
+                                                    ///< UUID belongs to the root device.
+    uint32_t* subdeviceId                           ///< [out] If onSubdevice is true, this gives the ID of the sub-device
+    )
+{
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
+    auto pfnGetDeviceByUuidExp = ze_lib::context->zesDdiTable.load()->DriverExp.pfnGetDeviceByUuidExp;
+    if( nullptr == pfnGetDeviceByUuidExp ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    return pfnGetDeviceByUuidExp( hDriver, uuid, phDevice, onSubdevice, subdeviceId );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Get handle of virtual function modules
+/// 
+/// @details
+///     - The application may call this function from simultaneous threads.
+///     - The implementation of this function should be lock-free.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hDevice`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == pCount`
+ze_result_t ZE_APICALL
+zesDeviceEnumActiveVFExp(
+    zes_device_handle_t hDevice,                    ///< [in] Sysman handle of the device.
+    uint32_t* pCount,                               ///< [in,out] pointer to the number of components of this type.
+                                                    ///< if count is zero, then the driver shall update the value with the
+                                                    ///< total number of components of this type that are available.
+                                                    ///< if count is greater than the number of components of this type that
+                                                    ///< are available, then the driver shall update the value with the correct
+                                                    ///< number of components.
+    zes_vf_handle_t* phVFhandle                     ///< [in,out][optional][range(0, *pCount)] array of handle of components of
+                                                    ///< this type.
+                                                    ///< if count is less than the number of components of this type that are
+                                                    ///< available, then the driver shall only retrieve that number of
+                                                    ///< component handles.
+    )
+{
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
+    auto pfnEnumActiveVFExp = ze_lib::context->zesDdiTable.load()->DeviceExp.pfnEnumActiveVFExp;
+    if( nullptr == pfnEnumActiveVFExp ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    return pfnEnumActiveVFExp( hDevice, pCount, phVFhandle );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Get virtual function management properties
+/// 
+/// @details
+///     - The application may call this function from simultaneous threads.
+///     - The implementation of this function should be lock-free.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hVFhandle`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == pProperties`
+ze_result_t ZE_APICALL
+zesVFManagementGetVFPropertiesExp(
+    zes_vf_handle_t hVFhandle,                      ///< [in] Sysman handle for the VF component.
+    zes_vf_exp_properties_t* pProperties            ///< [in,out] Will contain VF properties.
+    )
+{
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
+    auto pfnGetVFPropertiesExp = ze_lib::context->zesDdiTable.load()->VFManagementExp.pfnGetVFPropertiesExp;
+    if( nullptr == pfnGetVFPropertiesExp ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    return pfnGetVFPropertiesExp( hVFhandle, pProperties );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Get memory activity stats for each available memory types associated
+///        with Virtual Function (VF)
+/// 
+/// @details
+///     - The application may call this function from simultaneous threads.
+///     - The implementation of this function should be lock-free.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hVFhandle`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == pCount`
+ze_result_t ZE_APICALL
+zesVFManagementGetVFMemoryUtilizationExp(
+    zes_vf_handle_t hVFhandle,                      ///< [in] Sysman handle for the component.
+    uint32_t* pCount,                               ///< [in,out] Pointer to the number of VF memory stats descriptors.
+                                                    ///<  - if count is zero, the driver shall update the value with the total
+                                                    ///< number of memory stats available.
+                                                    ///<  - if count is greater than the total number of memory stats
+                                                    ///< available, the driver shall update the value with the correct number
+                                                    ///< of memory stats available.
+                                                    ///<  - The count returned is the sum of number of VF instances currently
+                                                    ///< available and the PF instance.
+    zes_vf_util_mem_exp_t* pMemUtil                 ///< [in,out][optional][range(0, *pCount)] array of memory group activity counters.
+                                                    ///<  - if count is less than the total number of memory stats available,
+                                                    ///< then driver shall only retrieve that number of stats.
+                                                    ///<  - the implementation shall populate the vector pCount-1 number of VF
+                                                    ///< memory stats.
+    )
+{
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
+    auto pfnGetVFMemoryUtilizationExp = ze_lib::context->zesDdiTable.load()->VFManagementExp.pfnGetVFMemoryUtilizationExp;
+    if( nullptr == pfnGetVFMemoryUtilizationExp ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    return pfnGetVFMemoryUtilizationExp( hVFhandle, pCount, pMemUtil );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Get engine activity stats for each available engine group associated
+///        with Virtual Function (VF)
+/// 
+/// @details
+///     - The application may call this function from simultaneous threads.
+///     - The implementation of this function should be lock-free.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hVFhandle`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == pCount`
+ze_result_t ZE_APICALL
+zesVFManagementGetVFEngineUtilizationExp(
+    zes_vf_handle_t hVFhandle,                      ///< [in] Sysman handle for the component.
+    uint32_t* pCount,                               ///< [in,out] Pointer to the number of VF engine stats descriptors.
+                                                    ///<  - if count is zero, the driver shall update the value with the total
+                                                    ///< number of engine stats available.
+                                                    ///<  - if count is greater than the total number of engine stats
+                                                    ///< available, the driver shall update the value with the correct number
+                                                    ///< of engine stats available.
+                                                    ///<  - The count returned is the sum of number of VF instances currently
+                                                    ///< available and the PF instance.
+    zes_vf_util_engine_exp_t* pEngineUtil           ///< [in,out][optional][range(0, *pCount)] array of engine group activity counters.
+                                                    ///<  - if count is less than the total number of engine stats available,
+                                                    ///< then driver shall only retrieve that number of stats.
+                                                    ///<  - the implementation shall populate the vector pCount-1 number of VF
+                                                    ///< engine stats.
+    )
+{
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
+    auto pfnGetVFEngineUtilizationExp = ze_lib::context->zesDdiTable.load()->VFManagementExp.pfnGetVFEngineUtilizationExp;
+    if( nullptr == pfnGetVFEngineUtilizationExp ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    return pfnGetVFEngineUtilizationExp( hVFhandle, pCount, pEngineUtil );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Configure utilization telemetry enabled or disabled associated with
+///        Virtual Function (VF)
+/// 
+/// @details
+///     - The application may call this function from simultaneous threads.
+///     - The implementation of this function should be lock-free.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hVFhandle`
+///     - ::ZE_RESULT_ERROR_INVALID_ENUMERATION
+///         + `0xf < flags`
+ze_result_t ZE_APICALL
+zesVFManagementSetVFTelemetryModeExp(
+    zes_vf_handle_t hVFhandle,                      ///< [in] Sysman handle for the component.
+    zes_vf_info_util_exp_flags_t flags,             ///< [in] utilization flags to enable or disable. May be 0 or a valid
+                                                    ///< combination of ::zes_vf_info_util_exp_flag_t.
+    ze_bool_t enable                                ///< [in] Enable utilization telemetry.
+    )
+{
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
+    auto pfnSetVFTelemetryModeExp = ze_lib::context->zesDdiTable.load()->VFManagementExp.pfnSetVFTelemetryModeExp;
+    if( nullptr == pfnSetVFTelemetryModeExp ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    return pfnSetVFTelemetryModeExp( hVFhandle, flags, enable );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Set sampling interval to monitor for a particular utilization
+///        telemetry associated with Virtual Function (VF)
+/// 
+/// @details
+///     - The application may call this function from simultaneous threads.
+///     - The implementation of this function should be lock-free.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hVFhandle`
+///     - ::ZE_RESULT_ERROR_INVALID_ENUMERATION
+///         + `0xf < flag`
+ze_result_t ZE_APICALL
+zesVFManagementSetVFTelemetrySamplingIntervalExp(
+    zes_vf_handle_t hVFhandle,                      ///< [in] Sysman handle for the component.
+    zes_vf_info_util_exp_flags_t flag,              ///< [in] utilization flags to set sampling interval. May be 0 or a valid
+                                                    ///< combination of ::zes_vf_info_util_exp_flag_t.
+    uint64_t samplingInterval                       ///< [in] Sampling interval value.
+    )
+{
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
+    auto pfnSetVFTelemetrySamplingIntervalExp = ze_lib::context->zesDdiTable.load()->VFManagementExp.pfnSetVFTelemetrySamplingIntervalExp;
+    if( nullptr == pfnSetVFTelemetrySamplingIntervalExp ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    return pfnSetVFTelemetrySamplingIntervalExp( hVFhandle, flag, samplingInterval );
 }
 
 } // extern "C"

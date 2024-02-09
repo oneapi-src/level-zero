@@ -634,6 +634,38 @@ namespace validation_layer
 
 
     ze_result_t
+    ZEParameterValidation::zeCommandQueueGetOrdinal(
+        ze_command_queue_handle_t hCommandQueue,        ///< [in] handle of the command queue
+        uint32_t* pOrdinal                              ///< [out] command queue group ordinal
+        )
+    {
+        if( nullptr == hCommandQueue )
+            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+        if( nullptr == pOrdinal )
+            return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+        return ZE_RESULT_SUCCESS;
+    }
+
+
+    ze_result_t
+    ZEParameterValidation::zeCommandQueueGetIndex(
+        ze_command_queue_handle_t hCommandQueue,        ///< [in] handle of the command queue
+        uint32_t* pIndex                                ///< [out] command queue index within the group
+        )
+    {
+        if( nullptr == hCommandQueue )
+            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+        if( nullptr == pIndex )
+            return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+        return ZE_RESULT_SUCCESS;
+    }
+
+
+    ze_result_t
     ZEParameterValidation::zeCommandListCreate(
         ze_context_handle_t hContext,                   ///< [in] handle of the context object
         ze_device_handle_t hDevice,                     ///< [in] handle of the device object
@@ -653,7 +685,7 @@ namespace validation_layer
         if( nullptr == phCommandList )
             return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-        if( 0xf < desc->flags )
+        if( 0x1f < desc->flags )
             return ZE_RESULT_ERROR_INVALID_ENUMERATION;
 
         return ParameterValidation::validateExtensions(desc);
@@ -768,6 +800,88 @@ namespace validation_layer
     {
         if( nullptr == hCommandList )
             return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+        return ZE_RESULT_SUCCESS;
+    }
+
+
+    ze_result_t
+    ZEParameterValidation::zeCommandListGetDeviceHandle(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
+        ze_device_handle_t* phDevice                    ///< [out] handle of the device on which the command list was created
+        )
+    {
+        if( nullptr == hCommandList )
+            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+        if( nullptr == phDevice )
+            return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+        return ZE_RESULT_SUCCESS;
+    }
+
+
+    ze_result_t
+    ZEParameterValidation::zeCommandListGetContextHandle(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
+        ze_context_handle_t* phContext                  ///< [out] handle of the context on which the command list was created
+        )
+    {
+        if( nullptr == hCommandList )
+            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+        if( nullptr == phContext )
+            return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+        return ZE_RESULT_SUCCESS;
+    }
+
+
+    ze_result_t
+    ZEParameterValidation::zeCommandListGetOrdinal(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
+        uint32_t* pOrdinal                              ///< [out] command queue group ordinal to which command list is submitted
+        )
+    {
+        if( nullptr == hCommandList )
+            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+        if( nullptr == pOrdinal )
+            return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+        return ZE_RESULT_SUCCESS;
+    }
+
+
+    ze_result_t
+    ZEParameterValidation::zeCommandListImmediateGetIndex(
+        ze_command_list_handle_t hCommandListImmediate, ///< [in] handle of the immediate command list
+        uint32_t* pIndex                                ///< [out] command queue index within the group to which the immediate
+                                                        ///< command list is submitted
+        )
+    {
+        if( nullptr == hCommandListImmediate )
+            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+        if( nullptr == pIndex )
+            return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+        return ZE_RESULT_SUCCESS;
+    }
+
+
+    ze_result_t
+    ZEParameterValidation::zeCommandListIsImmediate(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
+        ze_bool_t* pIsImmediate                         ///< [out] Boolean indicating whether the command list is an immediate
+                                                        ///< command list (true) or not (false)
+        )
+    {
+        if( nullptr == hCommandList )
+            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+        if( nullptr == pIsImmediate )
+            return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
         return ZE_RESULT_SUCCESS;
     }
@@ -1426,6 +1540,91 @@ namespace validation_layer
 
         if( (nullptr == phWaitEvents) && (0 < numWaitEvents) )
             return ZE_RESULT_ERROR_INVALID_SIZE;
+
+        return ZE_RESULT_SUCCESS;
+    }
+
+
+    ze_result_t
+    ZEParameterValidation::zeEventGetEventPool(
+        ze_event_handle_t hEvent,                       ///< [in] handle of the event
+        ze_event_pool_handle_t* phEventPool             ///< [out] handle of the event pool for the event
+        )
+    {
+        if( nullptr == hEvent )
+            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+        if( nullptr == phEventPool )
+            return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+        return ZE_RESULT_SUCCESS;
+    }
+
+
+    ze_result_t
+    ZEParameterValidation::zeEventGetSignalScope(
+        ze_event_handle_t hEvent,                       ///< [in] handle of the event
+        ze_event_scope_flags_t* pSignalScope            ///< [out] signal event scope. This is the scope of relevant cache
+                                                        ///< hierarchies that are flushed on a signal action before the event is
+                                                        ///< triggered. May be 0 or a valid combination of ::ze_event_scope_flag_t.
+        )
+    {
+        if( nullptr == hEvent )
+            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+        if( nullptr == pSignalScope )
+            return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+        return ZE_RESULT_SUCCESS;
+    }
+
+
+    ze_result_t
+    ZEParameterValidation::zeEventGetWaitScope(
+        ze_event_handle_t hEvent,                       ///< [in] handle of the event
+        ze_event_scope_flags_t* pWaitScope              ///< [out] wait event scope. This is the scope of relevant cache
+                                                        ///< hierarchies invalidated on a wait action after the event is complete.
+                                                        ///< May be 0 or a valid combination of ::ze_event_scope_flag_t.
+        )
+    {
+        if( nullptr == hEvent )
+            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+        if( nullptr == pWaitScope )
+            return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+        return ZE_RESULT_SUCCESS;
+    }
+
+
+    ze_result_t
+    ZEParameterValidation::zeEventPoolGetContextHandle(
+        ze_event_pool_handle_t hEventPool,              ///< [in] handle of the event pool
+        ze_context_handle_t* phContext                  ///< [out] handle of the context on which the event pool was created
+        )
+    {
+        if( nullptr == hEventPool )
+            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+        if( nullptr == phContext )
+            return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+        return ZE_RESULT_SUCCESS;
+    }
+
+
+    ze_result_t
+    ZEParameterValidation::zeEventPoolGetFlags(
+        ze_event_pool_handle_t hEventPool,              ///< [in] handle of the event pool
+        ze_event_pool_flags_t* pFlags                   ///< [out] creation flags used to create the event pool; may be 0 or a
+                                                        ///< valid combination of ::ze_event_pool_flag_t
+        )
+    {
+        if( nullptr == hEventPool )
+            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+        if( nullptr == pFlags )
+            return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
         return ZE_RESULT_SUCCESS;
     }
@@ -3489,6 +3688,154 @@ namespace validation_layer
         )
     {
         if( nullptr == hParallelOperation )
+            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+        return ZE_RESULT_SUCCESS;
+    }
+
+
+    ze_result_t
+    ZEParameterValidation::zeMemGetPitchFor2dImage(
+        ze_context_handle_t hContext,                   ///< [in] handle of the context object
+        ze_device_handle_t hDevice,                     ///< [in] handle of the device
+        size_t imageWidth,                              ///< [in] imageWidth
+        size_t imageHeight,                             ///< [in] imageHeight
+        unsigned int elementSizeInBytes,                ///< [in] Element size in bytes
+        size_t * rowPitch                               ///< [out] rowPitch
+        )
+    {
+        if( nullptr == hContext )
+            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+        if( nullptr == hDevice )
+            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+        return ZE_RESULT_SUCCESS;
+    }
+
+
+    ze_result_t
+    ZEParameterValidation::zeImageGetDeviceOffsetExp(
+        ze_image_handle_t hImage,                       ///< [in] handle of the image
+        uint64_t* pDeviceOffset                         ///< [out] bindless device offset for image
+        )
+    {
+        if( nullptr == hImage )
+            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+        if( nullptr == pDeviceOffset )
+            return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+        return ZE_RESULT_SUCCESS;
+    }
+
+
+    ze_result_t
+    ZEParameterValidation::zeCommandListCreateCloneExp(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle to source command list (the command list to clone)
+        ze_command_list_handle_t* phClonedCommandList   ///< [out] pointer to handle of the cloned command list
+        )
+    {
+        if( nullptr == hCommandList )
+            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+        if( nullptr == phClonedCommandList )
+            return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+        return ZE_RESULT_SUCCESS;
+    }
+
+
+    ze_result_t
+    ZEParameterValidation::zeCommandListImmediateAppendCommandListsExp(
+        ze_command_list_handle_t hCommandListImmediate, ///< [in] handle of the immediate command list
+        uint32_t numCommandLists,                       ///< [in] number of command lists
+        ze_command_list_handle_t* phCommandLists,       ///< [in][range(0, numCommandLists)] handles of command lists
+        ze_event_handle_t hSignalEvent,                 ///< [in][optional] handle of the event to signal on completion
+                                                        ///<    - if not null, this event is signaled after the completion of all
+                                                        ///< appended command lists
+        uint32_t numWaitEvents,                         ///< [in][optional] number of events to wait on before executing appended
+                                                        ///< command lists; must be 0 if nullptr == phWaitEvents
+        ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
+                                                        ///< on before executing appended command lists.
+                                                        ///<    - if not null, all wait events must be satisfied prior to the start
+                                                        ///< of any appended command list(s)
+        )
+    {
+        if( nullptr == hCommandListImmediate )
+            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+        if( nullptr == phCommandLists )
+            return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+        return ZE_RESULT_SUCCESS;
+    }
+
+
+    ze_result_t
+    ZEParameterValidation::zeCommandListGetNextCommandIdExp(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
+        const ze_mutable_command_id_exp_desc_t* desc,   ///< [in] pointer to mutable command identifier descriptor
+        uint64_t* pCommandId                            ///< [out] pointer to mutable command identifier to be written
+        )
+    {
+        if( nullptr == hCommandList )
+            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+        if( nullptr == desc )
+            return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+        if( nullptr == pCommandId )
+            return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+        if( 0x3f < desc->flags )
+            return ZE_RESULT_ERROR_INVALID_ENUMERATION;
+
+        return ParameterValidation::validateExtensions(desc);
+    }
+
+
+    ze_result_t
+    ZEParameterValidation::zeCommandListUpdateMutableCommandsExp(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
+        const ze_mutable_commands_exp_desc_t* desc      ///< [in] pointer to mutable commands descriptor; multiple descriptors may
+                                                        ///< be chained via `pNext` member
+        )
+    {
+        if( nullptr == hCommandList )
+            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+        if( nullptr == desc )
+            return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+        return ParameterValidation::validateExtensions(desc);
+    }
+
+
+    ze_result_t
+    ZEParameterValidation::zeCommandListUpdateMutableCommandSignalEventExp(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
+        uint64_t commandId,                             ///< [in] command identifier
+        ze_event_handle_t hSignalEvent                  ///< [in][optional] handle of the event to signal on completion
+        )
+    {
+        if( nullptr == hCommandList )
+            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+        return ZE_RESULT_SUCCESS;
+    }
+
+
+    ze_result_t
+    ZEParameterValidation::zeCommandListUpdateMutableCommandWaitEventsExp(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
+        uint64_t commandId,                             ///< [in] command identifier
+        uint32_t numWaitEvents,                         ///< [in][optional] the number of wait events
+        ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
+                                                        ///< on before launching
+        )
+    {
+        if( nullptr == hCommandList )
             return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
 
         return ZE_RESULT_SUCCESS;

@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (C) 2019-2022 Intel Corporation
+ * Copyright (C) 2019-2024 Intel Corporation
  *
  * SPDX-License-Identifier: MIT
  *
@@ -89,6 +89,13 @@ namespace ze_lib
             auto getTable = reinterpret_cast<ze_pfnGetCommandListProcAddrTable_t>(
                 GET_FUNCTION_PTR(loader, "zeGetCommandListProcAddrTable") );
             result = getTable( ZE_API_VERSION_CURRENT, &initialzeDdiTable.CommandList );
+        }
+
+        if( ZE_RESULT_SUCCESS == result )
+        {
+            auto getTable = reinterpret_cast<ze_pfnGetCommandListExpProcAddrTable_t>(
+                GET_FUNCTION_PTR(loader, "zeGetCommandListExpProcAddrTable") );
+            result = getTable( ZE_API_VERSION_CURRENT, &initialzeDdiTable.CommandListExp );
         }
 
         if( ZE_RESULT_SUCCESS == result )
@@ -265,6 +272,11 @@ namespace ze_lib
         if( ZE_RESULT_SUCCESS == result )
         {
             result = zeGetCommandListProcAddrTable( ZE_API_VERSION_CURRENT, &initialzeDdiTable.CommandList );
+        }
+
+        if( ZE_RESULT_SUCCESS == result )
+        {
+            result = zeGetCommandListExpProcAddrTable( ZE_API_VERSION_CURRENT, &initialzeDdiTable.CommandListExp );
         }
 
         if( ZE_RESULT_SUCCESS == result )

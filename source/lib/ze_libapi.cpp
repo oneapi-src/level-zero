@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (C) 2019-2022 Intel Corporation
+ * Copyright (C) 2019-2024 Intel Corporation
  *
  * SPDX-License-Identifier: MIT
  *
@@ -1512,6 +1512,82 @@ zeCommandQueueSynchronize(
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+/// @brief Gets the command queue group ordinal.
+/// 
+/// @details
+///     - The application may call this function from simultaneous threads.
+///     - The implementation of this function should be lock-free.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hCommandQueue`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == pOrdinal`
+ze_result_t ZE_APICALL
+zeCommandQueueGetOrdinal(
+    ze_command_queue_handle_t hCommandQueue,        ///< [in] handle of the command queue
+    uint32_t* pOrdinal                              ///< [out] command queue group ordinal
+    )
+{
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
+    auto pfnGetOrdinal = ze_lib::context->zeDdiTable.load()->CommandQueue.pfnGetOrdinal;
+    if( nullptr == pfnGetOrdinal ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    return pfnGetOrdinal( hCommandQueue, pOrdinal );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Gets the command queue index within the group.
+/// 
+/// @details
+///     - The application may call this function from simultaneous threads.
+///     - The implementation of this function should be lock-free.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hCommandQueue`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == pIndex`
+ze_result_t ZE_APICALL
+zeCommandQueueGetIndex(
+    ze_command_queue_handle_t hCommandQueue,        ///< [in] handle of the command queue
+    uint32_t* pIndex                                ///< [out] command queue index within the group
+    )
+{
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
+    auto pfnGetIndex = ze_lib::context->zeDdiTable.load()->CommandQueue.pfnGetIndex;
+    if( nullptr == pfnGetIndex ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    return pfnGetIndex( hCommandQueue, pIndex );
+}
+
+///////////////////////////////////////////////////////////////////////////////
 /// @brief Creates a command list on the context.
 /// 
 /// @details
@@ -1536,7 +1612,7 @@ zeCommandQueueSynchronize(
 ///         + `nullptr == desc`
 ///         + `nullptr == phCommandList`
 ///     - ::ZE_RESULT_ERROR_INVALID_ENUMERATION
-///         + `0xf < desc->flags`
+///         + `0x1f < desc->flags`
 ze_result_t ZE_APICALL
 zeCommandListCreate(
     ze_context_handle_t hContext,                   ///< [in] handle of the context object
@@ -1843,6 +1919,204 @@ zeCommandListHostSynchronize(
     }
 
     return pfnHostSynchronize( hCommandList, timeout );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Gets the handle of the device on which the command list was created.
+/// 
+/// @details
+///     - The application may call this function from simultaneous threads.
+///     - The implementation of this function should be lock-free.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hCommandList`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == phDevice`
+ze_result_t ZE_APICALL
+zeCommandListGetDeviceHandle(
+    ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
+    ze_device_handle_t* phDevice                    ///< [out] handle of the device on which the command list was created
+    )
+{
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
+    auto pfnGetDeviceHandle = ze_lib::context->zeDdiTable.load()->CommandList.pfnGetDeviceHandle;
+    if( nullptr == pfnGetDeviceHandle ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    return pfnGetDeviceHandle( hCommandList, phDevice );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Gets the handle of the context on which the command list was created.
+/// 
+/// @details
+///     - The application may call this function from simultaneous threads.
+///     - The implementation of this function should be lock-free.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hCommandList`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == phContext`
+ze_result_t ZE_APICALL
+zeCommandListGetContextHandle(
+    ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
+    ze_context_handle_t* phContext                  ///< [out] handle of the context on which the command list was created
+    )
+{
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
+    auto pfnGetContextHandle = ze_lib::context->zeDdiTable.load()->CommandList.pfnGetContextHandle;
+    if( nullptr == pfnGetContextHandle ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    return pfnGetContextHandle( hCommandList, phContext );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Gets the command queue group ordinal to which the command list is
+///        submitted.
+/// 
+/// @details
+///     - The application may call this function from simultaneous threads.
+///     - The implementation of this function should be lock-free.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hCommandList`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == pOrdinal`
+ze_result_t ZE_APICALL
+zeCommandListGetOrdinal(
+    ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
+    uint32_t* pOrdinal                              ///< [out] command queue group ordinal to which command list is submitted
+    )
+{
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
+    auto pfnGetOrdinal = ze_lib::context->zeDdiTable.load()->CommandList.pfnGetOrdinal;
+    if( nullptr == pfnGetOrdinal ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    return pfnGetOrdinal( hCommandList, pOrdinal );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Gets the command queue index within the group to which the immediate
+///        command list is submitted.
+/// 
+/// @details
+///     - The application must call this function only with command lists
+///       created with ::zeCommandListCreateImmediate.
+///     - The application may call this function from simultaneous threads.
+///     - The implementation of this function should be lock-free.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hCommandListImmediate`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == pIndex`
+///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
+///         + handle does not correspond to an immediate command list
+ze_result_t ZE_APICALL
+zeCommandListImmediateGetIndex(
+    ze_command_list_handle_t hCommandListImmediate, ///< [in] handle of the immediate command list
+    uint32_t* pIndex                                ///< [out] command queue index within the group to which the immediate
+                                                    ///< command list is submitted
+    )
+{
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
+    auto pfnImmediateGetIndex = ze_lib::context->zeDdiTable.load()->CommandList.pfnImmediateGetIndex;
+    if( nullptr == pfnImmediateGetIndex ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    return pfnImmediateGetIndex( hCommandListImmediate, pIndex );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Query whether a command list is an immediate command list.
+/// 
+/// @details
+///     - The application may call this function from simultaneous threads.
+///     - The implementation of this function should be lock-free.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hCommandList`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == pIsImmediate`
+ze_result_t ZE_APICALL
+zeCommandListIsImmediate(
+    ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
+    ze_bool_t* pIsImmediate                         ///< [out] Boolean indicating whether the command list is an immediate
+                                                    ///< command list (true) or not (false)
+    )
+{
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
+    auto pfnIsImmediate = ze_lib::context->zeDdiTable.load()->CommandList.pfnIsImmediate;
+    if( nullptr == pfnIsImmediate ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    return pfnIsImmediate( hCommandList, pIsImmediate );
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -3456,6 +3730,201 @@ zeCommandListAppendQueryKernelTimestamps(
     }
 
     return pfnAppendQueryKernelTimestamps( hCommandList, numEvents, phEvents, dstptr, pOffsets, hSignalEvent, numWaitEvents, phWaitEvents );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Gets the handle of the event pool for the event.
+/// 
+/// @details
+///     - The application may call this function from simultaneous threads.
+///     - The implementation of this function should be lock-free.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hEvent`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == phEventPool`
+ze_result_t ZE_APICALL
+zeEventGetEventPool(
+    ze_event_handle_t hEvent,                       ///< [in] handle of the event
+    ze_event_pool_handle_t* phEventPool             ///< [out] handle of the event pool for the event
+    )
+{
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
+    auto pfnGetEventPool = ze_lib::context->zeDdiTable.load()->Event.pfnGetEventPool;
+    if( nullptr == pfnGetEventPool ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    return pfnGetEventPool( hEvent, phEventPool );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Gets the signal event scope.
+/// 
+/// @details
+///     - The application may call this function from simultaneous threads.
+///     - The implementation of this function should be lock-free.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hEvent`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == pSignalScope`
+ze_result_t ZE_APICALL
+zeEventGetSignalScope(
+    ze_event_handle_t hEvent,                       ///< [in] handle of the event
+    ze_event_scope_flags_t* pSignalScope            ///< [out] signal event scope. This is the scope of relevant cache
+                                                    ///< hierarchies that are flushed on a signal action before the event is
+                                                    ///< triggered. May be 0 or a valid combination of ::ze_event_scope_flag_t.
+    )
+{
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
+    auto pfnGetSignalScope = ze_lib::context->zeDdiTable.load()->Event.pfnGetSignalScope;
+    if( nullptr == pfnGetSignalScope ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    return pfnGetSignalScope( hEvent, pSignalScope );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Gets the wait event scope.
+/// 
+/// @details
+///     - The application may call this function from simultaneous threads.
+///     - The implementation of this function should be lock-free.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hEvent`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == pWaitScope`
+ze_result_t ZE_APICALL
+zeEventGetWaitScope(
+    ze_event_handle_t hEvent,                       ///< [in] handle of the event
+    ze_event_scope_flags_t* pWaitScope              ///< [out] wait event scope. This is the scope of relevant cache
+                                                    ///< hierarchies invalidated on a wait action after the event is complete.
+                                                    ///< May be 0 or a valid combination of ::ze_event_scope_flag_t.
+    )
+{
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
+    auto pfnGetWaitScope = ze_lib::context->zeDdiTable.load()->Event.pfnGetWaitScope;
+    if( nullptr == pfnGetWaitScope ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    return pfnGetWaitScope( hEvent, pWaitScope );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Gets the handle of the context on which the event pool was created.
+/// 
+/// @details
+///     - The application may call this function from simultaneous threads.
+///     - The implementation of this function should be lock-free.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hEventPool`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == phContext`
+ze_result_t ZE_APICALL
+zeEventPoolGetContextHandle(
+    ze_event_pool_handle_t hEventPool,              ///< [in] handle of the event pool
+    ze_context_handle_t* phContext                  ///< [out] handle of the context on which the event pool was created
+    )
+{
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
+    auto pfnGetContextHandle = ze_lib::context->zeDdiTable.load()->EventPool.pfnGetContextHandle;
+    if( nullptr == pfnGetContextHandle ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    return pfnGetContextHandle( hEventPool, phContext );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Gets the creation flags used to create the event pool.
+/// 
+/// @details
+///     - The application may call this function from simultaneous threads.
+///     - The implementation of this function should be lock-free.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hEventPool`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == pFlags`
+ze_result_t ZE_APICALL
+zeEventPoolGetFlags(
+    ze_event_pool_handle_t hEventPool,              ///< [in] handle of the event pool
+    ze_event_pool_flags_t* pFlags                   ///< [out] creation flags used to create the event pool; may be 0 or a
+                                                    ///< valid combination of ::ze_event_pool_flag_t
+    )
+{
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
+    auto pfnGetFlags = ze_lib::context->zeDdiTable.load()->EventPool.pfnGetFlags;
+    if( nullptr == pfnGetFlags ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    return pfnGetFlags( hEventPool, pFlags );
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -5753,6 +6222,8 @@ zeCommandListAppendLaunchMultipleKernelsIndirect(
 ///         + `nullptr == hDevice`
 ///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
 ///         + `nullptr == ptr`
+///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
+///         + ptr is not recognized by the implementation
 ze_result_t ZE_APICALL
 zeContextMakeMemoryResident(
     ze_context_handle_t hContext,                   ///< [in] handle of context object
@@ -8021,6 +8492,389 @@ zeRTASParallelOperationDestroyExp(
     }
 
     return pfnDestroyExp( hParallelOperation );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Allocate pitched USM memory for images
+/// 
+/// @details
+///     - Retrieves pitch for 2D image given the width, height and size in bytes
+///     - The memory is then allocated using ::zeMemAllocDevice by providing
+///       input size calculated as the returned pitch value multiplied by image height
+///     - The application may call this function from simultaneous threads
+///     - The implementation of this function must be thread-safe.
+///     - The implementation of this function should be lock-free.
+///     - The implementation must support ::ZE_experimental_bindless_image extension.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hContext`
+///         + `nullptr == hDevice`
+ze_result_t ZE_APICALL
+zeMemGetPitchFor2dImage(
+    ze_context_handle_t hContext,                   ///< [in] handle of the context object
+    ze_device_handle_t hDevice,                     ///< [in] handle of the device
+    size_t imageWidth,                              ///< [in] imageWidth
+    size_t imageHeight,                             ///< [in] imageHeight
+    unsigned int elementSizeInBytes,                ///< [in] Element size in bytes
+    size_t * rowPitch                               ///< [out] rowPitch
+    )
+{
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
+    auto pfnGetPitchFor2dImage = ze_lib::context->zeDdiTable.load()->Mem.pfnGetPitchFor2dImage;
+    if( nullptr == pfnGetPitchFor2dImage ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    return pfnGetPitchFor2dImage( hContext, hDevice, imageWidth, imageHeight, elementSizeInBytes, rowPitch );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Get bindless device offset for image
+/// 
+/// @details
+///     - The application may call this function from simultaneous threads
+///     - The implementation of this function must be thread-safe.
+///     - The implementation of this function should be lock-free.
+///     - The implementation must support ::ZE_experimental_bindless_image
+///       extension.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hImage`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == pDeviceOffset`
+ze_result_t ZE_APICALL
+zeImageGetDeviceOffsetExp(
+    ze_image_handle_t hImage,                       ///< [in] handle of the image
+    uint64_t* pDeviceOffset                         ///< [out] bindless device offset for image
+    )
+{
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
+    auto pfnGetDeviceOffsetExp = ze_lib::context->zeDdiTable.load()->ImageExp.pfnGetDeviceOffsetExp;
+    if( nullptr == pfnGetDeviceOffsetExp ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    return pfnGetDeviceOffsetExp( hImage, pDeviceOffset );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Creates a command list as the clone of another command list.
+/// 
+/// @details
+///     - The source command list must be created with the
+///       ::ZE_COMMAND_LIST_FLAG_EXP_CLONEABLE flag.
+///     - The source command list must be closed prior to cloning.
+///     - The source command list may be cloned while it is running on the
+///       device.
+///     - The cloned command list inherits all properties of the source command
+///       list.
+///     - The cloned command list must be destroyed prior to the source command
+///       list.
+///     - The application must only use the command list for the device, or its
+///       sub-devices, which was provided during creation.
+///     - The application may call this function from simultaneous threads.
+///     - The implementation of this function must be thread-safe.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hCommandList`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == phClonedCommandList`
+ze_result_t ZE_APICALL
+zeCommandListCreateCloneExp(
+    ze_command_list_handle_t hCommandList,          ///< [in] handle to source command list (the command list to clone)
+    ze_command_list_handle_t* phClonedCommandList   ///< [out] pointer to handle of the cloned command list
+    )
+{
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
+    auto pfnCreateCloneExp = ze_lib::context->zeDdiTable.load()->CommandListExp.pfnCreateCloneExp;
+    if( nullptr == pfnCreateCloneExp ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    return pfnCreateCloneExp( hCommandList, phClonedCommandList );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Appends command lists to dispatch from an immediate command list.
+/// 
+/// @details
+///     - The application must call this function only with command lists
+///       created with ::zeCommandListCreateImmediate.
+///     - The command lists passed to this function in the `phCommandLists`
+///       argument must be regular command lists (i.e. not immediate command
+///       lists).
+///     - The application may call this function from simultaneous threads.
+///     - The implementation of this function should be lock-free.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hCommandListImmediate`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == phCommandLists`
+ze_result_t ZE_APICALL
+zeCommandListImmediateAppendCommandListsExp(
+    ze_command_list_handle_t hCommandListImmediate, ///< [in] handle of the immediate command list
+    uint32_t numCommandLists,                       ///< [in] number of command lists
+    ze_command_list_handle_t* phCommandLists,       ///< [in][range(0, numCommandLists)] handles of command lists
+    ze_event_handle_t hSignalEvent,                 ///< [in][optional] handle of the event to signal on completion
+                                                    ///<    - if not null, this event is signaled after the completion of all
+                                                    ///< appended command lists
+    uint32_t numWaitEvents,                         ///< [in][optional] number of events to wait on before executing appended
+                                                    ///< command lists; must be 0 if nullptr == phWaitEvents
+    ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
+                                                    ///< on before executing appended command lists.
+                                                    ///<    - if not null, all wait events must be satisfied prior to the start
+                                                    ///< of any appended command list(s)
+    )
+{
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
+    auto pfnImmediateAppendCommandListsExp = ze_lib::context->zeDdiTable.load()->CommandListExp.pfnImmediateAppendCommandListsExp;
+    if( nullptr == pfnImmediateAppendCommandListsExp ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    return pfnImmediateAppendCommandListsExp( hCommandListImmediate, numCommandLists, phCommandLists, hSignalEvent, numWaitEvents, phWaitEvents );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Returns a unique command identifier for the next command to be
+///        appended to a command list.
+/// 
+/// @details
+///     - This function may only be called for a mutable command list.
+///     - This function may not be called on a closed command list.
+///     - This function may be called from simultaneous threads with the same
+///       command list handle.
+///     - The implementation of this function should be lock-free.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hCommandList`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == desc`
+///         + `nullptr == pCommandId`
+///     - ::ZE_RESULT_ERROR_INVALID_ENUMERATION
+///         + `0x3f < desc->flags`
+ze_result_t ZE_APICALL
+zeCommandListGetNextCommandIdExp(
+    ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
+    const ze_mutable_command_id_exp_desc_t* desc,   ///< [in] pointer to mutable command identifier descriptor
+    uint64_t* pCommandId                            ///< [out] pointer to mutable command identifier to be written
+    )
+{
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
+    auto pfnGetNextCommandIdExp = ze_lib::context->zeDdiTable.load()->CommandListExp.pfnGetNextCommandIdExp;
+    if( nullptr == pfnGetNextCommandIdExp ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    return pfnGetNextCommandIdExp( hCommandList, desc, pCommandId );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Updates mutable commands.
+/// 
+/// @details
+///     - This function may only be called for a mutable command list.
+///     - The application must synchronize mutable command list execution before
+///       calling this function.
+///     - The application must close a mutable command list after completing all
+///       updates.
+///     - This function must not be called from simultaneous threads with the
+///       same command list handle.
+///     - The implementation of this function should be lock-free.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hCommandList`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == desc`
+ze_result_t ZE_APICALL
+zeCommandListUpdateMutableCommandsExp(
+    ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
+    const ze_mutable_commands_exp_desc_t* desc      ///< [in] pointer to mutable commands descriptor; multiple descriptors may
+                                                    ///< be chained via `pNext` member
+    )
+{
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
+    auto pfnUpdateMutableCommandsExp = ze_lib::context->zeDdiTable.load()->CommandListExp.pfnUpdateMutableCommandsExp;
+    if( nullptr == pfnUpdateMutableCommandsExp ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    return pfnUpdateMutableCommandsExp( hCommandList, desc );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Updates the signal event for a mutable command in a mutable command
+///        list.
+/// 
+/// @details
+///     - This function may only be called for a mutable command list.
+///     - The type, scope and flags of the signal event must match those of the
+///       source command.
+///     - Passing a null pointer as the signal event will update the command to
+///       not issue a signal.
+///     - The application must synchronize mutable command list execution before
+///       calling this function.
+///     - The application must close a mutable command list after completing all
+///       updates.
+///     - This function must not be called from simultaneous threads with the
+///       same command list handle.
+///     - The implementation of this function should be lock-free.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hCommandList`
+ze_result_t ZE_APICALL
+zeCommandListUpdateMutableCommandSignalEventExp(
+    ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
+    uint64_t commandId,                             ///< [in] command identifier
+    ze_event_handle_t hSignalEvent                  ///< [in][optional] handle of the event to signal on completion
+    )
+{
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
+    auto pfnUpdateMutableCommandSignalEventExp = ze_lib::context->zeDdiTable.load()->CommandListExp.pfnUpdateMutableCommandSignalEventExp;
+    if( nullptr == pfnUpdateMutableCommandSignalEventExp ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    return pfnUpdateMutableCommandSignalEventExp( hCommandList, commandId, hSignalEvent );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Updates the wait events for a mutable command in a mutable command
+///        list.
+/// 
+/// @details
+///     - This function may only be called for a mutable command list.
+///     - The number of wait events must match that of the source command.
+///     - The type, scope and flags of the wait events must match those of the
+///       source command.
+///     - Passing `nullptr` as the wait events will update the command to not
+///       wait on any events prior to dispatch.
+///     - Passing `nullptr` as an event on event wait list will remove event
+///       dependency from this wait list slot.
+///     - The application must synchronize mutable command list execution before
+///       calling this function.
+///     - The application must close a mutable command list after completing all
+///       updates.
+///     - This function must not be called from simultaneous threads with the
+///       same command list handle.
+///     - The implementation of this function should be lock-free.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hCommandList`
+///     - ::ZE_RESULT_ERROR_INVALID_SIZE
+///         + The `numWaitEvents` parameter does not match that of the original command.
+ze_result_t ZE_APICALL
+zeCommandListUpdateMutableCommandWaitEventsExp(
+    ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
+    uint64_t commandId,                             ///< [in] command identifier
+    uint32_t numWaitEvents,                         ///< [in][optional] the number of wait events
+    ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
+                                                    ///< on before launching
+    )
+{
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
+    auto pfnUpdateMutableCommandWaitEventsExp = ze_lib::context->zeDdiTable.load()->CommandListExp.pfnUpdateMutableCommandWaitEventsExp;
+    if( nullptr == pfnUpdateMutableCommandWaitEventsExp ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    return pfnUpdateMutableCommandWaitEventsExp( hCommandList, commandId, numWaitEvents, phWaitEvents );
 }
 
 } // extern "C"

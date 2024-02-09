@@ -909,4 +909,243 @@ namespace validation_layer
         return ParameterValidation::validateExtensions(pCalculateDescriptor);
     }
 
+
+    ze_result_t
+    ZETParameterValidation::zetMetricProgrammableGetExp(
+        zet_device_handle_t hDevice,                    ///< [in] handle of the device
+        uint32_t* pCount,                               ///< [in,out] pointer to the number of metric programmable handles.
+                                                        ///< if count is zero, then the driver shall update the value with the
+                                                        ///< total number of metric programmable handles available.
+                                                        ///< if count is greater than the number of metric programmable handles
+                                                        ///< available, then the driver shall update the value with the correct
+                                                        ///< number of metric programmable handles available.
+        zet_metric_programmable_exp_handle_t* phMetricProgrammables ///< [in,out][optional][range(0, *pCount)] array of handle of metric programmables.
+                                                        ///< if count is less than the number of metric programmables available,
+                                                        ///< then driver shall only retrieve that number of metric programmables.
+        )
+    {
+        if( nullptr == hDevice )
+            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+        if( nullptr == pCount )
+            return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+        return ZE_RESULT_SUCCESS;
+    }
+
+
+    ze_result_t
+    ZETParameterValidation::zetMetricProgrammableGetPropertiesExp(
+        zet_metric_programmable_exp_handle_t hMetricProgrammable,   ///< [in] handle of the metric programmable
+        zet_metric_programmable_exp_properties_t* pProperties   ///< [in,out] properties of the metric programmable
+        )
+    {
+        if( nullptr == hMetricProgrammable )
+            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+        if( nullptr == pProperties )
+            return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+        return ParameterValidation::validateExtensions(pProperties);
+    }
+
+
+    ze_result_t
+    ZETParameterValidation::zetMetricProgrammableGetParamInfoExp(
+        zet_metric_programmable_exp_handle_t hMetricProgrammable,   ///< [in] handle of the metric programmable
+        uint32_t* pParameterCount,                      ///< [in,out] count of the parameters to retrieve parameter info.
+                                                        ///< if value pParameterCount is greater than count of parameters
+                                                        ///< available, then pParameterCount will be updated with count of
+                                                        ///< parameters available.
+                                                        ///< The count of parameters available can be queried using ::zetMetricProgrammableGetPropertiesExp.
+        zet_metric_programmable_param_info_exp_t* pParameterInfo///< [in,out][range(1, *pParameterCount)] array of parameter info.
+                                                        ///< if parameterCount is less than the number of parameters available,
+                                                        ///< then driver shall only retrieve that number of parameter info.
+        )
+    {
+        if( nullptr == hMetricProgrammable )
+            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+        if( nullptr == pParameterCount )
+            return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+        if( nullptr == pParameterInfo )
+            return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+        return ZE_RESULT_SUCCESS;
+    }
+
+
+    ze_result_t
+    ZETParameterValidation::zetMetricProgrammableGetParamValueInfoExp(
+        zet_metric_programmable_exp_handle_t hMetricProgrammable,   ///< [in] handle of the metric programmable
+        uint32_t parameterOrdinal,                      ///< [in] ordinal of the parameter in the metric programmable
+        uint32_t* pValueInfoCount,                      ///< [in,out] count of parameter value information to retrieve.
+                                                        ///< if value at pValueInfoCount is greater than count of value info
+                                                        ///< available, then pValueInfoCount will be updated with count of value
+                                                        ///< info available.
+                                                        ///< The count of parameter value info available can be queried using ::zetMetricProgrammableGetParamInfoExp.
+        zet_metric_programmable_param_value_info_exp_t* pValueInfo  ///< [in,out][range(1, *pValueInfoCount)] array of parameter value info.
+                                                        ///< if pValueInfoCount is less than the number of value info available,
+                                                        ///< then driver shall only retrieve that number of value info.
+        )
+    {
+        if( nullptr == hMetricProgrammable )
+            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+        if( nullptr == pValueInfoCount )
+            return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+        if( nullptr == pValueInfo )
+            return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+        return ZE_RESULT_SUCCESS;
+    }
+
+
+    ze_result_t
+    ZETParameterValidation::zetMetricCreateFromProgrammableExp(
+        zet_metric_programmable_exp_handle_t hMetricProgrammable,   ///< [in] handle of the metric programmable
+        zet_metric_programmable_param_value_exp_t* pParameterValues,///< [in] list of parameter values to be set.
+        uint32_t parameterCount,                        ///< [in] Count of parameters to set.
+        const char* pName,                              ///< [in] pointer to metric name to be used. Must point to a
+                                                        ///< null-terminated character array no longer than ::ZET_MAX_METRIC_NAME.
+        const char* pDescription,                       ///< [in] pointer to metric description to be used. Must point to a
+                                                        ///< null-terminated character array no longer than
+                                                        ///< ::ZET_MAX_METRIC_DESCRIPTION.
+        uint32_t* pMetricHandleCount,                   ///< [in,out] Pointer to the number of metric handles.
+                                                        ///< if count is zero, then the driver shall update the value with the
+                                                        ///< number of metric handles available for this programmable.
+                                                        ///< if count is greater than the number of metric handles available, then
+                                                        ///< the driver shall update the value with the correct number of metric
+                                                        ///< handles available.
+        zet_metric_handle_t* phMetricHandles            ///< [in,out][optional][range(0,*pMetricHandleCount)] array of handle of metrics.
+                                                        ///< if count is less than the number of metrics available, then driver
+                                                        ///< shall only retrieve that number of metric handles.
+        )
+    {
+        if( nullptr == hMetricProgrammable )
+            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+        if( nullptr == pParameterValues )
+            return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+        if( nullptr == pName )
+            return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+        if( nullptr == pDescription )
+            return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+        if( nullptr == pMetricHandleCount )
+            return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+        return ZE_RESULT_SUCCESS;
+    }
+
+
+    ze_result_t
+    ZETParameterValidation::zetMetricGroupCreateExp(
+        zet_device_handle_t hDevice,                    ///< [in] handle of the device
+        const char* pName,                              ///< [in] pointer to metric group name. Must point to a null-terminated
+                                                        ///< character array no longer than ::ZET_MAX_METRIC_GROUP_NAME.
+        const char* pDescription,                       ///< [in] pointer to metric group description. Must point to a
+                                                        ///< null-terminated character array no longer than
+                                                        ///< ::ZET_MAX_METRIC_GROUP_DESCRIPTION.
+        zet_metric_group_sampling_type_flags_t samplingType,///< [in] Sampling type for the metric group.
+        zet_metric_group_handle_t* phMetricGroup        ///< [in,out] Created Metric group handle
+        )
+    {
+        if( nullptr == hDevice )
+            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+        if( nullptr == pName )
+            return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+        if( nullptr == pDescription )
+            return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+        if( nullptr == phMetricGroup )
+            return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+        if( 0x3 < samplingType )
+            return ZE_RESULT_ERROR_INVALID_ENUMERATION;
+
+        return ZE_RESULT_SUCCESS;
+    }
+
+
+    ze_result_t
+    ZETParameterValidation::zetMetricGroupAddMetricExp(
+        zet_metric_group_handle_t hMetricGroup,         ///< [in] Handle of the metric group
+        zet_metric_handle_t hMetric,                    ///< [in] Metric to be added to the group.
+        size_t * pErrorStringSize,                      ///< [in,out][optional] Size of the error string to query, if an error was
+                                                        ///< reported during adding the metric handle.
+                                                        ///< if *pErrorStringSize is zero, then the driver shall update the value
+                                                        ///< with the size of the error string in bytes.
+        char* pErrorString                              ///< [in,out][optional][range(0, *pErrorStringSize)] Error string.
+                                                        ///< if *pErrorStringSize is less than the length of the error string
+                                                        ///< available, then driver shall only retrieve that length of error string.
+        )
+    {
+        if( nullptr == hMetricGroup )
+            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+        if( nullptr == hMetric )
+            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+        return ZE_RESULT_SUCCESS;
+    }
+
+
+    ze_result_t
+    ZETParameterValidation::zetMetricGroupRemoveMetricExp(
+        zet_metric_group_handle_t hMetricGroup,         ///< [in] Handle of the metric group
+        zet_metric_handle_t hMetric                     ///< [in] Metric handle to be removed from the metric group.
+        )
+    {
+        if( nullptr == hMetricGroup )
+            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+        if( nullptr == hMetric )
+            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+        return ZE_RESULT_SUCCESS;
+    }
+
+
+    ze_result_t
+    ZETParameterValidation::zetMetricGroupCloseExp(
+        zet_metric_group_handle_t hMetricGroup          ///< [in] Handle of the metric group
+        )
+    {
+        if( nullptr == hMetricGroup )
+            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+        return ZE_RESULT_SUCCESS;
+    }
+
+
+    ze_result_t
+    ZETParameterValidation::zetMetricGroupDestroyExp(
+        zet_metric_group_handle_t hMetricGroup          ///< [in] Handle of the metric group to destroy
+        )
+    {
+        if( nullptr == hMetricGroup )
+            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+        return ZE_RESULT_SUCCESS;
+    }
+
+
+    ze_result_t
+    ZETParameterValidation::zetMetricDestroyExp(
+        zet_metric_handle_t hMetric                     ///< [in] Handle of the metric to destroy
+        )
+    {
+        if( nullptr == hMetric )
+            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+        return ZE_RESULT_SUCCESS;
+    }
+
 }

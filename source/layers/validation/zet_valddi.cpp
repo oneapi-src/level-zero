@@ -1689,11 +1689,514 @@ namespace validation_layer
         return result;
     }
 
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zetMetricProgrammableGetExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zetMetricProgrammableGetExp(
+        zet_device_handle_t hDevice,                    ///< [in] handle of the device
+        uint32_t* pCount,                               ///< [in,out] pointer to the number of metric programmable handles.
+                                                        ///< if count is zero, then the driver shall update the value with the
+                                                        ///< total number of metric programmable handles available.
+                                                        ///< if count is greater than the number of metric programmable handles
+                                                        ///< available, then the driver shall update the value with the correct
+                                                        ///< number of metric programmable handles available.
+        zet_metric_programmable_exp_handle_t* phMetricProgrammables ///< [in,out][optional][range(0, *pCount)] array of handle of metric programmables.
+                                                        ///< if count is less than the number of metric programmables available,
+                                                        ///< then driver shall only retrieve that number of metric programmables.
+        )
+    {
+        auto pfnGetExp = context.zetDdiTable.MetricProgrammableExp.pfnGetExp;
+
+        if( nullptr == pfnGetExp )
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        if( context.enableParameterValidation )
+        {
+            auto result = context.paramValidation->zetParamValidation.zetMetricProgrammableGetExp( hDevice, pCount, phMetricProgrammables );
+            if(result!=ZE_RESULT_SUCCESS) return result;
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zetHandleLifetime.zetMetricProgrammableGetExp( hDevice, pCount, phMetricProgrammables );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnGetExp( hDevice, pCount, phMetricProgrammables );
+
+        if( result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
+            
+            for (size_t i = 0; ( nullptr != phMetricProgrammables) && (i < *pCount); ++i){
+                if (phMetricProgrammables[i]){
+                    context.handleLifetime->addHandle( phMetricProgrammables[i] );
+                    context.handleLifetime->addDependent( hDevice, phMetricProgrammables[i] );
+                }
+            }
+        }
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zetMetricProgrammableGetPropertiesExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zetMetricProgrammableGetPropertiesExp(
+        zet_metric_programmable_exp_handle_t hMetricProgrammable,   ///< [in] handle of the metric programmable
+        zet_metric_programmable_exp_properties_t* pProperties   ///< [in,out] properties of the metric programmable
+        )
+    {
+        auto pfnGetPropertiesExp = context.zetDdiTable.MetricProgrammableExp.pfnGetPropertiesExp;
+
+        if( nullptr == pfnGetPropertiesExp )
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        if( context.enableParameterValidation )
+        {
+            auto result = context.paramValidation->zetParamValidation.zetMetricProgrammableGetPropertiesExp( hMetricProgrammable, pProperties );
+            if(result!=ZE_RESULT_SUCCESS) return result;
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zetHandleLifetime.zetMetricProgrammableGetPropertiesExp( hMetricProgrammable, pProperties );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnGetPropertiesExp( hMetricProgrammable, pProperties );
+
+        if( result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
+            
+        }
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zetMetricProgrammableGetParamInfoExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zetMetricProgrammableGetParamInfoExp(
+        zet_metric_programmable_exp_handle_t hMetricProgrammable,   ///< [in] handle of the metric programmable
+        uint32_t* pParameterCount,                      ///< [in,out] count of the parameters to retrieve parameter info.
+                                                        ///< if value pParameterCount is greater than count of parameters
+                                                        ///< available, then pParameterCount will be updated with count of
+                                                        ///< parameters available.
+                                                        ///< The count of parameters available can be queried using ::zetMetricProgrammableGetPropertiesExp.
+        zet_metric_programmable_param_info_exp_t* pParameterInfo///< [in,out][range(1, *pParameterCount)] array of parameter info.
+                                                        ///< if parameterCount is less than the number of parameters available,
+                                                        ///< then driver shall only retrieve that number of parameter info.
+        )
+    {
+        auto pfnGetParamInfoExp = context.zetDdiTable.MetricProgrammableExp.pfnGetParamInfoExp;
+
+        if( nullptr == pfnGetParamInfoExp )
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        if( context.enableParameterValidation )
+        {
+            auto result = context.paramValidation->zetParamValidation.zetMetricProgrammableGetParamInfoExp( hMetricProgrammable, pParameterCount, pParameterInfo );
+            if(result!=ZE_RESULT_SUCCESS) return result;
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zetHandleLifetime.zetMetricProgrammableGetParamInfoExp( hMetricProgrammable, pParameterCount, pParameterInfo );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnGetParamInfoExp( hMetricProgrammable, pParameterCount, pParameterInfo );
+
+        if( result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
+            
+        }
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zetMetricProgrammableGetParamValueInfoExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zetMetricProgrammableGetParamValueInfoExp(
+        zet_metric_programmable_exp_handle_t hMetricProgrammable,   ///< [in] handle of the metric programmable
+        uint32_t parameterOrdinal,                      ///< [in] ordinal of the parameter in the metric programmable
+        uint32_t* pValueInfoCount,                      ///< [in,out] count of parameter value information to retrieve.
+                                                        ///< if value at pValueInfoCount is greater than count of value info
+                                                        ///< available, then pValueInfoCount will be updated with count of value
+                                                        ///< info available.
+                                                        ///< The count of parameter value info available can be queried using ::zetMetricProgrammableGetParamInfoExp.
+        zet_metric_programmable_param_value_info_exp_t* pValueInfo  ///< [in,out][range(1, *pValueInfoCount)] array of parameter value info.
+                                                        ///< if pValueInfoCount is less than the number of value info available,
+                                                        ///< then driver shall only retrieve that number of value info.
+        )
+    {
+        auto pfnGetParamValueInfoExp = context.zetDdiTable.MetricProgrammableExp.pfnGetParamValueInfoExp;
+
+        if( nullptr == pfnGetParamValueInfoExp )
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        if( context.enableParameterValidation )
+        {
+            auto result = context.paramValidation->zetParamValidation.zetMetricProgrammableGetParamValueInfoExp( hMetricProgrammable, parameterOrdinal, pValueInfoCount, pValueInfo );
+            if(result!=ZE_RESULT_SUCCESS) return result;
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zetHandleLifetime.zetMetricProgrammableGetParamValueInfoExp( hMetricProgrammable, parameterOrdinal, pValueInfoCount, pValueInfo );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnGetParamValueInfoExp( hMetricProgrammable, parameterOrdinal, pValueInfoCount, pValueInfo );
+
+        if( result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
+            
+        }
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zetMetricCreateFromProgrammableExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zetMetricCreateFromProgrammableExp(
+        zet_metric_programmable_exp_handle_t hMetricProgrammable,   ///< [in] handle of the metric programmable
+        zet_metric_programmable_param_value_exp_t* pParameterValues,///< [in] list of parameter values to be set.
+        uint32_t parameterCount,                        ///< [in] Count of parameters to set.
+        const char* pName,                              ///< [in] pointer to metric name to be used. Must point to a
+                                                        ///< null-terminated character array no longer than ::ZET_MAX_METRIC_NAME.
+        const char* pDescription,                       ///< [in] pointer to metric description to be used. Must point to a
+                                                        ///< null-terminated character array no longer than
+                                                        ///< ::ZET_MAX_METRIC_DESCRIPTION.
+        uint32_t* pMetricHandleCount,                   ///< [in,out] Pointer to the number of metric handles.
+                                                        ///< if count is zero, then the driver shall update the value with the
+                                                        ///< number of metric handles available for this programmable.
+                                                        ///< if count is greater than the number of metric handles available, then
+                                                        ///< the driver shall update the value with the correct number of metric
+                                                        ///< handles available.
+        zet_metric_handle_t* phMetricHandles            ///< [in,out][optional][range(0,*pMetricHandleCount)] array of handle of metrics.
+                                                        ///< if count is less than the number of metrics available, then driver
+                                                        ///< shall only retrieve that number of metric handles.
+        )
+    {
+        auto pfnCreateFromProgrammableExp = context.zetDdiTable.MetricExp.pfnCreateFromProgrammableExp;
+
+        if( nullptr == pfnCreateFromProgrammableExp )
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        if( context.enableParameterValidation )
+        {
+            auto result = context.paramValidation->zetParamValidation.zetMetricCreateFromProgrammableExp( hMetricProgrammable, pParameterValues, parameterCount, pName, pDescription, pMetricHandleCount, phMetricHandles );
+            if(result!=ZE_RESULT_SUCCESS) return result;
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zetHandleLifetime.zetMetricCreateFromProgrammableExp( hMetricProgrammable, pParameterValues, parameterCount, pName, pDescription, pMetricHandleCount, phMetricHandles );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnCreateFromProgrammableExp( hMetricProgrammable, pParameterValues, parameterCount, pName, pDescription, pMetricHandleCount, phMetricHandles );
+
+        if( result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
+            
+            for (size_t i = 0; ( nullptr != phMetricHandles) && (i < *pMetricHandleCount); ++i){
+                if (phMetricHandles[i]){
+                    context.handleLifetime->addHandle( phMetricHandles[i] );
+                    context.handleLifetime->addDependent( hMetricProgrammable, phMetricHandles[i] );
+                }
+            }
+        }
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zetMetricGroupCreateExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zetMetricGroupCreateExp(
+        zet_device_handle_t hDevice,                    ///< [in] handle of the device
+        const char* pName,                              ///< [in] pointer to metric group name. Must point to a null-terminated
+                                                        ///< character array no longer than ::ZET_MAX_METRIC_GROUP_NAME.
+        const char* pDescription,                       ///< [in] pointer to metric group description. Must point to a
+                                                        ///< null-terminated character array no longer than
+                                                        ///< ::ZET_MAX_METRIC_GROUP_DESCRIPTION.
+        zet_metric_group_sampling_type_flags_t samplingType,///< [in] Sampling type for the metric group.
+        zet_metric_group_handle_t* phMetricGroup        ///< [in,out] Created Metric group handle
+        )
+    {
+        auto pfnCreateExp = context.zetDdiTable.MetricGroupExp.pfnCreateExp;
+
+        if( nullptr == pfnCreateExp )
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        if( context.enableParameterValidation )
+        {
+            auto result = context.paramValidation->zetParamValidation.zetMetricGroupCreateExp( hDevice, pName, pDescription, samplingType, phMetricGroup );
+            if(result!=ZE_RESULT_SUCCESS) return result;
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zetHandleLifetime.zetMetricGroupCreateExp( hDevice, pName, pDescription, samplingType, phMetricGroup );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnCreateExp( hDevice, pName, pDescription, samplingType, phMetricGroup );
+
+        if( result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
+            
+            if (phMetricGroup){
+                context.handleLifetime->addHandle( *phMetricGroup );
+                context.handleLifetime->addDependent( hDevice, *phMetricGroup );
+
+            }
+        }
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zetMetricGroupAddMetricExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zetMetricGroupAddMetricExp(
+        zet_metric_group_handle_t hMetricGroup,         ///< [in] Handle of the metric group
+        zet_metric_handle_t hMetric,                    ///< [in] Metric to be added to the group.
+        size_t * pErrorStringSize,                      ///< [in,out][optional] Size of the error string to query, if an error was
+                                                        ///< reported during adding the metric handle.
+                                                        ///< if *pErrorStringSize is zero, then the driver shall update the value
+                                                        ///< with the size of the error string in bytes.
+        char* pErrorString                              ///< [in,out][optional][range(0, *pErrorStringSize)] Error string.
+                                                        ///< if *pErrorStringSize is less than the length of the error string
+                                                        ///< available, then driver shall only retrieve that length of error string.
+        )
+    {
+        auto pfnAddMetricExp = context.zetDdiTable.MetricGroupExp.pfnAddMetricExp;
+
+        if( nullptr == pfnAddMetricExp )
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        if( context.enableParameterValidation )
+        {
+            auto result = context.paramValidation->zetParamValidation.zetMetricGroupAddMetricExp( hMetricGroup, hMetric, pErrorStringSize, pErrorString );
+            if(result!=ZE_RESULT_SUCCESS) return result;
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zetHandleLifetime.zetMetricGroupAddMetricExp( hMetricGroup, hMetric, pErrorStringSize, pErrorString );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnAddMetricExp( hMetricGroup, hMetric, pErrorStringSize, pErrorString );
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zetMetricGroupRemoveMetricExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zetMetricGroupRemoveMetricExp(
+        zet_metric_group_handle_t hMetricGroup,         ///< [in] Handle of the metric group
+        zet_metric_handle_t hMetric                     ///< [in] Metric handle to be removed from the metric group.
+        )
+    {
+        auto pfnRemoveMetricExp = context.zetDdiTable.MetricGroupExp.pfnRemoveMetricExp;
+
+        if( nullptr == pfnRemoveMetricExp )
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        if( context.enableParameterValidation )
+        {
+            auto result = context.paramValidation->zetParamValidation.zetMetricGroupRemoveMetricExp( hMetricGroup, hMetric );
+            if(result!=ZE_RESULT_SUCCESS) return result;
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zetHandleLifetime.zetMetricGroupRemoveMetricExp( hMetricGroup, hMetric );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnRemoveMetricExp( hMetricGroup, hMetric );
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zetMetricGroupCloseExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zetMetricGroupCloseExp(
+        zet_metric_group_handle_t hMetricGroup          ///< [in] Handle of the metric group
+        )
+    {
+        auto pfnCloseExp = context.zetDdiTable.MetricGroupExp.pfnCloseExp;
+
+        if( nullptr == pfnCloseExp )
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        if( context.enableParameterValidation )
+        {
+            auto result = context.paramValidation->zetParamValidation.zetMetricGroupCloseExp( hMetricGroup );
+            if(result!=ZE_RESULT_SUCCESS) return result;
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zetHandleLifetime.zetMetricGroupCloseExp( hMetricGroup );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnCloseExp( hMetricGroup );
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zetMetricGroupDestroyExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zetMetricGroupDestroyExp(
+        zet_metric_group_handle_t hMetricGroup          ///< [in] Handle of the metric group to destroy
+        )
+    {
+        auto pfnDestroyExp = context.zetDdiTable.MetricGroupExp.pfnDestroyExp;
+
+        if( nullptr == pfnDestroyExp )
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        if( context.enableParameterValidation )
+        {
+            auto result = context.paramValidation->zetParamValidation.zetMetricGroupDestroyExp( hMetricGroup );
+            if(result!=ZE_RESULT_SUCCESS) return result;
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zetHandleLifetime.zetMetricGroupDestroyExp( hMetricGroup );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnDestroyExp( hMetricGroup );
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zetMetricDestroyExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zetMetricDestroyExp(
+        zet_metric_handle_t hMetric                     ///< [in] Handle of the metric to destroy
+        )
+    {
+        auto pfnDestroyExp = context.zetDdiTable.MetricExp.pfnDestroyExp;
+
+        if( nullptr == pfnDestroyExp )
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        if( context.enableParameterValidation )
+        {
+            auto result = context.paramValidation->zetParamValidation.zetMetricDestroyExp( hMetric );
+            if(result!=ZE_RESULT_SUCCESS) return result;
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zetHandleLifetime.zetMetricDestroyExp( hMetric );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnDestroyExp( hMetric );
+        return result;
+    }
+
 } // namespace validation_layer
 
 #if defined(__cplusplus)
 extern "C" {
 #endif
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Exported function for filling application's MetricProgrammableExp table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+ZE_DLLEXPORT ze_result_t ZE_APICALL
+zetGetMetricProgrammableExpProcAddrTable(
+    ze_api_version_t version,                       ///< [in] API version requested
+    zet_metric_programmable_exp_dditable_t* pDdiTable   ///< [in,out] pointer to table of DDI function pointers
+    )
+{
+    auto& dditable = validation_layer::context.zetDdiTable.MetricProgrammableExp;
+
+    if( nullptr == pDdiTable )
+        return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+    if (ZE_MAJOR_VERSION(validation_layer::context.version) != ZE_MAJOR_VERSION(version) ||
+        ZE_MINOR_VERSION(validation_layer::context.version) > ZE_MINOR_VERSION(version))
+        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+
+    ze_result_t result = ZE_RESULT_SUCCESS;
+
+    dditable.pfnGetExp                                   = pDdiTable->pfnGetExp;
+    pDdiTable->pfnGetExp                                 = validation_layer::zetMetricProgrammableGetExp;
+
+    dditable.pfnGetPropertiesExp                         = pDdiTable->pfnGetPropertiesExp;
+    pDdiTable->pfnGetPropertiesExp                       = validation_layer::zetMetricProgrammableGetPropertiesExp;
+
+    dditable.pfnGetParamInfoExp                          = pDdiTable->pfnGetParamInfoExp;
+    pDdiTable->pfnGetParamInfoExp                        = validation_layer::zetMetricProgrammableGetParamInfoExp;
+
+    dditable.pfnGetParamValueInfoExp                     = pDdiTable->pfnGetParamValueInfoExp;
+    pDdiTable->pfnGetParamValueInfoExp                   = validation_layer::zetMetricProgrammableGetParamValueInfoExp;
+
+    return result;
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief Exported function for filling application's Device table
@@ -1958,6 +2461,40 @@ zetGetMetricProcAddrTable(
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+/// @brief Exported function for filling application's MetricExp table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+ZE_DLLEXPORT ze_result_t ZE_APICALL
+zetGetMetricExpProcAddrTable(
+    ze_api_version_t version,                       ///< [in] API version requested
+    zet_metric_exp_dditable_t* pDdiTable            ///< [in,out] pointer to table of DDI function pointers
+    )
+{
+    auto& dditable = validation_layer::context.zetDdiTable.MetricExp;
+
+    if( nullptr == pDdiTable )
+        return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+    if (ZE_MAJOR_VERSION(validation_layer::context.version) != ZE_MAJOR_VERSION(version) ||
+        ZE_MINOR_VERSION(validation_layer::context.version) > ZE_MINOR_VERSION(version))
+        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+
+    ze_result_t result = ZE_RESULT_SUCCESS;
+
+    dditable.pfnCreateFromProgrammableExp                = pDdiTable->pfnCreateFromProgrammableExp;
+    pDdiTable->pfnCreateFromProgrammableExp              = validation_layer::zetMetricCreateFromProgrammableExp;
+
+    dditable.pfnDestroyExp                               = pDdiTable->pfnDestroyExp;
+    pDdiTable->pfnDestroyExp                             = validation_layer::zetMetricDestroyExp;
+
+    return result;
+}
+
+///////////////////////////////////////////////////////////////////////////////
 /// @brief Exported function for filling application's MetricGroup table
 ///        with current process' addresses
 ///
@@ -2030,6 +2567,21 @@ zetGetMetricGroupExpProcAddrTable(
 
     dditable.pfnCalculateMetricExportDataExp             = pDdiTable->pfnCalculateMetricExportDataExp;
     pDdiTable->pfnCalculateMetricExportDataExp           = validation_layer::zetMetricGroupCalculateMetricExportDataExp;
+
+    dditable.pfnCreateExp                                = pDdiTable->pfnCreateExp;
+    pDdiTable->pfnCreateExp                              = validation_layer::zetMetricGroupCreateExp;
+
+    dditable.pfnAddMetricExp                             = pDdiTable->pfnAddMetricExp;
+    pDdiTable->pfnAddMetricExp                           = validation_layer::zetMetricGroupAddMetricExp;
+
+    dditable.pfnRemoveMetricExp                          = pDdiTable->pfnRemoveMetricExp;
+    pDdiTable->pfnRemoveMetricExp                        = validation_layer::zetMetricGroupRemoveMetricExp;
+
+    dditable.pfnCloseExp                                 = pDdiTable->pfnCloseExp;
+    pDdiTable->pfnCloseExp                               = validation_layer::zetMetricGroupCloseExp;
+
+    dditable.pfnDestroyExp                               = pDdiTable->pfnDestroyExp;
+    pDdiTable->pfnDestroyExp                             = validation_layer::zetMetricGroupDestroyExp;
 
     return result;
 }

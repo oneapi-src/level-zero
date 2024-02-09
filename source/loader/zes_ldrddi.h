@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (C) 2019-2022 Intel Corporation
+ * Copyright (C) 2019-2024 Intel Corporation
  *
  * SPDX-License-Identifier: MIT
  *
@@ -65,5 +65,8 @@ namespace loader
 
     using zes_overclock_object_t              = object_t < zes_overclock_handle_t >;
     using zes_overclock_factory_t             = singleton_factory_t < zes_overclock_object_t, zes_overclock_handle_t >;
+
+    using zes_vf_object_t                     = object_t < zes_vf_handle_t >;
+    using zes_vf_factory_t                    = singleton_factory_t < zes_vf_object_t, zes_vf_handle_t >;
 
 }

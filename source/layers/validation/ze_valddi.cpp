@@ -1241,6 +1241,74 @@ namespace validation_layer
     }
 
     ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeCommandQueueGetOrdinal
+    __zedlllocal ze_result_t ZE_APICALL
+    zeCommandQueueGetOrdinal(
+        ze_command_queue_handle_t hCommandQueue,        ///< [in] handle of the command queue
+        uint32_t* pOrdinal                              ///< [out] command queue group ordinal
+        )
+    {
+        auto pfnGetOrdinal = context.zeDdiTable.CommandQueue.pfnGetOrdinal;
+
+        if( nullptr == pfnGetOrdinal )
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        if( context.enableParameterValidation )
+        {
+            auto result = context.paramValidation->zeParamValidation.zeCommandQueueGetOrdinal( hCommandQueue, pOrdinal );
+            if(result!=ZE_RESULT_SUCCESS) return result;
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeCommandQueueGetOrdinal( hCommandQueue, pOrdinal );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnGetOrdinal( hCommandQueue, pOrdinal );
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeCommandQueueGetIndex
+    __zedlllocal ze_result_t ZE_APICALL
+    zeCommandQueueGetIndex(
+        ze_command_queue_handle_t hCommandQueue,        ///< [in] handle of the command queue
+        uint32_t* pIndex                                ///< [out] command queue index within the group
+        )
+    {
+        auto pfnGetIndex = context.zeDdiTable.CommandQueue.pfnGetIndex;
+
+        if( nullptr == pfnGetIndex )
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        if( context.enableParameterValidation )
+        {
+            auto result = context.paramValidation->zeParamValidation.zeCommandQueueGetIndex( hCommandQueue, pIndex );
+            if(result!=ZE_RESULT_SUCCESS) return result;
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeCommandQueueGetIndex( hCommandQueue, pIndex );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnGetIndex( hCommandQueue, pIndex );
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
     /// @brief Intercept function for zeCommandListCreate
     __zedlllocal ze_result_t ZE_APICALL
     zeCommandListCreate(
@@ -1504,6 +1572,178 @@ namespace validation_layer
         }
 
         auto result = pfnHostSynchronize( hCommandList, timeout );
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeCommandListGetDeviceHandle
+    __zedlllocal ze_result_t ZE_APICALL
+    zeCommandListGetDeviceHandle(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
+        ze_device_handle_t* phDevice                    ///< [out] handle of the device on which the command list was created
+        )
+    {
+        auto pfnGetDeviceHandle = context.zeDdiTable.CommandList.pfnGetDeviceHandle;
+
+        if( nullptr == pfnGetDeviceHandle )
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        if( context.enableParameterValidation )
+        {
+            auto result = context.paramValidation->zeParamValidation.zeCommandListGetDeviceHandle( hCommandList, phDevice );
+            if(result!=ZE_RESULT_SUCCESS) return result;
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeCommandListGetDeviceHandle( hCommandList, phDevice );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnGetDeviceHandle( hCommandList, phDevice );
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeCommandListGetContextHandle
+    __zedlllocal ze_result_t ZE_APICALL
+    zeCommandListGetContextHandle(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
+        ze_context_handle_t* phContext                  ///< [out] handle of the context on which the command list was created
+        )
+    {
+        auto pfnGetContextHandle = context.zeDdiTable.CommandList.pfnGetContextHandle;
+
+        if( nullptr == pfnGetContextHandle )
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        if( context.enableParameterValidation )
+        {
+            auto result = context.paramValidation->zeParamValidation.zeCommandListGetContextHandle( hCommandList, phContext );
+            if(result!=ZE_RESULT_SUCCESS) return result;
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeCommandListGetContextHandle( hCommandList, phContext );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnGetContextHandle( hCommandList, phContext );
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeCommandListGetOrdinal
+    __zedlllocal ze_result_t ZE_APICALL
+    zeCommandListGetOrdinal(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
+        uint32_t* pOrdinal                              ///< [out] command queue group ordinal to which command list is submitted
+        )
+    {
+        auto pfnGetOrdinal = context.zeDdiTable.CommandList.pfnGetOrdinal;
+
+        if( nullptr == pfnGetOrdinal )
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        if( context.enableParameterValidation )
+        {
+            auto result = context.paramValidation->zeParamValidation.zeCommandListGetOrdinal( hCommandList, pOrdinal );
+            if(result!=ZE_RESULT_SUCCESS) return result;
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeCommandListGetOrdinal( hCommandList, pOrdinal );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnGetOrdinal( hCommandList, pOrdinal );
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeCommandListImmediateGetIndex
+    __zedlllocal ze_result_t ZE_APICALL
+    zeCommandListImmediateGetIndex(
+        ze_command_list_handle_t hCommandListImmediate, ///< [in] handle of the immediate command list
+        uint32_t* pIndex                                ///< [out] command queue index within the group to which the immediate
+                                                        ///< command list is submitted
+        )
+    {
+        auto pfnImmediateGetIndex = context.zeDdiTable.CommandList.pfnImmediateGetIndex;
+
+        if( nullptr == pfnImmediateGetIndex )
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        if( context.enableParameterValidation )
+        {
+            auto result = context.paramValidation->zeParamValidation.zeCommandListImmediateGetIndex( hCommandListImmediate, pIndex );
+            if(result!=ZE_RESULT_SUCCESS) return result;
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeCommandListImmediateGetIndex( hCommandListImmediate, pIndex );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnImmediateGetIndex( hCommandListImmediate, pIndex );
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeCommandListIsImmediate
+    __zedlllocal ze_result_t ZE_APICALL
+    zeCommandListIsImmediate(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
+        ze_bool_t* pIsImmediate                         ///< [out] Boolean indicating whether the command list is an immediate
+                                                        ///< command list (true) or not (false)
+        )
+    {
+        auto pfnIsImmediate = context.zeDdiTable.CommandList.pfnIsImmediate;
+
+        if( nullptr == pfnIsImmediate )
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        if( context.enableParameterValidation )
+        {
+            auto result = context.paramValidation->zeParamValidation.zeCommandListIsImmediate( hCommandList, pIsImmediate );
+            if(result!=ZE_RESULT_SUCCESS) return result;
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeCommandListIsImmediate( hCommandList, pIsImmediate );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnIsImmediate( hCommandList, pIsImmediate );
         return result;
     }
 
@@ -2652,6 +2892,181 @@ namespace validation_layer
         }
 
         auto result = pfnAppendQueryKernelTimestamps( hCommandList, numEvents, phEvents, dstptr, pOffsets, hSignalEvent, numWaitEvents, phWaitEvents );
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeEventGetEventPool
+    __zedlllocal ze_result_t ZE_APICALL
+    zeEventGetEventPool(
+        ze_event_handle_t hEvent,                       ///< [in] handle of the event
+        ze_event_pool_handle_t* phEventPool             ///< [out] handle of the event pool for the event
+        )
+    {
+        auto pfnGetEventPool = context.zeDdiTable.Event.pfnGetEventPool;
+
+        if( nullptr == pfnGetEventPool )
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        if( context.enableParameterValidation )
+        {
+            auto result = context.paramValidation->zeParamValidation.zeEventGetEventPool( hEvent, phEventPool );
+            if(result!=ZE_RESULT_SUCCESS) return result;
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeEventGetEventPool( hEvent, phEventPool );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnGetEventPool( hEvent, phEventPool );
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeEventGetSignalScope
+    __zedlllocal ze_result_t ZE_APICALL
+    zeEventGetSignalScope(
+        ze_event_handle_t hEvent,                       ///< [in] handle of the event
+        ze_event_scope_flags_t* pSignalScope            ///< [out] signal event scope. This is the scope of relevant cache
+                                                        ///< hierarchies that are flushed on a signal action before the event is
+                                                        ///< triggered. May be 0 or a valid combination of ::ze_event_scope_flag_t.
+        )
+    {
+        auto pfnGetSignalScope = context.zeDdiTable.Event.pfnGetSignalScope;
+
+        if( nullptr == pfnGetSignalScope )
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        if( context.enableParameterValidation )
+        {
+            auto result = context.paramValidation->zeParamValidation.zeEventGetSignalScope( hEvent, pSignalScope );
+            if(result!=ZE_RESULT_SUCCESS) return result;
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeEventGetSignalScope( hEvent, pSignalScope );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnGetSignalScope( hEvent, pSignalScope );
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeEventGetWaitScope
+    __zedlllocal ze_result_t ZE_APICALL
+    zeEventGetWaitScope(
+        ze_event_handle_t hEvent,                       ///< [in] handle of the event
+        ze_event_scope_flags_t* pWaitScope              ///< [out] wait event scope. This is the scope of relevant cache
+                                                        ///< hierarchies invalidated on a wait action after the event is complete.
+                                                        ///< May be 0 or a valid combination of ::ze_event_scope_flag_t.
+        )
+    {
+        auto pfnGetWaitScope = context.zeDdiTable.Event.pfnGetWaitScope;
+
+        if( nullptr == pfnGetWaitScope )
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        if( context.enableParameterValidation )
+        {
+            auto result = context.paramValidation->zeParamValidation.zeEventGetWaitScope( hEvent, pWaitScope );
+            if(result!=ZE_RESULT_SUCCESS) return result;
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeEventGetWaitScope( hEvent, pWaitScope );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnGetWaitScope( hEvent, pWaitScope );
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeEventPoolGetContextHandle
+    __zedlllocal ze_result_t ZE_APICALL
+    zeEventPoolGetContextHandle(
+        ze_event_pool_handle_t hEventPool,              ///< [in] handle of the event pool
+        ze_context_handle_t* phContext                  ///< [out] handle of the context on which the event pool was created
+        )
+    {
+        auto pfnGetContextHandle = context.zeDdiTable.EventPool.pfnGetContextHandle;
+
+        if( nullptr == pfnGetContextHandle )
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        if( context.enableParameterValidation )
+        {
+            auto result = context.paramValidation->zeParamValidation.zeEventPoolGetContextHandle( hEventPool, phContext );
+            if(result!=ZE_RESULT_SUCCESS) return result;
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeEventPoolGetContextHandle( hEventPool, phContext );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnGetContextHandle( hEventPool, phContext );
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeEventPoolGetFlags
+    __zedlllocal ze_result_t ZE_APICALL
+    zeEventPoolGetFlags(
+        ze_event_pool_handle_t hEventPool,              ///< [in] handle of the event pool
+        ze_event_pool_flags_t* pFlags                   ///< [out] creation flags used to create the event pool; may be 0 or a
+                                                        ///< valid combination of ::ze_event_pool_flag_t
+        )
+    {
+        auto pfnGetFlags = context.zeDdiTable.EventPool.pfnGetFlags;
+
+        if( nullptr == pfnGetFlags )
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        if( context.enableParameterValidation )
+        {
+            auto result = context.paramValidation->zeParamValidation.zeEventPoolGetFlags( hEventPool, pFlags );
+            if(result!=ZE_RESULT_SUCCESS) return result;
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeEventPoolGetFlags( hEventPool, pFlags );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnGetFlags( hEventPool, pFlags );
         return result;
     }
 
@@ -6319,6 +6734,315 @@ namespace validation_layer
         return result;
     }
 
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeMemGetPitchFor2dImage
+    __zedlllocal ze_result_t ZE_APICALL
+    zeMemGetPitchFor2dImage(
+        ze_context_handle_t hContext,                   ///< [in] handle of the context object
+        ze_device_handle_t hDevice,                     ///< [in] handle of the device
+        size_t imageWidth,                              ///< [in] imageWidth
+        size_t imageHeight,                             ///< [in] imageHeight
+        unsigned int elementSizeInBytes,                ///< [in] Element size in bytes
+        size_t * rowPitch                               ///< [out] rowPitch
+        )
+    {
+        auto pfnGetPitchFor2dImage = context.zeDdiTable.Mem.pfnGetPitchFor2dImage;
+
+        if( nullptr == pfnGetPitchFor2dImage )
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        if( context.enableParameterValidation )
+        {
+            auto result = context.paramValidation->zeParamValidation.zeMemGetPitchFor2dImage( hContext, hDevice, imageWidth, imageHeight, elementSizeInBytes, rowPitch );
+            if(result!=ZE_RESULT_SUCCESS) return result;
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeMemGetPitchFor2dImage( hContext, hDevice, imageWidth, imageHeight, elementSizeInBytes, rowPitch );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnGetPitchFor2dImage( hContext, hDevice, imageWidth, imageHeight, elementSizeInBytes, rowPitch );
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeImageGetDeviceOffsetExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zeImageGetDeviceOffsetExp(
+        ze_image_handle_t hImage,                       ///< [in] handle of the image
+        uint64_t* pDeviceOffset                         ///< [out] bindless device offset for image
+        )
+    {
+        auto pfnGetDeviceOffsetExp = context.zeDdiTable.ImageExp.pfnGetDeviceOffsetExp;
+
+        if( nullptr == pfnGetDeviceOffsetExp )
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        if( context.enableParameterValidation )
+        {
+            auto result = context.paramValidation->zeParamValidation.zeImageGetDeviceOffsetExp( hImage, pDeviceOffset );
+            if(result!=ZE_RESULT_SUCCESS) return result;
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeImageGetDeviceOffsetExp( hImage, pDeviceOffset );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnGetDeviceOffsetExp( hImage, pDeviceOffset );
+
+        if( result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
+            
+        }
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeCommandListCreateCloneExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zeCommandListCreateCloneExp(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle to source command list (the command list to clone)
+        ze_command_list_handle_t* phClonedCommandList   ///< [out] pointer to handle of the cloned command list
+        )
+    {
+        auto pfnCreateCloneExp = context.zeDdiTable.CommandListExp.pfnCreateCloneExp;
+
+        if( nullptr == pfnCreateCloneExp )
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        if( context.enableParameterValidation )
+        {
+            auto result = context.paramValidation->zeParamValidation.zeCommandListCreateCloneExp( hCommandList, phClonedCommandList );
+            if(result!=ZE_RESULT_SUCCESS) return result;
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeCommandListCreateCloneExp( hCommandList, phClonedCommandList );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnCreateCloneExp( hCommandList, phClonedCommandList );
+
+        if( result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
+            
+            if (phClonedCommandList){
+                context.handleLifetime->addHandle( *phClonedCommandList );
+                context.handleLifetime->addDependent( hCommandList, *phClonedCommandList );
+
+            }
+        }
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeCommandListImmediateAppendCommandListsExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zeCommandListImmediateAppendCommandListsExp(
+        ze_command_list_handle_t hCommandListImmediate, ///< [in] handle of the immediate command list
+        uint32_t numCommandLists,                       ///< [in] number of command lists
+        ze_command_list_handle_t* phCommandLists,       ///< [in][range(0, numCommandLists)] handles of command lists
+        ze_event_handle_t hSignalEvent,                 ///< [in][optional] handle of the event to signal on completion
+                                                        ///<    - if not null, this event is signaled after the completion of all
+                                                        ///< appended command lists
+        uint32_t numWaitEvents,                         ///< [in][optional] number of events to wait on before executing appended
+                                                        ///< command lists; must be 0 if nullptr == phWaitEvents
+        ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
+                                                        ///< on before executing appended command lists.
+                                                        ///<    - if not null, all wait events must be satisfied prior to the start
+                                                        ///< of any appended command list(s)
+        )
+    {
+        auto pfnImmediateAppendCommandListsExp = context.zeDdiTable.CommandListExp.pfnImmediateAppendCommandListsExp;
+
+        if( nullptr == pfnImmediateAppendCommandListsExp )
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        if( context.enableParameterValidation )
+        {
+            auto result = context.paramValidation->zeParamValidation.zeCommandListImmediateAppendCommandListsExp( hCommandListImmediate, numCommandLists, phCommandLists, hSignalEvent, numWaitEvents, phWaitEvents );
+            if(result!=ZE_RESULT_SUCCESS) return result;
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeCommandListImmediateAppendCommandListsExp( hCommandListImmediate, numCommandLists, phCommandLists, hSignalEvent, numWaitEvents, phWaitEvents );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnImmediateAppendCommandListsExp( hCommandListImmediate, numCommandLists, phCommandLists, hSignalEvent, numWaitEvents, phWaitEvents );
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeCommandListGetNextCommandIdExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zeCommandListGetNextCommandIdExp(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
+        const ze_mutable_command_id_exp_desc_t* desc,   ///< [in] pointer to mutable command identifier descriptor
+        uint64_t* pCommandId                            ///< [out] pointer to mutable command identifier to be written
+        )
+    {
+        auto pfnGetNextCommandIdExp = context.zeDdiTable.CommandListExp.pfnGetNextCommandIdExp;
+
+        if( nullptr == pfnGetNextCommandIdExp )
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        if( context.enableParameterValidation )
+        {
+            auto result = context.paramValidation->zeParamValidation.zeCommandListGetNextCommandIdExp( hCommandList, desc, pCommandId );
+            if(result!=ZE_RESULT_SUCCESS) return result;
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeCommandListGetNextCommandIdExp( hCommandList, desc, pCommandId );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnGetNextCommandIdExp( hCommandList, desc, pCommandId );
+
+        if( result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
+            
+        }
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeCommandListUpdateMutableCommandsExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zeCommandListUpdateMutableCommandsExp(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
+        const ze_mutable_commands_exp_desc_t* desc      ///< [in] pointer to mutable commands descriptor; multiple descriptors may
+                                                        ///< be chained via `pNext` member
+        )
+    {
+        auto pfnUpdateMutableCommandsExp = context.zeDdiTable.CommandListExp.pfnUpdateMutableCommandsExp;
+
+        if( nullptr == pfnUpdateMutableCommandsExp )
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        if( context.enableParameterValidation )
+        {
+            auto result = context.paramValidation->zeParamValidation.zeCommandListUpdateMutableCommandsExp( hCommandList, desc );
+            if(result!=ZE_RESULT_SUCCESS) return result;
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeCommandListUpdateMutableCommandsExp( hCommandList, desc );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnUpdateMutableCommandsExp( hCommandList, desc );
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeCommandListUpdateMutableCommandSignalEventExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zeCommandListUpdateMutableCommandSignalEventExp(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
+        uint64_t commandId,                             ///< [in] command identifier
+        ze_event_handle_t hSignalEvent                  ///< [in][optional] handle of the event to signal on completion
+        )
+    {
+        auto pfnUpdateMutableCommandSignalEventExp = context.zeDdiTable.CommandListExp.pfnUpdateMutableCommandSignalEventExp;
+
+        if( nullptr == pfnUpdateMutableCommandSignalEventExp )
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        if( context.enableParameterValidation )
+        {
+            auto result = context.paramValidation->zeParamValidation.zeCommandListUpdateMutableCommandSignalEventExp( hCommandList, commandId, hSignalEvent );
+            if(result!=ZE_RESULT_SUCCESS) return result;
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeCommandListUpdateMutableCommandSignalEventExp( hCommandList, commandId, hSignalEvent );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnUpdateMutableCommandSignalEventExp( hCommandList, commandId, hSignalEvent );
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeCommandListUpdateMutableCommandWaitEventsExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zeCommandListUpdateMutableCommandWaitEventsExp(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
+        uint64_t commandId,                             ///< [in] command identifier
+        uint32_t numWaitEvents,                         ///< [in][optional] the number of wait events
+        ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
+                                                        ///< on before launching
+        )
+    {
+        auto pfnUpdateMutableCommandWaitEventsExp = context.zeDdiTable.CommandListExp.pfnUpdateMutableCommandWaitEventsExp;
+
+        if( nullptr == pfnUpdateMutableCommandWaitEventsExp )
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        if( context.enableParameterValidation )
+        {
+            auto result = context.paramValidation->zeParamValidation.zeCommandListUpdateMutableCommandWaitEventsExp( hCommandList, commandId, numWaitEvents, phWaitEvents );
+            if(result!=ZE_RESULT_SUCCESS) return result;
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeCommandListUpdateMutableCommandWaitEventsExp( hCommandList, commandId, numWaitEvents, phWaitEvents );
+            if(result!=ZE_RESULT_SUCCESS) return result;    
+        }
+
+        auto result = pfnUpdateMutableCommandWaitEventsExp( hCommandList, commandId, numWaitEvents, phWaitEvents );
+        return result;
+    }
+
 } // namespace validation_layer
 
 #if defined(__cplusplus)
@@ -6724,6 +7448,12 @@ zeGetCommandQueueProcAddrTable(
     dditable.pfnSynchronize                              = pDdiTable->pfnSynchronize;
     pDdiTable->pfnSynchronize                            = validation_layer::zeCommandQueueSynchronize;
 
+    dditable.pfnGetOrdinal                               = pDdiTable->pfnGetOrdinal;
+    pDdiTable->pfnGetOrdinal                             = validation_layer::zeCommandQueueGetOrdinal;
+
+    dditable.pfnGetIndex                                 = pDdiTable->pfnGetIndex;
+    pDdiTable->pfnGetIndex                               = validation_layer::zeCommandQueueGetIndex;
+
     return result;
 }
 
@@ -6839,6 +7569,67 @@ zeGetCommandListProcAddrTable(
     dditable.pfnHostSynchronize                          = pDdiTable->pfnHostSynchronize;
     pDdiTable->pfnHostSynchronize                        = validation_layer::zeCommandListHostSynchronize;
 
+    dditable.pfnGetDeviceHandle                          = pDdiTable->pfnGetDeviceHandle;
+    pDdiTable->pfnGetDeviceHandle                        = validation_layer::zeCommandListGetDeviceHandle;
+
+    dditable.pfnGetContextHandle                         = pDdiTable->pfnGetContextHandle;
+    pDdiTable->pfnGetContextHandle                       = validation_layer::zeCommandListGetContextHandle;
+
+    dditable.pfnGetOrdinal                               = pDdiTable->pfnGetOrdinal;
+    pDdiTable->pfnGetOrdinal                             = validation_layer::zeCommandListGetOrdinal;
+
+    dditable.pfnImmediateGetIndex                        = pDdiTable->pfnImmediateGetIndex;
+    pDdiTable->pfnImmediateGetIndex                      = validation_layer::zeCommandListImmediateGetIndex;
+
+    dditable.pfnIsImmediate                              = pDdiTable->pfnIsImmediate;
+    pDdiTable->pfnIsImmediate                            = validation_layer::zeCommandListIsImmediate;
+
+    return result;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Exported function for filling application's CommandListExp table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+ZE_DLLEXPORT ze_result_t ZE_APICALL
+zeGetCommandListExpProcAddrTable(
+    ze_api_version_t version,                       ///< [in] API version requested
+    ze_command_list_exp_dditable_t* pDdiTable       ///< [in,out] pointer to table of DDI function pointers
+    )
+{
+    auto& dditable = validation_layer::context.zeDdiTable.CommandListExp;
+
+    if( nullptr == pDdiTable )
+        return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+    if (ZE_MAJOR_VERSION(validation_layer::context.version) != ZE_MAJOR_VERSION(version) ||
+        ZE_MINOR_VERSION(validation_layer::context.version) > ZE_MINOR_VERSION(version))
+        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+
+    ze_result_t result = ZE_RESULT_SUCCESS;
+
+    dditable.pfnCreateCloneExp                           = pDdiTable->pfnCreateCloneExp;
+    pDdiTable->pfnCreateCloneExp                         = validation_layer::zeCommandListCreateCloneExp;
+
+    dditable.pfnImmediateAppendCommandListsExp           = pDdiTable->pfnImmediateAppendCommandListsExp;
+    pDdiTable->pfnImmediateAppendCommandListsExp         = validation_layer::zeCommandListImmediateAppendCommandListsExp;
+
+    dditable.pfnGetNextCommandIdExp                      = pDdiTable->pfnGetNextCommandIdExp;
+    pDdiTable->pfnGetNextCommandIdExp                    = validation_layer::zeCommandListGetNextCommandIdExp;
+
+    dditable.pfnUpdateMutableCommandsExp                 = pDdiTable->pfnUpdateMutableCommandsExp;
+    pDdiTable->pfnUpdateMutableCommandsExp               = validation_layer::zeCommandListUpdateMutableCommandsExp;
+
+    dditable.pfnUpdateMutableCommandSignalEventExp       = pDdiTable->pfnUpdateMutableCommandSignalEventExp;
+    pDdiTable->pfnUpdateMutableCommandSignalEventExp     = validation_layer::zeCommandListUpdateMutableCommandSignalEventExp;
+
+    dditable.pfnUpdateMutableCommandWaitEventsExp        = pDdiTable->pfnUpdateMutableCommandWaitEventsExp;
+    pDdiTable->pfnUpdateMutableCommandWaitEventsExp      = validation_layer::zeCommandListUpdateMutableCommandWaitEventsExp;
+
     return result;
 }
 
@@ -6890,6 +7681,15 @@ zeGetEventProcAddrTable(
 
     dditable.pfnQueryKernelTimestampsExt                 = pDdiTable->pfnQueryKernelTimestampsExt;
     pDdiTable->pfnQueryKernelTimestampsExt               = validation_layer::zeEventQueryKernelTimestampsExt;
+
+    dditable.pfnGetEventPool                             = pDdiTable->pfnGetEventPool;
+    pDdiTable->pfnGetEventPool                           = validation_layer::zeEventGetEventPool;
+
+    dditable.pfnGetSignalScope                           = pDdiTable->pfnGetSignalScope;
+    pDdiTable->pfnGetSignalScope                         = validation_layer::zeEventGetSignalScope;
+
+    dditable.pfnGetWaitScope                             = pDdiTable->pfnGetWaitScope;
+    pDdiTable->pfnGetWaitScope                           = validation_layer::zeEventGetWaitScope;
 
     return result;
 }
@@ -6967,6 +7767,12 @@ zeGetEventPoolProcAddrTable(
 
     dditable.pfnPutIpcHandle                             = pDdiTable->pfnPutIpcHandle;
     pDdiTable->pfnPutIpcHandle                           = validation_layer::zeEventPoolPutIpcHandle;
+
+    dditable.pfnGetContextHandle                         = pDdiTable->pfnGetContextHandle;
+    pDdiTable->pfnGetContextHandle                       = validation_layer::zeEventPoolGetContextHandle;
+
+    dditable.pfnGetFlags                                 = pDdiTable->pfnGetFlags;
+    pDdiTable->pfnGetFlags                               = validation_layer::zeEventPoolGetFlags;
 
     return result;
 }
@@ -7087,6 +7893,9 @@ zeGetImageExpProcAddrTable(
 
     dditable.pfnViewCreateExp                            = pDdiTable->pfnViewCreateExp;
     pDdiTable->pfnViewCreateExp                          = validation_layer::zeImageViewCreateExp;
+
+    dditable.pfnGetDeviceOffsetExp                       = pDdiTable->pfnGetDeviceOffsetExp;
+    pDdiTable->pfnGetDeviceOffsetExp                     = validation_layer::zeImageGetDeviceOffsetExp;
 
     return result;
 }
@@ -7246,6 +8055,9 @@ zeGetMemProcAddrTable(
 
     dditable.pfnPutIpcHandle                             = pDdiTable->pfnPutIpcHandle;
     pDdiTable->pfnPutIpcHandle                           = validation_layer::zeMemPutIpcHandle;
+
+    dditable.pfnGetPitchFor2dImage                       = pDdiTable->pfnGetPitchFor2dImage;
+    pDdiTable->pfnGetPitchFor2dImage                     = validation_layer::zeMemGetPitchFor2dImage;
 
     return result;
 }

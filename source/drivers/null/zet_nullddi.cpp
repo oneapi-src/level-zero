@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (C) 2019-2022 Intel Corporation
+ * Copyright (C) 2019-2024 Intel Corporation
  *
  * SPDX-License-Identifier: MIT
  *
@@ -1223,11 +1223,364 @@ namespace driver
         return result;
     }
 
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zetMetricProgrammableGetExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zetMetricProgrammableGetExp(
+        zet_device_handle_t hDevice,                    ///< [in] handle of the device
+        uint32_t* pCount,                               ///< [in,out] pointer to the number of metric programmable handles.
+                                                        ///< if count is zero, then the driver shall update the value with the
+                                                        ///< total number of metric programmable handles available.
+                                                        ///< if count is greater than the number of metric programmable handles
+                                                        ///< available, then the driver shall update the value with the correct
+                                                        ///< number of metric programmable handles available.
+        zet_metric_programmable_exp_handle_t* phMetricProgrammables ///< [in,out][optional][range(0, *pCount)] array of handle of metric programmables.
+                                                        ///< if count is less than the number of metric programmables available,
+                                                        ///< then driver shall only retrieve that number of metric programmables.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnGetExp = context.zetDdiTable.MetricProgrammableExp.pfnGetExp;
+        if( nullptr != pfnGetExp )
+        {
+            result = pfnGetExp( hDevice, pCount, phMetricProgrammables );
+        }
+        else
+        {
+            // generic implementation
+            for( size_t i = 0; ( nullptr != phMetricProgrammables ) && ( i < *pCount ); ++i )
+                phMetricProgrammables[ i ] = reinterpret_cast<zet_metric_programmable_exp_handle_t>( context.get() );
+
+        }
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zetMetricProgrammableGetPropertiesExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zetMetricProgrammableGetPropertiesExp(
+        zet_metric_programmable_exp_handle_t hMetricProgrammable,   ///< [in] handle of the metric programmable
+        zet_metric_programmable_exp_properties_t* pProperties   ///< [in,out] properties of the metric programmable
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnGetPropertiesExp = context.zetDdiTable.MetricProgrammableExp.pfnGetPropertiesExp;
+        if( nullptr != pfnGetPropertiesExp )
+        {
+            result = pfnGetPropertiesExp( hMetricProgrammable, pProperties );
+        }
+        else
+        {
+            // generic implementation
+        }
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zetMetricProgrammableGetParamInfoExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zetMetricProgrammableGetParamInfoExp(
+        zet_metric_programmable_exp_handle_t hMetricProgrammable,   ///< [in] handle of the metric programmable
+        uint32_t* pParameterCount,                      ///< [in,out] count of the parameters to retrieve parameter info.
+                                                        ///< if value pParameterCount is greater than count of parameters
+                                                        ///< available, then pParameterCount will be updated with count of
+                                                        ///< parameters available.
+                                                        ///< The count of parameters available can be queried using ::zetMetricProgrammableGetPropertiesExp.
+        zet_metric_programmable_param_info_exp_t* pParameterInfo///< [in,out][range(1, *pParameterCount)] array of parameter info.
+                                                        ///< if parameterCount is less than the number of parameters available,
+                                                        ///< then driver shall only retrieve that number of parameter info.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnGetParamInfoExp = context.zetDdiTable.MetricProgrammableExp.pfnGetParamInfoExp;
+        if( nullptr != pfnGetParamInfoExp )
+        {
+            result = pfnGetParamInfoExp( hMetricProgrammable, pParameterCount, pParameterInfo );
+        }
+        else
+        {
+            // generic implementation
+        }
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zetMetricProgrammableGetParamValueInfoExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zetMetricProgrammableGetParamValueInfoExp(
+        zet_metric_programmable_exp_handle_t hMetricProgrammable,   ///< [in] handle of the metric programmable
+        uint32_t parameterOrdinal,                      ///< [in] ordinal of the parameter in the metric programmable
+        uint32_t* pValueInfoCount,                      ///< [in,out] count of parameter value information to retrieve.
+                                                        ///< if value at pValueInfoCount is greater than count of value info
+                                                        ///< available, then pValueInfoCount will be updated with count of value
+                                                        ///< info available.
+                                                        ///< The count of parameter value info available can be queried using ::zetMetricProgrammableGetParamInfoExp.
+        zet_metric_programmable_param_value_info_exp_t* pValueInfo  ///< [in,out][range(1, *pValueInfoCount)] array of parameter value info.
+                                                        ///< if pValueInfoCount is less than the number of value info available,
+                                                        ///< then driver shall only retrieve that number of value info.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnGetParamValueInfoExp = context.zetDdiTable.MetricProgrammableExp.pfnGetParamValueInfoExp;
+        if( nullptr != pfnGetParamValueInfoExp )
+        {
+            result = pfnGetParamValueInfoExp( hMetricProgrammable, parameterOrdinal, pValueInfoCount, pValueInfo );
+        }
+        else
+        {
+            // generic implementation
+        }
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zetMetricCreateFromProgrammableExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zetMetricCreateFromProgrammableExp(
+        zet_metric_programmable_exp_handle_t hMetricProgrammable,   ///< [in] handle of the metric programmable
+        zet_metric_programmable_param_value_exp_t* pParameterValues,///< [in] list of parameter values to be set.
+        uint32_t parameterCount,                        ///< [in] Count of parameters to set.
+        const char* pName,                              ///< [in] pointer to metric name to be used. Must point to a
+                                                        ///< null-terminated character array no longer than ::ZET_MAX_METRIC_NAME.
+        const char* pDescription,                       ///< [in] pointer to metric description to be used. Must point to a
+                                                        ///< null-terminated character array no longer than
+                                                        ///< ::ZET_MAX_METRIC_DESCRIPTION.
+        uint32_t* pMetricHandleCount,                   ///< [in,out] Pointer to the number of metric handles.
+                                                        ///< if count is zero, then the driver shall update the value with the
+                                                        ///< number of metric handles available for this programmable.
+                                                        ///< if count is greater than the number of metric handles available, then
+                                                        ///< the driver shall update the value with the correct number of metric
+                                                        ///< handles available.
+        zet_metric_handle_t* phMetricHandles            ///< [in,out][optional][range(0,*pMetricHandleCount)] array of handle of metrics.
+                                                        ///< if count is less than the number of metrics available, then driver
+                                                        ///< shall only retrieve that number of metric handles.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnCreateFromProgrammableExp = context.zetDdiTable.MetricExp.pfnCreateFromProgrammableExp;
+        if( nullptr != pfnCreateFromProgrammableExp )
+        {
+            result = pfnCreateFromProgrammableExp( hMetricProgrammable, pParameterValues, parameterCount, pName, pDescription, pMetricHandleCount, phMetricHandles );
+        }
+        else
+        {
+            // generic implementation
+            for( size_t i = 0; ( nullptr != phMetricHandles ) && ( i < *pMetricHandleCount ); ++i )
+                phMetricHandles[ i ] = reinterpret_cast<zet_metric_handle_t>( context.get() );
+
+        }
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zetMetricGroupCreateExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zetMetricGroupCreateExp(
+        zet_device_handle_t hDevice,                    ///< [in] handle of the device
+        const char* pName,                              ///< [in] pointer to metric group name. Must point to a null-terminated
+                                                        ///< character array no longer than ::ZET_MAX_METRIC_GROUP_NAME.
+        const char* pDescription,                       ///< [in] pointer to metric group description. Must point to a
+                                                        ///< null-terminated character array no longer than
+                                                        ///< ::ZET_MAX_METRIC_GROUP_DESCRIPTION.
+        zet_metric_group_sampling_type_flags_t samplingType,///< [in] Sampling type for the metric group.
+        zet_metric_group_handle_t* phMetricGroup        ///< [in,out] Created Metric group handle
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnCreateExp = context.zetDdiTable.MetricGroupExp.pfnCreateExp;
+        if( nullptr != pfnCreateExp )
+        {
+            result = pfnCreateExp( hDevice, pName, pDescription, samplingType, phMetricGroup );
+        }
+        else
+        {
+            // generic implementation
+            *phMetricGroup = reinterpret_cast<zet_metric_group_handle_t>( context.get() );
+
+        }
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zetMetricGroupAddMetricExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zetMetricGroupAddMetricExp(
+        zet_metric_group_handle_t hMetricGroup,         ///< [in] Handle of the metric group
+        zet_metric_handle_t hMetric,                    ///< [in] Metric to be added to the group.
+        size_t * pErrorStringSize,                      ///< [in,out][optional] Size of the error string to query, if an error was
+                                                        ///< reported during adding the metric handle.
+                                                        ///< if *pErrorStringSize is zero, then the driver shall update the value
+                                                        ///< with the size of the error string in bytes.
+        char* pErrorString                              ///< [in,out][optional][range(0, *pErrorStringSize)] Error string.
+                                                        ///< if *pErrorStringSize is less than the length of the error string
+                                                        ///< available, then driver shall only retrieve that length of error string.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnAddMetricExp = context.zetDdiTable.MetricGroupExp.pfnAddMetricExp;
+        if( nullptr != pfnAddMetricExp )
+        {
+            result = pfnAddMetricExp( hMetricGroup, hMetric, pErrorStringSize, pErrorString );
+        }
+        else
+        {
+            // generic implementation
+        }
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zetMetricGroupRemoveMetricExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zetMetricGroupRemoveMetricExp(
+        zet_metric_group_handle_t hMetricGroup,         ///< [in] Handle of the metric group
+        zet_metric_handle_t hMetric                     ///< [in] Metric handle to be removed from the metric group.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnRemoveMetricExp = context.zetDdiTable.MetricGroupExp.pfnRemoveMetricExp;
+        if( nullptr != pfnRemoveMetricExp )
+        {
+            result = pfnRemoveMetricExp( hMetricGroup, hMetric );
+        }
+        else
+        {
+            // generic implementation
+        }
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zetMetricGroupCloseExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zetMetricGroupCloseExp(
+        zet_metric_group_handle_t hMetricGroup          ///< [in] Handle of the metric group
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnCloseExp = context.zetDdiTable.MetricGroupExp.pfnCloseExp;
+        if( nullptr != pfnCloseExp )
+        {
+            result = pfnCloseExp( hMetricGroup );
+        }
+        else
+        {
+            // generic implementation
+        }
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zetMetricGroupDestroyExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zetMetricGroupDestroyExp(
+        zet_metric_group_handle_t hMetricGroup          ///< [in] Handle of the metric group to destroy
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnDestroyExp = context.zetDdiTable.MetricGroupExp.pfnDestroyExp;
+        if( nullptr != pfnDestroyExp )
+        {
+            result = pfnDestroyExp( hMetricGroup );
+        }
+        else
+        {
+            // generic implementation
+        }
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zetMetricDestroyExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zetMetricDestroyExp(
+        zet_metric_handle_t hMetric                     ///< [in] Handle of the metric to destroy
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnDestroyExp = context.zetDdiTable.MetricExp.pfnDestroyExp;
+        if( nullptr != pfnDestroyExp )
+        {
+            result = pfnDestroyExp( hMetric );
+        }
+        else
+        {
+            // generic implementation
+        }
+
+        return result;
+    }
+
 } // namespace driver
 
 #if defined(__cplusplus)
 extern "C" {
 #endif
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Exported function for filling application's MetricProgrammableExp table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+ZE_DLLEXPORT ze_result_t ZE_APICALL
+zetGetMetricProgrammableExpProcAddrTable(
+    ze_api_version_t version,                       ///< [in] API version requested
+    zet_metric_programmable_exp_dditable_t* pDdiTable   ///< [in,out] pointer to table of DDI function pointers
+    )
+{
+    if( nullptr == pDdiTable )
+        return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+    if( driver::context.version < version )
+        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+
+    ze_result_t result = ZE_RESULT_SUCCESS;
+
+    pDdiTable->pfnGetExp                                 = driver::zetMetricProgrammableGetExp;
+
+    pDdiTable->pfnGetPropertiesExp                       = driver::zetMetricProgrammableGetPropertiesExp;
+
+    pDdiTable->pfnGetParamInfoExp                        = driver::zetMetricProgrammableGetParamInfoExp;
+
+    pDdiTable->pfnGetParamValueInfoExp                   = driver::zetMetricProgrammableGetParamValueInfoExp;
+
+    return result;
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief Exported function for filling application's Device table
@@ -1449,6 +1802,35 @@ zetGetMetricProcAddrTable(
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+/// @brief Exported function for filling application's MetricExp table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+ZE_DLLEXPORT ze_result_t ZE_APICALL
+zetGetMetricExpProcAddrTable(
+    ze_api_version_t version,                       ///< [in] API version requested
+    zet_metric_exp_dditable_t* pDdiTable            ///< [in,out] pointer to table of DDI function pointers
+    )
+{
+    if( nullptr == pDdiTable )
+        return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+    if( driver::context.version < version )
+        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+
+    ze_result_t result = ZE_RESULT_SUCCESS;
+
+    pDdiTable->pfnCreateFromProgrammableExp              = driver::zetMetricCreateFromProgrammableExp;
+
+    pDdiTable->pfnDestroyExp                             = driver::zetMetricDestroyExp;
+
+    return result;
+}
+
+///////////////////////////////////////////////////////////////////////////////
 /// @brief Exported function for filling application's MetricGroup table
 ///        with current process' addresses
 ///
@@ -1508,6 +1890,16 @@ zetGetMetricGroupExpProcAddrTable(
     pDdiTable->pfnGetExportDataExp                       = driver::zetMetricGroupGetExportDataExp;
 
     pDdiTable->pfnCalculateMetricExportDataExp           = driver::zetMetricGroupCalculateMetricExportDataExp;
+
+    pDdiTable->pfnCreateExp                              = driver::zetMetricGroupCreateExp;
+
+    pDdiTable->pfnAddMetricExp                           = driver::zetMetricGroupAddMetricExp;
+
+    pDdiTable->pfnRemoveMetricExp                        = driver::zetMetricGroupRemoveMetricExp;
+
+    pDdiTable->pfnCloseExp                               = driver::zetMetricGroupCloseExp;
+
+    pDdiTable->pfnDestroyExp                             = driver::zetMetricGroupDestroyExp;
 
     return result;
 }

@@ -5,7 +5,7 @@
  * SPDX-License-Identifier: MIT
  *
  * @file zet_api.h
- * @version v1.8-r1.8.0
+ * @version v1.9-r1.9.1
  *
  */
 #ifndef _ZET_API_H
@@ -96,6 +96,9 @@ typedef enum _zet_structure_type_t
     ZET_STRUCTURE_TYPE_METRICS_CALCULATE_EXP_DESC = 0x00010002,             ///< ::zet_metric_calculate_exp_desc_t. Deprecated, use
                                                                             ///< ::ZET_STRUCTURE_TYPE_METRIC_CALCULATE_EXP_DESC.
     ZET_STRUCTURE_TYPE_METRIC_CALCULATE_EXP_DESC = 0x00010002,              ///< ::zet_metric_calculate_exp_desc_t
+    ZET_STRUCTURE_TYPE_METRIC_PROGRAMMABLE_EXP_PROPERTIES = 0x00010003,     ///< ::zet_metric_programmable_exp_properties_t
+    ZET_STRUCTURE_TYPE_METRIC_PROGRAMMABLE_PARAM_INFO_EXP = 0x00010004,     ///< ::zet_metric_programmable_param_info_exp_t
+    ZET_STRUCTURE_TYPE_METRIC_PROGRAMMABLE_PARAM_VALUE_INFO_EXP = 0x00010005,   ///< ::zet_metric_programmable_param_value_info_exp_t
     ZET_STRUCTURE_TYPE_FORCE_UINT32 = 0x7fffffff
 
 } zet_structure_type_t;
@@ -141,7 +144,7 @@ typedef enum _zet_value_type_t
 typedef union _zet_value_t
 {
     uint32_t ui32;                                                          ///< [out] 32-bit unsigned-integer
-    uint64_t ui64;                                                          ///< [out] 32-bit unsigned-integer
+    uint64_t ui64;                                                          ///< [out] 64-bit unsigned-integer
     float fp32;                                                             ///< [out] 32-bit floating-point
     double fp64;                                                            ///< [out] 64-bit floating-point
     ze_bool_t b8;                                                           ///< [out] 8-bit boolean
@@ -254,6 +257,26 @@ typedef struct _zet_metric_global_timestamps_resolution_exp_t zet_metric_global_
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief Forward-declare zet_metric_calculate_exp_desc_t
 typedef struct _zet_metric_calculate_exp_desc_t zet_metric_calculate_exp_desc_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Forward-declare zet_metric_programmable_exp_properties_t
+typedef struct _zet_metric_programmable_exp_properties_t zet_metric_programmable_exp_properties_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Forward-declare zet_value_uint64_range_exp_t
+typedef struct _zet_value_uint64_range_exp_t zet_value_uint64_range_exp_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Forward-declare zet_metric_programmable_param_info_exp_t
+typedef struct _zet_metric_programmable_param_info_exp_t zet_metric_programmable_param_info_exp_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Forward-declare zet_metric_programmable_param_value_info_exp_t
+typedef struct _zet_metric_programmable_param_value_info_exp_t zet_metric_programmable_param_value_info_exp_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Forward-declare zet_metric_programmable_param_value_exp_t
+typedef struct _zet_metric_programmable_param_value_exp_t zet_metric_programmable_param_value_exp_t;
 
 
 #if !defined(__GNUC__)
@@ -2099,6 +2122,540 @@ zetMetricGroupCalculateMetricExportDataExp(
                                                                             ///< calculated metrics.
                                                                             ///< if count is less than the number available in the raw data buffer,
                                                                             ///< then driver shall only calculate that number of metric values.
+    );
+
+#if !defined(__GNUC__)
+#pragma endregion
+#endif
+// Intel 'oneAPI' Level-Zero Tool Experimental Extension for Programmable Metrics
+#if !defined(__GNUC__)
+#pragma region metricProgrammable
+#endif
+///////////////////////////////////////////////////////////////////////////////
+#ifndef ZET_PROGRAMMABLE_METRICS_EXP_NAME
+/// @brief Programmable Metrics Experimental Extension Name
+#define ZET_PROGRAMMABLE_METRICS_EXP_NAME  "ZET_experimental_programmable_metrics"
+#endif // ZET_PROGRAMMABLE_METRICS_EXP_NAME
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Programmable Metrics Experimental Extension Version(s)
+typedef enum _zet_metric_programmable_exp_version_t
+{
+    ZET_METRIC_PROGRAMMABLE_EXP_VERSION_1_0 = ZE_MAKE_VERSION( 1, 0 ),      ///< version 1.0
+    ZET_METRIC_PROGRAMMABLE_EXP_VERSION_CURRENT = ZE_MAKE_VERSION( 1, 0 ),  ///< latest known version
+    ZET_METRIC_PROGRAMMABLE_EXP_VERSION_FORCE_UINT32 = 0x7fffffff
+
+} zet_metric_programmable_exp_version_t;
+
+///////////////////////////////////////////////////////////////////////////////
+#ifndef ZET_MAX_PROGRAMMABLE_METRICS_ELEMENT_NAME_EXP
+/// @brief Maximum count of characters in export data element name
+#define ZET_MAX_PROGRAMMABLE_METRICS_ELEMENT_NAME_EXP  256
+#endif // ZET_MAX_PROGRAMMABLE_METRICS_ELEMENT_NAME_EXP
+
+///////////////////////////////////////////////////////////////////////////////
+#ifndef ZET_MAX_PROGRAMMABLE_METRICS_ELEMENT_DESCRIPTION_EXP
+/// @brief Maximum export data element description string size
+#define ZET_MAX_PROGRAMMABLE_METRICS_ELEMENT_DESCRIPTION_EXP  256
+#endif // ZET_MAX_PROGRAMMABLE_METRICS_ELEMENT_DESCRIPTION_EXP
+
+///////////////////////////////////////////////////////////////////////////////
+#ifndef ZET_MAX_METRIC_PROGRAMMABLE_NAME_EXP
+/// @brief Maximum metric programmable name string size
+#define ZET_MAX_METRIC_PROGRAMMABLE_NAME_EXP  128
+#endif // ZET_MAX_METRIC_PROGRAMMABLE_NAME_EXP
+
+///////////////////////////////////////////////////////////////////////////////
+#ifndef ZET_MAX_METRIC_PROGRAMMABLE_DESCRIPTION_EXP
+/// @brief Maximum metric programmable description string size
+#define ZET_MAX_METRIC_PROGRAMMABLE_DESCRIPTION_EXP  128
+#endif // ZET_MAX_METRIC_PROGRAMMABLE_DESCRIPTION_EXP
+
+///////////////////////////////////////////////////////////////////////////////
+#ifndef ZET_MAX_METRIC_PROGRAMMABLE_COMPONENT_EXP
+/// @brief Maximum metric programmable component string size
+#define ZET_MAX_METRIC_PROGRAMMABLE_COMPONENT_EXP  128
+#endif // ZET_MAX_METRIC_PROGRAMMABLE_COMPONENT_EXP
+
+///////////////////////////////////////////////////////////////////////////////
+#ifndef ZET_MAX_METRIC_PROGRAMMABLE_PARAMETER_NAME_EXP
+/// @brief Maximum metric programmable parameter string size
+#define ZET_MAX_METRIC_PROGRAMMABLE_PARAMETER_NAME_EXP  128
+#endif // ZET_MAX_METRIC_PROGRAMMABLE_PARAMETER_NAME_EXP
+
+///////////////////////////////////////////////////////////////////////////////
+#ifndef ZET_MAX_VALUE_INFO_CSTRING_EXP
+/// @brief Maximum value information string size
+#define ZET_MAX_VALUE_INFO_CSTRING_EXP  128
+#endif // ZET_MAX_VALUE_INFO_CSTRING_EXP
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Handle of metric programmable's object
+typedef struct _zet_metric_programmable_exp_handle_t *zet_metric_programmable_exp_handle_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Metric Programmable properties queried using
+///        ::zetMetricProgrammableGetPropertiesExp
+typedef struct _zet_metric_programmable_exp_properties_t
+{
+    zet_structure_type_t stype;                                             ///< [in] type of this structure
+    void* pNext;                                                            ///< [in,out][optional] must be null or a pointer to an extension-specific
+                                                                            ///< structure (i.e. contains stype and pNext).
+    char name[ZET_MAX_METRIC_PROGRAMMABLE_NAME_EXP];                        ///< [out] metric programmable name
+    char description[ZET_MAX_METRIC_PROGRAMMABLE_DESCRIPTION_EXP];          ///< [out] metric programmable description
+    char component[ZET_MAX_METRIC_PROGRAMMABLE_COMPONENT_EXP];              ///< [out] metric programmable component
+    uint32_t tierNumber;                                                    ///< [out] tier number
+    uint32_t domain;                                                        ///< [out] metric domain number.
+    uint32_t parameterCount;                                                ///< [out] number of parameters in the programmable
+    zet_metric_group_sampling_type_flags_t samplingType;                    ///< [out] metric sampling type.
+                                                                            ///< returns a combination of ::zet_metric_group_sampling_type_flag_t.
+    uint32_t sourceId;                                                      ///< [out] unique metric source identifier(within platform)to identify the
+                                                                            ///< HW block where the metric is collected.
+
+} zet_metric_programmable_exp_properties_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Metric Programmable Parameter types
+typedef enum _zet_metric_programmable_param_type_exp_t
+{
+    ZET_METRIC_PROGRAMMABLE_PARAM_TYPE_EXP_DISAGGREGATION = 0,              ///< Metric is disaggregated.
+    ZET_METRIC_PROGRAMMABLE_PARAM_TYPE_EXP_LATENCY = 1,                     ///< Metric for latency measurement.
+    ZET_METRIC_PROGRAMMABLE_PARAM_TYPE_EXP_NORMALIZATION_UTILIZATION = 2,   ///< Produces normalization in percent using raw_metric * 100 / cycles / HW
+                                                                            ///< instance_count.
+    ZET_METRIC_PROGRAMMABLE_PARAM_TYPE_EXP_NORMALIZATION_AVERAGE = 3,       ///< Produces normalization using raw_metric / HW instance_count.
+    ZET_METRIC_PROGRAMMABLE_PARAM_TYPE_EXP_NORMALIZATION_RATE = 4,          ///< Produces normalization average using raw_metric / timestamp.
+    ZET_METRIC_PROGRAMMABLE_PARAM_TYPE_EXP_FORCE_UINT32 = 0x7fffffff
+
+} zet_metric_programmable_param_type_exp_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Supported value info types
+typedef enum _zet_value_info_type_exp_t
+{
+    ZET_VALUE_INFO_TYPE_EXP_UINT32 = 0,                                     ///< 32-bit unsigned-integer
+    ZET_VALUE_INFO_TYPE_EXP_UINT64 = 1,                                     ///< 64-bit unsigned-integer
+    ZET_VALUE_INFO_TYPE_EXP_FLOAT32 = 2,                                    ///< 32-bit floating-point
+    ZET_VALUE_INFO_TYPE_EXP_FLOAT64 = 3,                                    ///< 64-bit floating-point
+    ZET_VALUE_INFO_TYPE_EXP_BOOL8 = 4,                                      ///< 8-bit boolean
+    ZET_VALUE_INFO_TYPE_EXP_CSTRING = 5,                                    ///< C string
+    ZET_VALUE_INFO_TYPE_EXP_UINT8 = 6,                                      ///< 8-bit unsigned-integer
+    ZET_VALUE_INFO_TYPE_EXP_UINT16 = 7,                                     ///< 16-bit unsigned-integer
+    ZET_VALUE_INFO_TYPE_EXP_UINT64_RANGE = 8,                               ///< 64-bit unsigned-integer range (minimum and maximum)
+    ZET_VALUE_INFO_TYPE_EXP_FORCE_UINT32 = 0x7fffffff
+
+} zet_value_info_type_exp_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Value info of type uint64_t range
+typedef struct _zet_value_uint64_range_exp_t
+{
+    uint64_t ui64Min;                                                       ///< [out] minimum value of the range
+    uint64_t ui64Max;                                                       ///< [out] max value of the range
+
+} zet_value_uint64_range_exp_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Union of value information
+typedef union _zet_value_info_exp_t
+{
+    uint32_t ui32;                                                          ///< [out] 32-bit unsigned-integer
+    uint64_t ui64;                                                          ///< [out] 64-bit unsigned-integer
+    float fp32;                                                             ///< [out] 32-bit floating-point
+    double fp64;                                                            ///< [out] 64-bit floating-point
+    ze_bool_t b8;                                                           ///< [out] 8-bit boolean
+    uint8_t ui8;                                                            ///< [out] 8-bit unsigned integer
+    uint16_t ui16;                                                          ///< [out] 16-bit unsigned integer
+    char cString[ZET_MAX_VALUE_INFO_CSTRING_EXP];                           ///< [out] cString
+    zet_value_uint64_range_exp_t ui64Range;                                 ///< [out] minimum and maximum value of the range
+
+} zet_value_info_exp_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Metric Programmable parameter information
+typedef struct _zet_metric_programmable_param_info_exp_t
+{
+    zet_structure_type_t stype;                                             ///< [in] type of this structure
+    const void* pNext;                                                      ///< [in][optional] must be null or a pointer to an extension-specific
+                                                                            ///< structure (i.e. contains stype and pNext).
+    zet_metric_programmable_param_type_exp_t type;                          ///< [out] programmable parameter type
+    char name[ZET_MAX_METRIC_PROGRAMMABLE_PARAMETER_NAME_EXP];              ///< [out] metric programmable parameter name
+    zet_value_info_type_exp_t valueInfoType;                                ///< [out] value info type
+    zet_value_t defaultValue;                                               ///< [out] default value for the parameter
+    uint32_t valueInfoCount;                                                ///< [out] count of ::zet_metric_programmable_param_value_info_exp_t
+
+} zet_metric_programmable_param_info_exp_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Metric Programmable parameter value information
+typedef struct _zet_metric_programmable_param_value_info_exp_t
+{
+    zet_structure_type_t stype;                                             ///< [in] type of this structure
+    const void* pNext;                                                      ///< [in][optional] must be null or a pointer to an extension-specific
+                                                                            ///< structure (i.e. contains stype and pNext).
+    zet_value_info_exp_t valueInfo;                                         ///< [out] information about the parameter value
+
+} zet_metric_programmable_param_value_info_exp_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Metric Programmable parameter value
+typedef struct _zet_metric_programmable_param_value_exp_t
+{
+    zet_value_t value;                                                      ///< [in] parameter value
+
+} zet_metric_programmable_param_value_exp_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Query and get the available metric programmable handles.
+/// 
+/// @details
+///     - Query the available programmable handles using *pCount = 0.
+///     - Returns all programmable metric handles available in the device.
+///     - The application may call this function from simultaneous threads.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hDevice`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == pCount`
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zetMetricProgrammableGetExp(
+    zet_device_handle_t hDevice,                                            ///< [in] handle of the device
+    uint32_t* pCount,                                                       ///< [in,out] pointer to the number of metric programmable handles.
+                                                                            ///< if count is zero, then the driver shall update the value with the
+                                                                            ///< total number of metric programmable handles available.
+                                                                            ///< if count is greater than the number of metric programmable handles
+                                                                            ///< available, then the driver shall update the value with the correct
+                                                                            ///< number of metric programmable handles available.
+    zet_metric_programmable_exp_handle_t* phMetricProgrammables             ///< [in,out][optional][range(0, *pCount)] array of handle of metric programmables.
+                                                                            ///< if count is less than the number of metric programmables available,
+                                                                            ///< then driver shall only retrieve that number of metric programmables.
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Get the properties of the metric programmable.
+/// 
+/// @details
+///     - Returns the properties of the metric programmable.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hMetricProgrammable`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == pProperties`
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zetMetricProgrammableGetPropertiesExp(
+    zet_metric_programmable_exp_handle_t hMetricProgrammable,               ///< [in] handle of the metric programmable
+    zet_metric_programmable_exp_properties_t* pProperties                   ///< [in,out] properties of the metric programmable
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Get the information about the parameters of the metric programmable.
+/// 
+/// @details
+///     - Returns information about the parameters of the metric programmable
+///       handle.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hMetricProgrammable`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == pParameterCount`
+///         + `nullptr == pParameterInfo`
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zetMetricProgrammableGetParamInfoExp(
+    zet_metric_programmable_exp_handle_t hMetricProgrammable,               ///< [in] handle of the metric programmable
+    uint32_t* pParameterCount,                                              ///< [in,out] count of the parameters to retrieve parameter info.
+                                                                            ///< if value pParameterCount is greater than count of parameters
+                                                                            ///< available, then pParameterCount will be updated with count of
+                                                                            ///< parameters available.
+                                                                            ///< The count of parameters available can be queried using ::zetMetricProgrammableGetPropertiesExp.
+    zet_metric_programmable_param_info_exp_t* pParameterInfo                ///< [in,out][range(1, *pParameterCount)] array of parameter info.
+                                                                            ///< if parameterCount is less than the number of parameters available,
+                                                                            ///< then driver shall only retrieve that number of parameter info.
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Get the information about the parameter value of the metric
+///        programmable.
+/// 
+/// @details
+///     - Returns the value-information about the parameter at the specific
+///       ordinal of the metric programmable handle.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hMetricProgrammable`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == pValueInfoCount`
+///         + `nullptr == pValueInfo`
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zetMetricProgrammableGetParamValueInfoExp(
+    zet_metric_programmable_exp_handle_t hMetricProgrammable,               ///< [in] handle of the metric programmable
+    uint32_t parameterOrdinal,                                              ///< [in] ordinal of the parameter in the metric programmable
+    uint32_t* pValueInfoCount,                                              ///< [in,out] count of parameter value information to retrieve.
+                                                                            ///< if value at pValueInfoCount is greater than count of value info
+                                                                            ///< available, then pValueInfoCount will be updated with count of value
+                                                                            ///< info available.
+                                                                            ///< The count of parameter value info available can be queried using ::zetMetricProgrammableGetParamInfoExp.
+    zet_metric_programmable_param_value_info_exp_t* pValueInfo              ///< [in,out][range(1, *pValueInfoCount)] array of parameter value info.
+                                                                            ///< if pValueInfoCount is less than the number of value info available,
+                                                                            ///< then driver shall only retrieve that number of value info.
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Create metric handles by applying parameter values on the metric
+///        programmable handle.
+/// 
+/// @details
+///     - Multiple parameter values could be used to prepare a metric.
+///     - If parameterCount = 0, the default value of the metric programmable
+///       would be used for all parameters.
+///     - The implementation can post-fix a C string to the metric name and
+///       description, based on the parmeter values chosen.
+///     - ::zetMetricProgrammableGetParamInfoExp() returns a list of parameters
+///       in a defined order.
+///     - Therefore, the list of values passed in to the API should respect the
+///       same order such that the desired parameter is set with expected value
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hMetricProgrammable`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == pParameterValues`
+///         + `nullptr == pName`
+///         + `nullptr == pDescription`
+///         + `nullptr == pMetricHandleCount`
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zetMetricCreateFromProgrammableExp(
+    zet_metric_programmable_exp_handle_t hMetricProgrammable,               ///< [in] handle of the metric programmable
+    zet_metric_programmable_param_value_exp_t* pParameterValues,            ///< [in] list of parameter values to be set.
+    uint32_t parameterCount,                                                ///< [in] Count of parameters to set.
+    const char* pName,                                                      ///< [in] pointer to metric name to be used. Must point to a
+                                                                            ///< null-terminated character array no longer than ::ZET_MAX_METRIC_NAME.
+    const char* pDescription,                                               ///< [in] pointer to metric description to be used. Must point to a
+                                                                            ///< null-terminated character array no longer than
+                                                                            ///< ::ZET_MAX_METRIC_DESCRIPTION.
+    uint32_t* pMetricHandleCount,                                           ///< [in,out] Pointer to the number of metric handles.
+                                                                            ///< if count is zero, then the driver shall update the value with the
+                                                                            ///< number of metric handles available for this programmable.
+                                                                            ///< if count is greater than the number of metric handles available, then
+                                                                            ///< the driver shall update the value with the correct number of metric
+                                                                            ///< handles available.
+    zet_metric_handle_t* phMetricHandles                                    ///< [in,out][optional][range(0,*pMetricHandleCount)] array of handle of metrics.
+                                                                            ///< if count is less than the number of metrics available, then driver
+                                                                            ///< shall only retrieve that number of metric handles.
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Create metric group handle.
+/// 
+/// @details
+///     - Metrics from ::zetMetricCreateFromProgrammableExp() could be added to
+///       the created metric group.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hDevice`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == pName`
+///         + `nullptr == pDescription`
+///         + `nullptr == phMetricGroup`
+///     - ::ZE_RESULT_ERROR_INVALID_ENUMERATION
+///         + `0x3 < samplingType`
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zetMetricGroupCreateExp(
+    zet_device_handle_t hDevice,                                            ///< [in] handle of the device
+    const char* pName,                                                      ///< [in] pointer to metric group name. Must point to a null-terminated
+                                                                            ///< character array no longer than ::ZET_MAX_METRIC_GROUP_NAME.
+    const char* pDescription,                                               ///< [in] pointer to metric group description. Must point to a
+                                                                            ///< null-terminated character array no longer than
+                                                                            ///< ::ZET_MAX_METRIC_GROUP_DESCRIPTION.
+    zet_metric_group_sampling_type_flags_t samplingType,                    ///< [in] Sampling type for the metric group.
+    zet_metric_group_handle_t* phMetricGroup                                ///< [in,out] Created Metric group handle
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Add a metric handle to the metric group handle created using
+///        ::zetMetricGroupCreateExp.
+/// 
+/// @details
+///     - Reasons for failing to add the metric could be queried using
+///       pErrorString
+///     - Multiple additions of same metric would add the metric only once to
+///       the hMetricGroup
+///     - Metric handles from multiple domains may be used in a single metric
+///       group.
+///     - Metric handles from different sourceIds (refer
+///       ::zet_metric_programmable_exp_properties_t) are not allowed in a
+///       single metric group.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hMetricGroup`
+///         + `nullptr == hMetric`
+///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
+///         + If a Metric handle from a pre-defined metric group is requested to be added.
+///     - ::ZE_RESULT_ERROR_HANDLE_OBJECT_IN_USE
+///         + If the metric group is currently activated.
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zetMetricGroupAddMetricExp(
+    zet_metric_group_handle_t hMetricGroup,                                 ///< [in] Handle of the metric group
+    zet_metric_handle_t hMetric,                                            ///< [in] Metric to be added to the group.
+    size_t * pErrorStringSize,                                              ///< [in,out][optional] Size of the error string to query, if an error was
+                                                                            ///< reported during adding the metric handle.
+                                                                            ///< if *pErrorStringSize is zero, then the driver shall update the value
+                                                                            ///< with the size of the error string in bytes.
+    char* pErrorString                                                      ///< [in,out][optional][range(0, *pErrorStringSize)] Error string.
+                                                                            ///< if *pErrorStringSize is less than the length of the error string
+                                                                            ///< available, then driver shall only retrieve that length of error string.
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Remove a metric from the metric group handle created using
+///        ::zetMetricGroupCreateExp.
+/// 
+/// @details
+///     - Remove an already added metric handle from the metric group.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hMetricGroup`
+///         + `nullptr == hMetric`
+///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
+///         + If trying to remove a metric not previously added to the metric group
+///         + If the input metric group is a pre-defined metric group
+///     - ::ZE_RESULT_ERROR_HANDLE_OBJECT_IN_USE
+///         + If the metric group is currently activated
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zetMetricGroupRemoveMetricExp(
+    zet_metric_group_handle_t hMetricGroup,                                 ///< [in] Handle of the metric group
+    zet_metric_handle_t hMetric                                             ///< [in] Metric handle to be removed from the metric group.
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Closes a created metric group using ::zetMetricGroupCreateExp, so that
+///        it can be activated.
+/// 
+/// @details
+///     - Finalizes the ::zetMetricGroupAddMetricExp and
+///       ::zetMetricGroupRemoveMetricExp operations on the metric group.
+///     - This is a necessary step before activation of the created metric
+///       group.
+///     - Add / Remove of metrics is possible after ::zetMetricGroupCloseExp.
+///       However, a call to ::zetMetricGroupCloseExp is necessary after
+///       modifying the metric group.
+///     - Implementations could choose to add new metrics to the group during
+///       ::zetMetricGroupCloseExp, which are related and might add value to the
+///       metrics already added by the application
+///     - Applications can query the list of metrics in the metric group using
+///       ::zetMetricGet
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hMetricGroup`
+///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
+///         + If the input metric group is a pre-defined metric group
+///     - ::ZE_RESULT_ERROR_HANDLE_OBJECT_IN_USE
+///         + If the metric group is currently activated
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zetMetricGroupCloseExp(
+    zet_metric_group_handle_t hMetricGroup                                  ///< [in] Handle of the metric group
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Destroy a metric group created using ::zetMetricGroupCreateExp.
+/// 
+/// @details
+///     - Metric handles created using ::zetMetricCreateFromProgrammableExp and
+///       are part of the metricGroup are not destroyed.
+///     - It is necessary to call ::zetMetricDestroyExp for each of the metric
+///       handles (created from ::zetMetricCreateFromProgrammableExp) to destroy
+///       them.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hMetricGroup`
+///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
+///         + If trying to destroy a pre-defined metric group
+///     - ::ZE_RESULT_ERROR_HANDLE_OBJECT_IN_USE
+///         + If trying to destroy an activated metric group
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zetMetricGroupDestroyExp(
+    zet_metric_group_handle_t hMetricGroup                                  ///< [in] Handle of the metric group to destroy
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Destroy a metric created using ::zetMetricCreateFromProgrammableExp.
+/// 
+/// @details
+///     - If a metric is added to a metric group, the metric has to be removed
+///       using ::zetMetricGroupRemoveMetricExp before it can be destroyed.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hMetric`
+///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
+///         + If trying to destroy a metric from pre-defined metric group
+///     - ::ZE_RESULT_ERROR_HANDLE_OBJECT_IN_USE
+///         + If trying to destroy a metric currently added to a metric group
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zetMetricDestroyExp(
+    zet_metric_handle_t hMetric                                             ///< [in] Handle of the metric to destroy
     );
 
 #if !defined(__GNUC__)

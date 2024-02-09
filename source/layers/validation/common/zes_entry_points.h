@@ -80,6 +80,7 @@ public:
     virtual ze_result_t zesFirmwareGetProperties( zes_firmware_handle_t hFirmware, zes_firmware_properties_t* pProperties ) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zesFirmwareFlash( zes_firmware_handle_t hFirmware, void* pImage, uint32_t size ) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zesFirmwareGetFlashProgress( zes_firmware_handle_t hFirmware, uint32_t* pCompletionPercent ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zesFirmwareGetConsoleLogs( zes_firmware_handle_t hFirmware, size_t* pSize, char* pFirmwareLog ) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zesDeviceEnumFrequencyDomains( zes_device_handle_t hDevice, uint32_t* pCount, zes_freq_handle_t* phFrequency ) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zesFrequencyGetProperties( zes_freq_handle_t hFrequency, zes_freq_properties_t* pProperties ) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zesFrequencyGetAvailableClocks( zes_freq_handle_t hFrequency, uint32_t* pCount, double* phFrequency ) {return ZE_RESULT_SUCCESS;}
@@ -150,6 +151,16 @@ public:
     virtual ze_result_t zesEngineGetActivityExt( zes_engine_handle_t hEngine, uint32_t* pCount, zes_engine_stats_t* pStats ) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zesRasGetStateExp( zes_ras_handle_t hRas, uint32_t* pCount, zes_ras_state_exp_t* pState ) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zesRasClearStateExp( zes_ras_handle_t hRas, zes_ras_error_category_exp_t category ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zesFirmwareGetSecurityVersionExp( zes_firmware_handle_t hFirmware, char* pVersion ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zesFirmwareSetSecurityVersionExp( zes_firmware_handle_t hFirmware ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zesDeviceGetSubDevicePropertiesExp( zes_device_handle_t hDevice, uint32_t* pCount, zes_subdevice_exp_properties_t* pSubdeviceProps ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zesDriverGetDeviceByUuidExp( zes_driver_handle_t hDriver, zes_uuid_t uuid, zes_device_handle_t* phDevice, ze_bool_t* onSubdevice, uint32_t* subdeviceId ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zesDeviceEnumActiveVFExp( zes_device_handle_t hDevice, uint32_t* pCount, zes_vf_handle_t* phVFhandle ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zesVFManagementGetVFPropertiesExp( zes_vf_handle_t hVFhandle, zes_vf_exp_properties_t* pProperties ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zesVFManagementGetVFMemoryUtilizationExp( zes_vf_handle_t hVFhandle, uint32_t* pCount, zes_vf_util_mem_exp_t* pMemUtil ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zesVFManagementGetVFEngineUtilizationExp( zes_vf_handle_t hVFhandle, uint32_t* pCount, zes_vf_util_engine_exp_t* pEngineUtil ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zesVFManagementSetVFTelemetryModeExp( zes_vf_handle_t hVFhandle, zes_vf_info_util_exp_flags_t flags, ze_bool_t enable ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zesVFManagementSetVFTelemetrySamplingIntervalExp( zes_vf_handle_t hVFhandle, zes_vf_info_util_exp_flags_t flag, uint64_t samplingInterval ) {return ZE_RESULT_SUCCESS;}
     virtual ~ZESValidationEntryPoints() {}
 };
 }

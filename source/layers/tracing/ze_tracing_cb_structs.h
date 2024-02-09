@@ -108,6 +108,8 @@ typedef struct _zel_command_queue_callbacks_t
     ze_pfnCommandQueueDestroyCb_t                                   pfnDestroyCb;
     ze_pfnCommandQueueExecuteCommandListsCb_t                       pfnExecuteCommandListsCb;
     ze_pfnCommandQueueSynchronizeCb_t                               pfnSynchronizeCb;
+    ze_pfnCommandQueueGetOrdinalCb_t                                pfnGetOrdinalCb;
+    ze_pfnCommandQueueGetIndexCb_t                                  pfnGetIndexCb;
 } zel_command_queue_callbacks_t;
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -143,6 +145,17 @@ typedef struct _zel_command_list_callbacks_t
     ze_pfnCommandListAppendImageCopyToMemoryExtCb_t                 pfnAppendImageCopyToMemoryExtCb;
     ze_pfnCommandListAppendImageCopyFromMemoryExtCb_t               pfnAppendImageCopyFromMemoryExtCb;
     ze_pfnCommandListHostSynchronizeCb_t                            pfnHostSynchronizeCb;
+    ze_pfnCommandListCreateCloneExpCb_t                             pfnCreateCloneExpCb;
+    ze_pfnCommandListGetDeviceHandleCb_t                            pfnGetDeviceHandleCb;
+    ze_pfnCommandListGetContextHandleCb_t                           pfnGetContextHandleCb;
+    ze_pfnCommandListGetOrdinalCb_t                                 pfnGetOrdinalCb;
+    ze_pfnCommandListImmediateGetIndexCb_t                          pfnImmediateGetIndexCb;
+    ze_pfnCommandListIsImmediateCb_t                                pfnIsImmediateCb;
+    ze_pfnCommandListImmediateAppendCommandListsExpCb_t             pfnImmediateAppendCommandListsExpCb;
+    ze_pfnCommandListGetNextCommandIdExpCb_t                        pfnGetNextCommandIdExpCb;
+    ze_pfnCommandListUpdateMutableCommandsExpCb_t                   pfnUpdateMutableCommandsExpCb;
+    ze_pfnCommandListUpdateMutableCommandSignalEventExpCb_t         pfnUpdateMutableCommandSignalEventExpCb;
+    ze_pfnCommandListUpdateMutableCommandWaitEventsExpCb_t          pfnUpdateMutableCommandWaitEventsExpCb;
 } zel_command_list_callbacks_t;
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -158,6 +171,9 @@ typedef struct _zel_event_callbacks_t
     ze_pfnEventQueryKernelTimestampCb_t                             pfnQueryKernelTimestampCb;
     ze_pfnEventQueryTimestampsExpCb_t                               pfnQueryTimestampsExpCb;
     ze_pfnEventQueryKernelTimestampsExtCb_t                         pfnQueryKernelTimestampsExtCb;
+    ze_pfnEventGetEventPoolCb_t                                     pfnGetEventPoolCb;
+    ze_pfnEventGetSignalScopeCb_t                                   pfnGetSignalScopeCb;
+    ze_pfnEventGetWaitScopeCb_t                                     pfnGetWaitScopeCb;
 } zel_event_callbacks_t;
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -170,6 +186,8 @@ typedef struct _zel_event_pool_callbacks_t
     ze_pfnEventPoolOpenIpcHandleCb_t                                pfnOpenIpcHandleCb;
     ze_pfnEventPoolCloseIpcHandleCb_t                               pfnCloseIpcHandleCb;
     ze_pfnEventPoolPutIpcHandleCb_t                                 pfnPutIpcHandleCb;
+    ze_pfnEventPoolGetContextHandleCb_t                             pfnGetContextHandleCb;
+    ze_pfnEventPoolGetFlagsCb_t                                     pfnGetFlagsCb;
 } zel_event_pool_callbacks_t;
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -194,6 +212,7 @@ typedef struct _zel_image_callbacks_t
     ze_pfnImageViewCreateExpCb_t                                    pfnViewCreateExpCb;
     ze_pfnImageGetAllocPropertiesExtCb_t                            pfnGetAllocPropertiesExtCb;
     ze_pfnImageViewCreateExtCb_t                                    pfnViewCreateExtCb;
+    ze_pfnImageGetDeviceOffsetExpCb_t                               pfnGetDeviceOffsetExpCb;
 } zel_image_callbacks_t;
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -235,6 +254,7 @@ typedef struct _zel_mem_callbacks_t
     ze_pfnMemPutIpcHandleCb_t                                       pfnPutIpcHandleCb;
     ze_pfnMemSetAtomicAccessAttributeExpCb_t                        pfnSetAtomicAccessAttributeExpCb;
     ze_pfnMemGetAtomicAccessAttributeExpCb_t                        pfnGetAtomicAccessAttributeExpCb;
+    ze_pfnMemGetPitchFor2dImageCb_t                                 pfnGetPitchFor2dImageCb;
 } zel_mem_callbacks_t;
 
 ///////////////////////////////////////////////////////////////////////////////

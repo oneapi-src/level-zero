@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (C) 2019-2022 Intel Corporation
+ * Copyright (C) 2019-2024 Intel Corporation
  *
  * SPDX-License-Identifier: MIT
  *
@@ -50,5 +50,8 @@ namespace loader
 
     using zet_debug_session_object_t          = object_t < zet_debug_session_handle_t >;
     using zet_debug_session_factory_t         = singleton_factory_t < zet_debug_session_object_t, zet_debug_session_handle_t >;
+
+    using zet_metric_programmable_exp_object_t    = object_t < zet_metric_programmable_exp_handle_t >;
+    using zet_metric_programmable_exp_factory_t   = singleton_factory_t < zet_metric_programmable_exp_object_t, zet_metric_programmable_exp_handle_t >;
 
 }

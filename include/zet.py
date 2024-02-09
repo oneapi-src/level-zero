@@ -4,7 +4,7 @@
  SPDX-License-Identifier: MIT
 
  @file zet.py
- @version v1.8-r1.8.0
+ @version v1.9-r1.9.1
 
  """
 import platform
@@ -97,6 +97,9 @@ class zet_structure_type_v(IntEnum):
     METRICS_CALCULATE_EXP_DESC = 0x00010002                                 ## ::zet_metric_calculate_exp_desc_t. Deprecated, use
                                                                             ## ::ZET_STRUCTURE_TYPE_METRIC_CALCULATE_EXP_DESC.
     METRIC_CALCULATE_EXP_DESC = 0x00010002                                  ## ::zet_metric_calculate_exp_desc_t
+    METRIC_PROGRAMMABLE_EXP_PROPERTIES = 0x00010003                         ## ::zet_metric_programmable_exp_properties_t
+    METRIC_PROGRAMMABLE_PARAM_INFO_EXP = 0x00010004                         ## ::zet_metric_programmable_param_info_exp_t
+    METRIC_PROGRAMMABLE_PARAM_VALUE_INFO_EXP = 0x00010005                   ## ::zet_metric_programmable_param_value_info_exp_t
 
 class zet_structure_type_t(c_int):
     def __str__(self):
@@ -143,7 +146,7 @@ class zet_value_type_t(c_int):
 class zet_value_t(Structure):
     _fields_ = [
         ("ui32", c_ulong),                                              ## [out] 32-bit unsigned-integer
-        ("ui64", c_ulonglong),                                          ## [out] 32-bit unsigned-integer
+        ("ui64", c_ulonglong),                                          ## [out] 64-bit unsigned-integer
         ("fp32", c_float),                                              ## [out] 32-bit floating-point
         ("fp64", c_double),                                             ## [out] 64-bit floating-point
         ("b8", ze_bool_t)                                               ## [out] 8-bit boolean
@@ -666,7 +669,201 @@ class zet_metric_calculate_exp_desc_t(Structure):
     ]
 
 ###############################################################################
+## @brief Programmable Metrics Experimental Extension Name
+ZET_PROGRAMMABLE_METRICS_EXP_NAME = "ZET_experimental_programmable_metrics"
+
+###############################################################################
+## @brief Programmable Metrics Experimental Extension Version(s)
+class zet_metric_programmable_exp_version_v(IntEnum):
+    _1_0 = ZE_MAKE_VERSION( 1, 0 )                                          ## version 1.0
+    CURRENT = ZE_MAKE_VERSION( 1, 0 )                                       ## latest known version
+
+class zet_metric_programmable_exp_version_t(c_int):
+    def __str__(self):
+        return str(zet_metric_programmable_exp_version_v(self.value))
+
+
+###############################################################################
+## @brief Maximum count of characters in export data element name
+ZET_MAX_PROGRAMMABLE_METRICS_ELEMENT_NAME_EXP = 256
+
+###############################################################################
+## @brief Maximum export data element description string size
+ZET_MAX_PROGRAMMABLE_METRICS_ELEMENT_DESCRIPTION_EXP = 256
+
+###############################################################################
+## @brief Maximum metric programmable name string size
+ZET_MAX_METRIC_PROGRAMMABLE_NAME_EXP = 128
+
+###############################################################################
+## @brief Maximum metric programmable description string size
+ZET_MAX_METRIC_PROGRAMMABLE_DESCRIPTION_EXP = 128
+
+###############################################################################
+## @brief Maximum metric programmable component string size
+ZET_MAX_METRIC_PROGRAMMABLE_COMPONENT_EXP = 128
+
+###############################################################################
+## @brief Maximum metric programmable parameter string size
+ZET_MAX_METRIC_PROGRAMMABLE_PARAMETER_NAME_EXP = 128
+
+###############################################################################
+## @brief Maximum value information string size
+ZET_MAX_VALUE_INFO_CSTRING_EXP = 128
+
+###############################################################################
+## @brief Handle of metric programmable's object
+class zet_metric_programmable_exp_handle_t(c_void_p):
+    pass
+
+###############################################################################
+## @brief Metric Programmable properties queried using
+##        ::zetMetricProgrammableGetPropertiesExp
+class zet_metric_programmable_exp_properties_t(Structure):
+    _fields_ = [
+        ("stype", zet_structure_type_t),                                ## [in] type of this structure
+        ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains stype and pNext).
+        ("name", c_char * ZET_MAX_METRIC_PROGRAMMABLE_NAME_EXP),        ## [out] metric programmable name
+        ("description", c_char * ZET_MAX_METRIC_PROGRAMMABLE_DESCRIPTION_EXP),  ## [out] metric programmable description
+        ("component", c_char * ZET_MAX_METRIC_PROGRAMMABLE_COMPONENT_EXP),  ## [out] metric programmable component
+        ("tierNumber", c_ulong),                                        ## [out] tier number
+        ("domain", c_ulong),                                            ## [out] metric domain number.
+        ("parameterCount", c_ulong),                                    ## [out] number of parameters in the programmable
+        ("samplingType", zet_metric_group_sampling_type_flags_t),       ## [out] metric sampling type.
+                                                                        ## returns a combination of ::zet_metric_group_sampling_type_flag_t.
+        ("sourceId", c_ulong)                                           ## [out] unique metric source identifier(within platform)to identify the
+                                                                        ## HW block where the metric is collected.
+    ]
+
+###############################################################################
+## @brief Metric Programmable Parameter types
+class zet_metric_programmable_param_type_exp_v(IntEnum):
+    DISAGGREGATION = 0                                                      ## Metric is disaggregated.
+    LATENCY = 1                                                             ## Metric for latency measurement.
+    NORMALIZATION_UTILIZATION = 2                                           ## Produces normalization in percent using raw_metric * 100 / cycles / HW
+                                                                            ## instance_count.
+    NORMALIZATION_AVERAGE = 3                                               ## Produces normalization using raw_metric / HW instance_count.
+    NORMALIZATION_RATE = 4                                                  ## Produces normalization average using raw_metric / timestamp.
+
+class zet_metric_programmable_param_type_exp_t(c_int):
+    def __str__(self):
+        return str(zet_metric_programmable_param_type_exp_v(self.value))
+
+
+###############################################################################
+## @brief Supported value info types
+class zet_value_info_type_exp_v(IntEnum):
+    UINT32 = 0                                                              ## 32-bit unsigned-integer
+    UINT64 = 1                                                              ## 64-bit unsigned-integer
+    FLOAT32 = 2                                                             ## 32-bit floating-point
+    FLOAT64 = 3                                                             ## 64-bit floating-point
+    BOOL8 = 4                                                               ## 8-bit boolean
+    CSTRING = 5                                                             ## C string
+    UINT8 = 6                                                               ## 8-bit unsigned-integer
+    UINT16 = 7                                                              ## 16-bit unsigned-integer
+    UINT64_RANGE = 8                                                        ## 64-bit unsigned-integer range (minimum and maximum)
+
+class zet_value_info_type_exp_t(c_int):
+    def __str__(self):
+        return str(zet_value_info_type_exp_v(self.value))
+
+
+###############################################################################
+## @brief Value info of type uint64_t range
+class zet_value_uint64_range_exp_t(Structure):
+    _fields_ = [
+        ("ui64Min", c_ulonglong),                                       ## [out] minimum value of the range
+        ("ui64Max", c_ulonglong)                                        ## [out] max value of the range
+    ]
+
+###############################################################################
+## @brief Union of value information
+class zet_value_info_exp_t(Structure):
+    _fields_ = [
+        ("ui32", c_ulong),                                              ## [out] 32-bit unsigned-integer
+        ("ui64", c_ulonglong),                                          ## [out] 64-bit unsigned-integer
+        ("fp32", c_float),                                              ## [out] 32-bit floating-point
+        ("fp64", c_double),                                             ## [out] 64-bit floating-point
+        ("b8", ze_bool_t),                                              ## [out] 8-bit boolean
+        ("ui8", c_ubyte),                                               ## [out] 8-bit unsigned integer
+        ("ui16", c_ushort),                                             ## [out] 16-bit unsigned integer
+        ("cString", c_char * ZET_MAX_VALUE_INFO_CSTRING_EXP),           ## [out] cString
+        ("ui64Range", zet_value_uint64_range_exp_t)                     ## [out] minimum and maximum value of the range
+    ]
+
+###############################################################################
+## @brief Metric Programmable parameter information
+class zet_metric_programmable_param_info_exp_t(Structure):
+    _fields_ = [
+        ("stype", zet_structure_type_t),                                ## [in] type of this structure
+        ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains stype and pNext).
+        ("type", zet_metric_programmable_param_type_exp_t),             ## [out] programmable parameter type
+        ("name", c_char * ZET_MAX_METRIC_PROGRAMMABLE_PARAMETER_NAME_EXP),  ## [out] metric programmable parameter name
+        ("valueInfoType", zet_value_info_type_exp_t),                   ## [out] value info type
+        ("defaultValue", zet_value_t),                                  ## [out] default value for the parameter
+        ("valueInfoCount", c_ulong)                                     ## [out] count of ::zet_metric_programmable_param_value_info_exp_t
+    ]
+
+###############################################################################
+## @brief Metric Programmable parameter value information
+class zet_metric_programmable_param_value_info_exp_t(Structure):
+    _fields_ = [
+        ("stype", zet_structure_type_t),                                ## [in] type of this structure
+        ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains stype and pNext).
+        ("valueInfo", zet_value_info_exp_t)                             ## [out] information about the parameter value
+    ]
+
+###############################################################################
+## @brief Metric Programmable parameter value
+class zet_metric_programmable_param_value_exp_t(Structure):
+    _fields_ = [
+        ("value", zet_value_t)                                          ## [in] parameter value
+    ]
+
+###############################################################################
 __use_win_types = "Windows" == platform.uname()[0]
+
+###############################################################################
+## @brief Function-pointer for zetMetricProgrammableGetExp
+if __use_win_types:
+    _zetMetricProgrammableGetExp_t = WINFUNCTYPE( ze_result_t, zet_device_handle_t, POINTER(c_ulong), POINTER(zet_metric_programmable_exp_handle_t) )
+else:
+    _zetMetricProgrammableGetExp_t = CFUNCTYPE( ze_result_t, zet_device_handle_t, POINTER(c_ulong), POINTER(zet_metric_programmable_exp_handle_t) )
+
+###############################################################################
+## @brief Function-pointer for zetMetricProgrammableGetPropertiesExp
+if __use_win_types:
+    _zetMetricProgrammableGetPropertiesExp_t = WINFUNCTYPE( ze_result_t, zet_metric_programmable_exp_handle_t, POINTER(zet_metric_programmable_exp_properties_t) )
+else:
+    _zetMetricProgrammableGetPropertiesExp_t = CFUNCTYPE( ze_result_t, zet_metric_programmable_exp_handle_t, POINTER(zet_metric_programmable_exp_properties_t) )
+
+###############################################################################
+## @brief Function-pointer for zetMetricProgrammableGetParamInfoExp
+if __use_win_types:
+    _zetMetricProgrammableGetParamInfoExp_t = WINFUNCTYPE( ze_result_t, zet_metric_programmable_exp_handle_t, POINTER(c_ulong), POINTER(zet_metric_programmable_param_info_exp_t) )
+else:
+    _zetMetricProgrammableGetParamInfoExp_t = CFUNCTYPE( ze_result_t, zet_metric_programmable_exp_handle_t, POINTER(c_ulong), POINTER(zet_metric_programmable_param_info_exp_t) )
+
+###############################################################################
+## @brief Function-pointer for zetMetricProgrammableGetParamValueInfoExp
+if __use_win_types:
+    _zetMetricProgrammableGetParamValueInfoExp_t = WINFUNCTYPE( ze_result_t, zet_metric_programmable_exp_handle_t, c_ulong, POINTER(c_ulong), POINTER(zet_metric_programmable_param_value_info_exp_t) )
+else:
+    _zetMetricProgrammableGetParamValueInfoExp_t = CFUNCTYPE( ze_result_t, zet_metric_programmable_exp_handle_t, c_ulong, POINTER(c_ulong), POINTER(zet_metric_programmable_param_value_info_exp_t) )
+
+
+###############################################################################
+## @brief Table of MetricProgrammableExp functions pointers
+class _zet_metric_programmable_exp_dditable_t(Structure):
+    _fields_ = [
+        ("pfnGetExp", c_void_p),                                        ## _zetMetricProgrammableGetExp_t
+        ("pfnGetPropertiesExp", c_void_p),                              ## _zetMetricProgrammableGetPropertiesExp_t
+        ("pfnGetParamInfoExp", c_void_p),                               ## _zetMetricProgrammableGetParamInfoExp_t
+        ("pfnGetParamValueInfoExp", c_void_p)                           ## _zetMetricProgrammableGetParamValueInfoExp_t
+    ]
 
 ###############################################################################
 ## @brief Function-pointer for zetDeviceGetDebugProperties
@@ -791,6 +988,29 @@ class _zet_metric_dditable_t(Structure):
     ]
 
 ###############################################################################
+## @brief Function-pointer for zetMetricCreateFromProgrammableExp
+if __use_win_types:
+    _zetMetricCreateFromProgrammableExp_t = WINFUNCTYPE( ze_result_t, zet_metric_programmable_exp_handle_t, POINTER(zet_metric_programmable_param_value_exp_t), c_ulong, c_char_p, c_char_p, POINTER(c_ulong), POINTER(zet_metric_handle_t) )
+else:
+    _zetMetricCreateFromProgrammableExp_t = CFUNCTYPE( ze_result_t, zet_metric_programmable_exp_handle_t, POINTER(zet_metric_programmable_param_value_exp_t), c_ulong, c_char_p, c_char_p, POINTER(c_ulong), POINTER(zet_metric_handle_t) )
+
+###############################################################################
+## @brief Function-pointer for zetMetricDestroyExp
+if __use_win_types:
+    _zetMetricDestroyExp_t = WINFUNCTYPE( ze_result_t, zet_metric_handle_t )
+else:
+    _zetMetricDestroyExp_t = CFUNCTYPE( ze_result_t, zet_metric_handle_t )
+
+
+###############################################################################
+## @brief Table of MetricExp functions pointers
+class _zet_metric_exp_dditable_t(Structure):
+    _fields_ = [
+        ("pfnCreateFromProgrammableExp", c_void_p),                     ## _zetMetricCreateFromProgrammableExp_t
+        ("pfnDestroyExp", c_void_p)                                     ## _zetMetricDestroyExp_t
+    ]
+
+###############################################################################
 ## @brief Function-pointer for zetMetricGroupGet
 if __use_win_types:
     _zetMetricGroupGet_t = WINFUNCTYPE( ze_result_t, zet_device_handle_t, POINTER(c_ulong), POINTER(zet_metric_group_handle_t) )
@@ -849,6 +1069,41 @@ if __use_win_types:
 else:
     _zetMetricGroupCalculateMetricExportDataExp_t = CFUNCTYPE( ze_result_t, ze_driver_handle_t, zet_metric_group_calculation_type_t, c_size_t, POINTER(c_ubyte), POINTER(zet_metric_calculate_exp_desc_t), POINTER(c_ulong), POINTER(c_ulong), POINTER(c_ulong), POINTER(zet_typed_value_t) )
 
+###############################################################################
+## @brief Function-pointer for zetMetricGroupCreateExp
+if __use_win_types:
+    _zetMetricGroupCreateExp_t = WINFUNCTYPE( ze_result_t, zet_device_handle_t, c_char_p, c_char_p, zet_metric_group_sampling_type_flags_t, POINTER(zet_metric_group_handle_t) )
+else:
+    _zetMetricGroupCreateExp_t = CFUNCTYPE( ze_result_t, zet_device_handle_t, c_char_p, c_char_p, zet_metric_group_sampling_type_flags_t, POINTER(zet_metric_group_handle_t) )
+
+###############################################################################
+## @brief Function-pointer for zetMetricGroupAddMetricExp
+if __use_win_types:
+    _zetMetricGroupAddMetricExp_t = WINFUNCTYPE( ze_result_t, zet_metric_group_handle_t, zet_metric_handle_t, *, c_char_p )
+else:
+    _zetMetricGroupAddMetricExp_t = CFUNCTYPE( ze_result_t, zet_metric_group_handle_t, zet_metric_handle_t, *, c_char_p )
+
+###############################################################################
+## @brief Function-pointer for zetMetricGroupRemoveMetricExp
+if __use_win_types:
+    _zetMetricGroupRemoveMetricExp_t = WINFUNCTYPE( ze_result_t, zet_metric_group_handle_t, zet_metric_handle_t )
+else:
+    _zetMetricGroupRemoveMetricExp_t = CFUNCTYPE( ze_result_t, zet_metric_group_handle_t, zet_metric_handle_t )
+
+###############################################################################
+## @brief Function-pointer for zetMetricGroupCloseExp
+if __use_win_types:
+    _zetMetricGroupCloseExp_t = WINFUNCTYPE( ze_result_t, zet_metric_group_handle_t )
+else:
+    _zetMetricGroupCloseExp_t = CFUNCTYPE( ze_result_t, zet_metric_group_handle_t )
+
+###############################################################################
+## @brief Function-pointer for zetMetricGroupDestroyExp
+if __use_win_types:
+    _zetMetricGroupDestroyExp_t = WINFUNCTYPE( ze_result_t, zet_metric_group_handle_t )
+else:
+    _zetMetricGroupDestroyExp_t = CFUNCTYPE( ze_result_t, zet_metric_group_handle_t )
+
 
 ###############################################################################
 ## @brief Table of MetricGroupExp functions pointers
@@ -857,7 +1112,12 @@ class _zet_metric_group_exp_dditable_t(Structure):
         ("pfnCalculateMultipleMetricValuesExp", c_void_p),              ## _zetMetricGroupCalculateMultipleMetricValuesExp_t
         ("pfnGetGlobalTimestampsExp", c_void_p),                        ## _zetMetricGroupGetGlobalTimestampsExp_t
         ("pfnGetExportDataExp", c_void_p),                              ## _zetMetricGroupGetExportDataExp_t
-        ("pfnCalculateMetricExportDataExp", c_void_p)                   ## _zetMetricGroupCalculateMetricExportDataExp_t
+        ("pfnCalculateMetricExportDataExp", c_void_p),                  ## _zetMetricGroupCalculateMetricExportDataExp_t
+        ("pfnCreateExp", c_void_p),                                     ## _zetMetricGroupCreateExp_t
+        ("pfnAddMetricExp", c_void_p),                                  ## _zetMetricGroupAddMetricExp_t
+        ("pfnRemoveMetricExp", c_void_p),                               ## _zetMetricGroupRemoveMetricExp_t
+        ("pfnCloseExp", c_void_p),                                      ## _zetMetricGroupCloseExp_t
+        ("pfnDestroyExp", c_void_p)                                     ## _zetMetricGroupDestroyExp_t
     ]
 
 ###############################################################################
@@ -1106,12 +1366,14 @@ class _zet_debug_dditable_t(Structure):
 ###############################################################################
 class _zet_dditable_t(Structure):
     _fields_ = [
+        ("MetricProgrammableExp", _zet_metric_programmable_exp_dditable_t),
         ("Device", _zet_device_dditable_t),
         ("Context", _zet_context_dditable_t),
         ("CommandList", _zet_command_list_dditable_t),
         ("Module", _zet_module_dditable_t),
         ("Kernel", _zet_kernel_dditable_t),
         ("Metric", _zet_metric_dditable_t),
+        ("MetricExp", _zet_metric_exp_dditable_t),
         ("MetricGroup", _zet_metric_group_dditable_t),
         ("MetricGroupExp", _zet_metric_group_exp_dditable_t),
         ("MetricStreamer", _zet_metric_streamer_dditable_t),
@@ -1133,6 +1395,19 @@ class ZET_DDI:
 
         # fill the ddi tables
         self.__dditable = _zet_dditable_t()
+
+        # call driver to get function pointers
+        _MetricProgrammableExp = _zet_metric_programmable_exp_dditable_t()
+        r = ze_result_v(self.__dll.zetGetMetricProgrammableExpProcAddrTable(version, byref(_MetricProgrammableExp)))
+        if r != ze_result_v.SUCCESS:
+            raise Exception(r)
+        self.__dditable.MetricProgrammableExp = _MetricProgrammableExp
+
+        # attach function interface to function address
+        self.zetMetricProgrammableGetExp = _zetMetricProgrammableGetExp_t(self.__dditable.MetricProgrammableExp.pfnGetExp)
+        self.zetMetricProgrammableGetPropertiesExp = _zetMetricProgrammableGetPropertiesExp_t(self.__dditable.MetricProgrammableExp.pfnGetPropertiesExp)
+        self.zetMetricProgrammableGetParamInfoExp = _zetMetricProgrammableGetParamInfoExp_t(self.__dditable.MetricProgrammableExp.pfnGetParamInfoExp)
+        self.zetMetricProgrammableGetParamValueInfoExp = _zetMetricProgrammableGetParamValueInfoExp_t(self.__dditable.MetricProgrammableExp.pfnGetParamValueInfoExp)
 
         # call driver to get function pointers
         _Device = _zet_device_dditable_t()
@@ -1199,6 +1474,17 @@ class ZET_DDI:
         self.zetMetricGetProperties = _zetMetricGetProperties_t(self.__dditable.Metric.pfnGetProperties)
 
         # call driver to get function pointers
+        _MetricExp = _zet_metric_exp_dditable_t()
+        r = ze_result_v(self.__dll.zetGetMetricExpProcAddrTable(version, byref(_MetricExp)))
+        if r != ze_result_v.SUCCESS:
+            raise Exception(r)
+        self.__dditable.MetricExp = _MetricExp
+
+        # attach function interface to function address
+        self.zetMetricCreateFromProgrammableExp = _zetMetricCreateFromProgrammableExp_t(self.__dditable.MetricExp.pfnCreateFromProgrammableExp)
+        self.zetMetricDestroyExp = _zetMetricDestroyExp_t(self.__dditable.MetricExp.pfnDestroyExp)
+
+        # call driver to get function pointers
         _MetricGroup = _zet_metric_group_dditable_t()
         r = ze_result_v(self.__dll.zetGetMetricGroupProcAddrTable(version, byref(_MetricGroup)))
         if r != ze_result_v.SUCCESS:
@@ -1222,6 +1508,11 @@ class ZET_DDI:
         self.zetMetricGroupGetGlobalTimestampsExp = _zetMetricGroupGetGlobalTimestampsExp_t(self.__dditable.MetricGroupExp.pfnGetGlobalTimestampsExp)
         self.zetMetricGroupGetExportDataExp = _zetMetricGroupGetExportDataExp_t(self.__dditable.MetricGroupExp.pfnGetExportDataExp)
         self.zetMetricGroupCalculateMetricExportDataExp = _zetMetricGroupCalculateMetricExportDataExp_t(self.__dditable.MetricGroupExp.pfnCalculateMetricExportDataExp)
+        self.zetMetricGroupCreateExp = _zetMetricGroupCreateExp_t(self.__dditable.MetricGroupExp.pfnCreateExp)
+        self.zetMetricGroupAddMetricExp = _zetMetricGroupAddMetricExp_t(self.__dditable.MetricGroupExp.pfnAddMetricExp)
+        self.zetMetricGroupRemoveMetricExp = _zetMetricGroupRemoveMetricExp_t(self.__dditable.MetricGroupExp.pfnRemoveMetricExp)
+        self.zetMetricGroupCloseExp = _zetMetricGroupCloseExp_t(self.__dditable.MetricGroupExp.pfnCloseExp)
+        self.zetMetricGroupDestroyExp = _zetMetricGroupDestroyExp_t(self.__dditable.MetricGroupExp.pfnDestroyExp)
 
         # call driver to get function pointers
         _MetricStreamer = _zet_metric_streamer_dditable_t()

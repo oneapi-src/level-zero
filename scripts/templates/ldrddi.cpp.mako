@@ -9,7 +9,7 @@ from templates import helper as th
     X=x.upper()
 %>/*
  *
- * Copyright (C) 2019-2022 Intel Corporation
+ * Copyright (C) 2019-2024 Intel Corporation
  *
  * SPDX-License-Identifier: MIT
  *
