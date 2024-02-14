@@ -1,5 +1,7 @@
 # Level zero loader changelog
 
+## v1.16.0
+* Update to spec 1.9.1
 ## v1.15.13
 * Enable for zesInit to run with zeInit without duplicate init
 * Addressed OpenSSF Token Permissions
