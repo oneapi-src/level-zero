@@ -1037,7 +1037,8 @@ typedef enum _ze_api_version_t
     ZE_API_VERSION_1_6 = ZE_MAKE_VERSION( 1, 6 ),                           ///< version 1.6
     ZE_API_VERSION_1_7 = ZE_MAKE_VERSION( 1, 7 ),                           ///< version 1.7
     ZE_API_VERSION_1_8 = ZE_MAKE_VERSION( 1, 8 ),                           ///< version 1.8
-    ZE_API_VERSION_CURRENT = ZE_MAKE_VERSION( 1, 8 ),                       ///< latest known version
+    ZE_API_VERSION_1_9 = ZE_MAKE_VERSION( 1, 9 ),                           ///< version 1.9
+    ZE_API_VERSION_CURRENT = ZE_MAKE_VERSION( 1, 9 ),                       ///< latest known version
     ZE_API_VERSION_FORCE_UINT32 = 0x7fffffff
 
 } ze_api_version_t;

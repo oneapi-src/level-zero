@@ -442,7 +442,8 @@ class ze_api_version_v(IntEnum):
     _1_6 = ZE_MAKE_VERSION( 1, 6 )                                          ## version 1.6
     _1_7 = ZE_MAKE_VERSION( 1, 7 )                                          ## version 1.7
     _1_8 = ZE_MAKE_VERSION( 1, 8 )                                          ## version 1.8
-    CURRENT = ZE_MAKE_VERSION( 1, 8 )                                       ## latest known version
+    _1_9 = ZE_MAKE_VERSION( 1, 9 )                                          ## version 1.9
+    CURRENT = ZE_MAKE_VERSION( 1, 9 )                                       ## latest known version
 
 class ze_api_version_t(c_int):
     def __str__(self):

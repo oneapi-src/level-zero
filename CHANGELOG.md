@@ -1,5 +1,7 @@
 # Level zero loader changelog
 
+## v1.16.1
+* Fix to spec generated api version defines
 ## v1.16.0
 * Update to spec 1.9.1
 ## v1.15.13
