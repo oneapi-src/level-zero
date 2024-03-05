@@ -143,6 +143,18 @@ if(MSVC)
 
 endif()
 
+if(USE_ASAN)
+    if(NOT MSVC)
+        # -fno-omit-frame-pointer is included for nicer stack traces in error messages
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address -fno-omit-frame-pointer")
+        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fsanitize=address -fno-omit-frame-pointer")
+        set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fsanitize=address")
+        set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -fsanitize=address")
+    else()
+        message(WARNING "Address Sanitizer is not supported on Windows")
+    endif()
+endif()
+
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/source/wrapper/include)
 
