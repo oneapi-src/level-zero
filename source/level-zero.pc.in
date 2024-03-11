@@ -1,5 +1,6 @@
-includedir=@CMAKE_INSTALL_FULL_INCLUDEDIR@
-libdir=@CMAKE_INSTALL_FULL_LIBDIR@
+prefix=@CMAKE_INSTALL_PREFIX@
+includedir=${prefix}/include
+libdir=${prefix}/lib
 
 
 Name: Level Zero

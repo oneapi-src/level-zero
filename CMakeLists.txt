@@ -180,21 +180,21 @@ string(SUBSTRING "${os_name}" 0 1 os_name)
 file(GLOB LEVEL_ZERO_API_HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/include/*.h")
 
 install(FILES ${LEVEL_ZERO_API_HEADERS}
-    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/level_zero/
+    DESTINATION ${CMAKE_INSTALL_PREFIX}/include/level_zero/
     COMPONENT level-zero-devel
 )
 
 file(GLOB LEVEL_ZERO_LAYERS_API_HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/include/layers/*.h")
 
 install(FILES ${LEVEL_ZERO_LAYERS_API_HEADERS}
-    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/level_zero/layers
+    DESTINATION ${CMAKE_INSTALL_PREFIX}/include/level_zero/layers
     COMPONENT level-zero-devel
 )
 
 file(GLOB LEVEL_ZERO_LOADER_API_HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/include/loader/*.h")
 
 install(FILES ${LEVEL_ZERO_LOADER_API_HEADERS}
-    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/level_zero/loader
+    DESTINATION ${CMAKE_INSTALL_PREFIX}/include/level_zero/loader
     COMPONENT level-zero-devel
 )
 
@@ -214,7 +214,7 @@ endif()
 if(MSVC)
 	set(CPACK_SET_DESTDIR FALSE)
 	set(CPACK_PACKAGING_INSTALL_PREFIX "")
-	install(DIRECTORY "${CMAKE_INSTALL_FULL_INCLUDEDIR}" DESTINATION "include")
+	install(DIRECTORY "${CMAKE_INSTALL_PREFIX}/include/" DESTINATION "include")
 else()
 	set(CPACK_SET_DESTDIR TRUE)
 endif()
