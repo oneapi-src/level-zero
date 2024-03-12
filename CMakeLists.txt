@@ -84,10 +84,10 @@ if(MSVC)
     set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} /DYNAMICBASE")
     set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} /guard:cf")
     # enable Spectre Mitigation, not supported by clang-cl
-    if(NOT CMAKE_CXX_COMPILER_ID STREQUAL Clang)
+    if((NOT CMAKE_CXX_COMPILER_ID STREQUAL Clang) AND (NOT CMAKE_CXX_COMPILER_ID STREQUAL IntelLLVM))
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Qspectre")
     endif()
-    if(NOT CMAKE_C_COMPILER_ID STREQUAL Clang)
+    if((NOT CMAKE_C_COMPILER_ID STREQUAL Clang) AND NOT (CMAKE_C_COMPILER_ID STREQUAL IntelLLVM))
         set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /Qspectre")
     endif()
 endif()
@@ -106,7 +106,9 @@ if(NOT MSVC)
     else()
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fpermissive")
     endif()
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Werror -Wnon-virtual-dtor")
+    if(NOT CMAKE_CXX_COMPILER_ID STREQUAL IntelLLVM)
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Werror -Wnon-virtual-dtor")
+    endif()
 endif()
 
 #MSVC compile flags
@@ -114,11 +116,13 @@ if(MSVC)
     string(REPLACE "/MDd" "/MTd" CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG}")
     string(REPLACE "/MD" "/MT" CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE}")
 
-    # treat warnings as errors
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /WX /W3")
+    if(NOT CMAKE_CXX_COMPILER_ID STREQUAL IntelLLVM)
+        # treat warnings as errors
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /WX /W3")
+    endif()
 
     # enable multi-process compilation, not supported by clang-cl
-    if(NOT CMAKE_CXX_COMPILER_ID STREQUAL Clang)
+    if((NOT CMAKE_CXX_COMPILER_ID STREQUAL Clang) AND (NOT CMAKE_CXX_COMPILER_ID STREQUAL IntelLLVM))
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
     endif()
 
