@@ -7,12 +7,14 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 if(MSVC AND (MSVC_VERSION LESS 1900))
-    message(FATAL_ERROR "Visual Studio Compiler Version >= 1900 Required to build.")
+message(FATAL_ERROR "Visual Studio Compiler Version >= 1900 Required to build.")
 endif()
 
 # This project follows semantic versioning (https://semver.org/). Only set the
 # major and minor version here - patch version is determined dynamically.
 project(level-zero VERSION 1.16)
+
+include(GNUInstallDirs)
 
 # Patch version corresponds to # of commits on master since last version
 # major/minor tag (e.g., v1.0). If not building in a git repository, then get
@@ -180,21 +182,21 @@ string(SUBSTRING "${os_name}" 0 1 os_name)
 file(GLOB LEVEL_ZERO_API_HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/include/*.h")
 
 install(FILES ${LEVEL_ZERO_API_HEADERS}
-    DESTINATION ${CMAKE_INSTALL_PREFIX}/include/level_zero/
+    DESTINATION ./include/level_zero
     COMPONENT level-zero-devel
 )
 
 file(GLOB LEVEL_ZERO_LAYERS_API_HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/include/layers/*.h")
 
 install(FILES ${LEVEL_ZERO_LAYERS_API_HEADERS}
-    DESTINATION ${CMAKE_INSTALL_PREFIX}/include/level_zero/layers
+    DESTINATION ./include/level_zero/layers
     COMPONENT level-zero-devel
 )
 
 file(GLOB LEVEL_ZERO_LOADER_API_HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/include/loader/*.h")
 
 install(FILES ${LEVEL_ZERO_LOADER_API_HEADERS}
-    DESTINATION ${CMAKE_INSTALL_PREFIX}/include/level_zero/loader
+    DESTINATION ./include/level_zero/loader
     COMPONENT level-zero-devel
 )
 
@@ -214,7 +216,6 @@ endif()
 if(MSVC)
 	set(CPACK_SET_DESTDIR FALSE)
 	set(CPACK_PACKAGING_INSTALL_PREFIX "")
-	install(DIRECTORY "${CMAKE_INSTALL_PREFIX}/include/" DESTINATION "include")
 else()
 	set(CPACK_SET_DESTDIR TRUE)
 endif()
