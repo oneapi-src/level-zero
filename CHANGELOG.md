@@ -1,5 +1,10 @@
 # Level zero loader changelog
 
+## v1.16.9
+* Fix code Gen scripts for zesInit Only
+* Fix Build using IntelLLVM compiler
+* Installation path fixes
+* Add USE_ASAN cmake flag for address sanitization
 ## v1.16.1
 * Fix to spec generated api version defines
 ## v1.16.0
