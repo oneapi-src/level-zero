@@ -12,8 +12,12 @@ FetchContent_Declare(
 FetchContent_makeAvailable(spdlog)
 
 add_library(utils
+  STATIC
   "logging.h"
   "logging.cpp"
 )
 
-target_link_libraries(utils spdlog::spdlog)
+target_include_directories(utils
+  PUBLIC
+  ${FETCHCONTENT_BASE_DIR}/spdlog-src/include
+)

@@ -57,6 +57,9 @@ elseif(Git_FOUND)
 	endif()
 endif()
 
+include(FetchContent)
+set(SPDLOG_ROOT "${FETCHCONTENT_BASE_DIR}/spdlog-src")
+
 # Update other relevant variables to include the patch
 set(PROJECT_VERSION "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH}")
 set(CMAKE_PROJECT_VERSION_PATCH "${PROJECT_VERSION_PATCH}")
@@ -163,6 +166,7 @@ endif()
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/source/wrapper/include)
+include_directories(${SPDLOG_ROOT}/include)
 
 include_directories("${CMAKE_CURRENT_SOURCE_DIR}")
 
