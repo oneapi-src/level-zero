@@ -1,5 +1,7 @@
 # Level zero loader changelog
 
+## v1.16.11
+* fix Logging build to be static linked
 ## v1.16.9
 * Fix code Gen scripts for zesInit Only
 * Fix Build using IntelLLVM compiler
