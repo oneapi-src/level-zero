@@ -263,13 +263,13 @@ namespace loader
 
 
         auto loader_file = getenv_string("ZEL_LOADER_LOG_FILE");
-
-        if (!loader_file){
+        if (loader_file.empty()){
             loader_file = LOADER_LOG_FILE_DEFAULT;
         }
+
         auto log_level = getenv_string("ZEL_LOADER_LOGGING_LEVEL");
-        zel_logger =  std::make_shared<Logger>("ze_loader", loader_file, log_level ? log_level : "warn");
-        if (log_level && (0 == strncmp(log_level, "trace", 5)) && !debugTraceEnabled){
+        zel_logger =  std::make_shared<Logger>("ze_loader", loader_file, !log_level.empty() ? log_level : "warn");
+        if ((log_level == "trace") && !debugTraceEnabled) {
             debugTraceEnabled = true;
             zel_logger->log_to_console = false;
         }

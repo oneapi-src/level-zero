@@ -138,7 +138,7 @@ inline bool getenv_tobool( const char* name )
 }
 
 
-inline const char * getenv_string ( const char* name ){
+inline std::string getenv_string ( const char* name){
 
     const char* env = nullptr;
 
@@ -152,5 +152,7 @@ inline const char * getenv_string ( const char* name ){
     env = getenv(name);
 #endif
 
-    return env;
+    if ((nullptr == env))
+        return "";
+    return std::string(env);
 }
