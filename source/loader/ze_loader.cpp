@@ -267,19 +267,21 @@ namespace loader
             loader_file = LOADER_LOG_FILE_DEFAULT;
         }
 
+        auto logging_enabled = getenv_tobool( "ZEL_ENABLE_LOADER_LOGGING" );
+
         auto log_level = getenv_string("ZEL_LOADER_LOGGING_LEVEL");
-        zel_logger =  std::make_shared<Logger>("ze_loader", loader_file, !log_level.empty() ? log_level : "warn");
+        zel_logger =  std::make_shared<Logger>("ze_loader", loader_file, !log_level.empty() ? log_level : "warn", logging_enabled);
         if ((log_level == "trace") && !debugTraceEnabled) {
             debugTraceEnabled = true;
             zel_logger->log_to_console = false;
         }
 
-        auto logging_enabled = getenv_tobool( "ZEL_ENABLE_LOADER_LOGGING" );
         if (!logging_enabled){
             zel_logger->set_level(spdlog::level::off);
         }
 
-        zel_logger->get_base_logger()->info("Loader Version {}.{}.{} ", LOADER_VERSION_MAJOR, LOADER_VERSION_MINOR, LOADER_VERSION_PATCH);
+        if (zel_logger->logging_enabled)
+            zel_logger->get_base_logger()->info("Loader Version {}.{}.{} ", LOADER_VERSION_MAJOR, LOADER_VERSION_MINOR, LOADER_VERSION_PATCH);
 
         drivers.reserve( discoveredDrivers.size() + getenv_tobool( "ZE_ENABLE_NULL_DRIVER" ) );
         if( getenv_tobool( "ZE_ENABLE_NULL_DRIVER" ) )
