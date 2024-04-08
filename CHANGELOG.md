@@ -1,5 +1,8 @@
 # Level zero loader changelog
 
+## v1.16.14
+* Fix loading environment strings
+* Avoid init of Logger unless Enabled by ZEL_ENABLE_LOADER_LOGGING
 ## v1.16.11
 * fix Logging build to be static linked
 ## v1.16.9
