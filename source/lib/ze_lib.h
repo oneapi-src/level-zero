@@ -56,7 +56,7 @@ namespace ze_lib
         ze_dditable_t initialzeDdiTable;
         zet_dditable_t initialzetDdiTable;
         zes_dditable_t initialzesDdiTable;
-        std::atomic_uint32_t tracingLayerEnableCounter;
+        std::atomic_uint32_t tracingLayerEnableCounter{0};
 
         HMODULE tracing_lib = nullptr;
         bool isInitialized = false;

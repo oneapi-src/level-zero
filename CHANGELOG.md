@@ -1,5 +1,7 @@
 # Level zero loader changelog
 
+## v1.16.15
+* Fix Tracing Layer Dynamic Enable Counter
 ## v1.16.14
 * Fix loading environment strings
 * Avoid init of Logger unless Enabled by ZEL_ENABLE_LOADER_LOGGING
