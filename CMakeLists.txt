@@ -57,6 +57,27 @@ elseif(Git_FOUND)
 	endif()
 endif()
 
+if(Git_FOUND)
+	if(MSVC)
+		execute_process(
+			COMMAND CMD /c ${GIT_EXECUTABLE} rev-parse HEAD
+			OUTPUT_VARIABLE VERSION_SHA
+			OUTPUT_STRIP_TRAILING_WHITESPACE
+			WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+		)
+	else()
+	execute_process(
+		COMMAND ${GIT_EXECUTABLE} rev-parse HEAD
+		OUTPUT_VARIABLE VERSION_SHA
+		OUTPUT_STRIP_TRAILING_WHITESPACE
+		WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+	)
+	endif()
+else()
+	set(VERSION_SHA " - No git SHA found, compiled outside git folder.")
+endif()
+add_definitions(-DLOADER_VERSION_SHA="${VERSION_SHA}")
+
 include(FetchContent)
 set(SPDLOG_ROOT "${FETCHCONTENT_BASE_DIR}/spdlog-src")
 

@@ -281,7 +281,8 @@ namespace loader
         }
 
         if (zel_logger->logging_enabled)
-            zel_logger->get_base_logger()->info("Loader Version {}.{}.{} ", LOADER_VERSION_MAJOR, LOADER_VERSION_MINOR, LOADER_VERSION_PATCH);
+            zel_logger->get_base_logger()->info("Loader Version {}.{}.{} {}", LOADER_VERSION_MAJOR, LOADER_VERSION_MINOR, LOADER_VERSION_PATCH, LOADER_VERSION_SHA);
+
 
         drivers.reserve( discoveredDrivers.size() + getenv_tobool( "ZE_ENABLE_NULL_DRIVER" ) );
         if( getenv_tobool( "ZE_ENABLE_NULL_DRIVER" ) )
