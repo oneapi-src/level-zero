@@ -9,6 +9,10 @@
 #ifndef level_zero_loader_LOGGING_HPP
 #define level_zero_loader_LOGGING_HPP
 
+#ifndef FMT_HEADER_ONLY
+#define FMT_HEADER_ONLY
+#endif
+
 #define LOADER_LOG_FILE_DEFAULT "ze_loader.log"
 
 #include <iostream>
