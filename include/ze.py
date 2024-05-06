@@ -4,7 +4,7 @@
  SPDX-License-Identifier: MIT
 
  @file ze.py
- @version v1.9-r1.9.1
+ @version v1.9-r1.9.3
 
  """
 import platform
@@ -560,7 +560,7 @@ class ze_device_properties_t(Structure):
                                                                         ## structure (i.e. contains stype and pNext).
         ("type", ze_device_type_t),                                     ## [out] generic device type
         ("vendorId", c_ulong),                                          ## [out] vendor id from PCI configuration
-        ("deviceId", c_ulong),                                          ## [out] device id from PCI configuration
+        ("deviceId", c_ulong),                                          ## [out] device id from PCI configuration.
                                                                         ## Note, the device id uses little-endian format.
         ("flags", ze_device_property_flags_t),                          ## [out] 0 (none) or a valid combination of ::ze_device_property_flag_t
         ("subdeviceId", c_ulong),                                       ## [out] sub-device id. Only valid if ::ZE_DEVICE_PROPERTY_FLAG_SUBDEVICE
@@ -1243,6 +1243,9 @@ class ze_image_format_layout_v(IntEnum):
     _444P = 40                                                              ## Media Format: 444P. Format type and swizzle is ignored for this.
     RGBP = 41                                                               ## Media Format: RGBP. Format type and swizzle is ignored for this.
     BRGP = 42                                                               ## Media Format: BRGP. Format type and swizzle is ignored for this.
+    _8_8_8 = 43                                                             ## 3-component 8-bit layout
+    _16_16_16 = 44                                                          ## 3-component 16-bit layout
+    _32_32_32 = 45                                                          ## 3-component 32-bit layout
 
 class ze_image_format_layout_t(c_int):
     def __str__(self):
@@ -3722,6 +3725,9 @@ class ze_bindless_image_exp_version_t(c_int):
 class ze_image_bindless_exp_flags_v(IntEnum):
     BINDLESS = ZE_BIT(0)                                                    ## Bindless images are created with ::zeImageCreate. The image handle
                                                                             ## created with this flag is valid on both host and device.
+    SAMPLED_IMAGE = ZE_BIT(1)                                               ## Bindless sampled images are created with ::zeImageCreate by combining
+                                                                            ## BINDLESS and SAMPLED_IMAGE.
+                                                                            ## Create sampled image view from bindless unsampled image using SAMPLED_IMAGE.
 
 class ze_image_bindless_exp_flags_t(c_int):
     def __str__(self):
@@ -3743,6 +3749,8 @@ class ze_image_bindless_exp_desc_t(Structure):
                                                                         ## When the flag is passed to ::zeImageCreate, then only the memory for
                                                                         ## the image is allocated.
                                                                         ## Additional image handles can be created with ::zeImageViewCreateExt.
+                                                                        ## When ::ZE_IMAGE_BINDLESS_EXP_FLAG_SAMPLED_IMAGE flag is passed,
+                                                                        ## ::ze_sampler_desc_t must be attached via pNext member of ::ze_image_bindless_exp_desc_t.
     ]
 
 ###############################################################################

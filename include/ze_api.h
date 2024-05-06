@@ -5,7 +5,7 @@
  * SPDX-License-Identifier: MIT
  *
  * @file ze_api.h
- * @version v1.9-r1.9.1
+ * @version v1.9-r1.9.3
  *
  */
 #ifndef _ZE_API_H
@@ -1443,7 +1443,7 @@ typedef struct _ze_device_properties_t
                                                                             ///< structure (i.e. contains stype and pNext).
     ze_device_type_t type;                                                  ///< [out] generic device type
     uint32_t vendorId;                                                      ///< [out] vendor id from PCI configuration
-    uint32_t deviceId;                                                      ///< [out] device id from PCI configuration
+    uint32_t deviceId;                                                      ///< [out] device id from PCI configuration.
                                                                             ///< Note, the device id uses little-endian format.
     ze_device_property_flags_t flags;                                       ///< [out] 0 (none) or a valid combination of ::ze_device_property_flag_t
     uint32_t subdeviceId;                                                   ///< [out] sub-device id. Only valid if ::ZE_DEVICE_PROPERTY_FLAG_SUBDEVICE
@@ -4697,6 +4697,9 @@ typedef enum _ze_image_format_layout_t
     ZE_IMAGE_FORMAT_LAYOUT_444P = 40,                                       ///< Media Format: 444P. Format type and swizzle is ignored for this.
     ZE_IMAGE_FORMAT_LAYOUT_RGBP = 41,                                       ///< Media Format: RGBP. Format type and swizzle is ignored for this.
     ZE_IMAGE_FORMAT_LAYOUT_BRGP = 42,                                       ///< Media Format: BRGP. Format type and swizzle is ignored for this.
+    ZE_IMAGE_FORMAT_LAYOUT_8_8_8 = 43,                                      ///< 3-component 8-bit layout
+    ZE_IMAGE_FORMAT_LAYOUT_16_16_16 = 44,                                   ///< 3-component 16-bit layout
+    ZE_IMAGE_FORMAT_LAYOUT_32_32_32 = 45,                                   ///< 3-component 32-bit layout
     ZE_IMAGE_FORMAT_LAYOUT_FORCE_UINT32 = 0x7fffffff
 
 } ze_image_format_layout_t;
@@ -10545,6 +10548,9 @@ typedef enum _ze_image_bindless_exp_flag_t
 {
     ZE_IMAGE_BINDLESS_EXP_FLAG_BINDLESS = ZE_BIT(0),                        ///< Bindless images are created with ::zeImageCreate. The image handle
                                                                             ///< created with this flag is valid on both host and device.
+    ZE_IMAGE_BINDLESS_EXP_FLAG_SAMPLED_IMAGE = ZE_BIT(1),                   ///< Bindless sampled images are created with ::zeImageCreate by combining
+                                                                            ///< BINDLESS and SAMPLED_IMAGE.
+                                                                            ///< Create sampled image view from bindless unsampled image using SAMPLED_IMAGE.
     ZE_IMAGE_BINDLESS_EXP_FLAG_FORCE_UINT32 = 0x7fffffff
 
 } ze_image_bindless_exp_flag_t;
@@ -10564,6 +10570,8 @@ typedef struct _ze_image_bindless_exp_desc_t
                                                                             ///< When the flag is passed to ::zeImageCreate, then only the memory for
                                                                             ///< the image is allocated.
                                                                             ///< Additional image handles can be created with ::zeImageViewCreateExt.
+                                                                            ///< When ::ZE_IMAGE_BINDLESS_EXP_FLAG_SAMPLED_IMAGE flag is passed,
+                                                                            ///< ::ze_sampler_desc_t must be attached via pNext member of ::ze_image_bindless_exp_desc_t.
 
 } ze_image_bindless_exp_desc_t;
 

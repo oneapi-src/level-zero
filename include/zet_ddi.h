@@ -5,7 +5,7 @@
  * SPDX-License-Identifier: MIT
  *
  * @file zet_ddi.h
- * @version v1.9-r1.9.1
+ * @version v1.9-r1.9.3
  *
  */
 #ifndef _ZET_DDI_H
