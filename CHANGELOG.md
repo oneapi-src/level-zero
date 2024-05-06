@@ -1,5 +1,7 @@
 # Level zero loader changelog
 
+## v1.17.0
+* Update to support v1.9.3 of the L0 Spec
 ## v1.16.15
 * Fix Tracing Layer Dynamic Enable Counter
 ## v1.16.14

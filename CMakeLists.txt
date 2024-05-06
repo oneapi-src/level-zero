@@ -12,7 +12,7 @@ endif()
 
 # This project follows semantic versioning (https://semver.org/). Only set the
 # major and minor version here - patch version is determined dynamically.
-project(level-zero VERSION 1.16)
+project(level-zero VERSION 1.17)
 
 include(GNUInstallDirs)
 
