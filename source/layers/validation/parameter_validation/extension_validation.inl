@@ -125,7 +125,8 @@ inline ze_result_t ParameterValidation::validateExtensions(ze_device_properties_
                                                   ZE_STRUCTURE_TYPE_DEVICE_PROPERTIES_1_2};
     std::vector<ze_structure_type_t> types = {ZE_STRUCTURE_TYPE_DEVICE_LUID_EXT_PROPERTIES,
                                               ZE_STRUCTURE_TYPE_EU_COUNT_EXT,
-                                              ZE_STRUCTURE_TYPE_DEVICE_IP_VERSION_EXT};
+                                              ZE_STRUCTURE_TYPE_DEVICE_IP_VERSION_EXT,
+                                              ZE_STRUCTURE_TYPE_MUTABLE_COMMAND_LIST_EXP_PROPERTIES};
 
     return validateStructureTypes<ze_structure_type_t, ze_base_properties_t>(descriptor, baseTypes, types);
 }
