@@ -78,8 +78,7 @@ else()
 endif()
 add_definitions(-DLOADER_VERSION_SHA="${VERSION_SHA}")
 
-include(FetchContent)
-set(SPDLOG_ROOT "${FETCHCONTENT_BASE_DIR}/spdlog-src")
+include_directories("${CMAKE_CURRENT_SOURCE_DIR}/third_party/spdlog_headers")
 
 # Update other relevant variables to include the patch
 set(PROJECT_VERSION "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH}")
@@ -187,7 +186,10 @@ endif()
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/source/wrapper/include)
-include_directories(${SPDLOG_ROOT}/include)
+
+if(NOT spdlog_FOUND)
+	include_directories(${SPDLOG_ROOT}/include)
+endif()
 
 include_directories("${CMAKE_CURRENT_SOURCE_DIR}")
 
