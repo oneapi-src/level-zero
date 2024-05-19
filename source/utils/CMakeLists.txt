@@ -7,4 +7,4 @@ add_library(utils
   "logging.cpp"
 )
 
-target_include_directories(utils PRIVATE ${CMAKE_SOURCE_DIR}/third_party/spdlog_headers/include)
+target_include_directories(utils PRIVATE ${CMAKE_SOURCE_DIR}/third_party/spdlog_headers/)
