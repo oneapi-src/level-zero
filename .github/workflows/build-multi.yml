@@ -17,8 +17,6 @@ jobs:
     outputs:
       short-sha: ${{ steps.const.outputs.short-sha }}
       ref-slug: ${{ steps.const.outputs.ref-slug }}
-      build-matrix: ${{ steps.build-matrix.outputs.matrix }}
-      image-matrix: ${{ steps.image-matrix.outputs.matrix }}
     steps:
     - uses: actions/checkout@v4
       with:
@@ -31,87 +29,6 @@ jobs:
         short-sha=$(git rev-parse --short=7 ${GITHUB_SHA})
         ref-slug=$(echo ${{ github.ref_name }} | tr '/_' '-')
         EOF
-    - name: Generate build matrix
-      id: build-matrix
-      run: '
-        echo ''matrix={
-          "os":[
-            {"name":"ubuntu", "vmaj":"20", "vmin":"04"},
-            {"name":"ubuntu", "vmaj":"22", "vmin":"04"},
-            {"name":"sles", "vmaj":"15", "vmin":"2"},
-            {"name":"sles", "vmaj":"15", "vmin":"3"},
-            {"name":"sles", "vmaj":"15", "vmin":"4"},
-            {"name":"rhel", "vmaj":"8", "vmin":"6"},
-            {"name":"windows"}
-          ],
-          "target":["install", "package"],
-          "arch":[""],
-          "include":[
-            {"os":{"name":"ubuntu", "vmaj":"20", "vmin":"04"}, "target":"install", "arch":"arm64"},
-            {"os":{"name":"ubuntu", "vmaj":"20", "vmin":"04"}, "target":"package", "arch":"arm64"}
-          ]
-        }'' | tee -a ${GITHUB_OUTPUT} | sed "s/matrix\=\(.*\)/\1/" | jq .'
-    - name: Generate image build matrix
-      id: image-matrix
-      run: |
-        echo 'matrix={"os":'$(echo '${{ steps.build-matrix.outputs.matrix }}' | jq -c .os)'}' |
-        tee -a ${GITHUB_OUTPUT} | sed "s/matrix\=\(.*\)/\1/" | jq .
-
-  image:
-    runs-on: ${{ matrix.os.name == 'windows' && 'windows-latest' || 'ubuntu-latest' }}
-    needs: [config]
-    strategy:
-      fail-fast: false
-      matrix: ${{ fromJSON(needs.config.outputs.image-matrix) }}
-    env:
-      OS_STRING: >-
-        ${{ matrix.os.name == 'windows' && 'windows' ||
-            format('{0}-{1}.{2}',
-              matrix.os.name,
-              matrix.os.vmaj,
-              matrix.os.vmin
-            )
-        }}
-      DOCKER_BUILDKIT: ${{ matrix.os.name == 'windows' && '0' || '1' }}
-    steps:
-    - name: Compute image name
-      run: echo "DOCKER_IMAGE=localhost/${{ github.repository }}/${OS_STRING}" >> ${GITHUB_ENV}
-    - uses: actions/checkout@v4
-      with:
-        clean: true
-        submodules: true
-    - name: "Registry login: ghcr.io"
-      run: |
-        echo ${{ secrets.GITHUB_TOKEN }} |
-        docker login -u sys-lzdev --password-stdin ghcr.io
-    - name: Setup buildkit builder
-      if: env.DOCKER_BUILDKIT == '1'
-      id: buildx-builder
-      uses: docker/setup-buildx-action@v3
-    - name: Build image
-      run: |
-        docker info
-        docker \
-        ${{ env.DOCKER_BUILDKIT == '0' && 'build' || 'buildx build --load' }} \
-        ${{ runner.os == 'Windows' && '  \
-          --memory 16G ' || '  '
-        }}\
-        ${{ matrix.os.vmaj != '' && format('  \
-          --build-arg VMAJ={0} \
-          --build-arg VMIN={1} ', matrix.os.vmaj, matrix.os.vmin) || '  '
-        }}\
-          --pull \
-          --tag ${DOCKER_IMAGE}:${{ needs.config.outputs.ref-slug }} \
-          - < .github/docker/${{ matrix.os.name }}.Dockerfile
-    - name: Save image
-      run: docker save ${DOCKER_IMAGE}:${{ needs.config.outputs.ref-slug }} -o ./${{ env.OS_STRING }}.tar
-    - name: Save image ID
-      run: echo "$(docker images --format '{{.ID}}' ${DOCKER_IMAGE}:${{ needs.config.outputs.ref-slug }})" > ./${{ env.OS_STRING }}.id
-    - name: Upload image
-      uses: actions/upload-artifact@v4
-      with:
-        name: ${{ env.OS_STRING }}
-        path: ./${{ env.OS_STRING }}.*
 
   build:
     # Notes on formatting:
@@ -122,16 +39,26 @@ jobs:
     # Note the mixed spaces and tabs in the heredocs, see the bash man page
     # entry for <<- in the Here Documents section. This allows generated code to
     # be indented for readability in the workflow output.
-    needs: [config, image]
+    needs: [config]
     runs-on: ${{ matrix.os.name == 'windows' && 'windows-latest' || 'ubuntu-latest' }}
-    # Always run build even if the image step failed, except if the job was cancelled
-    if: >-
-      always() &&
-      ! cancelled() &&
-      needs.config.result == 'success'
     strategy:
       fail-fast: false
-      matrix: ${{ fromJSON(needs.config.outputs.build-matrix) }}
+      matrix:
+        os: [
+          {name: ubuntu, vmaj: 20, vmin: '04'},
+          {name: ubuntu, vmaj: 22, vmin: '04'},
+          {name: sles, vmaj: 15, vmin: 2},
+          {name: sles, vmaj: 15, vmin: 3},
+          {name: sles, vmaj: 15, vmin: 4},
+          {name: rhel, vmaj: 8, vmin: 6},
+          {name: windows}
+        ]
+        target: [install, package]
+        arch: ['']
+        include: [
+          {os: {name: ubuntu, vmaj: 20, vmin: '04'}, target: install, arch: arm64},
+          {os: {name: ubuntu, vmaj: 20, vmin: '04'}, target: package, arch: arm64}
+        ]
     env:
       MSYS_NO_PATHCONV: 1
       MOUNT_TARGET:  ${{ matrix.os.name == 'windows' && 'C:/project' || '/project' }}
@@ -170,15 +97,62 @@ jobs:
         path: ${{ steps.const.outputs.ccache-dir }}
         key: ccache-${{ github.job }}-${{ steps.const.outputs.os-string }}${{ env.ARCH_SUFFIX }}-${{ matrix.target }}-${{ github.sha }}
         restore-keys: ccache-${{ github.job }}-${{ steps.const.outputs.os-string }}${{ env.ARCH_SUFFIX }}-${{ matrix.target }}-
-    - name: Download image
-      uses: actions/download-artifact@v4
+    - name: Compute image name
+      run: echo "DOCKER_IMAGE=localhost/${{ github.repository }}/${{ steps.const.outputs.os-string }}" >> ${GITHUB_ENV}
+    - name: "Registry login: ghcr.io"
+      run: |
+        echo ${{ secrets.GITHUB_TOKEN }} |
+        docker login -u sys-lzdev --password-stdin ghcr.io
+    - name: Setup buildkit builder
+      if: ${{ matrix.os.name != 'windows' }}
+      uses: docker/setup-buildx-action@v3
+    - name: Setup containerd
+      if: ${{ matrix.os.name == 'windows' }}
+      shell: pwsh
+      run: |
+        $version = "1.7.15"
+        curl.exe -L https://github.com/containerd/containerd/releases/download/v$version/containerd-$version-windows-amd64.tar.gz -o containerd.tar.gz
+        tar.exe xvf containerd.tar.gz
+        .\bin\containerd.exe config default | Out-File .\bin\config.toml -Encoding ascii
+        .\bin\containerd.exe --register-service
+        Start-Service containerd
+    - name: Setup BuildKit
+      if: ${{ matrix.os.name == 'windows' }}
+      shell: pwsh
+      run: |
+        $version = "v0.13.1"
+        curl.exe -L https://github.com/moby/buildkit/releases/download/$version/buildkit-$version.windows-amd64.tar.gz -o buildkit.tar.gz
+        tar.exe xvf buildkit.tar.gz
+        .\bin\buildkitd.exe --register-service --debug --containerd-worker=true --service-name buildkitd
+        Start-Service buildkitd
+    - name: Setup Docker Buildx
+      if: ${{ matrix.os.name == 'windows' }}
+      shell: pwsh
+      run: |
+        $version = "v0.13.1"
+        curl.exe -L https://github.com/docker/buildx/releases/download/$version/buildx-$version.windows-amd64.exe -o $env:ProgramData\Docker\cli-plugins\docker-buildx.exe
+    - uses: docker/setup-buildx-action@v3.2.0
+      if: ${{ matrix.os.name == 'windows' }}
       with:
-        name: ${{ steps.const.outputs.os-string }}
-    - name: Load image
-      run: docker load -i ./${{ steps.const.outputs.os-string }}.tar
-    - name: Get image ID
-      id: image-id
-      run: echo "id=$(cat ./${{ steps.const.outputs.os-string }}.id)" >> ${GITHUB_OUTPUT}
+        driver: remote
+        endpoint: npipe:////./pipe/buildkitd
+    - name: Build image
+      run: |
+        docker info
+        docker buildx build \
+          --load \
+          --cache-to=type=gha,mode=min \
+          --cache-from=type=gha \
+        ${{ runner.os == 'Windows' && '  \
+          --memory 16G ' || '  '
+        }}\
+        ${{ matrix.os.vmaj != '' && format('  \
+          --build-arg VMAJ={0} \
+          --build-arg VMIN={1} ', matrix.os.vmaj, matrix.os.vmin) || '  '
+        }}\
+          --pull \
+          --tag ${DOCKER_IMAGE}:${{ needs.config.outputs.ref-slug }} \
+          - < .github/docker/${{ matrix.os.name }}.Dockerfile
     - name: Build
       id: build
       run: |
@@ -191,7 +165,7 @@ jobs:
           -e CCACHE_BASEDIR=${MOUNT_TARGET} \
           -e CCACHE_DIR=${MOUNT_TARGET}/ccache \
           -v '${{ steps.const.outputs.ccache-dir }}':${MOUNT_TARGET}/ccache \
-          ${{ steps.image-id.outputs.id }} \
+          ${DOCKER_IMAGE}:${{ needs.config.outputs.ref-slug }} \
           bash -e -x <<-EOF
 
         	cmake \
