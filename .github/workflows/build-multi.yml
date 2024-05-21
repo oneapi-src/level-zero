@@ -103,46 +103,10 @@ jobs:
       run: |
         echo ${{ secrets.GITHUB_TOKEN }} |
         docker login -u sys-lzdev --password-stdin ghcr.io
-    - name: Setup buildkit builder
-      if: ${{ matrix.os.name != 'windows' }}
-      uses: docker/setup-buildx-action@v3
-    - name: Setup containerd
-      if: ${{ matrix.os.name == 'windows' }}
-      shell: pwsh
-      run: |
-        $version = "1.7.15"
-        curl.exe -L https://github.com/containerd/containerd/releases/download/v$version/containerd-$version-windows-amd64.tar.gz -o containerd.tar.gz
-        tar.exe xvf containerd.tar.gz
-        .\bin\containerd.exe config default | Out-File .\bin\config.toml -Encoding ascii
-        .\bin\containerd.exe --register-service
-        Start-Service containerd
-    - name: Setup BuildKit
-      if: ${{ matrix.os.name == 'windows' }}
-      shell: pwsh
-      run: |
-        $version = "v0.13.1"
-        curl.exe -L https://github.com/moby/buildkit/releases/download/$version/buildkit-$version.windows-amd64.tar.gz -o buildkit.tar.gz
-        tar.exe xvf buildkit.tar.gz
-        .\bin\buildkitd.exe --register-service --debug --containerd-worker=true --service-name buildkitd
-        Start-Service buildkitd
-    - name: Setup Docker Buildx
-      if: ${{ matrix.os.name == 'windows' }}
-      shell: pwsh
-      run: |
-        $version = "v0.13.1"
-        curl.exe -L https://github.com/docker/buildx/releases/download/$version/buildx-$version.windows-amd64.exe -o $env:ProgramData\Docker\cli-plugins\docker-buildx.exe
-    - uses: docker/setup-buildx-action@v3.2.0
-      if: ${{ matrix.os.name == 'windows' }}
-      with:
-        driver: remote
-        endpoint: npipe:////./pipe/buildkitd
     - name: Build image
       run: |
         docker info
-        docker buildx build \
-          --load \
-          --cache-to=type=gha,mode=min \
-          --cache-from=type=gha \
+        docker build \
         ${{ runner.os == 'Windows' && '  \
           --memory 16G ' || '  '
         }}\
