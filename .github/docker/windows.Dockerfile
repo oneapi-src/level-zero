@@ -1,10 +1,9 @@
 # escape=`
 
-ARG BASE_IMAGE=mcr.microsoft.com/dotnet/framework/runtime:4.8-windowsservercore-ltsc2019
+ARG BASE_IMAGE=mcr.microsoft.com/dotnet/framework/runtime:4.8
 FROM ${BASE_IMAGE}
 
 SHELL ["powershell"]
-RUN New-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\FileSystem" -Name "LongPathsEnabled" -Value 1 -PropertyType DWORD -Force
 ENV VS_VERSION=2019
 RUN [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; `
     Switch ($env:VS_VERSION) { `

@@ -24,53 +24,12 @@ Project is defined using [CMake](https://cmake.org/).
 
 ## Linux
 
-### General
-
 ```
 mkdir build
 cd build
-cmake ..
-cmake --build . --config Release
-cmake --build . --config Release --target package
-cmake --build . --config Release --target install
-```
-
-### Ubuntu with Docker
-
-```bash
-mkdir build
-mkdir -p .ccache
-
-docker run \
-  --rm \
-  -v $PWD:$PWD \
-  -w $PWD/build \
-  -e CCACHE_DIR=$PWD/.ccache \
-  -e CCACHE_BASEDIR=$PWD \
-  $(docker build -q \
-      --build-arg UID=$(id -u) \
-      --build-arg GID=$(id -g) \
-      --build-arg IMAGE_VERSION=eoan \
-      - < docker/build-ubuntu.Dockerfile) \
-  cmake \
-    -G Ninja \
-    -D CMAKE_C_COMPILER_LAUNCHER=ccache \
-    -D CMAKE_CXX_COMPILER_LAUNCHER=ccache \
-    -D CMAKE_BUILD_TYPE=Release \
-    ..
-
-docker run \
-  --rm \
-  -v $PWD:$PWD \
-  -w $PWD/build \
-  -e CCACHE_DIR=$PWD/.ccache \
-  -e CCACHE_BASEDIR=$PWD \
-  $(docker build -q \
-      --build-arg UID=$(id -u) \
-      --build-arg GID=$(id -g) \
-      --build-arg IMAGE_VERSION=eoan \
-      - < docker/build-ubuntu.Dockerfile) \
-  cmake --build . --config Release
+cmake .. -D CMAKE_BUILD_TYPE=Release
+cmake --build . --target package
+cmake --build . --target install
 ```
 
 # Debug Trace
