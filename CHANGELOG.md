@@ -1,5 +1,7 @@
 # Level zero loader changelog
 
+## v1.17.6
+* Bundle spdlog headers as part of build vs library build
 ## v1.17.2
 * Recognize mutable command list struct types in validation layer
 ## v1.17.0
