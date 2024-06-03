@@ -121,7 +121,7 @@ void OnExitCommandListAppendLaunchKernel(
     clock_t end = clock();
 
     my_tracer_data_t* tracer_data = (my_tracer_data_t*)pTracerUserData;
-    my_instance_data_t* instance_data = (my_instance_data_t*)ppTracerInstanceUserData;
+    my_instance_data_t* instance_data = *(my_instance_data_t**)ppTracerInstanceUserData;
 
     float time = 1000.f * ( end - instance_data->start ) / CLOCKS_PER_SEC;
     printf("zeCommandListAppendLaunchKernel #%d takes %.4f msn", tracer_data->instance++, time);
