@@ -40,6 +40,15 @@ namespace validation_layer
         if( nullptr == ${th.make_pfn_name(n, tags, obj)} )
             return ${X}_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->${n}ParamValidation->${th.make_func_name(n, tags, obj)}( \
+% for line in th.make_param_lines(n, tags, obj, format=['name','delim']):
+${line} \
+%endfor
+);
+        }
+
         if( context.enableParameterValidation )
         {
             auto result = context.paramValidation->${n}ParamValidation.${th.make_func_name(n, tags, obj)}( \

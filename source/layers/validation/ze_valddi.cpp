@@ -26,6 +26,11 @@ namespace validation_layer
         if( nullptr == pfnInit )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeInit( flags );
+        }
+
         if( context.enableParameterValidation )
         {
             auto result = context.paramValidation->zeParamValidation.zeInit( flags );
@@ -65,6 +70,11 @@ namespace validation_layer
 
         if( nullptr == pfnGet )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeDriverGet( pCount, phDrivers );
+        }
 
         if( context.enableParameterValidation )
         {
@@ -110,6 +120,11 @@ namespace validation_layer
         if( nullptr == pfnGetApiVersion )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeDriverGetApiVersion( hDriver, version );
+        }
+
         if( context.enableParameterValidation )
         {
             auto result = context.paramValidation->zeParamValidation.zeDriverGetApiVersion( hDriver, version );
@@ -144,6 +159,11 @@ namespace validation_layer
         if( nullptr == pfnGetProperties )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeDriverGetProperties( hDriver, pDriverProperties );
+        }
+
         if( context.enableParameterValidation )
         {
             auto result = context.paramValidation->zeParamValidation.zeDriverGetProperties( hDriver, pDriverProperties );
@@ -177,6 +197,11 @@ namespace validation_layer
 
         if( nullptr == pfnGetIpcProperties )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeDriverGetIpcProperties( hDriver, pIpcProperties );
+        }
 
         if( context.enableParameterValidation )
         {
@@ -221,6 +246,11 @@ namespace validation_layer
         if( nullptr == pfnGetExtensionProperties )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeDriverGetExtensionProperties( hDriver, pCount, pExtensionProperties );
+        }
+
         if( context.enableParameterValidation )
         {
             auto result = context.paramValidation->zeParamValidation.zeDriverGetExtensionProperties( hDriver, pCount, pExtensionProperties );
@@ -256,6 +286,11 @@ namespace validation_layer
         if( nullptr == pfnGetExtensionFunctionAddress )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeDriverGetExtensionFunctionAddress( hDriver, name, ppFunctionAddress );
+        }
+
         if( context.enableParameterValidation )
         {
             auto result = context.paramValidation->zeParamValidation.zeDriverGetExtensionFunctionAddress( hDriver, name, ppFunctionAddress );
@@ -290,6 +325,11 @@ namespace validation_layer
 
         if( nullptr == pfnGetLastErrorDescription )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeDriverGetLastErrorDescription( hDriver, ppString );
+        }
 
         if( context.enableParameterValidation )
         {
@@ -331,6 +371,11 @@ namespace validation_layer
 
         if( nullptr == pfnGet )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeDeviceGet( hDriver, pCount, phDevices );
+        }
 
         if( context.enableParameterValidation )
         {
@@ -376,6 +421,11 @@ namespace validation_layer
         if( nullptr == pfnGetRootDevice )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeDeviceGetRootDevice( hDevice, phRootDevice );
+        }
+
         if( context.enableParameterValidation )
         {
             auto result = context.paramValidation->zeParamValidation.zeDeviceGetRootDevice( hDevice, phRootDevice );
@@ -416,6 +466,11 @@ namespace validation_layer
 
         if( nullptr == pfnGetSubDevices )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeDeviceGetSubDevices( hDevice, pCount, phSubdevices );
+        }
 
         if( context.enableParameterValidation )
         {
@@ -461,6 +516,11 @@ namespace validation_layer
         if( nullptr == pfnGetProperties )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeDeviceGetProperties( hDevice, pDeviceProperties );
+        }
+
         if( context.enableParameterValidation )
         {
             auto result = context.paramValidation->zeParamValidation.zeDeviceGetProperties( hDevice, pDeviceProperties );
@@ -495,6 +555,11 @@ namespace validation_layer
         if( nullptr == pfnGetComputeProperties )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeDeviceGetComputeProperties( hDevice, pComputeProperties );
+        }
+
         if( context.enableParameterValidation )
         {
             auto result = context.paramValidation->zeParamValidation.zeDeviceGetComputeProperties( hDevice, pComputeProperties );
@@ -528,6 +593,11 @@ namespace validation_layer
 
         if( nullptr == pfnGetModuleProperties )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeDeviceGetModuleProperties( hDevice, pModuleProperties );
+        }
 
         if( context.enableParameterValidation )
         {
@@ -573,6 +643,11 @@ namespace validation_layer
         if( nullptr == pfnGetCommandQueueGroupProperties )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeDeviceGetCommandQueueGroupProperties( hDevice, pCount, pCommandQueueGroupProperties );
+        }
+
         if( context.enableParameterValidation )
         {
             auto result = context.paramValidation->zeParamValidation.zeDeviceGetCommandQueueGroupProperties( hDevice, pCount, pCommandQueueGroupProperties );
@@ -616,6 +691,11 @@ namespace validation_layer
         if( nullptr == pfnGetMemoryProperties )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeDeviceGetMemoryProperties( hDevice, pCount, pMemProperties );
+        }
+
         if( context.enableParameterValidation )
         {
             auto result = context.paramValidation->zeParamValidation.zeDeviceGetMemoryProperties( hDevice, pCount, pMemProperties );
@@ -649,6 +729,11 @@ namespace validation_layer
 
         if( nullptr == pfnGetMemoryAccessProperties )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeDeviceGetMemoryAccessProperties( hDevice, pMemAccessProperties );
+        }
 
         if( context.enableParameterValidation )
         {
@@ -692,6 +777,11 @@ namespace validation_layer
         if( nullptr == pfnGetCacheProperties )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeDeviceGetCacheProperties( hDevice, pCount, pCacheProperties );
+        }
+
         if( context.enableParameterValidation )
         {
             auto result = context.paramValidation->zeParamValidation.zeDeviceGetCacheProperties( hDevice, pCount, pCacheProperties );
@@ -726,6 +816,11 @@ namespace validation_layer
         if( nullptr == pfnGetImageProperties )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeDeviceGetImageProperties( hDevice, pImageProperties );
+        }
+
         if( context.enableParameterValidation )
         {
             auto result = context.paramValidation->zeParamValidation.zeDeviceGetImageProperties( hDevice, pImageProperties );
@@ -759,6 +854,11 @@ namespace validation_layer
 
         if( nullptr == pfnGetExternalMemoryProperties )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeDeviceGetExternalMemoryProperties( hDevice, pExternalMemoryProperties );
+        }
 
         if( context.enableParameterValidation )
         {
@@ -795,6 +895,11 @@ namespace validation_layer
         if( nullptr == pfnGetP2PProperties )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeDeviceGetP2PProperties( hDevice, hPeerDevice, pP2PProperties );
+        }
+
         if( context.enableParameterValidation )
         {
             auto result = context.paramValidation->zeParamValidation.zeDeviceGetP2PProperties( hDevice, hPeerDevice, pP2PProperties );
@@ -830,6 +935,11 @@ namespace validation_layer
         if( nullptr == pfnCanAccessPeer )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeDeviceCanAccessPeer( hDevice, hPeerDevice, value );
+        }
+
         if( context.enableParameterValidation )
         {
             auto result = context.paramValidation->zeParamValidation.zeDeviceCanAccessPeer( hDevice, hPeerDevice, value );
@@ -862,6 +972,11 @@ namespace validation_layer
 
         if( nullptr == pfnGetStatus )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeDeviceGetStatus( hDevice );
+        }
 
         if( context.enableParameterValidation )
         {
@@ -900,6 +1015,11 @@ namespace validation_layer
         if( nullptr == pfnGetGlobalTimestamps )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeDeviceGetGlobalTimestamps( hDevice, hostTimestamp, deviceTimestamp );
+        }
+
         if( context.enableParameterValidation )
         {
             auto result = context.paramValidation->zeParamValidation.zeDeviceGetGlobalTimestamps( hDevice, hostTimestamp, deviceTimestamp );
@@ -934,6 +1054,11 @@ namespace validation_layer
 
         if( nullptr == pfnCreate )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeContextCreate( hDriver, desc, phContext );
+        }
 
         if( context.enableParameterValidation )
         {
@@ -989,6 +1114,11 @@ namespace validation_layer
         if( nullptr == pfnCreateEx )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeContextCreateEx( hDriver, desc, numDevices, phDevices, phContext );
+        }
+
         if( context.enableParameterValidation )
         {
             auto result = context.paramValidation->zeParamValidation.zeContextCreateEx( hDriver, desc, numDevices, phDevices, phContext );
@@ -1031,6 +1161,11 @@ namespace validation_layer
         if( nullptr == pfnDestroy )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeContextDestroy( hContext );
+        }
+
         if( context.enableParameterValidation )
         {
             auto result = context.paramValidation->zeParamValidation.zeContextDestroy( hContext );
@@ -1063,6 +1198,11 @@ namespace validation_layer
 
         if( nullptr == pfnGetStatus )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeContextGetStatus( hContext );
+        }
 
         if( context.enableParameterValidation )
         {
@@ -1099,6 +1239,11 @@ namespace validation_layer
 
         if( nullptr == pfnCreate )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeCommandQueueCreate( hContext, hDevice, desc, phCommandQueue );
+        }
 
         if( context.enableParameterValidation )
         {
@@ -1142,6 +1287,11 @@ namespace validation_layer
         if( nullptr == pfnDestroy )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeCommandQueueDestroy( hCommandQueue );
+        }
+
         if( context.enableParameterValidation )
         {
             auto result = context.paramValidation->zeParamValidation.zeCommandQueueDestroy( hCommandQueue );
@@ -1178,6 +1328,11 @@ namespace validation_layer
 
         if( nullptr == pfnExecuteCommandLists )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeCommandQueueExecuteCommandLists( hCommandQueue, numCommandLists, phCommandLists, hFence );
+        }
 
         if( context.enableParameterValidation )
         {
@@ -1219,6 +1374,11 @@ namespace validation_layer
         if( nullptr == pfnSynchronize )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeCommandQueueSynchronize( hCommandQueue, timeout );
+        }
+
         if( context.enableParameterValidation )
         {
             auto result = context.paramValidation->zeParamValidation.zeCommandQueueSynchronize( hCommandQueue, timeout );
@@ -1253,6 +1413,11 @@ namespace validation_layer
         if( nullptr == pfnGetOrdinal )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeCommandQueueGetOrdinal( hCommandQueue, pOrdinal );
+        }
+
         if( context.enableParameterValidation )
         {
             auto result = context.paramValidation->zeParamValidation.zeCommandQueueGetOrdinal( hCommandQueue, pOrdinal );
@@ -1286,6 +1451,11 @@ namespace validation_layer
 
         if( nullptr == pfnGetIndex )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeCommandQueueGetIndex( hCommandQueue, pIndex );
+        }
 
         if( context.enableParameterValidation )
         {
@@ -1322,6 +1492,11 @@ namespace validation_layer
 
         if( nullptr == pfnCreate )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeCommandListCreate( hContext, hDevice, desc, phCommandList );
+        }
 
         if( context.enableParameterValidation )
         {
@@ -1368,6 +1543,11 @@ namespace validation_layer
         if( nullptr == pfnCreateImmediate )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeCommandListCreateImmediate( hContext, hDevice, altdesc, phCommandList );
+        }
+
         if( context.enableParameterValidation )
         {
             auto result = context.paramValidation->zeParamValidation.zeCommandListCreateImmediate( hContext, hDevice, altdesc, phCommandList );
@@ -1408,6 +1588,11 @@ namespace validation_layer
         if( nullptr == pfnDestroy )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeCommandListDestroy( hCommandList );
+        }
+
         if( context.enableParameterValidation )
         {
             auto result = context.paramValidation->zeParamValidation.zeCommandListDestroy( hCommandList );
@@ -1441,6 +1626,11 @@ namespace validation_layer
         if( nullptr == pfnClose )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeCommandListClose( hCommandList );
+        }
+
         if( context.enableParameterValidation )
         {
             auto result = context.paramValidation->zeParamValidation.zeCommandListClose( hCommandList );
@@ -1473,6 +1663,11 @@ namespace validation_layer
 
         if( nullptr == pfnReset )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeCommandListReset( hCommandList );
+        }
 
         if( context.enableParameterValidation )
         {
@@ -1514,6 +1709,11 @@ namespace validation_layer
         if( nullptr == pfnAppendWriteGlobalTimestamp )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeCommandListAppendWriteGlobalTimestamp( hCommandList, dstptr, hSignalEvent, numWaitEvents, phWaitEvents );
+        }
+
         if( context.enableParameterValidation )
         {
             auto result = context.paramValidation->zeParamValidation.zeCommandListAppendWriteGlobalTimestamp( hCommandList, dstptr, hSignalEvent, numWaitEvents, phWaitEvents );
@@ -1554,6 +1754,11 @@ namespace validation_layer
         if( nullptr == pfnHostSynchronize )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeCommandListHostSynchronize( hCommandList, timeout );
+        }
+
         if( context.enableParameterValidation )
         {
             auto result = context.paramValidation->zeParamValidation.zeCommandListHostSynchronize( hCommandList, timeout );
@@ -1587,6 +1792,11 @@ namespace validation_layer
 
         if( nullptr == pfnGetDeviceHandle )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeCommandListGetDeviceHandle( hCommandList, phDevice );
+        }
 
         if( context.enableParameterValidation )
         {
@@ -1622,6 +1832,11 @@ namespace validation_layer
         if( nullptr == pfnGetContextHandle )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeCommandListGetContextHandle( hCommandList, phContext );
+        }
+
         if( context.enableParameterValidation )
         {
             auto result = context.paramValidation->zeParamValidation.zeCommandListGetContextHandle( hCommandList, phContext );
@@ -1655,6 +1870,11 @@ namespace validation_layer
 
         if( nullptr == pfnGetOrdinal )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeCommandListGetOrdinal( hCommandList, pOrdinal );
+        }
 
         if( context.enableParameterValidation )
         {
@@ -1691,6 +1911,11 @@ namespace validation_layer
         if( nullptr == pfnImmediateGetIndex )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeCommandListImmediateGetIndex( hCommandListImmediate, pIndex );
+        }
+
         if( context.enableParameterValidation )
         {
             auto result = context.paramValidation->zeParamValidation.zeCommandListImmediateGetIndex( hCommandListImmediate, pIndex );
@@ -1725,6 +1950,11 @@ namespace validation_layer
 
         if( nullptr == pfnIsImmediate )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeCommandListIsImmediate( hCommandList, pIsImmediate );
+        }
 
         if( context.enableParameterValidation )
         {
@@ -1763,6 +1993,11 @@ namespace validation_layer
 
         if( nullptr == pfnAppendBarrier )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeCommandListAppendBarrier( hCommandList, hSignalEvent, numWaitEvents, phWaitEvents );
+        }
 
         if( context.enableParameterValidation )
         {
@@ -1805,6 +2040,11 @@ namespace validation_layer
         if( nullptr == pfnAppendMemoryRangesBarrier )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeCommandListAppendMemoryRangesBarrier( hCommandList, numRanges, pRangeSizes, pRanges, hSignalEvent, numWaitEvents, phWaitEvents );
+        }
+
         if( context.enableParameterValidation )
         {
             auto result = context.paramValidation->zeParamValidation.zeCommandListAppendMemoryRangesBarrier( hCommandList, numRanges, pRangeSizes, pRanges, hSignalEvent, numWaitEvents, phWaitEvents );
@@ -1838,6 +2078,11 @@ namespace validation_layer
 
         if( nullptr == pfnSystemBarrier )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeContextSystemBarrier( hContext, hDevice );
+        }
 
         if( context.enableParameterValidation )
         {
@@ -1880,6 +2125,11 @@ namespace validation_layer
         if( nullptr == pfnAppendMemoryCopy )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeCommandListAppendMemoryCopy( hCommandList, dstptr, srcptr, size, hSignalEvent, numWaitEvents, phWaitEvents );
+        }
+
         if( context.enableParameterValidation )
         {
             auto result = context.paramValidation->zeParamValidation.zeCommandListAppendMemoryCopy( hCommandList, dstptr, srcptr, size, hSignalEvent, numWaitEvents, phWaitEvents );
@@ -1921,6 +2171,11 @@ namespace validation_layer
 
         if( nullptr == pfnAppendMemoryFill )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeCommandListAppendMemoryFill( hCommandList, ptr, pattern, pattern_size, size, hSignalEvent, numWaitEvents, phWaitEvents );
+        }
 
         if( context.enableParameterValidation )
         {
@@ -1972,6 +2227,11 @@ namespace validation_layer
         if( nullptr == pfnAppendMemoryCopyRegion )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeCommandListAppendMemoryCopyRegion( hCommandList, dstptr, dstRegion, dstPitch, dstSlicePitch, srcptr, srcRegion, srcPitch, srcSlicePitch, hSignalEvent, numWaitEvents, phWaitEvents );
+        }
+
         if( context.enableParameterValidation )
         {
             auto result = context.paramValidation->zeParamValidation.zeCommandListAppendMemoryCopyRegion( hCommandList, dstptr, dstRegion, dstPitch, dstSlicePitch, srcptr, srcRegion, srcPitch, srcSlicePitch, hSignalEvent, numWaitEvents, phWaitEvents );
@@ -2014,6 +2274,11 @@ namespace validation_layer
         if( nullptr == pfnAppendMemoryCopyFromContext )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeCommandListAppendMemoryCopyFromContext( hCommandList, dstptr, hContextSrc, srcptr, size, hSignalEvent, numWaitEvents, phWaitEvents );
+        }
+
         if( context.enableParameterValidation )
         {
             auto result = context.paramValidation->zeParamValidation.zeCommandListAppendMemoryCopyFromContext( hCommandList, dstptr, hContextSrc, srcptr, size, hSignalEvent, numWaitEvents, phWaitEvents );
@@ -2053,6 +2318,11 @@ namespace validation_layer
 
         if( nullptr == pfnAppendImageCopy )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeCommandListAppendImageCopy( hCommandList, hDstImage, hSrcImage, hSignalEvent, numWaitEvents, phWaitEvents );
+        }
 
         if( context.enableParameterValidation )
         {
@@ -2096,6 +2366,11 @@ namespace validation_layer
         if( nullptr == pfnAppendImageCopyRegion )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeCommandListAppendImageCopyRegion( hCommandList, hDstImage, hSrcImage, pDstRegion, pSrcRegion, hSignalEvent, numWaitEvents, phWaitEvents );
+        }
+
         if( context.enableParameterValidation )
         {
             auto result = context.paramValidation->zeParamValidation.zeCommandListAppendImageCopyRegion( hCommandList, hDstImage, hSrcImage, pDstRegion, pSrcRegion, hSignalEvent, numWaitEvents, phWaitEvents );
@@ -2136,6 +2411,11 @@ namespace validation_layer
 
         if( nullptr == pfnAppendImageCopyToMemory )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeCommandListAppendImageCopyToMemory( hCommandList, dstptr, hSrcImage, pSrcRegion, hSignalEvent, numWaitEvents, phWaitEvents );
+        }
 
         if( context.enableParameterValidation )
         {
@@ -2178,6 +2458,11 @@ namespace validation_layer
         if( nullptr == pfnAppendImageCopyFromMemory )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeCommandListAppendImageCopyFromMemory( hCommandList, hDstImage, srcptr, pDstRegion, hSignalEvent, numWaitEvents, phWaitEvents );
+        }
+
         if( context.enableParameterValidation )
         {
             auto result = context.paramValidation->zeParamValidation.zeCommandListAppendImageCopyFromMemory( hCommandList, hDstImage, srcptr, pDstRegion, hSignalEvent, numWaitEvents, phWaitEvents );
@@ -2212,6 +2497,11 @@ namespace validation_layer
 
         if( nullptr == pfnAppendMemoryPrefetch )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeCommandListAppendMemoryPrefetch( hCommandList, ptr, size );
+        }
 
         if( context.enableParameterValidation )
         {
@@ -2249,6 +2539,11 @@ namespace validation_layer
 
         if( nullptr == pfnAppendMemAdvise )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeCommandListAppendMemAdvise( hCommandList, hDevice, ptr, size, advice );
+        }
 
         if( context.enableParameterValidation )
         {
@@ -2290,6 +2585,11 @@ namespace validation_layer
 
         if( nullptr == pfnCreate )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeEventPoolCreate( hContext, desc, numDevices, phDevices, phEventPool );
+        }
 
         if( context.enableParameterValidation )
         {
@@ -2333,6 +2633,11 @@ namespace validation_layer
         if( nullptr == pfnDestroy )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeEventPoolDestroy( hEventPool );
+        }
+
         if( context.enableParameterValidation )
         {
             auto result = context.paramValidation->zeParamValidation.zeEventPoolDestroy( hEventPool );
@@ -2367,6 +2672,11 @@ namespace validation_layer
 
         if( nullptr == pfnCreate )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeEventCreate( hEventPool, desc, phEvent );
+        }
 
         if( context.enableParameterValidation )
         {
@@ -2410,6 +2720,11 @@ namespace validation_layer
         if( nullptr == pfnDestroy )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeEventDestroy( hEvent );
+        }
+
         if( context.enableParameterValidation )
         {
             auto result = context.paramValidation->zeParamValidation.zeEventDestroy( hEvent );
@@ -2443,6 +2758,11 @@ namespace validation_layer
 
         if( nullptr == pfnGetIpcHandle )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeEventPoolGetIpcHandle( hEventPool, phIpc );
+        }
 
         if( context.enableParameterValidation )
         {
@@ -2483,6 +2803,11 @@ namespace validation_layer
         if( nullptr == pfnPutIpcHandle )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeEventPoolPutIpcHandle( hContext, hIpc );
+        }
+
         if( context.enableParameterValidation )
         {
             auto result = context.paramValidation->zeParamValidation.zeEventPoolPutIpcHandle( hContext, hIpc );
@@ -2519,6 +2844,11 @@ namespace validation_layer
         if( nullptr == pfnOpenIpcHandle )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeEventPoolOpenIpcHandle( hContext, hIpc, phEventPool );
+        }
+
         if( context.enableParameterValidation )
         {
             auto result = context.paramValidation->zeParamValidation.zeEventPoolOpenIpcHandle( hContext, hIpc, phEventPool );
@@ -2551,6 +2881,11 @@ namespace validation_layer
 
         if( nullptr == pfnCloseIpcHandle )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeEventPoolCloseIpcHandle( hEventPool );
+        }
 
         if( context.enableParameterValidation )
         {
@@ -2585,6 +2920,11 @@ namespace validation_layer
 
         if( nullptr == pfnAppendSignalEvent )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeCommandListAppendSignalEvent( hCommandList, hEvent );
+        }
 
         if( context.enableParameterValidation )
         {
@@ -2622,6 +2962,11 @@ namespace validation_layer
         if( nullptr == pfnAppendWaitOnEvents )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeCommandListAppendWaitOnEvents( hCommandList, numEvents, phEvents );
+        }
+
         if( context.enableParameterValidation )
         {
             auto result = context.paramValidation->zeParamValidation.zeCommandListAppendWaitOnEvents( hCommandList, numEvents, phEvents );
@@ -2654,6 +2999,11 @@ namespace validation_layer
 
         if( nullptr == pfnHostSignal )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeEventHostSignal( hEvent );
+        }
 
         if( context.enableParameterValidation )
         {
@@ -2695,6 +3045,11 @@ namespace validation_layer
         if( nullptr == pfnHostSynchronize )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeEventHostSynchronize( hEvent, timeout );
+        }
+
         if( context.enableParameterValidation )
         {
             auto result = context.paramValidation->zeParamValidation.zeEventHostSynchronize( hEvent, timeout );
@@ -2727,6 +3082,11 @@ namespace validation_layer
 
         if( nullptr == pfnQueryStatus )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeEventQueryStatus( hEvent );
+        }
 
         if( context.enableParameterValidation )
         {
@@ -2762,6 +3122,11 @@ namespace validation_layer
         if( nullptr == pfnAppendEventReset )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeCommandListAppendEventReset( hCommandList, hEvent );
+        }
+
         if( context.enableParameterValidation )
         {
             auto result = context.paramValidation->zeParamValidation.zeCommandListAppendEventReset( hCommandList, hEvent );
@@ -2794,6 +3159,11 @@ namespace validation_layer
 
         if( nullptr == pfnHostReset )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeEventHostReset( hEvent );
+        }
 
         if( context.enableParameterValidation )
         {
@@ -2828,6 +3198,11 @@ namespace validation_layer
 
         if( nullptr == pfnQueryKernelTimestamp )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeEventQueryKernelTimestamp( hEvent, dstptr );
+        }
 
         if( context.enableParameterValidation )
         {
@@ -2874,6 +3249,11 @@ namespace validation_layer
         if( nullptr == pfnAppendQueryKernelTimestamps )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeCommandListAppendQueryKernelTimestamps( hCommandList, numEvents, phEvents, dstptr, pOffsets, hSignalEvent, numWaitEvents, phWaitEvents );
+        }
+
         if( context.enableParameterValidation )
         {
             auto result = context.paramValidation->zeParamValidation.zeCommandListAppendQueryKernelTimestamps( hCommandList, numEvents, phEvents, dstptr, pOffsets, hSignalEvent, numWaitEvents, phWaitEvents );
@@ -2907,6 +3287,11 @@ namespace validation_layer
 
         if( nullptr == pfnGetEventPool )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeEventGetEventPool( hEvent, phEventPool );
+        }
 
         if( context.enableParameterValidation )
         {
@@ -2944,6 +3329,11 @@ namespace validation_layer
         if( nullptr == pfnGetSignalScope )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeEventGetSignalScope( hEvent, pSignalScope );
+        }
+
         if( context.enableParameterValidation )
         {
             auto result = context.paramValidation->zeParamValidation.zeEventGetSignalScope( hEvent, pSignalScope );
@@ -2980,6 +3370,11 @@ namespace validation_layer
         if( nullptr == pfnGetWaitScope )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeEventGetWaitScope( hEvent, pWaitScope );
+        }
+
         if( context.enableParameterValidation )
         {
             auto result = context.paramValidation->zeParamValidation.zeEventGetWaitScope( hEvent, pWaitScope );
@@ -3013,6 +3408,11 @@ namespace validation_layer
 
         if( nullptr == pfnGetContextHandle )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeEventPoolGetContextHandle( hEventPool, phContext );
+        }
 
         if( context.enableParameterValidation )
         {
@@ -3049,6 +3449,11 @@ namespace validation_layer
         if( nullptr == pfnGetFlags )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeEventPoolGetFlags( hEventPool, pFlags );
+        }
+
         if( context.enableParameterValidation )
         {
             auto result = context.paramValidation->zeParamValidation.zeEventPoolGetFlags( hEventPool, pFlags );
@@ -3083,6 +3488,11 @@ namespace validation_layer
 
         if( nullptr == pfnCreate )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeFenceCreate( hCommandQueue, desc, phFence );
+        }
 
         if( context.enableParameterValidation )
         {
@@ -3126,6 +3536,11 @@ namespace validation_layer
         if( nullptr == pfnDestroy )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeFenceDestroy( hFence );
+        }
+
         if( context.enableParameterValidation )
         {
             auto result = context.paramValidation->zeParamValidation.zeFenceDestroy( hFence );
@@ -3166,6 +3581,11 @@ namespace validation_layer
         if( nullptr == pfnHostSynchronize )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeFenceHostSynchronize( hFence, timeout );
+        }
+
         if( context.enableParameterValidation )
         {
             auto result = context.paramValidation->zeParamValidation.zeFenceHostSynchronize( hFence, timeout );
@@ -3199,6 +3619,11 @@ namespace validation_layer
         if( nullptr == pfnQueryStatus )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeFenceQueryStatus( hFence );
+        }
+
         if( context.enableParameterValidation )
         {
             auto result = context.paramValidation->zeParamValidation.zeFenceQueryStatus( hFence );
@@ -3231,6 +3656,11 @@ namespace validation_layer
 
         if( nullptr == pfnReset )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeFenceReset( hFence );
+        }
 
         if( context.enableParameterValidation )
         {
@@ -3267,6 +3697,11 @@ namespace validation_layer
         if( nullptr == pfnGetProperties )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeImageGetProperties( hDevice, desc, pImageProperties );
+        }
+
         if( context.enableParameterValidation )
         {
             auto result = context.paramValidation->zeParamValidation.zeImageGetProperties( hDevice, desc, pImageProperties );
@@ -3302,6 +3737,11 @@ namespace validation_layer
 
         if( nullptr == pfnCreate )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeImageCreate( hContext, hDevice, desc, phImage );
+        }
 
         if( context.enableParameterValidation )
         {
@@ -3345,6 +3785,11 @@ namespace validation_layer
         if( nullptr == pfnDestroy )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeImageDestroy( hImage );
+        }
+
         if( context.enableParameterValidation )
         {
             auto result = context.paramValidation->zeParamValidation.zeImageDestroy( hImage );
@@ -3386,6 +3831,11 @@ namespace validation_layer
         if( nullptr == pfnAllocShared )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeMemAllocShared( hContext, device_desc, host_desc, size, alignment, hDevice, pptr );
+        }
+
         if( context.enableParameterValidation )
         {
             auto result = context.paramValidation->zeParamValidation.zeMemAllocShared( hContext, device_desc, host_desc, size, alignment, hDevice, pptr );
@@ -3426,6 +3876,11 @@ namespace validation_layer
         if( nullptr == pfnAllocDevice )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeMemAllocDevice( hContext, device_desc, size, alignment, hDevice, pptr );
+        }
+
         if( context.enableParameterValidation )
         {
             auto result = context.paramValidation->zeParamValidation.zeMemAllocDevice( hContext, device_desc, size, alignment, hDevice, pptr );
@@ -3465,6 +3920,11 @@ namespace validation_layer
         if( nullptr == pfnAllocHost )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeMemAllocHost( hContext, host_desc, size, alignment, pptr );
+        }
+
         if( context.enableParameterValidation )
         {
             auto result = context.paramValidation->zeParamValidation.zeMemAllocHost( hContext, host_desc, size, alignment, pptr );
@@ -3498,6 +3958,11 @@ namespace validation_layer
 
         if( nullptr == pfnFree )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeMemFree( hContext, ptr );
+        }
 
         if( context.enableParameterValidation )
         {
@@ -3535,6 +4000,11 @@ namespace validation_layer
         if( nullptr == pfnGetAllocProperties )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeMemGetAllocProperties( hContext, ptr, pMemAllocProperties, phDevice );
+        }
+
         if( context.enableParameterValidation )
         {
             auto result = context.paramValidation->zeParamValidation.zeMemGetAllocProperties( hContext, ptr, pMemAllocProperties, phDevice );
@@ -3571,6 +4041,11 @@ namespace validation_layer
         if( nullptr == pfnGetAddressRange )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeMemGetAddressRange( hContext, ptr, pBase, pSize );
+        }
+
         if( context.enableParameterValidation )
         {
             auto result = context.paramValidation->zeParamValidation.zeMemGetAddressRange( hContext, ptr, pBase, pSize );
@@ -3605,6 +4080,11 @@ namespace validation_layer
 
         if( nullptr == pfnGetIpcHandle )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeMemGetIpcHandle( hContext, ptr, pIpcHandle );
+        }
 
         if( context.enableParameterValidation )
         {
@@ -3645,6 +4125,11 @@ namespace validation_layer
         if( nullptr == pfnGetIpcHandleFromFileDescriptorExp )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeMemGetIpcHandleFromFileDescriptorExp( hContext, handle, pIpcHandle );
+        }
+
         if( context.enableParameterValidation )
         {
             auto result = context.paramValidation->zeParamValidation.zeMemGetIpcHandleFromFileDescriptorExp( hContext, handle, pIpcHandle );
@@ -3684,6 +4169,11 @@ namespace validation_layer
         if( nullptr == pfnGetFileDescriptorFromIpcHandleExp )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeMemGetFileDescriptorFromIpcHandleExp( hContext, ipcHandle, pHandle );
+        }
+
         if( context.enableParameterValidation )
         {
             auto result = context.paramValidation->zeParamValidation.zeMemGetFileDescriptorFromIpcHandleExp( hContext, ipcHandle, pHandle );
@@ -3721,6 +4211,11 @@ namespace validation_layer
 
         if( nullptr == pfnPutIpcHandle )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeMemPutIpcHandle( hContext, handle );
+        }
 
         if( context.enableParameterValidation )
         {
@@ -3760,6 +4255,11 @@ namespace validation_layer
         if( nullptr == pfnOpenIpcHandle )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeMemOpenIpcHandle( hContext, hDevice, handle, flags, pptr );
+        }
+
         if( context.enableParameterValidation )
         {
             auto result = context.paramValidation->zeParamValidation.zeMemOpenIpcHandle( hContext, hDevice, handle, flags, pptr );
@@ -3793,6 +4293,11 @@ namespace validation_layer
 
         if( nullptr == pfnCloseIpcHandle )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeMemCloseIpcHandle( hContext, ptr );
+        }
 
         if( context.enableParameterValidation )
         {
@@ -3832,6 +4337,11 @@ namespace validation_layer
         if( nullptr == pfnSetAtomicAccessAttributeExp )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeMemSetAtomicAccessAttributeExp( hContext, hDevice, ptr, size, attr );
+        }
+
         if( context.enableParameterValidation )
         {
             auto result = context.paramValidation->zeParamValidation.zeMemSetAtomicAccessAttributeExp( hContext, hDevice, ptr, size, attr );
@@ -3868,6 +4378,11 @@ namespace validation_layer
 
         if( nullptr == pfnGetAtomicAccessAttributeExp )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeMemGetAtomicAccessAttributeExp( hContext, hDevice, ptr, size, pAttr );
+        }
 
         if( context.enableParameterValidation )
         {
@@ -3909,6 +4424,11 @@ namespace validation_layer
 
         if( nullptr == pfnCreate )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeModuleCreate( hContext, hDevice, desc, phModule, phBuildLog );
+        }
 
         if( context.enableParameterValidation )
         {
@@ -3957,6 +4477,11 @@ namespace validation_layer
         if( nullptr == pfnDestroy )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeModuleDestroy( hModule );
+        }
+
         if( context.enableParameterValidation )
         {
             auto result = context.paramValidation->zeParamValidation.zeModuleDestroy( hModule );
@@ -3993,6 +4518,11 @@ namespace validation_layer
         if( nullptr == pfnDynamicLink )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeModuleDynamicLink( numModules, phModules, phLinkLog );
+        }
+
         if( context.enableParameterValidation )
         {
             auto result = context.paramValidation->zeParamValidation.zeModuleDynamicLink( numModules, phModules, phLinkLog );
@@ -4025,6 +4555,11 @@ namespace validation_layer
 
         if( nullptr == pfnDestroy )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeModuleBuildLogDestroy( hModuleBuildLog );
+        }
 
         if( context.enableParameterValidation )
         {
@@ -4061,6 +4596,11 @@ namespace validation_layer
         if( nullptr == pfnGetString )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeModuleBuildLogGetString( hModuleBuildLog, pSize, pBuildLog );
+        }
+
         if( context.enableParameterValidation )
         {
             auto result = context.paramValidation->zeParamValidation.zeModuleBuildLogGetString( hModuleBuildLog, pSize, pBuildLog );
@@ -4095,6 +4635,11 @@ namespace validation_layer
 
         if( nullptr == pfnGetNativeBinary )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeModuleGetNativeBinary( hModule, pSize, pModuleNativeBinary );
+        }
 
         if( context.enableParameterValidation )
         {
@@ -4131,6 +4676,11 @@ namespace validation_layer
 
         if( nullptr == pfnGetGlobalPointer )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeModuleGetGlobalPointer( hModule, pGlobalName, pSize, pptr );
+        }
 
         if( context.enableParameterValidation )
         {
@@ -4173,6 +4723,11 @@ namespace validation_layer
         if( nullptr == pfnGetKernelNames )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeModuleGetKernelNames( hModule, pCount, pNames );
+        }
+
         if( context.enableParameterValidation )
         {
             auto result = context.paramValidation->zeParamValidation.zeModuleGetKernelNames( hModule, pCount, pNames );
@@ -4206,6 +4761,11 @@ namespace validation_layer
 
         if( nullptr == pfnGetProperties )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeModuleGetProperties( hModule, pModuleProperties );
+        }
 
         if( context.enableParameterValidation )
         {
@@ -4241,6 +4801,11 @@ namespace validation_layer
 
         if( nullptr == pfnCreate )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeKernelCreate( hModule, desc, phKernel );
+        }
 
         if( context.enableParameterValidation )
         {
@@ -4284,6 +4849,11 @@ namespace validation_layer
         if( nullptr == pfnDestroy )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeKernelDestroy( hKernel );
+        }
+
         if( context.enableParameterValidation )
         {
             auto result = context.paramValidation->zeParamValidation.zeKernelDestroy( hKernel );
@@ -4318,6 +4888,11 @@ namespace validation_layer
 
         if( nullptr == pfnGetFunctionPointer )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeModuleGetFunctionPointer( hModule, pFunctionName, pfnFunction );
+        }
 
         if( context.enableParameterValidation )
         {
@@ -4354,6 +4929,11 @@ namespace validation_layer
 
         if( nullptr == pfnSetGroupSize )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeKernelSetGroupSize( hKernel, groupSizeX, groupSizeY, groupSizeZ );
+        }
 
         if( context.enableParameterValidation )
         {
@@ -4394,6 +4974,11 @@ namespace validation_layer
         if( nullptr == pfnSuggestGroupSize )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeKernelSuggestGroupSize( hKernel, globalSizeX, globalSizeY, globalSizeZ, groupSizeX, groupSizeY, groupSizeZ );
+        }
+
         if( context.enableParameterValidation )
         {
             auto result = context.paramValidation->zeParamValidation.zeKernelSuggestGroupSize( hKernel, globalSizeX, globalSizeY, globalSizeZ, groupSizeX, groupSizeY, groupSizeZ );
@@ -4427,6 +5012,11 @@ namespace validation_layer
 
         if( nullptr == pfnSuggestMaxCooperativeGroupCount )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeKernelSuggestMaxCooperativeGroupCount( hKernel, totalGroupCount );
+        }
 
         if( context.enableParameterValidation )
         {
@@ -4465,6 +5055,11 @@ namespace validation_layer
         if( nullptr == pfnSetArgumentValue )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeKernelSetArgumentValue( hKernel, argIndex, argSize, pArgValue );
+        }
+
         if( context.enableParameterValidation )
         {
             auto result = context.paramValidation->zeParamValidation.zeKernelSetArgumentValue( hKernel, argIndex, argSize, pArgValue );
@@ -4499,6 +5094,11 @@ namespace validation_layer
         if( nullptr == pfnSetIndirectAccess )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeKernelSetIndirectAccess( hKernel, flags );
+        }
+
         if( context.enableParameterValidation )
         {
             auto result = context.paramValidation->zeParamValidation.zeKernelSetIndirectAccess( hKernel, flags );
@@ -4532,6 +5132,11 @@ namespace validation_layer
 
         if( nullptr == pfnGetIndirectAccess )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeKernelGetIndirectAccess( hKernel, pFlags );
+        }
 
         if( context.enableParameterValidation )
         {
@@ -4575,6 +5180,11 @@ namespace validation_layer
         if( nullptr == pfnGetSourceAttributes )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeKernelGetSourceAttributes( hKernel, pSize, pString );
+        }
+
         if( context.enableParameterValidation )
         {
             auto result = context.paramValidation->zeParamValidation.zeKernelGetSourceAttributes( hKernel, pSize, pString );
@@ -4610,6 +5220,11 @@ namespace validation_layer
         if( nullptr == pfnSetCacheConfig )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeKernelSetCacheConfig( hKernel, flags );
+        }
+
         if( context.enableParameterValidation )
         {
             auto result = context.paramValidation->zeParamValidation.zeKernelSetCacheConfig( hKernel, flags );
@@ -4643,6 +5258,11 @@ namespace validation_layer
 
         if( nullptr == pfnGetProperties )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeKernelGetProperties( hKernel, pKernelProperties );
+        }
 
         if( context.enableParameterValidation )
         {
@@ -4679,6 +5299,11 @@ namespace validation_layer
 
         if( nullptr == pfnGetName )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeKernelGetName( hKernel, pSize, pName );
+        }
 
         if( context.enableParameterValidation )
         {
@@ -4720,6 +5345,11 @@ namespace validation_layer
         if( nullptr == pfnAppendLaunchKernel )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeCommandListAppendLaunchKernel( hCommandList, hKernel, pLaunchFuncArgs, hSignalEvent, numWaitEvents, phWaitEvents );
+        }
+
         if( context.enableParameterValidation )
         {
             auto result = context.paramValidation->zeParamValidation.zeCommandListAppendLaunchKernel( hCommandList, hKernel, pLaunchFuncArgs, hSignalEvent, numWaitEvents, phWaitEvents );
@@ -4759,6 +5389,11 @@ namespace validation_layer
 
         if( nullptr == pfnAppendLaunchCooperativeKernel )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeCommandListAppendLaunchCooperativeKernel( hCommandList, hKernel, pLaunchFuncArgs, hSignalEvent, numWaitEvents, phWaitEvents );
+        }
 
         if( context.enableParameterValidation )
         {
@@ -4800,6 +5435,11 @@ namespace validation_layer
 
         if( nullptr == pfnAppendLaunchKernelIndirect )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeCommandListAppendLaunchKernelIndirect( hCommandList, hKernel, pLaunchArgumentsBuffer, hSignalEvent, numWaitEvents, phWaitEvents );
+        }
 
         if( context.enableParameterValidation )
         {
@@ -4846,6 +5486,11 @@ namespace validation_layer
         if( nullptr == pfnAppendLaunchMultipleKernelsIndirect )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeCommandListAppendLaunchMultipleKernelsIndirect( hCommandList, numKernels, phKernels, pCountBuffer, pLaunchArgumentsBuffer, hSignalEvent, numWaitEvents, phWaitEvents );
+        }
+
         if( context.enableParameterValidation )
         {
             auto result = context.paramValidation->zeParamValidation.zeCommandListAppendLaunchMultipleKernelsIndirect( hCommandList, numKernels, phKernels, pCountBuffer, pLaunchArgumentsBuffer, hSignalEvent, numWaitEvents, phWaitEvents );
@@ -4881,6 +5526,11 @@ namespace validation_layer
 
         if( nullptr == pfnMakeMemoryResident )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeContextMakeMemoryResident( hContext, hDevice, ptr, size );
+        }
 
         if( context.enableParameterValidation )
         {
@@ -4918,6 +5568,11 @@ namespace validation_layer
         if( nullptr == pfnEvictMemory )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeContextEvictMemory( hContext, hDevice, ptr, size );
+        }
+
         if( context.enableParameterValidation )
         {
             auto result = context.paramValidation->zeParamValidation.zeContextEvictMemory( hContext, hDevice, ptr, size );
@@ -4952,6 +5607,11 @@ namespace validation_layer
 
         if( nullptr == pfnMakeImageResident )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeContextMakeImageResident( hContext, hDevice, hImage );
+        }
 
         if( context.enableParameterValidation )
         {
@@ -4988,6 +5648,11 @@ namespace validation_layer
         if( nullptr == pfnEvictImage )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeContextEvictImage( hContext, hDevice, hImage );
+        }
+
         if( context.enableParameterValidation )
         {
             auto result = context.paramValidation->zeParamValidation.zeContextEvictImage( hContext, hDevice, hImage );
@@ -5023,6 +5688,11 @@ namespace validation_layer
 
         if( nullptr == pfnCreate )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeSamplerCreate( hContext, hDevice, desc, phSampler );
+        }
 
         if( context.enableParameterValidation )
         {
@@ -5066,6 +5736,11 @@ namespace validation_layer
         if( nullptr == pfnDestroy )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeSamplerDestroy( hSampler );
+        }
+
         if( context.enableParameterValidation )
         {
             auto result = context.paramValidation->zeParamValidation.zeSamplerDestroy( hSampler );
@@ -5103,6 +5778,11 @@ namespace validation_layer
         if( nullptr == pfnReserve )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeVirtualMemReserve( hContext, pStart, size, pptr );
+        }
+
         if( context.enableParameterValidation )
         {
             auto result = context.paramValidation->zeParamValidation.zeVirtualMemReserve( hContext, pStart, size, pptr );
@@ -5137,6 +5817,11 @@ namespace validation_layer
 
         if( nullptr == pfnFree )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeVirtualMemFree( hContext, ptr, size );
+        }
 
         if( context.enableParameterValidation )
         {
@@ -5175,6 +5860,11 @@ namespace validation_layer
         if( nullptr == pfnQueryPageSize )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeVirtualMemQueryPageSize( hContext, hDevice, size, pagesize );
+        }
+
         if( context.enableParameterValidation )
         {
             auto result = context.paramValidation->zeParamValidation.zeVirtualMemQueryPageSize( hContext, hDevice, size, pagesize );
@@ -5210,6 +5900,11 @@ namespace validation_layer
 
         if( nullptr == pfnCreate )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zePhysicalMemCreate( hContext, hDevice, desc, phPhysicalMemory );
+        }
 
         if( context.enableParameterValidation )
         {
@@ -5254,6 +5949,11 @@ namespace validation_layer
         if( nullptr == pfnDestroy )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zePhysicalMemDestroy( hContext, hPhysicalMemory );
+        }
+
         if( context.enableParameterValidation )
         {
             auto result = context.paramValidation->zeParamValidation.zePhysicalMemDestroy( hContext, hPhysicalMemory );
@@ -5295,6 +5995,11 @@ namespace validation_layer
         if( nullptr == pfnMap )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeVirtualMemMap( hContext, ptr, size, hPhysicalMemory, offset, access );
+        }
+
         if( context.enableParameterValidation )
         {
             auto result = context.paramValidation->zeParamValidation.zeVirtualMemMap( hContext, ptr, size, hPhysicalMemory, offset, access );
@@ -5329,6 +6034,11 @@ namespace validation_layer
 
         if( nullptr == pfnUnmap )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeVirtualMemUnmap( hContext, ptr, size );
+        }
 
         if( context.enableParameterValidation )
         {
@@ -5366,6 +6076,11 @@ namespace validation_layer
 
         if( nullptr == pfnSetAccessAttribute )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeVirtualMemSetAccessAttribute( hContext, ptr, size, access );
+        }
 
         if( context.enableParameterValidation )
         {
@@ -5405,6 +6120,11 @@ namespace validation_layer
         if( nullptr == pfnGetAccessAttribute )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeVirtualMemGetAccessAttribute( hContext, ptr, size, access, outSize );
+        }
+
         if( context.enableParameterValidation )
         {
             auto result = context.paramValidation->zeParamValidation.zeVirtualMemGetAccessAttribute( hContext, ptr, size, access, outSize );
@@ -5440,6 +6160,11 @@ namespace validation_layer
 
         if( nullptr == pfnSetGlobalOffsetExp )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeKernelSetGlobalOffsetExp( hKernel, offsetX, offsetY, offsetZ );
+        }
 
         if( context.enableParameterValidation )
         {
@@ -5479,6 +6204,11 @@ namespace validation_layer
         if( nullptr == pfnReserveCacheExt )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeDeviceReserveCacheExt( hDevice, cacheLevel, cacheReservationSize );
+        }
+
         if( context.enableParameterValidation )
         {
             auto result = context.paramValidation->zeParamValidation.zeDeviceReserveCacheExt( hDevice, cacheLevel, cacheReservationSize );
@@ -5514,6 +6244,11 @@ namespace validation_layer
 
         if( nullptr == pfnSetCacheAdviceExt )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeDeviceSetCacheAdviceExt( hDevice, ptr, regionSize, cacheRegion );
+        }
 
         if( context.enableParameterValidation )
         {
@@ -5557,6 +6292,11 @@ namespace validation_layer
         if( nullptr == pfnQueryTimestampsExp )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeEventQueryTimestampsExp( hEvent, hDevice, pCount, pTimestamps );
+        }
+
         if( context.enableParameterValidation )
         {
             auto result = context.paramValidation->zeParamValidation.zeEventQueryTimestampsExp( hEvent, hDevice, pCount, pTimestamps );
@@ -5590,6 +6330,11 @@ namespace validation_layer
 
         if( nullptr == pfnGetMemoryPropertiesExp )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeImageGetMemoryPropertiesExp( hImage, pMemoryProperties );
+        }
 
         if( context.enableParameterValidation )
         {
@@ -5631,6 +6376,11 @@ namespace validation_layer
 
         if( nullptr == pfnViewCreateExt )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeImageViewCreateExt( hContext, hDevice, desc, hImage, phImageView );
+        }
 
         if( context.enableParameterValidation )
         {
@@ -5678,6 +6428,11 @@ namespace validation_layer
         if( nullptr == pfnViewCreateExp )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeImageViewCreateExp( hContext, hDevice, desc, hImage, phImageView );
+        }
+
         if( context.enableParameterValidation )
         {
             auto result = context.paramValidation->zeParamValidation.zeImageViewCreateExp( hContext, hDevice, desc, hImage, phImageView );
@@ -5721,6 +6476,11 @@ namespace validation_layer
         if( nullptr == pfnSchedulingHintExp )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeKernelSchedulingHintExp( hKernel, pHint );
+        }
+
         if( context.enableParameterValidation )
         {
             auto result = context.paramValidation->zeParamValidation.zeKernelSchedulingHintExp( hKernel, pHint );
@@ -5754,6 +6514,11 @@ namespace validation_layer
 
         if( nullptr == pfnPciGetPropertiesExt )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeDevicePciGetPropertiesExt( hDevice, pPciProperties );
+        }
 
         if( context.enableParameterValidation )
         {
@@ -5800,6 +6565,11 @@ namespace validation_layer
         if( nullptr == pfnAppendImageCopyToMemoryExt )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeCommandListAppendImageCopyToMemoryExt( hCommandList, dstptr, hSrcImage, pSrcRegion, destRowPitch, destSlicePitch, hSignalEvent, numWaitEvents, phWaitEvents );
+        }
+
         if( context.enableParameterValidation )
         {
             auto result = context.paramValidation->zeParamValidation.zeCommandListAppendImageCopyToMemoryExt( hCommandList, dstptr, hSrcImage, pSrcRegion, destRowPitch, destSlicePitch, hSignalEvent, numWaitEvents, phWaitEvents );
@@ -5845,6 +6615,11 @@ namespace validation_layer
         if( nullptr == pfnAppendImageCopyFromMemoryExt )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeCommandListAppendImageCopyFromMemoryExt( hCommandList, hDstImage, srcptr, pDstRegion, srcRowPitch, srcSlicePitch, hSignalEvent, numWaitEvents, phWaitEvents );
+        }
+
         if( context.enableParameterValidation )
         {
             auto result = context.paramValidation->zeParamValidation.zeCommandListAppendImageCopyFromMemoryExt( hCommandList, hDstImage, srcptr, pDstRegion, srcRowPitch, srcSlicePitch, hSignalEvent, numWaitEvents, phWaitEvents );
@@ -5879,6 +6654,11 @@ namespace validation_layer
 
         if( nullptr == pfnGetAllocPropertiesExt )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeImageGetAllocPropertiesExt( hContext, hImage, pImageAllocProperties );
+        }
 
         if( context.enableParameterValidation )
         {
@@ -5918,6 +6698,11 @@ namespace validation_layer
         if( nullptr == pfnInspectLinkageExt )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeModuleInspectLinkageExt( pInspectDesc, numModules, phModules, phLog );
+        }
+
         if( context.enableParameterValidation )
         {
             auto result = context.paramValidation->zeParamValidation.zeModuleInspectLinkageExt( pInspectDesc, numModules, phModules, phLog );
@@ -5952,6 +6737,11 @@ namespace validation_layer
 
         if( nullptr == pfnFreeExt )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeMemFreeExt( hContext, pMemFreeDesc, ptr );
+        }
 
         if( context.enableParameterValidation )
         {
@@ -5994,6 +6784,11 @@ namespace validation_layer
 
         if( nullptr == pfnGetExp )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeFabricVertexGetExp( hDriver, pCount, phVertices );
+        }
 
         if( context.enableParameterValidation )
         {
@@ -6047,6 +6842,11 @@ namespace validation_layer
         if( nullptr == pfnGetSubVerticesExp )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeFabricVertexGetSubVerticesExp( hVertex, pCount, phSubvertices );
+        }
+
         if( context.enableParameterValidation )
         {
             auto result = context.paramValidation->zeParamValidation.zeFabricVertexGetSubVerticesExp( hVertex, pCount, phSubvertices );
@@ -6091,6 +6891,11 @@ namespace validation_layer
         if( nullptr == pfnGetPropertiesExp )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeFabricVertexGetPropertiesExp( hVertex, pVertexProperties );
+        }
+
         if( context.enableParameterValidation )
         {
             auto result = context.paramValidation->zeParamValidation.zeFabricVertexGetPropertiesExp( hVertex, pVertexProperties );
@@ -6128,6 +6933,11 @@ namespace validation_layer
 
         if( nullptr == pfnGetDeviceExp )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeFabricVertexGetDeviceExp( hVertex, phDevice );
+        }
 
         if( context.enableParameterValidation )
         {
@@ -6171,6 +6981,11 @@ namespace validation_layer
 
         if( nullptr == pfnGetFabricVertexExp )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeDeviceGetFabricVertexExp( hDevice, phVertex );
+        }
 
         if( context.enableParameterValidation )
         {
@@ -6224,6 +7039,11 @@ namespace validation_layer
         if( nullptr == pfnGetExp )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeFabricEdgeGetExp( hVertexA, hVertexB, pCount, phEdges );
+        }
+
         if( context.enableParameterValidation )
         {
             auto result = context.paramValidation->zeParamValidation.zeFabricEdgeGetExp( hVertexA, hVertexB, pCount, phEdges );
@@ -6268,6 +7088,11 @@ namespace validation_layer
 
         if( nullptr == pfnGetVerticesExp )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeFabricEdgeGetVerticesExp( hEdge, phVertexA, phVertexB );
+        }
 
         if( context.enableParameterValidation )
         {
@@ -6316,6 +7141,11 @@ namespace validation_layer
 
         if( nullptr == pfnGetPropertiesExp )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeFabricEdgeGetPropertiesExp( hEdge, pEdgeProperties );
+        }
 
         if( context.enableParameterValidation )
         {
@@ -6370,6 +7200,11 @@ namespace validation_layer
         if( nullptr == pfnQueryKernelTimestampsExt )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeEventQueryKernelTimestampsExt( hEvent, hDevice, pCount, pResults );
+        }
+
         if( context.enableParameterValidation )
         {
             auto result = context.paramValidation->zeParamValidation.zeEventQueryKernelTimestampsExt( hEvent, hDevice, pCount, pResults );
@@ -6404,6 +7239,11 @@ namespace validation_layer
 
         if( nullptr == pfnCreateExp )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeRTASBuilderCreateExp( hDriver, pDescriptor, phBuilder );
+        }
 
         if( context.enableParameterValidation )
         {
@@ -6449,6 +7289,11 @@ namespace validation_layer
         if( nullptr == pfnGetBuildPropertiesExp )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeRTASBuilderGetBuildPropertiesExp( hBuilder, pBuildOpDescriptor, pProperties );
+        }
+
         if( context.enableParameterValidation )
         {
             auto result = context.paramValidation->zeParamValidation.zeRTASBuilderGetBuildPropertiesExp( hBuilder, pBuildOpDescriptor, pProperties );
@@ -6487,6 +7332,11 @@ namespace validation_layer
 
         if( nullptr == pfnRTASFormatCompatibilityCheckExp )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeDriverRTASFormatCompatibilityCheckExp( hDriver, rtasFormatA, rtasFormatB );
+        }
 
         if( context.enableParameterValidation )
         {
@@ -6533,6 +7383,11 @@ namespace validation_layer
         if( nullptr == pfnBuildExp )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeRTASBuilderBuildExp( hBuilder, pBuildOpDescriptor, pScratchBuffer, scratchBufferSizeBytes, pRtasBuffer, rtasBufferSizeBytes, hParallelOperation, pBuildUserPtr, pBounds, pRtasBufferSizeBytes );
+        }
+
         if( context.enableParameterValidation )
         {
             auto result = context.paramValidation->zeParamValidation.zeRTASBuilderBuildExp( hBuilder, pBuildOpDescriptor, pScratchBuffer, scratchBufferSizeBytes, pRtasBuffer, rtasBufferSizeBytes, hParallelOperation, pBuildUserPtr, pBounds, pRtasBufferSizeBytes );
@@ -6565,6 +7420,11 @@ namespace validation_layer
 
         if( nullptr == pfnDestroyExp )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeRTASBuilderDestroyExp( hBuilder );
+        }
 
         if( context.enableParameterValidation )
         {
@@ -6599,6 +7459,11 @@ namespace validation_layer
 
         if( nullptr == pfnCreateExp )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeRTASParallelOperationCreateExp( hDriver, phParallelOperation );
+        }
 
         if( context.enableParameterValidation )
         {
@@ -6643,6 +7508,11 @@ namespace validation_layer
         if( nullptr == pfnGetPropertiesExp )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeRTASParallelOperationGetPropertiesExp( hParallelOperation, pProperties );
+        }
+
         if( context.enableParameterValidation )
         {
             auto result = context.paramValidation->zeParamValidation.zeRTASParallelOperationGetPropertiesExp( hParallelOperation, pProperties );
@@ -6680,6 +7550,11 @@ namespace validation_layer
         if( nullptr == pfnJoinExp )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeRTASParallelOperationJoinExp( hParallelOperation );
+        }
+
         if( context.enableParameterValidation )
         {
             auto result = context.paramValidation->zeParamValidation.zeRTASParallelOperationJoinExp( hParallelOperation );
@@ -6712,6 +7587,11 @@ namespace validation_layer
 
         if( nullptr == pfnDestroyExp )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeRTASParallelOperationDestroyExp( hParallelOperation );
+        }
 
         if( context.enableParameterValidation )
         {
@@ -6751,6 +7631,11 @@ namespace validation_layer
         if( nullptr == pfnGetPitchFor2dImage )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeMemGetPitchFor2dImage( hContext, hDevice, imageWidth, imageHeight, elementSizeInBytes, rowPitch );
+        }
+
         if( context.enableParameterValidation )
         {
             auto result = context.paramValidation->zeParamValidation.zeMemGetPitchFor2dImage( hContext, hDevice, imageWidth, imageHeight, elementSizeInBytes, rowPitch );
@@ -6784,6 +7669,11 @@ namespace validation_layer
 
         if( nullptr == pfnGetDeviceOffsetExp )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeImageGetDeviceOffsetExp( hImage, pDeviceOffset );
+        }
 
         if( context.enableParameterValidation )
         {
@@ -6822,6 +7712,11 @@ namespace validation_layer
 
         if( nullptr == pfnCreateCloneExp )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeCommandListCreateCloneExp( hCommandList, phClonedCommandList );
+        }
 
         if( context.enableParameterValidation )
         {
@@ -6876,6 +7771,11 @@ namespace validation_layer
         if( nullptr == pfnImmediateAppendCommandListsExp )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeCommandListImmediateAppendCommandListsExp( hCommandListImmediate, numCommandLists, phCommandLists, hSignalEvent, numWaitEvents, phWaitEvents );
+        }
+
         if( context.enableParameterValidation )
         {
             auto result = context.paramValidation->zeParamValidation.zeCommandListImmediateAppendCommandListsExp( hCommandListImmediate, numCommandLists, phCommandLists, hSignalEvent, numWaitEvents, phWaitEvents );
@@ -6910,6 +7810,11 @@ namespace validation_layer
 
         if( nullptr == pfnGetNextCommandIdExp )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeCommandListGetNextCommandIdExp( hCommandList, desc, pCommandId );
+        }
 
         if( context.enableParameterValidation )
         {
@@ -6950,6 +7855,11 @@ namespace validation_layer
         if( nullptr == pfnUpdateMutableCommandsExp )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeCommandListUpdateMutableCommandsExp( hCommandList, desc );
+        }
+
         if( context.enableParameterValidation )
         {
             auto result = context.paramValidation->zeParamValidation.zeCommandListUpdateMutableCommandsExp( hCommandList, desc );
@@ -6984,6 +7894,11 @@ namespace validation_layer
 
         if( nullptr == pfnUpdateMutableCommandSignalEventExp )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeCommandListUpdateMutableCommandSignalEventExp( hCommandList, commandId, hSignalEvent );
+        }
 
         if( context.enableParameterValidation )
         {
@@ -7021,6 +7936,11 @@ namespace validation_layer
 
         if( nullptr == pfnUpdateMutableCommandWaitEventsExp )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            context.validationHandlers[i]->zeParamValidation->zeCommandListUpdateMutableCommandWaitEventsExp( hCommandList, commandId, numWaitEvents, phWaitEvents );
+        }
 
         if( context.enableParameterValidation )
         {

@@ -32,6 +32,7 @@ namespace validation_layer
     ///////////////////////////////////////////////////////////////////////////////
     context_t::~context_t()
     {
+        validationHandlers.clear();
     }
 } // namespace validation_layer
 
@@ -53,7 +54,6 @@ zelLoaderGetVersion(zel_component_version_t *version)
 
     return ZE_RESULT_SUCCESS;
 }
-
 
 #if defined(__cplusplus)
 };

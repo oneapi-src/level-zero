@@ -22,6 +22,13 @@
 namespace validation_layer
 {
     ///////////////////////////////////////////////////////////////////////////////
+
+    class validationChecker {
+    public:
+        ZEValidationEntryPoints *zeParamValidation;
+        ZESValidationEntryPoints *zesParamValidation;
+        ZETValidationEntryPoints *zetParamValidation;
+    };
     class __zedlllocal context_t
     {
     public:
@@ -34,6 +41,8 @@ namespace validation_layer
         ze_dditable_t   zeDdiTable = {};
         zet_dditable_t  zetDdiTable = {};
         zes_dditable_t  zesDdiTable = {};
+
+        std::vector<validationChecker *> validationHandlers;
 
         std::unique_ptr<ParameterValidation> paramValidation;
         std::unique_ptr<HandleLifetimeValidation> handleLifetime;

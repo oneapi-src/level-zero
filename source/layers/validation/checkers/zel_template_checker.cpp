@@ -1,0 +1,61 @@
+/*
+ * Copyright (C) 2024 Intel Corporation
+ *
+ * SPDX-License-Identifier: MIT
+ *
+ * @file zel_template_checker.cpp
+ *
+ */
+#include "zel_template_checker.h"
+
+namespace validation_layer
+{
+    class validationCheckerTemplate templateChecker;
+
+    validationCheckerTemplate::validationCheckerTemplate() {
+        enableValidationCheckerTemplate = getenv_tobool( "ZE_ENABLE_VALIDATION_CHECKER_TEMPLATE" );
+        if(enableValidationCheckerTemplate) {
+            validationCheckerTemplate::ZEvalidationCheckerTemplate *zeChecker = new validationCheckerTemplate::ZEvalidationCheckerTemplate;
+            validationCheckerTemplate::ZESvalidationCheckerTemplate *zesChecker = new validationCheckerTemplate::ZESvalidationCheckerTemplate;
+            validationCheckerTemplate::ZETvalidationCheckerTemplate *zetChecker = new validationCheckerTemplate::ZETvalidationCheckerTemplate;
+            templateChecker.zeParamValidation = zeChecker;
+            templateChecker.zetParamValidation = zetChecker;
+            templateChecker.zesParamValidation = zesChecker;
+            validation_layer::context.validationHandlers.push_back(&templateChecker);
+        }
+    }
+
+    validationCheckerTemplate::~validationCheckerTemplate() {
+        if(enableValidationCheckerTemplate) {
+            delete templateChecker.zeParamValidation;
+            delete templateChecker.zetParamValidation;
+            delete templateChecker.zesParamValidation;
+        }
+    }
+
+    ze_result_t
+    validationCheckerTemplate::ZEvalidationCheckerTemplate::zeInit(
+        ze_init_flags_t flags)
+    {
+        return ZE_RESULT_SUCCESS;
+    }
+
+    ze_result_t
+    validationCheckerTemplate::ZESvalidationCheckerTemplate::zesInit(
+        zes_init_flags_t flags)
+    {
+        return ZE_RESULT_SUCCESS;
+    }
+
+    ze_result_t
+    validationCheckerTemplate::ZETvalidationCheckerTemplate::zetModuleGetDebugInfo(
+        zet_module_handle_t hModule,
+        zet_module_debug_info_format_t format,
+        size_t* pSize,
+        uint8_t* pDebugInfo
+        )
+    {
+        return ZE_RESULT_SUCCESS;
+    }
+
+}
