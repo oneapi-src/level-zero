@@ -27,7 +27,12 @@ namespace validation_layer
 class ${N}ValidationEntryPoints {
 public:
     %for obj in th.extract_objs(specs, r"function"):
-    virtual ${x}_result_t ${th.make_func_name(n, tags, obj)}( \
+    virtual ${x}_result_t ${th.make_func_name(n, tags, obj)}Prologue( \
+%for line in th.make_param_lines(n, tags, obj, format=["type", "name", "delim"]):
+${line} \
+%endfor
+) {return ZE_RESULT_SUCCESS;}
+    virtual ${x}_result_t ${th.make_func_name(n, tags, obj)}Epilogue( \
 %for line in th.make_param_lines(n, tags, obj, format=["type", "name", "delim"]):
 ${line} \
 %endfor

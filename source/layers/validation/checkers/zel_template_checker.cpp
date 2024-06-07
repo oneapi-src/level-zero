@@ -34,21 +34,21 @@ namespace validation_layer
     }
 
     ze_result_t
-    validationCheckerTemplate::ZEvalidationCheckerTemplate::zeInit(
+    validationCheckerTemplate::ZEvalidationCheckerTemplate::zeInitPrologue(
         ze_init_flags_t flags)
     {
         return ZE_RESULT_SUCCESS;
     }
 
     ze_result_t
-    validationCheckerTemplate::ZESvalidationCheckerTemplate::zesInit(
+    validationCheckerTemplate::ZESvalidationCheckerTemplate::zesInitPrologue(
         zes_init_flags_t flags)
     {
         return ZE_RESULT_SUCCESS;
     }
 
     ze_result_t
-    validationCheckerTemplate::ZETvalidationCheckerTemplate::zetModuleGetDebugInfo(
+    validationCheckerTemplate::ZETvalidationCheckerTemplate::zetModuleGetDebugInfoPrologue(
         zet_module_handle_t hModule,
         zet_module_debug_info_format_t format,
         size_t* pSize,

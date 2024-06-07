@@ -26,7 +26,7 @@ namespace validation_layer
     %for obj in th.extract_objs(specs, r"function"):
 
     ${x}_result_t
-    ${N}ParameterValidation::${th.make_func_name(n, tags, obj)}(
+    ${N}ParameterValidation::${th.make_func_name(n, tags, obj)}Prologue(
         %for line in th.make_param_lines(n, tags, obj):
         ${line}
         %endfor

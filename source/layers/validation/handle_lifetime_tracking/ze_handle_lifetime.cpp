@@ -15,7 +15,7 @@
 namespace validation_layer
 {
     ze_result_t
-    ZEHandleLifetimeValidation::zeDriverGetApiVersion(
+    ZEHandleLifetimeValidation::zeDriverGetApiVersionEpilogue(
         ze_driver_handle_t hDriver,                     ///< [in] handle of the driver instance
         ze_api_version_t* version                       ///< [out] api version
         )
@@ -27,7 +27,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeDriverGetProperties(
+    ZEHandleLifetimeValidation::zeDriverGetPropertiesEpilogue(
         ze_driver_handle_t hDriver,                     ///< [in] handle of the driver instance
         ze_driver_properties_t* pDriverProperties       ///< [in,out] query result for driver properties
         )
@@ -39,7 +39,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeDriverGetIpcProperties(
+    ZEHandleLifetimeValidation::zeDriverGetIpcPropertiesEpilogue(
         ze_driver_handle_t hDriver,                     ///< [in] handle of the driver instance
         ze_driver_ipc_properties_t* pIpcProperties      ///< [in,out] query result for IPC properties
         )
@@ -51,7 +51,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeDriverGetExtensionProperties(
+    ZEHandleLifetimeValidation::zeDriverGetExtensionPropertiesEpilogue(
         ze_driver_handle_t hDriver,                     ///< [in] handle of the driver instance
         uint32_t* pCount,                               ///< [in,out] pointer to the number of extension properties.
                                                         ///< if count is zero, then the driver shall update the value with the
@@ -72,7 +72,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeDriverGetExtensionFunctionAddress(
+    ZEHandleLifetimeValidation::zeDriverGetExtensionFunctionAddressEpilogue(
         ze_driver_handle_t hDriver,                     ///< [in] handle of the driver instance
         const char* name,                               ///< [in] extension function name
         void** ppFunctionAddress                        ///< [out] pointer to function pointer
@@ -85,7 +85,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeDriverGetLastErrorDescription(
+    ZEHandleLifetimeValidation::zeDriverGetLastErrorDescriptionEpilogue(
         ze_driver_handle_t hDriver,                     ///< [in] handle of the driver instance
         const char** ppString                           ///< [in,out] pointer to a null-terminated array of characters describing
                                                         ///< cause of error.
@@ -98,7 +98,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeDeviceGet(
+    ZEHandleLifetimeValidation::zeDeviceGetEpilogue(
         ze_driver_handle_t hDriver,                     ///< [in] handle of the driver instance
         uint32_t* pCount,                               ///< [in,out] pointer to the number of devices.
                                                         ///< if count is zero, then the driver shall update the value with the
@@ -117,7 +117,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeDeviceGetRootDevice(
+    ZEHandleLifetimeValidation::zeDeviceGetRootDeviceEpilogue(
         ze_device_handle_t hDevice,                     ///< [in] handle of the device object
         ze_device_handle_t* phRootDevice                ///< [in,out] parent root device.
         )
@@ -129,7 +129,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeDeviceGetSubDevices(
+    ZEHandleLifetimeValidation::zeDeviceGetSubDevicesEpilogue(
         ze_device_handle_t hDevice,                     ///< [in] handle of the device object
         uint32_t* pCount,                               ///< [in,out] pointer to the number of sub-devices.
                                                         ///< if count is zero, then the driver shall update the value with the
@@ -148,7 +148,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeDeviceGetProperties(
+    ZEHandleLifetimeValidation::zeDeviceGetPropertiesEpilogue(
         ze_device_handle_t hDevice,                     ///< [in] handle of the device
         ze_device_properties_t* pDeviceProperties       ///< [in,out] query result for device properties
         )
@@ -160,7 +160,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeDeviceGetComputeProperties(
+    ZEHandleLifetimeValidation::zeDeviceGetComputePropertiesEpilogue(
         ze_device_handle_t hDevice,                     ///< [in] handle of the device
         ze_device_compute_properties_t* pComputeProperties  ///< [in,out] query result for compute properties
         )
@@ -172,7 +172,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeDeviceGetModuleProperties(
+    ZEHandleLifetimeValidation::zeDeviceGetModulePropertiesEpilogue(
         ze_device_handle_t hDevice,                     ///< [in] handle of the device
         ze_device_module_properties_t* pModuleProperties///< [in,out] query result for module properties
         )
@@ -184,7 +184,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeDeviceGetCommandQueueGroupProperties(
+    ZEHandleLifetimeValidation::zeDeviceGetCommandQueueGroupPropertiesEpilogue(
         ze_device_handle_t hDevice,                     ///< [in] handle of the device
         uint32_t* pCount,                               ///< [in,out] pointer to the number of command queue group properties.
                                                         ///< if count is zero, then the driver shall update the value with the
@@ -206,7 +206,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeDeviceGetMemoryProperties(
+    ZEHandleLifetimeValidation::zeDeviceGetMemoryPropertiesEpilogue(
         ze_device_handle_t hDevice,                     ///< [in] handle of the device
         uint32_t* pCount,                               ///< [in,out] pointer to the number of memory properties.
                                                         ///< if count is zero, then the driver shall update the value with the
@@ -227,7 +227,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeDeviceGetMemoryAccessProperties(
+    ZEHandleLifetimeValidation::zeDeviceGetMemoryAccessPropertiesEpilogue(
         ze_device_handle_t hDevice,                     ///< [in] handle of the device
         ze_device_memory_access_properties_t* pMemAccessProperties  ///< [in,out] query result for memory access properties
         )
@@ -239,7 +239,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeDeviceGetCacheProperties(
+    ZEHandleLifetimeValidation::zeDeviceGetCachePropertiesEpilogue(
         ze_device_handle_t hDevice,                     ///< [in] handle of the device
         uint32_t* pCount,                               ///< [in,out] pointer to the number of cache properties.
                                                         ///< if count is zero, then the driver shall update the value with the
@@ -259,7 +259,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeDeviceGetImageProperties(
+    ZEHandleLifetimeValidation::zeDeviceGetImagePropertiesEpilogue(
         ze_device_handle_t hDevice,                     ///< [in] handle of the device
         ze_device_image_properties_t* pImageProperties  ///< [in,out] query result for image properties
         )
@@ -271,7 +271,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeDeviceGetExternalMemoryProperties(
+    ZEHandleLifetimeValidation::zeDeviceGetExternalMemoryPropertiesEpilogue(
         ze_device_handle_t hDevice,                     ///< [in] handle of the device
         ze_device_external_memory_properties_t* pExternalMemoryProperties   ///< [in,out] query result for external memory properties
         )
@@ -283,7 +283,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeDeviceGetP2PProperties(
+    ZEHandleLifetimeValidation::zeDeviceGetP2PPropertiesEpilogue(
         ze_device_handle_t hDevice,                     ///< [in] handle of the device performing the access
         ze_device_handle_t hPeerDevice,                 ///< [in] handle of the peer device with the allocation
         ze_device_p2p_properties_t* pP2PProperties      ///< [in,out] Peer-to-Peer properties between source and peer device
@@ -299,7 +299,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeDeviceCanAccessPeer(
+    ZEHandleLifetimeValidation::zeDeviceCanAccessPeerEpilogue(
         ze_device_handle_t hDevice,                     ///< [in] handle of the device performing the access
         ze_device_handle_t hPeerDevice,                 ///< [in] handle of the peer device with the allocation
         ze_bool_t* value                                ///< [out] returned access capability
@@ -315,7 +315,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeDeviceGetStatus(
+    ZEHandleLifetimeValidation::zeDeviceGetStatusEpilogue(
         ze_device_handle_t hDevice                      ///< [in] handle of the device
         )
     { 
@@ -326,7 +326,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeDeviceGetGlobalTimestamps(
+    ZEHandleLifetimeValidation::zeDeviceGetGlobalTimestampsEpilogue(
         ze_device_handle_t hDevice,                     ///< [in] handle of the device
         uint64_t* hostTimestamp,                        ///< [out] value of the Host's global timestamp that correlates with the
                                                         ///< Device's global timestamp value
@@ -341,7 +341,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeContextCreate(
+    ZEHandleLifetimeValidation::zeContextCreateEpilogue(
         ze_driver_handle_t hDriver,                     ///< [in] handle of the driver object
         const ze_context_desc_t* desc,                  ///< [in] pointer to context descriptor
         ze_context_handle_t* phContext                  ///< [out] pointer to handle of context object created
@@ -354,7 +354,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeContextCreateEx(
+    ZEHandleLifetimeValidation::zeContextCreateExEpilogue(
         ze_driver_handle_t hDriver,                     ///< [in] handle of the driver object
         const ze_context_desc_t* desc,                  ///< [in] pointer to context descriptor
         uint32_t numDevices,                            ///< [in][optional] number of device handles; must be 0 if `nullptr ==
@@ -382,7 +382,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeContextDestroy(
+    ZEHandleLifetimeValidation::zeContextDestroyEpilogue(
         ze_context_handle_t hContext                    ///< [in][release] handle of context object to destroy
         )
     { 
@@ -399,7 +399,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeContextGetStatus(
+    ZEHandleLifetimeValidation::zeContextGetStatusEpilogue(
         ze_context_handle_t hContext                    ///< [in] handle of context object
         )
     { 
@@ -410,7 +410,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeCommandQueueCreate(
+    ZEHandleLifetimeValidation::zeCommandQueueCreateEpilogue(
         ze_context_handle_t hContext,                   ///< [in] handle of the context object
         ze_device_handle_t hDevice,                     ///< [in] handle of the device object
         const ze_command_queue_desc_t* desc,            ///< [in] pointer to command queue descriptor
@@ -427,7 +427,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeCommandQueueDestroy(
+    ZEHandleLifetimeValidation::zeCommandQueueDestroyEpilogue(
         ze_command_queue_handle_t hCommandQueue         ///< [in][release] handle of command queue object to destroy
         )
     { 
@@ -444,7 +444,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeCommandQueueExecuteCommandLists(
+    ZEHandleLifetimeValidation::zeCommandQueueExecuteCommandListsEpilogue(
         ze_command_queue_handle_t hCommandQueue,        ///< [in] handle of the command queue
         uint32_t numCommandLists,                       ///< [in] number of command lists to execute
         ze_command_list_handle_t* phCommandLists,       ///< [in][range(0, numCommandLists)] list of handles of the command lists
@@ -472,7 +472,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeCommandQueueSynchronize(
+    ZEHandleLifetimeValidation::zeCommandQueueSynchronizeEpilogue(
         ze_command_queue_handle_t hCommandQueue,        ///< [in] handle of the command queue
         uint64_t timeout                                ///< [in] if non-zero, then indicates the maximum time (in nanoseconds) to
                                                         ///< yield before returning ::ZE_RESULT_SUCCESS or ::ZE_RESULT_NOT_READY;
@@ -490,7 +490,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeCommandQueueGetOrdinal(
+    ZEHandleLifetimeValidation::zeCommandQueueGetOrdinalEpilogue(
         ze_command_queue_handle_t hCommandQueue,        ///< [in] handle of the command queue
         uint32_t* pOrdinal                              ///< [out] command queue group ordinal
         )
@@ -502,7 +502,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeCommandQueueGetIndex(
+    ZEHandleLifetimeValidation::zeCommandQueueGetIndexEpilogue(
         ze_command_queue_handle_t hCommandQueue,        ///< [in] handle of the command queue
         uint32_t* pIndex                                ///< [out] command queue index within the group
         )
@@ -514,7 +514,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeCommandListCreate(
+    ZEHandleLifetimeValidation::zeCommandListCreateEpilogue(
         ze_context_handle_t hContext,                   ///< [in] handle of the context object
         ze_device_handle_t hDevice,                     ///< [in] handle of the device object
         const ze_command_list_desc_t* desc,             ///< [in] pointer to command list descriptor
@@ -531,7 +531,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeCommandListCreateImmediate(
+    ZEHandleLifetimeValidation::zeCommandListCreateImmediateEpilogue(
         ze_context_handle_t hContext,                   ///< [in] handle of the context object
         ze_device_handle_t hDevice,                     ///< [in] handle of the device object
         const ze_command_queue_desc_t* altdesc,         ///< [in] pointer to command queue descriptor
@@ -548,7 +548,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeCommandListDestroy(
+    ZEHandleLifetimeValidation::zeCommandListDestroyEpilogue(
         ze_command_list_handle_t hCommandList           ///< [in][release] handle of command list object to destroy
         )
     { 
@@ -565,7 +565,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeCommandListClose(
+    ZEHandleLifetimeValidation::zeCommandListCloseEpilogue(
         ze_command_list_handle_t hCommandList           ///< [in] handle of command list object to close
         )
     { 
@@ -577,7 +577,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeCommandListReset(
+    ZEHandleLifetimeValidation::zeCommandListResetEpilogue(
         ze_command_list_handle_t hCommandList           ///< [in] handle of command list object to reset
         )
     { 
@@ -589,7 +589,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeCommandListAppendWriteGlobalTimestamp(
+    ZEHandleLifetimeValidation::zeCommandListAppendWriteGlobalTimestampEpilogue(
         ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
         uint64_t* dstptr,                               ///< [in,out] pointer to memory where timestamp value will be written; must
                                                         ///< be 8byte-aligned.
@@ -618,7 +618,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeCommandListHostSynchronize(
+    ZEHandleLifetimeValidation::zeCommandListHostSynchronizeEpilogue(
         ze_command_list_handle_t hCommandList,          ///< [in] handle of the immediate command list
         uint64_t timeout                                ///< [in] if non-zero, then indicates the maximum time (in nanoseconds) to
                                                         ///< yield before returning ::ZE_RESULT_SUCCESS or ::ZE_RESULT_NOT_READY;
@@ -636,7 +636,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeCommandListGetDeviceHandle(
+    ZEHandleLifetimeValidation::zeCommandListGetDeviceHandleEpilogue(
         ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
         ze_device_handle_t* phDevice                    ///< [out] handle of the device on which the command list was created
         )
@@ -648,7 +648,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeCommandListGetContextHandle(
+    ZEHandleLifetimeValidation::zeCommandListGetContextHandleEpilogue(
         ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
         ze_context_handle_t* phContext                  ///< [out] handle of the context on which the command list was created
         )
@@ -660,7 +660,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeCommandListGetOrdinal(
+    ZEHandleLifetimeValidation::zeCommandListGetOrdinalEpilogue(
         ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
         uint32_t* pOrdinal                              ///< [out] command queue group ordinal to which command list is submitted
         )
@@ -672,7 +672,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeCommandListImmediateGetIndex(
+    ZEHandleLifetimeValidation::zeCommandListImmediateGetIndexEpilogue(
         ze_command_list_handle_t hCommandListImmediate, ///< [in] handle of the immediate command list
         uint32_t* pIndex                                ///< [out] command queue index within the group to which the immediate
                                                         ///< command list is submitted
@@ -685,7 +685,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeCommandListIsImmediate(
+    ZEHandleLifetimeValidation::zeCommandListIsImmediateEpilogue(
         ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
         ze_bool_t* pIsImmediate                         ///< [out] Boolean indicating whether the command list is an immediate
                                                         ///< command list (true) or not (false)
@@ -698,7 +698,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeCommandListAppendBarrier(
+    ZEHandleLifetimeValidation::zeCommandListAppendBarrierEpilogue(
         ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
         ze_event_handle_t hSignalEvent,                 ///< [in][optional] handle of the event to signal on completion
         uint32_t numWaitEvents,                         ///< [in][optional] number of events to wait on before executing barrier;
@@ -725,7 +725,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeCommandListAppendMemoryRangesBarrier(
+    ZEHandleLifetimeValidation::zeCommandListAppendMemoryRangesBarrierEpilogue(
         ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
         uint32_t numRanges,                             ///< [in] number of memory ranges
         const size_t* pRangeSizes,                      ///< [in][range(0, numRanges)] array of sizes of memory range
@@ -755,7 +755,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeContextSystemBarrier(
+    ZEHandleLifetimeValidation::zeContextSystemBarrierEpilogue(
         ze_context_handle_t hContext,                   ///< [in] handle of context object
         ze_device_handle_t hDevice                      ///< [in] handle of the device
         )
@@ -770,7 +770,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeCommandListAppendMemoryCopy(
+    ZEHandleLifetimeValidation::zeCommandListAppendMemoryCopyEpilogue(
         ze_command_list_handle_t hCommandList,          ///< [in] handle of command list
         void* dstptr,                                   ///< [in] pointer to destination memory to copy to
         const void* srcptr,                             ///< [in] pointer to source memory to copy from
@@ -800,7 +800,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeCommandListAppendMemoryFill(
+    ZEHandleLifetimeValidation::zeCommandListAppendMemoryFillEpilogue(
         ze_command_list_handle_t hCommandList,          ///< [in] handle of command list
         void* ptr,                                      ///< [in] pointer to memory to initialize
         const void* pattern,                            ///< [in] pointer to value to initialize memory to
@@ -831,7 +831,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeCommandListAppendMemoryCopyRegion(
+    ZEHandleLifetimeValidation::zeCommandListAppendMemoryCopyRegionEpilogue(
         ze_command_list_handle_t hCommandList,          ///< [in] handle of command list
         void* dstptr,                                   ///< [in] pointer to destination memory to copy to
         const ze_copy_region_t* dstRegion,              ///< [in] pointer to destination region to copy to
@@ -870,7 +870,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeCommandListAppendMemoryCopyFromContext(
+    ZEHandleLifetimeValidation::zeCommandListAppendMemoryCopyFromContextEpilogue(
         ze_command_list_handle_t hCommandList,          ///< [in] handle of command list
         void* dstptr,                                   ///< [in] pointer to destination memory to copy to
         ze_context_handle_t hContextSrc,                ///< [in] handle of source context object
@@ -904,7 +904,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeCommandListAppendImageCopy(
+    ZEHandleLifetimeValidation::zeCommandListAppendImageCopyEpilogue(
         ze_command_list_handle_t hCommandList,          ///< [in] handle of command list
         ze_image_handle_t hDstImage,                    ///< [in] handle of destination image to copy to
         ze_image_handle_t hSrcImage,                    ///< [in] handle of source image to copy from
@@ -939,7 +939,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeCommandListAppendImageCopyRegion(
+    ZEHandleLifetimeValidation::zeCommandListAppendImageCopyRegionEpilogue(
         ze_command_list_handle_t hCommandList,          ///< [in] handle of command list
         ze_image_handle_t hDstImage,                    ///< [in] handle of destination image to copy to
         ze_image_handle_t hSrcImage,                    ///< [in] handle of source image to copy from
@@ -976,7 +976,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeCommandListAppendImageCopyToMemory(
+    ZEHandleLifetimeValidation::zeCommandListAppendImageCopyToMemoryEpilogue(
         ze_command_list_handle_t hCommandList,          ///< [in] handle of command list
         void* dstptr,                                   ///< [in] pointer to destination memory to copy to
         ze_image_handle_t hSrcImage,                    ///< [in] handle of source image to copy from
@@ -1009,7 +1009,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeCommandListAppendImageCopyFromMemory(
+    ZEHandleLifetimeValidation::zeCommandListAppendImageCopyFromMemoryEpilogue(
         ze_command_list_handle_t hCommandList,          ///< [in] handle of command list
         ze_image_handle_t hDstImage,                    ///< [in] handle of destination image to copy to
         const void* srcptr,                             ///< [in] pointer to source memory to copy from
@@ -1042,7 +1042,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeCommandListAppendMemoryPrefetch(
+    ZEHandleLifetimeValidation::zeCommandListAppendMemoryPrefetchEpilogue(
         ze_command_list_handle_t hCommandList,          ///< [in] handle of command list
         const void* ptr,                                ///< [in] pointer to start of the memory range to prefetch
         size_t size                                     ///< [in] size in bytes of the memory range to prefetch
@@ -1058,7 +1058,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeCommandListAppendMemAdvise(
+    ZEHandleLifetimeValidation::zeCommandListAppendMemAdviseEpilogue(
         ze_command_list_handle_t hCommandList,          ///< [in] handle of command list
         ze_device_handle_t hDevice,                     ///< [in] device associated with the memory advice
         const void* ptr,                                ///< [in] Pointer to the start of the memory range
@@ -1079,7 +1079,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeEventPoolCreate(
+    ZEHandleLifetimeValidation::zeEventPoolCreateEpilogue(
         ze_context_handle_t hContext,                   ///< [in] handle of the context object
         const ze_event_pool_desc_t* desc,               ///< [in] pointer to event pool descriptor
         uint32_t numDevices,                            ///< [in][optional] number of device handles; must be 0 if `nullptr ==
@@ -1103,7 +1103,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeEventPoolDestroy(
+    ZEHandleLifetimeValidation::zeEventPoolDestroyEpilogue(
         ze_event_pool_handle_t hEventPool               ///< [in][release] handle of event pool object to destroy
         )
     { 
@@ -1120,7 +1120,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeEventCreate(
+    ZEHandleLifetimeValidation::zeEventCreateEpilogue(
         ze_event_pool_handle_t hEventPool,              ///< [in] handle of the event pool
         const ze_event_desc_t* desc,                    ///< [in] pointer to event descriptor
         ze_event_handle_t* phEvent                      ///< [out] pointer to handle of event object created
@@ -1133,7 +1133,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeEventDestroy(
+    ZEHandleLifetimeValidation::zeEventDestroyEpilogue(
         ze_event_handle_t hEvent                        ///< [in][release] handle of event object to destroy
         )
     { 
@@ -1150,7 +1150,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeEventPoolGetIpcHandle(
+    ZEHandleLifetimeValidation::zeEventPoolGetIpcHandleEpilogue(
         ze_event_pool_handle_t hEventPool,              ///< [in] handle of event pool object
         ze_ipc_event_pool_handle_t* phIpc               ///< [out] Returned IPC event handle
         )
@@ -1162,7 +1162,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeEventPoolPutIpcHandle(
+    ZEHandleLifetimeValidation::zeEventPoolPutIpcHandleEpilogue(
         ze_context_handle_t hContext,                   ///< [in] handle of the context object associated with the IPC event pool
                                                         ///< handle
         ze_ipc_event_pool_handle_t hIpc                 ///< [in] IPC event pool handle
@@ -1175,7 +1175,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeEventPoolOpenIpcHandle(
+    ZEHandleLifetimeValidation::zeEventPoolOpenIpcHandleEpilogue(
         ze_context_handle_t hContext,                   ///< [in] handle of the context object to associate with the IPC event pool
                                                         ///< handle
         ze_ipc_event_pool_handle_t hIpc,                ///< [in] IPC event pool handle
@@ -1189,7 +1189,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeEventPoolCloseIpcHandle(
+    ZEHandleLifetimeValidation::zeEventPoolCloseIpcHandleEpilogue(
         ze_event_pool_handle_t hEventPool               ///< [in][release] handle of event pool object
         )
     { 
@@ -1200,7 +1200,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeCommandListAppendSignalEvent(
+    ZEHandleLifetimeValidation::zeCommandListAppendSignalEventEpilogue(
         ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
         ze_event_handle_t hEvent                        ///< [in] handle of the event
         )
@@ -1218,7 +1218,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeCommandListAppendWaitOnEvents(
+    ZEHandleLifetimeValidation::zeCommandListAppendWaitOnEventsEpilogue(
         ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
         uint32_t numEvents,                             ///< [in] number of events to wait on before continuing
         ze_event_handle_t* phEvents                     ///< [in][range(0, numEvents)] handles of the events to wait on before
@@ -1240,7 +1240,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeEventHostSignal(
+    ZEHandleLifetimeValidation::zeEventHostSignalEpilogue(
         ze_event_handle_t hEvent                        ///< [in] handle of the event
         )
     { 
@@ -1251,7 +1251,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeEventHostSynchronize(
+    ZEHandleLifetimeValidation::zeEventHostSynchronizeEpilogue(
         ze_event_handle_t hEvent,                       ///< [in] handle of the event
         uint64_t timeout                                ///< [in] if non-zero, then indicates the maximum time (in nanoseconds) to
                                                         ///< yield before returning ::ZE_RESULT_SUCCESS or ::ZE_RESULT_NOT_READY;
@@ -1269,7 +1269,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeEventQueryStatus(
+    ZEHandleLifetimeValidation::zeEventQueryStatusEpilogue(
         ze_event_handle_t hEvent                        ///< [in] handle of the event
         )
     { 
@@ -1280,7 +1280,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeCommandListAppendEventReset(
+    ZEHandleLifetimeValidation::zeCommandListAppendEventResetEpilogue(
         ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
         ze_event_handle_t hEvent                        ///< [in] handle of the event
         )
@@ -1298,7 +1298,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeEventHostReset(
+    ZEHandleLifetimeValidation::zeEventHostResetEpilogue(
         ze_event_handle_t hEvent                        ///< [in] handle of the event
         )
     { 
@@ -1309,7 +1309,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeEventQueryKernelTimestamp(
+    ZEHandleLifetimeValidation::zeEventQueryKernelTimestampEpilogue(
         ze_event_handle_t hEvent,                       ///< [in] handle of the event
         ze_kernel_timestamp_result_t* dstptr            ///< [in,out] pointer to memory for where timestamp result will be written.
         )
@@ -1321,7 +1321,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeCommandListAppendQueryKernelTimestamps(
+    ZEHandleLifetimeValidation::zeCommandListAppendQueryKernelTimestampsEpilogue(
         ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
         uint32_t numEvents,                             ///< [in] the number of timestamp events to query
         ze_event_handle_t* phEvents,                    ///< [in][range(0, numEvents)] handles of timestamp events to query
@@ -1360,7 +1360,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeEventGetEventPool(
+    ZEHandleLifetimeValidation::zeEventGetEventPoolEpilogue(
         ze_event_handle_t hEvent,                       ///< [in] handle of the event
         ze_event_pool_handle_t* phEventPool             ///< [out] handle of the event pool for the event
         )
@@ -1372,7 +1372,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeEventGetSignalScope(
+    ZEHandleLifetimeValidation::zeEventGetSignalScopeEpilogue(
         ze_event_handle_t hEvent,                       ///< [in] handle of the event
         ze_event_scope_flags_t* pSignalScope            ///< [out] signal event scope. This is the scope of relevant cache
                                                         ///< hierarchies that are flushed on a signal action before the event is
@@ -1386,7 +1386,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeEventGetWaitScope(
+    ZEHandleLifetimeValidation::zeEventGetWaitScopeEpilogue(
         ze_event_handle_t hEvent,                       ///< [in] handle of the event
         ze_event_scope_flags_t* pWaitScope              ///< [out] wait event scope. This is the scope of relevant cache
                                                         ///< hierarchies invalidated on a wait action after the event is complete.
@@ -1400,7 +1400,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeEventPoolGetContextHandle(
+    ZEHandleLifetimeValidation::zeEventPoolGetContextHandleEpilogue(
         ze_event_pool_handle_t hEventPool,              ///< [in] handle of the event pool
         ze_context_handle_t* phContext                  ///< [out] handle of the context on which the event pool was created
         )
@@ -1412,7 +1412,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeEventPoolGetFlags(
+    ZEHandleLifetimeValidation::zeEventPoolGetFlagsEpilogue(
         ze_event_pool_handle_t hEventPool,              ///< [in] handle of the event pool
         ze_event_pool_flags_t* pFlags                   ///< [out] creation flags used to create the event pool; may be 0 or a
                                                         ///< valid combination of ::ze_event_pool_flag_t
@@ -1425,7 +1425,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeFenceCreate(
+    ZEHandleLifetimeValidation::zeFenceCreateEpilogue(
         ze_command_queue_handle_t hCommandQueue,        ///< [in] handle of command queue
         const ze_fence_desc_t* desc,                    ///< [in] pointer to fence descriptor
         ze_fence_handle_t* phFence                      ///< [out] pointer to handle of fence object created
@@ -1438,7 +1438,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeFenceDestroy(
+    ZEHandleLifetimeValidation::zeFenceDestroyEpilogue(
         ze_fence_handle_t hFence                        ///< [in][release] handle of fence object to destroy
         )
     { 
@@ -1455,7 +1455,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeFenceHostSynchronize(
+    ZEHandleLifetimeValidation::zeFenceHostSynchronizeEpilogue(
         ze_fence_handle_t hFence,                       ///< [in] handle of the fence
         uint64_t timeout                                ///< [in] if non-zero, then indicates the maximum time (in nanoseconds) to
                                                         ///< yield before returning ::ZE_RESULT_SUCCESS or ::ZE_RESULT_NOT_READY;
@@ -1473,7 +1473,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeFenceQueryStatus(
+    ZEHandleLifetimeValidation::zeFenceQueryStatusEpilogue(
         ze_fence_handle_t hFence                        ///< [in] handle of the fence
         )
     { 
@@ -1484,7 +1484,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeFenceReset(
+    ZEHandleLifetimeValidation::zeFenceResetEpilogue(
         ze_fence_handle_t hFence                        ///< [in] handle of the fence
         )
     { 
@@ -1495,7 +1495,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeImageGetProperties(
+    ZEHandleLifetimeValidation::zeImageGetPropertiesEpilogue(
         ze_device_handle_t hDevice,                     ///< [in] handle of the device
         const ze_image_desc_t* desc,                    ///< [in] pointer to image descriptor
         ze_image_properties_t* pImageProperties         ///< [out] pointer to image properties
@@ -1508,7 +1508,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeImageCreate(
+    ZEHandleLifetimeValidation::zeImageCreateEpilogue(
         ze_context_handle_t hContext,                   ///< [in] handle of the context object
         ze_device_handle_t hDevice,                     ///< [in] handle of the device
         const ze_image_desc_t* desc,                    ///< [in] pointer to image descriptor
@@ -1525,7 +1525,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeImageDestroy(
+    ZEHandleLifetimeValidation::zeImageDestroyEpilogue(
         ze_image_handle_t hImage                        ///< [in][release] handle of image object to destroy
         )
     { 
@@ -1542,7 +1542,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeMemAllocShared(
+    ZEHandleLifetimeValidation::zeMemAllocSharedEpilogue(
         ze_context_handle_t hContext,                   ///< [in] handle of the context object
         const ze_device_mem_alloc_desc_t* device_desc,  ///< [in] pointer to device memory allocation descriptor
         const ze_host_mem_alloc_desc_t* host_desc,      ///< [in] pointer to host memory allocation descriptor
@@ -1564,7 +1564,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeMemAllocDevice(
+    ZEHandleLifetimeValidation::zeMemAllocDeviceEpilogue(
         ze_context_handle_t hContext,                   ///< [in] handle of the context object
         const ze_device_mem_alloc_desc_t* device_desc,  ///< [in] pointer to device memory allocation descriptor
         size_t size,                                    ///< [in] size in bytes to allocate; must be less than or equal to the
@@ -1585,7 +1585,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeMemAllocHost(
+    ZEHandleLifetimeValidation::zeMemAllocHostEpilogue(
         ze_context_handle_t hContext,                   ///< [in] handle of the context object
         const ze_host_mem_alloc_desc_t* host_desc,      ///< [in] pointer to host memory allocation descriptor
         size_t size,                                    ///< [in] size in bytes to allocate; must be less than or equal to the
@@ -1602,7 +1602,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeMemFree(
+    ZEHandleLifetimeValidation::zeMemFreeEpilogue(
         ze_context_handle_t hContext,                   ///< [in] handle of the context object
         void* ptr                                       ///< [in][release] pointer to memory to free
         )
@@ -1614,7 +1614,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeMemGetAllocProperties(
+    ZEHandleLifetimeValidation::zeMemGetAllocPropertiesEpilogue(
         ze_context_handle_t hContext,                   ///< [in] handle of the context object
         const void* ptr,                                ///< [in] memory pointer to query
         ze_memory_allocation_properties_t* pMemAllocProperties, ///< [in,out] query result for memory allocation properties
@@ -1628,7 +1628,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeMemGetAddressRange(
+    ZEHandleLifetimeValidation::zeMemGetAddressRangeEpilogue(
         ze_context_handle_t hContext,                   ///< [in] handle of the context object
         const void* ptr,                                ///< [in] memory pointer to query
         void** pBase,                                   ///< [in,out][optional] base address of the allocation
@@ -1642,7 +1642,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeMemGetIpcHandle(
+    ZEHandleLifetimeValidation::zeMemGetIpcHandleEpilogue(
         ze_context_handle_t hContext,                   ///< [in] handle of the context object
         const void* ptr,                                ///< [in] pointer to the device memory allocation
         ze_ipc_mem_handle_t* pIpcHandle                 ///< [out] Returned IPC memory handle
@@ -1655,7 +1655,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeMemGetIpcHandleFromFileDescriptorExp(
+    ZEHandleLifetimeValidation::zeMemGetIpcHandleFromFileDescriptorExpEpilogue(
         ze_context_handle_t hContext,                   ///< [in] handle of the context object
         uint64_t handle,                                ///< [in] file descriptor
         ze_ipc_mem_handle_t* pIpcHandle                 ///< [out] Returned IPC memory handle
@@ -1668,7 +1668,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeMemGetFileDescriptorFromIpcHandleExp(
+    ZEHandleLifetimeValidation::zeMemGetFileDescriptorFromIpcHandleExpEpilogue(
         ze_context_handle_t hContext,                   ///< [in] handle of the context object
         ze_ipc_mem_handle_t ipcHandle,                  ///< [in] IPC memory handle
         uint64_t* pHandle                               ///< [out] Returned file descriptor
@@ -1681,7 +1681,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeMemPutIpcHandle(
+    ZEHandleLifetimeValidation::zeMemPutIpcHandleEpilogue(
         ze_context_handle_t hContext,                   ///< [in] handle of the context object
         ze_ipc_mem_handle_t handle                      ///< [in] IPC memory handle
         )
@@ -1693,7 +1693,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeMemOpenIpcHandle(
+    ZEHandleLifetimeValidation::zeMemOpenIpcHandleEpilogue(
         ze_context_handle_t hContext,                   ///< [in] handle of the context object
         ze_device_handle_t hDevice,                     ///< [in] handle of the device to associate with the IPC memory handle
         ze_ipc_mem_handle_t handle,                     ///< [in] IPC memory handle
@@ -1712,7 +1712,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeMemCloseIpcHandle(
+    ZEHandleLifetimeValidation::zeMemCloseIpcHandleEpilogue(
         ze_context_handle_t hContext,                   ///< [in] handle of the context object
         const void* ptr                                 ///< [in][release] pointer to device allocation in this process
         )
@@ -1724,7 +1724,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeMemSetAtomicAccessAttributeExp(
+    ZEHandleLifetimeValidation::zeMemSetAtomicAccessAttributeExpEpilogue(
         ze_context_handle_t hContext,                   ///< [in] handle of context
         ze_device_handle_t hDevice,                     ///< [in] device associated with the memory advice
         const void* ptr,                                ///< [in] Pointer to the start of the memory range
@@ -1743,7 +1743,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeMemGetAtomicAccessAttributeExp(
+    ZEHandleLifetimeValidation::zeMemGetAtomicAccessAttributeExpEpilogue(
         ze_context_handle_t hContext,                   ///< [in] handle of context
         ze_device_handle_t hDevice,                     ///< [in] device associated with the memory advice
         const void* ptr,                                ///< [in] Pointer to the start of the memory range
@@ -1761,7 +1761,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeModuleCreate(
+    ZEHandleLifetimeValidation::zeModuleCreateEpilogue(
         ze_context_handle_t hContext,                   ///< [in] handle of the context object
         ze_device_handle_t hDevice,                     ///< [in] handle of the device
         const ze_module_desc_t* desc,                   ///< [in] pointer to module descriptor
@@ -1779,7 +1779,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeModuleDestroy(
+    ZEHandleLifetimeValidation::zeModuleDestroyEpilogue(
         ze_module_handle_t hModule                      ///< [in][release] handle of the module
         )
     { 
@@ -1796,7 +1796,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeModuleDynamicLink(
+    ZEHandleLifetimeValidation::zeModuleDynamicLinkEpilogue(
         uint32_t numModules,                            ///< [in] number of modules to be linked pointed to by phModules.
         ze_module_handle_t* phModules,                  ///< [in][range(0, numModules)] pointer to an array of modules to
                                                         ///< dynamically link together.
@@ -1812,7 +1812,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeModuleBuildLogDestroy(
+    ZEHandleLifetimeValidation::zeModuleBuildLogDestroyEpilogue(
         ze_module_build_log_handle_t hModuleBuildLog    ///< [in][release] handle of the module build log object.
         )
     { 
@@ -1829,7 +1829,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeModuleBuildLogGetString(
+    ZEHandleLifetimeValidation::zeModuleBuildLogGetStringEpilogue(
         ze_module_build_log_handle_t hModuleBuildLog,   ///< [in] handle of the module build log object.
         size_t* pSize,                                  ///< [in,out] size of build log string.
         char* pBuildLog                                 ///< [in,out][optional] pointer to null-terminated string of the log.
@@ -1842,7 +1842,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeModuleGetNativeBinary(
+    ZEHandleLifetimeValidation::zeModuleGetNativeBinaryEpilogue(
         ze_module_handle_t hModule,                     ///< [in] handle of the module
         size_t* pSize,                                  ///< [in,out] size of native binary in bytes.
         uint8_t* pModuleNativeBinary                    ///< [in,out][optional] byte pointer to native binary
@@ -1855,7 +1855,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeModuleGetGlobalPointer(
+    ZEHandleLifetimeValidation::zeModuleGetGlobalPointerEpilogue(
         ze_module_handle_t hModule,                     ///< [in] handle of the module
         const char* pGlobalName,                        ///< [in] name of global variable in module
         size_t* pSize,                                  ///< [in,out][optional] size of global variable
@@ -1869,7 +1869,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeModuleGetKernelNames(
+    ZEHandleLifetimeValidation::zeModuleGetKernelNamesEpilogue(
         ze_module_handle_t hModule,                     ///< [in] handle of the module
         uint32_t* pCount,                               ///< [in,out] pointer to the number of names.
                                                         ///< if count is zero, then the driver shall update the value with the
@@ -1888,7 +1888,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeModuleGetProperties(
+    ZEHandleLifetimeValidation::zeModuleGetPropertiesEpilogue(
         ze_module_handle_t hModule,                     ///< [in] handle of the module
         ze_module_properties_t* pModuleProperties       ///< [in,out] query result for module properties.
         )
@@ -1900,7 +1900,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeKernelCreate(
+    ZEHandleLifetimeValidation::zeKernelCreateEpilogue(
         ze_module_handle_t hModule,                     ///< [in] handle of the module
         const ze_kernel_desc_t* desc,                   ///< [in] pointer to kernel descriptor
         ze_kernel_handle_t* phKernel                    ///< [out] handle of the Function object
@@ -1913,7 +1913,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeKernelDestroy(
+    ZEHandleLifetimeValidation::zeKernelDestroyEpilogue(
         ze_kernel_handle_t hKernel                      ///< [in][release] handle of the kernel object
         )
     { 
@@ -1930,7 +1930,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeModuleGetFunctionPointer(
+    ZEHandleLifetimeValidation::zeModuleGetFunctionPointerEpilogue(
         ze_module_handle_t hModule,                     ///< [in] handle of the module
         const char* pFunctionName,                      ///< [in] Name of function to retrieve function pointer for.
         void** pfnFunction                              ///< [out] pointer to function.
@@ -1943,7 +1943,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeKernelSetGroupSize(
+    ZEHandleLifetimeValidation::zeKernelSetGroupSizeEpilogue(
         ze_kernel_handle_t hKernel,                     ///< [in] handle of the kernel object
         uint32_t groupSizeX,                            ///< [in] group size for X dimension to use for this kernel
         uint32_t groupSizeY,                            ///< [in] group size for Y dimension to use for this kernel
@@ -1957,7 +1957,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeKernelSuggestGroupSize(
+    ZEHandleLifetimeValidation::zeKernelSuggestGroupSizeEpilogue(
         ze_kernel_handle_t hKernel,                     ///< [in] handle of the kernel object
         uint32_t globalSizeX,                           ///< [in] global width for X dimension
         uint32_t globalSizeY,                           ///< [in] global width for Y dimension
@@ -1974,7 +1974,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeKernelSuggestMaxCooperativeGroupCount(
+    ZEHandleLifetimeValidation::zeKernelSuggestMaxCooperativeGroupCountEpilogue(
         ze_kernel_handle_t hKernel,                     ///< [in] handle of the kernel object
         uint32_t* totalGroupCount                       ///< [out] recommended total group count.
         )
@@ -1986,7 +1986,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeKernelSetArgumentValue(
+    ZEHandleLifetimeValidation::zeKernelSetArgumentValueEpilogue(
         ze_kernel_handle_t hKernel,                     ///< [in] handle of the kernel object
         uint32_t argIndex,                              ///< [in] argument index in range [0, num args - 1]
         size_t argSize,                                 ///< [in] size of argument type
@@ -2001,7 +2001,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeKernelSetIndirectAccess(
+    ZEHandleLifetimeValidation::zeKernelSetIndirectAccessEpilogue(
         ze_kernel_handle_t hKernel,                     ///< [in] handle of the kernel object
         ze_kernel_indirect_access_flags_t flags         ///< [in] kernel indirect access flags
         )
@@ -2013,7 +2013,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeKernelGetIndirectAccess(
+    ZEHandleLifetimeValidation::zeKernelGetIndirectAccessEpilogue(
         ze_kernel_handle_t hKernel,                     ///< [in] handle of the kernel object
         ze_kernel_indirect_access_flags_t* pFlags       ///< [out] query result for kernel indirect access flags.
         )
@@ -2025,7 +2025,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeKernelGetSourceAttributes(
+    ZEHandleLifetimeValidation::zeKernelGetSourceAttributesEpilogue(
         ze_kernel_handle_t hKernel,                     ///< [in] handle of the kernel object
         uint32_t* pSize,                                ///< [in,out] pointer to size of string in bytes, including
                                                         ///< null-terminating character.
@@ -2045,7 +2045,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeKernelSetCacheConfig(
+    ZEHandleLifetimeValidation::zeKernelSetCacheConfigEpilogue(
         ze_kernel_handle_t hKernel,                     ///< [in] handle of the kernel object
         ze_cache_config_flags_t flags                   ///< [in] cache configuration.
                                                         ///< must be 0 (default configuration) or a valid combination of ::ze_cache_config_flag_t.
@@ -2058,7 +2058,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeKernelGetProperties(
+    ZEHandleLifetimeValidation::zeKernelGetPropertiesEpilogue(
         ze_kernel_handle_t hKernel,                     ///< [in] handle of the kernel object
         ze_kernel_properties_t* pKernelProperties       ///< [in,out] query result for kernel properties.
         )
@@ -2070,7 +2070,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeKernelGetName(
+    ZEHandleLifetimeValidation::zeKernelGetNameEpilogue(
         ze_kernel_handle_t hKernel,                     ///< [in] handle of the kernel object
         size_t* pSize,                                  ///< [in,out] size of kernel name string, including null terminator, in
                                                         ///< bytes.
@@ -2084,7 +2084,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeCommandListAppendLaunchKernel(
+    ZEHandleLifetimeValidation::zeCommandListAppendLaunchKernelEpilogue(
         ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
         ze_kernel_handle_t hKernel,                     ///< [in] handle of the kernel object
         const ze_group_count_t* pLaunchFuncArgs,        ///< [in] thread group launch arguments
@@ -2116,7 +2116,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeCommandListAppendLaunchCooperativeKernel(
+    ZEHandleLifetimeValidation::zeCommandListAppendLaunchCooperativeKernelEpilogue(
         ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
         ze_kernel_handle_t hKernel,                     ///< [in] handle of the kernel object
         const ze_group_count_t* pLaunchFuncArgs,        ///< [in] thread group launch arguments
@@ -2148,7 +2148,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeCommandListAppendLaunchKernelIndirect(
+    ZEHandleLifetimeValidation::zeCommandListAppendLaunchKernelIndirectEpilogue(
         ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
         ze_kernel_handle_t hKernel,                     ///< [in] handle of the kernel object
         const ze_group_count_t* pLaunchArgumentsBuffer, ///< [in] pointer to device buffer that will contain thread group launch
@@ -2181,7 +2181,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeCommandListAppendLaunchMultipleKernelsIndirect(
+    ZEHandleLifetimeValidation::zeCommandListAppendLaunchMultipleKernelsIndirectEpilogue(
         ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
         uint32_t numKernels,                            ///< [in] maximum number of kernels to launch
         ze_kernel_handle_t* phKernels,                  ///< [in][range(0, numKernels)] handles of the kernel objects
@@ -2220,7 +2220,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeContextMakeMemoryResident(
+    ZEHandleLifetimeValidation::zeContextMakeMemoryResidentEpilogue(
         ze_context_handle_t hContext,                   ///< [in] handle of context object
         ze_device_handle_t hDevice,                     ///< [in] handle of the device
         void* ptr,                                      ///< [in] pointer to memory to make resident
@@ -2237,7 +2237,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeContextEvictMemory(
+    ZEHandleLifetimeValidation::zeContextEvictMemoryEpilogue(
         ze_context_handle_t hContext,                   ///< [in] handle of context object
         ze_device_handle_t hDevice,                     ///< [in] handle of the device
         void* ptr,                                      ///< [in] pointer to memory to evict
@@ -2254,7 +2254,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeContextMakeImageResident(
+    ZEHandleLifetimeValidation::zeContextMakeImageResidentEpilogue(
         ze_context_handle_t hContext,                   ///< [in] handle of context object
         ze_device_handle_t hDevice,                     ///< [in] handle of the device
         ze_image_handle_t hImage                        ///< [in] handle of image to make resident
@@ -2273,7 +2273,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeContextEvictImage(
+    ZEHandleLifetimeValidation::zeContextEvictImageEpilogue(
         ze_context_handle_t hContext,                   ///< [in] handle of context object
         ze_device_handle_t hDevice,                     ///< [in] handle of the device
         ze_image_handle_t hImage                        ///< [in] handle of image to make evict
@@ -2292,7 +2292,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeSamplerCreate(
+    ZEHandleLifetimeValidation::zeSamplerCreateEpilogue(
         ze_context_handle_t hContext,                   ///< [in] handle of the context object
         ze_device_handle_t hDevice,                     ///< [in] handle of the device
         const ze_sampler_desc_t* desc,                  ///< [in] pointer to sampler descriptor
@@ -2309,7 +2309,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeSamplerDestroy(
+    ZEHandleLifetimeValidation::zeSamplerDestroyEpilogue(
         ze_sampler_handle_t hSampler                    ///< [in][release] handle of the sampler
         )
     { 
@@ -2326,7 +2326,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeVirtualMemReserve(
+    ZEHandleLifetimeValidation::zeVirtualMemReserveEpilogue(
         ze_context_handle_t hContext,                   ///< [in] handle of the context object
         const void* pStart,                             ///< [in][optional] pointer to start of region to reserve. If nullptr then
                                                         ///< implementation will choose a start address.
@@ -2341,7 +2341,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeVirtualMemFree(
+    ZEHandleLifetimeValidation::zeVirtualMemFreeEpilogue(
         ze_context_handle_t hContext,                   ///< [in] handle of the context object
         const void* ptr,                                ///< [in] pointer to start of region to free.
         size_t size                                     ///< [in] size in bytes to free; must be page aligned.
@@ -2354,7 +2354,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeVirtualMemQueryPageSize(
+    ZEHandleLifetimeValidation::zeVirtualMemQueryPageSizeEpilogue(
         ze_context_handle_t hContext,                   ///< [in] handle of the context object
         ze_device_handle_t hDevice,                     ///< [in] handle of the device object
         size_t size,                                    ///< [in] unaligned allocation size in bytes
@@ -2372,7 +2372,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zePhysicalMemCreate(
+    ZEHandleLifetimeValidation::zePhysicalMemCreateEpilogue(
         ze_context_handle_t hContext,                   ///< [in] handle of the context object
         ze_device_handle_t hDevice,                     ///< [in] handle of the device object
         ze_physical_mem_desc_t* desc,                   ///< [in] pointer to physical memory descriptor.
@@ -2389,7 +2389,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zePhysicalMemDestroy(
+    ZEHandleLifetimeValidation::zePhysicalMemDestroyEpilogue(
         ze_context_handle_t hContext,                   ///< [in] handle of the context object
         ze_physical_mem_handle_t hPhysicalMemory        ///< [in][release] handle of physical memory object to destroy
         )
@@ -2416,7 +2416,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeVirtualMemMap(
+    ZEHandleLifetimeValidation::zeVirtualMemMapEpilogue(
         ze_context_handle_t hContext,                   ///< [in] handle of the context object
         const void* ptr,                                ///< [in] pointer to start of virtual address range to map.
         size_t size,                                    ///< [in] size in bytes of virtual address range to map; must be page
@@ -2438,7 +2438,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeVirtualMemUnmap(
+    ZEHandleLifetimeValidation::zeVirtualMemUnmapEpilogue(
         ze_context_handle_t hContext,                   ///< [in] handle of the context object
         const void* ptr,                                ///< [in] pointer to start of region to unmap.
         size_t size                                     ///< [in] size in bytes to unmap; must be page aligned.
@@ -2451,7 +2451,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeVirtualMemSetAccessAttribute(
+    ZEHandleLifetimeValidation::zeVirtualMemSetAccessAttributeEpilogue(
         ze_context_handle_t hContext,                   ///< [in] handle of the context object
         const void* ptr,                                ///< [in] pointer to start of reserved virtual address region.
         size_t size,                                    ///< [in] size in bytes; must be page aligned.
@@ -2466,7 +2466,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeVirtualMemGetAccessAttribute(
+    ZEHandleLifetimeValidation::zeVirtualMemGetAccessAttributeEpilogue(
         ze_context_handle_t hContext,                   ///< [in] handle of the context object
         const void* ptr,                                ///< [in] pointer to start of virtual address region for query.
         size_t size,                                    ///< [in] size in bytes; must be page aligned.
@@ -2482,7 +2482,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeKernelSetGlobalOffsetExp(
+    ZEHandleLifetimeValidation::zeKernelSetGlobalOffsetExpEpilogue(
         ze_kernel_handle_t hKernel,                     ///< [in] handle of the kernel object
         uint32_t offsetX,                               ///< [in] global offset for X dimension to use for this kernel
         uint32_t offsetY,                               ///< [in] global offset for Y dimension to use for this kernel
@@ -2496,7 +2496,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeDeviceReserveCacheExt(
+    ZEHandleLifetimeValidation::zeDeviceReserveCacheExtEpilogue(
         ze_device_handle_t hDevice,                     ///< [in] handle of the device object
         size_t cacheLevel,                              ///< [in] cache level where application want to reserve. If zero, then the
                                                         ///< driver shall default to last level of cache and attempt to reserve in
@@ -2512,7 +2512,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeDeviceSetCacheAdviceExt(
+    ZEHandleLifetimeValidation::zeDeviceSetCacheAdviceExtEpilogue(
         ze_device_handle_t hDevice,                     ///< [in] handle of the device object
         void* ptr,                                      ///< [in] memory pointer to query
         size_t regionSize,                              ///< [in] region size, in pages
@@ -2526,7 +2526,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeEventQueryTimestampsExp(
+    ZEHandleLifetimeValidation::zeEventQueryTimestampsExpEpilogue(
         ze_event_handle_t hEvent,                       ///< [in] handle of the event
         ze_device_handle_t hDevice,                     ///< [in] handle of the device to query
         uint32_t* pCount,                               ///< [in,out] pointer to the number of timestamp results.
@@ -2549,7 +2549,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeImageGetMemoryPropertiesExp(
+    ZEHandleLifetimeValidation::zeImageGetMemoryPropertiesExpEpilogue(
         ze_image_handle_t hImage,                       ///< [in] handle of image object
         ze_image_memory_properties_exp_t* pMemoryProperties ///< [in,out] query result for image memory properties.
         )
@@ -2561,7 +2561,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeImageViewCreateExt(
+    ZEHandleLifetimeValidation::zeImageViewCreateExtEpilogue(
         ze_context_handle_t hContext,                   ///< [in] handle of the context object
         ze_device_handle_t hDevice,                     ///< [in] handle of the device
         const ze_image_desc_t* desc,                    ///< [in] pointer to image descriptor
@@ -2582,7 +2582,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeImageViewCreateExp(
+    ZEHandleLifetimeValidation::zeImageViewCreateExpEpilogue(
         ze_context_handle_t hContext,                   ///< [in] handle of the context object
         ze_device_handle_t hDevice,                     ///< [in] handle of the device
         const ze_image_desc_t* desc,                    ///< [in] pointer to image descriptor
@@ -2603,7 +2603,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeKernelSchedulingHintExp(
+    ZEHandleLifetimeValidation::zeKernelSchedulingHintExpEpilogue(
         ze_kernel_handle_t hKernel,                     ///< [in] handle of the kernel object
         ze_scheduling_hint_exp_desc_t* pHint            ///< [in] pointer to kernel scheduling hint descriptor
         )
@@ -2615,7 +2615,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeDevicePciGetPropertiesExt(
+    ZEHandleLifetimeValidation::zeDevicePciGetPropertiesExtEpilogue(
         ze_device_handle_t hDevice,                     ///< [in] handle of the device object.
         ze_pci_ext_properties_t* pPciProperties         ///< [in,out] returns the PCI properties of the device.
         )
@@ -2627,7 +2627,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeCommandListAppendImageCopyToMemoryExt(
+    ZEHandleLifetimeValidation::zeCommandListAppendImageCopyToMemoryExtEpilogue(
         ze_command_list_handle_t hCommandList,          ///< [in] handle of command list
         void* dstptr,                                   ///< [in] pointer to destination memory to copy to
         ze_image_handle_t hSrcImage,                    ///< [in] handle of source image to copy from
@@ -2664,7 +2664,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeCommandListAppendImageCopyFromMemoryExt(
+    ZEHandleLifetimeValidation::zeCommandListAppendImageCopyFromMemoryExtEpilogue(
         ze_command_list_handle_t hCommandList,          ///< [in] handle of command list
         ze_image_handle_t hDstImage,                    ///< [in] handle of destination image to copy to
         const void* srcptr,                             ///< [in] pointer to source memory to copy from
@@ -2701,7 +2701,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeImageGetAllocPropertiesExt(
+    ZEHandleLifetimeValidation::zeImageGetAllocPropertiesExtEpilogue(
         ze_context_handle_t hContext,                   ///< [in] handle of the context object
         ze_image_handle_t hImage,                       ///< [in] handle of image object to query
         ze_image_allocation_ext_properties_t* pImageAllocProperties ///< [in,out] query result for image allocation properties
@@ -2717,7 +2717,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeModuleInspectLinkageExt(
+    ZEHandleLifetimeValidation::zeModuleInspectLinkageExtEpilogue(
         ze_linkage_inspection_ext_desc_t* pInspectDesc, ///< [in] pointer to linkage inspection descriptor structure.
         uint32_t numModules,                            ///< [in] number of modules to be inspected pointed to by phModules.
         ze_module_handle_t* phModules,                  ///< [in][range(0, numModules)] pointer to an array of modules to be
@@ -2735,7 +2735,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeMemFreeExt(
+    ZEHandleLifetimeValidation::zeMemFreeExtEpilogue(
         ze_context_handle_t hContext,                   ///< [in] handle of the context object
         const ze_memory_free_ext_desc_t* pMemFreeDesc,  ///< [in] pointer to memory free descriptor
         void* ptr                                       ///< [in][release] pointer to memory to free
@@ -2748,7 +2748,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeFabricVertexGetExp(
+    ZEHandleLifetimeValidation::zeFabricVertexGetExpEpilogue(
         ze_driver_handle_t hDriver,                     ///< [in] handle of the driver instance
         uint32_t* pCount,                               ///< [in,out] pointer to the number of fabric vertices.
                                                         ///< if count is zero, then the driver shall update the value with the
@@ -2768,7 +2768,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeFabricVertexGetSubVerticesExp(
+    ZEHandleLifetimeValidation::zeFabricVertexGetSubVerticesExpEpilogue(
         ze_fabric_vertex_handle_t hVertex,              ///< [in] handle of the fabric vertex object
         uint32_t* pCount,                               ///< [in,out] pointer to the number of sub-vertices.
                                                         ///< if count is zero, then the driver shall update the value with the
@@ -2788,7 +2788,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeFabricVertexGetPropertiesExp(
+    ZEHandleLifetimeValidation::zeFabricVertexGetPropertiesExpEpilogue(
         ze_fabric_vertex_handle_t hVertex,              ///< [in] handle of the fabric vertex
         ze_fabric_vertex_exp_properties_t* pVertexProperties///< [in,out] query result for fabric vertex properties
         )
@@ -2800,7 +2800,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeFabricVertexGetDeviceExp(
+    ZEHandleLifetimeValidation::zeFabricVertexGetDeviceExpEpilogue(
         ze_fabric_vertex_handle_t hVertex,              ///< [in] handle of the fabric vertex
         ze_device_handle_t* phDevice                    ///< [out] device handle corresponding to fabric vertex
         )
@@ -2812,7 +2812,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeDeviceGetFabricVertexExp(
+    ZEHandleLifetimeValidation::zeDeviceGetFabricVertexExpEpilogue(
         ze_device_handle_t hDevice,                     ///< [in] handle of the device
         ze_fabric_vertex_handle_t* phVertex             ///< [out] fabric vertex handle corresponding to device
         )
@@ -2824,7 +2824,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeFabricEdgeGetExp(
+    ZEHandleLifetimeValidation::zeFabricEdgeGetExpEpilogue(
         ze_fabric_vertex_handle_t hVertexA,             ///< [in] handle of first fabric vertex instance
         ze_fabric_vertex_handle_t hVertexB,             ///< [in] handle of second fabric vertex instance
         uint32_t* pCount,                               ///< [in,out] pointer to the number of fabric edges.
@@ -2848,7 +2848,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeFabricEdgeGetVerticesExp(
+    ZEHandleLifetimeValidation::zeFabricEdgeGetVerticesExpEpilogue(
         ze_fabric_edge_handle_t hEdge,                  ///< [in] handle of the fabric edge instance
         ze_fabric_vertex_handle_t* phVertexA,           ///< [out] fabric vertex connected to one end of the given fabric edge.
         ze_fabric_vertex_handle_t* phVertexB            ///< [out] fabric vertex connected to other end of the given fabric edge.
@@ -2861,7 +2861,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeFabricEdgeGetPropertiesExp(
+    ZEHandleLifetimeValidation::zeFabricEdgeGetPropertiesExpEpilogue(
         ze_fabric_edge_handle_t hEdge,                  ///< [in] handle of the fabric edge
         ze_fabric_edge_exp_properties_t* pEdgeProperties///< [in,out] query result for fabric edge properties
         )
@@ -2873,7 +2873,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeEventQueryKernelTimestampsExt(
+    ZEHandleLifetimeValidation::zeEventQueryKernelTimestampsExtEpilogue(
         ze_event_handle_t hEvent,                       ///< [in] handle of the event
         ze_device_handle_t hDevice,                     ///< [in] handle of the device to query
         uint32_t* pCount,                               ///< [in,out] pointer to the number of event packets available.
@@ -2903,7 +2903,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeRTASBuilderCreateExp(
+    ZEHandleLifetimeValidation::zeRTASBuilderCreateExpEpilogue(
         ze_driver_handle_t hDriver,                     ///< [in] handle of driver object
         const ze_rtas_builder_exp_desc_t* pDescriptor,  ///< [in] pointer to builder descriptor
         ze_rtas_builder_exp_handle_t* phBuilder         ///< [out] handle of builder object
@@ -2916,7 +2916,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeRTASBuilderGetBuildPropertiesExp(
+    ZEHandleLifetimeValidation::zeRTASBuilderGetBuildPropertiesExpEpilogue(
         ze_rtas_builder_exp_handle_t hBuilder,          ///< [in] handle of builder object
         const ze_rtas_builder_build_op_exp_desc_t* pBuildOpDescriptor,  ///< [in] pointer to build operation descriptor
         ze_rtas_builder_exp_properties_t* pProperties   ///< [in,out] query result for builder properties
@@ -2929,7 +2929,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeDriverRTASFormatCompatibilityCheckExp(
+    ZEHandleLifetimeValidation::zeDriverRTASFormatCompatibilityCheckExpEpilogue(
         ze_driver_handle_t hDriver,                     ///< [in] handle of driver object
         ze_rtas_format_exp_t rtasFormatA,               ///< [in] operand A
         ze_rtas_format_exp_t rtasFormatB                ///< [in] operand B
@@ -2942,7 +2942,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeRTASBuilderBuildExp(
+    ZEHandleLifetimeValidation::zeRTASBuilderBuildExpEpilogue(
         ze_rtas_builder_exp_handle_t hBuilder,          ///< [in] handle of builder object
         const ze_rtas_builder_build_op_exp_desc_t* pBuildOpDescriptor,  ///< [in] pointer to build operation descriptor
         void* pScratchBuffer,                           ///< [in][range(0, `scratchBufferSizeBytes`)] scratch buffer to be used
@@ -2968,7 +2968,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeRTASBuilderDestroyExp(
+    ZEHandleLifetimeValidation::zeRTASBuilderDestroyExpEpilogue(
         ze_rtas_builder_exp_handle_t hBuilder           ///< [in][release] handle of builder object to destroy
         )
     { 
@@ -2979,7 +2979,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeRTASParallelOperationCreateExp(
+    ZEHandleLifetimeValidation::zeRTASParallelOperationCreateExpEpilogue(
         ze_driver_handle_t hDriver,                     ///< [in] handle of driver object
         ze_rtas_parallel_operation_exp_handle_t* phParallelOperation///< [out] handle of parallel operation object
         )
@@ -2991,7 +2991,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeRTASParallelOperationGetPropertiesExp(
+    ZEHandleLifetimeValidation::zeRTASParallelOperationGetPropertiesExpEpilogue(
         ze_rtas_parallel_operation_exp_handle_t hParallelOperation, ///< [in] handle of parallel operation object
         ze_rtas_parallel_operation_exp_properties_t* pProperties///< [in,out] query result for parallel operation properties
         )
@@ -3003,7 +3003,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeRTASParallelOperationJoinExp(
+    ZEHandleLifetimeValidation::zeRTASParallelOperationJoinExpEpilogue(
         ze_rtas_parallel_operation_exp_handle_t hParallelOperation  ///< [in] handle of parallel operation object
         )
     { 
@@ -3014,7 +3014,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeRTASParallelOperationDestroyExp(
+    ZEHandleLifetimeValidation::zeRTASParallelOperationDestroyExpEpilogue(
         ze_rtas_parallel_operation_exp_handle_t hParallelOperation  ///< [in][release] handle of parallel operation object to destroy
         )
     { 
@@ -3025,7 +3025,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeMemGetPitchFor2dImage(
+    ZEHandleLifetimeValidation::zeMemGetPitchFor2dImageEpilogue(
         ze_context_handle_t hContext,                   ///< [in] handle of the context object
         ze_device_handle_t hDevice,                     ///< [in] handle of the device
         size_t imageWidth,                              ///< [in] imageWidth
@@ -3044,7 +3044,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeImageGetDeviceOffsetExp(
+    ZEHandleLifetimeValidation::zeImageGetDeviceOffsetExpEpilogue(
         ze_image_handle_t hImage,                       ///< [in] handle of the image
         uint64_t* pDeviceOffset                         ///< [out] bindless device offset for image
         )
@@ -3056,7 +3056,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeCommandListCreateCloneExp(
+    ZEHandleLifetimeValidation::zeCommandListCreateCloneExpEpilogue(
         ze_command_list_handle_t hCommandList,          ///< [in] handle to source command list (the command list to clone)
         ze_command_list_handle_t* phClonedCommandList   ///< [out] pointer to handle of the cloned command list
         )
@@ -3068,7 +3068,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeCommandListImmediateAppendCommandListsExp(
+    ZEHandleLifetimeValidation::zeCommandListImmediateAppendCommandListsExpEpilogue(
         ze_command_list_handle_t hCommandListImmediate, ///< [in] handle of the immediate command list
         uint32_t numCommandLists,                       ///< [in] number of command lists
         ze_command_list_handle_t* phCommandLists,       ///< [in][range(0, numCommandLists)] handles of command lists
@@ -3103,7 +3103,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeCommandListGetNextCommandIdExp(
+    ZEHandleLifetimeValidation::zeCommandListGetNextCommandIdExpEpilogue(
         ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
         const ze_mutable_command_id_exp_desc_t* desc,   ///< [in] pointer to mutable command identifier descriptor
         uint64_t* pCommandId                            ///< [out] pointer to mutable command identifier to be written
@@ -3116,7 +3116,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeCommandListUpdateMutableCommandsExp(
+    ZEHandleLifetimeValidation::zeCommandListUpdateMutableCommandsExpEpilogue(
         ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
         const ze_mutable_commands_exp_desc_t* desc      ///< [in] pointer to mutable commands descriptor; multiple descriptors may
                                                         ///< be chained via `pNext` member
@@ -3129,7 +3129,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeCommandListUpdateMutableCommandSignalEventExp(
+    ZEHandleLifetimeValidation::zeCommandListUpdateMutableCommandSignalEventExpEpilogue(
         ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
         uint64_t commandId,                             ///< [in] command identifier
         ze_event_handle_t hSignalEvent                  ///< [in][optional] handle of the event to signal on completion
@@ -3145,7 +3145,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZEHandleLifetimeValidation::zeCommandListUpdateMutableCommandWaitEventsExp(
+    ZEHandleLifetimeValidation::zeCommandListUpdateMutableCommandWaitEventsExpEpilogue(
         ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
         uint64_t commandId,                             ///< [in] command identifier
         uint32_t numWaitEvents,                         ///< [in][optional] the number of wait events

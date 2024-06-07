@@ -23,15 +23,15 @@ namespace validation_layer
 
             class ZEvalidationCheckerTemplate : public ZEValidationEntryPoints {
             public:
-                ze_result_t zeInit ( ze_init_flags_t flags ) override;
+                ze_result_t zeInitPrologue( ze_init_flags_t flags ) override;
             };
             class ZESvalidationCheckerTemplate : public ZESValidationEntryPoints {
             public:
-                ze_result_t zesInit ( zes_init_flags_t flags ) override;
+                ze_result_t zesInitPrologue( zes_init_flags_t flags ) override;
             };
             class ZETvalidationCheckerTemplate : public ZETValidationEntryPoints {
             public:
-                ze_result_t zetModuleGetDebugInfo ( zet_module_handle_t hModule, zet_module_debug_info_format_t format, size_t* pSize, uint8_t* pDebugInfo ) override;
+                ze_result_t zetModuleGetDebugInfoPrologue( zet_module_handle_t hModule, zet_module_debug_info_format_t format, size_t* pSize, uint8_t* pDebugInfo ) override;
             };
         bool enableValidationCheckerTemplate = false;
     };

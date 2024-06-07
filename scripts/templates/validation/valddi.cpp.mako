@@ -42,16 +42,17 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            context.validationHandlers[i]->${n}ParamValidation->${th.make_func_name(n, tags, obj)}( \
+            auto result = context.validationHandlers[i]->${n}ParamValidation->${th.make_func_name(n, tags, obj)}Prologue( \
 % for line in th.make_param_lines(n, tags, obj, format=['name','delim']):
 ${line} \
 %endfor
 );
+            if(result!=${X}_RESULT_SUCCESS) return result;
         }
 
         if( context.enableParameterValidation )
         {
-            auto result = context.paramValidation->${n}ParamValidation.${th.make_func_name(n, tags, obj)}( \
+            auto result = context.paramValidation->${n}ParamValidation.${th.make_func_name(n, tags, obj)}Prologue( \
 % for line in th.make_param_lines(n, tags, obj, format=['name','delim']):
 ${line} \
 %endfor
@@ -69,15 +70,25 @@ ${line} \
         generate_post_call = re.match(r"\w+Create\w*$|\w+Get$|\w+Get\w*Exp$|\w+GetIpcHandle$|\w+GetSubDevices$", func_name)
         %>
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->${n}HandleLifetime.${th.make_func_name(n, tags, obj)}( \
+            auto result = context.handleLifetime->${n}HandleLifetime.${th.make_func_name(n, tags, obj)}Epilogue( \
 % for line in th.make_param_lines(n, tags, obj, format=['name','delim']):
 ${line} \
 %endfor
 );
-            if(result!=${X}_RESULT_SUCCESS) return result;    
+            if(result!=${X}_RESULT_SUCCESS) return result;
         }
 
         auto result = ${th.make_pfn_name(n, tags, obj)}( ${", ".join(th.make_param_lines(n, tags, obj, format=["name"]))} );
+
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->${n}ParamValidation->${th.make_func_name(n, tags, obj)}Epilogue( \
+% for line in th.make_param_lines(n, tags, obj, format=['name','delim']):
+${line} \
+%endfor
+);
+            if(result!=${X}_RESULT_SUCCESS) return result;
+        }
+
         %if generate_post_call:
 
         if( result == ${X}_RESULT_SUCCESS && context.enableHandleLifetime ){
