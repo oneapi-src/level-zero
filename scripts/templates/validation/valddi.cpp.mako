@@ -42,17 +42,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->${n}ParamValidation->${th.make_func_name(n, tags, obj)}Prologue( \
-% for line in th.make_param_lines(n, tags, obj, format=['name','delim']):
-${line} \
-%endfor
-);
-            if(result!=${X}_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->${n}ParamValidation.${th.make_func_name(n, tags, obj)}Prologue( \
+            auto result = context.validationHandlers[i]->${n}Validation->${th.make_func_name(n, tags, obj)}Prologue( \
 % for line in th.make_param_lines(n, tags, obj, format=['name','delim']):
 ${line} \
 %endfor
@@ -81,7 +71,7 @@ ${line} \
         auto result = ${th.make_pfn_name(n, tags, obj)}( ${", ".join(th.make_param_lines(n, tags, obj, format=["name"]))} );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->${n}ParamValidation->${th.make_func_name(n, tags, obj)}Epilogue( \
+            auto result = context.validationHandlers[i]->${n}Validation->${th.make_func_name(n, tags, obj)}Epilogue( \
 % for line in th.make_param_lines(n, tags, obj, format=['name','delim']):
 ${line} \
 %endfor

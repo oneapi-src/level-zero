@@ -18,18 +18,18 @@ namespace validation_layer
             validationCheckerTemplate::ZEvalidationCheckerTemplate *zeChecker = new validationCheckerTemplate::ZEvalidationCheckerTemplate;
             validationCheckerTemplate::ZESvalidationCheckerTemplate *zesChecker = new validationCheckerTemplate::ZESvalidationCheckerTemplate;
             validationCheckerTemplate::ZETvalidationCheckerTemplate *zetChecker = new validationCheckerTemplate::ZETvalidationCheckerTemplate;
-            templateChecker.zeParamValidation = zeChecker;
-            templateChecker.zetParamValidation = zetChecker;
-            templateChecker.zesParamValidation = zesChecker;
+            templateChecker.zeValidation = zeChecker;
+            templateChecker.zetValidation = zetChecker;
+            templateChecker.zesValidation = zesChecker;
             validation_layer::context.validationHandlers.push_back(&templateChecker);
         }
     }
 
     validationCheckerTemplate::~validationCheckerTemplate() {
         if(enableValidationCheckerTemplate) {
-            delete templateChecker.zeParamValidation;
-            delete templateChecker.zetParamValidation;
-            delete templateChecker.zesParamValidation;
+            delete templateChecker.zeValidation;
+            delete templateChecker.zetValidation;
+            delete templateChecker.zesValidation;
         }
     }
 

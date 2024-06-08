@@ -18,10 +18,6 @@ namespace validation_layer
     ///////////////////////////////////////////////////////////////////////////////
     context_t::context_t()
     {
-        enableParameterValidation = getenv_tobool( "ZE_ENABLE_PARAMETER_VALIDATION" );
-        if(enableParameterValidation) {
-            paramValidation = std::make_unique<ParameterValidation>();
-        }
         enableHandleLifetime = getenv_tobool( "ZE_ENABLE_HANDLE_LIFETIME" );
         if (enableHandleLifetime) {
             handleLifetime = std::make_unique<HandleLifetimeValidation>();

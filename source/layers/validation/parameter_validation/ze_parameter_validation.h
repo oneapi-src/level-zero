@@ -10,7 +10,8 @@
  *
  */
 
-#pragma once 
+#pragma once
+#include "ze_validation_layer.h"
 #include "ze_entry_points.h"
 
 
@@ -204,5 +205,4 @@ namespace validation_layer
         ze_result_t zeCommandListUpdateMutableCommandSignalEventExpPrologue( ze_command_list_handle_t hCommandList, uint64_t commandId, ze_event_handle_t hSignalEvent ) override;
         ze_result_t zeCommandListUpdateMutableCommandWaitEventsExpPrologue( ze_command_list_handle_t hCommandList, uint64_t commandId, uint32_t numWaitEvents, ze_event_handle_t* phWaitEvents ) override;
     };
-
 }

@@ -10,7 +10,7 @@
  *
  */
 #include "ze_validation_layer.h"
-#include "ze_parameter_validation.h"
+#include "param_validation.h"
 
 namespace validation_layer
 {

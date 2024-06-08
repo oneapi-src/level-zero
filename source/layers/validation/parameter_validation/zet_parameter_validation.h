@@ -10,7 +10,8 @@
  *
  */
 
-#pragma once 
+#pragma once
+#include "ze_validation_layer.h"
 #include "zet_entry_points.h"
 
 
@@ -74,5 +75,4 @@ namespace validation_layer
         ze_result_t zetMetricGroupDestroyExpPrologue( zet_metric_group_handle_t hMetricGroup ) override;
         ze_result_t zetMetricDestroyExpPrologue( zet_metric_handle_t hMetric ) override;
     };
-
 }

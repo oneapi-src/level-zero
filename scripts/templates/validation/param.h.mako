@@ -19,7 +19,8 @@ from templates import helper as th
  *
  */
 
-#pragma once 
+#pragma once
+#include "${x}_validation_layer.h"
 #include "${n}_entry_points.h"
 
 
@@ -36,5 +37,4 @@ ${line} \
 ) override;
     %endfor
     };
-
 }

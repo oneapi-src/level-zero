@@ -13,9 +13,12 @@
 #include "zes_ddi.h"
 #include "ze_util.h"
 #include "loader/ze_loader.h"
-#include "param_validation.h"
 #include "handle_lifetime.h"
+#include "ze_entry_points.h"
+#include "zet_entry_points.h"
+#include "zes_entry_points.h"
 #include <memory>
+#include <vector>
 
 #define VALIDATION_COMP_NAME "validation layer"
 
@@ -25,16 +28,15 @@ namespace validation_layer
 
     class validationChecker {
     public:
-        ZEValidationEntryPoints *zeParamValidation;
-        ZESValidationEntryPoints *zesParamValidation;
-        ZETValidationEntryPoints *zetParamValidation;
+        ZEValidationEntryPoints *zeValidation;
+        ZESValidationEntryPoints *zesValidation;
+        ZETValidationEntryPoints *zetValidation;
     };
     class __zedlllocal context_t
     {
     public:
         ze_api_version_t version = ZE_API_VERSION_CURRENT;
 
-        bool enableParameterValidation = false;
         bool enableHandleLifetime = false;
         bool enableThreadingValidation = false;
 
@@ -43,8 +45,6 @@ namespace validation_layer
         zes_dditable_t  zesDdiTable = {};
 
         std::vector<validationChecker *> validationHandlers;
-
-        std::unique_ptr<ParameterValidation> paramValidation;
         std::unique_ptr<HandleLifetimeValidation> handleLifetime;
 
         context_t();

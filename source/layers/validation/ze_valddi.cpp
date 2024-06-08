@@ -28,13 +28,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeInitPrologue( flags );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeInitPrologue( flags );
+            auto result = context.validationHandlers[i]->zeValidation->zeInitPrologue( flags );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -52,7 +46,7 @@ namespace validation_layer
         auto result = pfnInit( flags );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeInitEpilogue( flags );
+            auto result = context.validationHandlers[i]->zeValidation->zeInitEpilogue( flags );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -80,13 +74,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeDriverGetPrologue( pCount, phDrivers );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeDriverGetPrologue( pCount, phDrivers );
+            auto result = context.validationHandlers[i]->zeValidation->zeDriverGetPrologue( pCount, phDrivers );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -104,7 +92,7 @@ namespace validation_layer
         auto result = pfnGet( pCount, phDrivers );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeDriverGetEpilogue( pCount, phDrivers );
+            auto result = context.validationHandlers[i]->zeValidation->zeDriverGetEpilogue( pCount, phDrivers );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -136,13 +124,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeDriverGetApiVersionPrologue( hDriver, version );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeDriverGetApiVersionPrologue( hDriver, version );
+            auto result = context.validationHandlers[i]->zeValidation->zeDriverGetApiVersionPrologue( hDriver, version );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -160,7 +142,7 @@ namespace validation_layer
         auto result = pfnGetApiVersion( hDriver, version );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeDriverGetApiVersionEpilogue( hDriver, version );
+            auto result = context.validationHandlers[i]->zeValidation->zeDriverGetApiVersionEpilogue( hDriver, version );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -182,13 +164,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeDriverGetPropertiesPrologue( hDriver, pDriverProperties );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeDriverGetPropertiesPrologue( hDriver, pDriverProperties );
+            auto result = context.validationHandlers[i]->zeValidation->zeDriverGetPropertiesPrologue( hDriver, pDriverProperties );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -206,7 +182,7 @@ namespace validation_layer
         auto result = pfnGetProperties( hDriver, pDriverProperties );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeDriverGetPropertiesEpilogue( hDriver, pDriverProperties );
+            auto result = context.validationHandlers[i]->zeValidation->zeDriverGetPropertiesEpilogue( hDriver, pDriverProperties );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -228,13 +204,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeDriverGetIpcPropertiesPrologue( hDriver, pIpcProperties );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeDriverGetIpcPropertiesPrologue( hDriver, pIpcProperties );
+            auto result = context.validationHandlers[i]->zeValidation->zeDriverGetIpcPropertiesPrologue( hDriver, pIpcProperties );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -252,7 +222,7 @@ namespace validation_layer
         auto result = pfnGetIpcProperties( hDriver, pIpcProperties );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeDriverGetIpcPropertiesEpilogue( hDriver, pIpcProperties );
+            auto result = context.validationHandlers[i]->zeValidation->zeDriverGetIpcPropertiesEpilogue( hDriver, pIpcProperties );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -283,13 +253,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeDriverGetExtensionPropertiesPrologue( hDriver, pCount, pExtensionProperties );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeDriverGetExtensionPropertiesPrologue( hDriver, pCount, pExtensionProperties );
+            auto result = context.validationHandlers[i]->zeValidation->zeDriverGetExtensionPropertiesPrologue( hDriver, pCount, pExtensionProperties );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -307,7 +271,7 @@ namespace validation_layer
         auto result = pfnGetExtensionProperties( hDriver, pCount, pExtensionProperties );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeDriverGetExtensionPropertiesEpilogue( hDriver, pCount, pExtensionProperties );
+            auto result = context.validationHandlers[i]->zeValidation->zeDriverGetExtensionPropertiesEpilogue( hDriver, pCount, pExtensionProperties );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -330,13 +294,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeDriverGetExtensionFunctionAddressPrologue( hDriver, name, ppFunctionAddress );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeDriverGetExtensionFunctionAddressPrologue( hDriver, name, ppFunctionAddress );
+            auto result = context.validationHandlers[i]->zeValidation->zeDriverGetExtensionFunctionAddressPrologue( hDriver, name, ppFunctionAddress );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -354,7 +312,7 @@ namespace validation_layer
         auto result = pfnGetExtensionFunctionAddress( hDriver, name, ppFunctionAddress );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeDriverGetExtensionFunctionAddressEpilogue( hDriver, name, ppFunctionAddress );
+            auto result = context.validationHandlers[i]->zeValidation->zeDriverGetExtensionFunctionAddressEpilogue( hDriver, name, ppFunctionAddress );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -377,13 +335,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeDriverGetLastErrorDescriptionPrologue( hDriver, ppString );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeDriverGetLastErrorDescriptionPrologue( hDriver, ppString );
+            auto result = context.validationHandlers[i]->zeValidation->zeDriverGetLastErrorDescriptionPrologue( hDriver, ppString );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -401,7 +353,7 @@ namespace validation_layer
         auto result = pfnGetLastErrorDescription( hDriver, ppString );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeDriverGetLastErrorDescriptionEpilogue( hDriver, ppString );
+            auto result = context.validationHandlers[i]->zeValidation->zeDriverGetLastErrorDescriptionEpilogue( hDriver, ppString );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -430,13 +382,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeDeviceGetPrologue( hDriver, pCount, phDevices );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeDeviceGetPrologue( hDriver, pCount, phDevices );
+            auto result = context.validationHandlers[i]->zeValidation->zeDeviceGetPrologue( hDriver, pCount, phDevices );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -454,7 +400,7 @@ namespace validation_layer
         auto result = pfnGet( hDriver, pCount, phDevices );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeDeviceGetEpilogue( hDriver, pCount, phDevices );
+            auto result = context.validationHandlers[i]->zeValidation->zeDeviceGetEpilogue( hDriver, pCount, phDevices );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -486,13 +432,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeDeviceGetRootDevicePrologue( hDevice, phRootDevice );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeDeviceGetRootDevicePrologue( hDevice, phRootDevice );
+            auto result = context.validationHandlers[i]->zeValidation->zeDeviceGetRootDevicePrologue( hDevice, phRootDevice );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -510,7 +450,7 @@ namespace validation_layer
         auto result = pfnGetRootDevice( hDevice, phRootDevice );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeDeviceGetRootDeviceEpilogue( hDevice, phRootDevice );
+            auto result = context.validationHandlers[i]->zeValidation->zeDeviceGetRootDeviceEpilogue( hDevice, phRootDevice );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -539,13 +479,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeDeviceGetSubDevicesPrologue( hDevice, pCount, phSubdevices );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeDeviceGetSubDevicesPrologue( hDevice, pCount, phSubdevices );
+            auto result = context.validationHandlers[i]->zeValidation->zeDeviceGetSubDevicesPrologue( hDevice, pCount, phSubdevices );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -563,7 +497,7 @@ namespace validation_layer
         auto result = pfnGetSubDevices( hDevice, pCount, phSubdevices );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeDeviceGetSubDevicesEpilogue( hDevice, pCount, phSubdevices );
+            auto result = context.validationHandlers[i]->zeValidation->zeDeviceGetSubDevicesEpilogue( hDevice, pCount, phSubdevices );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -595,13 +529,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeDeviceGetPropertiesPrologue( hDevice, pDeviceProperties );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeDeviceGetPropertiesPrologue( hDevice, pDeviceProperties );
+            auto result = context.validationHandlers[i]->zeValidation->zeDeviceGetPropertiesPrologue( hDevice, pDeviceProperties );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -619,7 +547,7 @@ namespace validation_layer
         auto result = pfnGetProperties( hDevice, pDeviceProperties );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeDeviceGetPropertiesEpilogue( hDevice, pDeviceProperties );
+            auto result = context.validationHandlers[i]->zeValidation->zeDeviceGetPropertiesEpilogue( hDevice, pDeviceProperties );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -641,13 +569,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeDeviceGetComputePropertiesPrologue( hDevice, pComputeProperties );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeDeviceGetComputePropertiesPrologue( hDevice, pComputeProperties );
+            auto result = context.validationHandlers[i]->zeValidation->zeDeviceGetComputePropertiesPrologue( hDevice, pComputeProperties );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -665,7 +587,7 @@ namespace validation_layer
         auto result = pfnGetComputeProperties( hDevice, pComputeProperties );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeDeviceGetComputePropertiesEpilogue( hDevice, pComputeProperties );
+            auto result = context.validationHandlers[i]->zeValidation->zeDeviceGetComputePropertiesEpilogue( hDevice, pComputeProperties );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -687,13 +609,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeDeviceGetModulePropertiesPrologue( hDevice, pModuleProperties );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeDeviceGetModulePropertiesPrologue( hDevice, pModuleProperties );
+            auto result = context.validationHandlers[i]->zeValidation->zeDeviceGetModulePropertiesPrologue( hDevice, pModuleProperties );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -711,7 +627,7 @@ namespace validation_layer
         auto result = pfnGetModuleProperties( hDevice, pModuleProperties );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeDeviceGetModulePropertiesEpilogue( hDevice, pModuleProperties );
+            auto result = context.validationHandlers[i]->zeValidation->zeDeviceGetModulePropertiesEpilogue( hDevice, pModuleProperties );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -743,13 +659,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeDeviceGetCommandQueueGroupPropertiesPrologue( hDevice, pCount, pCommandQueueGroupProperties );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeDeviceGetCommandQueueGroupPropertiesPrologue( hDevice, pCount, pCommandQueueGroupProperties );
+            auto result = context.validationHandlers[i]->zeValidation->zeDeviceGetCommandQueueGroupPropertiesPrologue( hDevice, pCount, pCommandQueueGroupProperties );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -767,7 +677,7 @@ namespace validation_layer
         auto result = pfnGetCommandQueueGroupProperties( hDevice, pCount, pCommandQueueGroupProperties );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeDeviceGetCommandQueueGroupPropertiesEpilogue( hDevice, pCount, pCommandQueueGroupProperties );
+            auto result = context.validationHandlers[i]->zeValidation->zeDeviceGetCommandQueueGroupPropertiesEpilogue( hDevice, pCount, pCommandQueueGroupProperties );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -798,13 +708,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeDeviceGetMemoryPropertiesPrologue( hDevice, pCount, pMemProperties );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeDeviceGetMemoryPropertiesPrologue( hDevice, pCount, pMemProperties );
+            auto result = context.validationHandlers[i]->zeValidation->zeDeviceGetMemoryPropertiesPrologue( hDevice, pCount, pMemProperties );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -822,7 +726,7 @@ namespace validation_layer
         auto result = pfnGetMemoryProperties( hDevice, pCount, pMemProperties );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeDeviceGetMemoryPropertiesEpilogue( hDevice, pCount, pMemProperties );
+            auto result = context.validationHandlers[i]->zeValidation->zeDeviceGetMemoryPropertiesEpilogue( hDevice, pCount, pMemProperties );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -844,13 +748,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeDeviceGetMemoryAccessPropertiesPrologue( hDevice, pMemAccessProperties );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeDeviceGetMemoryAccessPropertiesPrologue( hDevice, pMemAccessProperties );
+            auto result = context.validationHandlers[i]->zeValidation->zeDeviceGetMemoryAccessPropertiesPrologue( hDevice, pMemAccessProperties );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -868,7 +766,7 @@ namespace validation_layer
         auto result = pfnGetMemoryAccessProperties( hDevice, pMemAccessProperties );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeDeviceGetMemoryAccessPropertiesEpilogue( hDevice, pMemAccessProperties );
+            auto result = context.validationHandlers[i]->zeValidation->zeDeviceGetMemoryAccessPropertiesEpilogue( hDevice, pMemAccessProperties );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -898,13 +796,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeDeviceGetCachePropertiesPrologue( hDevice, pCount, pCacheProperties );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeDeviceGetCachePropertiesPrologue( hDevice, pCount, pCacheProperties );
+            auto result = context.validationHandlers[i]->zeValidation->zeDeviceGetCachePropertiesPrologue( hDevice, pCount, pCacheProperties );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -922,7 +814,7 @@ namespace validation_layer
         auto result = pfnGetCacheProperties( hDevice, pCount, pCacheProperties );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeDeviceGetCachePropertiesEpilogue( hDevice, pCount, pCacheProperties );
+            auto result = context.validationHandlers[i]->zeValidation->zeDeviceGetCachePropertiesEpilogue( hDevice, pCount, pCacheProperties );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -944,13 +836,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeDeviceGetImagePropertiesPrologue( hDevice, pImageProperties );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeDeviceGetImagePropertiesPrologue( hDevice, pImageProperties );
+            auto result = context.validationHandlers[i]->zeValidation->zeDeviceGetImagePropertiesPrologue( hDevice, pImageProperties );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -968,7 +854,7 @@ namespace validation_layer
         auto result = pfnGetImageProperties( hDevice, pImageProperties );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeDeviceGetImagePropertiesEpilogue( hDevice, pImageProperties );
+            auto result = context.validationHandlers[i]->zeValidation->zeDeviceGetImagePropertiesEpilogue( hDevice, pImageProperties );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -990,13 +876,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeDeviceGetExternalMemoryPropertiesPrologue( hDevice, pExternalMemoryProperties );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeDeviceGetExternalMemoryPropertiesPrologue( hDevice, pExternalMemoryProperties );
+            auto result = context.validationHandlers[i]->zeValidation->zeDeviceGetExternalMemoryPropertiesPrologue( hDevice, pExternalMemoryProperties );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -1014,7 +894,7 @@ namespace validation_layer
         auto result = pfnGetExternalMemoryProperties( hDevice, pExternalMemoryProperties );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeDeviceGetExternalMemoryPropertiesEpilogue( hDevice, pExternalMemoryProperties );
+            auto result = context.validationHandlers[i]->zeValidation->zeDeviceGetExternalMemoryPropertiesEpilogue( hDevice, pExternalMemoryProperties );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -1037,13 +917,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeDeviceGetP2PPropertiesPrologue( hDevice, hPeerDevice, pP2PProperties );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeDeviceGetP2PPropertiesPrologue( hDevice, hPeerDevice, pP2PProperties );
+            auto result = context.validationHandlers[i]->zeValidation->zeDeviceGetP2PPropertiesPrologue( hDevice, hPeerDevice, pP2PProperties );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -1061,7 +935,7 @@ namespace validation_layer
         auto result = pfnGetP2PProperties( hDevice, hPeerDevice, pP2PProperties );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeDeviceGetP2PPropertiesEpilogue( hDevice, hPeerDevice, pP2PProperties );
+            auto result = context.validationHandlers[i]->zeValidation->zeDeviceGetP2PPropertiesEpilogue( hDevice, hPeerDevice, pP2PProperties );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -1084,13 +958,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeDeviceCanAccessPeerPrologue( hDevice, hPeerDevice, value );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeDeviceCanAccessPeerPrologue( hDevice, hPeerDevice, value );
+            auto result = context.validationHandlers[i]->zeValidation->zeDeviceCanAccessPeerPrologue( hDevice, hPeerDevice, value );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -1108,7 +976,7 @@ namespace validation_layer
         auto result = pfnCanAccessPeer( hDevice, hPeerDevice, value );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeDeviceCanAccessPeerEpilogue( hDevice, hPeerDevice, value );
+            auto result = context.validationHandlers[i]->zeValidation->zeDeviceCanAccessPeerEpilogue( hDevice, hPeerDevice, value );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -1129,13 +997,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeDeviceGetStatusPrologue( hDevice );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeDeviceGetStatusPrologue( hDevice );
+            auto result = context.validationHandlers[i]->zeValidation->zeDeviceGetStatusPrologue( hDevice );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -1153,7 +1015,7 @@ namespace validation_layer
         auto result = pfnGetStatus( hDevice );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeDeviceGetStatusEpilogue( hDevice );
+            auto result = context.validationHandlers[i]->zeValidation->zeDeviceGetStatusEpilogue( hDevice );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -1178,13 +1040,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeDeviceGetGlobalTimestampsPrologue( hDevice, hostTimestamp, deviceTimestamp );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeDeviceGetGlobalTimestampsPrologue( hDevice, hostTimestamp, deviceTimestamp );
+            auto result = context.validationHandlers[i]->zeValidation->zeDeviceGetGlobalTimestampsPrologue( hDevice, hostTimestamp, deviceTimestamp );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -1202,7 +1058,7 @@ namespace validation_layer
         auto result = pfnGetGlobalTimestamps( hDevice, hostTimestamp, deviceTimestamp );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeDeviceGetGlobalTimestampsEpilogue( hDevice, hostTimestamp, deviceTimestamp );
+            auto result = context.validationHandlers[i]->zeValidation->zeDeviceGetGlobalTimestampsEpilogue( hDevice, hostTimestamp, deviceTimestamp );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -1225,13 +1081,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeContextCreatePrologue( hDriver, desc, phContext );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeContextCreatePrologue( hDriver, desc, phContext );
+            auto result = context.validationHandlers[i]->zeValidation->zeContextCreatePrologue( hDriver, desc, phContext );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -1249,7 +1099,7 @@ namespace validation_layer
         auto result = pfnCreate( hDriver, desc, phContext );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeContextCreateEpilogue( hDriver, desc, phContext );
+            auto result = context.validationHandlers[i]->zeValidation->zeContextCreateEpilogue( hDriver, desc, phContext );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -1291,13 +1141,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeContextCreateExPrologue( hDriver, desc, numDevices, phDevices, phContext );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeContextCreateExPrologue( hDriver, desc, numDevices, phDevices, phContext );
+            auto result = context.validationHandlers[i]->zeValidation->zeContextCreateExPrologue( hDriver, desc, numDevices, phDevices, phContext );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -1315,7 +1159,7 @@ namespace validation_layer
         auto result = pfnCreateEx( hDriver, desc, numDevices, phDevices, phContext );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeContextCreateExEpilogue( hDriver, desc, numDevices, phDevices, phContext );
+            auto result = context.validationHandlers[i]->zeValidation->zeContextCreateExEpilogue( hDriver, desc, numDevices, phDevices, phContext );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -1345,13 +1189,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeContextDestroyPrologue( hContext );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeContextDestroyPrologue( hContext );
+            auto result = context.validationHandlers[i]->zeValidation->zeContextDestroyPrologue( hContext );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -1369,7 +1207,7 @@ namespace validation_layer
         auto result = pfnDestroy( hContext );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeContextDestroyEpilogue( hContext );
+            auto result = context.validationHandlers[i]->zeValidation->zeContextDestroyEpilogue( hContext );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -1390,13 +1228,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeContextGetStatusPrologue( hContext );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeContextGetStatusPrologue( hContext );
+            auto result = context.validationHandlers[i]->zeValidation->zeContextGetStatusPrologue( hContext );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -1414,7 +1246,7 @@ namespace validation_layer
         auto result = pfnGetStatus( hContext );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeContextGetStatusEpilogue( hContext );
+            auto result = context.validationHandlers[i]->zeValidation->zeContextGetStatusEpilogue( hContext );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -1438,13 +1270,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeCommandQueueCreatePrologue( hContext, hDevice, desc, phCommandQueue );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeCommandQueueCreatePrologue( hContext, hDevice, desc, phCommandQueue );
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandQueueCreatePrologue( hContext, hDevice, desc, phCommandQueue );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -1462,7 +1288,7 @@ namespace validation_layer
         auto result = pfnCreate( hContext, hDevice, desc, phCommandQueue );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeCommandQueueCreateEpilogue( hContext, hDevice, desc, phCommandQueue );
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandQueueCreateEpilogue( hContext, hDevice, desc, phCommandQueue );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -1492,13 +1318,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeCommandQueueDestroyPrologue( hCommandQueue );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeCommandQueueDestroyPrologue( hCommandQueue );
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandQueueDestroyPrologue( hCommandQueue );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -1516,7 +1336,7 @@ namespace validation_layer
         auto result = pfnDestroy( hCommandQueue );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeCommandQueueDestroyEpilogue( hCommandQueue );
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandQueueDestroyEpilogue( hCommandQueue );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -1541,13 +1361,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeCommandQueueExecuteCommandListsPrologue( hCommandQueue, numCommandLists, phCommandLists, hFence );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeCommandQueueExecuteCommandListsPrologue( hCommandQueue, numCommandLists, phCommandLists, hFence );
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandQueueExecuteCommandListsPrologue( hCommandQueue, numCommandLists, phCommandLists, hFence );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -1565,7 +1379,7 @@ namespace validation_layer
         auto result = pfnExecuteCommandLists( hCommandQueue, numCommandLists, phCommandLists, hFence );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeCommandQueueExecuteCommandListsEpilogue( hCommandQueue, numCommandLists, phCommandLists, hFence );
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandQueueExecuteCommandListsEpilogue( hCommandQueue, numCommandLists, phCommandLists, hFence );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -1593,13 +1407,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeCommandQueueSynchronizePrologue( hCommandQueue, timeout );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeCommandQueueSynchronizePrologue( hCommandQueue, timeout );
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandQueueSynchronizePrologue( hCommandQueue, timeout );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -1617,7 +1425,7 @@ namespace validation_layer
         auto result = pfnSynchronize( hCommandQueue, timeout );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeCommandQueueSynchronizeEpilogue( hCommandQueue, timeout );
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandQueueSynchronizeEpilogue( hCommandQueue, timeout );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -1639,13 +1447,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeCommandQueueGetOrdinalPrologue( hCommandQueue, pOrdinal );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeCommandQueueGetOrdinalPrologue( hCommandQueue, pOrdinal );
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandQueueGetOrdinalPrologue( hCommandQueue, pOrdinal );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -1663,7 +1465,7 @@ namespace validation_layer
         auto result = pfnGetOrdinal( hCommandQueue, pOrdinal );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeCommandQueueGetOrdinalEpilogue( hCommandQueue, pOrdinal );
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandQueueGetOrdinalEpilogue( hCommandQueue, pOrdinal );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -1685,13 +1487,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeCommandQueueGetIndexPrologue( hCommandQueue, pIndex );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeCommandQueueGetIndexPrologue( hCommandQueue, pIndex );
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandQueueGetIndexPrologue( hCommandQueue, pIndex );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -1709,7 +1505,7 @@ namespace validation_layer
         auto result = pfnGetIndex( hCommandQueue, pIndex );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeCommandQueueGetIndexEpilogue( hCommandQueue, pIndex );
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandQueueGetIndexEpilogue( hCommandQueue, pIndex );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -1733,13 +1529,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeCommandListCreatePrologue( hContext, hDevice, desc, phCommandList );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeCommandListCreatePrologue( hContext, hDevice, desc, phCommandList );
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListCreatePrologue( hContext, hDevice, desc, phCommandList );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -1757,7 +1547,7 @@ namespace validation_layer
         auto result = pfnCreate( hContext, hDevice, desc, phCommandList );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeCommandListCreateEpilogue( hContext, hDevice, desc, phCommandList );
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListCreateEpilogue( hContext, hDevice, desc, phCommandList );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -1790,13 +1580,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeCommandListCreateImmediatePrologue( hContext, hDevice, altdesc, phCommandList );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeCommandListCreateImmediatePrologue( hContext, hDevice, altdesc, phCommandList );
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListCreateImmediatePrologue( hContext, hDevice, altdesc, phCommandList );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -1814,7 +1598,7 @@ namespace validation_layer
         auto result = pfnCreateImmediate( hContext, hDevice, altdesc, phCommandList );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeCommandListCreateImmediateEpilogue( hContext, hDevice, altdesc, phCommandList );
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListCreateImmediateEpilogue( hContext, hDevice, altdesc, phCommandList );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -1842,13 +1626,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeCommandListDestroyPrologue( hCommandList );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeCommandListDestroyPrologue( hCommandList );
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListDestroyPrologue( hCommandList );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -1866,7 +1644,7 @@ namespace validation_layer
         auto result = pfnDestroy( hCommandList );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeCommandListDestroyEpilogue( hCommandList );
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListDestroyEpilogue( hCommandList );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -1887,13 +1665,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeCommandListClosePrologue( hCommandList );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeCommandListClosePrologue( hCommandList );
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListClosePrologue( hCommandList );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -1911,7 +1683,7 @@ namespace validation_layer
         auto result = pfnClose( hCommandList );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeCommandListCloseEpilogue( hCommandList );
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListCloseEpilogue( hCommandList );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -1932,13 +1704,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeCommandListResetPrologue( hCommandList );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeCommandListResetPrologue( hCommandList );
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListResetPrologue( hCommandList );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -1956,7 +1722,7 @@ namespace validation_layer
         auto result = pfnReset( hCommandList );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeCommandListResetEpilogue( hCommandList );
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListResetEpilogue( hCommandList );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -1984,13 +1750,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeCommandListAppendWriteGlobalTimestampPrologue( hCommandList, dstptr, hSignalEvent, numWaitEvents, phWaitEvents );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeCommandListAppendWriteGlobalTimestampPrologue( hCommandList, dstptr, hSignalEvent, numWaitEvents, phWaitEvents );
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListAppendWriteGlobalTimestampPrologue( hCommandList, dstptr, hSignalEvent, numWaitEvents, phWaitEvents );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -2008,7 +1768,7 @@ namespace validation_layer
         auto result = pfnAppendWriteGlobalTimestamp( hCommandList, dstptr, hSignalEvent, numWaitEvents, phWaitEvents );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeCommandListAppendWriteGlobalTimestampEpilogue( hCommandList, dstptr, hSignalEvent, numWaitEvents, phWaitEvents );
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListAppendWriteGlobalTimestampEpilogue( hCommandList, dstptr, hSignalEvent, numWaitEvents, phWaitEvents );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -2036,13 +1796,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeCommandListHostSynchronizePrologue( hCommandList, timeout );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeCommandListHostSynchronizePrologue( hCommandList, timeout );
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListHostSynchronizePrologue( hCommandList, timeout );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -2060,7 +1814,7 @@ namespace validation_layer
         auto result = pfnHostSynchronize( hCommandList, timeout );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeCommandListHostSynchronizeEpilogue( hCommandList, timeout );
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListHostSynchronizeEpilogue( hCommandList, timeout );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -2082,13 +1836,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeCommandListGetDeviceHandlePrologue( hCommandList, phDevice );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeCommandListGetDeviceHandlePrologue( hCommandList, phDevice );
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListGetDeviceHandlePrologue( hCommandList, phDevice );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -2106,7 +1854,7 @@ namespace validation_layer
         auto result = pfnGetDeviceHandle( hCommandList, phDevice );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeCommandListGetDeviceHandleEpilogue( hCommandList, phDevice );
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListGetDeviceHandleEpilogue( hCommandList, phDevice );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -2128,13 +1876,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeCommandListGetContextHandlePrologue( hCommandList, phContext );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeCommandListGetContextHandlePrologue( hCommandList, phContext );
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListGetContextHandlePrologue( hCommandList, phContext );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -2152,7 +1894,7 @@ namespace validation_layer
         auto result = pfnGetContextHandle( hCommandList, phContext );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeCommandListGetContextHandleEpilogue( hCommandList, phContext );
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListGetContextHandleEpilogue( hCommandList, phContext );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -2174,13 +1916,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeCommandListGetOrdinalPrologue( hCommandList, pOrdinal );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeCommandListGetOrdinalPrologue( hCommandList, pOrdinal );
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListGetOrdinalPrologue( hCommandList, pOrdinal );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -2198,7 +1934,7 @@ namespace validation_layer
         auto result = pfnGetOrdinal( hCommandList, pOrdinal );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeCommandListGetOrdinalEpilogue( hCommandList, pOrdinal );
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListGetOrdinalEpilogue( hCommandList, pOrdinal );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -2221,13 +1957,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeCommandListImmediateGetIndexPrologue( hCommandListImmediate, pIndex );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeCommandListImmediateGetIndexPrologue( hCommandListImmediate, pIndex );
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListImmediateGetIndexPrologue( hCommandListImmediate, pIndex );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -2245,7 +1975,7 @@ namespace validation_layer
         auto result = pfnImmediateGetIndex( hCommandListImmediate, pIndex );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeCommandListImmediateGetIndexEpilogue( hCommandListImmediate, pIndex );
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListImmediateGetIndexEpilogue( hCommandListImmediate, pIndex );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -2268,13 +1998,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeCommandListIsImmediatePrologue( hCommandList, pIsImmediate );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeCommandListIsImmediatePrologue( hCommandList, pIsImmediate );
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListIsImmediatePrologue( hCommandList, pIsImmediate );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -2292,7 +2016,7 @@ namespace validation_layer
         auto result = pfnIsImmediate( hCommandList, pIsImmediate );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeCommandListIsImmediateEpilogue( hCommandList, pIsImmediate );
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListIsImmediateEpilogue( hCommandList, pIsImmediate );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -2318,13 +2042,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeCommandListAppendBarrierPrologue( hCommandList, hSignalEvent, numWaitEvents, phWaitEvents );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeCommandListAppendBarrierPrologue( hCommandList, hSignalEvent, numWaitEvents, phWaitEvents );
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListAppendBarrierPrologue( hCommandList, hSignalEvent, numWaitEvents, phWaitEvents );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -2342,7 +2060,7 @@ namespace validation_layer
         auto result = pfnAppendBarrier( hCommandList, hSignalEvent, numWaitEvents, phWaitEvents );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeCommandListAppendBarrierEpilogue( hCommandList, hSignalEvent, numWaitEvents, phWaitEvents );
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListAppendBarrierEpilogue( hCommandList, hSignalEvent, numWaitEvents, phWaitEvents );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -2371,13 +2089,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeCommandListAppendMemoryRangesBarrierPrologue( hCommandList, numRanges, pRangeSizes, pRanges, hSignalEvent, numWaitEvents, phWaitEvents );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeCommandListAppendMemoryRangesBarrierPrologue( hCommandList, numRanges, pRangeSizes, pRanges, hSignalEvent, numWaitEvents, phWaitEvents );
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListAppendMemoryRangesBarrierPrologue( hCommandList, numRanges, pRangeSizes, pRanges, hSignalEvent, numWaitEvents, phWaitEvents );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -2395,7 +2107,7 @@ namespace validation_layer
         auto result = pfnAppendMemoryRangesBarrier( hCommandList, numRanges, pRangeSizes, pRanges, hSignalEvent, numWaitEvents, phWaitEvents );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeCommandListAppendMemoryRangesBarrierEpilogue( hCommandList, numRanges, pRangeSizes, pRanges, hSignalEvent, numWaitEvents, phWaitEvents );
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListAppendMemoryRangesBarrierEpilogue( hCommandList, numRanges, pRangeSizes, pRanges, hSignalEvent, numWaitEvents, phWaitEvents );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -2417,13 +2129,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeContextSystemBarrierPrologue( hContext, hDevice );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeContextSystemBarrierPrologue( hContext, hDevice );
+            auto result = context.validationHandlers[i]->zeValidation->zeContextSystemBarrierPrologue( hContext, hDevice );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -2441,7 +2147,7 @@ namespace validation_layer
         auto result = pfnSystemBarrier( hContext, hDevice );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeContextSystemBarrierEpilogue( hContext, hDevice );
+            auto result = context.validationHandlers[i]->zeValidation->zeContextSystemBarrierEpilogue( hContext, hDevice );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -2470,13 +2176,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeCommandListAppendMemoryCopyPrologue( hCommandList, dstptr, srcptr, size, hSignalEvent, numWaitEvents, phWaitEvents );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeCommandListAppendMemoryCopyPrologue( hCommandList, dstptr, srcptr, size, hSignalEvent, numWaitEvents, phWaitEvents );
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListAppendMemoryCopyPrologue( hCommandList, dstptr, srcptr, size, hSignalEvent, numWaitEvents, phWaitEvents );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -2494,7 +2194,7 @@ namespace validation_layer
         auto result = pfnAppendMemoryCopy( hCommandList, dstptr, srcptr, size, hSignalEvent, numWaitEvents, phWaitEvents );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeCommandListAppendMemoryCopyEpilogue( hCommandList, dstptr, srcptr, size, hSignalEvent, numWaitEvents, phWaitEvents );
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListAppendMemoryCopyEpilogue( hCommandList, dstptr, srcptr, size, hSignalEvent, numWaitEvents, phWaitEvents );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -2524,13 +2224,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeCommandListAppendMemoryFillPrologue( hCommandList, ptr, pattern, pattern_size, size, hSignalEvent, numWaitEvents, phWaitEvents );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeCommandListAppendMemoryFillPrologue( hCommandList, ptr, pattern, pattern_size, size, hSignalEvent, numWaitEvents, phWaitEvents );
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListAppendMemoryFillPrologue( hCommandList, ptr, pattern, pattern_size, size, hSignalEvent, numWaitEvents, phWaitEvents );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -2548,7 +2242,7 @@ namespace validation_layer
         auto result = pfnAppendMemoryFill( hCommandList, ptr, pattern, pattern_size, size, hSignalEvent, numWaitEvents, phWaitEvents );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeCommandListAppendMemoryFillEpilogue( hCommandList, ptr, pattern, pattern_size, size, hSignalEvent, numWaitEvents, phWaitEvents );
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListAppendMemoryFillEpilogue( hCommandList, ptr, pattern, pattern_size, size, hSignalEvent, numWaitEvents, phWaitEvents );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -2586,13 +2280,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeCommandListAppendMemoryCopyRegionPrologue( hCommandList, dstptr, dstRegion, dstPitch, dstSlicePitch, srcptr, srcRegion, srcPitch, srcSlicePitch, hSignalEvent, numWaitEvents, phWaitEvents );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeCommandListAppendMemoryCopyRegionPrologue( hCommandList, dstptr, dstRegion, dstPitch, dstSlicePitch, srcptr, srcRegion, srcPitch, srcSlicePitch, hSignalEvent, numWaitEvents, phWaitEvents );
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListAppendMemoryCopyRegionPrologue( hCommandList, dstptr, dstRegion, dstPitch, dstSlicePitch, srcptr, srcRegion, srcPitch, srcSlicePitch, hSignalEvent, numWaitEvents, phWaitEvents );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -2610,7 +2298,7 @@ namespace validation_layer
         auto result = pfnAppendMemoryCopyRegion( hCommandList, dstptr, dstRegion, dstPitch, dstSlicePitch, srcptr, srcRegion, srcPitch, srcSlicePitch, hSignalEvent, numWaitEvents, phWaitEvents );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeCommandListAppendMemoryCopyRegionEpilogue( hCommandList, dstptr, dstRegion, dstPitch, dstSlicePitch, srcptr, srcRegion, srcPitch, srcSlicePitch, hSignalEvent, numWaitEvents, phWaitEvents );
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListAppendMemoryCopyRegionEpilogue( hCommandList, dstptr, dstRegion, dstPitch, dstSlicePitch, srcptr, srcRegion, srcPitch, srcSlicePitch, hSignalEvent, numWaitEvents, phWaitEvents );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -2640,13 +2328,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeCommandListAppendMemoryCopyFromContextPrologue( hCommandList, dstptr, hContextSrc, srcptr, size, hSignalEvent, numWaitEvents, phWaitEvents );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeCommandListAppendMemoryCopyFromContextPrologue( hCommandList, dstptr, hContextSrc, srcptr, size, hSignalEvent, numWaitEvents, phWaitEvents );
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListAppendMemoryCopyFromContextPrologue( hCommandList, dstptr, hContextSrc, srcptr, size, hSignalEvent, numWaitEvents, phWaitEvents );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -2664,7 +2346,7 @@ namespace validation_layer
         auto result = pfnAppendMemoryCopyFromContext( hCommandList, dstptr, hContextSrc, srcptr, size, hSignalEvent, numWaitEvents, phWaitEvents );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeCommandListAppendMemoryCopyFromContextEpilogue( hCommandList, dstptr, hContextSrc, srcptr, size, hSignalEvent, numWaitEvents, phWaitEvents );
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListAppendMemoryCopyFromContextEpilogue( hCommandList, dstptr, hContextSrc, srcptr, size, hSignalEvent, numWaitEvents, phWaitEvents );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -2692,13 +2374,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeCommandListAppendImageCopyPrologue( hCommandList, hDstImage, hSrcImage, hSignalEvent, numWaitEvents, phWaitEvents );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeCommandListAppendImageCopyPrologue( hCommandList, hDstImage, hSrcImage, hSignalEvent, numWaitEvents, phWaitEvents );
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListAppendImageCopyPrologue( hCommandList, hDstImage, hSrcImage, hSignalEvent, numWaitEvents, phWaitEvents );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -2716,7 +2392,7 @@ namespace validation_layer
         auto result = pfnAppendImageCopy( hCommandList, hDstImage, hSrcImage, hSignalEvent, numWaitEvents, phWaitEvents );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeCommandListAppendImageCopyEpilogue( hCommandList, hDstImage, hSrcImage, hSignalEvent, numWaitEvents, phWaitEvents );
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListAppendImageCopyEpilogue( hCommandList, hDstImage, hSrcImage, hSignalEvent, numWaitEvents, phWaitEvents );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -2746,13 +2422,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeCommandListAppendImageCopyRegionPrologue( hCommandList, hDstImage, hSrcImage, pDstRegion, pSrcRegion, hSignalEvent, numWaitEvents, phWaitEvents );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeCommandListAppendImageCopyRegionPrologue( hCommandList, hDstImage, hSrcImage, pDstRegion, pSrcRegion, hSignalEvent, numWaitEvents, phWaitEvents );
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListAppendImageCopyRegionPrologue( hCommandList, hDstImage, hSrcImage, pDstRegion, pSrcRegion, hSignalEvent, numWaitEvents, phWaitEvents );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -2770,7 +2440,7 @@ namespace validation_layer
         auto result = pfnAppendImageCopyRegion( hCommandList, hDstImage, hSrcImage, pDstRegion, pSrcRegion, hSignalEvent, numWaitEvents, phWaitEvents );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeCommandListAppendImageCopyRegionEpilogue( hCommandList, hDstImage, hSrcImage, pDstRegion, pSrcRegion, hSignalEvent, numWaitEvents, phWaitEvents );
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListAppendImageCopyRegionEpilogue( hCommandList, hDstImage, hSrcImage, pDstRegion, pSrcRegion, hSignalEvent, numWaitEvents, phWaitEvents );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -2799,13 +2469,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeCommandListAppendImageCopyToMemoryPrologue( hCommandList, dstptr, hSrcImage, pSrcRegion, hSignalEvent, numWaitEvents, phWaitEvents );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeCommandListAppendImageCopyToMemoryPrologue( hCommandList, dstptr, hSrcImage, pSrcRegion, hSignalEvent, numWaitEvents, phWaitEvents );
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListAppendImageCopyToMemoryPrologue( hCommandList, dstptr, hSrcImage, pSrcRegion, hSignalEvent, numWaitEvents, phWaitEvents );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -2823,7 +2487,7 @@ namespace validation_layer
         auto result = pfnAppendImageCopyToMemory( hCommandList, dstptr, hSrcImage, pSrcRegion, hSignalEvent, numWaitEvents, phWaitEvents );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeCommandListAppendImageCopyToMemoryEpilogue( hCommandList, dstptr, hSrcImage, pSrcRegion, hSignalEvent, numWaitEvents, phWaitEvents );
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListAppendImageCopyToMemoryEpilogue( hCommandList, dstptr, hSrcImage, pSrcRegion, hSignalEvent, numWaitEvents, phWaitEvents );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -2852,13 +2516,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeCommandListAppendImageCopyFromMemoryPrologue( hCommandList, hDstImage, srcptr, pDstRegion, hSignalEvent, numWaitEvents, phWaitEvents );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeCommandListAppendImageCopyFromMemoryPrologue( hCommandList, hDstImage, srcptr, pDstRegion, hSignalEvent, numWaitEvents, phWaitEvents );
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListAppendImageCopyFromMemoryPrologue( hCommandList, hDstImage, srcptr, pDstRegion, hSignalEvent, numWaitEvents, phWaitEvents );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -2876,7 +2534,7 @@ namespace validation_layer
         auto result = pfnAppendImageCopyFromMemory( hCommandList, hDstImage, srcptr, pDstRegion, hSignalEvent, numWaitEvents, phWaitEvents );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeCommandListAppendImageCopyFromMemoryEpilogue( hCommandList, hDstImage, srcptr, pDstRegion, hSignalEvent, numWaitEvents, phWaitEvents );
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListAppendImageCopyFromMemoryEpilogue( hCommandList, hDstImage, srcptr, pDstRegion, hSignalEvent, numWaitEvents, phWaitEvents );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -2899,13 +2557,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeCommandListAppendMemoryPrefetchPrologue( hCommandList, ptr, size );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeCommandListAppendMemoryPrefetchPrologue( hCommandList, ptr, size );
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListAppendMemoryPrefetchPrologue( hCommandList, ptr, size );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -2923,7 +2575,7 @@ namespace validation_layer
         auto result = pfnAppendMemoryPrefetch( hCommandList, ptr, size );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeCommandListAppendMemoryPrefetchEpilogue( hCommandList, ptr, size );
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListAppendMemoryPrefetchEpilogue( hCommandList, ptr, size );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -2948,13 +2600,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeCommandListAppendMemAdvisePrologue( hCommandList, hDevice, ptr, size, advice );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeCommandListAppendMemAdvisePrologue( hCommandList, hDevice, ptr, size, advice );
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListAppendMemAdvisePrologue( hCommandList, hDevice, ptr, size, advice );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -2972,7 +2618,7 @@ namespace validation_layer
         auto result = pfnAppendMemAdvise( hCommandList, hDevice, ptr, size, advice );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeCommandListAppendMemAdviseEpilogue( hCommandList, hDevice, ptr, size, advice );
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListAppendMemAdviseEpilogue( hCommandList, hDevice, ptr, size, advice );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -3001,13 +2647,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeEventPoolCreatePrologue( hContext, desc, numDevices, phDevices, phEventPool );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeEventPoolCreatePrologue( hContext, desc, numDevices, phDevices, phEventPool );
+            auto result = context.validationHandlers[i]->zeValidation->zeEventPoolCreatePrologue( hContext, desc, numDevices, phDevices, phEventPool );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -3025,7 +2665,7 @@ namespace validation_layer
         auto result = pfnCreate( hContext, desc, numDevices, phDevices, phEventPool );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeEventPoolCreateEpilogue( hContext, desc, numDevices, phDevices, phEventPool );
+            auto result = context.validationHandlers[i]->zeValidation->zeEventPoolCreateEpilogue( hContext, desc, numDevices, phDevices, phEventPool );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -3055,13 +2695,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeEventPoolDestroyPrologue( hEventPool );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeEventPoolDestroyPrologue( hEventPool );
+            auto result = context.validationHandlers[i]->zeValidation->zeEventPoolDestroyPrologue( hEventPool );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -3079,7 +2713,7 @@ namespace validation_layer
         auto result = pfnDestroy( hEventPool );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeEventPoolDestroyEpilogue( hEventPool );
+            auto result = context.validationHandlers[i]->zeValidation->zeEventPoolDestroyEpilogue( hEventPool );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -3102,13 +2736,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeEventCreatePrologue( hEventPool, desc, phEvent );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeEventCreatePrologue( hEventPool, desc, phEvent );
+            auto result = context.validationHandlers[i]->zeValidation->zeEventCreatePrologue( hEventPool, desc, phEvent );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -3126,7 +2754,7 @@ namespace validation_layer
         auto result = pfnCreate( hEventPool, desc, phEvent );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeEventCreateEpilogue( hEventPool, desc, phEvent );
+            auto result = context.validationHandlers[i]->zeValidation->zeEventCreateEpilogue( hEventPool, desc, phEvent );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -3156,13 +2784,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeEventDestroyPrologue( hEvent );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeEventDestroyPrologue( hEvent );
+            auto result = context.validationHandlers[i]->zeValidation->zeEventDestroyPrologue( hEvent );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -3180,7 +2802,7 @@ namespace validation_layer
         auto result = pfnDestroy( hEvent );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeEventDestroyEpilogue( hEvent );
+            auto result = context.validationHandlers[i]->zeValidation->zeEventDestroyEpilogue( hEvent );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -3202,13 +2824,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeEventPoolGetIpcHandlePrologue( hEventPool, phIpc );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeEventPoolGetIpcHandlePrologue( hEventPool, phIpc );
+            auto result = context.validationHandlers[i]->zeValidation->zeEventPoolGetIpcHandlePrologue( hEventPool, phIpc );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -3226,7 +2842,7 @@ namespace validation_layer
         auto result = pfnGetIpcHandle( hEventPool, phIpc );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeEventPoolGetIpcHandleEpilogue( hEventPool, phIpc );
+            auto result = context.validationHandlers[i]->zeValidation->zeEventPoolGetIpcHandleEpilogue( hEventPool, phIpc );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -3253,13 +2869,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeEventPoolPutIpcHandlePrologue( hContext, hIpc );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeEventPoolPutIpcHandlePrologue( hContext, hIpc );
+            auto result = context.validationHandlers[i]->zeValidation->zeEventPoolPutIpcHandlePrologue( hContext, hIpc );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -3277,7 +2887,7 @@ namespace validation_layer
         auto result = pfnPutIpcHandle( hContext, hIpc );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeEventPoolPutIpcHandleEpilogue( hContext, hIpc );
+            auto result = context.validationHandlers[i]->zeValidation->zeEventPoolPutIpcHandleEpilogue( hContext, hIpc );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -3301,13 +2911,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeEventPoolOpenIpcHandlePrologue( hContext, hIpc, phEventPool );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeEventPoolOpenIpcHandlePrologue( hContext, hIpc, phEventPool );
+            auto result = context.validationHandlers[i]->zeValidation->zeEventPoolOpenIpcHandlePrologue( hContext, hIpc, phEventPool );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -3325,7 +2929,7 @@ namespace validation_layer
         auto result = pfnOpenIpcHandle( hContext, hIpc, phEventPool );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeEventPoolOpenIpcHandleEpilogue( hContext, hIpc, phEventPool );
+            auto result = context.validationHandlers[i]->zeValidation->zeEventPoolOpenIpcHandleEpilogue( hContext, hIpc, phEventPool );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -3346,13 +2950,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeEventPoolCloseIpcHandlePrologue( hEventPool );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeEventPoolCloseIpcHandlePrologue( hEventPool );
+            auto result = context.validationHandlers[i]->zeValidation->zeEventPoolCloseIpcHandlePrologue( hEventPool );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -3370,7 +2968,7 @@ namespace validation_layer
         auto result = pfnCloseIpcHandle( hEventPool );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeEventPoolCloseIpcHandleEpilogue( hEventPool );
+            auto result = context.validationHandlers[i]->zeValidation->zeEventPoolCloseIpcHandleEpilogue( hEventPool );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -3392,13 +2990,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeCommandListAppendSignalEventPrologue( hCommandList, hEvent );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeCommandListAppendSignalEventPrologue( hCommandList, hEvent );
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListAppendSignalEventPrologue( hCommandList, hEvent );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -3416,7 +3008,7 @@ namespace validation_layer
         auto result = pfnAppendSignalEvent( hCommandList, hEvent );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeCommandListAppendSignalEventEpilogue( hCommandList, hEvent );
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListAppendSignalEventEpilogue( hCommandList, hEvent );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -3440,13 +3032,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeCommandListAppendWaitOnEventsPrologue( hCommandList, numEvents, phEvents );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeCommandListAppendWaitOnEventsPrologue( hCommandList, numEvents, phEvents );
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListAppendWaitOnEventsPrologue( hCommandList, numEvents, phEvents );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -3464,7 +3050,7 @@ namespace validation_layer
         auto result = pfnAppendWaitOnEvents( hCommandList, numEvents, phEvents );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeCommandListAppendWaitOnEventsEpilogue( hCommandList, numEvents, phEvents );
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListAppendWaitOnEventsEpilogue( hCommandList, numEvents, phEvents );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -3485,13 +3071,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeEventHostSignalPrologue( hEvent );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeEventHostSignalPrologue( hEvent );
+            auto result = context.validationHandlers[i]->zeValidation->zeEventHostSignalPrologue( hEvent );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -3509,7 +3089,7 @@ namespace validation_layer
         auto result = pfnHostSignal( hEvent );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeEventHostSignalEpilogue( hEvent );
+            auto result = context.validationHandlers[i]->zeValidation->zeEventHostSignalEpilogue( hEvent );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -3537,13 +3117,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeEventHostSynchronizePrologue( hEvent, timeout );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeEventHostSynchronizePrologue( hEvent, timeout );
+            auto result = context.validationHandlers[i]->zeValidation->zeEventHostSynchronizePrologue( hEvent, timeout );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -3561,7 +3135,7 @@ namespace validation_layer
         auto result = pfnHostSynchronize( hEvent, timeout );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeEventHostSynchronizeEpilogue( hEvent, timeout );
+            auto result = context.validationHandlers[i]->zeValidation->zeEventHostSynchronizeEpilogue( hEvent, timeout );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -3582,13 +3156,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeEventQueryStatusPrologue( hEvent );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeEventQueryStatusPrologue( hEvent );
+            auto result = context.validationHandlers[i]->zeValidation->zeEventQueryStatusPrologue( hEvent );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -3606,7 +3174,7 @@ namespace validation_layer
         auto result = pfnQueryStatus( hEvent );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeEventQueryStatusEpilogue( hEvent );
+            auto result = context.validationHandlers[i]->zeValidation->zeEventQueryStatusEpilogue( hEvent );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -3628,13 +3196,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeCommandListAppendEventResetPrologue( hCommandList, hEvent );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeCommandListAppendEventResetPrologue( hCommandList, hEvent );
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListAppendEventResetPrologue( hCommandList, hEvent );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -3652,7 +3214,7 @@ namespace validation_layer
         auto result = pfnAppendEventReset( hCommandList, hEvent );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeCommandListAppendEventResetEpilogue( hCommandList, hEvent );
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListAppendEventResetEpilogue( hCommandList, hEvent );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -3673,13 +3235,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeEventHostResetPrologue( hEvent );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeEventHostResetPrologue( hEvent );
+            auto result = context.validationHandlers[i]->zeValidation->zeEventHostResetPrologue( hEvent );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -3697,7 +3253,7 @@ namespace validation_layer
         auto result = pfnHostReset( hEvent );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeEventHostResetEpilogue( hEvent );
+            auto result = context.validationHandlers[i]->zeValidation->zeEventHostResetEpilogue( hEvent );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -3719,13 +3275,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeEventQueryKernelTimestampPrologue( hEvent, dstptr );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeEventQueryKernelTimestampPrologue( hEvent, dstptr );
+            auto result = context.validationHandlers[i]->zeValidation->zeEventQueryKernelTimestampPrologue( hEvent, dstptr );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -3743,7 +3293,7 @@ namespace validation_layer
         auto result = pfnQueryKernelTimestamp( hEvent, dstptr );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeEventQueryKernelTimestampEpilogue( hEvent, dstptr );
+            auto result = context.validationHandlers[i]->zeValidation->zeEventQueryKernelTimestampEpilogue( hEvent, dstptr );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -3776,13 +3326,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeCommandListAppendQueryKernelTimestampsPrologue( hCommandList, numEvents, phEvents, dstptr, pOffsets, hSignalEvent, numWaitEvents, phWaitEvents );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeCommandListAppendQueryKernelTimestampsPrologue( hCommandList, numEvents, phEvents, dstptr, pOffsets, hSignalEvent, numWaitEvents, phWaitEvents );
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListAppendQueryKernelTimestampsPrologue( hCommandList, numEvents, phEvents, dstptr, pOffsets, hSignalEvent, numWaitEvents, phWaitEvents );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -3800,7 +3344,7 @@ namespace validation_layer
         auto result = pfnAppendQueryKernelTimestamps( hCommandList, numEvents, phEvents, dstptr, pOffsets, hSignalEvent, numWaitEvents, phWaitEvents );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeCommandListAppendQueryKernelTimestampsEpilogue( hCommandList, numEvents, phEvents, dstptr, pOffsets, hSignalEvent, numWaitEvents, phWaitEvents );
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListAppendQueryKernelTimestampsEpilogue( hCommandList, numEvents, phEvents, dstptr, pOffsets, hSignalEvent, numWaitEvents, phWaitEvents );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -3822,13 +3366,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeEventGetEventPoolPrologue( hEvent, phEventPool );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeEventGetEventPoolPrologue( hEvent, phEventPool );
+            auto result = context.validationHandlers[i]->zeValidation->zeEventGetEventPoolPrologue( hEvent, phEventPool );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -3846,7 +3384,7 @@ namespace validation_layer
         auto result = pfnGetEventPool( hEvent, phEventPool );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeEventGetEventPoolEpilogue( hEvent, phEventPool );
+            auto result = context.validationHandlers[i]->zeValidation->zeEventGetEventPoolEpilogue( hEvent, phEventPool );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -3870,13 +3408,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeEventGetSignalScopePrologue( hEvent, pSignalScope );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeEventGetSignalScopePrologue( hEvent, pSignalScope );
+            auto result = context.validationHandlers[i]->zeValidation->zeEventGetSignalScopePrologue( hEvent, pSignalScope );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -3894,7 +3426,7 @@ namespace validation_layer
         auto result = pfnGetSignalScope( hEvent, pSignalScope );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeEventGetSignalScopeEpilogue( hEvent, pSignalScope );
+            auto result = context.validationHandlers[i]->zeValidation->zeEventGetSignalScopeEpilogue( hEvent, pSignalScope );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -3918,13 +3450,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeEventGetWaitScopePrologue( hEvent, pWaitScope );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeEventGetWaitScopePrologue( hEvent, pWaitScope );
+            auto result = context.validationHandlers[i]->zeValidation->zeEventGetWaitScopePrologue( hEvent, pWaitScope );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -3942,7 +3468,7 @@ namespace validation_layer
         auto result = pfnGetWaitScope( hEvent, pWaitScope );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeEventGetWaitScopeEpilogue( hEvent, pWaitScope );
+            auto result = context.validationHandlers[i]->zeValidation->zeEventGetWaitScopeEpilogue( hEvent, pWaitScope );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -3964,13 +3490,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeEventPoolGetContextHandlePrologue( hEventPool, phContext );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeEventPoolGetContextHandlePrologue( hEventPool, phContext );
+            auto result = context.validationHandlers[i]->zeValidation->zeEventPoolGetContextHandlePrologue( hEventPool, phContext );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -3988,7 +3508,7 @@ namespace validation_layer
         auto result = pfnGetContextHandle( hEventPool, phContext );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeEventPoolGetContextHandleEpilogue( hEventPool, phContext );
+            auto result = context.validationHandlers[i]->zeValidation->zeEventPoolGetContextHandleEpilogue( hEventPool, phContext );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -4011,13 +3531,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeEventPoolGetFlagsPrologue( hEventPool, pFlags );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeEventPoolGetFlagsPrologue( hEventPool, pFlags );
+            auto result = context.validationHandlers[i]->zeValidation->zeEventPoolGetFlagsPrologue( hEventPool, pFlags );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -4035,7 +3549,7 @@ namespace validation_layer
         auto result = pfnGetFlags( hEventPool, pFlags );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeEventPoolGetFlagsEpilogue( hEventPool, pFlags );
+            auto result = context.validationHandlers[i]->zeValidation->zeEventPoolGetFlagsEpilogue( hEventPool, pFlags );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -4058,13 +3572,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeFenceCreatePrologue( hCommandQueue, desc, phFence );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeFenceCreatePrologue( hCommandQueue, desc, phFence );
+            auto result = context.validationHandlers[i]->zeValidation->zeFenceCreatePrologue( hCommandQueue, desc, phFence );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -4082,7 +3590,7 @@ namespace validation_layer
         auto result = pfnCreate( hCommandQueue, desc, phFence );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeFenceCreateEpilogue( hCommandQueue, desc, phFence );
+            auto result = context.validationHandlers[i]->zeValidation->zeFenceCreateEpilogue( hCommandQueue, desc, phFence );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -4112,13 +3620,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeFenceDestroyPrologue( hFence );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeFenceDestroyPrologue( hFence );
+            auto result = context.validationHandlers[i]->zeValidation->zeFenceDestroyPrologue( hFence );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -4136,7 +3638,7 @@ namespace validation_layer
         auto result = pfnDestroy( hFence );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeFenceDestroyEpilogue( hFence );
+            auto result = context.validationHandlers[i]->zeValidation->zeFenceDestroyEpilogue( hFence );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -4164,13 +3666,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeFenceHostSynchronizePrologue( hFence, timeout );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeFenceHostSynchronizePrologue( hFence, timeout );
+            auto result = context.validationHandlers[i]->zeValidation->zeFenceHostSynchronizePrologue( hFence, timeout );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -4188,7 +3684,7 @@ namespace validation_layer
         auto result = pfnHostSynchronize( hFence, timeout );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeFenceHostSynchronizeEpilogue( hFence, timeout );
+            auto result = context.validationHandlers[i]->zeValidation->zeFenceHostSynchronizeEpilogue( hFence, timeout );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -4209,13 +3705,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeFenceQueryStatusPrologue( hFence );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeFenceQueryStatusPrologue( hFence );
+            auto result = context.validationHandlers[i]->zeValidation->zeFenceQueryStatusPrologue( hFence );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -4233,7 +3723,7 @@ namespace validation_layer
         auto result = pfnQueryStatus( hFence );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeFenceQueryStatusEpilogue( hFence );
+            auto result = context.validationHandlers[i]->zeValidation->zeFenceQueryStatusEpilogue( hFence );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -4254,13 +3744,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeFenceResetPrologue( hFence );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeFenceResetPrologue( hFence );
+            auto result = context.validationHandlers[i]->zeValidation->zeFenceResetPrologue( hFence );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -4278,7 +3762,7 @@ namespace validation_layer
         auto result = pfnReset( hFence );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeFenceResetEpilogue( hFence );
+            auto result = context.validationHandlers[i]->zeValidation->zeFenceResetEpilogue( hFence );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -4301,13 +3785,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeImageGetPropertiesPrologue( hDevice, desc, pImageProperties );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeImageGetPropertiesPrologue( hDevice, desc, pImageProperties );
+            auto result = context.validationHandlers[i]->zeValidation->zeImageGetPropertiesPrologue( hDevice, desc, pImageProperties );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -4325,7 +3803,7 @@ namespace validation_layer
         auto result = pfnGetProperties( hDevice, desc, pImageProperties );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeImageGetPropertiesEpilogue( hDevice, desc, pImageProperties );
+            auto result = context.validationHandlers[i]->zeValidation->zeImageGetPropertiesEpilogue( hDevice, desc, pImageProperties );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -4349,13 +3827,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeImageCreatePrologue( hContext, hDevice, desc, phImage );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeImageCreatePrologue( hContext, hDevice, desc, phImage );
+            auto result = context.validationHandlers[i]->zeValidation->zeImageCreatePrologue( hContext, hDevice, desc, phImage );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -4373,7 +3845,7 @@ namespace validation_layer
         auto result = pfnCreate( hContext, hDevice, desc, phImage );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeImageCreateEpilogue( hContext, hDevice, desc, phImage );
+            auto result = context.validationHandlers[i]->zeValidation->zeImageCreateEpilogue( hContext, hDevice, desc, phImage );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -4403,13 +3875,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeImageDestroyPrologue( hImage );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeImageDestroyPrologue( hImage );
+            auto result = context.validationHandlers[i]->zeValidation->zeImageDestroyPrologue( hImage );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -4427,7 +3893,7 @@ namespace validation_layer
         auto result = pfnDestroy( hImage );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeImageDestroyEpilogue( hImage );
+            auto result = context.validationHandlers[i]->zeValidation->zeImageDestroyEpilogue( hImage );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -4456,13 +3922,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeMemAllocSharedPrologue( hContext, device_desc, host_desc, size, alignment, hDevice, pptr );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeMemAllocSharedPrologue( hContext, device_desc, host_desc, size, alignment, hDevice, pptr );
+            auto result = context.validationHandlers[i]->zeValidation->zeMemAllocSharedPrologue( hContext, device_desc, host_desc, size, alignment, hDevice, pptr );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -4480,7 +3940,7 @@ namespace validation_layer
         auto result = pfnAllocShared( hContext, device_desc, host_desc, size, alignment, hDevice, pptr );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeMemAllocSharedEpilogue( hContext, device_desc, host_desc, size, alignment, hDevice, pptr );
+            auto result = context.validationHandlers[i]->zeValidation->zeMemAllocSharedEpilogue( hContext, device_desc, host_desc, size, alignment, hDevice, pptr );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -4508,13 +3968,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeMemAllocDevicePrologue( hContext, device_desc, size, alignment, hDevice, pptr );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeMemAllocDevicePrologue( hContext, device_desc, size, alignment, hDevice, pptr );
+            auto result = context.validationHandlers[i]->zeValidation->zeMemAllocDevicePrologue( hContext, device_desc, size, alignment, hDevice, pptr );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -4532,7 +3986,7 @@ namespace validation_layer
         auto result = pfnAllocDevice( hContext, device_desc, size, alignment, hDevice, pptr );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeMemAllocDeviceEpilogue( hContext, device_desc, size, alignment, hDevice, pptr );
+            auto result = context.validationHandlers[i]->zeValidation->zeMemAllocDeviceEpilogue( hContext, device_desc, size, alignment, hDevice, pptr );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -4559,13 +4013,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeMemAllocHostPrologue( hContext, host_desc, size, alignment, pptr );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeMemAllocHostPrologue( hContext, host_desc, size, alignment, pptr );
+            auto result = context.validationHandlers[i]->zeValidation->zeMemAllocHostPrologue( hContext, host_desc, size, alignment, pptr );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -4583,7 +4031,7 @@ namespace validation_layer
         auto result = pfnAllocHost( hContext, host_desc, size, alignment, pptr );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeMemAllocHostEpilogue( hContext, host_desc, size, alignment, pptr );
+            auto result = context.validationHandlers[i]->zeValidation->zeMemAllocHostEpilogue( hContext, host_desc, size, alignment, pptr );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -4605,13 +4053,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeMemFreePrologue( hContext, ptr );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeMemFreePrologue( hContext, ptr );
+            auto result = context.validationHandlers[i]->zeValidation->zeMemFreePrologue( hContext, ptr );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -4629,7 +4071,7 @@ namespace validation_layer
         auto result = pfnFree( hContext, ptr );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeMemFreeEpilogue( hContext, ptr );
+            auto result = context.validationHandlers[i]->zeValidation->zeMemFreeEpilogue( hContext, ptr );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -4653,13 +4095,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeMemGetAllocPropertiesPrologue( hContext, ptr, pMemAllocProperties, phDevice );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeMemGetAllocPropertiesPrologue( hContext, ptr, pMemAllocProperties, phDevice );
+            auto result = context.validationHandlers[i]->zeValidation->zeMemGetAllocPropertiesPrologue( hContext, ptr, pMemAllocProperties, phDevice );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -4677,7 +4113,7 @@ namespace validation_layer
         auto result = pfnGetAllocProperties( hContext, ptr, pMemAllocProperties, phDevice );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeMemGetAllocPropertiesEpilogue( hContext, ptr, pMemAllocProperties, phDevice );
+            auto result = context.validationHandlers[i]->zeValidation->zeMemGetAllocPropertiesEpilogue( hContext, ptr, pMemAllocProperties, phDevice );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -4701,13 +4137,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeMemGetAddressRangePrologue( hContext, ptr, pBase, pSize );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeMemGetAddressRangePrologue( hContext, ptr, pBase, pSize );
+            auto result = context.validationHandlers[i]->zeValidation->zeMemGetAddressRangePrologue( hContext, ptr, pBase, pSize );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -4725,7 +4155,7 @@ namespace validation_layer
         auto result = pfnGetAddressRange( hContext, ptr, pBase, pSize );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeMemGetAddressRangeEpilogue( hContext, ptr, pBase, pSize );
+            auto result = context.validationHandlers[i]->zeValidation->zeMemGetAddressRangeEpilogue( hContext, ptr, pBase, pSize );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -4748,13 +4178,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeMemGetIpcHandlePrologue( hContext, ptr, pIpcHandle );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeMemGetIpcHandlePrologue( hContext, ptr, pIpcHandle );
+            auto result = context.validationHandlers[i]->zeValidation->zeMemGetIpcHandlePrologue( hContext, ptr, pIpcHandle );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -4772,7 +4196,7 @@ namespace validation_layer
         auto result = pfnGetIpcHandle( hContext, ptr, pIpcHandle );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeMemGetIpcHandleEpilogue( hContext, ptr, pIpcHandle );
+            auto result = context.validationHandlers[i]->zeValidation->zeMemGetIpcHandleEpilogue( hContext, ptr, pIpcHandle );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -4799,13 +4223,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeMemGetIpcHandleFromFileDescriptorExpPrologue( hContext, handle, pIpcHandle );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeMemGetIpcHandleFromFileDescriptorExpPrologue( hContext, handle, pIpcHandle );
+            auto result = context.validationHandlers[i]->zeValidation->zeMemGetIpcHandleFromFileDescriptorExpPrologue( hContext, handle, pIpcHandle );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -4823,7 +4241,7 @@ namespace validation_layer
         auto result = pfnGetIpcHandleFromFileDescriptorExp( hContext, handle, pIpcHandle );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeMemGetIpcHandleFromFileDescriptorExpEpilogue( hContext, handle, pIpcHandle );
+            auto result = context.validationHandlers[i]->zeValidation->zeMemGetIpcHandleFromFileDescriptorExpEpilogue( hContext, handle, pIpcHandle );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -4850,13 +4268,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeMemGetFileDescriptorFromIpcHandleExpPrologue( hContext, ipcHandle, pHandle );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeMemGetFileDescriptorFromIpcHandleExpPrologue( hContext, ipcHandle, pHandle );
+            auto result = context.validationHandlers[i]->zeValidation->zeMemGetFileDescriptorFromIpcHandleExpPrologue( hContext, ipcHandle, pHandle );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -4874,7 +4286,7 @@ namespace validation_layer
         auto result = pfnGetFileDescriptorFromIpcHandleExp( hContext, ipcHandle, pHandle );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeMemGetFileDescriptorFromIpcHandleExpEpilogue( hContext, ipcHandle, pHandle );
+            auto result = context.validationHandlers[i]->zeValidation->zeMemGetFileDescriptorFromIpcHandleExpEpilogue( hContext, ipcHandle, pHandle );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -4900,13 +4312,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeMemPutIpcHandlePrologue( hContext, handle );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeMemPutIpcHandlePrologue( hContext, handle );
+            auto result = context.validationHandlers[i]->zeValidation->zeMemPutIpcHandlePrologue( hContext, handle );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -4924,7 +4330,7 @@ namespace validation_layer
         auto result = pfnPutIpcHandle( hContext, handle );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeMemPutIpcHandleEpilogue( hContext, handle );
+            auto result = context.validationHandlers[i]->zeValidation->zeMemPutIpcHandleEpilogue( hContext, handle );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -4950,13 +4356,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeMemOpenIpcHandlePrologue( hContext, hDevice, handle, flags, pptr );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeMemOpenIpcHandlePrologue( hContext, hDevice, handle, flags, pptr );
+            auto result = context.validationHandlers[i]->zeValidation->zeMemOpenIpcHandlePrologue( hContext, hDevice, handle, flags, pptr );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -4974,7 +4374,7 @@ namespace validation_layer
         auto result = pfnOpenIpcHandle( hContext, hDevice, handle, flags, pptr );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeMemOpenIpcHandleEpilogue( hContext, hDevice, handle, flags, pptr );
+            auto result = context.validationHandlers[i]->zeValidation->zeMemOpenIpcHandleEpilogue( hContext, hDevice, handle, flags, pptr );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -4996,13 +4396,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeMemCloseIpcHandlePrologue( hContext, ptr );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeMemCloseIpcHandlePrologue( hContext, ptr );
+            auto result = context.validationHandlers[i]->zeValidation->zeMemCloseIpcHandlePrologue( hContext, ptr );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -5020,7 +4414,7 @@ namespace validation_layer
         auto result = pfnCloseIpcHandle( hContext, ptr );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeMemCloseIpcHandleEpilogue( hContext, ptr );
+            auto result = context.validationHandlers[i]->zeValidation->zeMemCloseIpcHandleEpilogue( hContext, ptr );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -5046,13 +4440,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeMemSetAtomicAccessAttributeExpPrologue( hContext, hDevice, ptr, size, attr );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeMemSetAtomicAccessAttributeExpPrologue( hContext, hDevice, ptr, size, attr );
+            auto result = context.validationHandlers[i]->zeValidation->zeMemSetAtomicAccessAttributeExpPrologue( hContext, hDevice, ptr, size, attr );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -5070,7 +4458,7 @@ namespace validation_layer
         auto result = pfnSetAtomicAccessAttributeExp( hContext, hDevice, ptr, size, attr );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeMemSetAtomicAccessAttributeExpEpilogue( hContext, hDevice, ptr, size, attr );
+            auto result = context.validationHandlers[i]->zeValidation->zeMemSetAtomicAccessAttributeExpEpilogue( hContext, hDevice, ptr, size, attr );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -5095,13 +4483,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeMemGetAtomicAccessAttributeExpPrologue( hContext, hDevice, ptr, size, pAttr );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeMemGetAtomicAccessAttributeExpPrologue( hContext, hDevice, ptr, size, pAttr );
+            auto result = context.validationHandlers[i]->zeValidation->zeMemGetAtomicAccessAttributeExpPrologue( hContext, hDevice, ptr, size, pAttr );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -5119,7 +4501,7 @@ namespace validation_layer
         auto result = pfnGetAtomicAccessAttributeExp( hContext, hDevice, ptr, size, pAttr );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeMemGetAtomicAccessAttributeExpEpilogue( hContext, hDevice, ptr, size, pAttr );
+            auto result = context.validationHandlers[i]->zeValidation->zeMemGetAtomicAccessAttributeExpEpilogue( hContext, hDevice, ptr, size, pAttr );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -5148,13 +4530,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeModuleCreatePrologue( hContext, hDevice, desc, phModule, phBuildLog );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeModuleCreatePrologue( hContext, hDevice, desc, phModule, phBuildLog );
+            auto result = context.validationHandlers[i]->zeValidation->zeModuleCreatePrologue( hContext, hDevice, desc, phModule, phBuildLog );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -5172,7 +4548,7 @@ namespace validation_layer
         auto result = pfnCreate( hContext, hDevice, desc, phModule, phBuildLog );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeModuleCreateEpilogue( hContext, hDevice, desc, phModule, phBuildLog );
+            auto result = context.validationHandlers[i]->zeValidation->zeModuleCreateEpilogue( hContext, hDevice, desc, phModule, phBuildLog );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -5207,13 +4583,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeModuleDestroyPrologue( hModule );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeModuleDestroyPrologue( hModule );
+            auto result = context.validationHandlers[i]->zeValidation->zeModuleDestroyPrologue( hModule );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -5231,7 +4601,7 @@ namespace validation_layer
         auto result = pfnDestroy( hModule );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeModuleDestroyEpilogue( hModule );
+            auto result = context.validationHandlers[i]->zeValidation->zeModuleDestroyEpilogue( hModule );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -5255,13 +4625,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeModuleDynamicLinkPrologue( numModules, phModules, phLinkLog );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeModuleDynamicLinkPrologue( numModules, phModules, phLinkLog );
+            auto result = context.validationHandlers[i]->zeValidation->zeModuleDynamicLinkPrologue( numModules, phModules, phLinkLog );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -5279,7 +4643,7 @@ namespace validation_layer
         auto result = pfnDynamicLink( numModules, phModules, phLinkLog );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeModuleDynamicLinkEpilogue( numModules, phModules, phLinkLog );
+            auto result = context.validationHandlers[i]->zeValidation->zeModuleDynamicLinkEpilogue( numModules, phModules, phLinkLog );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -5300,13 +4664,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeModuleBuildLogDestroyPrologue( hModuleBuildLog );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeModuleBuildLogDestroyPrologue( hModuleBuildLog );
+            auto result = context.validationHandlers[i]->zeValidation->zeModuleBuildLogDestroyPrologue( hModuleBuildLog );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -5324,7 +4682,7 @@ namespace validation_layer
         auto result = pfnDestroy( hModuleBuildLog );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeModuleBuildLogDestroyEpilogue( hModuleBuildLog );
+            auto result = context.validationHandlers[i]->zeValidation->zeModuleBuildLogDestroyEpilogue( hModuleBuildLog );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -5347,13 +4705,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeModuleBuildLogGetStringPrologue( hModuleBuildLog, pSize, pBuildLog );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeModuleBuildLogGetStringPrologue( hModuleBuildLog, pSize, pBuildLog );
+            auto result = context.validationHandlers[i]->zeValidation->zeModuleBuildLogGetStringPrologue( hModuleBuildLog, pSize, pBuildLog );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -5371,7 +4723,7 @@ namespace validation_layer
         auto result = pfnGetString( hModuleBuildLog, pSize, pBuildLog );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeModuleBuildLogGetStringEpilogue( hModuleBuildLog, pSize, pBuildLog );
+            auto result = context.validationHandlers[i]->zeValidation->zeModuleBuildLogGetStringEpilogue( hModuleBuildLog, pSize, pBuildLog );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -5394,13 +4746,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeModuleGetNativeBinaryPrologue( hModule, pSize, pModuleNativeBinary );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeModuleGetNativeBinaryPrologue( hModule, pSize, pModuleNativeBinary );
+            auto result = context.validationHandlers[i]->zeValidation->zeModuleGetNativeBinaryPrologue( hModule, pSize, pModuleNativeBinary );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -5418,7 +4764,7 @@ namespace validation_layer
         auto result = pfnGetNativeBinary( hModule, pSize, pModuleNativeBinary );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeModuleGetNativeBinaryEpilogue( hModule, pSize, pModuleNativeBinary );
+            auto result = context.validationHandlers[i]->zeValidation->zeModuleGetNativeBinaryEpilogue( hModule, pSize, pModuleNativeBinary );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -5442,13 +4788,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeModuleGetGlobalPointerPrologue( hModule, pGlobalName, pSize, pptr );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeModuleGetGlobalPointerPrologue( hModule, pGlobalName, pSize, pptr );
+            auto result = context.validationHandlers[i]->zeValidation->zeModuleGetGlobalPointerPrologue( hModule, pGlobalName, pSize, pptr );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -5466,7 +4806,7 @@ namespace validation_layer
         auto result = pfnGetGlobalPointer( hModule, pGlobalName, pSize, pptr );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeModuleGetGlobalPointerEpilogue( hModule, pGlobalName, pSize, pptr );
+            auto result = context.validationHandlers[i]->zeValidation->zeModuleGetGlobalPointerEpilogue( hModule, pGlobalName, pSize, pptr );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -5495,13 +4835,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeModuleGetKernelNamesPrologue( hModule, pCount, pNames );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeModuleGetKernelNamesPrologue( hModule, pCount, pNames );
+            auto result = context.validationHandlers[i]->zeValidation->zeModuleGetKernelNamesPrologue( hModule, pCount, pNames );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -5519,7 +4853,7 @@ namespace validation_layer
         auto result = pfnGetKernelNames( hModule, pCount, pNames );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeModuleGetKernelNamesEpilogue( hModule, pCount, pNames );
+            auto result = context.validationHandlers[i]->zeValidation->zeModuleGetKernelNamesEpilogue( hModule, pCount, pNames );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -5541,13 +4875,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeModuleGetPropertiesPrologue( hModule, pModuleProperties );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeModuleGetPropertiesPrologue( hModule, pModuleProperties );
+            auto result = context.validationHandlers[i]->zeValidation->zeModuleGetPropertiesPrologue( hModule, pModuleProperties );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -5565,7 +4893,7 @@ namespace validation_layer
         auto result = pfnGetProperties( hModule, pModuleProperties );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeModuleGetPropertiesEpilogue( hModule, pModuleProperties );
+            auto result = context.validationHandlers[i]->zeValidation->zeModuleGetPropertiesEpilogue( hModule, pModuleProperties );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -5588,13 +4916,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeKernelCreatePrologue( hModule, desc, phKernel );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeKernelCreatePrologue( hModule, desc, phKernel );
+            auto result = context.validationHandlers[i]->zeValidation->zeKernelCreatePrologue( hModule, desc, phKernel );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -5612,7 +4934,7 @@ namespace validation_layer
         auto result = pfnCreate( hModule, desc, phKernel );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeKernelCreateEpilogue( hModule, desc, phKernel );
+            auto result = context.validationHandlers[i]->zeValidation->zeKernelCreateEpilogue( hModule, desc, phKernel );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -5642,13 +4964,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeKernelDestroyPrologue( hKernel );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeKernelDestroyPrologue( hKernel );
+            auto result = context.validationHandlers[i]->zeValidation->zeKernelDestroyPrologue( hKernel );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -5666,7 +4982,7 @@ namespace validation_layer
         auto result = pfnDestroy( hKernel );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeKernelDestroyEpilogue( hKernel );
+            auto result = context.validationHandlers[i]->zeValidation->zeKernelDestroyEpilogue( hKernel );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -5689,13 +5005,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeModuleGetFunctionPointerPrologue( hModule, pFunctionName, pfnFunction );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeModuleGetFunctionPointerPrologue( hModule, pFunctionName, pfnFunction );
+            auto result = context.validationHandlers[i]->zeValidation->zeModuleGetFunctionPointerPrologue( hModule, pFunctionName, pfnFunction );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -5713,7 +5023,7 @@ namespace validation_layer
         auto result = pfnGetFunctionPointer( hModule, pFunctionName, pfnFunction );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeModuleGetFunctionPointerEpilogue( hModule, pFunctionName, pfnFunction );
+            auto result = context.validationHandlers[i]->zeValidation->zeModuleGetFunctionPointerEpilogue( hModule, pFunctionName, pfnFunction );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -5737,13 +5047,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeKernelSetGroupSizePrologue( hKernel, groupSizeX, groupSizeY, groupSizeZ );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeKernelSetGroupSizePrologue( hKernel, groupSizeX, groupSizeY, groupSizeZ );
+            auto result = context.validationHandlers[i]->zeValidation->zeKernelSetGroupSizePrologue( hKernel, groupSizeX, groupSizeY, groupSizeZ );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -5761,7 +5065,7 @@ namespace validation_layer
         auto result = pfnSetGroupSize( hKernel, groupSizeX, groupSizeY, groupSizeZ );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeKernelSetGroupSizeEpilogue( hKernel, groupSizeX, groupSizeY, groupSizeZ );
+            auto result = context.validationHandlers[i]->zeValidation->zeKernelSetGroupSizeEpilogue( hKernel, groupSizeX, groupSizeY, groupSizeZ );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -5788,13 +5092,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeKernelSuggestGroupSizePrologue( hKernel, globalSizeX, globalSizeY, globalSizeZ, groupSizeX, groupSizeY, groupSizeZ );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeKernelSuggestGroupSizePrologue( hKernel, globalSizeX, globalSizeY, globalSizeZ, groupSizeX, groupSizeY, groupSizeZ );
+            auto result = context.validationHandlers[i]->zeValidation->zeKernelSuggestGroupSizePrologue( hKernel, globalSizeX, globalSizeY, globalSizeZ, groupSizeX, groupSizeY, groupSizeZ );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -5812,7 +5110,7 @@ namespace validation_layer
         auto result = pfnSuggestGroupSize( hKernel, globalSizeX, globalSizeY, globalSizeZ, groupSizeX, groupSizeY, groupSizeZ );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeKernelSuggestGroupSizeEpilogue( hKernel, globalSizeX, globalSizeY, globalSizeZ, groupSizeX, groupSizeY, groupSizeZ );
+            auto result = context.validationHandlers[i]->zeValidation->zeKernelSuggestGroupSizeEpilogue( hKernel, globalSizeX, globalSizeY, globalSizeZ, groupSizeX, groupSizeY, groupSizeZ );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -5834,13 +5132,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeKernelSuggestMaxCooperativeGroupCountPrologue( hKernel, totalGroupCount );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeKernelSuggestMaxCooperativeGroupCountPrologue( hKernel, totalGroupCount );
+            auto result = context.validationHandlers[i]->zeValidation->zeKernelSuggestMaxCooperativeGroupCountPrologue( hKernel, totalGroupCount );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -5858,7 +5150,7 @@ namespace validation_layer
         auto result = pfnSuggestMaxCooperativeGroupCount( hKernel, totalGroupCount );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeKernelSuggestMaxCooperativeGroupCountEpilogue( hKernel, totalGroupCount );
+            auto result = context.validationHandlers[i]->zeValidation->zeKernelSuggestMaxCooperativeGroupCountEpilogue( hKernel, totalGroupCount );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -5883,13 +5175,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeKernelSetArgumentValuePrologue( hKernel, argIndex, argSize, pArgValue );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeKernelSetArgumentValuePrologue( hKernel, argIndex, argSize, pArgValue );
+            auto result = context.validationHandlers[i]->zeValidation->zeKernelSetArgumentValuePrologue( hKernel, argIndex, argSize, pArgValue );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -5907,7 +5193,7 @@ namespace validation_layer
         auto result = pfnSetArgumentValue( hKernel, argIndex, argSize, pArgValue );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeKernelSetArgumentValueEpilogue( hKernel, argIndex, argSize, pArgValue );
+            auto result = context.validationHandlers[i]->zeValidation->zeKernelSetArgumentValueEpilogue( hKernel, argIndex, argSize, pArgValue );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -5929,13 +5215,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeKernelSetIndirectAccessPrologue( hKernel, flags );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeKernelSetIndirectAccessPrologue( hKernel, flags );
+            auto result = context.validationHandlers[i]->zeValidation->zeKernelSetIndirectAccessPrologue( hKernel, flags );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -5953,7 +5233,7 @@ namespace validation_layer
         auto result = pfnSetIndirectAccess( hKernel, flags );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeKernelSetIndirectAccessEpilogue( hKernel, flags );
+            auto result = context.validationHandlers[i]->zeValidation->zeKernelSetIndirectAccessEpilogue( hKernel, flags );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -5975,13 +5255,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeKernelGetIndirectAccessPrologue( hKernel, pFlags );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeKernelGetIndirectAccessPrologue( hKernel, pFlags );
+            auto result = context.validationHandlers[i]->zeValidation->zeKernelGetIndirectAccessPrologue( hKernel, pFlags );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -5999,7 +5273,7 @@ namespace validation_layer
         auto result = pfnGetIndirectAccess( hKernel, pFlags );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeKernelGetIndirectAccessEpilogue( hKernel, pFlags );
+            auto result = context.validationHandlers[i]->zeValidation->zeKernelGetIndirectAccessEpilogue( hKernel, pFlags );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -6029,13 +5303,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeKernelGetSourceAttributesPrologue( hKernel, pSize, pString );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeKernelGetSourceAttributesPrologue( hKernel, pSize, pString );
+            auto result = context.validationHandlers[i]->zeValidation->zeKernelGetSourceAttributesPrologue( hKernel, pSize, pString );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -6053,7 +5321,7 @@ namespace validation_layer
         auto result = pfnGetSourceAttributes( hKernel, pSize, pString );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeKernelGetSourceAttributesEpilogue( hKernel, pSize, pString );
+            auto result = context.validationHandlers[i]->zeValidation->zeKernelGetSourceAttributesEpilogue( hKernel, pSize, pString );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -6076,13 +5344,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeKernelSetCacheConfigPrologue( hKernel, flags );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeKernelSetCacheConfigPrologue( hKernel, flags );
+            auto result = context.validationHandlers[i]->zeValidation->zeKernelSetCacheConfigPrologue( hKernel, flags );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -6100,7 +5362,7 @@ namespace validation_layer
         auto result = pfnSetCacheConfig( hKernel, flags );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeKernelSetCacheConfigEpilogue( hKernel, flags );
+            auto result = context.validationHandlers[i]->zeValidation->zeKernelSetCacheConfigEpilogue( hKernel, flags );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -6122,13 +5384,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeKernelGetPropertiesPrologue( hKernel, pKernelProperties );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeKernelGetPropertiesPrologue( hKernel, pKernelProperties );
+            auto result = context.validationHandlers[i]->zeValidation->zeKernelGetPropertiesPrologue( hKernel, pKernelProperties );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -6146,7 +5402,7 @@ namespace validation_layer
         auto result = pfnGetProperties( hKernel, pKernelProperties );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeKernelGetPropertiesEpilogue( hKernel, pKernelProperties );
+            auto result = context.validationHandlers[i]->zeValidation->zeKernelGetPropertiesEpilogue( hKernel, pKernelProperties );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -6170,13 +5426,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeKernelGetNamePrologue( hKernel, pSize, pName );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeKernelGetNamePrologue( hKernel, pSize, pName );
+            auto result = context.validationHandlers[i]->zeValidation->zeKernelGetNamePrologue( hKernel, pSize, pName );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -6194,7 +5444,7 @@ namespace validation_layer
         auto result = pfnGetName( hKernel, pSize, pName );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeKernelGetNameEpilogue( hKernel, pSize, pName );
+            auto result = context.validationHandlers[i]->zeValidation->zeKernelGetNameEpilogue( hKernel, pSize, pName );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -6222,13 +5472,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeCommandListAppendLaunchKernelPrologue( hCommandList, hKernel, pLaunchFuncArgs, hSignalEvent, numWaitEvents, phWaitEvents );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeCommandListAppendLaunchKernelPrologue( hCommandList, hKernel, pLaunchFuncArgs, hSignalEvent, numWaitEvents, phWaitEvents );
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListAppendLaunchKernelPrologue( hCommandList, hKernel, pLaunchFuncArgs, hSignalEvent, numWaitEvents, phWaitEvents );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -6246,7 +5490,7 @@ namespace validation_layer
         auto result = pfnAppendLaunchKernel( hCommandList, hKernel, pLaunchFuncArgs, hSignalEvent, numWaitEvents, phWaitEvents );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeCommandListAppendLaunchKernelEpilogue( hCommandList, hKernel, pLaunchFuncArgs, hSignalEvent, numWaitEvents, phWaitEvents );
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListAppendLaunchKernelEpilogue( hCommandList, hKernel, pLaunchFuncArgs, hSignalEvent, numWaitEvents, phWaitEvents );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -6274,13 +5518,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeCommandListAppendLaunchCooperativeKernelPrologue( hCommandList, hKernel, pLaunchFuncArgs, hSignalEvent, numWaitEvents, phWaitEvents );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeCommandListAppendLaunchCooperativeKernelPrologue( hCommandList, hKernel, pLaunchFuncArgs, hSignalEvent, numWaitEvents, phWaitEvents );
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListAppendLaunchCooperativeKernelPrologue( hCommandList, hKernel, pLaunchFuncArgs, hSignalEvent, numWaitEvents, phWaitEvents );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -6298,7 +5536,7 @@ namespace validation_layer
         auto result = pfnAppendLaunchCooperativeKernel( hCommandList, hKernel, pLaunchFuncArgs, hSignalEvent, numWaitEvents, phWaitEvents );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeCommandListAppendLaunchCooperativeKernelEpilogue( hCommandList, hKernel, pLaunchFuncArgs, hSignalEvent, numWaitEvents, phWaitEvents );
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListAppendLaunchCooperativeKernelEpilogue( hCommandList, hKernel, pLaunchFuncArgs, hSignalEvent, numWaitEvents, phWaitEvents );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -6327,13 +5565,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeCommandListAppendLaunchKernelIndirectPrologue( hCommandList, hKernel, pLaunchArgumentsBuffer, hSignalEvent, numWaitEvents, phWaitEvents );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeCommandListAppendLaunchKernelIndirectPrologue( hCommandList, hKernel, pLaunchArgumentsBuffer, hSignalEvent, numWaitEvents, phWaitEvents );
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListAppendLaunchKernelIndirectPrologue( hCommandList, hKernel, pLaunchArgumentsBuffer, hSignalEvent, numWaitEvents, phWaitEvents );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -6351,7 +5583,7 @@ namespace validation_layer
         auto result = pfnAppendLaunchKernelIndirect( hCommandList, hKernel, pLaunchArgumentsBuffer, hSignalEvent, numWaitEvents, phWaitEvents );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeCommandListAppendLaunchKernelIndirectEpilogue( hCommandList, hKernel, pLaunchArgumentsBuffer, hSignalEvent, numWaitEvents, phWaitEvents );
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListAppendLaunchKernelIndirectEpilogue( hCommandList, hKernel, pLaunchArgumentsBuffer, hSignalEvent, numWaitEvents, phWaitEvents );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -6384,13 +5616,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeCommandListAppendLaunchMultipleKernelsIndirectPrologue( hCommandList, numKernels, phKernels, pCountBuffer, pLaunchArgumentsBuffer, hSignalEvent, numWaitEvents, phWaitEvents );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeCommandListAppendLaunchMultipleKernelsIndirectPrologue( hCommandList, numKernels, phKernels, pCountBuffer, pLaunchArgumentsBuffer, hSignalEvent, numWaitEvents, phWaitEvents );
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListAppendLaunchMultipleKernelsIndirectPrologue( hCommandList, numKernels, phKernels, pCountBuffer, pLaunchArgumentsBuffer, hSignalEvent, numWaitEvents, phWaitEvents );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -6408,7 +5634,7 @@ namespace validation_layer
         auto result = pfnAppendLaunchMultipleKernelsIndirect( hCommandList, numKernels, phKernels, pCountBuffer, pLaunchArgumentsBuffer, hSignalEvent, numWaitEvents, phWaitEvents );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeCommandListAppendLaunchMultipleKernelsIndirectEpilogue( hCommandList, numKernels, phKernels, pCountBuffer, pLaunchArgumentsBuffer, hSignalEvent, numWaitEvents, phWaitEvents );
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListAppendLaunchMultipleKernelsIndirectEpilogue( hCommandList, numKernels, phKernels, pCountBuffer, pLaunchArgumentsBuffer, hSignalEvent, numWaitEvents, phWaitEvents );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -6432,13 +5658,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeContextMakeMemoryResidentPrologue( hContext, hDevice, ptr, size );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeContextMakeMemoryResidentPrologue( hContext, hDevice, ptr, size );
+            auto result = context.validationHandlers[i]->zeValidation->zeContextMakeMemoryResidentPrologue( hContext, hDevice, ptr, size );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -6456,7 +5676,7 @@ namespace validation_layer
         auto result = pfnMakeMemoryResident( hContext, hDevice, ptr, size );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeContextMakeMemoryResidentEpilogue( hContext, hDevice, ptr, size );
+            auto result = context.validationHandlers[i]->zeValidation->zeContextMakeMemoryResidentEpilogue( hContext, hDevice, ptr, size );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -6480,13 +5700,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeContextEvictMemoryPrologue( hContext, hDevice, ptr, size );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeContextEvictMemoryPrologue( hContext, hDevice, ptr, size );
+            auto result = context.validationHandlers[i]->zeValidation->zeContextEvictMemoryPrologue( hContext, hDevice, ptr, size );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -6504,7 +5718,7 @@ namespace validation_layer
         auto result = pfnEvictMemory( hContext, hDevice, ptr, size );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeContextEvictMemoryEpilogue( hContext, hDevice, ptr, size );
+            auto result = context.validationHandlers[i]->zeValidation->zeContextEvictMemoryEpilogue( hContext, hDevice, ptr, size );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -6527,13 +5741,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeContextMakeImageResidentPrologue( hContext, hDevice, hImage );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeContextMakeImageResidentPrologue( hContext, hDevice, hImage );
+            auto result = context.validationHandlers[i]->zeValidation->zeContextMakeImageResidentPrologue( hContext, hDevice, hImage );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -6551,7 +5759,7 @@ namespace validation_layer
         auto result = pfnMakeImageResident( hContext, hDevice, hImage );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeContextMakeImageResidentEpilogue( hContext, hDevice, hImage );
+            auto result = context.validationHandlers[i]->zeValidation->zeContextMakeImageResidentEpilogue( hContext, hDevice, hImage );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -6574,13 +5782,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeContextEvictImagePrologue( hContext, hDevice, hImage );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeContextEvictImagePrologue( hContext, hDevice, hImage );
+            auto result = context.validationHandlers[i]->zeValidation->zeContextEvictImagePrologue( hContext, hDevice, hImage );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -6598,7 +5800,7 @@ namespace validation_layer
         auto result = pfnEvictImage( hContext, hDevice, hImage );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeContextEvictImageEpilogue( hContext, hDevice, hImage );
+            auto result = context.validationHandlers[i]->zeValidation->zeContextEvictImageEpilogue( hContext, hDevice, hImage );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -6622,13 +5824,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeSamplerCreatePrologue( hContext, hDevice, desc, phSampler );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeSamplerCreatePrologue( hContext, hDevice, desc, phSampler );
+            auto result = context.validationHandlers[i]->zeValidation->zeSamplerCreatePrologue( hContext, hDevice, desc, phSampler );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -6646,7 +5842,7 @@ namespace validation_layer
         auto result = pfnCreate( hContext, hDevice, desc, phSampler );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeSamplerCreateEpilogue( hContext, hDevice, desc, phSampler );
+            auto result = context.validationHandlers[i]->zeValidation->zeSamplerCreateEpilogue( hContext, hDevice, desc, phSampler );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -6676,13 +5872,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeSamplerDestroyPrologue( hSampler );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeSamplerDestroyPrologue( hSampler );
+            auto result = context.validationHandlers[i]->zeValidation->zeSamplerDestroyPrologue( hSampler );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -6700,7 +5890,7 @@ namespace validation_layer
         auto result = pfnDestroy( hSampler );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeSamplerDestroyEpilogue( hSampler );
+            auto result = context.validationHandlers[i]->zeValidation->zeSamplerDestroyEpilogue( hSampler );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -6725,13 +5915,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeVirtualMemReservePrologue( hContext, pStart, size, pptr );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeVirtualMemReservePrologue( hContext, pStart, size, pptr );
+            auto result = context.validationHandlers[i]->zeValidation->zeVirtualMemReservePrologue( hContext, pStart, size, pptr );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -6749,7 +5933,7 @@ namespace validation_layer
         auto result = pfnReserve( hContext, pStart, size, pptr );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeVirtualMemReserveEpilogue( hContext, pStart, size, pptr );
+            auto result = context.validationHandlers[i]->zeValidation->zeVirtualMemReserveEpilogue( hContext, pStart, size, pptr );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -6772,13 +5956,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeVirtualMemFreePrologue( hContext, ptr, size );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeVirtualMemFreePrologue( hContext, ptr, size );
+            auto result = context.validationHandlers[i]->zeValidation->zeVirtualMemFreePrologue( hContext, ptr, size );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -6796,7 +5974,7 @@ namespace validation_layer
         auto result = pfnFree( hContext, ptr, size );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeVirtualMemFreeEpilogue( hContext, ptr, size );
+            auto result = context.validationHandlers[i]->zeValidation->zeVirtualMemFreeEpilogue( hContext, ptr, size );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -6821,13 +5999,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeVirtualMemQueryPageSizePrologue( hContext, hDevice, size, pagesize );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeVirtualMemQueryPageSizePrologue( hContext, hDevice, size, pagesize );
+            auto result = context.validationHandlers[i]->zeValidation->zeVirtualMemQueryPageSizePrologue( hContext, hDevice, size, pagesize );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -6845,7 +6017,7 @@ namespace validation_layer
         auto result = pfnQueryPageSize( hContext, hDevice, size, pagesize );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeVirtualMemQueryPageSizeEpilogue( hContext, hDevice, size, pagesize );
+            auto result = context.validationHandlers[i]->zeValidation->zeVirtualMemQueryPageSizeEpilogue( hContext, hDevice, size, pagesize );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -6869,13 +6041,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zePhysicalMemCreatePrologue( hContext, hDevice, desc, phPhysicalMemory );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zePhysicalMemCreatePrologue( hContext, hDevice, desc, phPhysicalMemory );
+            auto result = context.validationHandlers[i]->zeValidation->zePhysicalMemCreatePrologue( hContext, hDevice, desc, phPhysicalMemory );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -6893,7 +6059,7 @@ namespace validation_layer
         auto result = pfnCreate( hContext, hDevice, desc, phPhysicalMemory );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zePhysicalMemCreateEpilogue( hContext, hDevice, desc, phPhysicalMemory );
+            auto result = context.validationHandlers[i]->zeValidation->zePhysicalMemCreateEpilogue( hContext, hDevice, desc, phPhysicalMemory );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -6924,13 +6090,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zePhysicalMemDestroyPrologue( hContext, hPhysicalMemory );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zePhysicalMemDestroyPrologue( hContext, hPhysicalMemory );
+            auto result = context.validationHandlers[i]->zeValidation->zePhysicalMemDestroyPrologue( hContext, hPhysicalMemory );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -6948,7 +6108,7 @@ namespace validation_layer
         auto result = pfnDestroy( hContext, hPhysicalMemory );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zePhysicalMemDestroyEpilogue( hContext, hPhysicalMemory );
+            auto result = context.validationHandlers[i]->zeValidation->zePhysicalMemDestroyEpilogue( hContext, hPhysicalMemory );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -6977,13 +6137,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeVirtualMemMapPrologue( hContext, ptr, size, hPhysicalMemory, offset, access );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeVirtualMemMapPrologue( hContext, ptr, size, hPhysicalMemory, offset, access );
+            auto result = context.validationHandlers[i]->zeValidation->zeVirtualMemMapPrologue( hContext, ptr, size, hPhysicalMemory, offset, access );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -7001,7 +6155,7 @@ namespace validation_layer
         auto result = pfnMap( hContext, ptr, size, hPhysicalMemory, offset, access );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeVirtualMemMapEpilogue( hContext, ptr, size, hPhysicalMemory, offset, access );
+            auto result = context.validationHandlers[i]->zeValidation->zeVirtualMemMapEpilogue( hContext, ptr, size, hPhysicalMemory, offset, access );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -7024,13 +6178,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeVirtualMemUnmapPrologue( hContext, ptr, size );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeVirtualMemUnmapPrologue( hContext, ptr, size );
+            auto result = context.validationHandlers[i]->zeValidation->zeVirtualMemUnmapPrologue( hContext, ptr, size );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -7048,7 +6196,7 @@ namespace validation_layer
         auto result = pfnUnmap( hContext, ptr, size );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeVirtualMemUnmapEpilogue( hContext, ptr, size );
+            auto result = context.validationHandlers[i]->zeValidation->zeVirtualMemUnmapEpilogue( hContext, ptr, size );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -7073,13 +6221,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeVirtualMemSetAccessAttributePrologue( hContext, ptr, size, access );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeVirtualMemSetAccessAttributePrologue( hContext, ptr, size, access );
+            auto result = context.validationHandlers[i]->zeValidation->zeVirtualMemSetAccessAttributePrologue( hContext, ptr, size, access );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -7097,7 +6239,7 @@ namespace validation_layer
         auto result = pfnSetAccessAttribute( hContext, ptr, size, access );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeVirtualMemSetAccessAttributeEpilogue( hContext, ptr, size, access );
+            auto result = context.validationHandlers[i]->zeValidation->zeVirtualMemSetAccessAttributeEpilogue( hContext, ptr, size, access );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -7123,13 +6265,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeVirtualMemGetAccessAttributePrologue( hContext, ptr, size, access, outSize );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeVirtualMemGetAccessAttributePrologue( hContext, ptr, size, access, outSize );
+            auto result = context.validationHandlers[i]->zeValidation->zeVirtualMemGetAccessAttributePrologue( hContext, ptr, size, access, outSize );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -7147,7 +6283,7 @@ namespace validation_layer
         auto result = pfnGetAccessAttribute( hContext, ptr, size, access, outSize );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeVirtualMemGetAccessAttributeEpilogue( hContext, ptr, size, access, outSize );
+            auto result = context.validationHandlers[i]->zeValidation->zeVirtualMemGetAccessAttributeEpilogue( hContext, ptr, size, access, outSize );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -7171,13 +6307,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeKernelSetGlobalOffsetExpPrologue( hKernel, offsetX, offsetY, offsetZ );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeKernelSetGlobalOffsetExpPrologue( hKernel, offsetX, offsetY, offsetZ );
+            auto result = context.validationHandlers[i]->zeValidation->zeKernelSetGlobalOffsetExpPrologue( hKernel, offsetX, offsetY, offsetZ );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -7195,7 +6325,7 @@ namespace validation_layer
         auto result = pfnSetGlobalOffsetExp( hKernel, offsetX, offsetY, offsetZ );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeKernelSetGlobalOffsetExpEpilogue( hKernel, offsetX, offsetY, offsetZ );
+            auto result = context.validationHandlers[i]->zeValidation->zeKernelSetGlobalOffsetExpEpilogue( hKernel, offsetX, offsetY, offsetZ );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -7221,13 +6351,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeDeviceReserveCacheExtPrologue( hDevice, cacheLevel, cacheReservationSize );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeDeviceReserveCacheExtPrologue( hDevice, cacheLevel, cacheReservationSize );
+            auto result = context.validationHandlers[i]->zeValidation->zeDeviceReserveCacheExtPrologue( hDevice, cacheLevel, cacheReservationSize );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -7245,7 +6369,7 @@ namespace validation_layer
         auto result = pfnReserveCacheExt( hDevice, cacheLevel, cacheReservationSize );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeDeviceReserveCacheExtEpilogue( hDevice, cacheLevel, cacheReservationSize );
+            auto result = context.validationHandlers[i]->zeValidation->zeDeviceReserveCacheExtEpilogue( hDevice, cacheLevel, cacheReservationSize );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -7269,13 +6393,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeDeviceSetCacheAdviceExtPrologue( hDevice, ptr, regionSize, cacheRegion );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeDeviceSetCacheAdviceExtPrologue( hDevice, ptr, regionSize, cacheRegion );
+            auto result = context.validationHandlers[i]->zeValidation->zeDeviceSetCacheAdviceExtPrologue( hDevice, ptr, regionSize, cacheRegion );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -7293,7 +6411,7 @@ namespace validation_layer
         auto result = pfnSetCacheAdviceExt( hDevice, ptr, regionSize, cacheRegion );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeDeviceSetCacheAdviceExtEpilogue( hDevice, ptr, regionSize, cacheRegion );
+            auto result = context.validationHandlers[i]->zeValidation->zeDeviceSetCacheAdviceExtEpilogue( hDevice, ptr, regionSize, cacheRegion );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -7323,13 +6441,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeEventQueryTimestampsExpPrologue( hEvent, hDevice, pCount, pTimestamps );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeEventQueryTimestampsExpPrologue( hEvent, hDevice, pCount, pTimestamps );
+            auto result = context.validationHandlers[i]->zeValidation->zeEventQueryTimestampsExpPrologue( hEvent, hDevice, pCount, pTimestamps );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -7347,7 +6459,7 @@ namespace validation_layer
         auto result = pfnQueryTimestampsExp( hEvent, hDevice, pCount, pTimestamps );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeEventQueryTimestampsExpEpilogue( hEvent, hDevice, pCount, pTimestamps );
+            auto result = context.validationHandlers[i]->zeValidation->zeEventQueryTimestampsExpEpilogue( hEvent, hDevice, pCount, pTimestamps );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -7369,13 +6481,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeImageGetMemoryPropertiesExpPrologue( hImage, pMemoryProperties );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeImageGetMemoryPropertiesExpPrologue( hImage, pMemoryProperties );
+            auto result = context.validationHandlers[i]->zeValidation->zeImageGetMemoryPropertiesExpPrologue( hImage, pMemoryProperties );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -7393,7 +6499,7 @@ namespace validation_layer
         auto result = pfnGetMemoryPropertiesExp( hImage, pMemoryProperties );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeImageGetMemoryPropertiesExpEpilogue( hImage, pMemoryProperties );
+            auto result = context.validationHandlers[i]->zeValidation->zeImageGetMemoryPropertiesExpEpilogue( hImage, pMemoryProperties );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -7422,13 +6528,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeImageViewCreateExtPrologue( hContext, hDevice, desc, hImage, phImageView );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeImageViewCreateExtPrologue( hContext, hDevice, desc, hImage, phImageView );
+            auto result = context.validationHandlers[i]->zeValidation->zeImageViewCreateExtPrologue( hContext, hDevice, desc, hImage, phImageView );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -7446,7 +6546,7 @@ namespace validation_layer
         auto result = pfnViewCreateExt( hContext, hDevice, desc, hImage, phImageView );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeImageViewCreateExtEpilogue( hContext, hDevice, desc, hImage, phImageView );
+            auto result = context.validationHandlers[i]->zeValidation->zeImageViewCreateExtEpilogue( hContext, hDevice, desc, hImage, phImageView );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -7480,13 +6580,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeImageViewCreateExpPrologue( hContext, hDevice, desc, hImage, phImageView );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeImageViewCreateExpPrologue( hContext, hDevice, desc, hImage, phImageView );
+            auto result = context.validationHandlers[i]->zeValidation->zeImageViewCreateExpPrologue( hContext, hDevice, desc, hImage, phImageView );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -7504,7 +6598,7 @@ namespace validation_layer
         auto result = pfnViewCreateExp( hContext, hDevice, desc, hImage, phImageView );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeImageViewCreateExpEpilogue( hContext, hDevice, desc, hImage, phImageView );
+            auto result = context.validationHandlers[i]->zeValidation->zeImageViewCreateExpEpilogue( hContext, hDevice, desc, hImage, phImageView );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -7535,13 +6629,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeKernelSchedulingHintExpPrologue( hKernel, pHint );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeKernelSchedulingHintExpPrologue( hKernel, pHint );
+            auto result = context.validationHandlers[i]->zeValidation->zeKernelSchedulingHintExpPrologue( hKernel, pHint );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -7559,7 +6647,7 @@ namespace validation_layer
         auto result = pfnSchedulingHintExp( hKernel, pHint );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeKernelSchedulingHintExpEpilogue( hKernel, pHint );
+            auto result = context.validationHandlers[i]->zeValidation->zeKernelSchedulingHintExpEpilogue( hKernel, pHint );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -7581,13 +6669,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeDevicePciGetPropertiesExtPrologue( hDevice, pPciProperties );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeDevicePciGetPropertiesExtPrologue( hDevice, pPciProperties );
+            auto result = context.validationHandlers[i]->zeValidation->zeDevicePciGetPropertiesExtPrologue( hDevice, pPciProperties );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -7605,7 +6687,7 @@ namespace validation_layer
         auto result = pfnPciGetPropertiesExt( hDevice, pPciProperties );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeDevicePciGetPropertiesExtEpilogue( hDevice, pPciProperties );
+            auto result = context.validationHandlers[i]->zeValidation->zeDevicePciGetPropertiesExtEpilogue( hDevice, pPciProperties );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -7638,13 +6720,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeCommandListAppendImageCopyToMemoryExtPrologue( hCommandList, dstptr, hSrcImage, pSrcRegion, destRowPitch, destSlicePitch, hSignalEvent, numWaitEvents, phWaitEvents );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeCommandListAppendImageCopyToMemoryExtPrologue( hCommandList, dstptr, hSrcImage, pSrcRegion, destRowPitch, destSlicePitch, hSignalEvent, numWaitEvents, phWaitEvents );
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListAppendImageCopyToMemoryExtPrologue( hCommandList, dstptr, hSrcImage, pSrcRegion, destRowPitch, destSlicePitch, hSignalEvent, numWaitEvents, phWaitEvents );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -7662,7 +6738,7 @@ namespace validation_layer
         auto result = pfnAppendImageCopyToMemoryExt( hCommandList, dstptr, hSrcImage, pSrcRegion, destRowPitch, destSlicePitch, hSignalEvent, numWaitEvents, phWaitEvents );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeCommandListAppendImageCopyToMemoryExtEpilogue( hCommandList, dstptr, hSrcImage, pSrcRegion, destRowPitch, destSlicePitch, hSignalEvent, numWaitEvents, phWaitEvents );
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListAppendImageCopyToMemoryExtEpilogue( hCommandList, dstptr, hSrcImage, pSrcRegion, destRowPitch, destSlicePitch, hSignalEvent, numWaitEvents, phWaitEvents );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -7695,13 +6771,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeCommandListAppendImageCopyFromMemoryExtPrologue( hCommandList, hDstImage, srcptr, pDstRegion, srcRowPitch, srcSlicePitch, hSignalEvent, numWaitEvents, phWaitEvents );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeCommandListAppendImageCopyFromMemoryExtPrologue( hCommandList, hDstImage, srcptr, pDstRegion, srcRowPitch, srcSlicePitch, hSignalEvent, numWaitEvents, phWaitEvents );
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListAppendImageCopyFromMemoryExtPrologue( hCommandList, hDstImage, srcptr, pDstRegion, srcRowPitch, srcSlicePitch, hSignalEvent, numWaitEvents, phWaitEvents );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -7719,7 +6789,7 @@ namespace validation_layer
         auto result = pfnAppendImageCopyFromMemoryExt( hCommandList, hDstImage, srcptr, pDstRegion, srcRowPitch, srcSlicePitch, hSignalEvent, numWaitEvents, phWaitEvents );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeCommandListAppendImageCopyFromMemoryExtEpilogue( hCommandList, hDstImage, srcptr, pDstRegion, srcRowPitch, srcSlicePitch, hSignalEvent, numWaitEvents, phWaitEvents );
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListAppendImageCopyFromMemoryExtEpilogue( hCommandList, hDstImage, srcptr, pDstRegion, srcRowPitch, srcSlicePitch, hSignalEvent, numWaitEvents, phWaitEvents );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -7742,13 +6812,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeImageGetAllocPropertiesExtPrologue( hContext, hImage, pImageAllocProperties );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeImageGetAllocPropertiesExtPrologue( hContext, hImage, pImageAllocProperties );
+            auto result = context.validationHandlers[i]->zeValidation->zeImageGetAllocPropertiesExtPrologue( hContext, hImage, pImageAllocProperties );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -7766,7 +6830,7 @@ namespace validation_layer
         auto result = pfnGetAllocPropertiesExt( hContext, hImage, pImageAllocProperties );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeImageGetAllocPropertiesExtEpilogue( hContext, hImage, pImageAllocProperties );
+            auto result = context.validationHandlers[i]->zeValidation->zeImageGetAllocPropertiesExtEpilogue( hContext, hImage, pImageAllocProperties );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -7792,13 +6856,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeModuleInspectLinkageExtPrologue( pInspectDesc, numModules, phModules, phLog );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeModuleInspectLinkageExtPrologue( pInspectDesc, numModules, phModules, phLog );
+            auto result = context.validationHandlers[i]->zeValidation->zeModuleInspectLinkageExtPrologue( pInspectDesc, numModules, phModules, phLog );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -7816,7 +6874,7 @@ namespace validation_layer
         auto result = pfnInspectLinkageExt( pInspectDesc, numModules, phModules, phLog );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeModuleInspectLinkageExtEpilogue( pInspectDesc, numModules, phModules, phLog );
+            auto result = context.validationHandlers[i]->zeValidation->zeModuleInspectLinkageExtEpilogue( pInspectDesc, numModules, phModules, phLog );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -7839,13 +6897,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeMemFreeExtPrologue( hContext, pMemFreeDesc, ptr );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeMemFreeExtPrologue( hContext, pMemFreeDesc, ptr );
+            auto result = context.validationHandlers[i]->zeValidation->zeMemFreeExtPrologue( hContext, pMemFreeDesc, ptr );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -7863,7 +6915,7 @@ namespace validation_layer
         auto result = pfnFreeExt( hContext, pMemFreeDesc, ptr );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeMemFreeExtEpilogue( hContext, pMemFreeDesc, ptr );
+            auto result = context.validationHandlers[i]->zeValidation->zeMemFreeExtEpilogue( hContext, pMemFreeDesc, ptr );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -7893,13 +6945,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeFabricVertexGetExpPrologue( hDriver, pCount, phVertices );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeFabricVertexGetExpPrologue( hDriver, pCount, phVertices );
+            auto result = context.validationHandlers[i]->zeValidation->zeFabricVertexGetExpPrologue( hDriver, pCount, phVertices );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -7917,7 +6963,7 @@ namespace validation_layer
         auto result = pfnGetExp( hDriver, pCount, phVertices );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeFabricVertexGetExpEpilogue( hDriver, pCount, phVertices );
+            auto result = context.validationHandlers[i]->zeValidation->zeFabricVertexGetExpEpilogue( hDriver, pCount, phVertices );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -7957,13 +7003,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeFabricVertexGetSubVerticesExpPrologue( hVertex, pCount, phSubvertices );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeFabricVertexGetSubVerticesExpPrologue( hVertex, pCount, phSubvertices );
+            auto result = context.validationHandlers[i]->zeValidation->zeFabricVertexGetSubVerticesExpPrologue( hVertex, pCount, phSubvertices );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -7981,7 +7021,7 @@ namespace validation_layer
         auto result = pfnGetSubVerticesExp( hVertex, pCount, phSubvertices );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeFabricVertexGetSubVerticesExpEpilogue( hVertex, pCount, phSubvertices );
+            auto result = context.validationHandlers[i]->zeValidation->zeFabricVertexGetSubVerticesExpEpilogue( hVertex, pCount, phSubvertices );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -8013,13 +7053,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeFabricVertexGetPropertiesExpPrologue( hVertex, pVertexProperties );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeFabricVertexGetPropertiesExpPrologue( hVertex, pVertexProperties );
+            auto result = context.validationHandlers[i]->zeValidation->zeFabricVertexGetPropertiesExpPrologue( hVertex, pVertexProperties );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -8037,7 +7071,7 @@ namespace validation_layer
         auto result = pfnGetPropertiesExp( hVertex, pVertexProperties );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeFabricVertexGetPropertiesExpEpilogue( hVertex, pVertexProperties );
+            auto result = context.validationHandlers[i]->zeValidation->zeFabricVertexGetPropertiesExpEpilogue( hVertex, pVertexProperties );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -8063,13 +7097,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeFabricVertexGetDeviceExpPrologue( hVertex, phDevice );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeFabricVertexGetDeviceExpPrologue( hVertex, phDevice );
+            auto result = context.validationHandlers[i]->zeValidation->zeFabricVertexGetDeviceExpPrologue( hVertex, phDevice );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -8087,7 +7115,7 @@ namespace validation_layer
         auto result = pfnGetDeviceExp( hVertex, phDevice );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeFabricVertexGetDeviceExpEpilogue( hVertex, phDevice );
+            auto result = context.validationHandlers[i]->zeValidation->zeFabricVertexGetDeviceExpEpilogue( hVertex, phDevice );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -8118,13 +7146,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeDeviceGetFabricVertexExpPrologue( hDevice, phVertex );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeDeviceGetFabricVertexExpPrologue( hDevice, phVertex );
+            auto result = context.validationHandlers[i]->zeValidation->zeDeviceGetFabricVertexExpPrologue( hDevice, phVertex );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -8142,7 +7164,7 @@ namespace validation_layer
         auto result = pfnGetFabricVertexExp( hDevice, phVertex );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeDeviceGetFabricVertexExpEpilogue( hDevice, phVertex );
+            auto result = context.validationHandlers[i]->zeValidation->zeDeviceGetFabricVertexExpEpilogue( hDevice, phVertex );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -8182,13 +7204,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeFabricEdgeGetExpPrologue( hVertexA, hVertexB, pCount, phEdges );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeFabricEdgeGetExpPrologue( hVertexA, hVertexB, pCount, phEdges );
+            auto result = context.validationHandlers[i]->zeValidation->zeFabricEdgeGetExpPrologue( hVertexA, hVertexB, pCount, phEdges );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -8206,7 +7222,7 @@ namespace validation_layer
         auto result = pfnGetExp( hVertexA, hVertexB, pCount, phEdges );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeFabricEdgeGetExpEpilogue( hVertexA, hVertexB, pCount, phEdges );
+            auto result = context.validationHandlers[i]->zeValidation->zeFabricEdgeGetExpEpilogue( hVertexA, hVertexB, pCount, phEdges );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -8239,13 +7255,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeFabricEdgeGetVerticesExpPrologue( hEdge, phVertexA, phVertexB );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeFabricEdgeGetVerticesExpPrologue( hEdge, phVertexA, phVertexB );
+            auto result = context.validationHandlers[i]->zeValidation->zeFabricEdgeGetVerticesExpPrologue( hEdge, phVertexA, phVertexB );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -8263,7 +7273,7 @@ namespace validation_layer
         auto result = pfnGetVerticesExp( hEdge, phVertexA, phVertexB );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeFabricEdgeGetVerticesExpEpilogue( hEdge, phVertexA, phVertexB );
+            auto result = context.validationHandlers[i]->zeValidation->zeFabricEdgeGetVerticesExpEpilogue( hEdge, phVertexA, phVertexB );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -8299,13 +7309,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeFabricEdgeGetPropertiesExpPrologue( hEdge, pEdgeProperties );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeFabricEdgeGetPropertiesExpPrologue( hEdge, pEdgeProperties );
+            auto result = context.validationHandlers[i]->zeValidation->zeFabricEdgeGetPropertiesExpPrologue( hEdge, pEdgeProperties );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -8323,7 +7327,7 @@ namespace validation_layer
         auto result = pfnGetPropertiesExp( hEdge, pEdgeProperties );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeFabricEdgeGetPropertiesExpEpilogue( hEdge, pEdgeProperties );
+            auto result = context.validationHandlers[i]->zeValidation->zeFabricEdgeGetPropertiesExpEpilogue( hEdge, pEdgeProperties );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -8364,13 +7368,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeEventQueryKernelTimestampsExtPrologue( hEvent, hDevice, pCount, pResults );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeEventQueryKernelTimestampsExtPrologue( hEvent, hDevice, pCount, pResults );
+            auto result = context.validationHandlers[i]->zeValidation->zeEventQueryKernelTimestampsExtPrologue( hEvent, hDevice, pCount, pResults );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -8388,7 +7386,7 @@ namespace validation_layer
         auto result = pfnQueryKernelTimestampsExt( hEvent, hDevice, pCount, pResults );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeEventQueryKernelTimestampsExtEpilogue( hEvent, hDevice, pCount, pResults );
+            auto result = context.validationHandlers[i]->zeValidation->zeEventQueryKernelTimestampsExtEpilogue( hEvent, hDevice, pCount, pResults );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -8411,13 +7409,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeRTASBuilderCreateExpPrologue( hDriver, pDescriptor, phBuilder );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeRTASBuilderCreateExpPrologue( hDriver, pDescriptor, phBuilder );
+            auto result = context.validationHandlers[i]->zeValidation->zeRTASBuilderCreateExpPrologue( hDriver, pDescriptor, phBuilder );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -8435,7 +7427,7 @@ namespace validation_layer
         auto result = pfnCreateExp( hDriver, pDescriptor, phBuilder );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeRTASBuilderCreateExpEpilogue( hDriver, pDescriptor, phBuilder );
+            auto result = context.validationHandlers[i]->zeValidation->zeRTASBuilderCreateExpEpilogue( hDriver, pDescriptor, phBuilder );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -8467,13 +7459,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeRTASBuilderGetBuildPropertiesExpPrologue( hBuilder, pBuildOpDescriptor, pProperties );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeRTASBuilderGetBuildPropertiesExpPrologue( hBuilder, pBuildOpDescriptor, pProperties );
+            auto result = context.validationHandlers[i]->zeValidation->zeRTASBuilderGetBuildPropertiesExpPrologue( hBuilder, pBuildOpDescriptor, pProperties );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -8491,7 +7477,7 @@ namespace validation_layer
         auto result = pfnGetBuildPropertiesExp( hBuilder, pBuildOpDescriptor, pProperties );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeRTASBuilderGetBuildPropertiesExpEpilogue( hBuilder, pBuildOpDescriptor, pProperties );
+            auto result = context.validationHandlers[i]->zeValidation->zeRTASBuilderGetBuildPropertiesExpEpilogue( hBuilder, pBuildOpDescriptor, pProperties );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -8518,13 +7504,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeDriverRTASFormatCompatibilityCheckExpPrologue( hDriver, rtasFormatA, rtasFormatB );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeDriverRTASFormatCompatibilityCheckExpPrologue( hDriver, rtasFormatA, rtasFormatB );
+            auto result = context.validationHandlers[i]->zeValidation->zeDriverRTASFormatCompatibilityCheckExpPrologue( hDriver, rtasFormatA, rtasFormatB );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -8542,7 +7522,7 @@ namespace validation_layer
         auto result = pfnRTASFormatCompatibilityCheckExp( hDriver, rtasFormatA, rtasFormatB );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeDriverRTASFormatCompatibilityCheckExpEpilogue( hDriver, rtasFormatA, rtasFormatB );
+            auto result = context.validationHandlers[i]->zeValidation->zeDriverRTASFormatCompatibilityCheckExpEpilogue( hDriver, rtasFormatA, rtasFormatB );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -8575,13 +7555,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeRTASBuilderBuildExpPrologue( hBuilder, pBuildOpDescriptor, pScratchBuffer, scratchBufferSizeBytes, pRtasBuffer, rtasBufferSizeBytes, hParallelOperation, pBuildUserPtr, pBounds, pRtasBufferSizeBytes );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeRTASBuilderBuildExpPrologue( hBuilder, pBuildOpDescriptor, pScratchBuffer, scratchBufferSizeBytes, pRtasBuffer, rtasBufferSizeBytes, hParallelOperation, pBuildUserPtr, pBounds, pRtasBufferSizeBytes );
+            auto result = context.validationHandlers[i]->zeValidation->zeRTASBuilderBuildExpPrologue( hBuilder, pBuildOpDescriptor, pScratchBuffer, scratchBufferSizeBytes, pRtasBuffer, rtasBufferSizeBytes, hParallelOperation, pBuildUserPtr, pBounds, pRtasBufferSizeBytes );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -8599,7 +7573,7 @@ namespace validation_layer
         auto result = pfnBuildExp( hBuilder, pBuildOpDescriptor, pScratchBuffer, scratchBufferSizeBytes, pRtasBuffer, rtasBufferSizeBytes, hParallelOperation, pBuildUserPtr, pBounds, pRtasBufferSizeBytes );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeRTASBuilderBuildExpEpilogue( hBuilder, pBuildOpDescriptor, pScratchBuffer, scratchBufferSizeBytes, pRtasBuffer, rtasBufferSizeBytes, hParallelOperation, pBuildUserPtr, pBounds, pRtasBufferSizeBytes );
+            auto result = context.validationHandlers[i]->zeValidation->zeRTASBuilderBuildExpEpilogue( hBuilder, pBuildOpDescriptor, pScratchBuffer, scratchBufferSizeBytes, pRtasBuffer, rtasBufferSizeBytes, hParallelOperation, pBuildUserPtr, pBounds, pRtasBufferSizeBytes );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -8620,13 +7594,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeRTASBuilderDestroyExpPrologue( hBuilder );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeRTASBuilderDestroyExpPrologue( hBuilder );
+            auto result = context.validationHandlers[i]->zeValidation->zeRTASBuilderDestroyExpPrologue( hBuilder );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -8644,7 +7612,7 @@ namespace validation_layer
         auto result = pfnDestroyExp( hBuilder );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeRTASBuilderDestroyExpEpilogue( hBuilder );
+            auto result = context.validationHandlers[i]->zeValidation->zeRTASBuilderDestroyExpEpilogue( hBuilder );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -8666,13 +7634,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeRTASParallelOperationCreateExpPrologue( hDriver, phParallelOperation );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeRTASParallelOperationCreateExpPrologue( hDriver, phParallelOperation );
+            auto result = context.validationHandlers[i]->zeValidation->zeRTASParallelOperationCreateExpPrologue( hDriver, phParallelOperation );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -8690,7 +7652,7 @@ namespace validation_layer
         auto result = pfnCreateExp( hDriver, phParallelOperation );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeRTASParallelOperationCreateExpEpilogue( hDriver, phParallelOperation );
+            auto result = context.validationHandlers[i]->zeValidation->zeRTASParallelOperationCreateExpEpilogue( hDriver, phParallelOperation );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -8721,13 +7683,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeRTASParallelOperationGetPropertiesExpPrologue( hParallelOperation, pProperties );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeRTASParallelOperationGetPropertiesExpPrologue( hParallelOperation, pProperties );
+            auto result = context.validationHandlers[i]->zeValidation->zeRTASParallelOperationGetPropertiesExpPrologue( hParallelOperation, pProperties );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -8745,7 +7701,7 @@ namespace validation_layer
         auto result = pfnGetPropertiesExp( hParallelOperation, pProperties );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeRTASParallelOperationGetPropertiesExpEpilogue( hParallelOperation, pProperties );
+            auto result = context.validationHandlers[i]->zeValidation->zeRTASParallelOperationGetPropertiesExpEpilogue( hParallelOperation, pProperties );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -8770,13 +7726,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeRTASParallelOperationJoinExpPrologue( hParallelOperation );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeRTASParallelOperationJoinExpPrologue( hParallelOperation );
+            auto result = context.validationHandlers[i]->zeValidation->zeRTASParallelOperationJoinExpPrologue( hParallelOperation );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -8794,7 +7744,7 @@ namespace validation_layer
         auto result = pfnJoinExp( hParallelOperation );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeRTASParallelOperationJoinExpEpilogue( hParallelOperation );
+            auto result = context.validationHandlers[i]->zeValidation->zeRTASParallelOperationJoinExpEpilogue( hParallelOperation );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -8815,13 +7765,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeRTASParallelOperationDestroyExpPrologue( hParallelOperation );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeRTASParallelOperationDestroyExpPrologue( hParallelOperation );
+            auto result = context.validationHandlers[i]->zeValidation->zeRTASParallelOperationDestroyExpPrologue( hParallelOperation );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -8839,7 +7783,7 @@ namespace validation_layer
         auto result = pfnDestroyExp( hParallelOperation );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeRTASParallelOperationDestroyExpEpilogue( hParallelOperation );
+            auto result = context.validationHandlers[i]->zeValidation->zeRTASParallelOperationDestroyExpEpilogue( hParallelOperation );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -8865,13 +7809,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeMemGetPitchFor2dImagePrologue( hContext, hDevice, imageWidth, imageHeight, elementSizeInBytes, rowPitch );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeMemGetPitchFor2dImagePrologue( hContext, hDevice, imageWidth, imageHeight, elementSizeInBytes, rowPitch );
+            auto result = context.validationHandlers[i]->zeValidation->zeMemGetPitchFor2dImagePrologue( hContext, hDevice, imageWidth, imageHeight, elementSizeInBytes, rowPitch );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -8889,7 +7827,7 @@ namespace validation_layer
         auto result = pfnGetPitchFor2dImage( hContext, hDevice, imageWidth, imageHeight, elementSizeInBytes, rowPitch );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeMemGetPitchFor2dImageEpilogue( hContext, hDevice, imageWidth, imageHeight, elementSizeInBytes, rowPitch );
+            auto result = context.validationHandlers[i]->zeValidation->zeMemGetPitchFor2dImageEpilogue( hContext, hDevice, imageWidth, imageHeight, elementSizeInBytes, rowPitch );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -8911,13 +7849,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeImageGetDeviceOffsetExpPrologue( hImage, pDeviceOffset );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeImageGetDeviceOffsetExpPrologue( hImage, pDeviceOffset );
+            auto result = context.validationHandlers[i]->zeValidation->zeImageGetDeviceOffsetExpPrologue( hImage, pDeviceOffset );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -8935,7 +7867,7 @@ namespace validation_layer
         auto result = pfnGetDeviceOffsetExp( hImage, pDeviceOffset );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeImageGetDeviceOffsetExpEpilogue( hImage, pDeviceOffset );
+            auto result = context.validationHandlers[i]->zeValidation->zeImageGetDeviceOffsetExpEpilogue( hImage, pDeviceOffset );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -8961,13 +7893,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeCommandListCreateCloneExpPrologue( hCommandList, phClonedCommandList );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeCommandListCreateCloneExpPrologue( hCommandList, phClonedCommandList );
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListCreateCloneExpPrologue( hCommandList, phClonedCommandList );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -8985,7 +7911,7 @@ namespace validation_layer
         auto result = pfnCreateCloneExp( hCommandList, phClonedCommandList );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeCommandListCreateCloneExpEpilogue( hCommandList, phClonedCommandList );
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListCreateCloneExpEpilogue( hCommandList, phClonedCommandList );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -9026,13 +7952,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeCommandListImmediateAppendCommandListsExpPrologue( hCommandListImmediate, numCommandLists, phCommandLists, hSignalEvent, numWaitEvents, phWaitEvents );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeCommandListImmediateAppendCommandListsExpPrologue( hCommandListImmediate, numCommandLists, phCommandLists, hSignalEvent, numWaitEvents, phWaitEvents );
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListImmediateAppendCommandListsExpPrologue( hCommandListImmediate, numCommandLists, phCommandLists, hSignalEvent, numWaitEvents, phWaitEvents );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -9050,7 +7970,7 @@ namespace validation_layer
         auto result = pfnImmediateAppendCommandListsExp( hCommandListImmediate, numCommandLists, phCommandLists, hSignalEvent, numWaitEvents, phWaitEvents );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeCommandListImmediateAppendCommandListsExpEpilogue( hCommandListImmediate, numCommandLists, phCommandLists, hSignalEvent, numWaitEvents, phWaitEvents );
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListImmediateAppendCommandListsExpEpilogue( hCommandListImmediate, numCommandLists, phCommandLists, hSignalEvent, numWaitEvents, phWaitEvents );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -9073,13 +7993,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeCommandListGetNextCommandIdExpPrologue( hCommandList, desc, pCommandId );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeCommandListGetNextCommandIdExpPrologue( hCommandList, desc, pCommandId );
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListGetNextCommandIdExpPrologue( hCommandList, desc, pCommandId );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -9097,7 +8011,7 @@ namespace validation_layer
         auto result = pfnGetNextCommandIdExp( hCommandList, desc, pCommandId );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeCommandListGetNextCommandIdExpEpilogue( hCommandList, desc, pCommandId );
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListGetNextCommandIdExpEpilogue( hCommandList, desc, pCommandId );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -9124,13 +8038,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeCommandListUpdateMutableCommandsExpPrologue( hCommandList, desc );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeCommandListUpdateMutableCommandsExpPrologue( hCommandList, desc );
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListUpdateMutableCommandsExpPrologue( hCommandList, desc );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -9148,7 +8056,7 @@ namespace validation_layer
         auto result = pfnUpdateMutableCommandsExp( hCommandList, desc );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeCommandListUpdateMutableCommandsExpEpilogue( hCommandList, desc );
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListUpdateMutableCommandsExpEpilogue( hCommandList, desc );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -9171,13 +8079,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeCommandListUpdateMutableCommandSignalEventExpPrologue( hCommandList, commandId, hSignalEvent );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeCommandListUpdateMutableCommandSignalEventExpPrologue( hCommandList, commandId, hSignalEvent );
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListUpdateMutableCommandSignalEventExpPrologue( hCommandList, commandId, hSignalEvent );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -9195,7 +8097,7 @@ namespace validation_layer
         auto result = pfnUpdateMutableCommandSignalEventExp( hCommandList, commandId, hSignalEvent );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeCommandListUpdateMutableCommandSignalEventExpEpilogue( hCommandList, commandId, hSignalEvent );
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListUpdateMutableCommandSignalEventExpEpilogue( hCommandList, commandId, hSignalEvent );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -9220,13 +8122,7 @@ namespace validation_layer
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeCommandListUpdateMutableCommandWaitEventsExpPrologue( hCommandList, commandId, numWaitEvents, phWaitEvents );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        if( context.enableParameterValidation )
-        {
-            auto result = context.paramValidation->zeParamValidation.zeCommandListUpdateMutableCommandWaitEventsExpPrologue( hCommandList, commandId, numWaitEvents, phWaitEvents );
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListUpdateMutableCommandWaitEventsExpPrologue( hCommandList, commandId, numWaitEvents, phWaitEvents );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -9244,7 +8140,7 @@ namespace validation_layer
         auto result = pfnUpdateMutableCommandWaitEventsExp( hCommandList, commandId, numWaitEvents, phWaitEvents );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeParamValidation->zeCommandListUpdateMutableCommandWaitEventsExpEpilogue( hCommandList, commandId, numWaitEvents, phWaitEvents );
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListUpdateMutableCommandWaitEventsExpEpilogue( hCommandList, commandId, numWaitEvents, phWaitEvents );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 

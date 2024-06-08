@@ -10,7 +10,8 @@
  *
  */
 
-#pragma once 
+#pragma once
+#include "ze_validation_layer.h"
 #include "zes_entry_points.h"
 
 
@@ -164,5 +165,4 @@ namespace validation_layer
         ze_result_t zesVFManagementSetVFTelemetryModeExpPrologue( zes_vf_handle_t hVFhandle, zes_vf_info_util_exp_flags_t flags, ze_bool_t enable ) override;
         ze_result_t zesVFManagementSetVFTelemetrySamplingIntervalExpPrologue( zes_vf_handle_t hVFhandle, zes_vf_info_util_exp_flags_t flag, uint64_t samplingInterval ) override;
     };
-
 }

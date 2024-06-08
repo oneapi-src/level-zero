@@ -10,10 +10,32 @@
  *
  */
 #include "ze_validation_layer.h"
-#include "ze_parameter_validation.h"
+#include "param_validation.h"
 
 namespace validation_layer
 {
+    class parameterValidationChecker parameterChecker;
+
+    parameterValidationChecker::parameterValidationChecker() {
+        enableParameterValidation = getenv_tobool( "ZE_ENABLE_PARAMETER_VALIDATION" );
+        if(enableParameterValidation) {
+            ZEParameterValidation *zeChecker = new ZEParameterValidation;
+            ZESParameterValidation *zesChecker = new ZESParameterValidation;
+            ZETParameterValidation *zetChecker = new ZETParameterValidation;
+            parameterChecker.zeValidation = zeChecker;
+            parameterChecker.zetValidation = zetChecker;
+            parameterChecker.zesValidation = zesChecker;
+            validation_layer::context.validationHandlers.push_back(&parameterChecker);
+        }
+    }
+
+    parameterValidationChecker::~parameterValidationChecker() {
+        if(enableParameterValidation) {
+            delete parameterChecker.zeValidation;
+            delete parameterChecker.zetValidation;
+            delete parameterChecker.zesValidation;
+        }
+    }
 
     ze_result_t
     ZEParameterValidation::zeInitPrologue(
