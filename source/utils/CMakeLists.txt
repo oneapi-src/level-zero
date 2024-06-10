@@ -1,10 +1,12 @@
 # Copyright (C) 2024 Intel Corporation
 # SPDX-License-Identifier: MIT
 
-add_library(utils
-  STATIC
-  "logging.h"
-  "logging.cpp"
-)
+set(logging_files logging.h logging.cpp)
+add_library(utils STATIC ${logging_files})
 
-target_include_directories(utils PRIVATE ${CMAKE_SOURCE_DIR}/third_party/spdlog_headers/)
+if(SYSTEM_SPDLOG)
+       target_link_libraries(utils PUBLIC spdlog::spdlog)
+else()
+       target_include_directories(utils PUBLIC ${PROJECT_SOURCE_DIR}/third_party/spdlog_headers/)
+endif()
+set_property(TARGET utils PROPERTY POSITION_INDEPENDENT_CODE ON)
