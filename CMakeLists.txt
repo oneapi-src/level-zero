@@ -78,7 +78,16 @@ else()
 endif()
 add_definitions(-DLOADER_VERSION_SHA="${VERSION_SHA}")
 
-include_directories("${CMAKE_CURRENT_SOURCE_DIR}/third_party/spdlog_headers")
+if(SYSTEM_SPDLOG)
+	find_package(spdlog CONFIG)
+	if(spdlog_FOUND)
+		message(STATUS "System spdlog found.")
+	else()
+		message(FATAL_ERROR "SYSTEM_SPDLOG specified but spdlog wasn't found.")
+	endif()
+else()
+    include_directories("${CMAKE_CURRENT_SOURCE_DIR}/third_party/spdlog_headers")
+endif()
 
 # Update other relevant variables to include the patch
 set(PROJECT_VERSION "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH}")
@@ -151,17 +160,17 @@ if(MSVC)
 
     # enable exceptions handling
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /EHsc")
-    
+
     # enable creation of PDB files for Release Builds
     set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /Zi")
     set(CMAKE_SHARED_LINKER_FLAGS_RELEASE "${CMAKE_SHARED_LINKER_FLAGS_RELEASE} /DEBUG /OPT:REF /OPT:ICF")
-		
+
     # enable CET shadow stack
     set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} /CETCOMPAT")
 
     #Use of sccache with MSVC requires workaround of replacing /Zi with /Z7
     #https://github.com/mozilla/sccache
-    if(USE_Z7) #sccache 
+    if(USE_Z7) #sccache
       string(REPLACE "/Zi" "/Z7" CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG}")
       string(REPLACE "/Zi" "/Z7" CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG}")
       string(REPLACE "/Zi" "/Z7" CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE}")
