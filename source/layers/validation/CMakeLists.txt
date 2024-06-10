@@ -22,8 +22,8 @@ target_include_directories(${TARGET_NAME}
         ${CMAKE_CURRENT_SOURCE_DIR}
         ${CMAKE_CURRENT_SOURCE_DIR}/common
         ${CMAKE_CURRENT_SOURCE_DIR}/handle_lifetime_tracking
-        ${CMAKE_CURRENT_SOURCE_DIR}/parameter_validation
-        ${CMAKE_CURRENT_SOURCE_DIR}/checkers
+        ${CMAKE_CURRENT_SOURCE_DIR}/checkers/parameter_validation
+        ${CMAKE_CURRENT_SOURCE_DIR}/checkers/template
 )
 
 if(UNIX)
@@ -54,6 +54,5 @@ install(TARGETS ze_validation_layer
         NAMELINK_ONLY
 )
 
-add_subdirectory(parameter_validation)
 add_subdirectory(handle_lifetime_tracking)
 add_subdirectory(checkers)
