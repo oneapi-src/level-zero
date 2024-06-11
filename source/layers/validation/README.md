@@ -64,9 +64,5 @@ It is desired to add new unit tests directly into validation layer repo that exe
 
 ## Contributing
 
-Pull requests are encouraged!
-
-Please follow the recommended guidelines:
-
-1) All additions must fit inside one of the currently defined validation modes.  Requests for new validation modes can be raised in issues
+See [CONTRIBUTING](CONTRIBUTING.md) for more information.
 
