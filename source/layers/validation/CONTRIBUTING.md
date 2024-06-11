@@ -35,7 +35,7 @@ review these for proper alignment with the
 * * `<L0API>Epilogue(`
 * Once your checker meets your needs, include your checker in the compile by adding your new checker folder to:
 * * `source/layers/validation/checkers/CMakeLists.txt`
-* Your new checker will need to be enabled during runtime with `ZE_ENABLE_<CheckerName>_CHECKER=1` when the validation layer is enabled with `ZE_ENABLE_VALIDATION_LAYER=1`.
+* Your new checker will need to be enabled during runtime with `ZEL_ENABLE_<CheckerName>_CHECKER=1` when the validation layer is enabled with `ZE_ENABLE_VALIDATION_LAYER=1`.
 
 ## Sign Your Work
 

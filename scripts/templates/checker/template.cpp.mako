@@ -13,7 +13,7 @@ namespace validation_layer
     class ${name}Checker ${name}_checker;
 
     ${name}Checker::${name}Checker() {
-        enable${name} = getenv_tobool( "ZE_ENABLE_${env_name}_CHECKER" );
+        enable${name} = getenv_tobool( "ZEL_ENABLE_${env_name}_CHECKER" );
         if(enable${name}) {
             ${name}Checker::ZE${name}Checker *zeChecker = new ${name}Checker::ZE${name}Checker;
             ${name}Checker::ZES${name}Checker *zesChecker = new ${name}Checker::ZES${name}Checker;

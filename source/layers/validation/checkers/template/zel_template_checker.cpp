@@ -13,7 +13,7 @@ namespace validation_layer
     class validationCheckerTemplate templateChecker;
 
     validationCheckerTemplate::validationCheckerTemplate() {
-        enableValidationCheckerTemplate = getenv_tobool( "ZE_ENABLE_VALIDATION_CHECKER_TEMPLATE" );
+        enableValidationCheckerTemplate = getenv_tobool( "ZEL_ENABLE_VALIDATION_CHECKER_TEMPLATE" );
         if(enableValidationCheckerTemplate) {
             validationCheckerTemplate::ZEvalidationCheckerTemplate *zeChecker = new validationCheckerTemplate::ZEvalidationCheckerTemplate;
             validationCheckerTemplate::ZESvalidationCheckerTemplate *zesChecker = new validationCheckerTemplate::ZESvalidationCheckerTemplate;
