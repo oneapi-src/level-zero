@@ -27,7 +27,7 @@ namespace validation_layer
     ## don't genrate function if it has no handles as parameters
     %if th.obj_traits.is_function_with_input_handles(obj):
     ${x}_result_t
-    ${N}HandleLifetimeValidation::${th.make_func_name(n, tags, obj)}Epilogue(
+    ${N}HandleLifetimeValidation::${th.make_func_name(n, tags, obj)}Prologue(
         %for line in th.make_param_lines(n, tags, obj):
         ${line}
         %endfor

@@ -60,7 +60,7 @@ ${line} \
         generate_post_call = re.match(r"\w+Create\w*$|\w+Get$|\w+Get\w*Exp$|\w+GetIpcHandle$|\w+GetSubDevices$", func_name)
         %>
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->${n}HandleLifetime.${th.make_func_name(n, tags, obj)}Epilogue( \
+            auto result = context.handleLifetime->${n}HandleLifetime.${th.make_func_name(n, tags, obj)}Prologue( \
 % for line in th.make_param_lines(n, tags, obj, format=['name','delim']):
 ${line} \
 %endfor

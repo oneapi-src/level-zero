@@ -28,6 +28,7 @@ review these for proper alignment with the
 * * this will create a new folder at `source/layers/validation/checkers/<CheckerName>`
 * * this folder will have 3 files, the `CMakeLists.txt` include file, `zel_<CheckerName>_checker.cpp`, and `zel_<CheckerName>_checker.h`
 * * Naming Convention of the Checkers in the generator is `PascalCase`.
+* * An `EXAMPLE` Checker is located [here](./checkers/template/zel_template_checker.cpp)
 * Once one has generated the checker files, one can define intercepts for any of the functions in the Level Zero Specification.
 * Each function allows for Prologue and Epilogue intercepts to check both the pre and post call parameters.
 * In your generated class, one can overide any functions with:

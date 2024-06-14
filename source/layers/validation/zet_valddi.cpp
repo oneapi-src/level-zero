@@ -41,7 +41,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zetHandleLifetime.zetModuleGetDebugInfoEpilogue( hModule, format, pSize, pDebugInfo );
+            auto result = context.handleLifetime->zetHandleLifetime.zetModuleGetDebugInfoPrologue( hModule, format, pSize, pDebugInfo );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -81,7 +81,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zetHandleLifetime.zetDeviceGetDebugPropertiesEpilogue( hDevice, pDebugProperties );
+            auto result = context.handleLifetime->zetHandleLifetime.zetDeviceGetDebugPropertiesPrologue( hDevice, pDebugProperties );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -122,7 +122,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zetHandleLifetime.zetDebugAttachEpilogue( hDevice, config, phDebug );
+            auto result = context.handleLifetime->zetHandleLifetime.zetDebugAttachPrologue( hDevice, config, phDebug );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -161,7 +161,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zetHandleLifetime.zetDebugDetachEpilogue( hDebug );
+            auto result = context.handleLifetime->zetHandleLifetime.zetDebugDetachPrologue( hDebug );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -208,7 +208,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zetHandleLifetime.zetDebugReadEventEpilogue( hDebug, timeout, event );
+            auto result = context.handleLifetime->zetHandleLifetime.zetDebugReadEventPrologue( hDebug, timeout, event );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -248,7 +248,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zetHandleLifetime.zetDebugAcknowledgeEventEpilogue( hDebug, event );
+            auto result = context.handleLifetime->zetHandleLifetime.zetDebugAcknowledgeEventPrologue( hDebug, event );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -288,7 +288,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zetHandleLifetime.zetDebugInterruptEpilogue( hDebug, thread );
+            auto result = context.handleLifetime->zetHandleLifetime.zetDebugInterruptPrologue( hDebug, thread );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -328,7 +328,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zetHandleLifetime.zetDebugResumeEpilogue( hDebug, thread );
+            auto result = context.handleLifetime->zetHandleLifetime.zetDebugResumePrologue( hDebug, thread );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -371,7 +371,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zetHandleLifetime.zetDebugReadMemoryEpilogue( hDebug, thread, desc, size, buffer );
+            auto result = context.handleLifetime->zetHandleLifetime.zetDebugReadMemoryPrologue( hDebug, thread, desc, size, buffer );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -414,7 +414,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zetHandleLifetime.zetDebugWriteMemoryEpilogue( hDebug, thread, desc, size, buffer );
+            auto result = context.handleLifetime->zetHandleLifetime.zetDebugWriteMemoryPrologue( hDebug, thread, desc, size, buffer );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -463,7 +463,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zetHandleLifetime.zetDebugGetRegisterSetPropertiesEpilogue( hDevice, pCount, pRegisterSetProperties );
+            auto result = context.handleLifetime->zetHandleLifetime.zetDebugGetRegisterSetPropertiesPrologue( hDevice, pCount, pRegisterSetProperties );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -513,7 +513,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zetHandleLifetime.zetDebugGetThreadRegisterSetPropertiesEpilogue( hDebug, thread, pCount, pRegisterSetProperties );
+            auto result = context.handleLifetime->zetHandleLifetime.zetDebugGetThreadRegisterSetPropertiesPrologue( hDebug, thread, pCount, pRegisterSetProperties );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -561,7 +561,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zetHandleLifetime.zetDebugReadRegistersEpilogue( hDebug, thread, type, start, count, pRegisterValues );
+            auto result = context.handleLifetime->zetHandleLifetime.zetDebugReadRegistersPrologue( hDebug, thread, type, start, count, pRegisterValues );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -609,7 +609,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zetHandleLifetime.zetDebugWriteRegistersEpilogue( hDebug, thread, type, start, count, pRegisterValues );
+            auto result = context.handleLifetime->zetHandleLifetime.zetDebugWriteRegistersPrologue( hDebug, thread, type, start, count, pRegisterValues );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -657,7 +657,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zetHandleLifetime.zetMetricGroupGetEpilogue( hDevice, pCount, phMetricGroups );
+            auto result = context.handleLifetime->zetHandleLifetime.zetMetricGroupGetPrologue( hDevice, pCount, phMetricGroups );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -707,7 +707,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zetHandleLifetime.zetMetricGroupGetPropertiesEpilogue( hMetricGroup, pProperties );
+            auto result = context.handleLifetime->zetHandleLifetime.zetMetricGroupGetPropertiesPrologue( hMetricGroup, pProperties );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -758,7 +758,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zetHandleLifetime.zetMetricGroupCalculateMetricValuesEpilogue( hMetricGroup, type, rawDataSize, pRawData, pMetricValueCount, pMetricValues );
+            auto result = context.handleLifetime->zetHandleLifetime.zetMetricGroupCalculateMetricValuesPrologue( hMetricGroup, type, rawDataSize, pRawData, pMetricValueCount, pMetricValues );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -805,7 +805,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zetHandleLifetime.zetMetricGetEpilogue( hMetricGroup, pCount, phMetrics );
+            auto result = context.handleLifetime->zetHandleLifetime.zetMetricGetPrologue( hMetricGroup, pCount, phMetrics );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -855,7 +855,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zetHandleLifetime.zetMetricGetPropertiesEpilogue( hMetric, pProperties );
+            auto result = context.handleLifetime->zetHandleLifetime.zetMetricGetPropertiesPrologue( hMetric, pProperties );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -901,7 +901,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zetHandleLifetime.zetContextActivateMetricGroupsEpilogue( hContext, hDevice, count, phMetricGroups );
+            auto result = context.handleLifetime->zetHandleLifetime.zetContextActivateMetricGroupsPrologue( hContext, hDevice, count, phMetricGroups );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -945,7 +945,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zetHandleLifetime.zetMetricStreamerOpenEpilogue( hContext, hDevice, hMetricGroup, desc, hNotificationEvent, phMetricStreamer );
+            auto result = context.handleLifetime->zetHandleLifetime.zetMetricStreamerOpenPrologue( hContext, hDevice, hMetricGroup, desc, hNotificationEvent, phMetricStreamer );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -986,7 +986,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zetHandleLifetime.zetCommandListAppendMetricStreamerMarkerEpilogue( hCommandList, hMetricStreamer, value );
+            auto result = context.handleLifetime->zetHandleLifetime.zetCommandListAppendMetricStreamerMarkerPrologue( hCommandList, hMetricStreamer, value );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -1025,7 +1025,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zetHandleLifetime.zetMetricStreamerCloseEpilogue( hMetricStreamer );
+            auto result = context.handleLifetime->zetHandleLifetime.zetMetricStreamerClosePrologue( hMetricStreamer );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -1075,7 +1075,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zetHandleLifetime.zetMetricStreamerReadDataEpilogue( hMetricStreamer, maxReportCount, pRawDataSize, pRawData );
+            auto result = context.handleLifetime->zetHandleLifetime.zetMetricStreamerReadDataPrologue( hMetricStreamer, maxReportCount, pRawDataSize, pRawData );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -1118,7 +1118,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zetHandleLifetime.zetMetricQueryPoolCreateEpilogue( hContext, hDevice, hMetricGroup, desc, phMetricQueryPool );
+            auto result = context.handleLifetime->zetHandleLifetime.zetMetricQueryPoolCreatePrologue( hContext, hDevice, hMetricGroup, desc, phMetricQueryPool );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -1166,7 +1166,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zetHandleLifetime.zetMetricQueryPoolDestroyEpilogue( hMetricQueryPool );
+            auto result = context.handleLifetime->zetHandleLifetime.zetMetricQueryPoolDestroyPrologue( hMetricQueryPool );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -1207,7 +1207,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zetHandleLifetime.zetMetricQueryCreateEpilogue( hMetricQueryPool, index, phMetricQuery );
+            auto result = context.handleLifetime->zetHandleLifetime.zetMetricQueryCreatePrologue( hMetricQueryPool, index, phMetricQuery );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -1255,7 +1255,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zetHandleLifetime.zetMetricQueryDestroyEpilogue( hMetricQuery );
+            auto result = context.handleLifetime->zetHandleLifetime.zetMetricQueryDestroyPrologue( hMetricQuery );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -1294,7 +1294,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zetHandleLifetime.zetMetricQueryResetEpilogue( hMetricQuery );
+            auto result = context.handleLifetime->zetHandleLifetime.zetMetricQueryResetPrologue( hMetricQuery );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -1334,7 +1334,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zetHandleLifetime.zetCommandListAppendMetricQueryBeginEpilogue( hCommandList, hMetricQuery );
+            auto result = context.handleLifetime->zetHandleLifetime.zetCommandListAppendMetricQueryBeginPrologue( hCommandList, hMetricQuery );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -1377,7 +1377,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zetHandleLifetime.zetCommandListAppendMetricQueryEndEpilogue( hCommandList, hMetricQuery, hSignalEvent, numWaitEvents, phWaitEvents );
+            auto result = context.handleLifetime->zetHandleLifetime.zetCommandListAppendMetricQueryEndPrologue( hCommandList, hMetricQuery, hSignalEvent, numWaitEvents, phWaitEvents );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -1416,7 +1416,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zetHandleLifetime.zetCommandListAppendMetricMemoryBarrierEpilogue( hCommandList );
+            auto result = context.handleLifetime->zetHandleLifetime.zetCommandListAppendMetricMemoryBarrierPrologue( hCommandList );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -1464,7 +1464,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zetHandleLifetime.zetMetricQueryGetDataEpilogue( hMetricQuery, pRawDataSize, pRawData );
+            auto result = context.handleLifetime->zetHandleLifetime.zetMetricQueryGetDataPrologue( hMetricQuery, pRawDataSize, pRawData );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -1504,7 +1504,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zetHandleLifetime.zetKernelGetProfileInfoEpilogue( hKernel, pProfileProperties );
+            auto result = context.handleLifetime->zetHandleLifetime.zetKernelGetProfileInfoPrologue( hKernel, pProfileProperties );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -1545,7 +1545,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zetHandleLifetime.zetTracerExpCreateEpilogue( hContext, desc, phTracer );
+            auto result = context.handleLifetime->zetHandleLifetime.zetTracerExpCreatePrologue( hContext, desc, phTracer );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -1593,7 +1593,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zetHandleLifetime.zetTracerExpDestroyEpilogue( hTracer );
+            auto result = context.handleLifetime->zetHandleLifetime.zetTracerExpDestroyPrologue( hTracer );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -1633,7 +1633,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zetHandleLifetime.zetTracerExpSetProloguesEpilogue( hTracer, pCoreCbs );
+            auto result = context.handleLifetime->zetHandleLifetime.zetTracerExpSetProloguesPrologue( hTracer, pCoreCbs );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -1673,7 +1673,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zetHandleLifetime.zetTracerExpSetEpiloguesEpilogue( hTracer, pCoreCbs );
+            auto result = context.handleLifetime->zetHandleLifetime.zetTracerExpSetEpiloguesPrologue( hTracer, pCoreCbs );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -1713,7 +1713,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zetHandleLifetime.zetTracerExpSetEnabledEpilogue( hTracer, enable );
+            auto result = context.handleLifetime->zetHandleLifetime.zetTracerExpSetEnabledPrologue( hTracer, enable );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -1774,7 +1774,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zetHandleLifetime.zetMetricGroupCalculateMultipleMetricValuesExpEpilogue( hMetricGroup, type, rawDataSize, pRawData, pSetCount, pTotalMetricValueCount, pMetricCounts, pMetricValues );
+            auto result = context.handleLifetime->zetHandleLifetime.zetMetricGroupCalculateMultipleMetricValuesExpPrologue( hMetricGroup, type, rawDataSize, pRawData, pSetCount, pTotalMetricValueCount, pMetricCounts, pMetricValues );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -1816,7 +1816,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zetHandleLifetime.zetMetricGroupGetGlobalTimestampsExpEpilogue( hMetricGroup, synchronizedWithHost, globalTimestamp, metricTimestamp );
+            auto result = context.handleLifetime->zetHandleLifetime.zetMetricGroupGetGlobalTimestampsExpPrologue( hMetricGroup, synchronizedWithHost, globalTimestamp, metricTimestamp );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -1867,7 +1867,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zetHandleLifetime.zetMetricGroupGetExportDataExpEpilogue( hMetricGroup, pRawData, rawDataSize, pExportDataSize, pExportData );
+            auto result = context.handleLifetime->zetHandleLifetime.zetMetricGroupGetExportDataExpPrologue( hMetricGroup, pRawData, rawDataSize, pExportDataSize, pExportData );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -1933,7 +1933,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zetHandleLifetime.zetMetricGroupCalculateMetricExportDataExpEpilogue( hDriver, type, exportDataSize, pExportData, pCalculateDescriptor, pSetCount, pTotalMetricValueCount, pMetricCounts, pMetricValues );
+            auto result = context.handleLifetime->zetHandleLifetime.zetMetricGroupCalculateMetricExportDataExpPrologue( hDriver, type, exportDataSize, pExportData, pCalculateDescriptor, pSetCount, pTotalMetricValueCount, pMetricCounts, pMetricValues );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -1981,7 +1981,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zetHandleLifetime.zetMetricProgrammableGetExpEpilogue( hDevice, pCount, phMetricProgrammables );
+            auto result = context.handleLifetime->zetHandleLifetime.zetMetricProgrammableGetExpPrologue( hDevice, pCount, phMetricProgrammables );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -2031,7 +2031,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zetHandleLifetime.zetMetricProgrammableGetPropertiesExpEpilogue( hMetricProgrammable, pProperties );
+            auto result = context.handleLifetime->zetHandleLifetime.zetMetricProgrammableGetPropertiesExpPrologue( hMetricProgrammable, pProperties );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -2082,7 +2082,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zetHandleLifetime.zetMetricProgrammableGetParamInfoExpEpilogue( hMetricProgrammable, pParameterCount, pParameterInfo );
+            auto result = context.handleLifetime->zetHandleLifetime.zetMetricProgrammableGetParamInfoExpPrologue( hMetricProgrammable, pParameterCount, pParameterInfo );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -2134,7 +2134,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zetHandleLifetime.zetMetricProgrammableGetParamValueInfoExpEpilogue( hMetricProgrammable, parameterOrdinal, pValueInfoCount, pValueInfo );
+            auto result = context.handleLifetime->zetHandleLifetime.zetMetricProgrammableGetParamValueInfoExpPrologue( hMetricProgrammable, parameterOrdinal, pValueInfoCount, pValueInfo );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -2193,7 +2193,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zetHandleLifetime.zetMetricCreateFromProgrammableExpEpilogue( hMetricProgrammable, pParameterValues, parameterCount, pName, pDescription, pMetricHandleCount, phMetricHandles );
+            auto result = context.handleLifetime->zetHandleLifetime.zetMetricCreateFromProgrammableExpPrologue( hMetricProgrammable, pParameterValues, parameterCount, pName, pDescription, pMetricHandleCount, phMetricHandles );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -2249,7 +2249,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zetHandleLifetime.zetMetricGroupCreateExpEpilogue( hDevice, pName, pDescription, samplingType, phMetricGroup );
+            auto result = context.handleLifetime->zetHandleLifetime.zetMetricGroupCreateExpPrologue( hDevice, pName, pDescription, samplingType, phMetricGroup );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -2305,7 +2305,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zetHandleLifetime.zetMetricGroupAddMetricExpEpilogue( hMetricGroup, hMetric, pErrorStringSize, pErrorString );
+            auto result = context.handleLifetime->zetHandleLifetime.zetMetricGroupAddMetricExpPrologue( hMetricGroup, hMetric, pErrorStringSize, pErrorString );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -2345,7 +2345,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zetHandleLifetime.zetMetricGroupRemoveMetricExpEpilogue( hMetricGroup, hMetric );
+            auto result = context.handleLifetime->zetHandleLifetime.zetMetricGroupRemoveMetricExpPrologue( hMetricGroup, hMetric );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -2384,7 +2384,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zetHandleLifetime.zetMetricGroupCloseExpEpilogue( hMetricGroup );
+            auto result = context.handleLifetime->zetHandleLifetime.zetMetricGroupCloseExpPrologue( hMetricGroup );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -2423,7 +2423,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zetHandleLifetime.zetMetricGroupDestroyExpEpilogue( hMetricGroup );
+            auto result = context.handleLifetime->zetHandleLifetime.zetMetricGroupDestroyExpPrologue( hMetricGroup );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -2462,7 +2462,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zetHandleLifetime.zetMetricDestroyExpEpilogue( hMetric );
+            auto result = context.handleLifetime->zetHandleLifetime.zetMetricDestroyExpPrologue( hMetric );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 

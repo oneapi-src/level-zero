@@ -39,7 +39,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeInitEpilogue( flags );
+            auto result = context.handleLifetime->zeHandleLifetime.zeInitPrologue( flags );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -85,7 +85,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeDriverGetEpilogue( pCount, phDrivers );
+            auto result = context.handleLifetime->zeHandleLifetime.zeDriverGetPrologue( pCount, phDrivers );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -135,7 +135,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeDriverGetApiVersionEpilogue( hDriver, version );
+            auto result = context.handleLifetime->zeHandleLifetime.zeDriverGetApiVersionPrologue( hDriver, version );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -175,7 +175,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeDriverGetPropertiesEpilogue( hDriver, pDriverProperties );
+            auto result = context.handleLifetime->zeHandleLifetime.zeDriverGetPropertiesPrologue( hDriver, pDriverProperties );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -215,7 +215,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeDriverGetIpcPropertiesEpilogue( hDriver, pIpcProperties );
+            auto result = context.handleLifetime->zeHandleLifetime.zeDriverGetIpcPropertiesPrologue( hDriver, pIpcProperties );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -264,7 +264,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeDriverGetExtensionPropertiesEpilogue( hDriver, pCount, pExtensionProperties );
+            auto result = context.handleLifetime->zeHandleLifetime.zeDriverGetExtensionPropertiesPrologue( hDriver, pCount, pExtensionProperties );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -305,7 +305,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeDriverGetExtensionFunctionAddressEpilogue( hDriver, name, ppFunctionAddress );
+            auto result = context.handleLifetime->zeHandleLifetime.zeDriverGetExtensionFunctionAddressPrologue( hDriver, name, ppFunctionAddress );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -346,7 +346,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeDriverGetLastErrorDescriptionEpilogue( hDriver, ppString );
+            auto result = context.handleLifetime->zeHandleLifetime.zeDriverGetLastErrorDescriptionPrologue( hDriver, ppString );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -393,7 +393,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeDeviceGetEpilogue( hDriver, pCount, phDevices );
+            auto result = context.handleLifetime->zeHandleLifetime.zeDeviceGetPrologue( hDriver, pCount, phDevices );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -443,7 +443,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeDeviceGetRootDeviceEpilogue( hDevice, phRootDevice );
+            auto result = context.handleLifetime->zeHandleLifetime.zeDeviceGetRootDevicePrologue( hDevice, phRootDevice );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -490,7 +490,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeDeviceGetSubDevicesEpilogue( hDevice, pCount, phSubdevices );
+            auto result = context.handleLifetime->zeHandleLifetime.zeDeviceGetSubDevicesPrologue( hDevice, pCount, phSubdevices );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -540,7 +540,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeDeviceGetPropertiesEpilogue( hDevice, pDeviceProperties );
+            auto result = context.handleLifetime->zeHandleLifetime.zeDeviceGetPropertiesPrologue( hDevice, pDeviceProperties );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -580,7 +580,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeDeviceGetComputePropertiesEpilogue( hDevice, pComputeProperties );
+            auto result = context.handleLifetime->zeHandleLifetime.zeDeviceGetComputePropertiesPrologue( hDevice, pComputeProperties );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -620,7 +620,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeDeviceGetModulePropertiesEpilogue( hDevice, pModuleProperties );
+            auto result = context.handleLifetime->zeHandleLifetime.zeDeviceGetModulePropertiesPrologue( hDevice, pModuleProperties );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -670,7 +670,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeDeviceGetCommandQueueGroupPropertiesEpilogue( hDevice, pCount, pCommandQueueGroupProperties );
+            auto result = context.handleLifetime->zeHandleLifetime.zeDeviceGetCommandQueueGroupPropertiesPrologue( hDevice, pCount, pCommandQueueGroupProperties );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -719,7 +719,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeDeviceGetMemoryPropertiesEpilogue( hDevice, pCount, pMemProperties );
+            auto result = context.handleLifetime->zeHandleLifetime.zeDeviceGetMemoryPropertiesPrologue( hDevice, pCount, pMemProperties );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -759,7 +759,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeDeviceGetMemoryAccessPropertiesEpilogue( hDevice, pMemAccessProperties );
+            auto result = context.handleLifetime->zeHandleLifetime.zeDeviceGetMemoryAccessPropertiesPrologue( hDevice, pMemAccessProperties );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -807,7 +807,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeDeviceGetCachePropertiesEpilogue( hDevice, pCount, pCacheProperties );
+            auto result = context.handleLifetime->zeHandleLifetime.zeDeviceGetCachePropertiesPrologue( hDevice, pCount, pCacheProperties );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -847,7 +847,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeDeviceGetImagePropertiesEpilogue( hDevice, pImageProperties );
+            auto result = context.handleLifetime->zeHandleLifetime.zeDeviceGetImagePropertiesPrologue( hDevice, pImageProperties );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -887,7 +887,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeDeviceGetExternalMemoryPropertiesEpilogue( hDevice, pExternalMemoryProperties );
+            auto result = context.handleLifetime->zeHandleLifetime.zeDeviceGetExternalMemoryPropertiesPrologue( hDevice, pExternalMemoryProperties );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -928,7 +928,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeDeviceGetP2PPropertiesEpilogue( hDevice, hPeerDevice, pP2PProperties );
+            auto result = context.handleLifetime->zeHandleLifetime.zeDeviceGetP2PPropertiesPrologue( hDevice, hPeerDevice, pP2PProperties );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -969,7 +969,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeDeviceCanAccessPeerEpilogue( hDevice, hPeerDevice, value );
+            auto result = context.handleLifetime->zeHandleLifetime.zeDeviceCanAccessPeerPrologue( hDevice, hPeerDevice, value );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -1008,7 +1008,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeDeviceGetStatusEpilogue( hDevice );
+            auto result = context.handleLifetime->zeHandleLifetime.zeDeviceGetStatusPrologue( hDevice );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -1051,7 +1051,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeDeviceGetGlobalTimestampsEpilogue( hDevice, hostTimestamp, deviceTimestamp );
+            auto result = context.handleLifetime->zeHandleLifetime.zeDeviceGetGlobalTimestampsPrologue( hDevice, hostTimestamp, deviceTimestamp );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -1092,7 +1092,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeContextCreateEpilogue( hDriver, desc, phContext );
+            auto result = context.handleLifetime->zeHandleLifetime.zeContextCreatePrologue( hDriver, desc, phContext );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -1152,7 +1152,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeContextCreateExEpilogue( hDriver, desc, numDevices, phDevices, phContext );
+            auto result = context.handleLifetime->zeHandleLifetime.zeContextCreateExPrologue( hDriver, desc, numDevices, phDevices, phContext );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -1200,7 +1200,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeContextDestroyEpilogue( hContext );
+            auto result = context.handleLifetime->zeHandleLifetime.zeContextDestroyPrologue( hContext );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -1239,7 +1239,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeContextGetStatusEpilogue( hContext );
+            auto result = context.handleLifetime->zeHandleLifetime.zeContextGetStatusPrologue( hContext );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -1281,7 +1281,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeCommandQueueCreateEpilogue( hContext, hDevice, desc, phCommandQueue );
+            auto result = context.handleLifetime->zeHandleLifetime.zeCommandQueueCreatePrologue( hContext, hDevice, desc, phCommandQueue );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -1329,7 +1329,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeCommandQueueDestroyEpilogue( hCommandQueue );
+            auto result = context.handleLifetime->zeHandleLifetime.zeCommandQueueDestroyPrologue( hCommandQueue );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -1372,7 +1372,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeCommandQueueExecuteCommandListsEpilogue( hCommandQueue, numCommandLists, phCommandLists, hFence );
+            auto result = context.handleLifetime->zeHandleLifetime.zeCommandQueueExecuteCommandListsPrologue( hCommandQueue, numCommandLists, phCommandLists, hFence );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -1418,7 +1418,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeCommandQueueSynchronizeEpilogue( hCommandQueue, timeout );
+            auto result = context.handleLifetime->zeHandleLifetime.zeCommandQueueSynchronizePrologue( hCommandQueue, timeout );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -1458,7 +1458,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeCommandQueueGetOrdinalEpilogue( hCommandQueue, pOrdinal );
+            auto result = context.handleLifetime->zeHandleLifetime.zeCommandQueueGetOrdinalPrologue( hCommandQueue, pOrdinal );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -1498,7 +1498,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeCommandQueueGetIndexEpilogue( hCommandQueue, pIndex );
+            auto result = context.handleLifetime->zeHandleLifetime.zeCommandQueueGetIndexPrologue( hCommandQueue, pIndex );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -1540,7 +1540,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeCommandListCreateEpilogue( hContext, hDevice, desc, phCommandList );
+            auto result = context.handleLifetime->zeHandleLifetime.zeCommandListCreatePrologue( hContext, hDevice, desc, phCommandList );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -1591,7 +1591,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeCommandListCreateImmediateEpilogue( hContext, hDevice, altdesc, phCommandList );
+            auto result = context.handleLifetime->zeHandleLifetime.zeCommandListCreateImmediatePrologue( hContext, hDevice, altdesc, phCommandList );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -1637,7 +1637,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeCommandListDestroyEpilogue( hCommandList );
+            auto result = context.handleLifetime->zeHandleLifetime.zeCommandListDestroyPrologue( hCommandList );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -1676,7 +1676,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeCommandListCloseEpilogue( hCommandList );
+            auto result = context.handleLifetime->zeHandleLifetime.zeCommandListClosePrologue( hCommandList );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -1715,7 +1715,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeCommandListResetEpilogue( hCommandList );
+            auto result = context.handleLifetime->zeHandleLifetime.zeCommandListResetPrologue( hCommandList );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -1761,7 +1761,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeCommandListAppendWriteGlobalTimestampEpilogue( hCommandList, dstptr, hSignalEvent, numWaitEvents, phWaitEvents );
+            auto result = context.handleLifetime->zeHandleLifetime.zeCommandListAppendWriteGlobalTimestampPrologue( hCommandList, dstptr, hSignalEvent, numWaitEvents, phWaitEvents );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -1807,7 +1807,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeCommandListHostSynchronizeEpilogue( hCommandList, timeout );
+            auto result = context.handleLifetime->zeHandleLifetime.zeCommandListHostSynchronizePrologue( hCommandList, timeout );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -1847,7 +1847,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeCommandListGetDeviceHandleEpilogue( hCommandList, phDevice );
+            auto result = context.handleLifetime->zeHandleLifetime.zeCommandListGetDeviceHandlePrologue( hCommandList, phDevice );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -1887,7 +1887,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeCommandListGetContextHandleEpilogue( hCommandList, phContext );
+            auto result = context.handleLifetime->zeHandleLifetime.zeCommandListGetContextHandlePrologue( hCommandList, phContext );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -1927,7 +1927,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeCommandListGetOrdinalEpilogue( hCommandList, pOrdinal );
+            auto result = context.handleLifetime->zeHandleLifetime.zeCommandListGetOrdinalPrologue( hCommandList, pOrdinal );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -1968,7 +1968,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeCommandListImmediateGetIndexEpilogue( hCommandListImmediate, pIndex );
+            auto result = context.handleLifetime->zeHandleLifetime.zeCommandListImmediateGetIndexPrologue( hCommandListImmediate, pIndex );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -2009,7 +2009,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeCommandListIsImmediateEpilogue( hCommandList, pIsImmediate );
+            auto result = context.handleLifetime->zeHandleLifetime.zeCommandListIsImmediatePrologue( hCommandList, pIsImmediate );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -2053,7 +2053,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeCommandListAppendBarrierEpilogue( hCommandList, hSignalEvent, numWaitEvents, phWaitEvents );
+            auto result = context.handleLifetime->zeHandleLifetime.zeCommandListAppendBarrierPrologue( hCommandList, hSignalEvent, numWaitEvents, phWaitEvents );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -2100,7 +2100,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeCommandListAppendMemoryRangesBarrierEpilogue( hCommandList, numRanges, pRangeSizes, pRanges, hSignalEvent, numWaitEvents, phWaitEvents );
+            auto result = context.handleLifetime->zeHandleLifetime.zeCommandListAppendMemoryRangesBarrierPrologue( hCommandList, numRanges, pRangeSizes, pRanges, hSignalEvent, numWaitEvents, phWaitEvents );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -2140,7 +2140,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeContextSystemBarrierEpilogue( hContext, hDevice );
+            auto result = context.handleLifetime->zeHandleLifetime.zeContextSystemBarrierPrologue( hContext, hDevice );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -2187,7 +2187,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeCommandListAppendMemoryCopyEpilogue( hCommandList, dstptr, srcptr, size, hSignalEvent, numWaitEvents, phWaitEvents );
+            auto result = context.handleLifetime->zeHandleLifetime.zeCommandListAppendMemoryCopyPrologue( hCommandList, dstptr, srcptr, size, hSignalEvent, numWaitEvents, phWaitEvents );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -2235,7 +2235,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeCommandListAppendMemoryFillEpilogue( hCommandList, ptr, pattern, pattern_size, size, hSignalEvent, numWaitEvents, phWaitEvents );
+            auto result = context.handleLifetime->zeHandleLifetime.zeCommandListAppendMemoryFillPrologue( hCommandList, ptr, pattern, pattern_size, size, hSignalEvent, numWaitEvents, phWaitEvents );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -2291,7 +2291,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeCommandListAppendMemoryCopyRegionEpilogue( hCommandList, dstptr, dstRegion, dstPitch, dstSlicePitch, srcptr, srcRegion, srcPitch, srcSlicePitch, hSignalEvent, numWaitEvents, phWaitEvents );
+            auto result = context.handleLifetime->zeHandleLifetime.zeCommandListAppendMemoryCopyRegionPrologue( hCommandList, dstptr, dstRegion, dstPitch, dstSlicePitch, srcptr, srcRegion, srcPitch, srcSlicePitch, hSignalEvent, numWaitEvents, phWaitEvents );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -2339,7 +2339,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeCommandListAppendMemoryCopyFromContextEpilogue( hCommandList, dstptr, hContextSrc, srcptr, size, hSignalEvent, numWaitEvents, phWaitEvents );
+            auto result = context.handleLifetime->zeHandleLifetime.zeCommandListAppendMemoryCopyFromContextPrologue( hCommandList, dstptr, hContextSrc, srcptr, size, hSignalEvent, numWaitEvents, phWaitEvents );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -2385,7 +2385,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeCommandListAppendImageCopyEpilogue( hCommandList, hDstImage, hSrcImage, hSignalEvent, numWaitEvents, phWaitEvents );
+            auto result = context.handleLifetime->zeHandleLifetime.zeCommandListAppendImageCopyPrologue( hCommandList, hDstImage, hSrcImage, hSignalEvent, numWaitEvents, phWaitEvents );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -2433,7 +2433,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeCommandListAppendImageCopyRegionEpilogue( hCommandList, hDstImage, hSrcImage, pDstRegion, pSrcRegion, hSignalEvent, numWaitEvents, phWaitEvents );
+            auto result = context.handleLifetime->zeHandleLifetime.zeCommandListAppendImageCopyRegionPrologue( hCommandList, hDstImage, hSrcImage, pDstRegion, pSrcRegion, hSignalEvent, numWaitEvents, phWaitEvents );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -2480,7 +2480,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeCommandListAppendImageCopyToMemoryEpilogue( hCommandList, dstptr, hSrcImage, pSrcRegion, hSignalEvent, numWaitEvents, phWaitEvents );
+            auto result = context.handleLifetime->zeHandleLifetime.zeCommandListAppendImageCopyToMemoryPrologue( hCommandList, dstptr, hSrcImage, pSrcRegion, hSignalEvent, numWaitEvents, phWaitEvents );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -2527,7 +2527,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeCommandListAppendImageCopyFromMemoryEpilogue( hCommandList, hDstImage, srcptr, pDstRegion, hSignalEvent, numWaitEvents, phWaitEvents );
+            auto result = context.handleLifetime->zeHandleLifetime.zeCommandListAppendImageCopyFromMemoryPrologue( hCommandList, hDstImage, srcptr, pDstRegion, hSignalEvent, numWaitEvents, phWaitEvents );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -2568,7 +2568,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeCommandListAppendMemoryPrefetchEpilogue( hCommandList, ptr, size );
+            auto result = context.handleLifetime->zeHandleLifetime.zeCommandListAppendMemoryPrefetchPrologue( hCommandList, ptr, size );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -2611,7 +2611,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeCommandListAppendMemAdviseEpilogue( hCommandList, hDevice, ptr, size, advice );
+            auto result = context.handleLifetime->zeHandleLifetime.zeCommandListAppendMemAdvisePrologue( hCommandList, hDevice, ptr, size, advice );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -2658,7 +2658,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeEventPoolCreateEpilogue( hContext, desc, numDevices, phDevices, phEventPool );
+            auto result = context.handleLifetime->zeHandleLifetime.zeEventPoolCreatePrologue( hContext, desc, numDevices, phDevices, phEventPool );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -2706,7 +2706,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeEventPoolDestroyEpilogue( hEventPool );
+            auto result = context.handleLifetime->zeHandleLifetime.zeEventPoolDestroyPrologue( hEventPool );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -2747,7 +2747,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeEventCreateEpilogue( hEventPool, desc, phEvent );
+            auto result = context.handleLifetime->zeHandleLifetime.zeEventCreatePrologue( hEventPool, desc, phEvent );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -2795,7 +2795,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeEventDestroyEpilogue( hEvent );
+            auto result = context.handleLifetime->zeHandleLifetime.zeEventDestroyPrologue( hEvent );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -2835,7 +2835,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeEventPoolGetIpcHandleEpilogue( hEventPool, phIpc );
+            auto result = context.handleLifetime->zeHandleLifetime.zeEventPoolGetIpcHandlePrologue( hEventPool, phIpc );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -2880,7 +2880,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeEventPoolPutIpcHandleEpilogue( hContext, hIpc );
+            auto result = context.handleLifetime->zeHandleLifetime.zeEventPoolPutIpcHandlePrologue( hContext, hIpc );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -2922,7 +2922,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeEventPoolOpenIpcHandleEpilogue( hContext, hIpc, phEventPool );
+            auto result = context.handleLifetime->zeHandleLifetime.zeEventPoolOpenIpcHandlePrologue( hContext, hIpc, phEventPool );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -2961,7 +2961,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeEventPoolCloseIpcHandleEpilogue( hEventPool );
+            auto result = context.handleLifetime->zeHandleLifetime.zeEventPoolCloseIpcHandlePrologue( hEventPool );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -3001,7 +3001,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeCommandListAppendSignalEventEpilogue( hCommandList, hEvent );
+            auto result = context.handleLifetime->zeHandleLifetime.zeCommandListAppendSignalEventPrologue( hCommandList, hEvent );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -3043,7 +3043,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeCommandListAppendWaitOnEventsEpilogue( hCommandList, numEvents, phEvents );
+            auto result = context.handleLifetime->zeHandleLifetime.zeCommandListAppendWaitOnEventsPrologue( hCommandList, numEvents, phEvents );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -3082,7 +3082,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeEventHostSignalEpilogue( hEvent );
+            auto result = context.handleLifetime->zeHandleLifetime.zeEventHostSignalPrologue( hEvent );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -3128,7 +3128,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeEventHostSynchronizeEpilogue( hEvent, timeout );
+            auto result = context.handleLifetime->zeHandleLifetime.zeEventHostSynchronizePrologue( hEvent, timeout );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -3167,7 +3167,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeEventQueryStatusEpilogue( hEvent );
+            auto result = context.handleLifetime->zeHandleLifetime.zeEventQueryStatusPrologue( hEvent );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -3207,7 +3207,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeCommandListAppendEventResetEpilogue( hCommandList, hEvent );
+            auto result = context.handleLifetime->zeHandleLifetime.zeCommandListAppendEventResetPrologue( hCommandList, hEvent );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -3246,7 +3246,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeEventHostResetEpilogue( hEvent );
+            auto result = context.handleLifetime->zeHandleLifetime.zeEventHostResetPrologue( hEvent );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -3286,7 +3286,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeEventQueryKernelTimestampEpilogue( hEvent, dstptr );
+            auto result = context.handleLifetime->zeHandleLifetime.zeEventQueryKernelTimestampPrologue( hEvent, dstptr );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -3337,7 +3337,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeCommandListAppendQueryKernelTimestampsEpilogue( hCommandList, numEvents, phEvents, dstptr, pOffsets, hSignalEvent, numWaitEvents, phWaitEvents );
+            auto result = context.handleLifetime->zeHandleLifetime.zeCommandListAppendQueryKernelTimestampsPrologue( hCommandList, numEvents, phEvents, dstptr, pOffsets, hSignalEvent, numWaitEvents, phWaitEvents );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -3377,7 +3377,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeEventGetEventPoolEpilogue( hEvent, phEventPool );
+            auto result = context.handleLifetime->zeHandleLifetime.zeEventGetEventPoolPrologue( hEvent, phEventPool );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -3419,7 +3419,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeEventGetSignalScopeEpilogue( hEvent, pSignalScope );
+            auto result = context.handleLifetime->zeHandleLifetime.zeEventGetSignalScopePrologue( hEvent, pSignalScope );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -3461,7 +3461,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeEventGetWaitScopeEpilogue( hEvent, pWaitScope );
+            auto result = context.handleLifetime->zeHandleLifetime.zeEventGetWaitScopePrologue( hEvent, pWaitScope );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -3501,7 +3501,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeEventPoolGetContextHandleEpilogue( hEventPool, phContext );
+            auto result = context.handleLifetime->zeHandleLifetime.zeEventPoolGetContextHandlePrologue( hEventPool, phContext );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -3542,7 +3542,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeEventPoolGetFlagsEpilogue( hEventPool, pFlags );
+            auto result = context.handleLifetime->zeHandleLifetime.zeEventPoolGetFlagsPrologue( hEventPool, pFlags );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -3583,7 +3583,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeFenceCreateEpilogue( hCommandQueue, desc, phFence );
+            auto result = context.handleLifetime->zeHandleLifetime.zeFenceCreatePrologue( hCommandQueue, desc, phFence );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -3631,7 +3631,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeFenceDestroyEpilogue( hFence );
+            auto result = context.handleLifetime->zeHandleLifetime.zeFenceDestroyPrologue( hFence );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -3677,7 +3677,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeFenceHostSynchronizeEpilogue( hFence, timeout );
+            auto result = context.handleLifetime->zeHandleLifetime.zeFenceHostSynchronizePrologue( hFence, timeout );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -3716,7 +3716,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeFenceQueryStatusEpilogue( hFence );
+            auto result = context.handleLifetime->zeHandleLifetime.zeFenceQueryStatusPrologue( hFence );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -3755,7 +3755,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeFenceResetEpilogue( hFence );
+            auto result = context.handleLifetime->zeHandleLifetime.zeFenceResetPrologue( hFence );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -3796,7 +3796,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeImageGetPropertiesEpilogue( hDevice, desc, pImageProperties );
+            auto result = context.handleLifetime->zeHandleLifetime.zeImageGetPropertiesPrologue( hDevice, desc, pImageProperties );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -3838,7 +3838,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeImageCreateEpilogue( hContext, hDevice, desc, phImage );
+            auto result = context.handleLifetime->zeHandleLifetime.zeImageCreatePrologue( hContext, hDevice, desc, phImage );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -3886,7 +3886,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeImageDestroyEpilogue( hImage );
+            auto result = context.handleLifetime->zeHandleLifetime.zeImageDestroyPrologue( hImage );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -3933,7 +3933,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeMemAllocSharedEpilogue( hContext, device_desc, host_desc, size, alignment, hDevice, pptr );
+            auto result = context.handleLifetime->zeHandleLifetime.zeMemAllocSharedPrologue( hContext, device_desc, host_desc, size, alignment, hDevice, pptr );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -3979,7 +3979,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeMemAllocDeviceEpilogue( hContext, device_desc, size, alignment, hDevice, pptr );
+            auto result = context.handleLifetime->zeHandleLifetime.zeMemAllocDevicePrologue( hContext, device_desc, size, alignment, hDevice, pptr );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -4024,7 +4024,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeMemAllocHostEpilogue( hContext, host_desc, size, alignment, pptr );
+            auto result = context.handleLifetime->zeHandleLifetime.zeMemAllocHostPrologue( hContext, host_desc, size, alignment, pptr );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -4064,7 +4064,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeMemFreeEpilogue( hContext, ptr );
+            auto result = context.handleLifetime->zeHandleLifetime.zeMemFreePrologue( hContext, ptr );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -4106,7 +4106,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeMemGetAllocPropertiesEpilogue( hContext, ptr, pMemAllocProperties, phDevice );
+            auto result = context.handleLifetime->zeHandleLifetime.zeMemGetAllocPropertiesPrologue( hContext, ptr, pMemAllocProperties, phDevice );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -4148,7 +4148,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeMemGetAddressRangeEpilogue( hContext, ptr, pBase, pSize );
+            auto result = context.handleLifetime->zeHandleLifetime.zeMemGetAddressRangePrologue( hContext, ptr, pBase, pSize );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -4189,7 +4189,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeMemGetIpcHandleEpilogue( hContext, ptr, pIpcHandle );
+            auto result = context.handleLifetime->zeHandleLifetime.zeMemGetIpcHandlePrologue( hContext, ptr, pIpcHandle );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -4234,7 +4234,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeMemGetIpcHandleFromFileDescriptorExpEpilogue( hContext, handle, pIpcHandle );
+            auto result = context.handleLifetime->zeHandleLifetime.zeMemGetIpcHandleFromFileDescriptorExpPrologue( hContext, handle, pIpcHandle );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -4279,7 +4279,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeMemGetFileDescriptorFromIpcHandleExpEpilogue( hContext, ipcHandle, pHandle );
+            auto result = context.handleLifetime->zeHandleLifetime.zeMemGetFileDescriptorFromIpcHandleExpPrologue( hContext, ipcHandle, pHandle );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -4323,7 +4323,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeMemPutIpcHandleEpilogue( hContext, handle );
+            auto result = context.handleLifetime->zeHandleLifetime.zeMemPutIpcHandlePrologue( hContext, handle );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -4367,7 +4367,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeMemOpenIpcHandleEpilogue( hContext, hDevice, handle, flags, pptr );
+            auto result = context.handleLifetime->zeHandleLifetime.zeMemOpenIpcHandlePrologue( hContext, hDevice, handle, flags, pptr );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -4407,7 +4407,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeMemCloseIpcHandleEpilogue( hContext, ptr );
+            auto result = context.handleLifetime->zeHandleLifetime.zeMemCloseIpcHandlePrologue( hContext, ptr );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -4451,7 +4451,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeMemSetAtomicAccessAttributeExpEpilogue( hContext, hDevice, ptr, size, attr );
+            auto result = context.handleLifetime->zeHandleLifetime.zeMemSetAtomicAccessAttributeExpPrologue( hContext, hDevice, ptr, size, attr );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -4494,7 +4494,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeMemGetAtomicAccessAttributeExpEpilogue( hContext, hDevice, ptr, size, pAttr );
+            auto result = context.handleLifetime->zeHandleLifetime.zeMemGetAtomicAccessAttributeExpPrologue( hContext, hDevice, ptr, size, pAttr );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -4541,7 +4541,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeModuleCreateEpilogue( hContext, hDevice, desc, phModule, phBuildLog );
+            auto result = context.handleLifetime->zeHandleLifetime.zeModuleCreatePrologue( hContext, hDevice, desc, phModule, phBuildLog );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -4594,7 +4594,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeModuleDestroyEpilogue( hModule );
+            auto result = context.handleLifetime->zeHandleLifetime.zeModuleDestroyPrologue( hModule );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -4636,7 +4636,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeModuleDynamicLinkEpilogue( numModules, phModules, phLinkLog );
+            auto result = context.handleLifetime->zeHandleLifetime.zeModuleDynamicLinkPrologue( numModules, phModules, phLinkLog );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -4675,7 +4675,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeModuleBuildLogDestroyEpilogue( hModuleBuildLog );
+            auto result = context.handleLifetime->zeHandleLifetime.zeModuleBuildLogDestroyPrologue( hModuleBuildLog );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -4716,7 +4716,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeModuleBuildLogGetStringEpilogue( hModuleBuildLog, pSize, pBuildLog );
+            auto result = context.handleLifetime->zeHandleLifetime.zeModuleBuildLogGetStringPrologue( hModuleBuildLog, pSize, pBuildLog );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -4757,7 +4757,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeModuleGetNativeBinaryEpilogue( hModule, pSize, pModuleNativeBinary );
+            auto result = context.handleLifetime->zeHandleLifetime.zeModuleGetNativeBinaryPrologue( hModule, pSize, pModuleNativeBinary );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -4799,7 +4799,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeModuleGetGlobalPointerEpilogue( hModule, pGlobalName, pSize, pptr );
+            auto result = context.handleLifetime->zeHandleLifetime.zeModuleGetGlobalPointerPrologue( hModule, pGlobalName, pSize, pptr );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -4846,7 +4846,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeModuleGetKernelNamesEpilogue( hModule, pCount, pNames );
+            auto result = context.handleLifetime->zeHandleLifetime.zeModuleGetKernelNamesPrologue( hModule, pCount, pNames );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -4886,7 +4886,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeModuleGetPropertiesEpilogue( hModule, pModuleProperties );
+            auto result = context.handleLifetime->zeHandleLifetime.zeModuleGetPropertiesPrologue( hModule, pModuleProperties );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -4927,7 +4927,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeKernelCreateEpilogue( hModule, desc, phKernel );
+            auto result = context.handleLifetime->zeHandleLifetime.zeKernelCreatePrologue( hModule, desc, phKernel );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -4975,7 +4975,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeKernelDestroyEpilogue( hKernel );
+            auto result = context.handleLifetime->zeHandleLifetime.zeKernelDestroyPrologue( hKernel );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -5016,7 +5016,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeModuleGetFunctionPointerEpilogue( hModule, pFunctionName, pfnFunction );
+            auto result = context.handleLifetime->zeHandleLifetime.zeModuleGetFunctionPointerPrologue( hModule, pFunctionName, pfnFunction );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -5058,7 +5058,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeKernelSetGroupSizeEpilogue( hKernel, groupSizeX, groupSizeY, groupSizeZ );
+            auto result = context.handleLifetime->zeHandleLifetime.zeKernelSetGroupSizePrologue( hKernel, groupSizeX, groupSizeY, groupSizeZ );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -5103,7 +5103,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeKernelSuggestGroupSizeEpilogue( hKernel, globalSizeX, globalSizeY, globalSizeZ, groupSizeX, groupSizeY, groupSizeZ );
+            auto result = context.handleLifetime->zeHandleLifetime.zeKernelSuggestGroupSizePrologue( hKernel, globalSizeX, globalSizeY, globalSizeZ, groupSizeX, groupSizeY, groupSizeZ );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -5143,7 +5143,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeKernelSuggestMaxCooperativeGroupCountEpilogue( hKernel, totalGroupCount );
+            auto result = context.handleLifetime->zeHandleLifetime.zeKernelSuggestMaxCooperativeGroupCountPrologue( hKernel, totalGroupCount );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -5186,7 +5186,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeKernelSetArgumentValueEpilogue( hKernel, argIndex, argSize, pArgValue );
+            auto result = context.handleLifetime->zeHandleLifetime.zeKernelSetArgumentValuePrologue( hKernel, argIndex, argSize, pArgValue );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -5226,7 +5226,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeKernelSetIndirectAccessEpilogue( hKernel, flags );
+            auto result = context.handleLifetime->zeHandleLifetime.zeKernelSetIndirectAccessPrologue( hKernel, flags );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -5266,7 +5266,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeKernelGetIndirectAccessEpilogue( hKernel, pFlags );
+            auto result = context.handleLifetime->zeHandleLifetime.zeKernelGetIndirectAccessPrologue( hKernel, pFlags );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -5314,7 +5314,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeKernelGetSourceAttributesEpilogue( hKernel, pSize, pString );
+            auto result = context.handleLifetime->zeHandleLifetime.zeKernelGetSourceAttributesPrologue( hKernel, pSize, pString );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -5355,7 +5355,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeKernelSetCacheConfigEpilogue( hKernel, flags );
+            auto result = context.handleLifetime->zeHandleLifetime.zeKernelSetCacheConfigPrologue( hKernel, flags );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -5395,7 +5395,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeKernelGetPropertiesEpilogue( hKernel, pKernelProperties );
+            auto result = context.handleLifetime->zeHandleLifetime.zeKernelGetPropertiesPrologue( hKernel, pKernelProperties );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -5437,7 +5437,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeKernelGetNameEpilogue( hKernel, pSize, pName );
+            auto result = context.handleLifetime->zeHandleLifetime.zeKernelGetNamePrologue( hKernel, pSize, pName );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -5483,7 +5483,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeCommandListAppendLaunchKernelEpilogue( hCommandList, hKernel, pLaunchFuncArgs, hSignalEvent, numWaitEvents, phWaitEvents );
+            auto result = context.handleLifetime->zeHandleLifetime.zeCommandListAppendLaunchKernelPrologue( hCommandList, hKernel, pLaunchFuncArgs, hSignalEvent, numWaitEvents, phWaitEvents );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -5529,7 +5529,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeCommandListAppendLaunchCooperativeKernelEpilogue( hCommandList, hKernel, pLaunchFuncArgs, hSignalEvent, numWaitEvents, phWaitEvents );
+            auto result = context.handleLifetime->zeHandleLifetime.zeCommandListAppendLaunchCooperativeKernelPrologue( hCommandList, hKernel, pLaunchFuncArgs, hSignalEvent, numWaitEvents, phWaitEvents );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -5576,7 +5576,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeCommandListAppendLaunchKernelIndirectEpilogue( hCommandList, hKernel, pLaunchArgumentsBuffer, hSignalEvent, numWaitEvents, phWaitEvents );
+            auto result = context.handleLifetime->zeHandleLifetime.zeCommandListAppendLaunchKernelIndirectPrologue( hCommandList, hKernel, pLaunchArgumentsBuffer, hSignalEvent, numWaitEvents, phWaitEvents );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -5627,7 +5627,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeCommandListAppendLaunchMultipleKernelsIndirectEpilogue( hCommandList, numKernels, phKernels, pCountBuffer, pLaunchArgumentsBuffer, hSignalEvent, numWaitEvents, phWaitEvents );
+            auto result = context.handleLifetime->zeHandleLifetime.zeCommandListAppendLaunchMultipleKernelsIndirectPrologue( hCommandList, numKernels, phKernels, pCountBuffer, pLaunchArgumentsBuffer, hSignalEvent, numWaitEvents, phWaitEvents );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -5669,7 +5669,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeContextMakeMemoryResidentEpilogue( hContext, hDevice, ptr, size );
+            auto result = context.handleLifetime->zeHandleLifetime.zeContextMakeMemoryResidentPrologue( hContext, hDevice, ptr, size );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -5711,7 +5711,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeContextEvictMemoryEpilogue( hContext, hDevice, ptr, size );
+            auto result = context.handleLifetime->zeHandleLifetime.zeContextEvictMemoryPrologue( hContext, hDevice, ptr, size );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -5752,7 +5752,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeContextMakeImageResidentEpilogue( hContext, hDevice, hImage );
+            auto result = context.handleLifetime->zeHandleLifetime.zeContextMakeImageResidentPrologue( hContext, hDevice, hImage );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -5793,7 +5793,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeContextEvictImageEpilogue( hContext, hDevice, hImage );
+            auto result = context.handleLifetime->zeHandleLifetime.zeContextEvictImagePrologue( hContext, hDevice, hImage );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -5835,7 +5835,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeSamplerCreateEpilogue( hContext, hDevice, desc, phSampler );
+            auto result = context.handleLifetime->zeHandleLifetime.zeSamplerCreatePrologue( hContext, hDevice, desc, phSampler );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -5883,7 +5883,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeSamplerDestroyEpilogue( hSampler );
+            auto result = context.handleLifetime->zeHandleLifetime.zeSamplerDestroyPrologue( hSampler );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -5926,7 +5926,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeVirtualMemReserveEpilogue( hContext, pStart, size, pptr );
+            auto result = context.handleLifetime->zeHandleLifetime.zeVirtualMemReservePrologue( hContext, pStart, size, pptr );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -5967,7 +5967,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeVirtualMemFreeEpilogue( hContext, ptr, size );
+            auto result = context.handleLifetime->zeHandleLifetime.zeVirtualMemFreePrologue( hContext, ptr, size );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -6010,7 +6010,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeVirtualMemQueryPageSizeEpilogue( hContext, hDevice, size, pagesize );
+            auto result = context.handleLifetime->zeHandleLifetime.zeVirtualMemQueryPageSizePrologue( hContext, hDevice, size, pagesize );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -6052,7 +6052,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zePhysicalMemCreateEpilogue( hContext, hDevice, desc, phPhysicalMemory );
+            auto result = context.handleLifetime->zeHandleLifetime.zePhysicalMemCreatePrologue( hContext, hDevice, desc, phPhysicalMemory );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -6101,7 +6101,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zePhysicalMemDestroyEpilogue( hContext, hPhysicalMemory );
+            auto result = context.handleLifetime->zeHandleLifetime.zePhysicalMemDestroyPrologue( hContext, hPhysicalMemory );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -6148,7 +6148,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeVirtualMemMapEpilogue( hContext, ptr, size, hPhysicalMemory, offset, access );
+            auto result = context.handleLifetime->zeHandleLifetime.zeVirtualMemMapPrologue( hContext, ptr, size, hPhysicalMemory, offset, access );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -6189,7 +6189,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeVirtualMemUnmapEpilogue( hContext, ptr, size );
+            auto result = context.handleLifetime->zeHandleLifetime.zeVirtualMemUnmapPrologue( hContext, ptr, size );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -6232,7 +6232,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeVirtualMemSetAccessAttributeEpilogue( hContext, ptr, size, access );
+            auto result = context.handleLifetime->zeHandleLifetime.zeVirtualMemSetAccessAttributePrologue( hContext, ptr, size, access );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -6276,7 +6276,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeVirtualMemGetAccessAttributeEpilogue( hContext, ptr, size, access, outSize );
+            auto result = context.handleLifetime->zeHandleLifetime.zeVirtualMemGetAccessAttributePrologue( hContext, ptr, size, access, outSize );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -6318,7 +6318,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeKernelSetGlobalOffsetExpEpilogue( hKernel, offsetX, offsetY, offsetZ );
+            auto result = context.handleLifetime->zeHandleLifetime.zeKernelSetGlobalOffsetExpPrologue( hKernel, offsetX, offsetY, offsetZ );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -6362,7 +6362,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeDeviceReserveCacheExtEpilogue( hDevice, cacheLevel, cacheReservationSize );
+            auto result = context.handleLifetime->zeHandleLifetime.zeDeviceReserveCacheExtPrologue( hDevice, cacheLevel, cacheReservationSize );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -6404,7 +6404,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeDeviceSetCacheAdviceExtEpilogue( hDevice, ptr, regionSize, cacheRegion );
+            auto result = context.handleLifetime->zeHandleLifetime.zeDeviceSetCacheAdviceExtPrologue( hDevice, ptr, regionSize, cacheRegion );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -6452,7 +6452,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeEventQueryTimestampsExpEpilogue( hEvent, hDevice, pCount, pTimestamps );
+            auto result = context.handleLifetime->zeHandleLifetime.zeEventQueryTimestampsExpPrologue( hEvent, hDevice, pCount, pTimestamps );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -6492,7 +6492,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeImageGetMemoryPropertiesExpEpilogue( hImage, pMemoryProperties );
+            auto result = context.handleLifetime->zeHandleLifetime.zeImageGetMemoryPropertiesExpPrologue( hImage, pMemoryProperties );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -6539,7 +6539,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeImageViewCreateExtEpilogue( hContext, hDevice, desc, hImage, phImageView );
+            auto result = context.handleLifetime->zeHandleLifetime.zeImageViewCreateExtPrologue( hContext, hDevice, desc, hImage, phImageView );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -6591,7 +6591,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeImageViewCreateExpEpilogue( hContext, hDevice, desc, hImage, phImageView );
+            auto result = context.handleLifetime->zeHandleLifetime.zeImageViewCreateExpPrologue( hContext, hDevice, desc, hImage, phImageView );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -6640,7 +6640,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeKernelSchedulingHintExpEpilogue( hKernel, pHint );
+            auto result = context.handleLifetime->zeHandleLifetime.zeKernelSchedulingHintExpPrologue( hKernel, pHint );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -6680,7 +6680,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeDevicePciGetPropertiesExtEpilogue( hDevice, pPciProperties );
+            auto result = context.handleLifetime->zeHandleLifetime.zeDevicePciGetPropertiesExtPrologue( hDevice, pPciProperties );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -6731,7 +6731,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeCommandListAppendImageCopyToMemoryExtEpilogue( hCommandList, dstptr, hSrcImage, pSrcRegion, destRowPitch, destSlicePitch, hSignalEvent, numWaitEvents, phWaitEvents );
+            auto result = context.handleLifetime->zeHandleLifetime.zeCommandListAppendImageCopyToMemoryExtPrologue( hCommandList, dstptr, hSrcImage, pSrcRegion, destRowPitch, destSlicePitch, hSignalEvent, numWaitEvents, phWaitEvents );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -6782,7 +6782,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeCommandListAppendImageCopyFromMemoryExtEpilogue( hCommandList, hDstImage, srcptr, pDstRegion, srcRowPitch, srcSlicePitch, hSignalEvent, numWaitEvents, phWaitEvents );
+            auto result = context.handleLifetime->zeHandleLifetime.zeCommandListAppendImageCopyFromMemoryExtPrologue( hCommandList, hDstImage, srcptr, pDstRegion, srcRowPitch, srcSlicePitch, hSignalEvent, numWaitEvents, phWaitEvents );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -6823,7 +6823,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeImageGetAllocPropertiesExtEpilogue( hContext, hImage, pImageAllocProperties );
+            auto result = context.handleLifetime->zeHandleLifetime.zeImageGetAllocPropertiesExtPrologue( hContext, hImage, pImageAllocProperties );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -6867,7 +6867,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeModuleInspectLinkageExtEpilogue( pInspectDesc, numModules, phModules, phLog );
+            auto result = context.handleLifetime->zeHandleLifetime.zeModuleInspectLinkageExtPrologue( pInspectDesc, numModules, phModules, phLog );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -6908,7 +6908,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeMemFreeExtEpilogue( hContext, pMemFreeDesc, ptr );
+            auto result = context.handleLifetime->zeHandleLifetime.zeMemFreeExtPrologue( hContext, pMemFreeDesc, ptr );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -6956,7 +6956,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeFabricVertexGetExpEpilogue( hDriver, pCount, phVertices );
+            auto result = context.handleLifetime->zeHandleLifetime.zeFabricVertexGetExpPrologue( hDriver, pCount, phVertices );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -7014,7 +7014,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeFabricVertexGetSubVerticesExpEpilogue( hVertex, pCount, phSubvertices );
+            auto result = context.handleLifetime->zeHandleLifetime.zeFabricVertexGetSubVerticesExpPrologue( hVertex, pCount, phSubvertices );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -7064,7 +7064,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeFabricVertexGetPropertiesExpEpilogue( hVertex, pVertexProperties );
+            auto result = context.handleLifetime->zeHandleLifetime.zeFabricVertexGetPropertiesExpPrologue( hVertex, pVertexProperties );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -7108,7 +7108,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeFabricVertexGetDeviceExpEpilogue( hVertex, phDevice );
+            auto result = context.handleLifetime->zeHandleLifetime.zeFabricVertexGetDeviceExpPrologue( hVertex, phDevice );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -7157,7 +7157,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeDeviceGetFabricVertexExpEpilogue( hDevice, phVertex );
+            auto result = context.handleLifetime->zeHandleLifetime.zeDeviceGetFabricVertexExpPrologue( hDevice, phVertex );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -7215,7 +7215,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeFabricEdgeGetExpEpilogue( hVertexA, hVertexB, pCount, phEdges );
+            auto result = context.handleLifetime->zeHandleLifetime.zeFabricEdgeGetExpPrologue( hVertexA, hVertexB, pCount, phEdges );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -7266,7 +7266,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeFabricEdgeGetVerticesExpEpilogue( hEdge, phVertexA, phVertexB );
+            auto result = context.handleLifetime->zeHandleLifetime.zeFabricEdgeGetVerticesExpPrologue( hEdge, phVertexA, phVertexB );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -7320,7 +7320,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeFabricEdgeGetPropertiesExpEpilogue( hEdge, pEdgeProperties );
+            auto result = context.handleLifetime->zeHandleLifetime.zeFabricEdgeGetPropertiesExpPrologue( hEdge, pEdgeProperties );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -7379,7 +7379,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeEventQueryKernelTimestampsExtEpilogue( hEvent, hDevice, pCount, pResults );
+            auto result = context.handleLifetime->zeHandleLifetime.zeEventQueryKernelTimestampsExtPrologue( hEvent, hDevice, pCount, pResults );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -7420,7 +7420,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeRTASBuilderCreateExpEpilogue( hDriver, pDescriptor, phBuilder );
+            auto result = context.handleLifetime->zeHandleLifetime.zeRTASBuilderCreateExpPrologue( hDriver, pDescriptor, phBuilder );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -7470,7 +7470,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeRTASBuilderGetBuildPropertiesExpEpilogue( hBuilder, pBuildOpDescriptor, pProperties );
+            auto result = context.handleLifetime->zeHandleLifetime.zeRTASBuilderGetBuildPropertiesExpPrologue( hBuilder, pBuildOpDescriptor, pProperties );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -7515,7 +7515,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeDriverRTASFormatCompatibilityCheckExpEpilogue( hDriver, rtasFormatA, rtasFormatB );
+            auto result = context.handleLifetime->zeHandleLifetime.zeDriverRTASFormatCompatibilityCheckExpPrologue( hDriver, rtasFormatA, rtasFormatB );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -7566,7 +7566,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeRTASBuilderBuildExpEpilogue( hBuilder, pBuildOpDescriptor, pScratchBuffer, scratchBufferSizeBytes, pRtasBuffer, rtasBufferSizeBytes, hParallelOperation, pBuildUserPtr, pBounds, pRtasBufferSizeBytes );
+            auto result = context.handleLifetime->zeHandleLifetime.zeRTASBuilderBuildExpPrologue( hBuilder, pBuildOpDescriptor, pScratchBuffer, scratchBufferSizeBytes, pRtasBuffer, rtasBufferSizeBytes, hParallelOperation, pBuildUserPtr, pBounds, pRtasBufferSizeBytes );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -7605,7 +7605,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeRTASBuilderDestroyExpEpilogue( hBuilder );
+            auto result = context.handleLifetime->zeHandleLifetime.zeRTASBuilderDestroyExpPrologue( hBuilder );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -7645,7 +7645,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeRTASParallelOperationCreateExpEpilogue( hDriver, phParallelOperation );
+            auto result = context.handleLifetime->zeHandleLifetime.zeRTASParallelOperationCreateExpPrologue( hDriver, phParallelOperation );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -7694,7 +7694,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeRTASParallelOperationGetPropertiesExpEpilogue( hParallelOperation, pProperties );
+            auto result = context.handleLifetime->zeHandleLifetime.zeRTASParallelOperationGetPropertiesExpPrologue( hParallelOperation, pProperties );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -7737,7 +7737,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeRTASParallelOperationJoinExpEpilogue( hParallelOperation );
+            auto result = context.handleLifetime->zeHandleLifetime.zeRTASParallelOperationJoinExpPrologue( hParallelOperation );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -7776,7 +7776,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeRTASParallelOperationDestroyExpEpilogue( hParallelOperation );
+            auto result = context.handleLifetime->zeHandleLifetime.zeRTASParallelOperationDestroyExpPrologue( hParallelOperation );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -7820,7 +7820,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeMemGetPitchFor2dImageEpilogue( hContext, hDevice, imageWidth, imageHeight, elementSizeInBytes, rowPitch );
+            auto result = context.handleLifetime->zeHandleLifetime.zeMemGetPitchFor2dImagePrologue( hContext, hDevice, imageWidth, imageHeight, elementSizeInBytes, rowPitch );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -7860,7 +7860,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeImageGetDeviceOffsetExpEpilogue( hImage, pDeviceOffset );
+            auto result = context.handleLifetime->zeHandleLifetime.zeImageGetDeviceOffsetExpPrologue( hImage, pDeviceOffset );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -7904,7 +7904,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeCommandListCreateCloneExpEpilogue( hCommandList, phClonedCommandList );
+            auto result = context.handleLifetime->zeHandleLifetime.zeCommandListCreateCloneExpPrologue( hCommandList, phClonedCommandList );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -7963,7 +7963,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeCommandListImmediateAppendCommandListsExpEpilogue( hCommandListImmediate, numCommandLists, phCommandLists, hSignalEvent, numWaitEvents, phWaitEvents );
+            auto result = context.handleLifetime->zeHandleLifetime.zeCommandListImmediateAppendCommandListsExpPrologue( hCommandListImmediate, numCommandLists, phCommandLists, hSignalEvent, numWaitEvents, phWaitEvents );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -8004,7 +8004,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeCommandListGetNextCommandIdExpEpilogue( hCommandList, desc, pCommandId );
+            auto result = context.handleLifetime->zeHandleLifetime.zeCommandListGetNextCommandIdExpPrologue( hCommandList, desc, pCommandId );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -8049,7 +8049,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeCommandListUpdateMutableCommandsExpEpilogue( hCommandList, desc );
+            auto result = context.handleLifetime->zeHandleLifetime.zeCommandListUpdateMutableCommandsExpPrologue( hCommandList, desc );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -8090,7 +8090,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeCommandListUpdateMutableCommandSignalEventExpEpilogue( hCommandList, commandId, hSignalEvent );
+            auto result = context.handleLifetime->zeHandleLifetime.zeCommandListUpdateMutableCommandSignalEventExpPrologue( hCommandList, commandId, hSignalEvent );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -8133,7 +8133,7 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zeHandleLifetime.zeCommandListUpdateMutableCommandWaitEventsExpEpilogue( hCommandList, commandId, numWaitEvents, phWaitEvents );
+            auto result = context.handleLifetime->zeHandleLifetime.zeCommandListUpdateMutableCommandWaitEventsExpPrologue( hCommandList, commandId, numWaitEvents, phWaitEvents );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 

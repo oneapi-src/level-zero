@@ -32,7 +32,7 @@ namespace validation_layer
         %if not th.obj_traits.is_function_with_input_handles(obj):
         <% continue %>
         %endif
-        ${x}_result_t ${th.make_func_name(n, tags, obj)}Epilogue( \
+        ${x}_result_t ${th.make_func_name(n, tags, obj)}Prologue( \
 %for line in th.make_param_lines(n, tags, obj, format=["type", "name", "delim"]):
 ${line} \
 %endfor
