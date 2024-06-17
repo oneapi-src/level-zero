@@ -13,7 +13,8 @@
 #define FMT_HEADER_ONLY
 #endif
 
-#define LOADER_LOG_FILE_DEFAULT "ze_loader.log"
+#define LOADER_LOG_FILE "ze_loader.log"
+#define LOADER_LOG_FILE_DIRECTORY ".oneapi_logs"
 
 #include <iostream>
 #include <sstream>
