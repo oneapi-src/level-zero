@@ -3788,7 +3788,7 @@ namespace validation_layer
         if( nullptr == pCommandId )
             return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-        if( 0x3f < desc->flags )
+        if( 0x80 < desc->flags )
             return ZE_RESULT_ERROR_INVALID_ENUMERATION;
 
         return ParameterValidation::validateExtensions(desc);
