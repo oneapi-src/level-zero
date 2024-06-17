@@ -19,7 +19,8 @@ from templates import helper as th
  *
  */
 
-#pragma once 
+#pragma once
+#include "${x}_validation_layer.h"
 #include "${n}_entry_points.h"
 
 
@@ -29,12 +30,11 @@ namespace validation_layer
     class ${N}ParameterValidation : public ${N}ValidationEntryPoints {
     public:
     %for obj in th.extract_objs(specs, r"function"):
-        ${x}_result_t ${th.make_func_name(n, tags, obj)} ( \
+        ${x}_result_t ${th.make_func_name(n, tags, obj)}Prologue( \
 %for line in th.make_param_lines(n, tags, obj, format=["type", "name", "delim"]):
 ${line} \
 %endfor
 ) override;
     %endfor
     };
-
 }

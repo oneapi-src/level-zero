@@ -1,23 +1,24 @@
 /*
  * ***THIS FILE IS GENERATED. ***
- * See handle_lifetime.h.mako for modifications
+ * See param.h.mako for modifications
  *
  * Copyright (C) 2019-2023 Intel Corporation
  *
  * SPDX-License-Identifier: MIT
  *
- * @file zet_handle_lifetime.h
+ * @file zet_parameter_validation.h
  *
  */
 
 #pragma once
+#include "ze_validation_layer.h"
 #include "zet_entry_points.h"
 
 
 namespace validation_layer
 {
 
-    class ZETHandleLifetimeValidation : public ZETValidationEntryPoints {
+    class ZETParameterValidation : public ZETValidationEntryPoints {
     public:
         ze_result_t zetModuleGetDebugInfoPrologue( zet_module_handle_t hModule, zet_module_debug_info_format_t format, size_t* pSize, uint8_t* pDebugInfo ) override;
         ze_result_t zetDeviceGetDebugPropertiesPrologue( zet_device_handle_t hDevice, zet_device_debug_properties_t* pDebugProperties ) override;
@@ -74,5 +75,4 @@ namespace validation_layer
         ze_result_t zetMetricGroupDestroyExpPrologue( zet_metric_group_handle_t hMetricGroup ) override;
         ze_result_t zetMetricDestroyExpPrologue( zet_metric_handle_t hMetric ) override;
     };
-
 }

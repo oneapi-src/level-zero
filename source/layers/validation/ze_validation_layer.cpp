@@ -18,10 +18,6 @@ namespace validation_layer
     ///////////////////////////////////////////////////////////////////////////////
     context_t::context_t()
     {
-        enableParameterValidation = getenv_tobool( "ZE_ENABLE_PARAMETER_VALIDATION" );
-        if(enableParameterValidation) {
-            paramValidation = std::make_unique<ParameterValidation>();
-        }
         enableHandleLifetime = getenv_tobool( "ZE_ENABLE_HANDLE_LIFETIME" );
         if (enableHandleLifetime) {
             handleLifetime = std::make_unique<HandleLifetimeValidation>();
@@ -32,6 +28,7 @@ namespace validation_layer
     ///////////////////////////////////////////////////////////////////////////////
     context_t::~context_t()
     {
+        validationHandlers.clear();
     }
 } // namespace validation_layer
 
@@ -53,7 +50,6 @@ zelLoaderGetVersion(zel_component_version_t *version)
 
     return ZE_RESULT_SUCCESS;
 }
-
 
 #if defined(__cplusplus)
 };

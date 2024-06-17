@@ -1,25 +1,28 @@
 /*
  * ***THIS FILE IS GENERATED. ***
- * See handle_lifetime.h.mako for modifications
+ * See param.h.mako for modifications
  *
  * Copyright (C) 2019-2023 Intel Corporation
  *
  * SPDX-License-Identifier: MIT
  *
- * @file zes_handle_lifetime.h
+ * @file zes_parameter_validation.h
  *
  */
 
 #pragma once
+#include "ze_validation_layer.h"
 #include "zes_entry_points.h"
 
 
 namespace validation_layer
 {
 
-    class ZESHandleLifetimeValidation : public ZESValidationEntryPoints {
+    class ZESParameterValidation : public ZESValidationEntryPoints {
     public:
-                        ze_result_t zesDriverGetExtensionPropertiesPrologue( zes_driver_handle_t hDriver, uint32_t* pCount, zes_driver_extension_properties_t* pExtensionProperties ) override;
+        ze_result_t zesInitPrologue( zes_init_flags_t flags ) override;
+        ze_result_t zesDriverGetPrologue( uint32_t* pCount, zes_driver_handle_t* phDrivers ) override;
+        ze_result_t zesDriverGetExtensionPropertiesPrologue( zes_driver_handle_t hDriver, uint32_t* pCount, zes_driver_extension_properties_t* pExtensionProperties ) override;
         ze_result_t zesDriverGetExtensionFunctionAddressPrologue( zes_driver_handle_t hDriver, const char* name, void** ppFunctionAddress ) override;
         ze_result_t zesDeviceGetPrologue( zes_driver_handle_t hDriver, uint32_t* pCount, zes_device_handle_t* phDevices ) override;
         ze_result_t zesDeviceGetPropertiesPrologue( zes_device_handle_t hDevice, zes_device_properties_t* pProperties ) override;
@@ -162,5 +165,4 @@ namespace validation_layer
         ze_result_t zesVFManagementSetVFTelemetryModeExpPrologue( zes_vf_handle_t hVFhandle, zes_vf_info_util_exp_flags_t flags, ze_bool_t enable ) override;
         ze_result_t zesVFManagementSetVFTelemetrySamplingIntervalExpPrologue( zes_vf_handle_t hVFhandle, zes_vf_info_util_exp_flags_t flag, uint64_t samplingInterval ) override;
     };
-
 }

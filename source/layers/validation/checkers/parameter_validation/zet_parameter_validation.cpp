@@ -10,13 +10,13 @@
  *
  */
 #include "ze_validation_layer.h"
-#include "ze_parameter_validation.h"
+#include "param_validation.h"
 
 namespace validation_layer
 {
 
     ze_result_t
-    ZETParameterValidation::zetModuleGetDebugInfo(
+    ZETParameterValidation::zetModuleGetDebugInfoPrologue(
         zet_module_handle_t hModule,                    ///< [in] handle of the module
         zet_module_debug_info_format_t format,          ///< [in] debug info format requested
         size_t* pSize,                                  ///< [in,out] size of debug info in bytes
@@ -37,7 +37,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZETParameterValidation::zetDeviceGetDebugProperties(
+    ZETParameterValidation::zetDeviceGetDebugPropertiesPrologue(
         zet_device_handle_t hDevice,                    ///< [in] device handle
         zet_device_debug_properties_t* pDebugProperties ///< [in,out] query result for debug properties
         )
@@ -53,7 +53,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZETParameterValidation::zetDebugAttach(
+    ZETParameterValidation::zetDebugAttachPrologue(
         zet_device_handle_t hDevice,                    ///< [in] device handle
         const zet_debug_config_t* config,               ///< [in] the debug configuration
         zet_debug_session_handle_t* phDebug             ///< [out] debug session handle
@@ -73,7 +73,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZETParameterValidation::zetDebugDetach(
+    ZETParameterValidation::zetDebugDetachPrologue(
         zet_debug_session_handle_t hDebug               ///< [in][release] debug session handle
         )
     {
@@ -85,7 +85,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZETParameterValidation::zetDebugReadEvent(
+    ZETParameterValidation::zetDebugReadEventPrologue(
         zet_debug_session_handle_t hDebug,              ///< [in] debug session handle
         uint64_t timeout,                               ///< [in] if non-zero, then indicates the maximum time (in milliseconds) to
                                                         ///< yield before returning ::ZE_RESULT_SUCCESS or ::ZE_RESULT_NOT_READY;
@@ -108,7 +108,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZETParameterValidation::zetDebugAcknowledgeEvent(
+    ZETParameterValidation::zetDebugAcknowledgeEventPrologue(
         zet_debug_session_handle_t hDebug,              ///< [in] debug session handle
         const zet_debug_event_t* event                  ///< [in] a pointer to a ::zet_debug_event_t.
         )
@@ -124,7 +124,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZETParameterValidation::zetDebugInterrupt(
+    ZETParameterValidation::zetDebugInterruptPrologue(
         zet_debug_session_handle_t hDebug,              ///< [in] debug session handle
         ze_device_thread_t thread                       ///< [in] the thread to interrupt
         )
@@ -137,7 +137,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZETParameterValidation::zetDebugResume(
+    ZETParameterValidation::zetDebugResumePrologue(
         zet_debug_session_handle_t hDebug,              ///< [in] debug session handle
         ze_device_thread_t thread                       ///< [in] the thread to resume
         )
@@ -150,7 +150,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZETParameterValidation::zetDebugReadMemory(
+    ZETParameterValidation::zetDebugReadMemoryPrologue(
         zet_debug_session_handle_t hDebug,              ///< [in] debug session handle
         ze_device_thread_t thread,                      ///< [in] the thread identifier.
         const zet_debug_memory_space_desc_t* desc,      ///< [in] memory space descriptor
@@ -175,7 +175,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZETParameterValidation::zetDebugWriteMemory(
+    ZETParameterValidation::zetDebugWriteMemoryPrologue(
         zet_debug_session_handle_t hDebug,              ///< [in] debug session handle
         ze_device_thread_t thread,                      ///< [in] the thread identifier.
         const zet_debug_memory_space_desc_t* desc,      ///< [in] memory space descriptor
@@ -200,7 +200,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZETParameterValidation::zetDebugGetRegisterSetProperties(
+    ZETParameterValidation::zetDebugGetRegisterSetPropertiesPrologue(
         zet_device_handle_t hDevice,                    ///< [in] device handle
         uint32_t* pCount,                               ///< [in,out] pointer to the number of register set properties.
                                                         ///< if count is zero, then the driver shall update the value with the
@@ -225,7 +225,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZETParameterValidation::zetDebugGetThreadRegisterSetProperties(
+    ZETParameterValidation::zetDebugGetThreadRegisterSetPropertiesPrologue(
         zet_debug_session_handle_t hDebug,              ///< [in] debug session handle
         ze_device_thread_t thread,                      ///< [in] the thread identifier specifying a single stopped thread
         uint32_t* pCount,                               ///< [in,out] pointer to the number of register set properties.
@@ -251,7 +251,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZETParameterValidation::zetDebugReadRegisters(
+    ZETParameterValidation::zetDebugReadRegistersPrologue(
         zet_debug_session_handle_t hDebug,              ///< [in] debug session handle
         ze_device_thread_t thread,                      ///< [in] the thread identifier
         uint32_t type,                                  ///< [in] register set type
@@ -272,7 +272,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZETParameterValidation::zetDebugWriteRegisters(
+    ZETParameterValidation::zetDebugWriteRegistersPrologue(
         zet_debug_session_handle_t hDebug,              ///< [in] debug session handle
         ze_device_thread_t thread,                      ///< [in] the thread identifier
         uint32_t type,                                  ///< [in] register set type
@@ -293,7 +293,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZETParameterValidation::zetMetricGroupGet(
+    ZETParameterValidation::zetMetricGroupGetPrologue(
         zet_device_handle_t hDevice,                    ///< [in] handle of the device
         uint32_t* pCount,                               ///< [in,out] pointer to the number of metric groups.
                                                         ///< if count is zero, then the driver shall update the value with the
@@ -317,7 +317,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZETParameterValidation::zetMetricGroupGetProperties(
+    ZETParameterValidation::zetMetricGroupGetPropertiesPrologue(
         zet_metric_group_handle_t hMetricGroup,         ///< [in] handle of the metric group
         zet_metric_group_properties_t* pProperties      ///< [in,out] metric group properties
         )
@@ -333,7 +333,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZETParameterValidation::zetMetricGroupCalculateMetricValues(
+    ZETParameterValidation::zetMetricGroupCalculateMetricValuesPrologue(
         zet_metric_group_handle_t hMetricGroup,         ///< [in] handle of the metric group
         zet_metric_group_calculation_type_t type,       ///< [in] calculation type to be applied on raw data
         size_t rawDataSize,                             ///< [in] size in bytes of raw data buffer
@@ -366,7 +366,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZETParameterValidation::zetMetricGet(
+    ZETParameterValidation::zetMetricGetPrologue(
         zet_metric_group_handle_t hMetricGroup,         ///< [in] handle of the metric group
         uint32_t* pCount,                               ///< [in,out] pointer to the number of metrics.
                                                         ///< if count is zero, then the driver shall update the value with the
@@ -389,7 +389,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZETParameterValidation::zetMetricGetProperties(
+    ZETParameterValidation::zetMetricGetPropertiesPrologue(
         zet_metric_handle_t hMetric,                    ///< [in] handle of the metric
         zet_metric_properties_t* pProperties            ///< [in,out] metric properties
         )
@@ -405,7 +405,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZETParameterValidation::zetContextActivateMetricGroups(
+    ZETParameterValidation::zetContextActivateMetricGroupsPrologue(
         zet_context_handle_t hContext,                  ///< [in] handle of the context object
         zet_device_handle_t hDevice,                    ///< [in] handle of the device
         uint32_t count,                                 ///< [in] metric group count to activate; must be 0 if `nullptr ==
@@ -430,7 +430,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZETParameterValidation::zetMetricStreamerOpen(
+    ZETParameterValidation::zetMetricStreamerOpenPrologue(
         zet_context_handle_t hContext,                  ///< [in] handle of the context object
         zet_device_handle_t hDevice,                    ///< [in] handle of the device
         zet_metric_group_handle_t hMetricGroup,         ///< [in] handle of the metric group
@@ -459,7 +459,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZETParameterValidation::zetCommandListAppendMetricStreamerMarker(
+    ZETParameterValidation::zetCommandListAppendMetricStreamerMarkerPrologue(
         zet_command_list_handle_t hCommandList,         ///< [in] handle of the command list
         zet_metric_streamer_handle_t hMetricStreamer,   ///< [in] handle of the metric streamer
         uint32_t value                                  ///< [in] streamer marker value
@@ -476,7 +476,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZETParameterValidation::zetMetricStreamerClose(
+    ZETParameterValidation::zetMetricStreamerClosePrologue(
         zet_metric_streamer_handle_t hMetricStreamer    ///< [in][release] handle of the metric streamer
         )
     {
@@ -488,7 +488,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZETParameterValidation::zetMetricStreamerReadData(
+    ZETParameterValidation::zetMetricStreamerReadDataPrologue(
         zet_metric_streamer_handle_t hMetricStreamer,   ///< [in] handle of the metric streamer
         uint32_t maxReportCount,                        ///< [in] the maximum number of reports the application wants to receive.
                                                         ///< if `UINT32_MAX`, then function will retrieve all reports available
@@ -514,7 +514,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZETParameterValidation::zetMetricQueryPoolCreate(
+    ZETParameterValidation::zetMetricQueryPoolCreatePrologue(
         zet_context_handle_t hContext,                  ///< [in] handle of the context object
         zet_device_handle_t hDevice,                    ///< [in] handle of the device
         zet_metric_group_handle_t hMetricGroup,         ///< [in] metric group associated with the query object.
@@ -545,7 +545,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZETParameterValidation::zetMetricQueryPoolDestroy(
+    ZETParameterValidation::zetMetricQueryPoolDestroyPrologue(
         zet_metric_query_pool_handle_t hMetricQueryPool ///< [in][release] handle of the metric query pool
         )
     {
@@ -557,7 +557,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZETParameterValidation::zetMetricQueryCreate(
+    ZETParameterValidation::zetMetricQueryCreatePrologue(
         zet_metric_query_pool_handle_t hMetricQueryPool,///< [in] handle of the metric query pool
         uint32_t index,                                 ///< [in] index of the query within the pool
         zet_metric_query_handle_t* phMetricQuery        ///< [out] handle of metric query
@@ -574,7 +574,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZETParameterValidation::zetMetricQueryDestroy(
+    ZETParameterValidation::zetMetricQueryDestroyPrologue(
         zet_metric_query_handle_t hMetricQuery          ///< [in][release] handle of metric query
         )
     {
@@ -586,7 +586,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZETParameterValidation::zetMetricQueryReset(
+    ZETParameterValidation::zetMetricQueryResetPrologue(
         zet_metric_query_handle_t hMetricQuery          ///< [in] handle of metric query
         )
     {
@@ -598,7 +598,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZETParameterValidation::zetCommandListAppendMetricQueryBegin(
+    ZETParameterValidation::zetCommandListAppendMetricQueryBeginPrologue(
         zet_command_list_handle_t hCommandList,         ///< [in] handle of the command list
         zet_metric_query_handle_t hMetricQuery          ///< [in] handle of the metric query
         )
@@ -614,7 +614,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZETParameterValidation::zetCommandListAppendMetricQueryEnd(
+    ZETParameterValidation::zetCommandListAppendMetricQueryEndPrologue(
         zet_command_list_handle_t hCommandList,         ///< [in] handle of the command list
         zet_metric_query_handle_t hMetricQuery,         ///< [in] handle of the metric query
         ze_event_handle_t hSignalEvent,                 ///< [in][optional] handle of the event to signal on completion
@@ -636,7 +636,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZETParameterValidation::zetCommandListAppendMetricMemoryBarrier(
+    ZETParameterValidation::zetCommandListAppendMetricMemoryBarrierPrologue(
         zet_command_list_handle_t hCommandList          ///< [in] handle of the command list
         )
     {
@@ -648,7 +648,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZETParameterValidation::zetMetricQueryGetData(
+    ZETParameterValidation::zetMetricQueryGetDataPrologue(
         zet_metric_query_handle_t hMetricQuery,         ///< [in] handle of the metric query
         size_t* pRawDataSize,                           ///< [in,out] pointer to size in bytes of raw data requested to read.
                                                         ///< if size is zero, then the driver will update the value with the total
@@ -672,7 +672,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZETParameterValidation::zetKernelGetProfileInfo(
+    ZETParameterValidation::zetKernelGetProfileInfoPrologue(
         zet_kernel_handle_t hKernel,                    ///< [in] handle to kernel
         zet_profile_properties_t* pProfileProperties    ///< [out] pointer to profile properties
         )
@@ -688,7 +688,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZETParameterValidation::zetTracerExpCreate(
+    ZETParameterValidation::zetTracerExpCreatePrologue(
         zet_context_handle_t hContext,                  ///< [in] handle of the context object
         const zet_tracer_exp_desc_t* desc,              ///< [in] pointer to tracer descriptor
         zet_tracer_exp_handle_t* phTracer               ///< [out] pointer to handle of tracer object created
@@ -711,7 +711,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZETParameterValidation::zetTracerExpDestroy(
+    ZETParameterValidation::zetTracerExpDestroyPrologue(
         zet_tracer_exp_handle_t hTracer                 ///< [in][release] handle of tracer object to destroy
         )
     {
@@ -723,7 +723,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZETParameterValidation::zetTracerExpSetPrologues(
+    ZETParameterValidation::zetTracerExpSetProloguesPrologue(
         zet_tracer_exp_handle_t hTracer,                ///< [in] handle of the tracer
         zet_core_callbacks_t* pCoreCbs                  ///< [in] pointer to table of 'core' callback function pointers
         )
@@ -739,7 +739,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZETParameterValidation::zetTracerExpSetEpilogues(
+    ZETParameterValidation::zetTracerExpSetEpiloguesPrologue(
         zet_tracer_exp_handle_t hTracer,                ///< [in] handle of the tracer
         zet_core_callbacks_t* pCoreCbs                  ///< [in] pointer to table of 'core' callback function pointers
         )
@@ -755,7 +755,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZETParameterValidation::zetTracerExpSetEnabled(
+    ZETParameterValidation::zetTracerExpSetEnabledPrologue(
         zet_tracer_exp_handle_t hTracer,                ///< [in] handle of the tracer
         ze_bool_t enable                                ///< [in] enable the tracer if true; disable if false
         )
@@ -768,7 +768,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZETParameterValidation::zetMetricGroupCalculateMultipleMetricValuesExp(
+    ZETParameterValidation::zetMetricGroupCalculateMultipleMetricValuesExpPrologue(
         zet_metric_group_handle_t hMetricGroup,         ///< [in] handle of the metric group
         zet_metric_group_calculation_type_t type,       ///< [in] calculation type to be applied on raw data
         size_t rawDataSize,                             ///< [in] size in bytes of raw data buffer
@@ -814,7 +814,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZETParameterValidation::zetMetricGroupGetGlobalTimestampsExp(
+    ZETParameterValidation::zetMetricGroupGetGlobalTimestampsExpPrologue(
         zet_metric_group_handle_t hMetricGroup,         ///< [in] handle of the metric group
         ze_bool_t synchronizedWithHost,                 ///< [in] Returns the timestamps synchronized to the host or the device.
         uint64_t* globalTimestamp,                      ///< [out] Device timestamp.
@@ -835,7 +835,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZETParameterValidation::zetMetricGroupGetExportDataExp(
+    ZETParameterValidation::zetMetricGroupGetExportDataExpPrologue(
         zet_metric_group_handle_t hMetricGroup,         ///< [in] handle of the metric group
         const uint8_t* pRawData,                        ///< [in] buffer of raw data
         size_t rawDataSize,                             ///< [in] size in bytes of raw data buffer
@@ -861,7 +861,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZETParameterValidation::zetMetricGroupCalculateMetricExportDataExp(
+    ZETParameterValidation::zetMetricGroupCalculateMetricExportDataExpPrologue(
         ze_driver_handle_t hDriver,                     ///< [in] handle of the driver instance
         zet_metric_group_calculation_type_t type,       ///< [in] calculation type to be applied on raw data
         size_t exportDataSize,                          ///< [in] size in bytes of exported data buffer
@@ -911,7 +911,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZETParameterValidation::zetMetricProgrammableGetExp(
+    ZETParameterValidation::zetMetricProgrammableGetExpPrologue(
         zet_device_handle_t hDevice,                    ///< [in] handle of the device
         uint32_t* pCount,                               ///< [in,out] pointer to the number of metric programmable handles.
                                                         ///< if count is zero, then the driver shall update the value with the
@@ -935,7 +935,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZETParameterValidation::zetMetricProgrammableGetPropertiesExp(
+    ZETParameterValidation::zetMetricProgrammableGetPropertiesExpPrologue(
         zet_metric_programmable_exp_handle_t hMetricProgrammable,   ///< [in] handle of the metric programmable
         zet_metric_programmable_exp_properties_t* pProperties   ///< [in,out] properties of the metric programmable
         )
@@ -951,7 +951,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZETParameterValidation::zetMetricProgrammableGetParamInfoExp(
+    ZETParameterValidation::zetMetricProgrammableGetParamInfoExpPrologue(
         zet_metric_programmable_exp_handle_t hMetricProgrammable,   ///< [in] handle of the metric programmable
         uint32_t* pParameterCount,                      ///< [in,out] count of the parameters to retrieve parameter info.
                                                         ///< if value pParameterCount is greater than count of parameters
@@ -977,7 +977,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZETParameterValidation::zetMetricProgrammableGetParamValueInfoExp(
+    ZETParameterValidation::zetMetricProgrammableGetParamValueInfoExpPrologue(
         zet_metric_programmable_exp_handle_t hMetricProgrammable,   ///< [in] handle of the metric programmable
         uint32_t parameterOrdinal,                      ///< [in] ordinal of the parameter in the metric programmable
         uint32_t* pValueInfoCount,                      ///< [in,out] count of parameter value information to retrieve.
@@ -1004,7 +1004,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZETParameterValidation::zetMetricCreateFromProgrammableExp(
+    ZETParameterValidation::zetMetricCreateFromProgrammableExpPrologue(
         zet_metric_programmable_exp_handle_t hMetricProgrammable,   ///< [in] handle of the metric programmable
         zet_metric_programmable_param_value_exp_t* pParameterValues,///< [in] list of parameter values to be set.
         uint32_t parameterCount,                        ///< [in] Count of parameters to set.
@@ -1044,7 +1044,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZETParameterValidation::zetMetricGroupCreateExp(
+    ZETParameterValidation::zetMetricGroupCreateExpPrologue(
         zet_device_handle_t hDevice,                    ///< [in] handle of the device
         const char* pName,                              ///< [in] pointer to metric group name. Must point to a null-terminated
                                                         ///< character array no longer than ::ZET_MAX_METRIC_GROUP_NAME.
@@ -1075,7 +1075,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZETParameterValidation::zetMetricGroupAddMetricExp(
+    ZETParameterValidation::zetMetricGroupAddMetricExpPrologue(
         zet_metric_group_handle_t hMetricGroup,         ///< [in] Handle of the metric group
         zet_metric_handle_t hMetric,                    ///< [in] Metric to be added to the group.
         size_t * pErrorStringSize,                      ///< [in,out][optional] Size of the error string to query, if an error was
@@ -1098,7 +1098,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZETParameterValidation::zetMetricGroupRemoveMetricExp(
+    ZETParameterValidation::zetMetricGroupRemoveMetricExpPrologue(
         zet_metric_group_handle_t hMetricGroup,         ///< [in] Handle of the metric group
         zet_metric_handle_t hMetric                     ///< [in] Metric handle to be removed from the metric group.
         )
@@ -1114,7 +1114,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZETParameterValidation::zetMetricGroupCloseExp(
+    ZETParameterValidation::zetMetricGroupCloseExpPrologue(
         zet_metric_group_handle_t hMetricGroup          ///< [in] Handle of the metric group
         )
     {
@@ -1126,7 +1126,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZETParameterValidation::zetMetricGroupDestroyExp(
+    ZETParameterValidation::zetMetricGroupDestroyExpPrologue(
         zet_metric_group_handle_t hMetricGroup          ///< [in] Handle of the metric group to destroy
         )
     {
@@ -1138,7 +1138,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZETParameterValidation::zetMetricDestroyExp(
+    ZETParameterValidation::zetMetricDestroyExpPrologue(
         zet_metric_handle_t hMetric                     ///< [in] Handle of the metric to destroy
         )
     {

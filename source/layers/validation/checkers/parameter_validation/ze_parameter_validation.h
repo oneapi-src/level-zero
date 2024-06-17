@@ -1,25 +1,28 @@
 /*
  * ***THIS FILE IS GENERATED. ***
- * See handle_lifetime.h.mako for modifications
+ * See param.h.mako for modifications
  *
  * Copyright (C) 2019-2023 Intel Corporation
  *
  * SPDX-License-Identifier: MIT
  *
- * @file ze_handle_lifetime.h
+ * @file ze_parameter_validation.h
  *
  */
 
 #pragma once
+#include "ze_validation_layer.h"
 #include "ze_entry_points.h"
 
 
 namespace validation_layer
 {
 
-    class ZEHandleLifetimeValidation : public ZEValidationEntryPoints {
+    class ZEParameterValidation : public ZEValidationEntryPoints {
     public:
-                        ze_result_t zeDriverGetApiVersionPrologue( ze_driver_handle_t hDriver, ze_api_version_t* version ) override;
+        ze_result_t zeInitPrologue( ze_init_flags_t flags ) override;
+        ze_result_t zeDriverGetPrologue( uint32_t* pCount, ze_driver_handle_t* phDrivers ) override;
+        ze_result_t zeDriverGetApiVersionPrologue( ze_driver_handle_t hDriver, ze_api_version_t* version ) override;
         ze_result_t zeDriverGetPropertiesPrologue( ze_driver_handle_t hDriver, ze_driver_properties_t* pDriverProperties ) override;
         ze_result_t zeDriverGetIpcPropertiesPrologue( ze_driver_handle_t hDriver, ze_driver_ipc_properties_t* pIpcProperties ) override;
         ze_result_t zeDriverGetExtensionPropertiesPrologue( ze_driver_handle_t hDriver, uint32_t* pCount, ze_driver_extension_properties_t* pExtensionProperties ) override;
@@ -202,5 +205,4 @@ namespace validation_layer
         ze_result_t zeCommandListUpdateMutableCommandSignalEventExpPrologue( ze_command_list_handle_t hCommandList, uint64_t commandId, ze_event_handle_t hSignalEvent ) override;
         ze_result_t zeCommandListUpdateMutableCommandWaitEventsExpPrologue( ze_command_list_handle_t hCommandList, uint64_t commandId, uint32_t numWaitEvents, ze_event_handle_t* phWaitEvents ) override;
     };
-
 }

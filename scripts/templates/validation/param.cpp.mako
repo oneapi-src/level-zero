@@ -19,14 +19,38 @@ from templates import helper as th
  *
  */
 #include "${x}_validation_layer.h"
-#include "${x}_parameter_validation.h"
+#include "param_validation.h"
 
 namespace validation_layer
 {
+    %if 'ze' == n:
+    class parameterValidationChecker parameterChecker;
+
+    parameterValidationChecker::parameterValidationChecker() {
+        enableParameterValidation = getenv_tobool( "ZE_ENABLE_PARAMETER_VALIDATION" );
+        if(enableParameterValidation) {
+            ZEParameterValidation *zeChecker = new ZEParameterValidation;
+            ZESParameterValidation *zesChecker = new ZESParameterValidation;
+            ZETParameterValidation *zetChecker = new ZETParameterValidation;
+            parameterChecker.zeValidation = zeChecker;
+            parameterChecker.zetValidation = zetChecker;
+            parameterChecker.zesValidation = zesChecker;
+            validation_layer::context.validationHandlers.push_back(&parameterChecker);
+        }
+    }
+
+    parameterValidationChecker::~parameterValidationChecker() {
+        if(enableParameterValidation) {
+            delete parameterChecker.zeValidation;
+            delete parameterChecker.zetValidation;
+            delete parameterChecker.zesValidation;
+        }
+    }
+    %endif
     %for obj in th.extract_objs(specs, r"function"):
 
     ${x}_result_t
-    ${N}ParameterValidation::${th.make_func_name(n, tags, obj)}(
+    ${N}ParameterValidation::${th.make_func_name(n, tags, obj)}Prologue(
         %for line in th.make_param_lines(n, tags, obj):
         ${line}
         %endfor

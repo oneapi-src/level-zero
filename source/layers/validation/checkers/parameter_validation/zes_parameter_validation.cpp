@@ -10,13 +10,13 @@
  *
  */
 #include "ze_validation_layer.h"
-#include "ze_parameter_validation.h"
+#include "param_validation.h"
 
 namespace validation_layer
 {
 
     ze_result_t
-    ZESParameterValidation::zesInit(
+    ZESParameterValidation::zesInitPrologue(
         zes_init_flags_t flags                          ///< [in] initialization flags.
                                                         ///< currently unused, must be 0 (default).
         )
@@ -29,7 +29,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZESParameterValidation::zesDriverGet(
+    ZESParameterValidation::zesDriverGetPrologue(
         uint32_t* pCount,                               ///< [in,out] pointer to the number of sysman driver instances.
                                                         ///< if count is zero, then the loader shall update the value with the
                                                         ///< total number of sysman drivers available.
@@ -49,7 +49,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZESParameterValidation::zesDriverGetExtensionProperties(
+    ZESParameterValidation::zesDriverGetExtensionPropertiesPrologue(
         zes_driver_handle_t hDriver,                    ///< [in] handle of the driver instance
         uint32_t* pCount,                               ///< [in,out] pointer to the number of extension properties.
                                                         ///< if count is zero, then the driver shall update the value with the
@@ -74,7 +74,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZESParameterValidation::zesDriverGetExtensionFunctionAddress(
+    ZESParameterValidation::zesDriverGetExtensionFunctionAddressPrologue(
         zes_driver_handle_t hDriver,                    ///< [in] handle of the driver instance
         const char* name,                               ///< [in] extension function name
         void** ppFunctionAddress                        ///< [out] pointer to function pointer
@@ -94,7 +94,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZESParameterValidation::zesDeviceGet(
+    ZESParameterValidation::zesDeviceGetPrologue(
         zes_driver_handle_t hDriver,                    ///< [in] handle of the sysman driver instance
         uint32_t* pCount,                               ///< [in,out] pointer to the number of sysman devices.
                                                         ///< if count is zero, then the driver shall update the value with the
@@ -118,7 +118,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZESParameterValidation::zesDeviceGetProperties(
+    ZESParameterValidation::zesDeviceGetPropertiesPrologue(
         zes_device_handle_t hDevice,                    ///< [in] Sysman handle of the device.
         zes_device_properties_t* pProperties            ///< [in,out] Structure that will contain information about the device.
         )
@@ -134,7 +134,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZESParameterValidation::zesDeviceGetState(
+    ZESParameterValidation::zesDeviceGetStatePrologue(
         zes_device_handle_t hDevice,                    ///< [in] Sysman handle of the device.
         zes_device_state_t* pState                      ///< [in,out] Structure that will contain information about the device.
         )
@@ -150,7 +150,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZESParameterValidation::zesDeviceReset(
+    ZESParameterValidation::zesDeviceResetPrologue(
         zes_device_handle_t hDevice,                    ///< [in] Sysman handle for the device
         ze_bool_t force                                 ///< [in] If set to true, all applications that are currently using the
                                                         ///< device will be forcibly killed.
@@ -164,7 +164,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZESParameterValidation::zesDeviceResetExt(
+    ZESParameterValidation::zesDeviceResetExtPrologue(
         zes_device_handle_t hDevice,                    ///< [in] Sysman handle for the device
         zes_reset_properties_t* pProperties             ///< [in] Device reset properties to apply
         )
@@ -180,7 +180,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZESParameterValidation::zesDeviceProcessesGetState(
+    ZESParameterValidation::zesDeviceProcessesGetStatePrologue(
         zes_device_handle_t hDevice,                    ///< [in] Sysman handle for the device
         uint32_t* pCount,                               ///< [in,out] pointer to the number of processes.
                                                         ///< if count is zero, then the driver shall update the value with the
@@ -205,7 +205,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZESParameterValidation::zesDevicePciGetProperties(
+    ZESParameterValidation::zesDevicePciGetPropertiesPrologue(
         zes_device_handle_t hDevice,                    ///< [in] Sysman handle of the device.
         zes_pci_properties_t* pProperties               ///< [in,out] Will contain the PCI properties.
         )
@@ -221,7 +221,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZESParameterValidation::zesDevicePciGetState(
+    ZESParameterValidation::zesDevicePciGetStatePrologue(
         zes_device_handle_t hDevice,                    ///< [in] Sysman handle of the device.
         zes_pci_state_t* pState                         ///< [in,out] Will contain the PCI properties.
         )
@@ -237,7 +237,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZESParameterValidation::zesDevicePciGetBars(
+    ZESParameterValidation::zesDevicePciGetBarsPrologue(
         zes_device_handle_t hDevice,                    ///< [in] Sysman handle of the device.
         uint32_t* pCount,                               ///< [in,out] pointer to the number of PCI bars.
                                                         ///< if count is zero, then the driver shall update the value with the
@@ -261,7 +261,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZESParameterValidation::zesDevicePciGetStats(
+    ZESParameterValidation::zesDevicePciGetStatsPrologue(
         zes_device_handle_t hDevice,                    ///< [in] Sysman handle of the device.
         zes_pci_stats_t* pStats                         ///< [in,out] Will contain a snapshot of the latest stats.
         )
@@ -277,7 +277,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZESParameterValidation::zesDeviceSetOverclockWaiver(
+    ZESParameterValidation::zesDeviceSetOverclockWaiverPrologue(
         zes_device_handle_t hDevice                     ///< [in] Sysman handle of the device.
         )
     {
@@ -289,7 +289,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZESParameterValidation::zesDeviceGetOverclockDomains(
+    ZESParameterValidation::zesDeviceGetOverclockDomainsPrologue(
         zes_device_handle_t hDevice,                    ///< [in] Sysman handle of the device.
         uint32_t* pOverclockDomains                     ///< [in,out] Returns the overclock domains that are supported (a bit for
                                                         ///< each of enum ::zes_overclock_domain_t). If no bits are set, the device
@@ -307,7 +307,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZESParameterValidation::zesDeviceGetOverclockControls(
+    ZESParameterValidation::zesDeviceGetOverclockControlsPrologue(
         zes_device_handle_t hDevice,                    ///< [in] Sysman handle of the device.
         zes_overclock_domain_t domainType,              ///< [in] Domain type.
         uint32_t* pAvailableControls                    ///< [in,out] Returns the overclock controls that are supported for the
@@ -329,7 +329,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZESParameterValidation::zesDeviceResetOverclockSettings(
+    ZESParameterValidation::zesDeviceResetOverclockSettingsPrologue(
         zes_device_handle_t hDevice,                    ///< [in] Sysman handle of the device.
         ze_bool_t onShippedState                        ///< [in] True will reset to shipped state; false will reset to
                                                         ///< manufacturing state
@@ -343,7 +343,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZESParameterValidation::zesDeviceReadOverclockState(
+    ZESParameterValidation::zesDeviceReadOverclockStatePrologue(
         zes_device_handle_t hDevice,                    ///< [in] Sysman handle of the device.
         zes_overclock_mode_t* pOverclockMode,           ///< [out] One of overclock mode.
         ze_bool_t* pWaiverSetting,                      ///< [out] Waiver setting: 0 = Waiver not set, 1 = waiver has been set.
@@ -376,7 +376,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZESParameterValidation::zesDeviceEnumOverclockDomains(
+    ZESParameterValidation::zesDeviceEnumOverclockDomainsPrologue(
         zes_device_handle_t hDevice,                    ///< [in] Sysman handle of the device.
         uint32_t* pCount,                               ///< [in,out] pointer to the number of components of this type.
                                                         ///< if count is zero, then the driver shall update the value with the
@@ -402,7 +402,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZESParameterValidation::zesOverclockGetDomainProperties(
+    ZESParameterValidation::zesOverclockGetDomainPropertiesPrologue(
         zes_overclock_handle_t hDomainHandle,           ///< [in] Handle for the component domain.
         zes_overclock_properties_t* pDomainProperties   ///< [in,out] The overclock properties for the specified domain.
         )
@@ -418,7 +418,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZESParameterValidation::zesOverclockGetDomainVFProperties(
+    ZESParameterValidation::zesOverclockGetDomainVFPropertiesPrologue(
         zes_overclock_handle_t hDomainHandle,           ///< [in] Handle for the component domain.
         zes_vf_property_t* pVFProperties                ///< [in,out] The VF min,max,step for a specified domain.
         )
@@ -434,7 +434,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZESParameterValidation::zesOverclockGetDomainControlProperties(
+    ZESParameterValidation::zesOverclockGetDomainControlPropertiesPrologue(
         zes_overclock_handle_t hDomainHandle,           ///< [in] Handle for the component domain.
         zes_overclock_control_t DomainControl,          ///< [in] Handle for the component.
         zes_control_property_t* pControlProperties      ///< [in,out] overclock control values.
@@ -454,7 +454,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZESParameterValidation::zesOverclockGetControlCurrentValue(
+    ZESParameterValidation::zesOverclockGetControlCurrentValuePrologue(
         zes_overclock_handle_t hDomainHandle,           ///< [in] Handle for the component.
         zes_overclock_control_t DomainControl,          ///< [in] Overclock Control.
         double* pValue                                  ///< [in,out] Getting overclock control value for the specified control.
@@ -474,7 +474,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZESParameterValidation::zesOverclockGetControlPendingValue(
+    ZESParameterValidation::zesOverclockGetControlPendingValuePrologue(
         zes_overclock_handle_t hDomainHandle,           ///< [in] Handle for the component domain.
         zes_overclock_control_t DomainControl,          ///< [in] Overclock Control.
         double* pValue                                  ///< [out] Returns the pending value for a given control. The units and
@@ -495,7 +495,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZESParameterValidation::zesOverclockSetControlUserValue(
+    ZESParameterValidation::zesOverclockSetControlUserValuePrologue(
         zes_overclock_handle_t hDomainHandle,           ///< [in] Handle for the component domain.
         zes_overclock_control_t DomainControl,          ///< [in] Domain Control.
         double pValue,                                  ///< [in] The new value of the control. The units and format of the value
@@ -517,7 +517,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZESParameterValidation::zesOverclockGetControlState(
+    ZESParameterValidation::zesOverclockGetControlStatePrologue(
         zes_overclock_handle_t hDomainHandle,           ///< [in] Handle for the component domain.
         zes_overclock_control_t DomainControl,          ///< [in] Domain Control.
         zes_control_state_t* pControlState,             ///< [out] Current overclock control state.
@@ -541,7 +541,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZESParameterValidation::zesOverclockGetVFPointValues(
+    ZESParameterValidation::zesOverclockGetVFPointValuesPrologue(
         zes_overclock_handle_t hDomainHandle,           ///< [in] Handle for the component domain.
         zes_vf_type_t VFType,                           ///< [in] Voltage or Freqency point to read.
         zes_vf_array_type_t VFArrayType,                ///< [in] User,Default or Live VF array to read from
@@ -567,7 +567,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZESParameterValidation::zesOverclockSetVFPointValues(
+    ZESParameterValidation::zesOverclockSetVFPointValuesPrologue(
         zes_overclock_handle_t hDomainHandle,           ///< [in] Handle for the component domain.
         zes_vf_type_t VFType,                           ///< [in] Voltage or Freqency point to read.
         uint32_t PointIndex,                            ///< [in] Point index - number between (0, max_num_points - 1).
@@ -586,7 +586,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZESParameterValidation::zesDeviceEnumDiagnosticTestSuites(
+    ZESParameterValidation::zesDeviceEnumDiagnosticTestSuitesPrologue(
         zes_device_handle_t hDevice,                    ///< [in] Sysman handle of the device.
         uint32_t* pCount,                               ///< [in,out] pointer to the number of components of this type.
                                                         ///< if count is zero, then the driver shall update the value with the
@@ -612,7 +612,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZESParameterValidation::zesDiagnosticsGetProperties(
+    ZESParameterValidation::zesDiagnosticsGetPropertiesPrologue(
         zes_diag_handle_t hDiagnostics,                 ///< [in] Handle for the component.
         zes_diag_properties_t* pProperties              ///< [in,out] Structure describing the properties of a diagnostics test
                                                         ///< suite
@@ -629,7 +629,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZESParameterValidation::zesDiagnosticsGetTests(
+    ZESParameterValidation::zesDiagnosticsGetTestsPrologue(
         zes_diag_handle_t hDiagnostics,                 ///< [in] Handle for the component.
         uint32_t* pCount,                               ///< [in,out] pointer to the number of tests.
                                                         ///< if count is zero, then the driver shall update the value with the
@@ -653,7 +653,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZESParameterValidation::zesDiagnosticsRunTests(
+    ZESParameterValidation::zesDiagnosticsRunTestsPrologue(
         zes_diag_handle_t hDiagnostics,                 ///< [in] Handle for the component.
         uint32_t startIndex,                            ///< [in] The index of the first test to run. Set to
                                                         ///< ::ZES_DIAG_FIRST_TEST_INDEX to start from the beginning.
@@ -673,7 +673,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZESParameterValidation::zesDeviceEccAvailable(
+    ZESParameterValidation::zesDeviceEccAvailablePrologue(
         zes_device_handle_t hDevice,                    ///< [in] Handle for the component.
         ze_bool_t* pAvailable                           ///< [out] ECC functionality is available (true)/unavailable (false).
         )
@@ -689,7 +689,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZESParameterValidation::zesDeviceEccConfigurable(
+    ZESParameterValidation::zesDeviceEccConfigurablePrologue(
         zes_device_handle_t hDevice,                    ///< [in] Handle for the component.
         ze_bool_t* pConfigurable                        ///< [out] ECC can be enabled/disabled (true)/enabled/disabled (false).
         )
@@ -705,7 +705,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZESParameterValidation::zesDeviceGetEccState(
+    ZESParameterValidation::zesDeviceGetEccStatePrologue(
         zes_device_handle_t hDevice,                    ///< [in] Handle for the component.
         zes_device_ecc_properties_t* pState             ///< [out] ECC state, pending state, and pending action for state change.
         )
@@ -721,7 +721,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZESParameterValidation::zesDeviceSetEccState(
+    ZESParameterValidation::zesDeviceSetEccStatePrologue(
         zes_device_handle_t hDevice,                    ///< [in] Handle for the component.
         const zes_device_ecc_desc_t* newState,          ///< [in] Pointer to desired ECC state.
         zes_device_ecc_properties_t* pState             ///< [out] ECC state, pending state, and pending action for state change.
@@ -749,7 +749,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZESParameterValidation::zesDeviceEnumEngineGroups(
+    ZESParameterValidation::zesDeviceEnumEngineGroupsPrologue(
         zes_device_handle_t hDevice,                    ///< [in] Sysman handle of the device.
         uint32_t* pCount,                               ///< [in,out] pointer to the number of components of this type.
                                                         ///< if count is zero, then the driver shall update the value with the
@@ -775,7 +775,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZESParameterValidation::zesEngineGetProperties(
+    ZESParameterValidation::zesEngineGetPropertiesPrologue(
         zes_engine_handle_t hEngine,                    ///< [in] Handle for the component.
         zes_engine_properties_t* pProperties            ///< [in,out] The properties for the specified engine group.
         )
@@ -791,7 +791,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZESParameterValidation::zesEngineGetActivity(
+    ZESParameterValidation::zesEngineGetActivityPrologue(
         zes_engine_handle_t hEngine,                    ///< [in] Handle for the component.
         zes_engine_stats_t* pStats                      ///< [in,out] Will contain a snapshot of the engine group activity
                                                         ///< counters.
@@ -808,7 +808,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZESParameterValidation::zesDeviceEventRegister(
+    ZESParameterValidation::zesDeviceEventRegisterPrologue(
         zes_device_handle_t hDevice,                    ///< [in] The device handle.
         zes_event_type_flags_t events                   ///< [in] List of events to listen to.
         )
@@ -824,7 +824,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZESParameterValidation::zesDriverEventListen(
+    ZESParameterValidation::zesDriverEventListenPrologue(
         ze_driver_handle_t hDriver,                     ///< [in] handle of the driver instance
         uint32_t timeout,                               ///< [in] if non-zero, then indicates the maximum time (in milliseconds) to
                                                         ///< yield before returning ::ZE_RESULT_SUCCESS or ::ZE_RESULT_NOT_READY;
@@ -862,7 +862,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZESParameterValidation::zesDriverEventListenEx(
+    ZESParameterValidation::zesDriverEventListenExPrologue(
         ze_driver_handle_t hDriver,                     ///< [in] handle of the driver instance
         uint64_t timeout,                               ///< [in] if non-zero, then indicates the maximum time (in milliseconds) to
                                                         ///< yield before returning ::ZE_RESULT_SUCCESS or ::ZE_RESULT_NOT_READY;
@@ -900,7 +900,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZESParameterValidation::zesDeviceEnumFabricPorts(
+    ZESParameterValidation::zesDeviceEnumFabricPortsPrologue(
         zes_device_handle_t hDevice,                    ///< [in] Sysman handle of the device.
         uint32_t* pCount,                               ///< [in,out] pointer to the number of components of this type.
                                                         ///< if count is zero, then the driver shall update the value with the
@@ -926,7 +926,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZESParameterValidation::zesFabricPortGetProperties(
+    ZESParameterValidation::zesFabricPortGetPropertiesPrologue(
         zes_fabric_port_handle_t hPort,                 ///< [in] Handle for the component.
         zes_fabric_port_properties_t* pProperties       ///< [in,out] Will contain properties of the Fabric Port.
         )
@@ -942,7 +942,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZESParameterValidation::zesFabricPortGetLinkType(
+    ZESParameterValidation::zesFabricPortGetLinkTypePrologue(
         zes_fabric_port_handle_t hPort,                 ///< [in] Handle for the component.
         zes_fabric_link_type_t* pLinkType               ///< [in,out] Will contain details about the link attached to the Fabric
                                                         ///< port.
@@ -959,7 +959,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZESParameterValidation::zesFabricPortGetConfig(
+    ZESParameterValidation::zesFabricPortGetConfigPrologue(
         zes_fabric_port_handle_t hPort,                 ///< [in] Handle for the component.
         zes_fabric_port_config_t* pConfig               ///< [in,out] Will contain configuration of the Fabric Port.
         )
@@ -975,7 +975,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZESParameterValidation::zesFabricPortSetConfig(
+    ZESParameterValidation::zesFabricPortSetConfigPrologue(
         zes_fabric_port_handle_t hPort,                 ///< [in] Handle for the component.
         const zes_fabric_port_config_t* pConfig         ///< [in] Contains new configuration of the Fabric Port.
         )
@@ -991,7 +991,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZESParameterValidation::zesFabricPortGetState(
+    ZESParameterValidation::zesFabricPortGetStatePrologue(
         zes_fabric_port_handle_t hPort,                 ///< [in] Handle for the component.
         zes_fabric_port_state_t* pState                 ///< [in,out] Will contain the current state of the Fabric Port
         )
@@ -1007,7 +1007,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZESParameterValidation::zesFabricPortGetThroughput(
+    ZESParameterValidation::zesFabricPortGetThroughputPrologue(
         zes_fabric_port_handle_t hPort,                 ///< [in] Handle for the component.
         zes_fabric_port_throughput_t* pThroughput       ///< [in,out] Will contain the Fabric port throughput counters.
         )
@@ -1023,7 +1023,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZESParameterValidation::zesFabricPortGetFabricErrorCounters(
+    ZESParameterValidation::zesFabricPortGetFabricErrorCountersPrologue(
         zes_fabric_port_handle_t hPort,                 ///< [in] Handle for the component.
         zes_fabric_port_error_counters_t* pErrors       ///< [in,out] Will contain the Fabric port Error counters.
         )
@@ -1039,7 +1039,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZESParameterValidation::zesFabricPortGetMultiPortThroughput(
+    ZESParameterValidation::zesFabricPortGetMultiPortThroughputPrologue(
         zes_device_handle_t hDevice,                    ///< [in] Sysman handle of the device.
         uint32_t numPorts,                              ///< [in] Number of ports enumerated in function ::zesDeviceEnumFabricPorts
         zes_fabric_port_handle_t* phPort,               ///< [in][range(0, numPorts)] array of fabric port handles provided by user
@@ -1062,7 +1062,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZESParameterValidation::zesDeviceEnumFans(
+    ZESParameterValidation::zesDeviceEnumFansPrologue(
         zes_device_handle_t hDevice,                    ///< [in] Sysman handle of the device.
         uint32_t* pCount,                               ///< [in,out] pointer to the number of components of this type.
                                                         ///< if count is zero, then the driver shall update the value with the
@@ -1088,7 +1088,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZESParameterValidation::zesFanGetProperties(
+    ZESParameterValidation::zesFanGetPropertiesPrologue(
         zes_fan_handle_t hFan,                          ///< [in] Handle for the component.
         zes_fan_properties_t* pProperties               ///< [in,out] Will contain the properties of the fan.
         )
@@ -1104,7 +1104,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZESParameterValidation::zesFanGetConfig(
+    ZESParameterValidation::zesFanGetConfigPrologue(
         zes_fan_handle_t hFan,                          ///< [in] Handle for the component.
         zes_fan_config_t* pConfig                       ///< [in,out] Will contain the current configuration of the fan.
         )
@@ -1120,7 +1120,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZESParameterValidation::zesFanSetDefaultMode(
+    ZESParameterValidation::zesFanSetDefaultModePrologue(
         zes_fan_handle_t hFan                           ///< [in] Handle for the component.
         )
     {
@@ -1132,7 +1132,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZESParameterValidation::zesFanSetFixedSpeedMode(
+    ZESParameterValidation::zesFanSetFixedSpeedModePrologue(
         zes_fan_handle_t hFan,                          ///< [in] Handle for the component.
         const zes_fan_speed_t* speed                    ///< [in] The fixed fan speed setting
         )
@@ -1148,7 +1148,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZESParameterValidation::zesFanSetSpeedTableMode(
+    ZESParameterValidation::zesFanSetSpeedTableModePrologue(
         zes_fan_handle_t hFan,                          ///< [in] Handle for the component.
         const zes_fan_speed_table_t* speedTable         ///< [in] A table containing temperature/speed pairs.
         )
@@ -1164,7 +1164,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZESParameterValidation::zesFanGetState(
+    ZESParameterValidation::zesFanGetStatePrologue(
         zes_fan_handle_t hFan,                          ///< [in] Handle for the component.
         zes_fan_speed_units_t units,                    ///< [in] The units in which the fan speed should be returned.
         int32_t* pSpeed                                 ///< [in,out] Will contain the current speed of the fan in the units
@@ -1186,7 +1186,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZESParameterValidation::zesDeviceEnumFirmwares(
+    ZESParameterValidation::zesDeviceEnumFirmwaresPrologue(
         zes_device_handle_t hDevice,                    ///< [in] Sysman handle of the device.
         uint32_t* pCount,                               ///< [in,out] pointer to the number of components of this type.
                                                         ///< if count is zero, then the driver shall update the value with the
@@ -1212,7 +1212,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZESParameterValidation::zesFirmwareGetProperties(
+    ZESParameterValidation::zesFirmwareGetPropertiesPrologue(
         zes_firmware_handle_t hFirmware,                ///< [in] Handle for the component.
         zes_firmware_properties_t* pProperties          ///< [in,out] Pointer to an array that will hold the properties of the
                                                         ///< firmware
@@ -1229,7 +1229,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZESParameterValidation::zesFirmwareFlash(
+    ZESParameterValidation::zesFirmwareFlashPrologue(
         zes_firmware_handle_t hFirmware,                ///< [in] Handle for the component.
         void* pImage,                                   ///< [in] Image of the new firmware to flash.
         uint32_t size                                   ///< [in] Size of the flash image.
@@ -1246,7 +1246,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZESParameterValidation::zesFirmwareGetFlashProgress(
+    ZESParameterValidation::zesFirmwareGetFlashProgressPrologue(
         zes_firmware_handle_t hFirmware,                ///< [in] Handle for the component.
         uint32_t* pCompletionPercent                    ///< [in,out] Pointer to the Completion Percentage of Firmware Update
         )
@@ -1262,7 +1262,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZESParameterValidation::zesFirmwareGetConsoleLogs(
+    ZESParameterValidation::zesFirmwareGetConsoleLogsPrologue(
         zes_firmware_handle_t hFirmware,                ///< [in] Handle for the component.
         size_t* pSize,                                  ///< [in,out] size of firmware log
         char* pFirmwareLog                              ///< [in,out][optional] pointer to null-terminated string of the log.
@@ -1279,7 +1279,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZESParameterValidation::zesDeviceEnumFrequencyDomains(
+    ZESParameterValidation::zesDeviceEnumFrequencyDomainsPrologue(
         zes_device_handle_t hDevice,                    ///< [in] Sysman handle of the device.
         uint32_t* pCount,                               ///< [in,out] pointer to the number of components of this type.
                                                         ///< if count is zero, then the driver shall update the value with the
@@ -1305,7 +1305,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZESParameterValidation::zesFrequencyGetProperties(
+    ZESParameterValidation::zesFrequencyGetPropertiesPrologue(
         zes_freq_handle_t hFrequency,                   ///< [in] Handle for the component.
         zes_freq_properties_t* pProperties              ///< [in,out] The frequency properties for the specified domain.
         )
@@ -1321,7 +1321,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZESParameterValidation::zesFrequencyGetAvailableClocks(
+    ZESParameterValidation::zesFrequencyGetAvailableClocksPrologue(
         zes_freq_handle_t hFrequency,                   ///< [in] Sysman handle of the device.
         uint32_t* pCount,                               ///< [in,out] pointer to the number of frequencies.
                                                         ///< if count is zero, then the driver shall update the value with the
@@ -1345,7 +1345,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZESParameterValidation::zesFrequencyGetRange(
+    ZESParameterValidation::zesFrequencyGetRangePrologue(
         zes_freq_handle_t hFrequency,                   ///< [in] Handle for the component.
         zes_freq_range_t* pLimits                       ///< [in,out] The range between which the hardware can operate for the
                                                         ///< specified domain.
@@ -1362,7 +1362,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZESParameterValidation::zesFrequencySetRange(
+    ZESParameterValidation::zesFrequencySetRangePrologue(
         zes_freq_handle_t hFrequency,                   ///< [in] Handle for the component.
         const zes_freq_range_t* pLimits                 ///< [in] The limits between which the hardware can operate for the
                                                         ///< specified domain.
@@ -1379,7 +1379,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZESParameterValidation::zesFrequencyGetState(
+    ZESParameterValidation::zesFrequencyGetStatePrologue(
         zes_freq_handle_t hFrequency,                   ///< [in] Handle for the component.
         zes_freq_state_t* pState                        ///< [in,out] Frequency state for the specified domain.
         )
@@ -1395,7 +1395,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZESParameterValidation::zesFrequencyGetThrottleTime(
+    ZESParameterValidation::zesFrequencyGetThrottleTimePrologue(
         zes_freq_handle_t hFrequency,                   ///< [in] Handle for the component.
         zes_freq_throttle_time_t* pThrottleTime         ///< [in,out] Will contain a snapshot of the throttle time counters for the
                                                         ///< specified domain.
@@ -1412,7 +1412,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZESParameterValidation::zesFrequencyOcGetCapabilities(
+    ZESParameterValidation::zesFrequencyOcGetCapabilitiesPrologue(
         zes_freq_handle_t hFrequency,                   ///< [in] Handle for the component.
         zes_oc_capabilities_t* pOcCapabilities          ///< [in,out] Pointer to the capabilities structure.
         )
@@ -1428,7 +1428,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZESParameterValidation::zesFrequencyOcGetFrequencyTarget(
+    ZESParameterValidation::zesFrequencyOcGetFrequencyTargetPrologue(
         zes_freq_handle_t hFrequency,                   ///< [in] Handle for the component.
         double* pCurrentOcFrequency                     ///< [out] Overclocking Frequency in MHz, if extended moded is supported,
                                                         ///< will returned in 1 Mhz granularity, else, in multiples of 50 Mhz. This
@@ -1447,7 +1447,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZESParameterValidation::zesFrequencyOcSetFrequencyTarget(
+    ZESParameterValidation::zesFrequencyOcSetFrequencyTargetPrologue(
         zes_freq_handle_t hFrequency,                   ///< [in] Handle for the component.
         double CurrentOcFrequency                       ///< [in] Overclocking Frequency in MHz, if extended moded is supported, it
                                                         ///< could be set in 1 Mhz granularity, else, in multiples of 50 Mhz. This
@@ -1463,7 +1463,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZESParameterValidation::zesFrequencyOcGetVoltageTarget(
+    ZESParameterValidation::zesFrequencyOcGetVoltageTargetPrologue(
         zes_freq_handle_t hFrequency,                   ///< [in] Handle for the component.
         double* pCurrentVoltageTarget,                  ///< [out] Overclock voltage in Volts. This cannot be greater than the
                                                         ///< `maxOcVoltage` member of ::zes_oc_capabilities_t.
@@ -1487,7 +1487,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZESParameterValidation::zesFrequencyOcSetVoltageTarget(
+    ZESParameterValidation::zesFrequencyOcSetVoltageTargetPrologue(
         zes_freq_handle_t hFrequency,                   ///< [in] Handle for the component.
         double CurrentVoltageTarget,                    ///< [in] Overclock voltage in Volts. This cannot be greater than the
                                                         ///< `maxOcVoltage` member of ::zes_oc_capabilities_t.
@@ -1505,7 +1505,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZESParameterValidation::zesFrequencyOcSetMode(
+    ZESParameterValidation::zesFrequencyOcSetModePrologue(
         zes_freq_handle_t hFrequency,                   ///< [in] Handle for the component.
         zes_oc_mode_t CurrentOcMode                     ///< [in] Current Overclocking Mode ::zes_oc_mode_t.
         )
@@ -1521,7 +1521,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZESParameterValidation::zesFrequencyOcGetMode(
+    ZESParameterValidation::zesFrequencyOcGetModePrologue(
         zes_freq_handle_t hFrequency,                   ///< [in] Handle for the component.
         zes_oc_mode_t* pCurrentOcMode                   ///< [out] Current Overclocking Mode ::zes_oc_mode_t.
         )
@@ -1537,7 +1537,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZESParameterValidation::zesFrequencyOcGetIccMax(
+    ZESParameterValidation::zesFrequencyOcGetIccMaxPrologue(
         zes_freq_handle_t hFrequency,                   ///< [in] Handle for the component.
         double* pOcIccMax                               ///< [in,out] Will contain the maximum current limit in Amperes on
                                                         ///< successful return.
@@ -1554,7 +1554,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZESParameterValidation::zesFrequencyOcSetIccMax(
+    ZESParameterValidation::zesFrequencyOcSetIccMaxPrologue(
         zes_freq_handle_t hFrequency,                   ///< [in] Handle for the component.
         double ocIccMax                                 ///< [in] The new maximum current limit in Amperes.
         )
@@ -1567,7 +1567,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZESParameterValidation::zesFrequencyOcGetTjMax(
+    ZESParameterValidation::zesFrequencyOcGetTjMaxPrologue(
         zes_freq_handle_t hFrequency,                   ///< [in] Handle for the component.
         double* pOcTjMax                                ///< [in,out] Will contain the maximum temperature limit in degrees Celsius
                                                         ///< on successful return.
@@ -1584,7 +1584,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZESParameterValidation::zesFrequencyOcSetTjMax(
+    ZESParameterValidation::zesFrequencyOcSetTjMaxPrologue(
         zes_freq_handle_t hFrequency,                   ///< [in] Handle for the component.
         double ocTjMax                                  ///< [in] The new maximum temperature limit in degrees Celsius.
         )
@@ -1597,7 +1597,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZESParameterValidation::zesDeviceEnumLeds(
+    ZESParameterValidation::zesDeviceEnumLedsPrologue(
         zes_device_handle_t hDevice,                    ///< [in] Sysman handle of the device.
         uint32_t* pCount,                               ///< [in,out] pointer to the number of components of this type.
                                                         ///< if count is zero, then the driver shall update the value with the
@@ -1623,7 +1623,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZESParameterValidation::zesLedGetProperties(
+    ZESParameterValidation::zesLedGetPropertiesPrologue(
         zes_led_handle_t hLed,                          ///< [in] Handle for the component.
         zes_led_properties_t* pProperties               ///< [in,out] Will contain the properties of the LED.
         )
@@ -1639,7 +1639,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZESParameterValidation::zesLedGetState(
+    ZESParameterValidation::zesLedGetStatePrologue(
         zes_led_handle_t hLed,                          ///< [in] Handle for the component.
         zes_led_state_t* pState                         ///< [in,out] Will contain the current state of the LED.
         )
@@ -1655,7 +1655,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZESParameterValidation::zesLedSetState(
+    ZESParameterValidation::zesLedSetStatePrologue(
         zes_led_handle_t hLed,                          ///< [in] Handle for the component.
         ze_bool_t enable                                ///< [in] Set to TRUE to turn the LED on, FALSE to turn off.
         )
@@ -1668,7 +1668,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZESParameterValidation::zesLedSetColor(
+    ZESParameterValidation::zesLedSetColorPrologue(
         zes_led_handle_t hLed,                          ///< [in] Handle for the component.
         const zes_led_color_t* pColor                   ///< [in] New color of the LED.
         )
@@ -1684,7 +1684,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZESParameterValidation::zesDeviceEnumMemoryModules(
+    ZESParameterValidation::zesDeviceEnumMemoryModulesPrologue(
         zes_device_handle_t hDevice,                    ///< [in] Sysman handle of the device.
         uint32_t* pCount,                               ///< [in,out] pointer to the number of components of this type.
                                                         ///< if count is zero, then the driver shall update the value with the
@@ -1710,7 +1710,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZESParameterValidation::zesMemoryGetProperties(
+    ZESParameterValidation::zesMemoryGetPropertiesPrologue(
         zes_mem_handle_t hMemory,                       ///< [in] Handle for the component.
         zes_mem_properties_t* pProperties               ///< [in,out] Will contain memory properties.
         )
@@ -1726,7 +1726,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZESParameterValidation::zesMemoryGetState(
+    ZESParameterValidation::zesMemoryGetStatePrologue(
         zes_mem_handle_t hMemory,                       ///< [in] Handle for the component.
         zes_mem_state_t* pState                         ///< [in,out] Will contain the current health and allocated memory.
         )
@@ -1742,7 +1742,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZESParameterValidation::zesMemoryGetBandwidth(
+    ZESParameterValidation::zesMemoryGetBandwidthPrologue(
         zes_mem_handle_t hMemory,                       ///< [in] Handle for the component.
         zes_mem_bandwidth_t* pBandwidth                 ///< [in,out] Will contain the total number of bytes read from and written
                                                         ///< to memory, as well as the current maximum bandwidth.
@@ -1759,7 +1759,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZESParameterValidation::zesDeviceEnumPerformanceFactorDomains(
+    ZESParameterValidation::zesDeviceEnumPerformanceFactorDomainsPrologue(
         zes_device_handle_t hDevice,                    ///< [in] Sysman handle of the device.
         uint32_t* pCount,                               ///< [in,out] pointer to the number of components of this type.
                                                         ///< if count is zero, then the driver shall update the value with the
@@ -1785,7 +1785,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZESParameterValidation::zesPerformanceFactorGetProperties(
+    ZESParameterValidation::zesPerformanceFactorGetPropertiesPrologue(
         zes_perf_handle_t hPerf,                        ///< [in] Handle for the Performance Factor domain.
         zes_perf_properties_t* pProperties              ///< [in,out] Will contain information about the specified Performance
                                                         ///< Factor domain.
@@ -1802,7 +1802,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZESParameterValidation::zesPerformanceFactorGetConfig(
+    ZESParameterValidation::zesPerformanceFactorGetConfigPrologue(
         zes_perf_handle_t hPerf,                        ///< [in] Handle for the Performance Factor domain.
         double* pFactor                                 ///< [in,out] Will contain the actual Performance Factor being used by the
                                                         ///< hardware (may not be the same as the requested Performance Factor).
@@ -1819,7 +1819,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZESParameterValidation::zesPerformanceFactorSetConfig(
+    ZESParameterValidation::zesPerformanceFactorSetConfigPrologue(
         zes_perf_handle_t hPerf,                        ///< [in] Handle for the Performance Factor domain.
         double factor                                   ///< [in] The new Performance Factor.
         )
@@ -1832,7 +1832,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZESParameterValidation::zesDeviceEnumPowerDomains(
+    ZESParameterValidation::zesDeviceEnumPowerDomainsPrologue(
         zes_device_handle_t hDevice,                    ///< [in] Sysman handle of the device.
         uint32_t* pCount,                               ///< [in,out] pointer to the number of components of this type.
                                                         ///< if count is zero, then the driver shall update the value with the
@@ -1858,7 +1858,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZESParameterValidation::zesDeviceGetCardPowerDomain(
+    ZESParameterValidation::zesDeviceGetCardPowerDomainPrologue(
         zes_device_handle_t hDevice,                    ///< [in] Sysman handle of the device.
         zes_pwr_handle_t* phPower                       ///< [in,out] power domain handle for the entire PCIe card.
         )
@@ -1874,7 +1874,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZESParameterValidation::zesPowerGetProperties(
+    ZESParameterValidation::zesPowerGetPropertiesPrologue(
         zes_pwr_handle_t hPower,                        ///< [in] Handle for the component.
         zes_power_properties_t* pProperties             ///< [in,out] Structure that will contain property data.
         )
@@ -1890,7 +1890,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZESParameterValidation::zesPowerGetEnergyCounter(
+    ZESParameterValidation::zesPowerGetEnergyCounterPrologue(
         zes_pwr_handle_t hPower,                        ///< [in] Handle for the component.
         zes_power_energy_counter_t* pEnergy             ///< [in,out] Will contain the latest snapshot of the energy counter and
                                                         ///< timestamp when the last counter value was measured.
@@ -1907,7 +1907,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZESParameterValidation::zesPowerGetLimits(
+    ZESParameterValidation::zesPowerGetLimitsPrologue(
         zes_pwr_handle_t hPower,                        ///< [in] Handle for the component.
         zes_power_sustained_limit_t* pSustained,        ///< [in,out][optional] The sustained power limit. If this is null, the
                                                         ///< current sustained power limits will not be returned.
@@ -1925,7 +1925,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZESParameterValidation::zesPowerSetLimits(
+    ZESParameterValidation::zesPowerSetLimitsPrologue(
         zes_pwr_handle_t hPower,                        ///< [in] Handle for the component.
         const zes_power_sustained_limit_t* pSustained,  ///< [in][optional] The sustained power limit. If this is null, no changes
                                                         ///< will be made to the sustained power limits.
@@ -1943,7 +1943,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZESParameterValidation::zesPowerGetEnergyThreshold(
+    ZESParameterValidation::zesPowerGetEnergyThresholdPrologue(
         zes_pwr_handle_t hPower,                        ///< [in] Handle for the component.
         zes_energy_threshold_t* pThreshold              ///< [in,out] Returns information about the energy threshold setting -
                                                         ///< enabled/energy threshold/process ID.
@@ -1960,7 +1960,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZESParameterValidation::zesPowerSetEnergyThreshold(
+    ZESParameterValidation::zesPowerSetEnergyThresholdPrologue(
         zes_pwr_handle_t hPower,                        ///< [in] Handle for the component.
         double threshold                                ///< [in] The energy threshold to be set in joules.
         )
@@ -1973,7 +1973,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZESParameterValidation::zesDeviceEnumPsus(
+    ZESParameterValidation::zesDeviceEnumPsusPrologue(
         zes_device_handle_t hDevice,                    ///< [in] Sysman handle of the device.
         uint32_t* pCount,                               ///< [in,out] pointer to the number of components of this type.
                                                         ///< if count is zero, then the driver shall update the value with the
@@ -1999,7 +1999,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZESParameterValidation::zesPsuGetProperties(
+    ZESParameterValidation::zesPsuGetPropertiesPrologue(
         zes_psu_handle_t hPsu,                          ///< [in] Handle for the component.
         zes_psu_properties_t* pProperties               ///< [in,out] Will contain the properties of the power supply.
         )
@@ -2015,7 +2015,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZESParameterValidation::zesPsuGetState(
+    ZESParameterValidation::zesPsuGetStatePrologue(
         zes_psu_handle_t hPsu,                          ///< [in] Handle for the component.
         zes_psu_state_t* pState                         ///< [in,out] Will contain the current state of the power supply.
         )
@@ -2031,7 +2031,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZESParameterValidation::zesDeviceEnumRasErrorSets(
+    ZESParameterValidation::zesDeviceEnumRasErrorSetsPrologue(
         zes_device_handle_t hDevice,                    ///< [in] Sysman handle of the device.
         uint32_t* pCount,                               ///< [in,out] pointer to the number of components of this type.
                                                         ///< if count is zero, then the driver shall update the value with the
@@ -2057,7 +2057,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZESParameterValidation::zesRasGetProperties(
+    ZESParameterValidation::zesRasGetPropertiesPrologue(
         zes_ras_handle_t hRas,                          ///< [in] Handle for the component.
         zes_ras_properties_t* pProperties               ///< [in,out] Structure describing RAS properties
         )
@@ -2073,7 +2073,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZESParameterValidation::zesRasGetConfig(
+    ZESParameterValidation::zesRasGetConfigPrologue(
         zes_ras_handle_t hRas,                          ///< [in] Handle for the component.
         zes_ras_config_t* pConfig                       ///< [in,out] Will be populed with the current RAS configuration -
                                                         ///< thresholds used to trigger events
@@ -2090,7 +2090,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZESParameterValidation::zesRasSetConfig(
+    ZESParameterValidation::zesRasSetConfigPrologue(
         zes_ras_handle_t hRas,                          ///< [in] Handle for the component.
         const zes_ras_config_t* pConfig                 ///< [in] Change the RAS configuration - thresholds used to trigger events
         )
@@ -2106,7 +2106,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZESParameterValidation::zesRasGetState(
+    ZESParameterValidation::zesRasGetStatePrologue(
         zes_ras_handle_t hRas,                          ///< [in] Handle for the component.
         ze_bool_t clear,                                ///< [in] Set to 1 to clear the counters of this type
         zes_ras_state_t* pState                         ///< [in,out] Breakdown of where errors have occurred
@@ -2123,7 +2123,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZESParameterValidation::zesDeviceEnumSchedulers(
+    ZESParameterValidation::zesDeviceEnumSchedulersPrologue(
         zes_device_handle_t hDevice,                    ///< [in] Sysman handle of the device.
         uint32_t* pCount,                               ///< [in,out] pointer to the number of components of this type.
                                                         ///< if count is zero, then the driver shall update the value with the
@@ -2149,7 +2149,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZESParameterValidation::zesSchedulerGetProperties(
+    ZESParameterValidation::zesSchedulerGetPropertiesPrologue(
         zes_sched_handle_t hScheduler,                  ///< [in] Handle for the component.
         zes_sched_properties_t* pProperties             ///< [in,out] Structure that will contain property data.
         )
@@ -2165,7 +2165,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZESParameterValidation::zesSchedulerGetCurrentMode(
+    ZESParameterValidation::zesSchedulerGetCurrentModePrologue(
         zes_sched_handle_t hScheduler,                  ///< [in] Sysman handle for the component.
         zes_sched_mode_t* pMode                         ///< [in,out] Will contain the current scheduler mode.
         )
@@ -2181,7 +2181,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZESParameterValidation::zesSchedulerGetTimeoutModeProperties(
+    ZESParameterValidation::zesSchedulerGetTimeoutModePropertiesPrologue(
         zes_sched_handle_t hScheduler,                  ///< [in] Sysman handle for the component.
         ze_bool_t getDefaults,                          ///< [in] If TRUE, the driver will return the system default properties for
                                                         ///< this mode, otherwise it will return the current properties.
@@ -2199,7 +2199,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZESParameterValidation::zesSchedulerGetTimesliceModeProperties(
+    ZESParameterValidation::zesSchedulerGetTimesliceModePropertiesPrologue(
         zes_sched_handle_t hScheduler,                  ///< [in] Sysman handle for the component.
         ze_bool_t getDefaults,                          ///< [in] If TRUE, the driver will return the system default properties for
                                                         ///< this mode, otherwise it will return the current properties.
@@ -2217,7 +2217,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZESParameterValidation::zesSchedulerSetTimeoutMode(
+    ZESParameterValidation::zesSchedulerSetTimeoutModePrologue(
         zes_sched_handle_t hScheduler,                  ///< [in] Sysman handle for the component.
         zes_sched_timeout_properties_t* pProperties,    ///< [in] The properties to use when configurating this mode.
         ze_bool_t* pNeedReload                          ///< [in,out] Will be set to TRUE if a device driver reload is needed to
@@ -2238,7 +2238,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZESParameterValidation::zesSchedulerSetTimesliceMode(
+    ZESParameterValidation::zesSchedulerSetTimesliceModePrologue(
         zes_sched_handle_t hScheduler,                  ///< [in] Sysman handle for the component.
         zes_sched_timeslice_properties_t* pProperties,  ///< [in] The properties to use when configurating this mode.
         ze_bool_t* pNeedReload                          ///< [in,out] Will be set to TRUE if a device driver reload is needed to
@@ -2259,7 +2259,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZESParameterValidation::zesSchedulerSetExclusiveMode(
+    ZESParameterValidation::zesSchedulerSetExclusiveModePrologue(
         zes_sched_handle_t hScheduler,                  ///< [in] Sysman handle for the component.
         ze_bool_t* pNeedReload                          ///< [in,out] Will be set to TRUE if a device driver reload is needed to
                                                         ///< apply the new scheduler mode.
@@ -2276,7 +2276,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZESParameterValidation::zesSchedulerSetComputeUnitDebugMode(
+    ZESParameterValidation::zesSchedulerSetComputeUnitDebugModePrologue(
         zes_sched_handle_t hScheduler,                  ///< [in] Sysman handle for the component.
         ze_bool_t* pNeedReload                          ///< [in,out] Will be set to TRUE if a device driver reload is needed to
                                                         ///< apply the new scheduler mode.
@@ -2293,7 +2293,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZESParameterValidation::zesDeviceEnumStandbyDomains(
+    ZESParameterValidation::zesDeviceEnumStandbyDomainsPrologue(
         zes_device_handle_t hDevice,                    ///< [in] Sysman handle of the device.
         uint32_t* pCount,                               ///< [in,out] pointer to the number of components of this type.
                                                         ///< if count is zero, then the driver shall update the value with the
@@ -2319,7 +2319,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZESParameterValidation::zesStandbyGetProperties(
+    ZESParameterValidation::zesStandbyGetPropertiesPrologue(
         zes_standby_handle_t hStandby,                  ///< [in] Handle for the component.
         zes_standby_properties_t* pProperties           ///< [in,out] Will contain the standby hardware properties.
         )
@@ -2335,7 +2335,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZESParameterValidation::zesStandbyGetMode(
+    ZESParameterValidation::zesStandbyGetModePrologue(
         zes_standby_handle_t hStandby,                  ///< [in] Handle for the component.
         zes_standby_promo_mode_t* pMode                 ///< [in,out] Will contain the current standby mode.
         )
@@ -2351,7 +2351,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZESParameterValidation::zesStandbySetMode(
+    ZESParameterValidation::zesStandbySetModePrologue(
         zes_standby_handle_t hStandby,                  ///< [in] Handle for the component.
         zes_standby_promo_mode_t mode                   ///< [in] New standby mode.
         )
@@ -2367,7 +2367,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZESParameterValidation::zesDeviceEnumTemperatureSensors(
+    ZESParameterValidation::zesDeviceEnumTemperatureSensorsPrologue(
         zes_device_handle_t hDevice,                    ///< [in] Sysman handle of the device.
         uint32_t* pCount,                               ///< [in,out] pointer to the number of components of this type.
                                                         ///< if count is zero, then the driver shall update the value with the
@@ -2393,7 +2393,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZESParameterValidation::zesTemperatureGetProperties(
+    ZESParameterValidation::zesTemperatureGetPropertiesPrologue(
         zes_temp_handle_t hTemperature,                 ///< [in] Handle for the component.
         zes_temp_properties_t* pProperties              ///< [in,out] Will contain the temperature sensor properties.
         )
@@ -2409,7 +2409,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZESParameterValidation::zesTemperatureGetConfig(
+    ZESParameterValidation::zesTemperatureGetConfigPrologue(
         zes_temp_handle_t hTemperature,                 ///< [in] Handle for the component.
         zes_temp_config_t* pConfig                      ///< [in,out] Returns current configuration.
         )
@@ -2425,7 +2425,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZESParameterValidation::zesTemperatureSetConfig(
+    ZESParameterValidation::zesTemperatureSetConfigPrologue(
         zes_temp_handle_t hTemperature,                 ///< [in] Handle for the component.
         const zes_temp_config_t* pConfig                ///< [in] New configuration.
         )
@@ -2441,7 +2441,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZESParameterValidation::zesTemperatureGetState(
+    ZESParameterValidation::zesTemperatureGetStatePrologue(
         zes_temp_handle_t hTemperature,                 ///< [in] Handle for the component.
         double* pTemperature                            ///< [in,out] Will contain the temperature read from the specified sensor
                                                         ///< in degrees Celsius.
@@ -2458,7 +2458,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZESParameterValidation::zesPowerGetLimitsExt(
+    ZESParameterValidation::zesPowerGetLimitsExtPrologue(
         zes_pwr_handle_t hPower,                        ///< [in] Power domain handle instance.
         uint32_t* pCount,                               ///< [in,out] Pointer to the number of power limit descriptors. If count is
                                                         ///< zero, then the driver shall update the value with the total number of
@@ -2482,7 +2482,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZESParameterValidation::zesPowerSetLimitsExt(
+    ZESParameterValidation::zesPowerSetLimitsExtPrologue(
         zes_pwr_handle_t hPower,                        ///< [in] Handle for the component.
         uint32_t* pCount,                               ///< [in] Pointer to the number of power limit descriptors.
         zes_power_limit_ext_desc_t* pSustained          ///< [in][optional][range(0, *pCount)] Array of power limit descriptors.
@@ -2499,7 +2499,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZESParameterValidation::zesEngineGetActivityExt(
+    ZESParameterValidation::zesEngineGetActivityExtPrologue(
         zes_engine_handle_t hEngine,                    ///< [in] Handle for the component.
         uint32_t* pCount,                               ///< [in,out] Pointer to the number of VF engine stats descriptors.
                                                         ///<  - if count is zero, the driver shall update the value with the total
@@ -2528,7 +2528,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZESParameterValidation::zesRasGetStateExp(
+    ZESParameterValidation::zesRasGetStateExpPrologue(
         zes_ras_handle_t hRas,                          ///< [in] Handle for the component.
         uint32_t* pCount,                               ///< [in,out] pointer to the number of RAS state structures that can be retrieved.
                                                         ///< if count is zero, then the driver shall update the value with the
@@ -2552,7 +2552,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZESParameterValidation::zesRasClearStateExp(
+    ZESParameterValidation::zesRasClearStateExpPrologue(
         zes_ras_handle_t hRas,                          ///< [in] Handle for the component.
         zes_ras_error_category_exp_t category           ///< [in] category for which error counter is to be cleared.
         )
@@ -2568,7 +2568,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZESParameterValidation::zesFirmwareGetSecurityVersionExp(
+    ZESParameterValidation::zesFirmwareGetSecurityVersionExpPrologue(
         zes_firmware_handle_t hFirmware,                ///< [in] Handle for the component.
         char* pVersion                                  ///< [in,out] NULL terminated string value. The string "unknown" will be
                                                         ///< returned if this property cannot be determined.
@@ -2585,7 +2585,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZESParameterValidation::zesFirmwareSetSecurityVersionExp(
+    ZESParameterValidation::zesFirmwareSetSecurityVersionExpPrologue(
         zes_firmware_handle_t hFirmware                 ///< [in] Handle for the component.
         )
     {
@@ -2597,7 +2597,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZESParameterValidation::zesDeviceGetSubDevicePropertiesExp(
+    ZESParameterValidation::zesDeviceGetSubDevicePropertiesExpPrologue(
         zes_device_handle_t hDevice,                    ///< [in] Sysman handle of the device.
         uint32_t* pCount,                               ///< [in,out] pointer to the number of sub devices.
                                                         ///< if count is zero, then the driver shall update the value with the
@@ -2621,7 +2621,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZESParameterValidation::zesDriverGetDeviceByUuidExp(
+    ZESParameterValidation::zesDriverGetDeviceByUuidExpPrologue(
         zes_driver_handle_t hDriver,                    ///< [in] handle of the sysman driver instance
         zes_uuid_t uuid,                                ///< [in] universal unique identifier.
         zes_device_handle_t* phDevice,                  ///< [out] Sysman handle of the device.
@@ -2647,7 +2647,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZESParameterValidation::zesDeviceEnumActiveVFExp(
+    ZESParameterValidation::zesDeviceEnumActiveVFExpPrologue(
         zes_device_handle_t hDevice,                    ///< [in] Sysman handle of the device.
         uint32_t* pCount,                               ///< [in,out] pointer to the number of components of this type.
                                                         ///< if count is zero, then the driver shall update the value with the
@@ -2673,7 +2673,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZESParameterValidation::zesVFManagementGetVFPropertiesExp(
+    ZESParameterValidation::zesVFManagementGetVFPropertiesExpPrologue(
         zes_vf_handle_t hVFhandle,                      ///< [in] Sysman handle for the VF component.
         zes_vf_exp_properties_t* pProperties            ///< [in,out] Will contain VF properties.
         )
@@ -2689,7 +2689,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZESParameterValidation::zesVFManagementGetVFMemoryUtilizationExp(
+    ZESParameterValidation::zesVFManagementGetVFMemoryUtilizationExpPrologue(
         zes_vf_handle_t hVFhandle,                      ///< [in] Sysman handle for the component.
         uint32_t* pCount,                               ///< [in,out] Pointer to the number of VF memory stats descriptors.
                                                         ///<  - if count is zero, the driver shall update the value with the total
@@ -2717,7 +2717,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZESParameterValidation::zesVFManagementGetVFEngineUtilizationExp(
+    ZESParameterValidation::zesVFManagementGetVFEngineUtilizationExpPrologue(
         zes_vf_handle_t hVFhandle,                      ///< [in] Sysman handle for the component.
         uint32_t* pCount,                               ///< [in,out] Pointer to the number of VF engine stats descriptors.
                                                         ///<  - if count is zero, the driver shall update the value with the total
@@ -2745,7 +2745,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZESParameterValidation::zesVFManagementSetVFTelemetryModeExp(
+    ZESParameterValidation::zesVFManagementSetVFTelemetryModeExpPrologue(
         zes_vf_handle_t hVFhandle,                      ///< [in] Sysman handle for the component.
         zes_vf_info_util_exp_flags_t flags,             ///< [in] utilization flags to enable or disable. May be 0 or a valid
                                                         ///< combination of ::zes_vf_info_util_exp_flag_t.
@@ -2763,7 +2763,7 @@ namespace validation_layer
 
 
     ze_result_t
-    ZESParameterValidation::zesVFManagementSetVFTelemetrySamplingIntervalExp(
+    ZESParameterValidation::zesVFManagementSetVFTelemetrySamplingIntervalExpPrologue(
         zes_vf_handle_t hVFhandle,                      ///< [in] Sysman handle for the component.
         zes_vf_info_util_exp_flags_t flag,              ///< [in] utilization flags to set sampling interval. May be 0 or a valid
                                                         ///< combination of ::zes_vf_info_util_exp_flag_t.
