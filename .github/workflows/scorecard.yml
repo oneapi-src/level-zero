@@ -8,6 +8,8 @@ on:
     - cron: '20 19 * * 3'
   push:
     branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
 
 permissions: read-all
 
@@ -42,6 +44,7 @@ jobs:
         name: SARIF file
         path: results.sarif
     - name: "Upload to code-scanning"
+      if: github.event_name != 'pull_request'
       uses: github/codeql-action/upload-sarif@v3
       with:
         sarif_file: results.sarif
