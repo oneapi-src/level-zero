@@ -1,0 +1,73 @@
+on:
+  pull_request:
+    branches: [master]
+    paths:
+    - .github/workflows/update-spec.yml
+  workflow_dispatch:
+    inputs:
+      repository:
+        description: Spec repository from which to generate code
+        type: string
+        default: oneapi-src/level-zero-spec
+      ref:
+        description: Ref to checkout from the spec repository
+        type: string
+        default: master
+      version:
+        description: Version of the spec to generate code for
+        type: string
+      branch:
+        description: Branch to (force) push generated code to
+        type: string
+        default: spec-develop
+
+concurrency: ${{ github.event_name == 'pull_request' && github.run_id || inputs.branch }}
+
+jobs:
+  update-headers:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/setup-python@v5
+      with:
+        python-version: '3.x'
+    - name: Install dependencies
+      run: pip install Mako==1.1.0 PyYAML==5.2
+    - uses: actions/checkout@v3
+      with:
+        clean: true
+        fetch-depth: 0
+        fetch-tags: true
+        token: ${{ secrets.TOKEN }}
+    - name: Checkout develop branch or create local version
+      if: ${{ github.event_name == 'workflow_dispatch' }}
+      run: git checkout ${{ inputs.branch }} || git checkout -b ${{ inputs.branch }}
+    - name: Reset develop branch to master
+      if: ${{ github.event_name == 'workflow_dispatch' }}
+      run: git reset --hard origin/master
+    - name: Checkout spec repository
+      uses: actions/checkout@v3
+      with:
+        repository: ${{ github.event_name == 'pull_request' && 'oneapi-src/level-zero-spec' || inputs.repository }}
+        clean: true
+        fetch-depth: 0
+        path: spec
+        ref: ${{ github.event_name == 'pull_request' && 'master' || inputs.ref }}
+    - name: Apply latest spec commit to develop branch
+      run: | #bash
+        export LANG="C.UTF-8"
+        pushd spec/scripts
+        python3 ./run.py --debug '--!html' '--!rst' '--!build' --ver ${{ github.event_name == 'pull_request' && '1.10' || inputs.version }}
+        popd
+        ./scripts/json2src.py < spec/scripts/input.json --ver ${{ github.event_name == 'pull_request' && '1.10' || inputs.version }} .
+        if (($(git diff | tee >(wc -l) >&2) == 0)); then
+            echo "::warning::No changes were made to files"
+        else
+            git config user.email "sys-lzdev@intel.com"
+            git config user.name "sys-lzdev"
+            spec_ver=$(sed -n 's/^.*version v.*-r\([0-9]*\.[0-9]*\.[0-9]*\)/\1/p' include/ze_api.h)
+            git add -u
+            git commit -m "Update to spec ${spec_ver}"
+        fi
+    - name: Push changes to develop branch
+      if: ${{ github.event_name == 'workflow_dispatch' }}
+      run: git push origin ${{ inputs.branch }} -f
