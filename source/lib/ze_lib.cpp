@@ -74,6 +74,16 @@ namespace ze_lib
             ze_lib::context->zesDdiTable.exchange(&ze_lib::context->initialzesDdiTable);
         }
 
+
+        // Check which drivers and layers are functional by checking which can be loaded.
+        // This check needs to be done before all inits to avoid overwriting the layer ddi table pointers.
+        if( ZE_RESULT_SUCCESS == result && !sysmanOnly)
+        {
+            //Check which drivers support the ze_driver_flag_t specified
+            //No need to check if only initializing sysman
+            result = zelLoaderDriverCheck(flags);
+        }
+
         if( ZE_RESULT_SUCCESS == result )
         {
             result = zeInit();
@@ -97,13 +107,6 @@ namespace ze_lib
         if( ZE_RESULT_SUCCESS == result )
         {
             result = zelLoaderTracingLayerInit(this->pTracingZeDdiTable, this->pTracingZetDdiTable, this->pTracingZesDdiTable);
-        }
-
-        if( ZE_RESULT_SUCCESS == result && !sysmanOnly)
-        {
-            //Check which drivers support the ze_driver_flag_t specified
-            //No need to check if only initializing sysman  
-            result = zelLoaderDriverCheck(flags);
         }
 
         if( ZE_RESULT_SUCCESS == result )
