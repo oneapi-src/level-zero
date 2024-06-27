@@ -44,12 +44,17 @@ This will enforce the Loader to print all errors whether fatal or non-fatal to s
 The Level Zero Loader uses spdlog logging and can be controlled via environment variables:
 
 `ZEL_ENABLE_LOADER_LOGGING=1`
-`ZEL_LOADER_LOG_FILE=/path/to/logfile`
+
+[DEPRECATED] `ZEL_LOADER_LOG_FILE=/path/to/logfile`
+
+`ZEL_LOADER_LOG_DIR='/directory/path'`
+
 `ZEL_LOADER_LOGGING_LEVEL=debug`
 
 Valid logging levels are trace, debug, info, warn, error, critical, off.
 Logging is disabled by default but when enabled the default level is 'warn'.
-The default log file is 'ze_loader.log' in the current directory
+The default log file is 'ze_loader.log' in '.oneapi_logs' in the current
+user's home directory.
 
 This feature is in early development and is preview only.
 
