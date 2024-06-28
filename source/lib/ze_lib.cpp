@@ -74,39 +74,47 @@ namespace ze_lib
             ze_lib::context->zesDdiTable.exchange(&ze_lib::context->initialzesDdiTable);
         }
 
+        // Always call the inits for all the ddi tables before checking which drivers are usable to enable Instrumentation correctly.
 
-        // Check which drivers and layers are functional by checking which can be loaded.
-        // This check needs to be done before all inits to avoid overwriting the layer ddi table pointers.
-        if( ZE_RESULT_SUCCESS == result && !sysmanOnly)
-        {
-            //Check which drivers support the ze_driver_flag_t specified
-            //No need to check if only initializing sysman
-            result = zelLoaderDriverCheck(flags);
-        }
-
+        // Init the ZE DDI Tables
         if( ZE_RESULT_SUCCESS == result )
         {
             result = zeInit();
         }
-
+        // Init the ZET DDI Tables
         if( ZE_RESULT_SUCCESS == result )
         {
             result = zetInit();
         }
-
+        // Init the ZES DDI Tables
         if( ZE_RESULT_SUCCESS == result )
         {
             result = zesInit();
         }
-
+        // Init the Tracing API DDI Tables
         if( ZE_RESULT_SUCCESS == result )
         {
             result = zelTracingInit();
         }
-
+        // Init the stored ddi tables for the tracing layer
         if( ZE_RESULT_SUCCESS == result )
         {
             result = zelLoaderTracingLayerInit(this->pTracingZeDdiTable, this->pTracingZetDdiTable, this->pTracingZesDdiTable);
+        }
+        // End DDI Table Inits
+
+        // Check which drivers and layers can be init on this system.
+        if( ZE_RESULT_SUCCESS == result && !sysmanOnly)
+        {
+            // Check which drivers support the ze_driver_flag_t specified
+            // No need to check if only initializing sysman
+            result = zelLoaderDriverCheck(flags);
+            // reInit the ze ddi tables after verifying the zeInit() with dummy tables.
+            // This ensures the tracing and validation layers are pointing to the correct function pointers after init.
+            if( ZE_RESULT_SUCCESS == result )
+            {
+                result = zeInit();
+            }
         }
 
         if( ZE_RESULT_SUCCESS == result )
