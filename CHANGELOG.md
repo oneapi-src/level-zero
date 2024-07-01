@@ -1,5 +1,15 @@
 # Level zero loader changelog
 
+## v1.17.17
+* Fix layer init with multiple drivers and ensure init for instrumentation support
+* Change loader log file location
+* Add update-spec.yml workflow
+* Define FMT_HEADER_ONLY for spdlog inclusion
+* spdlog: Use system library if requested
+* Create scorecard.yml
+* Support for Pluggable Validation Layer Checkers
+* Add NPU Driver to list of known names on linux
+* Correct casting in tracing layer sample code
 ## v1.17.6
 * Bundle spdlog headers as part of build vs library build
 ## v1.17.2
