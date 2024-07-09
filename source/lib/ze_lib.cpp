@@ -109,12 +109,6 @@ namespace ze_lib
             // Check which drivers support the ze_driver_flag_t specified
             // No need to check if only initializing sysman
             result = zelLoaderDriverCheck(flags);
-            // reInit the ze ddi tables after verifying the zeInit() with dummy tables.
-            // This ensures the tracing and validation layers are pointing to the correct function pointers after init.
-            if( ZE_RESULT_SUCCESS == result )
-            {
-                result = zeInit();
-            }
         }
 
         if( ZE_RESULT_SUCCESS == result )

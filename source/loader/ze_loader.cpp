@@ -200,46 +200,6 @@ namespace loader
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
 
-        if(nullptr != validationLayer) {
-            getTable = reinterpret_cast<ze_pfnGetGlobalProcAddrTable_t>(
-                GET_FUNCTION_PTR(validationLayer, "zeGetGlobalProcAddrTable") );
-            if(!getTable) {
-                if (debugTraceEnabled) {
-                    std::string errorMessage = "init driver " + driver.name + " failed, zeGetGlobalProcAddrTable function pointer null with validation layer. Returning ";
-                    debug_trace_message(errorMessage, loader::to_string(ZE_RESULT_ERROR_UNINITIALIZED));
-                }
-                return ZE_RESULT_ERROR_UNINITIALIZED;
-            }
-            getTableResult = getTable( version, &global);
-            if(getTableResult != ZE_RESULT_SUCCESS) {
-                if (debugTraceEnabled) {
-                    std::string errorMessage = "init driver " + driver.name + " failed, zeGetGlobalProcAddrTable() with validation layer failed with ";
-                    debug_trace_message(errorMessage, loader::to_string(ZE_RESULT_ERROR_UNINITIALIZED));
-                }
-                return ZE_RESULT_ERROR_UNINITIALIZED;
-            }
-        }
-
-        if(nullptr != tracingLayer) {
-            getTable = reinterpret_cast<ze_pfnGetGlobalProcAddrTable_t>(
-                GET_FUNCTION_PTR(tracingLayer, "zeGetGlobalProcAddrTable") );
-            if(!getTable) {
-                if (debugTraceEnabled) {
-                    std::string errorMessage = "init driver " + driver.name + " failed, zeGetGlobalProcAddrTable function pointer null with tracing layer. Returning ";
-                    debug_trace_message(errorMessage, loader::to_string(ZE_RESULT_ERROR_UNINITIALIZED));
-                }
-                return ZE_RESULT_ERROR_UNINITIALIZED;
-            }
-            getTableResult = getTable( version, &global);
-            if(getTableResult != ZE_RESULT_SUCCESS) {
-                if (debugTraceEnabled) {
-                    std::string errorMessage = "init driver " + driver.name + " failed, zeGetGlobalProcAddrTable() with tracing layer failed with ";
-                    debug_trace_message(errorMessage, loader::to_string(ZE_RESULT_ERROR_UNINITIALIZED));
-                }
-                return ZE_RESULT_ERROR_UNINITIALIZED;
-            }
-        }
-
         auto pfnInit = global.pfnInit;
         if(nullptr == pfnInit) {
             if (debugTraceEnabled) {
