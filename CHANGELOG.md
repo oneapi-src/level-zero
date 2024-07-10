@@ -1,5 +1,7 @@
 # Level zero loader changelog
 
+## v1.17.19
+* Fix DriverGet to handle failed drivers and avoid layer init during checks
 ## v1.17.17
 * Fix layer init with multiple drivers and ensure init for instrumentation support
 * Change loader log file location
