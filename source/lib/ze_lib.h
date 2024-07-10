@@ -39,16 +39,16 @@ namespace ze_lib
 
         ze_result_t Init(ze_init_flags_t flags, bool sysmanOnly);
 
-        ze_result_t zeInit();
+        ze_result_t zeDdiTableInit();
         std::atomic<ze_dditable_t *>  zeDdiTable = {nullptr};
 
-        ze_result_t zetInit();
+        ze_result_t zetDdiTableInit();
         std::atomic<zet_dditable_t *> zetDdiTable = {nullptr};
 
-        ze_result_t zesInit();
+        ze_result_t zesDdiTableInit();
         std::atomic<zes_dditable_t *> zesDdiTable = {nullptr};
 
-        ze_result_t zelTracingInit();
+        ze_result_t zelTracingDdiTableInit();
         zel_tracing_dditable_t  zelTracingDdiTable = {};
         std::atomic<ze_dditable_t *> pTracingZeDdiTable = {nullptr};
         std::atomic<zet_dditable_t *> pTracingZetDdiTable = {nullptr};

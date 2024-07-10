@@ -79,22 +79,22 @@ namespace ze_lib
         // Init the ZE DDI Tables
         if( ZE_RESULT_SUCCESS == result )
         {
-            result = zeInit();
+            result = zeDdiTableInit();
         }
         // Init the ZET DDI Tables
         if( ZE_RESULT_SUCCESS == result )
         {
-            result = zetInit();
+            result = zetDdiTableInit();
         }
         // Init the ZES DDI Tables
         if( ZE_RESULT_SUCCESS == result )
         {
-            result = zesInit();
+            result = zesDdiTableInit();
         }
         // Init the Tracing API DDI Tables
         if( ZE_RESULT_SUCCESS == result )
         {
-            result = zelTracingInit();
+            result = zelTracingDdiTableInit();
         }
         // Init the stored ddi tables for the tracing layer
         if( ZE_RESULT_SUCCESS == result )

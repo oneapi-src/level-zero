@@ -17,7 +17,7 @@ namespace ze_lib
     ///////////////////////////////////////////////////////////////////////////////
 
 #ifdef DYNAMIC_LOAD_LOADER
-    __zedlllocal ze_result_t context_t::zesInit()
+    __zedlllocal ze_result_t context_t::zesDdiTableInit()
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
 
@@ -192,7 +192,7 @@ namespace ze_lib
         return result;
     }
 #else
-    __zedlllocal ze_result_t context_t::zesInit()
+    __zedlllocal ze_result_t context_t::zesDdiTableInit()
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
 
