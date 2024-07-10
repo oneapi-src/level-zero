@@ -26,7 +26,7 @@ namespace ${x}_lib
     ///////////////////////////////////////////////////////////////////////////////
 
 #ifdef DYNAMIC_LOAD_LOADER
-    __zedlllocal ${x}_result_t context_t::${n}Init()
+    __zedlllocal ${x}_result_t context_t::${n}DdiTableInit()
     {
         ${x}_result_t result = ${X}_RESULT_SUCCESS;
 
@@ -42,7 +42,7 @@ namespace ${x}_lib
         return result;
     }
 #else
-    __zedlllocal ${x}_result_t context_t::${n}Init()
+    __zedlllocal ${x}_result_t context_t::${n}DdiTableInit()
     {
         ${x}_result_t result = ${X}_RESULT_SUCCESS;
 
