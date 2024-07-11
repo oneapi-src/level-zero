@@ -88,7 +88,13 @@ namespace loader
             uint32_t library_driver_handle_count = 0;
 
             result = drv.dditable.zes.Driver.pfnGet( &library_driver_handle_count, nullptr );
-            if( ZE_RESULT_SUCCESS != result ) break;
+            if( ZE_RESULT_SUCCESS != result ) {
+                // If Get Drivers fails with Uninitialized, then update the driver init status to prevent reporting this driver in the next get call.
+                if (ZE_RESULT_ERROR_UNINITIALIZED == result) {
+                    drv.initStatus = result;
+                }
+                continue;
+            }
 
             if( nullptr != phDrivers && *pCount !=0)
             {
@@ -115,8 +121,12 @@ namespace loader
             total_driver_handle_count += library_driver_handle_count;
         }
 
-        if( ZE_RESULT_SUCCESS == result )
+        // If the last driver get failed, but at least one driver succeeded, then return success with total count.
+        if( ZE_RESULT_SUCCESS == result || total_driver_handle_count > 0)
             *pCount = total_driver_handle_count;
+        if (total_driver_handle_count > 0) {
+            result = ZE_RESULT_SUCCESS;
+        }
 
         return result;
     }
