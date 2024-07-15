@@ -21,6 +21,8 @@ on:
         type: string
         default: spec-develop
 
+permissions: read-all
+
 concurrency: ${{ github.event_name == 'pull_request' && github.run_id || inputs.branch }}
 
 jobs:
