@@ -99,7 +99,7 @@ namespace ze_lib
         // Init the stored ddi tables for the tracing layer
         if( ZE_RESULT_SUCCESS == result )
         {
-            result = zelLoaderTracingLayerInit(this->pTracingZeDdiTable, this->pTracingZetDdiTable, this->pTracingZesDdiTable);
+            result = zelLoaderTracingLayerInit(this->pTracingZeDdiTable);
         }
         // End DDI Table Inits
 
@@ -167,8 +167,6 @@ zelEnableTracingLayer()
 {
     if (ze_lib::context->tracingLayerEnableCounter.fetch_add(1) == 0) {
         ze_lib::context->zeDdiTable.exchange(ze_lib::context->pTracingZeDdiTable);
-        ze_lib::context->zetDdiTable.exchange(ze_lib::context->pTracingZetDdiTable);
-        ze_lib::context->zesDdiTable.exchange(ze_lib::context->pTracingZesDdiTable);
     }
     return ZE_RESULT_SUCCESS;
 }
@@ -178,8 +176,6 @@ zelDisableTracingLayer()
 {
     if (ze_lib::context->tracingLayerEnableCounter.fetch_sub(1) <= 1) {
         ze_lib::context->zeDdiTable.exchange(&ze_lib::context->initialzeDdiTable);
-        ze_lib::context->zetDdiTable.exchange(&ze_lib::context->initialzetDdiTable);
-        ze_lib::context->zesDdiTable.exchange(&ze_lib::context->initialzesDdiTable);
     }
     return ZE_RESULT_SUCCESS;
 }

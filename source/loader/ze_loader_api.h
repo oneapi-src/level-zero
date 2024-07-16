@@ -37,10 +37,10 @@ zelLoaderDriverCheck(ze_init_flags_t flags);
 
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Internal function for Setting the ddi tables for the Tracing Layer.
+/// @brief Internal function for Setting the ddi table for the Tracing Layer.
 ///
 ZE_DLLEXPORT ze_result_t ZE_APICALL
-zelLoaderTracingLayerInit(std::atomic<ze_dditable_t *> &zeDdiTable, std::atomic<zet_dditable_t *> &zetDdiTable, std::atomic<zes_dditable_t *> &zesDdiTable);
+zelLoaderTracingLayerInit(std::atomic<ze_dditable_t *> &zeDdiTable);
 
 
 ///////////////////////////////////////////////////////////////////////////////
