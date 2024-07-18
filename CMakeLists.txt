@@ -89,6 +89,22 @@ else()
     include_directories("${CMAKE_CURRENT_SOURCE_DIR}/third_party/spdlog_headers")
 endif()
 
+include(FetchContent)
+
+if(BUILD_L0_LOADER_TESTS)
+	FetchContent_Declare(
+		googletest
+		URL https://github.com/google/googletest/archive/refs/tags/v1.14.0.zip
+	)
+
+	# For Windows: Prevent overriding the parent project's compiler/linker settings
+	set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+
+	FetchContent_MakeAvailable(googletest)
+
+	enable_testing()
+endif()
+
 # Update other relevant variables to include the patch
 set(PROJECT_VERSION "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH}")
 set(CMAKE_PROJECT_VERSION_PATCH "${PROJECT_VERSION_PATCH}")
@@ -206,7 +222,8 @@ add_subdirectory(source)
 add_subdirectory(samples)
 
 if(BUILD_L0_LOADER_TESTS)
-	add_subdirectory(test)
+    include(CTest)
+    add_subdirectory(test)
 endif()
 
 include("os_release_info.cmake")

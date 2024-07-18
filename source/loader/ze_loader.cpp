@@ -328,6 +328,18 @@ namespace loader
         if (zel_logger->logging_enabled)
             zel_logger->get_base_logger()->info("Loader Version {}.{}.{} {}", LOADER_VERSION_MAJOR, LOADER_VERSION_MINOR, LOADER_VERSION_PATCH, LOADER_VERSION_SHA);
 
+        add_loader_version();
+        std::string loaderLibraryPath;
+        auto loaderLibraryPathEnv = getenv_string("ZEL_LIBRARY_PATH");
+        if (!loaderLibraryPathEnv.empty()) {
+            loaderLibraryPath = loaderLibraryPathEnv;
+        }
+#ifdef _WIN32
+        else {
+            loaderLibraryPath = readLevelZeroLoaderLibraryPath();
+        }
+#endif
+        debug_trace_message("Using Loader Library Path: ", loaderLibraryPath);
 
         // To allow for two different sets of drivers to be in use between sysman and core/tools, we use and store the drivers in two vectors.
         // alldrivers stores all the drivers for cleanup when the library exits.
@@ -337,7 +349,7 @@ namespace loader
         if( getenv_tobool( "ZE_ENABLE_NULL_DRIVER" ) )
         {
             zel_logger->log_info("Enabling Null Driver");
-            auto handle = LOAD_DRIVER_LIBRARY( MAKE_LIBRARY_NAME( "ze_null", L0_LOADER_VERSION ) );
+            auto handle = LOAD_DRIVER_LIBRARY( create_library_path( MAKE_LIBRARY_NAME( "ze_null", L0_LOADER_VERSION ), loaderLibraryPath.c_str()).c_str());
             if (debugTraceEnabled) {
                 std::string message = "ze_null Driver Init";
                 debug_trace_message(message, "");
@@ -349,7 +361,7 @@ namespace loader
                 allDrivers.rbegin()->name = "ze_null";
             } else if (debugTraceEnabled) {
                 GET_LIBRARY_ERROR(loadLibraryErrorValue);
-                std::string errorMessage = "Load Library of " + std::string(MAKE_LIBRARY_NAME( "ze_null", L0_LOADER_VERSION )) + " failed with ";
+                std::string errorMessage = "Load Library of " + create_library_path( MAKE_LIBRARY_NAME( "ze_null", L0_LOADER_VERSION ), loaderLibraryPath.c_str()) + " failed with ";
                 debug_trace_message(errorMessage, loadLibraryErrorValue);
                 loadLibraryErrorValue.clear();
             }
@@ -375,17 +387,14 @@ namespace loader
             }
         }
         if(allDrivers.size()==0){
+            std::string message = "0 Drivers Discovered";
+            debug_trace_message(message, "");
             zel_logger->log_error("0 Drivers Discovered");
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         std::copy(allDrivers.begin(), allDrivers.end(), std::back_inserter(zeDrivers));
         std::copy(allDrivers.begin(), allDrivers.end(), std::back_inserter(zesDrivers));
 
-        add_loader_version();
-        std::string loaderLibraryPath;
-#ifdef _WIN32
-        loaderLibraryPath = readLevelZeroLoaderLibraryPath();
-#endif
         typedef ze_result_t (ZE_APICALL *getVersion_t)(zel_component_version_t *version);
         if( getenv_tobool( "ZE_ENABLE_VALIDATION_LAYER" ) )
         {
@@ -414,6 +423,7 @@ namespace loader
             tracingLayerEnabled = true;
         }
         std::string tracingLayerLibraryPath = create_library_path(MAKE_LAYER_NAME( "ze_tracing_layer" ), loaderLibraryPath.c_str());
+        debug_trace_message("Tracing Layer Library Path: ", tracingLayerLibraryPath);
         tracingLayer = LOAD_DRIVER_LIBRARY( tracingLayerLibraryPath.c_str() );
         if(tracingLayer)
         {
