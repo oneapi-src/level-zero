@@ -24,15 +24,25 @@ jobs:
             -D CMAKE_BUILD_TYPE=Release \
             ..
           make -j$(nproc)
+      - env:
+          ZEL_LIBRARY_PATH: ${{ github.workspace }}/build/lib
+          ZE_ENABLE_NULL_DRIVER: '1'
+          ZE_ENABLE_LOADER_DEBUG_TRACE: '1'
+        run: ./build/bin/tests
+
   build-windows:
     if: github.repository_owner == 'oneapi-src'
     runs-on: [windows-latest]
     steps:
       - uses: actions/checkout@v3
       - name: Build Loader on Latest Windows
-        shell: pwsh
         run: |
           mkdir build
           cd build
-          cmake -D CMAKE_BUILD_TYPE=Release ..
+          cmake ..
           cmake --build . --config Release
+      - env:
+          ZEL_LIBRARY_PATH: ${{ github.workspace }}/build/bin/Release
+          ZE_ENABLE_NULL_DRIVER: '1'
+          ZE_ENABLE_LOADER_DEBUG_TRACE: '1'
+        run: ./build/bin/Release/tests.exe
