@@ -1,5 +1,10 @@
 # Level zero loader changelog
 
+## v1.17.25
+* Don't exchange zet/zes DDI tables for tracing
+* Fix OpenSSF token permissions warning
+* Rename init functions to avoid confusion with zeInit
+* Add missing ZE_RESULT_ERROR_UNINITIALIZED checks to zesDriverGet
 ## v1.17.19
 * Fix DriverGet to handle failed drivers and avoid layer init during checks
 ## v1.17.17
