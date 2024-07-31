@@ -32,6 +32,17 @@ cmake --build . --target package
 cmake --build . --target install
 ```
 
+# Running tests
+
+The project builds a `tests` binary which contains tests from the `tests`
+project subdirectory, as well as a `zello_world` binary from the `samples`
+project subdirectory.  Set the environment variable `ZEL_LIBRARY_PATH` to point
+to `build/lib` on Linux and `build/bin/Release` (as an absolute path) on
+Windows.  Set `ZE_ENABLE_NULL_DRIVER=1` if your system has no working driver
+installed.  Refer to
+[.github/workflows/build-quick.yml](.github/workflows/build-quick.yml) for
+examples.
+
 # Debug Trace
 The Level Zero Loader has the ability to print warnings and errors which occur within the internals of the Level Zero Loader itself.
 
