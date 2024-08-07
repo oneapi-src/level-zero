@@ -33,7 +33,7 @@ zeLoaderInit();
 ///     - ::ZE_RESULT_SUCCESS
 ///     - ::ZE_RESULT_ERROR_UNINITIALIZED
 ZE_DLLEXPORT ze_result_t ZE_APICALL
-zelLoaderDriverCheck(ze_init_flags_t flags);
+zelLoaderDriverCheck(ze_init_flags_t flags, ze_global_dditable_t *globalInitStored);
 
 
 ///////////////////////////////////////////////////////////////////////////////
