@@ -124,7 +124,7 @@ namespace loader
         }
     }
 
-    ze_result_t context_t::check_drivers(ze_init_flags_t flags) {
+    ze_result_t context_t::check_drivers(ze_init_flags_t flags, ze_global_dditable_t *globalInitStored) {
         if (debugTraceEnabled) {
             std::string message = "check_drivers(" + std::string("flags=") + loader::to_string(flags) + ")";
             debug_trace_message(message, "");
@@ -137,7 +137,7 @@ namespace loader
         for(auto it = drivers.begin(); it != drivers.end(); )
         {
             std::string freeLibraryErrorValue;
-            ze_result_t result = init_driver(*it, flags);
+            ze_result_t result = init_driver(*it, flags, globalInitStored);
             if(result != ZE_RESULT_SUCCESS) {
                 if (it->handle) {
                     auto free_result = FREE_DRIVER_LIBRARY(it->handle);
@@ -170,7 +170,7 @@ namespace loader
         return ZE_RESULT_SUCCESS;
     }
 
-    ze_result_t context_t::init_driver(driver_t driver, ze_init_flags_t flags) {
+    ze_result_t context_t::init_driver(driver_t driver, ze_init_flags_t flags, ze_global_dditable_t *globalInitStored) {
 
         auto getTable = reinterpret_cast<ze_pfnGetGlobalProcAddrTable_t>(
             GET_FUNCTION_PTR(driver.handle, "zeGetGlobalProcAddrTable"));
@@ -201,7 +201,7 @@ namespace loader
         }
 
         auto pfnInit = global.pfnInit;
-        if(nullptr == pfnInit) {
+        if(nullptr == pfnInit || globalInitStored->pfnInit == nullptr) {
             if (debugTraceEnabled) {
                 std::string errorMessage = "init driver " + driver.name + " failed, zeInit function pointer null. Returning ";
                 debug_trace_message(errorMessage, loader::to_string(ZE_RESULT_ERROR_UNINITIALIZED));
@@ -209,7 +209,8 @@ namespace loader
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
 
-        ze_result_t res = pfnInit(flags);
+        // Use the previously init ddi table pointer to zeInit to allow for intercept of the zeInit calls
+        ze_result_t res = globalInitStored->pfnInit(flags);
         if (debugTraceEnabled) {
             std::string message = "init driver " + driver.name + " zeInit(" + loader::to_string(flags) + ") returning ";
             debug_trace_message(message, loader::to_string(res));

@@ -108,7 +108,7 @@ namespace ze_lib
         {
             // Check which drivers support the ze_driver_flag_t specified
             // No need to check if only initializing sysman
-            result = zelLoaderDriverCheck(flags);
+            result = zelLoaderDriverCheck(flags, &ze_lib::context->initialzeDdiTable.Global);
         }
 
         if( ZE_RESULT_SUCCESS == result )
