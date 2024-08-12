@@ -1,5 +1,8 @@
 # Level zero loader changelog
 
+## v1.17.28
+* Add GPU-legacy1 driver to list of known names on Linux
+* Fix first zeinit to allow for layer checks
 ## v1.17.25
 * Don't exchange zet/zes DDI tables for tracing
 * Fix OpenSSF token permissions warning
