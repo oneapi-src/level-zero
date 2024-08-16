@@ -21,18 +21,10 @@ target_include_directories(${TARGET_NAME}
 
 if(INSTALL_NULL_DRIVER)
     install(TARGETS ze_null
-        ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
-        LIBRARY
-            DESTINATION ${CMAKE_INSTALL_LIBDIR}
-            COMPONENT level-zero
-            NAMELINK_SKIP
-    )
-    install(TARGETS ze_null
-    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
-    LIBRARY
-        DESTINATION ${CMAKE_INSTALL_LIBDIR}
-        COMPONENT level-zero-devel
-        NAMELINK_ONLY
+        ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR} COMPONENT level-zero-devel
+        RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR} COMPONENT level-zero
+        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR} COMPONENT level-zero
+        NAMELINK_COMPONENT level-zero-devel
     )
 endif()
 
