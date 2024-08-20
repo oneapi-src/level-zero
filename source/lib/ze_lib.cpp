@@ -108,7 +108,26 @@ namespace ze_lib
         {
             // Check which drivers support the ze_driver_flag_t specified
             // No need to check if only initializing sysman
-            result = zelLoaderDriverCheck(flags, &ze_lib::context->initialzeDdiTable.Global);
+            bool requireDdiReinit = false;
+            result = zelLoaderDriverCheck(flags, &ze_lib::context->initialzeDdiTable.Global, &requireDdiReinit);
+            // If a driver was removed from the driver list, then the ddi tables need to be reinit to allow for passthru directly to the driver.
+            if (requireDdiReinit) {
+                // reInit the ZE DDI Tables
+                if( ZE_RESULT_SUCCESS == result )
+                {
+                    result = zeDdiTableInit();
+                }
+                // reInit the ZET DDI Tables
+                if( ZE_RESULT_SUCCESS == result )
+                {
+                    result = zetDdiTableInit();
+                }
+                // reInit the ZES DDI Tables
+                if( ZE_RESULT_SUCCESS == result )
+                {
+                    result = zesDdiTableInit();
+                }
+            }
         }
 
         if( ZE_RESULT_SUCCESS == result )
