@@ -211,6 +211,10 @@ namespace loader
 
         // Use the previously init ddi table pointer to zeInit to allow for intercept of the zeInit calls
         ze_result_t res = globalInitStored->pfnInit(flags);
+        // Verify that this driver successfully init in the call above.
+        if (driver.initStatus != ZE_RESULT_SUCCESS) {
+            res = driver.initStatus;
+        }
         if (debugTraceEnabled) {
             std::string message = "init driver " + driver.name + " zeInit(" + loader::to_string(flags) + ") returning ";
             debug_trace_message(message, loader::to_string(res));
