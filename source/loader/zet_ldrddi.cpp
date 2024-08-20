@@ -12,22 +12,6 @@
 namespace loader
 {
     ///////////////////////////////////////////////////////////////////////////////
-    zet_driver_factory_t                zet_driver_factory;
-    zet_device_factory_t                zet_device_factory;
-    zet_context_factory_t               zet_context_factory;
-    zet_command_list_factory_t          zet_command_list_factory;
-    zet_module_factory_t                zet_module_factory;
-    zet_kernel_factory_t                zet_kernel_factory;
-    zet_metric_group_factory_t          zet_metric_group_factory;
-    zet_metric_factory_t                zet_metric_factory;
-    zet_metric_streamer_factory_t       zet_metric_streamer_factory;
-    zet_metric_query_pool_factory_t     zet_metric_query_pool_factory;
-    zet_metric_query_factory_t          zet_metric_query_factory;
-    zet_tracer_exp_factory_t            zet_tracer_exp_factory;
-    zet_debug_session_factory_t         zet_debug_session_factory;
-    zet_metric_programmable_exp_factory_t   zet_metric_programmable_exp_factory;
-
-    ///////////////////////////////////////////////////////////////////////////////
     /// @brief Intercept function for zetModuleGetDebugInfo
     __zedlllocal ze_result_t ZE_APICALL
     zetModuleGetDebugInfo(
@@ -109,7 +93,7 @@ namespace loader
         {
             // convert driver handle to loader handle
             *phDebug = reinterpret_cast<zet_debug_session_handle_t>(
-                zet_debug_session_factory.getInstance( *phDebug, dditable ) );
+                context->zet_debug_session_factory.getInstance( *phDebug, dditable ) );
         }
         catch( std::bad_alloc& )
         {
@@ -144,7 +128,7 @@ namespace loader
             return result;
 
         // release loader handle
-        zet_debug_session_factory.release( hDebug );
+        context->zet_debug_session_factory.release( hDebug );
 
         return result;
     }
@@ -485,7 +469,7 @@ namespace loader
             // convert driver handles to loader handles
             for( size_t i = 0; ( nullptr != phMetricGroups ) && ( i < *pCount ); ++i )
                 phMetricGroups[ i ] = reinterpret_cast<zet_metric_group_handle_t>(
-                    zet_metric_group_factory.getInstance( phMetricGroups[ i ], dditable ) );
+                    context->zet_metric_group_factory.getInstance( phMetricGroups[ i ], dditable ) );
         }
         catch( std::bad_alloc& )
         {
@@ -593,7 +577,7 @@ namespace loader
             // convert driver handles to loader handles
             for( size_t i = 0; ( nullptr != phMetrics ) && ( i < *pCount ); ++i )
                 phMetrics[ i ] = reinterpret_cast<zet_metric_handle_t>(
-                    zet_metric_factory.getInstance( phMetrics[ i ], dditable ) );
+                    context->zet_metric_factory.getInstance( phMetrics[ i ], dditable ) );
         }
         catch( std::bad_alloc& )
         {
@@ -710,7 +694,7 @@ namespace loader
         {
             // convert driver handle to loader handle
             *phMetricStreamer = reinterpret_cast<zet_metric_streamer_handle_t>(
-                zet_metric_streamer_factory.getInstance( *phMetricStreamer, dditable ) );
+                context->zet_metric_streamer_factory.getInstance( *phMetricStreamer, dditable ) );
         }
         catch( std::bad_alloc& )
         {
@@ -774,7 +758,7 @@ namespace loader
             return result;
 
         // release loader handle
-        zet_metric_streamer_factory.release( hMetricStreamer );
+        context->zet_metric_streamer_factory.release( hMetricStreamer );
 
         return result;
     }
@@ -852,7 +836,7 @@ namespace loader
         {
             // convert driver handle to loader handle
             *phMetricQueryPool = reinterpret_cast<zet_metric_query_pool_handle_t>(
-                zet_metric_query_pool_factory.getInstance( *phMetricQueryPool, dditable ) );
+                context->zet_metric_query_pool_factory.getInstance( *phMetricQueryPool, dditable ) );
         }
         catch( std::bad_alloc& )
         {
@@ -887,7 +871,7 @@ namespace loader
             return result;
 
         // release loader handle
-        zet_metric_query_pool_factory.release( hMetricQueryPool );
+        context->zet_metric_query_pool_factory.release( hMetricQueryPool );
 
         return result;
     }
@@ -922,7 +906,7 @@ namespace loader
         {
             // convert driver handle to loader handle
             *phMetricQuery = reinterpret_cast<zet_metric_query_handle_t>(
-                zet_metric_query_factory.getInstance( *phMetricQuery, dditable ) );
+                context->zet_metric_query_factory.getInstance( *phMetricQuery, dditable ) );
         }
         catch( std::bad_alloc& )
         {
@@ -957,7 +941,7 @@ namespace loader
             return result;
 
         // release loader handle
-        zet_metric_query_factory.release( hMetricQuery );
+        context->zet_metric_query_factory.release( hMetricQuery );
 
         return result;
     }
@@ -1160,7 +1144,7 @@ namespace loader
         {
             // convert driver handle to loader handle
             *phTracer = reinterpret_cast<zet_tracer_exp_handle_t>(
-                zet_tracer_exp_factory.getInstance( *phTracer, dditable ) );
+                context->zet_tracer_exp_factory.getInstance( *phTracer, dditable ) );
         }
         catch( std::bad_alloc& )
         {
@@ -1195,7 +1179,7 @@ namespace loader
             return result;
 
         // release loader handle
-        zet_tracer_exp_factory.release( hTracer );
+        context->zet_tracer_exp_factory.release( hTracer );
 
         return result;
     }
@@ -1465,7 +1449,7 @@ namespace loader
             // convert driver handles to loader handles
             for( size_t i = 0; ( nullptr != phMetricProgrammables ) && ( i < *pCount ); ++i )
                 phMetricProgrammables[ i ] = reinterpret_cast<zet_metric_programmable_exp_handle_t>(
-                    zet_metric_programmable_exp_factory.getInstance( phMetricProgrammables[ i ], dditable ) );
+                    context->zet_metric_programmable_exp_factory.getInstance( phMetricProgrammables[ i ], dditable ) );
         }
         catch( std::bad_alloc& )
         {
@@ -1610,7 +1594,7 @@ namespace loader
             // convert driver handles to loader handles
             for( size_t i = 0; ( nullptr != phMetricHandles ) && ( i < *pMetricHandleCount ); ++i )
                 phMetricHandles[ i ] = reinterpret_cast<zet_metric_handle_t>(
-                    zet_metric_factory.getInstance( phMetricHandles[ i ], dditable ) );
+                    context->zet_metric_factory.getInstance( phMetricHandles[ i ], dditable ) );
         }
         catch( std::bad_alloc& )
         {
@@ -1655,7 +1639,7 @@ namespace loader
         {
             // convert driver handle to loader handle
             *phMetricGroup = reinterpret_cast<zet_metric_group_handle_t>(
-                zet_metric_group_factory.getInstance( *phMetricGroup, dditable ) );
+                context->zet_metric_group_factory.getInstance( *phMetricGroup, dditable ) );
         }
         catch( std::bad_alloc& )
         {

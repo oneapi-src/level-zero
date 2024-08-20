@@ -12,27 +12,6 @@
 namespace loader
 {
     ///////////////////////////////////////////////////////////////////////////////
-    zes_driver_factory_t                zes_driver_factory;
-    zes_device_factory_t                zes_device_factory;
-    zes_sched_factory_t                 zes_sched_factory;
-    zes_perf_factory_t                  zes_perf_factory;
-    zes_pwr_factory_t                   zes_pwr_factory;
-    zes_freq_factory_t                  zes_freq_factory;
-    zes_engine_factory_t                zes_engine_factory;
-    zes_standby_factory_t               zes_standby_factory;
-    zes_firmware_factory_t              zes_firmware_factory;
-    zes_mem_factory_t                   zes_mem_factory;
-    zes_fabric_port_factory_t           zes_fabric_port_factory;
-    zes_temp_factory_t                  zes_temp_factory;
-    zes_psu_factory_t                   zes_psu_factory;
-    zes_fan_factory_t                   zes_fan_factory;
-    zes_led_factory_t                   zes_led_factory;
-    zes_ras_factory_t                   zes_ras_factory;
-    zes_diag_factory_t                  zes_diag_factory;
-    zes_overclock_factory_t             zes_overclock_factory;
-    zes_vf_factory_t                    zes_vf_factory;
-
-    ///////////////////////////////////////////////////////////////////////////////
     /// @brief Intercept function for zesInit
     __zedlllocal ze_result_t ZE_APICALL
     zesInit(
@@ -109,7 +88,7 @@ namespace loader
                     for( uint32_t i = 0; i < library_driver_handle_count; ++i ) {
                         uint32_t driver_index = total_driver_handle_count + i;
                         phDrivers[ driver_index ] = reinterpret_cast<zes_driver_handle_t>(
-                            zes_driver_factory.getInstance( phDrivers[ driver_index ], &drv.dditable ) );
+                            context->zes_driver_factory.getInstance( phDrivers[ driver_index ], &drv.dditable ) );
                     }
                 }
                 catch( std::bad_alloc& )
@@ -229,7 +208,7 @@ namespace loader
             // convert driver handles to loader handles
             for( size_t i = 0; ( nullptr != phDevices ) && ( i < *pCount ); ++i )
                 phDevices[ i ] = reinterpret_cast<zes_device_handle_t>(
-                    zes_device_factory.getInstance( phDevices[ i ], dditable ) );
+                    context->zes_device_factory.getInstance( phDevices[ i ], dditable ) );
         }
         catch( std::bad_alloc& )
         {
@@ -657,7 +636,7 @@ namespace loader
             // convert driver handles to loader handles
             for( size_t i = 0; ( nullptr != phDomainHandle ) && ( i < *pCount ); ++i )
                 phDomainHandle[ i ] = reinterpret_cast<zes_overclock_handle_t>(
-                    zes_overclock_factory.getInstance( phDomainHandle[ i ], dditable ) );
+                    context->zes_overclock_factory.getInstance( phDomainHandle[ i ], dditable ) );
         }
         catch( std::bad_alloc& )
         {
@@ -948,7 +927,7 @@ namespace loader
             // convert driver handles to loader handles
             for( size_t i = 0; ( nullptr != phDiagnostics ) && ( i < *pCount ); ++i )
                 phDiagnostics[ i ] = reinterpret_cast<zes_diag_handle_t>(
-                    zes_diag_factory.getInstance( phDiagnostics[ i ], dditable ) );
+                    context->zes_diag_factory.getInstance( phDiagnostics[ i ], dditable ) );
         }
         catch( std::bad_alloc& )
         {
@@ -1187,7 +1166,7 @@ namespace loader
             // convert driver handles to loader handles
             for( size_t i = 0; ( nullptr != phEngine ) && ( i < *pCount ); ++i )
                 phEngine[ i ] = reinterpret_cast<zes_engine_handle_t>(
-                    zes_engine_factory.getInstance( phEngine[ i ], dditable ) );
+                    context->zes_engine_factory.getInstance( phEngine[ i ], dditable ) );
         }
         catch( std::bad_alloc& )
         {
@@ -1407,7 +1386,7 @@ namespace loader
             // convert driver handles to loader handles
             for( size_t i = 0; ( nullptr != phPort ) && ( i < *pCount ); ++i )
                 phPort[ i ] = reinterpret_cast<zes_fabric_port_handle_t>(
-                    zes_fabric_port_factory.getInstance( phPort[ i ], dditable ) );
+                    context->zes_fabric_port_factory.getInstance( phPort[ i ], dditable ) );
         }
         catch( std::bad_alloc& )
         {
@@ -1668,7 +1647,7 @@ namespace loader
             // convert driver handles to loader handles
             for( size_t i = 0; ( nullptr != phFan ) && ( i < *pCount ); ++i )
                 phFan[ i ] = reinterpret_cast<zes_fan_handle_t>(
-                    zes_fan_factory.getInstance( phFan[ i ], dditable ) );
+                    context->zes_fan_factory.getInstance( phFan[ i ], dditable ) );
         }
         catch( std::bad_alloc& )
         {
@@ -1870,7 +1849,7 @@ namespace loader
             // convert driver handles to loader handles
             for( size_t i = 0; ( nullptr != phFirmware ) && ( i < *pCount ); ++i )
                 phFirmware[ i ] = reinterpret_cast<zes_firmware_handle_t>(
-                    zes_firmware_factory.getInstance( phFirmware[ i ], dditable ) );
+                    context->zes_firmware_factory.getInstance( phFirmware[ i ], dditable ) );
         }
         catch( std::bad_alloc& )
         {
@@ -2023,7 +2002,7 @@ namespace loader
             // convert driver handles to loader handles
             for( size_t i = 0; ( nullptr != phFrequency ) && ( i < *pCount ); ++i )
                 phFrequency[ i ] = reinterpret_cast<zes_freq_handle_t>(
-                    zes_freq_factory.getInstance( phFrequency[ i ], dditable ) );
+                    context->zes_freq_factory.getInstance( phFrequency[ i ], dditable ) );
         }
         catch( std::bad_alloc& )
         {
@@ -2527,7 +2506,7 @@ namespace loader
             // convert driver handles to loader handles
             for( size_t i = 0; ( nullptr != phLed ) && ( i < *pCount ); ++i )
                 phLed[ i ] = reinterpret_cast<zes_led_handle_t>(
-                    zes_led_factory.getInstance( phLed[ i ], dditable ) );
+                    context->zes_led_factory.getInstance( phLed[ i ], dditable ) );
         }
         catch( std::bad_alloc& )
         {
@@ -2677,7 +2656,7 @@ namespace loader
             // convert driver handles to loader handles
             for( size_t i = 0; ( nullptr != phMemory ) && ( i < *pCount ); ++i )
                 phMemory[ i ] = reinterpret_cast<zes_mem_handle_t>(
-                    zes_mem_factory.getInstance( phMemory[ i ], dditable ) );
+                    context->zes_mem_factory.getInstance( phMemory[ i ], dditable ) );
         }
         catch( std::bad_alloc& )
         {
@@ -2803,7 +2782,7 @@ namespace loader
             // convert driver handles to loader handles
             for( size_t i = 0; ( nullptr != phPerf ) && ( i < *pCount ); ++i )
                 phPerf[ i ] = reinterpret_cast<zes_perf_handle_t>(
-                    zes_perf_factory.getInstance( phPerf[ i ], dditable ) );
+                    context->zes_perf_factory.getInstance( phPerf[ i ], dditable ) );
         }
         catch( std::bad_alloc& )
         {
@@ -2930,7 +2909,7 @@ namespace loader
             // convert driver handles to loader handles
             for( size_t i = 0; ( nullptr != phPower ) && ( i < *pCount ); ++i )
                 phPower[ i ] = reinterpret_cast<zes_pwr_handle_t>(
-                    zes_pwr_factory.getInstance( phPower[ i ], dditable ) );
+                    context->zes_pwr_factory.getInstance( phPower[ i ], dditable ) );
         }
         catch( std::bad_alloc& )
         {
@@ -2969,7 +2948,7 @@ namespace loader
         {
             // convert driver handle to loader handle
             *phPower = reinterpret_cast<zes_pwr_handle_t>(
-                zes_pwr_factory.getInstance( *phPower, dditable ) );
+                context->zes_pwr_factory.getInstance( *phPower, dditable ) );
         }
         catch( std::bad_alloc& )
         {
@@ -3181,7 +3160,7 @@ namespace loader
             // convert driver handles to loader handles
             for( size_t i = 0; ( nullptr != phPsu ) && ( i < *pCount ); ++i )
                 phPsu[ i ] = reinterpret_cast<zes_psu_handle_t>(
-                    zes_psu_factory.getInstance( phPsu[ i ], dditable ) );
+                    context->zes_psu_factory.getInstance( phPsu[ i ], dditable ) );
         }
         catch( std::bad_alloc& )
         {
@@ -3281,7 +3260,7 @@ namespace loader
             // convert driver handles to loader handles
             for( size_t i = 0; ( nullptr != phRas ) && ( i < *pCount ); ++i )
                 phRas[ i ] = reinterpret_cast<zes_ras_handle_t>(
-                    zes_ras_factory.getInstance( phRas[ i ], dditable ) );
+                    context->zes_ras_factory.getInstance( phRas[ i ], dditable ) );
         }
         catch( std::bad_alloc& )
         {
@@ -3433,7 +3412,7 @@ namespace loader
             // convert driver handles to loader handles
             for( size_t i = 0; ( nullptr != phScheduler ) && ( i < *pCount ); ++i )
                 phScheduler[ i ] = reinterpret_cast<zes_sched_handle_t>(
-                    zes_sched_factory.getInstance( phScheduler[ i ], dditable ) );
+                    context->zes_sched_factory.getInstance( phScheduler[ i ], dditable ) );
         }
         catch( std::bad_alloc& )
         {
@@ -3693,7 +3672,7 @@ namespace loader
             // convert driver handles to loader handles
             for( size_t i = 0; ( nullptr != phStandby ) && ( i < *pCount ); ++i )
                 phStandby[ i ] = reinterpret_cast<zes_standby_handle_t>(
-                    zes_standby_factory.getInstance( phStandby[ i ], dditable ) );
+                    context->zes_standby_factory.getInstance( phStandby[ i ], dditable ) );
         }
         catch( std::bad_alloc& )
         {
@@ -3818,7 +3797,7 @@ namespace loader
             // convert driver handles to loader handles
             for( size_t i = 0; ( nullptr != phTemperature ) && ( i < *pCount ); ++i )
                 phTemperature[ i ] = reinterpret_cast<zes_temp_handle_t>(
-                    zes_temp_factory.getInstance( phTemperature[ i ], dditable ) );
+                    context->zes_temp_factory.getInstance( phTemperature[ i ], dditable ) );
         }
         catch( std::bad_alloc& )
         {
@@ -4200,7 +4179,7 @@ namespace loader
         {
             // convert driver handle to loader handle
             *phDevice = reinterpret_cast<zes_device_handle_t>(
-                zes_device_factory.getInstance( *phDevice, dditable ) );
+                context->zes_device_factory.getInstance( *phDevice, dditable ) );
         }
         catch( std::bad_alloc& )
         {
@@ -4250,7 +4229,7 @@ namespace loader
             // convert driver handles to loader handles
             for( size_t i = 0; ( nullptr != phVFhandle ) && ( i < *pCount ); ++i )
                 phVFhandle[ i ] = reinterpret_cast<zes_vf_handle_t>(
-                    zes_vf_factory.getInstance( phVFhandle[ i ], dditable ) );
+                    context->zes_vf_factory.getInstance( phVFhandle[ i ], dditable ) );
         }
         catch( std::bad_alloc& )
         {

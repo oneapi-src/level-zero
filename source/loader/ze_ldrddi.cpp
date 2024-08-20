@@ -12,29 +12,6 @@
 namespace loader
 {
     ///////////////////////////////////////////////////////////////////////////////
-    ze_driver_factory_t                 ze_driver_factory;
-    ze_device_factory_t                 ze_device_factory;
-    ze_context_factory_t                ze_context_factory;
-    ze_command_queue_factory_t          ze_command_queue_factory;
-    ze_command_list_factory_t           ze_command_list_factory;
-    ze_fence_factory_t                  ze_fence_factory;
-    ze_event_pool_factory_t             ze_event_pool_factory;
-    ze_event_factory_t                  ze_event_factory;
-    ze_image_factory_t                  ze_image_factory;
-    ze_module_factory_t                 ze_module_factory;
-    ze_module_build_log_factory_t       ze_module_build_log_factory;
-    ze_kernel_factory_t                 ze_kernel_factory;
-    ze_sampler_factory_t                ze_sampler_factory;
-    ze_physical_mem_factory_t           ze_physical_mem_factory;
-    ze_fabric_vertex_factory_t          ze_fabric_vertex_factory;
-    ze_fabric_edge_factory_t            ze_fabric_edge_factory;
-    ze_rtas_builder_exp_factory_t       ze_rtas_builder_exp_factory;
-    ze_rtas_parallel_operation_exp_factory_t    ze_rtas_parallel_operation_exp_factory;
-    ///////////////////////////////////////////////////////////////////////////////
-    std::unordered_map<ze_image_object_t *, ze_image_handle_t>            image_handle_map;
-    std::unordered_map<ze_sampler_object_t *, ze_sampler_handle_t>        sampler_handle_map;
-
-    ///////////////////////////////////////////////////////////////////////////////
     /// @brief Intercept function for zeInit
     __zedlllocal ze_result_t ZE_APICALL
     zeInit(
@@ -110,7 +87,7 @@ namespace loader
                     for( uint32_t i = 0; i < library_driver_handle_count; ++i ) {
                         uint32_t driver_index = total_driver_handle_count + i;
                         phDrivers[ driver_index ] = reinterpret_cast<ze_driver_handle_t>(
-                            ze_driver_factory.getInstance( phDrivers[ driver_index ], &drv.dditable ) );
+                            context->ze_driver_factory.getInstance( phDrivers[ driver_index ], &drv.dditable ) );
                     }
                 }
                 catch( std::bad_alloc& )
@@ -330,7 +307,7 @@ namespace loader
             // convert driver handles to loader handles
             for( size_t i = 0; ( nullptr != phDevices ) && ( i < *pCount ); ++i )
                 phDevices[ i ] = reinterpret_cast<ze_device_handle_t>(
-                    ze_device_factory.getInstance( phDevices[ i ], dditable ) );
+                    context->ze_device_factory.getInstance( phDevices[ i ], dditable ) );
         }
         catch( std::bad_alloc& )
         {
@@ -369,7 +346,7 @@ namespace loader
         {
             // convert driver handle to loader handle
             *phRootDevice = reinterpret_cast<ze_device_handle_t>(
-                ze_device_factory.getInstance( *phRootDevice, dditable ) );
+                context->ze_device_factory.getInstance( *phRootDevice, dditable ) );
         }
         catch( std::bad_alloc& )
         {
@@ -416,7 +393,7 @@ namespace loader
             // convert driver handles to loader handles
             for( size_t i = 0; ( nullptr != phSubdevices ) && ( i < *pCount ); ++i )
                 phSubdevices[ i ] = reinterpret_cast<ze_device_handle_t>(
-                    ze_device_factory.getInstance( phSubdevices[ i ], dditable ) );
+                    context->ze_device_factory.getInstance( phSubdevices[ i ], dditable ) );
         }
         catch( std::bad_alloc& )
         {
@@ -818,7 +795,7 @@ namespace loader
         {
             // convert driver handle to loader handle
             *phContext = reinterpret_cast<ze_context_handle_t>(
-                ze_context_factory.getInstance( *phContext, dditable ) );
+                context->ze_context_factory.getInstance( *phContext, dditable ) );
         }
         catch( std::bad_alloc& )
         {
@@ -874,7 +851,7 @@ namespace loader
         {
             // convert driver handle to loader handle
             *phContext = reinterpret_cast<ze_context_handle_t>(
-                ze_context_factory.getInstance( *phContext, dditable ) );
+                context->ze_context_factory.getInstance( *phContext, dditable ) );
         }
         catch( std::bad_alloc& )
         {
@@ -909,7 +886,7 @@ namespace loader
             return result;
 
         // release loader handle
-        ze_context_factory.release( hContext );
+        context->ze_context_factory.release( hContext );
 
         return result;
     }
@@ -972,7 +949,7 @@ namespace loader
         {
             // convert driver handle to loader handle
             *phCommandQueue = reinterpret_cast<ze_command_queue_handle_t>(
-                ze_command_queue_factory.getInstance( *phCommandQueue, dditable ) );
+                context->ze_command_queue_factory.getInstance( *phCommandQueue, dditable ) );
         }
         catch( std::bad_alloc& )
         {
@@ -1007,7 +984,7 @@ namespace loader
             return result;
 
         // release loader handle
-        ze_command_queue_factory.release( hCommandQueue );
+        context->ze_command_queue_factory.release( hCommandQueue );
 
         return result;
     }
@@ -1164,7 +1141,7 @@ namespace loader
         {
             // convert driver handle to loader handle
             *phCommandList = reinterpret_cast<ze_command_list_handle_t>(
-                ze_command_list_factory.getInstance( *phCommandList, dditable ) );
+                context->ze_command_list_factory.getInstance( *phCommandList, dditable ) );
         }
         catch( std::bad_alloc& )
         {
@@ -1208,7 +1185,7 @@ namespace loader
         {
             // convert driver handle to loader handle
             *phCommandList = reinterpret_cast<ze_command_list_handle_t>(
-                ze_command_list_factory.getInstance( *phCommandList, dditable ) );
+                context->ze_command_list_factory.getInstance( *phCommandList, dditable ) );
         }
         catch( std::bad_alloc& )
         {
@@ -1243,7 +1220,7 @@ namespace loader
             return result;
 
         // release loader handle
-        ze_command_list_factory.release( hCommandList );
+        context->ze_command_list_factory.release( hCommandList );
 
         return result;
     }
@@ -1396,7 +1373,7 @@ namespace loader
         {
             // convert driver handle to loader handle
             *phDevice = reinterpret_cast<ze_device_handle_t>(
-                ze_device_factory.getInstance( *phDevice, dditable ) );
+                context->ze_device_factory.getInstance( *phDevice, dditable ) );
         }
         catch( std::bad_alloc& )
         {
@@ -1435,7 +1412,7 @@ namespace loader
         {
             // convert driver handle to loader handle
             *phContext = reinterpret_cast<ze_context_handle_t>(
-                ze_context_factory.getInstance( *phContext, dditable ) );
+                context->ze_context_factory.getInstance( *phContext, dditable ) );
         }
         catch( std::bad_alloc& )
         {
@@ -2088,7 +2065,7 @@ namespace loader
         {
             // convert driver handle to loader handle
             *phEventPool = reinterpret_cast<ze_event_pool_handle_t>(
-                ze_event_pool_factory.getInstance( *phEventPool, dditable ) );
+                context->ze_event_pool_factory.getInstance( *phEventPool, dditable ) );
         }
         catch( std::bad_alloc& )
         {
@@ -2123,7 +2100,7 @@ namespace loader
             return result;
 
         // release loader handle
-        ze_event_pool_factory.release( hEventPool );
+        context->ze_event_pool_factory.release( hEventPool );
 
         return result;
     }
@@ -2158,7 +2135,7 @@ namespace loader
         {
             // convert driver handle to loader handle
             *phEvent = reinterpret_cast<ze_event_handle_t>(
-                ze_event_factory.getInstance( *phEvent, dditable ) );
+                context->ze_event_factory.getInstance( *phEvent, dditable ) );
         }
         catch( std::bad_alloc& )
         {
@@ -2193,7 +2170,7 @@ namespace loader
             return result;
 
         // release loader handle
-        ze_event_factory.release( hEvent );
+        context->ze_event_factory.release( hEvent );
 
         return result;
     }
@@ -2280,7 +2257,7 @@ namespace loader
         {
             // convert driver handle to loader handle
             *phEventPool = reinterpret_cast<ze_event_pool_handle_t>(
-                ze_event_pool_factory.getInstance( *phEventPool, dditable ) );
+                context->ze_event_pool_factory.getInstance( *phEventPool, dditable ) );
         }
         catch( std::bad_alloc& )
         {
@@ -2315,7 +2292,7 @@ namespace loader
             return result;
 
         // release loader handle
-        ze_event_pool_factory.release( hEventPool );
+        context->ze_event_pool_factory.release( hEventPool );
 
         return result;
     }
@@ -2617,7 +2594,7 @@ namespace loader
         {
             // convert driver handle to loader handle
             *phEventPool = reinterpret_cast<ze_event_pool_handle_t>(
-                ze_event_pool_factory.getInstance( *phEventPool, dditable ) );
+                context->ze_event_pool_factory.getInstance( *phEventPool, dditable ) );
         }
         catch( std::bad_alloc& )
         {
@@ -2710,7 +2687,7 @@ namespace loader
         {
             // convert driver handle to loader handle
             *phContext = reinterpret_cast<ze_context_handle_t>(
-                ze_context_factory.getInstance( *phContext, dditable ) );
+                context->ze_context_factory.getInstance( *phContext, dditable ) );
         }
         catch( std::bad_alloc& )
         {
@@ -2776,7 +2753,7 @@ namespace loader
         {
             // convert driver handle to loader handle
             *phFence = reinterpret_cast<ze_fence_handle_t>(
-                ze_fence_factory.getInstance( *phFence, dditable ) );
+                context->ze_fence_factory.getInstance( *phFence, dditable ) );
         }
         catch( std::bad_alloc& )
         {
@@ -2811,7 +2788,7 @@ namespace loader
             return result;
 
         // release loader handle
-        ze_fence_factory.release( hFence );
+        context->ze_fence_factory.release( hFence );
 
         return result;
     }
@@ -2956,9 +2933,9 @@ namespace loader
             // convert driver handle to loader handle
             ze_image_handle_t internalHandlePtr = *phImage;
             *phImage = reinterpret_cast<ze_image_handle_t>(
-                ze_image_factory.getInstance( *phImage, dditable ) );
+                context->ze_image_factory.getInstance( *phImage, dditable ) );
             // convert loader handle to driver handle and store in map
-            image_handle_map.insert({ze_image_factory.getInstance( internalHandlePtr, dditable ), internalHandlePtr});
+            context->image_handle_map.insert({context->ze_image_factory.getInstance( internalHandlePtr, dditable ), internalHandlePtr});
         }
         catch( std::bad_alloc& )
         {
@@ -2984,7 +2961,7 @@ namespace loader
             return ZE_RESULT_ERROR_UNINITIALIZED;
 
         // remove the handle from the kernel arugment map
-        image_handle_map.erase(reinterpret_cast<ze_image_object_t*>(hImage));
+        context->image_handle_map.erase(reinterpret_cast<ze_image_object_t*>(hImage));
         // convert loader handle to driver handle
         hImage = reinterpret_cast<ze_image_object_t*>( hImage )->handle;
 
@@ -2995,7 +2972,7 @@ namespace loader
             return result;
 
         // release loader handle
-        ze_image_factory.release( hImage );
+        context->ze_image_factory.release( hImage );
 
         return result;
     }
@@ -3156,7 +3133,7 @@ namespace loader
             // convert driver handle to loader handle
             if( nullptr != phDevice )
                 *phDevice = reinterpret_cast<ze_device_handle_t>(
-                    ze_device_factory.getInstance( *phDevice, dditable ) );
+                    context->ze_device_factory.getInstance( *phDevice, dditable ) );
         }
         catch( std::bad_alloc& )
         {
@@ -3448,7 +3425,7 @@ namespace loader
         {
             // convert driver handle to loader handle
             *phModule = reinterpret_cast<ze_module_handle_t>(
-                ze_module_factory.getInstance( *phModule, dditable ) );
+                context->ze_module_factory.getInstance( *phModule, dditable ) );
         }
         catch( std::bad_alloc& )
         {
@@ -3463,7 +3440,7 @@ namespace loader
             // convert driver handle to loader handle
             if( nullptr != phBuildLog )
                 *phBuildLog = reinterpret_cast<ze_module_build_log_handle_t>(
-                    ze_module_build_log_factory.getInstance( *phBuildLog, dditable ) );
+                    context->ze_module_build_log_factory.getInstance( *phBuildLog, dditable ) );
         }
         catch( std::bad_alloc& )
         {
@@ -3498,7 +3475,7 @@ namespace loader
             return result;
 
         // release loader handle
-        ze_module_factory.release( hModule );
+        context->ze_module_factory.release( hModule );
 
         return result;
     }
@@ -3535,7 +3512,7 @@ namespace loader
             // convert driver handle to loader handle
             if( nullptr != phLinkLog )
                 *phLinkLog = reinterpret_cast<ze_module_build_log_handle_t>(
-                    ze_module_build_log_factory.getInstance( *phLinkLog, dditable ) );
+                    context->ze_module_build_log_factory.getInstance( *phLinkLog, dditable ) );
         }
         catch( std::bad_alloc& )
         {
@@ -3573,7 +3550,7 @@ namespace loader
             return result;
 
         // release loader handle
-        ze_module_build_log_factory.release( hModuleBuildLog );
+        context->ze_module_build_log_factory.release( hModuleBuildLog );
 
         return result;
     }
@@ -3744,7 +3721,7 @@ namespace loader
         {
             // convert driver handle to loader handle
             *phKernel = reinterpret_cast<ze_kernel_handle_t>(
-                ze_kernel_factory.getInstance( *phKernel, dditable ) );
+                context->ze_kernel_factory.getInstance( *phKernel, dditable ) );
         }
         catch( std::bad_alloc& )
         {
@@ -3779,7 +3756,7 @@ namespace loader
             return result;
 
         // release loader handle
-        ze_kernel_factory.release( hKernel );
+        context->ze_kernel_factory.release( hKernel );
 
         return result;
     }
@@ -3920,10 +3897,10 @@ namespace loader
             // check if the arg value is a translated handle
             ze_image_object_t **imageHandle = static_cast<ze_image_object_t **>(internalArgValue);
             ze_sampler_object_t **samplerHandle = static_cast<ze_sampler_object_t **>(internalArgValue);
-            if( image_handle_map.find(*imageHandle) != image_handle_map.end() ) {
-                internalArgValue = &image_handle_map[*imageHandle];
-            } else if( sampler_handle_map.find(*samplerHandle) != sampler_handle_map.end() ) {
-                internalArgValue = &sampler_handle_map[*samplerHandle];
+            if( context->image_handle_map.find(*imageHandle) != context->image_handle_map.end() ) {
+                internalArgValue = &context->image_handle_map[*imageHandle];
+            } else if( context->sampler_handle_map.find(*samplerHandle) != context->sampler_handle_map.end() ) {
+                internalArgValue = &context->sampler_handle_map[*samplerHandle];
             }
         }
         // forward to device-driver
@@ -4433,9 +4410,9 @@ namespace loader
             // convert driver handle to loader handle
             ze_sampler_handle_t internalHandlePtr = *phSampler;
             *phSampler = reinterpret_cast<ze_sampler_handle_t>(
-                ze_sampler_factory.getInstance( *phSampler, dditable ) );
+                context->ze_sampler_factory.getInstance( *phSampler, dditable ) );
             // convert loader handle to driver handle and store in map
-            sampler_handle_map.insert({ze_sampler_factory.getInstance( internalHandlePtr, dditable ), internalHandlePtr});
+            context->sampler_handle_map.insert({context->ze_sampler_factory.getInstance( internalHandlePtr, dditable ), internalHandlePtr});
         }
         catch( std::bad_alloc& )
         {
@@ -4461,7 +4438,7 @@ namespace loader
             return ZE_RESULT_ERROR_UNINITIALIZED;
 
         // remove the handle from the kernel arugment map
-        sampler_handle_map.erase(reinterpret_cast<ze_sampler_object_t*>(hSampler));
+        context->sampler_handle_map.erase(reinterpret_cast<ze_sampler_object_t*>(hSampler));
         // convert loader handle to driver handle
         hSampler = reinterpret_cast<ze_sampler_object_t*>( hSampler )->handle;
 
@@ -4472,7 +4449,7 @@ namespace loader
             return result;
 
         // release loader handle
-        ze_sampler_factory.release( hSampler );
+        context->ze_sampler_factory.release( hSampler );
 
         return result;
     }
@@ -4596,7 +4573,7 @@ namespace loader
         {
             // convert driver handle to loader handle
             *phPhysicalMemory = reinterpret_cast<ze_physical_mem_handle_t>(
-                ze_physical_mem_factory.getInstance( *phPhysicalMemory, dditable ) );
+                context->ze_physical_mem_factory.getInstance( *phPhysicalMemory, dditable ) );
         }
         catch( std::bad_alloc& )
         {
@@ -4635,7 +4612,7 @@ namespace loader
             return result;
 
         // release loader handle
-        ze_physical_mem_factory.release( hPhysicalMemory );
+        context->ze_physical_mem_factory.release( hPhysicalMemory );
 
         return result;
     }
@@ -4940,7 +4917,7 @@ namespace loader
         {
             // convert driver handle to loader handle
             *phImageView = reinterpret_cast<ze_image_handle_t>(
-                ze_image_factory.getInstance( *phImageView, dditable ) );
+                context->ze_image_factory.getInstance( *phImageView, dditable ) );
         }
         catch( std::bad_alloc& )
         {
@@ -4989,9 +4966,9 @@ namespace loader
             // convert driver handle to loader handle
             ze_image_handle_t internalHandlePtr = *phImageView;
             *phImageView = reinterpret_cast<ze_image_handle_t>(
-                ze_image_factory.getInstance( *phImageView, dditable ) );
+                context->ze_image_factory.getInstance( *phImageView, dditable ) );
             // convert loader handle to driver handle and store in map
-            image_handle_map.insert({ze_image_factory.getInstance( internalHandlePtr, dditable ), internalHandlePtr});
+            context->image_handle_map.insert({context->ze_image_factory.getInstance( internalHandlePtr, dditable ), internalHandlePtr});
         }
         catch( std::bad_alloc& )
         {
@@ -5212,7 +5189,7 @@ namespace loader
         {
             // convert driver handle to loader handle
             *phLog = reinterpret_cast<ze_module_build_log_handle_t>(
-                ze_module_build_log_factory.getInstance( *phLog, dditable ) );
+                context->ze_module_build_log_factory.getInstance( *phLog, dditable ) );
         }
         catch( std::bad_alloc& )
         {
@@ -5286,7 +5263,7 @@ namespace loader
             // convert driver handles to loader handles
             for( size_t i = 0; ( nullptr != phVertices ) && ( i < *pCount ); ++i )
                 phVertices[ i ] = reinterpret_cast<ze_fabric_vertex_handle_t>(
-                    ze_fabric_vertex_factory.getInstance( phVertices[ i ], dditable ) );
+                    context->ze_fabric_vertex_factory.getInstance( phVertices[ i ], dditable ) );
         }
         catch( std::bad_alloc& )
         {
@@ -5334,7 +5311,7 @@ namespace loader
             // convert driver handles to loader handles
             for( size_t i = 0; ( nullptr != phSubvertices ) && ( i < *pCount ); ++i )
                 phSubvertices[ i ] = reinterpret_cast<ze_fabric_vertex_handle_t>(
-                    ze_fabric_vertex_factory.getInstance( phSubvertices[ i ], dditable ) );
+                    context->ze_fabric_vertex_factory.getInstance( phSubvertices[ i ], dditable ) );
         }
         catch( std::bad_alloc& )
         {
@@ -5398,7 +5375,7 @@ namespace loader
         {
             // convert driver handle to loader handle
             *phDevice = reinterpret_cast<ze_device_handle_t>(
-                ze_device_factory.getInstance( *phDevice, dditable ) );
+                context->ze_device_factory.getInstance( *phDevice, dditable ) );
         }
         catch( std::bad_alloc& )
         {
@@ -5437,7 +5414,7 @@ namespace loader
         {
             // convert driver handle to loader handle
             *phVertex = reinterpret_cast<ze_fabric_vertex_handle_t>(
-                ze_fabric_vertex_factory.getInstance( *phVertex, dditable ) );
+                context->ze_fabric_vertex_factory.getInstance( *phVertex, dditable ) );
         }
         catch( std::bad_alloc& )
         {
@@ -5489,7 +5466,7 @@ namespace loader
             // convert driver handles to loader handles
             for( size_t i = 0; ( nullptr != phEdges ) && ( i < *pCount ); ++i )
                 phEdges[ i ] = reinterpret_cast<ze_fabric_edge_handle_t>(
-                    ze_fabric_edge_factory.getInstance( phEdges[ i ], dditable ) );
+                    context->ze_fabric_edge_factory.getInstance( phEdges[ i ], dditable ) );
         }
         catch( std::bad_alloc& )
         {
@@ -5529,7 +5506,7 @@ namespace loader
         {
             // convert driver handle to loader handle
             *phVertexA = reinterpret_cast<ze_fabric_vertex_handle_t>(
-                ze_fabric_vertex_factory.getInstance( *phVertexA, dditable ) );
+                context->ze_fabric_vertex_factory.getInstance( *phVertexA, dditable ) );
         }
         catch( std::bad_alloc& )
         {
@@ -5540,7 +5517,7 @@ namespace loader
         {
             // convert driver handle to loader handle
             *phVertexB = reinterpret_cast<ze_fabric_vertex_handle_t>(
-                ze_fabric_vertex_factory.getInstance( *phVertexB, dditable ) );
+                context->ze_fabric_vertex_factory.getInstance( *phVertexB, dditable ) );
         }
         catch( std::bad_alloc& )
         {
@@ -5648,7 +5625,7 @@ namespace loader
         {
             // convert driver handle to loader handle
             *phBuilder = reinterpret_cast<ze_rtas_builder_exp_handle_t>(
-                ze_rtas_builder_exp_factory.getInstance( *phBuilder, dditable ) );
+                context->ze_rtas_builder_exp_factory.getInstance( *phBuilder, dditable ) );
         }
         catch( std::bad_alloc& )
         {
@@ -5774,7 +5751,7 @@ namespace loader
             return result;
 
         // release loader handle
-        ze_rtas_builder_exp_factory.release( hBuilder );
+        context->ze_rtas_builder_exp_factory.release( hBuilder );
 
         return result;
     }
@@ -5808,7 +5785,7 @@ namespace loader
         {
             // convert driver handle to loader handle
             *phParallelOperation = reinterpret_cast<ze_rtas_parallel_operation_exp_handle_t>(
-                ze_rtas_parallel_operation_exp_factory.getInstance( *phParallelOperation, dditable ) );
+                context->ze_rtas_parallel_operation_exp_factory.getInstance( *phParallelOperation, dditable ) );
         }
         catch( std::bad_alloc& )
         {
@@ -5892,7 +5869,7 @@ namespace loader
             return result;
 
         // release loader handle
-        ze_rtas_parallel_operation_exp_factory.release( hParallelOperation );
+        context->ze_rtas_parallel_operation_exp_factory.release( hParallelOperation );
 
         return result;
     }
@@ -5983,7 +5960,7 @@ namespace loader
         {
             // convert driver handle to loader handle
             *phClonedCommandList = reinterpret_cast<ze_command_list_handle_t>(
-                ze_command_list_factory.getInstance( *phClonedCommandList, dditable ) );
+                context->ze_command_list_factory.getInstance( *phClonedCommandList, dditable ) );
         }
         catch( std::bad_alloc& )
         {
