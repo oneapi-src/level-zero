@@ -124,7 +124,7 @@ namespace loader
         }
     }
 
-    ze_result_t context_t::check_drivers(ze_init_flags_t flags, ze_global_dditable_t *globalInitStored) {
+    ze_result_t context_t::check_drivers(ze_init_flags_t flags, ze_global_dditable_t *globalInitStored, bool *requireDdiReinit) {
         if (debugTraceEnabled) {
             std::string message = "check_drivers(" + std::string("flags=") + loader::to_string(flags) + ")";
             debug_trace_message(message, "");
@@ -156,6 +156,10 @@ namespace loader
                     debug_trace_message(errorMessage, loader::to_string(result));
                 }
                 it = drivers.erase(it);
+                // If the number of drivers is now ==1, then we need to reinit the ddi tables to pass through.
+                if (drivers.size() == 1) {
+                    *requireDdiReinit = true;
+                }
                 if(return_first_driver_result)
                     return result;
             }
@@ -211,6 +215,10 @@ namespace loader
 
         // Use the previously init ddi table pointer to zeInit to allow for intercept of the zeInit calls
         ze_result_t res = globalInitStored->pfnInit(flags);
+        // Verify that this driver successfully init in the call above.
+        if (driver.initStatus != ZE_RESULT_SUCCESS) {
+            res = driver.initStatus;
+        }
         if (debugTraceEnabled) {
             std::string message = "init driver " + driver.name + " zeInit(" + loader::to_string(flags) + ") returning ";
             debug_trace_message(message, loader::to_string(res));
