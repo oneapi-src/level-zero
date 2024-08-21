@@ -156,7 +156,10 @@ namespace loader
                     debug_trace_message(errorMessage, loader::to_string(result));
                 }
                 it = drivers.erase(it);
-                *requireDdiReinit = true;
+                // If the number of drivers is now ==1, then we need to reinit the ddi tables to pass through.
+                if (drivers.size() == 1) {
+                    *requireDdiReinit = true;
+                }
                 if(return_first_driver_result)
                     return result;
             }
