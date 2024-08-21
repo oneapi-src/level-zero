@@ -111,7 +111,9 @@ namespace ze_lib
             bool requireDdiReinit = false;
             result = zelLoaderDriverCheck(flags, &ze_lib::context->initialzeDdiTable.Global, &requireDdiReinit);
             // If a driver was removed from the driver list, then the ddi tables need to be reinit to allow for passthru directly to the driver.
-            if (requireDdiReinit) {
+            // If ZET_ENABLE_PROGRAM_INSTRUMENTATION is enabled, then reInit is not possible due to the functions being intercepted with the previous ddi tables.
+            auto programInstrumentationEnabled = getenv_tobool( "ZET_ENABLE_PROGRAM_INSTRUMENTATION" );
+            if (requireDdiReinit && !programInstrumentationEnabled) {
                 // reInit the ZE DDI Tables
                 if( ZE_RESULT_SUCCESS == result )
                 {
