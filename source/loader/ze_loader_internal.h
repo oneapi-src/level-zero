@@ -96,6 +96,8 @@ namespace loader
         zet_debug_session_factory_t         zet_debug_session_factory;
         zet_metric_programmable_exp_factory_t   zet_metric_programmable_exp_factory;
         ///////////////////////////////////////////////////////////////////////////////
+        std::mutex image_handle_map_lock;
+        std::mutex sampler_handle_map_lock;
         std::unordered_map<ze_image_object_t *, ze_image_handle_t>            image_handle_map;
         std::unordered_map<ze_sampler_object_t *, ze_sampler_handle_t>        sampler_handle_map;
         ze_api_version_t version = ZE_API_VERSION_CURRENT;
