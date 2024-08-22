@@ -205,7 +205,7 @@ namespace loader
                 return ZE_RESULT_ERROR_UNINITIALIZED;
             }
 
-            // Use the previously init ddi table pointer to zeInit to allow for intercept of the zeInit calls
+            // Use the previously init ddi table pointer to zesInit to allow for intercept of the zesInit calls
             ze_result_t res = sysmanGlobalInitStored->pfnInit(flags);
             // Verify that this driver successfully init in the call above.
             if (driver.initStatus != ZE_RESULT_SUCCESS) {

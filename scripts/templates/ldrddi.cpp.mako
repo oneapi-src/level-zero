@@ -137,18 +137,14 @@ namespace loader
         // remove the handle from the kernel arugment map
         {
             std::lock_guard<std::mutex> lock(context->image_handle_map_lock);
-            if( context->image_handle_map.find(reinterpret_cast<ze_image_object_t*>(hImage)) != context->image_handle_map.end() ) {
-                context->image_handle_map.erase(reinterpret_cast<ze_image_object_t*>(hImage));
-            }
+            context->image_handle_map.erase(reinterpret_cast<ze_image_object_t*>(hImage));
         }
         %endif
         %if re.match(r"\w+SamplerDestroy$", th.make_func_name(n, tags, obj)):
         // remove the handle from the kernel arugment map
         {
             std::lock_guard<std::mutex> lock(context->sampler_handle_map_lock);
-            if( context->sampler_handle_map.find(reinterpret_cast<ze_sampler_object_t*>(hSampler)) != context->sampler_handle_map.end() ) {
-                context->sampler_handle_map.erase(reinterpret_cast<ze_sampler_object_t*>(hSampler));
-            }
+            context->sampler_handle_map.erase(reinterpret_cast<ze_sampler_object_t*>(hSampler));
         }
         %endif
         // convert loader handle to driver handle
