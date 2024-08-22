@@ -171,6 +171,8 @@ namespace loader
             }
         }
         %endif
+        ## Workaround due to incorrect defintion of phWaitEvents in the ze headers which missed the range values.
+        ## To be removed once the headers have been updated in a new spec release.
         %if re.match(r"\w+CommandListAppendMetricQueryEnd$", th.make_func_name(n, tags, obj)):
         // convert loader handles to driver handles
         auto phWaitEventsLocal = new ze_event_handle_t [numWaitEvents];
