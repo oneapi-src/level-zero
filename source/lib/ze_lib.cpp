@@ -104,12 +104,13 @@ namespace ze_lib
         // End DDI Table Inits
 
         // Check which drivers and layers can be init on this system.
-        if( ZE_RESULT_SUCCESS == result && !sysmanOnly)
+        // If the driver check has already been called by zesInit or zeinit, then this is skipped.
+        if( ZE_RESULT_SUCCESS == result && !driverCheckCompleted)
         {
             // Check which drivers support the ze_driver_flag_t specified
             // No need to check if only initializing sysman
             bool requireDdiReinit = false;
-            result = zelLoaderDriverCheck(flags, &ze_lib::context->initialzeDdiTable.Global, &requireDdiReinit);
+            result = zelLoaderDriverCheck(flags, &ze_lib::context->initialzeDdiTable.Global, &ze_lib::context->initialzesDdiTable.Global, &requireDdiReinit, sysmanOnly);
             // If a driver was removed from the driver list, then the ddi tables need to be reinit to allow for passthru directly to the driver.
             // If ZET_ENABLE_PROGRAM_INSTRUMENTATION is enabled, then reInit is not possible due to the functions being intercepted with the previous ddi tables.
             auto programInstrumentationEnabled = getenv_tobool( "ZET_ENABLE_PROGRAM_INSTRUMENTATION" );
@@ -130,6 +131,7 @@ namespace ze_lib
                     result = zesDdiTableInit();
                 }
             }
+            driverCheckCompleted = true;
         }
 
         if( ZE_RESULT_SUCCESS == result )
