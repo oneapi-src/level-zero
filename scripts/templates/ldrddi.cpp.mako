@@ -135,11 +135,17 @@ namespace loader
         %else:
         %if re.match(r"\w+ImageDestroy$", th.make_func_name(n, tags, obj)):
         // remove the handle from the kernel arugment map
-        context->image_handle_map.erase(reinterpret_cast<ze_image_object_t*>(hImage));
+        {
+            std::lock_guard<std::mutex> lock(context->image_handle_map_lock);
+            context->image_handle_map.erase(reinterpret_cast<ze_image_object_t*>(hImage));
+        }
         %endif
         %if re.match(r"\w+SamplerDestroy$", th.make_func_name(n, tags, obj)):
         // remove the handle from the kernel arugment map
-        context->sampler_handle_map.erase(reinterpret_cast<ze_sampler_object_t*>(hSampler));
+        {
+            std::lock_guard<std::mutex> lock(context->sampler_handle_map_lock);
+            context->sampler_handle_map.erase(reinterpret_cast<ze_sampler_object_t*>(hSampler));
+        }
         %endif
         // convert loader handle to driver handle
         ${item['name']} = reinterpret_cast<${item['obj']}*>( ${item['name']} )->handle;
@@ -154,13 +160,29 @@ namespace loader
             // check if the arg value is a translated handle
             ze_image_object_t **imageHandle = static_cast<ze_image_object_t **>(internalArgValue);
             ze_sampler_object_t **samplerHandle = static_cast<ze_sampler_object_t **>(internalArgValue);
-            if( context->image_handle_map.find(*imageHandle) != context->image_handle_map.end() ) {
-                internalArgValue = &context->image_handle_map[*imageHandle];
-            } else if( context->sampler_handle_map.find(*samplerHandle) != context->sampler_handle_map.end() ) {
-                internalArgValue = &context->sampler_handle_map[*samplerHandle];
+            {
+                std::lock_guard<std::mutex> image_lock(context->image_handle_map_lock);
+                std::lock_guard<std::mutex> sampler_lock(context->sampler_handle_map_lock);
+                if( context->image_handle_map.find(*imageHandle) != context->image_handle_map.end() ) {
+                    internalArgValue = &context->image_handle_map[*imageHandle];
+                } else if( context->sampler_handle_map.find(*samplerHandle) != context->sampler_handle_map.end() ) {
+                    internalArgValue = &context->sampler_handle_map[*samplerHandle];
+                }
             }
         }
         %endif
+        ## Workaround due to incorrect defintion of phWaitEvents in the ze headers which missed the range values.
+        ## To be removed once the headers have been updated in a new spec release.
+        %if re.match(r"\w+CommandListAppendMetricQueryEnd$", th.make_func_name(n, tags, obj)):
+        // convert loader handles to driver handles
+        auto phWaitEventsLocal = new ze_event_handle_t [numWaitEvents];
+        for( size_t i = 0; ( nullptr != phWaitEvents ) && ( i < numWaitEvents ); ++i )
+            phWaitEventsLocal[ i ] = reinterpret_cast<ze_event_object_t*>( phWaitEvents[ i ] )->handle;
+
+        // forward to device-driver
+        result = pfnAppendMetricQueryEnd( hCommandList, hMetricQuery, hSignalEvent, numWaitEvents, phWaitEventsLocal );
+        delete []phWaitEventsLocal;
+        %else:
         // forward to device-driver
         %if add_local:
         result = ${th.make_pfn_name(n, tags, obj)}( ${", ".join(th.make_param_lines(n, tags, obj, format=["name", "local"]))} );
@@ -172,6 +194,7 @@ namespace loader
         result = pfnSetArgumentValue( hKernel, argIndex, argSize, const_cast<const void *>(internalArgValue) );
         %else:
         result = ${th.make_pfn_name(n, tags, obj)}( ${", ".join(th.make_param_lines(n, tags, obj, format=["name"]))} );
+        %endif
         %endif
         %endif
 <%
@@ -210,11 +233,17 @@ namespace loader
                 context->${item['factory']}.getInstance( *${item['name']}, dditable ) );
             %if re.match(r"\w+ImageCreate$", th.make_func_name(n, tags, obj)) or re.match(r"\w+ImageViewCreateExp$", th.make_func_name(n, tags, obj)):
             // convert loader handle to driver handle and store in map
-            context->image_handle_map.insert({context->ze_image_factory.getInstance( internalHandlePtr, dditable ), internalHandlePtr});
+            {
+                std::lock_guard<std::mutex> lock(context->image_handle_map_lock);
+                context->image_handle_map.insert({context->ze_image_factory.getInstance( internalHandlePtr, dditable ), internalHandlePtr});
+            }
             %endif
             %if re.match(r"\w+SamplerCreate$", th.make_func_name(n, tags, obj)):
             // convert loader handle to driver handle and store in map
-            context->sampler_handle_map.insert({context->ze_sampler_factory.getInstance( internalHandlePtr, dditable ), internalHandlePtr});
+            {
+                std::lock_guard<std::mutex> lock(context->sampler_handle_map_lock);
+                context->sampler_handle_map.insert({context->ze_sampler_factory.getInstance( internalHandlePtr, dditable ), internalHandlePtr});
+            }
             %endif
             %endif
             %endif

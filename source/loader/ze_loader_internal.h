@@ -96,6 +96,8 @@ namespace loader
         zet_debug_session_factory_t         zet_debug_session_factory;
         zet_metric_programmable_exp_factory_t   zet_metric_programmable_exp_factory;
         ///////////////////////////////////////////////////////////////////////////////
+        std::mutex image_handle_map_lock;
+        std::mutex sampler_handle_map_lock;
         std::unordered_map<ze_image_object_t *, ze_image_handle_t>            image_handle_map;
         std::unordered_map<ze_sampler_object_t *, ze_sampler_handle_t>        sampler_handle_map;
         ze_api_version_t version = ZE_API_VERSION_CURRENT;
@@ -110,10 +112,10 @@ namespace loader
         std::vector<zel_component_version_t> compVersions;
         const char *LOADER_COMP_NAME = "loader";
 
-        ze_result_t check_drivers(ze_init_flags_t flags, ze_global_dditable_t *globalInitStored, bool *requireDdiReinit);
+        ze_result_t check_drivers(ze_init_flags_t flags, ze_global_dditable_t *globalInitStored, zes_global_dditable_t *sysmanGlobalInitStored, bool *requireDdiReinit, bool sysmanOnly);
         void debug_trace_message(std::string errorMessage, std::string errorValue);
         ze_result_t init();
-        ze_result_t init_driver(driver_t driver, ze_init_flags_t flags, ze_global_dditable_t *globalInitStored);
+        ze_result_t init_driver(driver_t driver, ze_init_flags_t flags, ze_global_dditable_t *globalInitStored, zes_global_dditable_t *sysmanGlobalInitStored, bool sysmanOnly);
         void add_loader_version();
         ~context_t();
         bool intercept_enabled = false;

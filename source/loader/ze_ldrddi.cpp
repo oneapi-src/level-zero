@@ -2935,7 +2935,10 @@ namespace loader
             *phImage = reinterpret_cast<ze_image_handle_t>(
                 context->ze_image_factory.getInstance( *phImage, dditable ) );
             // convert loader handle to driver handle and store in map
-            context->image_handle_map.insert({context->ze_image_factory.getInstance( internalHandlePtr, dditable ), internalHandlePtr});
+            {
+                std::lock_guard<std::mutex> lock(context->image_handle_map_lock);
+                context->image_handle_map.insert({context->ze_image_factory.getInstance( internalHandlePtr, dditable ), internalHandlePtr});
+            }
         }
         catch( std::bad_alloc& )
         {
@@ -2961,7 +2964,10 @@ namespace loader
             return ZE_RESULT_ERROR_UNINITIALIZED;
 
         // remove the handle from the kernel arugment map
-        context->image_handle_map.erase(reinterpret_cast<ze_image_object_t*>(hImage));
+        {
+            std::lock_guard<std::mutex> lock(context->image_handle_map_lock);
+            context->image_handle_map.erase(reinterpret_cast<ze_image_object_t*>(hImage));
+        }
         // convert loader handle to driver handle
         hImage = reinterpret_cast<ze_image_object_t*>( hImage )->handle;
 
@@ -3897,10 +3903,14 @@ namespace loader
             // check if the arg value is a translated handle
             ze_image_object_t **imageHandle = static_cast<ze_image_object_t **>(internalArgValue);
             ze_sampler_object_t **samplerHandle = static_cast<ze_sampler_object_t **>(internalArgValue);
-            if( context->image_handle_map.find(*imageHandle) != context->image_handle_map.end() ) {
-                internalArgValue = &context->image_handle_map[*imageHandle];
-            } else if( context->sampler_handle_map.find(*samplerHandle) != context->sampler_handle_map.end() ) {
-                internalArgValue = &context->sampler_handle_map[*samplerHandle];
+            {
+                std::lock_guard<std::mutex> image_lock(context->image_handle_map_lock);
+                std::lock_guard<std::mutex> sampler_lock(context->sampler_handle_map_lock);
+                if( context->image_handle_map.find(*imageHandle) != context->image_handle_map.end() ) {
+                    internalArgValue = &context->image_handle_map[*imageHandle];
+                } else if( context->sampler_handle_map.find(*samplerHandle) != context->sampler_handle_map.end() ) {
+                    internalArgValue = &context->sampler_handle_map[*samplerHandle];
+                }
             }
         }
         // forward to device-driver
@@ -4412,7 +4422,10 @@ namespace loader
             *phSampler = reinterpret_cast<ze_sampler_handle_t>(
                 context->ze_sampler_factory.getInstance( *phSampler, dditable ) );
             // convert loader handle to driver handle and store in map
-            context->sampler_handle_map.insert({context->ze_sampler_factory.getInstance( internalHandlePtr, dditable ), internalHandlePtr});
+            {
+                std::lock_guard<std::mutex> lock(context->sampler_handle_map_lock);
+                context->sampler_handle_map.insert({context->ze_sampler_factory.getInstance( internalHandlePtr, dditable ), internalHandlePtr});
+            }
         }
         catch( std::bad_alloc& )
         {
@@ -4438,7 +4451,10 @@ namespace loader
             return ZE_RESULT_ERROR_UNINITIALIZED;
 
         // remove the handle from the kernel arugment map
-        context->sampler_handle_map.erase(reinterpret_cast<ze_sampler_object_t*>(hSampler));
+        {
+            std::lock_guard<std::mutex> lock(context->sampler_handle_map_lock);
+            context->sampler_handle_map.erase(reinterpret_cast<ze_sampler_object_t*>(hSampler));
+        }
         // convert loader handle to driver handle
         hSampler = reinterpret_cast<ze_sampler_object_t*>( hSampler )->handle;
 
@@ -4968,7 +4984,10 @@ namespace loader
             *phImageView = reinterpret_cast<ze_image_handle_t>(
                 context->ze_image_factory.getInstance( *phImageView, dditable ) );
             // convert loader handle to driver handle and store in map
-            context->image_handle_map.insert({context->ze_image_factory.getInstance( internalHandlePtr, dditable ), internalHandlePtr});
+            {
+                std::lock_guard<std::mutex> lock(context->image_handle_map_lock);
+                context->image_handle_map.insert({context->ze_image_factory.getInstance( internalHandlePtr, dditable ), internalHandlePtr});
+            }
         }
         catch( std::bad_alloc& )
         {
