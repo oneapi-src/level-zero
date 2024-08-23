@@ -36,7 +36,6 @@ namespace ze_lib
 
         std::once_flag initOnce;
         std::once_flag initOnceSysMan;
-        bool driverCheckCompleted = false;
 
         ze_result_t Init(ze_init_flags_t flags, bool sysmanOnly);
 

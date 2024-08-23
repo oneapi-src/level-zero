@@ -104,34 +104,37 @@ namespace ze_lib
         // End DDI Table Inits
 
         // Check which drivers and layers can be init on this system.
-        // If the driver check has already been called by zesInit or zeinit, then this is skipped.
-        if( ZE_RESULT_SUCCESS == result && !driverCheckCompleted)
+        if( ZE_RESULT_SUCCESS == result)
         {
             // Check which drivers support the ze_driver_flag_t specified
             // No need to check if only initializing sysman
             bool requireDdiReinit = false;
+            auto sysmanEnv = getenv_tobool( "ZES_ENABLE_SYSMAN" );
             result = zelLoaderDriverCheck(flags, &ze_lib::context->initialzeDdiTable.Global, &ze_lib::context->initialzesDdiTable.Global, &requireDdiReinit, sysmanOnly);
             // If a driver was removed from the driver list, then the ddi tables need to be reinit to allow for passthru directly to the driver.
             // If ZET_ENABLE_PROGRAM_INSTRUMENTATION is enabled, then reInit is not possible due to the functions being intercepted with the previous ddi tables.
             auto programInstrumentationEnabled = getenv_tobool( "ZET_ENABLE_PROGRAM_INSTRUMENTATION" );
             if (requireDdiReinit && !programInstrumentationEnabled) {
-                // reInit the ZE DDI Tables
-                if( ZE_RESULT_SUCCESS == result )
-                {
-                    result = zeDdiTableInit();
+                if (!sysmanOnly) {
+                    // reInit the ZE DDI Tables
+                    if( ZE_RESULT_SUCCESS == result )
+                    {
+                        result = zeDdiTableInit();
+                    }
+                    // reInit the ZET DDI Tables
+                    if( ZE_RESULT_SUCCESS == result )
+                    {
+                        result = zetDdiTableInit();
+                    }
                 }
-                // reInit the ZET DDI Tables
-                if( ZE_RESULT_SUCCESS == result )
-                {
-                    result = zetDdiTableInit();
-                }
-                // reInit the ZES DDI Tables
-                if( ZE_RESULT_SUCCESS == result )
-                {
-                    result = zesDdiTableInit();
+                if (sysmanOnly || sysmanEnv) {
+                    // reInit the ZES DDI Tables
+                    if( ZE_RESULT_SUCCESS == result )
+                    {
+                        result = zesDdiTableInit();
+                    }
                 }
             }
-            driverCheckCompleted = true;
         }
 
         if( ZE_RESULT_SUCCESS == result )

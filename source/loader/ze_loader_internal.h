@@ -102,7 +102,10 @@ namespace loader
         std::unordered_map<ze_sampler_object_t *, ze_sampler_handle_t>        sampler_handle_map;
         ze_api_version_t version = ZE_API_VERSION_CURRENT;
 
-        driver_vector_t drivers;
+        driver_vector_t allDrivers;
+        driver_vector_t zeDrivers;
+        driver_vector_t zesDrivers;
+        driver_vector_t *sysmanInstanceDrivers;
 
         HMODULE validationLayer = nullptr;
         HMODULE tracingLayer = nullptr;

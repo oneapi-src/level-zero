@@ -130,34 +130,29 @@ namespace loader
             debug_trace_message(message, "");
         }
         bool return_first_driver_result=false;
-        if(drivers.size()==1) {
+        std::string initName = "zeInit";
+        driver_vector_t *drivers = &zeDrivers;
+        // If this is sysmanOnly check_drivers, then zesInit is being called and we need to use zesDrivers.
+        if (sysmanOnly) {
+            drivers = &zesDrivers;
+            initName = "zesInit";
+        }
+        if(drivers->size()==1) {
             return_first_driver_result=true;
         }
 
-        for(auto it = drivers.begin(); it != drivers.end(); )
+        for(auto it = drivers->begin(); it != drivers->end(); )
         {
             std::string freeLibraryErrorValue;
             ze_result_t result = init_driver(*it, flags, globalInitStored, sysmanGlobalInitStored, sysmanOnly);
             if(result != ZE_RESULT_SUCCESS) {
-                if (it->handle) {
-                    auto free_result = FREE_DRIVER_LIBRARY(it->handle);
-                    auto failure = FREE_DRIVER_LIBRARY_FAILURE_CHECK(free_result);
-                    if (debugTraceEnabled && failure) {
-                        GET_LIBRARY_ERROR(freeLibraryErrorValue);
-                        if (!freeLibraryErrorValue.empty()) {
-                            std::string errorMessage = "Free Library Failed on " + it->name + " with ";
-                            debug_trace_message(errorMessage, freeLibraryErrorValue);
-                            freeLibraryErrorValue.clear();
-                        }
-                    }
-                }
                 if (debugTraceEnabled) {
-                    std::string errorMessage = "Check Drivers Failed on " + it->name + " , driver will be removed. zeInit failed with ";
+                    std::string errorMessage = "Check Drivers Failed on " + it->name + " , driver will be removed. " + initName + " failed with ";
                     debug_trace_message(errorMessage, loader::to_string(result));
                 }
-                it = drivers.erase(it);
+                it = drivers->erase(it);
                 // If the number of drivers is now ==1, then we need to reinit the ddi tables to pass through.
-                if (drivers.size() == 1) {
+                if (drivers->size() == 1) {
                     *requireDdiReinit = true;
                 }
                 if(return_first_driver_result)
@@ -168,7 +163,7 @@ namespace loader
             }
         }
 
-        if(drivers.size() == 0)
+        if(drivers->size() == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
 
         return ZE_RESULT_SUCCESS;
@@ -334,7 +329,11 @@ namespace loader
             zel_logger->get_base_logger()->info("Loader Version {}.{}.{} {}", LOADER_VERSION_MAJOR, LOADER_VERSION_MINOR, LOADER_VERSION_PATCH, LOADER_VERSION_SHA);
 
 
-        drivers.reserve( discoveredDrivers.size() + getenv_tobool( "ZE_ENABLE_NULL_DRIVER" ) );
+        // To allow for two different sets of drivers to be in use between sysman and core/tools, we use and store the drivers in two vectors.
+        // alldrivers stores all the drivers for cleanup when the library exits.
+        zeDrivers.reserve( discoveredDrivers.size() + getenv_tobool( "ZE_ENABLE_NULL_DRIVER" ) );
+        zesDrivers.reserve( discoveredDrivers.size() + getenv_tobool( "ZE_ENABLE_NULL_DRIVER" ) );
+        allDrivers.reserve( discoveredDrivers.size() + getenv_tobool( "ZE_ENABLE_NULL_DRIVER" ) );
         if( getenv_tobool( "ZE_ENABLE_NULL_DRIVER" ) )
         {
             zel_logger->log_info("Enabling Null Driver");
@@ -345,9 +344,9 @@ namespace loader
             }
             if( NULL != handle )
             {
-                drivers.emplace_back();
-                drivers.rbegin()->handle = handle;
-                drivers.rbegin()->name = "ze_null";
+                allDrivers.emplace_back();
+                allDrivers.rbegin()->handle = handle;
+                allDrivers.rbegin()->name = "ze_null";
             } else if (debugTraceEnabled) {
                 GET_LIBRARY_ERROR(loadLibraryErrorValue);
                 std::string errorMessage = "Load Library of " + std::string(MAKE_LIBRARY_NAME( "ze_null", L0_LOADER_VERSION )) + " failed with ";
@@ -365,9 +364,9 @@ namespace loader
             }
             if( NULL != handle )
             {
-                drivers.emplace_back();
-                drivers.rbegin()->handle = handle;
-                drivers.rbegin()->name = name;
+                allDrivers.emplace_back();
+                allDrivers.rbegin()->handle = handle;
+                allDrivers.rbegin()->name = name;
             } else if (debugTraceEnabled) {
                 GET_LIBRARY_ERROR(loadLibraryErrorValue);
                 std::string errorMessage = "Load Library of " + name + " failed with ";
@@ -375,10 +374,12 @@ namespace loader
                 loadLibraryErrorValue.clear();
             }
         }
-        if(drivers.size()==0){
+        if(allDrivers.size()==0){
             zel_logger->log_error("0 Drivers Discovered");
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
+        std::copy(allDrivers.begin(), allDrivers.end(), std::back_inserter(zeDrivers));
+        std::copy(allDrivers.begin(), allDrivers.end(), std::back_inserter(zesDrivers));
 
         add_loader_version();
         std::string loaderLibraryPath;
@@ -437,8 +438,14 @@ namespace loader
         }
 
         forceIntercept = getenv_tobool( "ZE_ENABLE_LOADER_INTERCEPT" );
+        auto sysmanEnv = getenv_tobool( "ZES_ENABLE_SYSMAN" );
 
-        if(forceIntercept || drivers.size() > 1){
+        sysmanInstanceDrivers = &zesDrivers;
+        if (sysmanEnv) {
+            sysmanInstanceDrivers = &zeDrivers;
+        }
+
+        if(forceIntercept || allDrivers.size() > 1){
              intercept_enabled = true;
              zel_logger->log_info("Intercept Enabled");
         }
@@ -478,7 +485,7 @@ namespace loader
             }
         }
 
-        for( auto& drv : drivers )
+        for( auto& drv : allDrivers )
         {
             if (drv.handle) {
                 auto free_result = FREE_DRIVER_LIBRARY( drv.handle );

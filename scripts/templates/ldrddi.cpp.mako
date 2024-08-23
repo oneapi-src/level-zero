@@ -40,7 +40,11 @@ namespace loader
 
         %if re.match(r"Init", obj['name']):
         bool atLeastOneDriverValid = false;
-        for( auto& drv : context->drivers )
+        %if namespace != "zes":
+        for( auto& drv : loader::context->zeDrivers )
+        %else:
+        for( auto& drv : *loader::context->sysmanInstanceDrivers )
+        %endif
         {
             if(drv.initStatus != ZE_RESULT_SUCCESS)
                 continue;
@@ -55,7 +59,11 @@ namespace loader
         %elif re.match(r"\w+DriverGet$", th.make_func_name(n, tags, obj)):
         uint32_t total_driver_handle_count = 0;
 
-        for( auto& drv : context->drivers )
+        %if namespace != "zes":
+        for( auto& drv : loader::context->zeDrivers )
+        %else:
+        for( auto& drv : *loader::context->sysmanInstanceDrivers )
+        %endif
         {
             if(drv.initStatus != ZE_RESULT_SUCCESS)
                 continue;
@@ -293,7 +301,12 @@ ${tbl['export']['name']}(
     %endfor
     )
 {
-    if( loader::context->drivers.size() < 1 )
+    %if namespace != "zes":
+    if( loader::context->zeDrivers.size() < 1 )
+    %else:
+    if( loader::context->sysmanInstanceDrivers->size() < 1 )
+    %endif
+
         return ${X}_RESULT_ERROR_UNINITIALIZED;
 
     if( nullptr == pDdiTable )
@@ -308,7 +321,11 @@ ${tbl['export']['name']}(
     bool atLeastOneDriverValid = false;
     %endif
     // Load the device-driver DDI tables
-    for( auto& drv : loader::context->drivers )
+    %if namespace != "zes":
+    for( auto& drv : loader::context->zeDrivers )
+    %else:
+    for( auto& drv : *loader::context->sysmanInstanceDrivers )
+    %endif
     {
         if(drv.initStatus != ZE_RESULT_SUCCESS)
             continue;
@@ -344,7 +361,11 @@ ${tbl['export']['name']}(
 
     if( ${X}_RESULT_SUCCESS == result )
     {
-        if( ( loader::context->drivers.size() > 1 ) || loader::context->forceIntercept )
+        %if namespace != "zes":
+        if( ( loader::context->zeDrivers.size() > 1 ) || loader::context->forceIntercept )
+        %else:
+        if( ( loader::context->sysmanInstanceDrivers->size() > 1 ) || loader::context->forceIntercept )
+        %endif
         {
             // return pointers to loader's DDIs
             %for obj in tbl['functions']:
@@ -362,7 +383,11 @@ ${tbl['export']['name']}(
         else
         {
             // return pointers directly to driver's DDIs
-            *pDdiTable = loader::context->drivers.front().dditable.${n}.${tbl['name']};
+            %if namespace != "zes":
+            *pDdiTable = loader::context->zeDrivers.front().dditable.${n}.${tbl['name']};
+            %else:
+            *pDdiTable = loader::context->sysmanInstanceDrivers->front().dditable.${n}.${tbl['name']};
+            %endif
         }
     }
 

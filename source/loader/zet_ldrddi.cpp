@@ -1811,7 +1811,8 @@ zetGetMetricProgrammableExpProcAddrTable(
     zet_metric_programmable_exp_dditable_t* pDdiTable   ///< [in,out] pointer to table of DDI function pointers
     )
 {
-    if( loader::context->drivers.size() < 1 )
+    if( loader::context->zeDrivers.size() < 1 )
+
         return ZE_RESULT_ERROR_UNINITIALIZED;
 
     if( nullptr == pDdiTable )
@@ -1823,7 +1824,7 @@ zetGetMetricProgrammableExpProcAddrTable(
     ze_result_t result = ZE_RESULT_SUCCESS;
 
     // Load the device-driver DDI tables
-    for( auto& drv : loader::context->drivers )
+    for( auto& drv : loader::context->zeDrivers )
     {
         if(drv.initStatus != ZE_RESULT_SUCCESS)
             continue;
@@ -1837,7 +1838,7 @@ zetGetMetricProgrammableExpProcAddrTable(
 
     if( ZE_RESULT_SUCCESS == result )
     {
-        if( ( loader::context->drivers.size() > 1 ) || loader::context->forceIntercept )
+        if( ( loader::context->zeDrivers.size() > 1 ) || loader::context->forceIntercept )
         {
             // return pointers to loader's DDIs
             pDdiTable->pfnGetExp                                   = loader::zetMetricProgrammableGetExp;
@@ -1848,7 +1849,7 @@ zetGetMetricProgrammableExpProcAddrTable(
         else
         {
             // return pointers directly to driver's DDIs
-            *pDdiTable = loader::context->drivers.front().dditable.zet.MetricProgrammableExp;
+            *pDdiTable = loader::context->zeDrivers.front().dditable.zet.MetricProgrammableExp;
         }
     }
 
@@ -1880,7 +1881,8 @@ zetGetDeviceProcAddrTable(
     zet_device_dditable_t* pDdiTable                ///< [in,out] pointer to table of DDI function pointers
     )
 {
-    if( loader::context->drivers.size() < 1 )
+    if( loader::context->zeDrivers.size() < 1 )
+
         return ZE_RESULT_ERROR_UNINITIALIZED;
 
     if( nullptr == pDdiTable )
@@ -1893,7 +1895,7 @@ zetGetDeviceProcAddrTable(
 
     bool atLeastOneDriverValid = false;
     // Load the device-driver DDI tables
-    for( auto& drv : loader::context->drivers )
+    for( auto& drv : loader::context->zeDrivers )
     {
         if(drv.initStatus != ZE_RESULT_SUCCESS)
             continue;
@@ -1915,7 +1917,7 @@ zetGetDeviceProcAddrTable(
 
     if( ZE_RESULT_SUCCESS == result )
     {
-        if( ( loader::context->drivers.size() > 1 ) || loader::context->forceIntercept )
+        if( ( loader::context->zeDrivers.size() > 1 ) || loader::context->forceIntercept )
         {
             // return pointers to loader's DDIs
             pDdiTable->pfnGetDebugProperties                       = loader::zetDeviceGetDebugProperties;
@@ -1923,7 +1925,7 @@ zetGetDeviceProcAddrTable(
         else
         {
             // return pointers directly to driver's DDIs
-            *pDdiTable = loader::context->drivers.front().dditable.zet.Device;
+            *pDdiTable = loader::context->zeDrivers.front().dditable.zet.Device;
         }
     }
 
@@ -1955,7 +1957,8 @@ zetGetContextProcAddrTable(
     zet_context_dditable_t* pDdiTable               ///< [in,out] pointer to table of DDI function pointers
     )
 {
-    if( loader::context->drivers.size() < 1 )
+    if( loader::context->zeDrivers.size() < 1 )
+
         return ZE_RESULT_ERROR_UNINITIALIZED;
 
     if( nullptr == pDdiTable )
@@ -1968,7 +1971,7 @@ zetGetContextProcAddrTable(
 
     bool atLeastOneDriverValid = false;
     // Load the device-driver DDI tables
-    for( auto& drv : loader::context->drivers )
+    for( auto& drv : loader::context->zeDrivers )
     {
         if(drv.initStatus != ZE_RESULT_SUCCESS)
             continue;
@@ -1990,7 +1993,7 @@ zetGetContextProcAddrTable(
 
     if( ZE_RESULT_SUCCESS == result )
     {
-        if( ( loader::context->drivers.size() > 1 ) || loader::context->forceIntercept )
+        if( ( loader::context->zeDrivers.size() > 1 ) || loader::context->forceIntercept )
         {
             // return pointers to loader's DDIs
             pDdiTable->pfnActivateMetricGroups                     = loader::zetContextActivateMetricGroups;
@@ -1998,7 +2001,7 @@ zetGetContextProcAddrTable(
         else
         {
             // return pointers directly to driver's DDIs
-            *pDdiTable = loader::context->drivers.front().dditable.zet.Context;
+            *pDdiTable = loader::context->zeDrivers.front().dditable.zet.Context;
         }
     }
 
@@ -2030,7 +2033,8 @@ zetGetCommandListProcAddrTable(
     zet_command_list_dditable_t* pDdiTable          ///< [in,out] pointer to table of DDI function pointers
     )
 {
-    if( loader::context->drivers.size() < 1 )
+    if( loader::context->zeDrivers.size() < 1 )
+
         return ZE_RESULT_ERROR_UNINITIALIZED;
 
     if( nullptr == pDdiTable )
@@ -2043,7 +2047,7 @@ zetGetCommandListProcAddrTable(
 
     bool atLeastOneDriverValid = false;
     // Load the device-driver DDI tables
-    for( auto& drv : loader::context->drivers )
+    for( auto& drv : loader::context->zeDrivers )
     {
         if(drv.initStatus != ZE_RESULT_SUCCESS)
             continue;
@@ -2065,7 +2069,7 @@ zetGetCommandListProcAddrTable(
 
     if( ZE_RESULT_SUCCESS == result )
     {
-        if( ( loader::context->drivers.size() > 1 ) || loader::context->forceIntercept )
+        if( ( loader::context->zeDrivers.size() > 1 ) || loader::context->forceIntercept )
         {
             // return pointers to loader's DDIs
             pDdiTable->pfnAppendMetricStreamerMarker               = loader::zetCommandListAppendMetricStreamerMarker;
@@ -2076,7 +2080,7 @@ zetGetCommandListProcAddrTable(
         else
         {
             // return pointers directly to driver's DDIs
-            *pDdiTable = loader::context->drivers.front().dditable.zet.CommandList;
+            *pDdiTable = loader::context->zeDrivers.front().dditable.zet.CommandList;
         }
     }
 
@@ -2108,7 +2112,8 @@ zetGetKernelProcAddrTable(
     zet_kernel_dditable_t* pDdiTable                ///< [in,out] pointer to table of DDI function pointers
     )
 {
-    if( loader::context->drivers.size() < 1 )
+    if( loader::context->zeDrivers.size() < 1 )
+
         return ZE_RESULT_ERROR_UNINITIALIZED;
 
     if( nullptr == pDdiTable )
@@ -2121,7 +2126,7 @@ zetGetKernelProcAddrTable(
 
     bool atLeastOneDriverValid = false;
     // Load the device-driver DDI tables
-    for( auto& drv : loader::context->drivers )
+    for( auto& drv : loader::context->zeDrivers )
     {
         if(drv.initStatus != ZE_RESULT_SUCCESS)
             continue;
@@ -2143,7 +2148,7 @@ zetGetKernelProcAddrTable(
 
     if( ZE_RESULT_SUCCESS == result )
     {
-        if( ( loader::context->drivers.size() > 1 ) || loader::context->forceIntercept )
+        if( ( loader::context->zeDrivers.size() > 1 ) || loader::context->forceIntercept )
         {
             // return pointers to loader's DDIs
             pDdiTable->pfnGetProfileInfo                           = loader::zetKernelGetProfileInfo;
@@ -2151,7 +2156,7 @@ zetGetKernelProcAddrTable(
         else
         {
             // return pointers directly to driver's DDIs
-            *pDdiTable = loader::context->drivers.front().dditable.zet.Kernel;
+            *pDdiTable = loader::context->zeDrivers.front().dditable.zet.Kernel;
         }
     }
 
@@ -2183,7 +2188,8 @@ zetGetModuleProcAddrTable(
     zet_module_dditable_t* pDdiTable                ///< [in,out] pointer to table of DDI function pointers
     )
 {
-    if( loader::context->drivers.size() < 1 )
+    if( loader::context->zeDrivers.size() < 1 )
+
         return ZE_RESULT_ERROR_UNINITIALIZED;
 
     if( nullptr == pDdiTable )
@@ -2196,7 +2202,7 @@ zetGetModuleProcAddrTable(
 
     bool atLeastOneDriverValid = false;
     // Load the device-driver DDI tables
-    for( auto& drv : loader::context->drivers )
+    for( auto& drv : loader::context->zeDrivers )
     {
         if(drv.initStatus != ZE_RESULT_SUCCESS)
             continue;
@@ -2218,7 +2224,7 @@ zetGetModuleProcAddrTable(
 
     if( ZE_RESULT_SUCCESS == result )
     {
-        if( ( loader::context->drivers.size() > 1 ) || loader::context->forceIntercept )
+        if( ( loader::context->zeDrivers.size() > 1 ) || loader::context->forceIntercept )
         {
             // return pointers to loader's DDIs
             pDdiTable->pfnGetDebugInfo                             = loader::zetModuleGetDebugInfo;
@@ -2226,7 +2232,7 @@ zetGetModuleProcAddrTable(
         else
         {
             // return pointers directly to driver's DDIs
-            *pDdiTable = loader::context->drivers.front().dditable.zet.Module;
+            *pDdiTable = loader::context->zeDrivers.front().dditable.zet.Module;
         }
     }
 
@@ -2258,7 +2264,8 @@ zetGetDebugProcAddrTable(
     zet_debug_dditable_t* pDdiTable                 ///< [in,out] pointer to table of DDI function pointers
     )
 {
-    if( loader::context->drivers.size() < 1 )
+    if( loader::context->zeDrivers.size() < 1 )
+
         return ZE_RESULT_ERROR_UNINITIALIZED;
 
     if( nullptr == pDdiTable )
@@ -2271,7 +2278,7 @@ zetGetDebugProcAddrTable(
 
     bool atLeastOneDriverValid = false;
     // Load the device-driver DDI tables
-    for( auto& drv : loader::context->drivers )
+    for( auto& drv : loader::context->zeDrivers )
     {
         if(drv.initStatus != ZE_RESULT_SUCCESS)
             continue;
@@ -2293,7 +2300,7 @@ zetGetDebugProcAddrTable(
 
     if( ZE_RESULT_SUCCESS == result )
     {
-        if( ( loader::context->drivers.size() > 1 ) || loader::context->forceIntercept )
+        if( ( loader::context->zeDrivers.size() > 1 ) || loader::context->forceIntercept )
         {
             // return pointers to loader's DDIs
             pDdiTable->pfnAttach                                   = loader::zetDebugAttach;
@@ -2312,7 +2319,7 @@ zetGetDebugProcAddrTable(
         else
         {
             // return pointers directly to driver's DDIs
-            *pDdiTable = loader::context->drivers.front().dditable.zet.Debug;
+            *pDdiTable = loader::context->zeDrivers.front().dditable.zet.Debug;
         }
     }
 
@@ -2344,7 +2351,8 @@ zetGetMetricProcAddrTable(
     zet_metric_dditable_t* pDdiTable                ///< [in,out] pointer to table of DDI function pointers
     )
 {
-    if( loader::context->drivers.size() < 1 )
+    if( loader::context->zeDrivers.size() < 1 )
+
         return ZE_RESULT_ERROR_UNINITIALIZED;
 
     if( nullptr == pDdiTable )
@@ -2357,7 +2365,7 @@ zetGetMetricProcAddrTable(
 
     bool atLeastOneDriverValid = false;
     // Load the device-driver DDI tables
-    for( auto& drv : loader::context->drivers )
+    for( auto& drv : loader::context->zeDrivers )
     {
         if(drv.initStatus != ZE_RESULT_SUCCESS)
             continue;
@@ -2379,7 +2387,7 @@ zetGetMetricProcAddrTable(
 
     if( ZE_RESULT_SUCCESS == result )
     {
-        if( ( loader::context->drivers.size() > 1 ) || loader::context->forceIntercept )
+        if( ( loader::context->zeDrivers.size() > 1 ) || loader::context->forceIntercept )
         {
             // return pointers to loader's DDIs
             pDdiTable->pfnGet                                      = loader::zetMetricGet;
@@ -2388,7 +2396,7 @@ zetGetMetricProcAddrTable(
         else
         {
             // return pointers directly to driver's DDIs
-            *pDdiTable = loader::context->drivers.front().dditable.zet.Metric;
+            *pDdiTable = loader::context->zeDrivers.front().dditable.zet.Metric;
         }
     }
 
@@ -2420,7 +2428,8 @@ zetGetMetricExpProcAddrTable(
     zet_metric_exp_dditable_t* pDdiTable            ///< [in,out] pointer to table of DDI function pointers
     )
 {
-    if( loader::context->drivers.size() < 1 )
+    if( loader::context->zeDrivers.size() < 1 )
+
         return ZE_RESULT_ERROR_UNINITIALIZED;
 
     if( nullptr == pDdiTable )
@@ -2432,7 +2441,7 @@ zetGetMetricExpProcAddrTable(
     ze_result_t result = ZE_RESULT_SUCCESS;
 
     // Load the device-driver DDI tables
-    for( auto& drv : loader::context->drivers )
+    for( auto& drv : loader::context->zeDrivers )
     {
         if(drv.initStatus != ZE_RESULT_SUCCESS)
             continue;
@@ -2446,7 +2455,7 @@ zetGetMetricExpProcAddrTable(
 
     if( ZE_RESULT_SUCCESS == result )
     {
-        if( ( loader::context->drivers.size() > 1 ) || loader::context->forceIntercept )
+        if( ( loader::context->zeDrivers.size() > 1 ) || loader::context->forceIntercept )
         {
             // return pointers to loader's DDIs
             pDdiTable->pfnCreateFromProgrammableExp                = loader::zetMetricCreateFromProgrammableExp;
@@ -2455,7 +2464,7 @@ zetGetMetricExpProcAddrTable(
         else
         {
             // return pointers directly to driver's DDIs
-            *pDdiTable = loader::context->drivers.front().dditable.zet.MetricExp;
+            *pDdiTable = loader::context->zeDrivers.front().dditable.zet.MetricExp;
         }
     }
 
@@ -2487,7 +2496,8 @@ zetGetMetricGroupProcAddrTable(
     zet_metric_group_dditable_t* pDdiTable          ///< [in,out] pointer to table of DDI function pointers
     )
 {
-    if( loader::context->drivers.size() < 1 )
+    if( loader::context->zeDrivers.size() < 1 )
+
         return ZE_RESULT_ERROR_UNINITIALIZED;
 
     if( nullptr == pDdiTable )
@@ -2500,7 +2510,7 @@ zetGetMetricGroupProcAddrTable(
 
     bool atLeastOneDriverValid = false;
     // Load the device-driver DDI tables
-    for( auto& drv : loader::context->drivers )
+    for( auto& drv : loader::context->zeDrivers )
     {
         if(drv.initStatus != ZE_RESULT_SUCCESS)
             continue;
@@ -2522,7 +2532,7 @@ zetGetMetricGroupProcAddrTable(
 
     if( ZE_RESULT_SUCCESS == result )
     {
-        if( ( loader::context->drivers.size() > 1 ) || loader::context->forceIntercept )
+        if( ( loader::context->zeDrivers.size() > 1 ) || loader::context->forceIntercept )
         {
             // return pointers to loader's DDIs
             pDdiTable->pfnGet                                      = loader::zetMetricGroupGet;
@@ -2532,7 +2542,7 @@ zetGetMetricGroupProcAddrTable(
         else
         {
             // return pointers directly to driver's DDIs
-            *pDdiTable = loader::context->drivers.front().dditable.zet.MetricGroup;
+            *pDdiTable = loader::context->zeDrivers.front().dditable.zet.MetricGroup;
         }
     }
 
@@ -2564,7 +2574,8 @@ zetGetMetricGroupExpProcAddrTable(
     zet_metric_group_exp_dditable_t* pDdiTable      ///< [in,out] pointer to table of DDI function pointers
     )
 {
-    if( loader::context->drivers.size() < 1 )
+    if( loader::context->zeDrivers.size() < 1 )
+
         return ZE_RESULT_ERROR_UNINITIALIZED;
 
     if( nullptr == pDdiTable )
@@ -2576,7 +2587,7 @@ zetGetMetricGroupExpProcAddrTable(
     ze_result_t result = ZE_RESULT_SUCCESS;
 
     // Load the device-driver DDI tables
-    for( auto& drv : loader::context->drivers )
+    for( auto& drv : loader::context->zeDrivers )
     {
         if(drv.initStatus != ZE_RESULT_SUCCESS)
             continue;
@@ -2590,7 +2601,7 @@ zetGetMetricGroupExpProcAddrTable(
 
     if( ZE_RESULT_SUCCESS == result )
     {
-        if( ( loader::context->drivers.size() > 1 ) || loader::context->forceIntercept )
+        if( ( loader::context->zeDrivers.size() > 1 ) || loader::context->forceIntercept )
         {
             // return pointers to loader's DDIs
             pDdiTable->pfnCalculateMultipleMetricValuesExp         = loader::zetMetricGroupCalculateMultipleMetricValuesExp;
@@ -2606,7 +2617,7 @@ zetGetMetricGroupExpProcAddrTable(
         else
         {
             // return pointers directly to driver's DDIs
-            *pDdiTable = loader::context->drivers.front().dditable.zet.MetricGroupExp;
+            *pDdiTable = loader::context->zeDrivers.front().dditable.zet.MetricGroupExp;
         }
     }
 
@@ -2638,7 +2649,8 @@ zetGetMetricQueryProcAddrTable(
     zet_metric_query_dditable_t* pDdiTable          ///< [in,out] pointer to table of DDI function pointers
     )
 {
-    if( loader::context->drivers.size() < 1 )
+    if( loader::context->zeDrivers.size() < 1 )
+
         return ZE_RESULT_ERROR_UNINITIALIZED;
 
     if( nullptr == pDdiTable )
@@ -2651,7 +2663,7 @@ zetGetMetricQueryProcAddrTable(
 
     bool atLeastOneDriverValid = false;
     // Load the device-driver DDI tables
-    for( auto& drv : loader::context->drivers )
+    for( auto& drv : loader::context->zeDrivers )
     {
         if(drv.initStatus != ZE_RESULT_SUCCESS)
             continue;
@@ -2673,7 +2685,7 @@ zetGetMetricQueryProcAddrTable(
 
     if( ZE_RESULT_SUCCESS == result )
     {
-        if( ( loader::context->drivers.size() > 1 ) || loader::context->forceIntercept )
+        if( ( loader::context->zeDrivers.size() > 1 ) || loader::context->forceIntercept )
         {
             // return pointers to loader's DDIs
             pDdiTable->pfnCreate                                   = loader::zetMetricQueryCreate;
@@ -2684,7 +2696,7 @@ zetGetMetricQueryProcAddrTable(
         else
         {
             // return pointers directly to driver's DDIs
-            *pDdiTable = loader::context->drivers.front().dditable.zet.MetricQuery;
+            *pDdiTable = loader::context->zeDrivers.front().dditable.zet.MetricQuery;
         }
     }
 
@@ -2716,7 +2728,8 @@ zetGetMetricQueryPoolProcAddrTable(
     zet_metric_query_pool_dditable_t* pDdiTable     ///< [in,out] pointer to table of DDI function pointers
     )
 {
-    if( loader::context->drivers.size() < 1 )
+    if( loader::context->zeDrivers.size() < 1 )
+
         return ZE_RESULT_ERROR_UNINITIALIZED;
 
     if( nullptr == pDdiTable )
@@ -2729,7 +2742,7 @@ zetGetMetricQueryPoolProcAddrTable(
 
     bool atLeastOneDriverValid = false;
     // Load the device-driver DDI tables
-    for( auto& drv : loader::context->drivers )
+    for( auto& drv : loader::context->zeDrivers )
     {
         if(drv.initStatus != ZE_RESULT_SUCCESS)
             continue;
@@ -2751,7 +2764,7 @@ zetGetMetricQueryPoolProcAddrTable(
 
     if( ZE_RESULT_SUCCESS == result )
     {
-        if( ( loader::context->drivers.size() > 1 ) || loader::context->forceIntercept )
+        if( ( loader::context->zeDrivers.size() > 1 ) || loader::context->forceIntercept )
         {
             // return pointers to loader's DDIs
             pDdiTable->pfnCreate                                   = loader::zetMetricQueryPoolCreate;
@@ -2760,7 +2773,7 @@ zetGetMetricQueryPoolProcAddrTable(
         else
         {
             // return pointers directly to driver's DDIs
-            *pDdiTable = loader::context->drivers.front().dditable.zet.MetricQueryPool;
+            *pDdiTable = loader::context->zeDrivers.front().dditable.zet.MetricQueryPool;
         }
     }
 
@@ -2792,7 +2805,8 @@ zetGetMetricStreamerProcAddrTable(
     zet_metric_streamer_dditable_t* pDdiTable       ///< [in,out] pointer to table of DDI function pointers
     )
 {
-    if( loader::context->drivers.size() < 1 )
+    if( loader::context->zeDrivers.size() < 1 )
+
         return ZE_RESULT_ERROR_UNINITIALIZED;
 
     if( nullptr == pDdiTable )
@@ -2805,7 +2819,7 @@ zetGetMetricStreamerProcAddrTable(
 
     bool atLeastOneDriverValid = false;
     // Load the device-driver DDI tables
-    for( auto& drv : loader::context->drivers )
+    for( auto& drv : loader::context->zeDrivers )
     {
         if(drv.initStatus != ZE_RESULT_SUCCESS)
             continue;
@@ -2827,7 +2841,7 @@ zetGetMetricStreamerProcAddrTable(
 
     if( ZE_RESULT_SUCCESS == result )
     {
-        if( ( loader::context->drivers.size() > 1 ) || loader::context->forceIntercept )
+        if( ( loader::context->zeDrivers.size() > 1 ) || loader::context->forceIntercept )
         {
             // return pointers to loader's DDIs
             pDdiTable->pfnOpen                                     = loader::zetMetricStreamerOpen;
@@ -2837,7 +2851,7 @@ zetGetMetricStreamerProcAddrTable(
         else
         {
             // return pointers directly to driver's DDIs
-            *pDdiTable = loader::context->drivers.front().dditable.zet.MetricStreamer;
+            *pDdiTable = loader::context->zeDrivers.front().dditable.zet.MetricStreamer;
         }
     }
 
@@ -2869,7 +2883,8 @@ zetGetTracerExpProcAddrTable(
     zet_tracer_exp_dditable_t* pDdiTable            ///< [in,out] pointer to table of DDI function pointers
     )
 {
-    if( loader::context->drivers.size() < 1 )
+    if( loader::context->zeDrivers.size() < 1 )
+
         return ZE_RESULT_ERROR_UNINITIALIZED;
 
     if( nullptr == pDdiTable )
@@ -2882,7 +2897,7 @@ zetGetTracerExpProcAddrTable(
 
     bool atLeastOneDriverValid = false;
     // Load the device-driver DDI tables
-    for( auto& drv : loader::context->drivers )
+    for( auto& drv : loader::context->zeDrivers )
     {
         if(drv.initStatus != ZE_RESULT_SUCCESS)
             continue;
@@ -2904,7 +2919,7 @@ zetGetTracerExpProcAddrTable(
 
     if( ZE_RESULT_SUCCESS == result )
     {
-        if( ( loader::context->drivers.size() > 1 ) || loader::context->forceIntercept )
+        if( ( loader::context->zeDrivers.size() > 1 ) || loader::context->forceIntercept )
         {
             // return pointers to loader's DDIs
             pDdiTable->pfnCreate                                   = loader::zetTracerExpCreate;
@@ -2916,7 +2931,7 @@ zetGetTracerExpProcAddrTable(
         else
         {
             // return pointers directly to driver's DDIs
-            *pDdiTable = loader::context->drivers.front().dditable.zet.TracerExp;
+            *pDdiTable = loader::context->zeDrivers.front().dditable.zet.TracerExp;
         }
     }
 

@@ -31,7 +31,7 @@ zelGetTracerApiProcAddrTable(
     zel_tracer_dditable_t* pDdiTable                ///< [in,out] pointer to table of DDI function pointers
     )
 {
-    if( loader::context->drivers.size() < 1 )
+    if( loader::context->zeDrivers.size() < 1 )
         return ZE_RESULT_ERROR_UNINITIALIZED;
 
     if( nullptr == pDdiTable )
