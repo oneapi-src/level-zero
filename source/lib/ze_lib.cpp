@@ -126,6 +126,10 @@ namespace ze_lib
                     {
                         result = zetDdiTableInit();
                     }
+                    // If ze/zet ddi tables have been reinit and no longer use the intercept layer, then handles passed to zelLoaderTranslateHandleInternal do not require translation.
+                    // Setting intercept_enabled==false changes the behavior of zelLoaderTranslateHandleInternal to avoid translation.
+                    // Translation is only required if the intercept layer is enabled for the ZE handle types.
+                    loader::context->intercept_enabled = false;
                 }
                 if (sysmanOnly || sysmanEnv) {
                     // reInit the ZES DDI Tables
