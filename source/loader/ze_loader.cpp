@@ -170,7 +170,7 @@ namespace loader
         return ZE_RESULT_SUCCESS;
     }
 
-    ze_result_t context_t::init_driver(driver_t driver, ze_init_flags_t flags, ze_global_dditable_t *globalInitStored, zes_global_dditable_t *sysmanGlobalInitStored, bool sysmanOnly) {
+    ze_result_t context_t::init_driver(driver_t &driver, ze_init_flags_t flags, ze_global_dditable_t *globalInitStored, zes_global_dditable_t *sysmanGlobalInitStored, bool sysmanOnly) {
 
         if (sysmanOnly) {
             auto getTable = reinterpret_cast<zes_pfnGetGlobalProcAddrTable_t>(
