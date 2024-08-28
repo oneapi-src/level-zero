@@ -152,7 +152,8 @@ namespace loader
                 }
                 it = drivers->erase(it);
                 // If the number of drivers is now ==1, then we need to reinit the ddi tables to pass through.
-                if (drivers->size() == 1) {
+                // If ZE_ENABLE_LOADER_INTERCEPT is set to 1, then even if drivers were removed, don't reinit the ddi tables.
+                if (drivers->size() == 1 && !loader::context->forceIntercept) {
                     *requireDdiReinit = true;
                 }
                 if(return_first_driver_result)
