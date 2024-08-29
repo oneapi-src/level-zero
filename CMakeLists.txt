@@ -92,6 +92,8 @@ endif()
 include(FetchContent)
 
 if(BUILD_L0_LOADER_TESTS)
+	set(INSTALL_GTEST OFF)
+
 	FetchContent_Declare(
 		googletest
 		URL https://github.com/google/googletest/archive/refs/tags/v1.14.0.zip
