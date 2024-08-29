@@ -30,6 +30,8 @@ jobs:
           ZEL_LIBRARY_PATH: '${{ github.workspace }}/build/lib'
         working-directory: build
         run: ctest -V
+      - working-directory: build
+        run: sudo make install
 
   build-windows:
     if: github.repository_owner == 'oneapi-src'
@@ -47,3 +49,5 @@ jobs:
           ZEL_LIBRARY_PATH: '${{ github.workspace }}/build/bin/Release'
         working-directory: build
         run: ctest -C Release -V
+      - working-directory: build
+        run: cmake --build . --config Release --target install
