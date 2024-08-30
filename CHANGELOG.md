@@ -1,5 +1,16 @@
 # Level zero loader changelog
 
+## v1.17.39
+* Add Ubuntu 24.04 and 24.10 builds
+* Proper installation rules
+* Enable testing with ctest
+* Fix reading updated state of the driver_t for checking initStatus (#188)
+* Avoid DDI table reinit if ZE_ENABLE_LOADER_INTERCEPT=1 (#187)
+* Update spdlog headers (#186)
+* Fix handle translation when ddi table fallback (#185)
+* Split Ze and Zes Drivers and only release drivers at close (#184)
+* Fix issues with intercept layer and zesInit/zeInit given fallback to passthrough (#183)
+* Fix global teardown of loader handles and check driver status in init_driver (#182)
 ## v1.17.28
 * Add GPU-legacy1 driver to list of known names on Linux
 * Fix first zeinit to allow for layer checks
