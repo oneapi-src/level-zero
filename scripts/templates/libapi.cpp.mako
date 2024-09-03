@@ -127,6 +127,9 @@ ${th.make_func_name(n, tags, obj)}(
         else
             return ${X}_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
+%if re.match(r"\w+DriverGet$", th.make_func_name(n, tags, obj)):
+    ze_lib::context->${n}Inuse = true;
+%endif
 
     return ${th.make_pfn_name(n, tags, obj)}( ${", ".join(th.make_param_lines(n, tags, obj, format=["name"]))} );
 }
