@@ -171,6 +171,22 @@ zelLoaderGetVersions(
 #endif
 }
 
+ze_result_t ZE_APICALL
+zelReloadDrivers(
+    ze_init_flags_t flags)
+{
+#ifdef DYNAMIC_LOAD_LOADER
+    if(nullptr == ze_lib::context->loader)
+        return ZE_RESULT_ERROR;
+    typedef ze_result_t (ZE_APICALL *zelReloadDriver_t)(ze_driver_handle_t hDriver);
+    auto reloadDrivers = reinterpret_cast<zelReloadDriver_t>(
+            GET_FUNCTION_PTR(ze_lib::context->loader, "zelReloadDriversInternal") );
+    return reloadDrivers(flags);
+#else
+    return zelReloadDriversInternal(flags);
+#endif
+}
+
 
 ze_result_t ZE_APICALL
 zelLoaderTranslateHandle(
