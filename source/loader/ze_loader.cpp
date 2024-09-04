@@ -449,12 +449,9 @@ namespace loader
         }
 
         forceIntercept = getenv_tobool( "ZE_ENABLE_LOADER_INTERCEPT" );
-        auto sysmanEnv = getenv_tobool( "ZES_ENABLE_SYSMAN" );
 
-        sysmanInstanceDrivers = &zesDrivers;
-        if (sysmanEnv) {
-            sysmanInstanceDrivers = &zeDrivers;
-        }
+        // Default sysmanInstance Drivers to be the zeDrivers list unless zesInit is called during init.
+        sysmanInstanceDrivers = &zeDrivers;
 
         if(forceIntercept || allDrivers.size() > 1){
              intercept_enabled = true;
