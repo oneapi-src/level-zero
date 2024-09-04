@@ -112,10 +112,9 @@ namespace ze_lib
             auto sysmanEnv = getenv_tobool( "ZES_ENABLE_SYSMAN" );
             result = zelLoaderDriverCheck(flags, &ze_lib::context->initialzeDdiTable.Global, &ze_lib::context->initialzesDdiTable.Global, &requireDdiReinit, sysmanOnly);
             // If a driver was removed from the driver list, then the ddi tables need to be reinit to allow for passthru directly to the driver.
-            // If ZET_ENABLE_PROGRAM_INSTRUMENTATION is enabled, then reInit is not possible due to the functions being intercepted with the previous ddi tables.
-            auto programInstrumentationEnabled = getenv_tobool( "ZET_ENABLE_PROGRAM_INSTRUMENTATION" );
-            if (requireDdiReinit && !programInstrumentationEnabled) {
-                if (!sysmanOnly) {
+            if (requireDdiReinit) {
+                // If a user has already called the core apis, then ddi table reinit is not possible due to handles already being read by the user.
+                if (!sysmanOnly && !ze_lib::context->zeInuse) {
                     // reInit the ZE DDI Tables
                     if( ZE_RESULT_SUCCESS == result )
                     {
@@ -131,7 +130,8 @@ namespace ze_lib
                     // Translation is only required if the intercept layer is enabled for the ZE handle types.
                     loader::context->intercept_enabled = false;
                 }
-                if (sysmanOnly || sysmanEnv) {
+                // If a user has already called the zes/ze apis, then ddi table reinit is not possible due to handles already being read by the user.
+                if ((sysmanOnly || sysmanEnv) && !(ze_lib::context->zesInuse || ze_lib::context->zeInuse)) {
                     // reInit the ZES DDI Tables
                     if( ZE_RESULT_SUCCESS == result )
                     {

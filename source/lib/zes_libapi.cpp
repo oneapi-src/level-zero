@@ -120,6 +120,7 @@ zesDriverGet(
         else
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
+    ze_lib::context->zesInuse = true;
 
     return pfnGet( pCount, phDrivers );
 }
