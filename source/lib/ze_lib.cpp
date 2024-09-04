@@ -74,6 +74,11 @@ namespace ze_lib
             ze_lib::context->zesDdiTable.exchange(&ze_lib::context->initialzesDdiTable);
         }
 
+        // Given zesInit, then zesDrivers needs to be used as the sysmanInstanceDrivers;
+        if (sysmanOnly) {
+            loader::context->sysmanInstanceDrivers = &loader::context->zesDrivers;
+        }
+
         // Always call the inits for all the ddi tables before checking which drivers are usable to enable Instrumentation correctly.
 
         // Init the ZE DDI Tables
@@ -109,7 +114,6 @@ namespace ze_lib
             // Check which drivers support the ze_driver_flag_t specified
             // No need to check if only initializing sysman
             bool requireDdiReinit = false;
-            auto sysmanEnv = getenv_tobool( "ZES_ENABLE_SYSMAN" );
             result = zelLoaderDriverCheck(flags, &ze_lib::context->initialzeDdiTable.Global, &ze_lib::context->initialzesDdiTable.Global, &requireDdiReinit, sysmanOnly);
             // If a driver was removed from the driver list, then the ddi tables need to be reinit to allow for passthru directly to the driver.
             if (requireDdiReinit) {
@@ -131,7 +135,7 @@ namespace ze_lib
                     loader::context->intercept_enabled = false;
                 }
                 // If a user has already called the zes/ze apis, then ddi table reinit is not possible due to handles already being read by the user.
-                if ((sysmanOnly || sysmanEnv) && !(ze_lib::context->zesInuse || ze_lib::context->zeInuse)) {
+                if (!(ze_lib::context->zesInuse || ze_lib::context->zeInuse)) {
                     // reInit the ZES DDI Tables
                     if( ZE_RESULT_SUCCESS == result )
                     {
