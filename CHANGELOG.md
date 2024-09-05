@@ -1,5 +1,8 @@
 # Level zero loader changelog
 
+## v1.17.42
+* Fix SysMan driver pointers given no sysman env and no zesInit (#193)
+* Prevent reinit when zes/ze handles have already been retrieved (#192)
 ## v1.17.39
 * Add Ubuntu 24.04 and 24.10 builds
 * Proper installation rules
