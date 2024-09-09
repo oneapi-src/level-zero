@@ -340,7 +340,8 @@ namespace loader
             loaderLibraryPath = readLevelZeroLoaderLibraryPath();
         }
 #endif
-        debug_trace_message("Using Loader Library Path: ", loaderLibraryPath);
+        if (debugTraceEnabled)
+            debug_trace_message("Using Loader Library Path: ", loaderLibraryPath);
 
         // To allow for two different sets of drivers to be in use between sysman and core/tools, we use and store the drivers in two vectors.
         // alldrivers stores all the drivers for cleanup when the library exits.
@@ -424,7 +425,8 @@ namespace loader
             tracingLayerEnabled = true;
         }
         std::string tracingLayerLibraryPath = create_library_path(MAKE_LAYER_NAME( "ze_tracing_layer" ), loaderLibraryPath.c_str());
-        debug_trace_message("Tracing Layer Library Path: ", tracingLayerLibraryPath);
+        if (debugTraceEnabled)
+            debug_trace_message("Tracing Layer Library Path: ", tracingLayerLibraryPath);
         tracingLayer = LOAD_DRIVER_LIBRARY( tracingLayerLibraryPath.c_str() );
         if(tracingLayer)
         {
