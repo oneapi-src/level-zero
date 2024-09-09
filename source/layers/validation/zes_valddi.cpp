@@ -5960,9 +5960,9 @@ namespace validation_layer
     }
 
     ///////////////////////////////////////////////////////////////////////////////
-    /// @brief Intercept function for zesDeviceEnumActiveVFExp
+    /// @brief Intercept function for zesDeviceEnumEnabledVFExp
     __zedlllocal ze_result_t ZE_APICALL
-    zesDeviceEnumActiveVFExp(
+    zesDeviceEnumEnabledVFExp(
         zes_device_handle_t hDevice,                    ///< [in] Sysman handle of the device.
         uint32_t* pCount,                               ///< [in,out] pointer to the number of components of this type.
                                                         ///< if count is zero, then the driver shall update the value with the
@@ -5977,14 +5977,14 @@ namespace validation_layer
                                                         ///< component handles.
         )
     {
-        auto pfnEnumActiveVFExp = context.zesDdiTable.DeviceExp.pfnEnumActiveVFExp;
+        auto pfnEnumEnabledVFExp = context.zesDdiTable.DeviceExp.pfnEnumEnabledVFExp;
 
-        if( nullptr == pfnEnumActiveVFExp )
+        if( nullptr == pfnEnumEnabledVFExp )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zesValidation->zesDeviceEnumActiveVFExpPrologue( hDevice, pCount, phVFhandle );
+            auto result = context.validationHandlers[i]->zesValidation->zesDeviceEnumEnabledVFExpPrologue( hDevice, pCount, phVFhandle );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -5995,14 +5995,14 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zesHandleLifetime.zesDeviceEnumActiveVFExpPrologue( hDevice, pCount, phVFhandle );
+            auto result = context.handleLifetime->zesHandleLifetime.zesDeviceEnumEnabledVFExpPrologue( hDevice, pCount, phVFhandle );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        auto result = pfnEnumActiveVFExp( hDevice, pCount, phVFhandle );
+        auto result = pfnEnumEnabledVFExp( hDevice, pCount, phVFhandle );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zesValidation->zesDeviceEnumActiveVFExpEpilogue( hDevice, pCount, phVFhandle );
+            auto result = context.validationHandlers[i]->zesValidation->zesDeviceEnumEnabledVFExpEpilogue( hDevice, pCount, phVFhandle );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -6010,21 +6010,21 @@ namespace validation_layer
     }
 
     ///////////////////////////////////////////////////////////////////////////////
-    /// @brief Intercept function for zesVFManagementGetVFPropertiesExp
+    /// @brief Intercept function for zesVFManagementGetVFCapabilitiesExp
     __zedlllocal ze_result_t ZE_APICALL
-    zesVFManagementGetVFPropertiesExp(
+    zesVFManagementGetVFCapabilitiesExp(
         zes_vf_handle_t hVFhandle,                      ///< [in] Sysman handle for the VF component.
-        zes_vf_exp_properties_t* pProperties            ///< [in,out] Will contain VF properties.
+        zes_vf_exp_capabilities_t* pCapability          ///< [in,out] Will contain VF capability.
         )
     {
-        auto pfnGetVFPropertiesExp = context.zesDdiTable.VFManagementExp.pfnGetVFPropertiesExp;
+        auto pfnGetVFCapabilitiesExp = context.zesDdiTable.VFManagementExp.pfnGetVFCapabilitiesExp;
 
-        if( nullptr == pfnGetVFPropertiesExp )
+        if( nullptr == pfnGetVFCapabilitiesExp )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zesValidation->zesVFManagementGetVFPropertiesExpPrologue( hVFhandle, pProperties );
+            auto result = context.validationHandlers[i]->zesValidation->zesVFManagementGetVFCapabilitiesExpPrologue( hVFhandle, pCapability );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -6035,14 +6035,14 @@ namespace validation_layer
 
         
         if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zesHandleLifetime.zesVFManagementGetVFPropertiesExpPrologue( hVFhandle, pProperties );
+            auto result = context.handleLifetime->zesHandleLifetime.zesVFManagementGetVFCapabilitiesExpPrologue( hVFhandle, pCapability );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
-        auto result = pfnGetVFPropertiesExp( hVFhandle, pProperties );
+        auto result = pfnGetVFCapabilitiesExp( hVFhandle, pCapability );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zesValidation->zesVFManagementGetVFPropertiesExpEpilogue( hVFhandle, pProperties );
+            auto result = context.validationHandlers[i]->zesValidation->zesVFManagementGetVFCapabilitiesExpEpilogue( hVFhandle, pCapability );
             if(result!=ZE_RESULT_SUCCESS) return result;
         }
 
@@ -6064,8 +6064,6 @@ namespace validation_layer
                                                         ///<  - if count is greater than the total number of memory stats
                                                         ///< available, the driver shall update the value with the correct number
                                                         ///< of memory stats available.
-                                                        ///<  - The count returned is the sum of number of VF instances currently
-                                                        ///< available and the PF instance.
         zes_vf_util_mem_exp_t* pMemUtil                 ///< [in,out][optional][range(0, *pCount)] array of memory group activity counters.
                                                         ///<  - if count is less than the total number of memory stats available,
                                                         ///< then driver shall only retrieve that number of stats.
@@ -6120,8 +6118,6 @@ namespace validation_layer
                                                         ///<  - if count is greater than the total number of engine stats
                                                         ///< available, the driver shall update the value with the correct number
                                                         ///< of engine stats available.
-                                                        ///<  - The count returned is the sum of number of VF instances currently
-                                                        ///< available and the PF instance.
         zes_vf_util_engine_exp_t* pEngineUtil           ///< [in,out][optional][range(0, *pCount)] array of engine group activity counters.
                                                         ///<  - if count is less than the total number of engine stats available,
                                                         ///< then driver shall only retrieve that number of stats.
@@ -6162,90 +6158,6 @@ namespace validation_layer
         if( result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
             
         }
-        return result;
-    }
-
-    ///////////////////////////////////////////////////////////////////////////////
-    /// @brief Intercept function for zesVFManagementSetVFTelemetryModeExp
-    __zedlllocal ze_result_t ZE_APICALL
-    zesVFManagementSetVFTelemetryModeExp(
-        zes_vf_handle_t hVFhandle,                      ///< [in] Sysman handle for the component.
-        zes_vf_info_util_exp_flags_t flags,             ///< [in] utilization flags to enable or disable. May be 0 or a valid
-                                                        ///< combination of ::zes_vf_info_util_exp_flag_t.
-        ze_bool_t enable                                ///< [in] Enable utilization telemetry.
-        )
-    {
-        auto pfnSetVFTelemetryModeExp = context.zesDdiTable.VFManagementExp.pfnSetVFTelemetryModeExp;
-
-        if( nullptr == pfnSetVFTelemetryModeExp )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-
-        auto numValHandlers = context.validationHandlers.size();
-        for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zesValidation->zesVFManagementSetVFTelemetryModeExpPrologue( hVFhandle, flags, enable );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-
-        if( context.enableThreadingValidation ){ 
-            //Unimplemented
-        }
-
-        
-        if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zesHandleLifetime.zesVFManagementSetVFTelemetryModeExpPrologue( hVFhandle, flags, enable );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        auto result = pfnSetVFTelemetryModeExp( hVFhandle, flags, enable );
-
-        for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zesValidation->zesVFManagementSetVFTelemetryModeExpEpilogue( hVFhandle, flags, enable );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        return result;
-    }
-
-    ///////////////////////////////////////////////////////////////////////////////
-    /// @brief Intercept function for zesVFManagementSetVFTelemetrySamplingIntervalExp
-    __zedlllocal ze_result_t ZE_APICALL
-    zesVFManagementSetVFTelemetrySamplingIntervalExp(
-        zes_vf_handle_t hVFhandle,                      ///< [in] Sysman handle for the component.
-        zes_vf_info_util_exp_flags_t flag,              ///< [in] utilization flags to set sampling interval. May be 0 or a valid
-                                                        ///< combination of ::zes_vf_info_util_exp_flag_t.
-        uint64_t samplingInterval                       ///< [in] Sampling interval value.
-        )
-    {
-        auto pfnSetVFTelemetrySamplingIntervalExp = context.zesDdiTable.VFManagementExp.pfnSetVFTelemetrySamplingIntervalExp;
-
-        if( nullptr == pfnSetVFTelemetrySamplingIntervalExp )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-
-        auto numValHandlers = context.validationHandlers.size();
-        for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zesValidation->zesVFManagementSetVFTelemetrySamplingIntervalExpPrologue( hVFhandle, flag, samplingInterval );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-
-        if( context.enableThreadingValidation ){ 
-            //Unimplemented
-        }
-
-        
-        if(context.enableHandleLifetime ){
-            auto result = context.handleLifetime->zesHandleLifetime.zesVFManagementSetVFTelemetrySamplingIntervalExpPrologue( hVFhandle, flag, samplingInterval );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
-        auto result = pfnSetVFTelemetrySamplingIntervalExp( hVFhandle, flag, samplingInterval );
-
-        for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zesValidation->zesVFManagementSetVFTelemetrySamplingIntervalExpEpilogue( hVFhandle, flag, samplingInterval );
-            if(result!=ZE_RESULT_SUCCESS) return result;
-        }
-
         return result;
     }
 
@@ -6453,8 +6365,8 @@ zesGetDeviceExpProcAddrTable(
     dditable.pfnGetSubDevicePropertiesExp                = pDdiTable->pfnGetSubDevicePropertiesExp;
     pDdiTable->pfnGetSubDevicePropertiesExp              = validation_layer::zesDeviceGetSubDevicePropertiesExp;
 
-    dditable.pfnEnumActiveVFExp                          = pDdiTable->pfnEnumActiveVFExp;
-    pDdiTable->pfnEnumActiveVFExp                        = validation_layer::zesDeviceEnumActiveVFExp;
+    dditable.pfnEnumEnabledVFExp                         = pDdiTable->pfnEnumEnabledVFExp;
+    pDdiTable->pfnEnumEnabledVFExp                       = validation_layer::zesDeviceEnumEnabledVFExp;
 
     return result;
 }
@@ -7341,20 +7253,14 @@ zesGetVFManagementExpProcAddrTable(
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
-    dditable.pfnGetVFPropertiesExp                       = pDdiTable->pfnGetVFPropertiesExp;
-    pDdiTable->pfnGetVFPropertiesExp                     = validation_layer::zesVFManagementGetVFPropertiesExp;
+    dditable.pfnGetVFCapabilitiesExp                     = pDdiTable->pfnGetVFCapabilitiesExp;
+    pDdiTable->pfnGetVFCapabilitiesExp                   = validation_layer::zesVFManagementGetVFCapabilitiesExp;
 
     dditable.pfnGetVFMemoryUtilizationExp                = pDdiTable->pfnGetVFMemoryUtilizationExp;
     pDdiTable->pfnGetVFMemoryUtilizationExp              = validation_layer::zesVFManagementGetVFMemoryUtilizationExp;
 
     dditable.pfnGetVFEngineUtilizationExp                = pDdiTable->pfnGetVFEngineUtilizationExp;
     pDdiTable->pfnGetVFEngineUtilizationExp              = validation_layer::zesVFManagementGetVFEngineUtilizationExp;
-
-    dditable.pfnSetVFTelemetryModeExp                    = pDdiTable->pfnSetVFTelemetryModeExp;
-    pDdiTable->pfnSetVFTelemetryModeExp                  = validation_layer::zesVFManagementSetVFTelemetryModeExp;
-
-    dditable.pfnSetVFTelemetrySamplingIntervalExp        = pDdiTable->pfnSetVFTelemetrySamplingIntervalExp;
-    pDdiTable->pfnSetVFTelemetrySamplingIntervalExp      = validation_layer::zesVFManagementSetVFTelemetrySamplingIntervalExp;
 
     return result;
 }
