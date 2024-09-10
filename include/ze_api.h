@@ -5,7 +5,7 @@
  * SPDX-License-Identifier: MIT
  *
  * @file ze_api.h
- * @version v1.9-r1.9.3
+ * @version v1.10-r1.10.0
  *
  */
 #ifndef _ZE_API_H
@@ -248,6 +248,7 @@ typedef enum _ze_result_t
     ZE_RESULT_ERROR_OVERLAPPING_REGIONS = 0x7800001a,                       ///< [Validation] copy operations do not support overlapping regions of
                                                                             ///< memory
     ZE_RESULT_WARNING_ACTION_REQUIRED = 0x7800001b,                         ///< [Sysman] an action is required to complete the desired operation
+    ZE_RESULT_ERROR_INVALID_KERNEL_HANDLE = 0x7800001c,                     ///< [Core, Validation] kernel handle is invalid for the operation
     ZE_RESULT_ERROR_UNKNOWN = 0x7ffffffe,                                   ///< [Core] unknown or internal error
     ZE_RESULT_FORCE_UINT32 = 0x7fffffff
 
@@ -342,6 +343,8 @@ typedef enum _ze_structure_type_t
     ZE_STRUCTURE_TYPE_PITCHED_ALLOC_DEVICE_EXP_PROPERTIES = 0x0002001D,     ///< ::ze_device_pitched_alloc_exp_properties_t
     ZE_STRUCTURE_TYPE_BINDLESS_IMAGE_EXP_DESC = 0x0002001E,                 ///< ::ze_image_bindless_exp_desc_t
     ZE_STRUCTURE_TYPE_PITCHED_IMAGE_EXP_DESC = 0x0002001F,                  ///< ::ze_image_pitched_exp_desc_t
+    ZE_STRUCTURE_TYPE_MUTABLE_GRAPH_ARGUMENT_EXP_DESC = 0x00020020,         ///< ::ze_mutable_graph_argument_exp_desc_t
+    ZE_STRUCTURE_TYPE_INIT_DRIVER_TYPE_DESC = 0x00020021,                   ///< ::ze_init_driver_type_desc_t
     ZE_STRUCTURE_TYPE_FORCE_UINT32 = 0x7fffffff
 
 } ze_structure_type_t;
@@ -469,6 +472,10 @@ typedef struct _ze_base_properties_t ze_base_properties_t;
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief Forward-declare ze_base_desc_t
 typedef struct _ze_base_desc_t ze_base_desc_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Forward-declare ze_init_driver_type_desc_t
+typedef struct _ze_init_driver_type_desc_t ze_init_driver_type_desc_t;
 
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief Forward-declare ze_driver_uuid_t
@@ -677,6 +684,42 @@ typedef struct _ze_physical_mem_desc_t ze_physical_mem_desc_t;
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief Forward-declare ze_float_atomic_ext_properties_t
 typedef struct _ze_float_atomic_ext_properties_t ze_float_atomic_ext_properties_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Forward-declare ze_mutable_command_id_exp_desc_t
+typedef struct _ze_mutable_command_id_exp_desc_t ze_mutable_command_id_exp_desc_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Forward-declare ze_mutable_command_list_exp_properties_t
+typedef struct _ze_mutable_command_list_exp_properties_t ze_mutable_command_list_exp_properties_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Forward-declare ze_mutable_command_list_exp_desc_t
+typedef struct _ze_mutable_command_list_exp_desc_t ze_mutable_command_list_exp_desc_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Forward-declare ze_mutable_commands_exp_desc_t
+typedef struct _ze_mutable_commands_exp_desc_t ze_mutable_commands_exp_desc_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Forward-declare ze_mutable_kernel_argument_exp_desc_t
+typedef struct _ze_mutable_kernel_argument_exp_desc_t ze_mutable_kernel_argument_exp_desc_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Forward-declare ze_mutable_group_count_exp_desc_t
+typedef struct _ze_mutable_group_count_exp_desc_t ze_mutable_group_count_exp_desc_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Forward-declare ze_mutable_group_size_exp_desc_t
+typedef struct _ze_mutable_group_size_exp_desc_t ze_mutable_group_size_exp_desc_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Forward-declare ze_mutable_global_offset_exp_desc_t
+typedef struct _ze_mutable_global_offset_exp_desc_t ze_mutable_global_offset_exp_desc_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Forward-declare ze_mutable_graph_argument_exp_desc_t
+typedef struct _ze_mutable_graph_argument_exp_desc_t ze_mutable_graph_argument_exp_desc_t;
 
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief Forward-declare ze_relaxed_allocation_limits_exp_desc_t
@@ -902,38 +945,6 @@ typedef struct _ze_image_pitched_exp_desc_t ze_image_pitched_exp_desc_t;
 /// @brief Forward-declare ze_device_pitched_alloc_exp_properties_t
 typedef struct _ze_device_pitched_alloc_exp_properties_t ze_device_pitched_alloc_exp_properties_t;
 
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Forward-declare ze_mutable_command_id_exp_desc_t
-typedef struct _ze_mutable_command_id_exp_desc_t ze_mutable_command_id_exp_desc_t;
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Forward-declare ze_mutable_command_list_exp_properties_t
-typedef struct _ze_mutable_command_list_exp_properties_t ze_mutable_command_list_exp_properties_t;
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Forward-declare ze_mutable_command_list_exp_desc_t
-typedef struct _ze_mutable_command_list_exp_desc_t ze_mutable_command_list_exp_desc_t;
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Forward-declare ze_mutable_commands_exp_desc_t
-typedef struct _ze_mutable_commands_exp_desc_t ze_mutable_commands_exp_desc_t;
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Forward-declare ze_mutable_kernel_argument_exp_desc_t
-typedef struct _ze_mutable_kernel_argument_exp_desc_t ze_mutable_kernel_argument_exp_desc_t;
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Forward-declare ze_mutable_group_count_exp_desc_t
-typedef struct _ze_mutable_group_count_exp_desc_t ze_mutable_group_count_exp_desc_t;
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Forward-declare ze_mutable_group_size_exp_desc_t
-typedef struct _ze_mutable_group_size_exp_desc_t ze_mutable_group_size_exp_desc_t;
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Forward-declare ze_mutable_global_offset_exp_desc_t
-typedef struct _ze_mutable_global_offset_exp_desc_t ze_mutable_global_offset_exp_desc_t;
-
 
 #if !defined(__GNUC__)
 #pragma endregion
@@ -1021,6 +1032,105 @@ zeDriverGet(
     );
 
 ///////////////////////////////////////////////////////////////////////////////
+/// @brief Supported driver initialization type flags
+/// 
+/// @details
+///     - Bit Field which details the driver types to be initialized and
+///       returned to the user.
+///     - Value Definition:
+///     - 0, do not init or retrieve any drivers.
+///     - ZE_INIT_DRIVER_TYPE_FLAG_GPU,	GPU Drivers are Init and driver handles
+///       retrieved.
+///     - ZE_INIT_DRIVER_TYPE_FLAG_NPU,	NPU Drivers are Init and driver handles
+///       retrieved.
+///     - ZE_INIT_DRIVER_TYPE_FLAG_GPU | ZE_INIT_DRIVER_TYPE_FLAG_NPU, NPU & GPU
+///       Drivers are Init and driver handles retrieved.
+///     - UINT32_MAX	All Drivers of any type are Init and driver handles
+///       retrieved.
+typedef uint32_t ze_init_driver_type_flags_t;
+typedef enum _ze_init_driver_type_flag_t
+{
+    ZE_INIT_DRIVER_TYPE_FLAG_GPU = ZE_BIT(0),                               ///< initialize and retrieve GPU drivers
+    ZE_INIT_DRIVER_TYPE_FLAG_NPU = ZE_BIT(1),                               ///< initialize and retrieve NPU drivers
+    ZE_INIT_DRIVER_TYPE_FLAG_FORCE_UINT32 = 0x7fffffff
+
+} ze_init_driver_type_flag_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Init Driver Type descriptor
+typedef struct _ze_init_driver_type_desc_t
+{
+    ze_structure_type_t stype;                                              ///< [in] type of this structure
+    const void* pNext;                                                      ///< [in][optional] must be null or a pointer to an extension-specific
+                                                                            ///< structure (i.e. contains stype and pNext).
+    ze_init_driver_type_flags_t flags;                                      ///< [in] driver type init flags.
+                                                                            ///< must be a valid combination of ::ze_init_driver_type_flag_t or UINT32_MAX;
+                                                                            ///< driver types are init and retrieved based on these init flags in zeInitDrivers().
+
+} ze_init_driver_type_desc_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Initialize the 'oneAPI' driver(s) based on the driver types requested
+///        and retrieve the driver handles.
+/// 
+/// @details
+///     - The application must call this function or zeInit before calling any
+///       other function.
+///     - The application can call InitDrivers or zeInit to init the drivers on
+///       the system.
+///     - Calls to zeInit or InitDrivers will not alter the drivers retrieved
+///       thru either api.
+///     - Drivers init thru zeInit or InitDrivers will not be reInitialized once
+///       init in an application. The Loader will determine if the already init
+///       driver needs to be delivered to the user thru the init type flags.
+///     - Already init Drivers will not be uninitialized if the call to
+///       InitDrivers does not include that driver's type. Those init drivers
+///       which don't match the init flags will not have their driver handles
+///       returned to the user in that InitDrivers call.
+///     - If this function or zeInit is not called, then all other functions
+///       will return ::ZE_RESULT_ERROR_UNINITIALIZED.
+///     - Only one instance of each driver will be initialized per process.
+///     - A driver represents a collection of physical devices.
+///     - Multiple calls to this function will return identical driver handles,
+///       in the same order.
+///     - The drivers returned to the caller will be based on the init types
+///       which state the drivers to be included.
+///     - The application may pass nullptr for pDrivers when only querying the
+///       number of drivers.
+///     - The application may call this function multiple times with different
+///       flags or environment variables enabled.
+///     - The application must call this function after forking new processes.
+///       Each forked process must call this function.
+///     - The application may call this function from simultaneous threads.
+///     - The implementation of this function must be thread-safe for scenarios
+///       where multiple libraries may initialize the driver(s) simultaneously.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == pCount`
+///         + `nullptr == desc`
+///     - ::ZE_RESULT_ERROR_INVALID_ENUMERATION
+///         + `0x0 == desc->flags`
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zeInitDrivers(
+    uint32_t* pCount,                                                       ///< [in,out] pointer to the number of driver instances.
+                                                                            ///< if count is zero, then the loader shall update the value with the
+                                                                            ///< total number of drivers available.
+                                                                            ///< if count is greater than the number of drivers available, then the
+                                                                            ///< loader shall update the value with the correct number of drivers available.
+    ze_driver_handle_t* phDrivers,                                          ///< [in,out][optional][range(0, *pCount)] array of driver instance handles.
+                                                                            ///< if count is less than the number of drivers available, then the loader
+                                                                            ///< shall only retrieve that number of drivers.
+    ze_init_driver_type_desc_t* desc                                        ///< [in] descriptor containing the driver type initialization details
+                                                                            ///< including ::ze_init_driver_type_flag_t combinations.
+    );
+
+///////////////////////////////////////////////////////////////////////////////
 /// @brief Supported API versions
 /// 
 /// @details
@@ -1042,6 +1152,12 @@ typedef enum _ze_api_version_t
     ZE_API_VERSION_FORCE_UINT32 = 0x7fffffff
 
 } ze_api_version_t;
+
+///////////////////////////////////////////////////////////////////////////////
+#ifndef ZE_API_VERSION_CURRENT_M
+/// @brief Current API version as a macro
+#define ZE_API_VERSION_CURRENT_M  ZE_MAKE_VERSION( 1, 10 )
+#endif // ZE_API_VERSION_CURRENT_M
 
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief Returns the API version supported by the specified driver
@@ -7471,6 +7587,383 @@ zeKernelSetGlobalOffsetExp(
 #if !defined(__GNUC__)
 #pragma endregion
 #endif
+// Intel 'oneAPI' Level-Zero Extension for supporting compute graphs with dynamic properties.
+#if !defined(__GNUC__)
+#pragma region mutableCommandList
+#endif
+///////////////////////////////////////////////////////////////////////////////
+#ifndef ZE_MUTABLE_COMMAND_LIST_EXP_NAME
+/// @brief Mutable Command List Extension Name
+#define ZE_MUTABLE_COMMAND_LIST_EXP_NAME  "ZE_experimental_mutable_command_list"
+#endif // ZE_MUTABLE_COMMAND_LIST_EXP_NAME
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Mutable Command List Extension Version(s)
+typedef enum _ze_mutable_command_list_exp_version_t
+{
+    ZE_MUTABLE_COMMAND_LIST_EXP_VERSION_1_0 = ZE_MAKE_VERSION( 1, 0 ),      ///< version 1.0
+    ZE_MUTABLE_COMMAND_LIST_EXP_VERSION_1_1 = ZE_MAKE_VERSION( 1, 1 ),      ///< version 1.1
+    ZE_MUTABLE_COMMAND_LIST_EXP_VERSION_CURRENT = ZE_MAKE_VERSION( 1, 1 ),  ///< latest known version
+    ZE_MUTABLE_COMMAND_LIST_EXP_VERSION_FORCE_UINT32 = 0x7fffffff
+
+} ze_mutable_command_list_exp_version_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Mutable command flags
+typedef uint32_t ze_mutable_command_exp_flags_t;
+typedef enum _ze_mutable_command_exp_flag_t
+{
+    ZE_MUTABLE_COMMAND_EXP_FLAG_KERNEL_ARGUMENTS = ZE_BIT(0),               ///< kernel arguments
+    ZE_MUTABLE_COMMAND_EXP_FLAG_GROUP_COUNT = ZE_BIT(1),                    ///< kernel group count
+    ZE_MUTABLE_COMMAND_EXP_FLAG_GROUP_SIZE = ZE_BIT(2),                     ///< kernel group size
+    ZE_MUTABLE_COMMAND_EXP_FLAG_GLOBAL_OFFSET = ZE_BIT(3),                  ///< kernel global offset
+    ZE_MUTABLE_COMMAND_EXP_FLAG_SIGNAL_EVENT = ZE_BIT(4),                   ///< command signal event
+    ZE_MUTABLE_COMMAND_EXP_FLAG_WAIT_EVENTS = ZE_BIT(5),                    ///< command wait events
+    ZE_MUTABLE_COMMAND_EXP_FLAG_KERNEL_INSTRUCTION = ZE_BIT(6),             ///< command kernel
+    ZE_MUTABLE_COMMAND_EXP_FLAG_GRAPH_ARGUMENTS = ZE_BIT(7),                ///< graph arguments
+    ZE_MUTABLE_COMMAND_EXP_FLAG_FORCE_UINT32 = 0x7fffffff
+
+} ze_mutable_command_exp_flag_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Mutable command identifier descriptor
+typedef struct _ze_mutable_command_id_exp_desc_t
+{
+    ze_structure_type_t stype;                                              ///< [in] type of this structure
+    const void* pNext;                                                      ///< [in][optional] must be null or a pointer to an extension-specific
+                                                                            ///< structure (i.e. contains stype and pNext).
+    ze_mutable_command_exp_flags_t flags;                                   ///< [in] mutable command flags.
+                                                                            ///<  - must be 0 (default, equivalent to setting all flags bar kernel
+                                                                            ///< instruction), or a valid combination of ::ze_mutable_command_exp_flag_t
+                                                                            ///<  - in order to include kernel instruction mutation,
+                                                                            ///< ::ZE_MUTABLE_COMMAND_EXP_FLAG_KERNEL_INSTRUCTION must be explictly included
+
+} ze_mutable_command_id_exp_desc_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Mutable command list flags
+typedef uint32_t ze_mutable_command_list_exp_flags_t;
+typedef enum _ze_mutable_command_list_exp_flag_t
+{
+    ZE_MUTABLE_COMMAND_LIST_EXP_FLAG_RESERVED = ZE_BIT(0),                  ///< reserved
+    ZE_MUTABLE_COMMAND_LIST_EXP_FLAG_FORCE_UINT32 = 0x7fffffff
+
+} ze_mutable_command_list_exp_flag_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Mutable command list properties
+typedef struct _ze_mutable_command_list_exp_properties_t
+{
+    ze_structure_type_t stype;                                              ///< [in] type of this structure
+    void* pNext;                                                            ///< [in,out][optional] must be null or a pointer to an extension-specific
+                                                                            ///< structure (i.e. contains stype and pNext).
+    ze_mutable_command_list_exp_flags_t mutableCommandListFlags;            ///< [out] mutable command list flags
+    ze_mutable_command_exp_flags_t mutableCommandFlags;                     ///< [out] mutable command flags
+
+} ze_mutable_command_list_exp_properties_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Mutable command list descriptor
+typedef struct _ze_mutable_command_list_exp_desc_t
+{
+    ze_structure_type_t stype;                                              ///< [in] type of this structure
+    const void* pNext;                                                      ///< [in][optional] must be null or a pointer to an extension-specific
+                                                                            ///< structure (i.e. contains stype and pNext).
+    ze_mutable_command_list_exp_flags_t flags;                              ///< [in] mutable command list flags.
+                                                                            ///<  - must be 0 (default) or a valid combination of ::ze_mutable_command_list_exp_flag_t
+
+} ze_mutable_command_list_exp_desc_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Mutable commands descriptor
+typedef struct _ze_mutable_commands_exp_desc_t
+{
+    ze_structure_type_t stype;                                              ///< [in] type of this structure
+    const void* pNext;                                                      ///< [in][optional] must be null or a pointer to an extension-specific
+                                                                            ///< structure (i.e. contains stype and pNext).
+    uint32_t flags;                                                         ///< [in] must be 0, this field is reserved for future use
+
+} ze_mutable_commands_exp_desc_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Mutable kernel argument descriptor
+typedef struct _ze_mutable_kernel_argument_exp_desc_t
+{
+    ze_structure_type_t stype;                                              ///< [in] type of this structure
+    const void* pNext;                                                      ///< [in][optional] must be null or a pointer to an extension-specific
+                                                                            ///< structure (i.e. contains stype and pNext).
+    uint64_t commandId;                                                     ///< [in] command identifier
+    uint32_t argIndex;                                                      ///< [in] kernel argument index
+    size_t argSize;                                                         ///< [in] kernel argument size
+    const void* pArgValue;                                                  ///< [in] pointer to kernel argument value
+
+} ze_mutable_kernel_argument_exp_desc_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Mutable kernel group count descriptor
+typedef struct _ze_mutable_group_count_exp_desc_t
+{
+    ze_structure_type_t stype;                                              ///< [in] type of this structure
+    const void* pNext;                                                      ///< [in][optional] must be null or a pointer to an extension-specific
+                                                                            ///< structure (i.e. contains stype and pNext).
+    uint64_t commandId;                                                     ///< [in] command identifier
+    const ze_group_count_t* pGroupCount;                                    ///< [in] pointer to group count
+
+} ze_mutable_group_count_exp_desc_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Mutable kernel group size descriptor
+typedef struct _ze_mutable_group_size_exp_desc_t
+{
+    ze_structure_type_t stype;                                              ///< [in] type of this structure
+    const void* pNext;                                                      ///< [in][optional] must be null or a pointer to an extension-specific
+                                                                            ///< structure (i.e. contains stype and pNext).
+    uint64_t commandId;                                                     ///< [in] command identifier
+    uint32_t groupSizeX;                                                    ///< [in] group size for X dimension to use for the kernel
+    uint32_t groupSizeY;                                                    ///< [in] group size for Y dimension to use for the kernel
+    uint32_t groupSizeZ;                                                    ///< [in] group size for Z dimension to use for the kernel
+
+} ze_mutable_group_size_exp_desc_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Mutable kernel global offset descriptor
+typedef struct _ze_mutable_global_offset_exp_desc_t
+{
+    ze_structure_type_t stype;                                              ///< [in] type of this structure
+    const void* pNext;                                                      ///< [in][optional] must be null or a pointer to an extension-specific
+                                                                            ///< structure (i.e. contains stype and pNext).
+    uint64_t commandId;                                                     ///< [in] command identifier
+    uint32_t offsetX;                                                       ///< [in] global offset for X dimension to use for this kernel
+    uint32_t offsetY;                                                       ///< [in] global offset for Y dimension to use for this kernel
+    uint32_t offsetZ;                                                       ///< [in] global offset for Z dimension to use for this kernel
+
+} ze_mutable_global_offset_exp_desc_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Mutable graph argument descriptor
+typedef struct _ze_mutable_graph_argument_exp_desc_t
+{
+    ze_structure_type_t stype;                                              ///< [in] type of this structure
+    const void* pNext;                                                      ///< [in][optional] must be null or a pointer to an extension-specific
+                                                                            ///< structure (i.e. contains stype and pNext).
+    uint64_t commandId;                                                     ///< [in] command identifier
+    uint32_t argIndex;                                                      ///< [in] graph argument index
+    const void* pArgValue;                                                  ///< [in] pointer to graph argument value
+
+} ze_mutable_graph_argument_exp_desc_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Returns a unique command identifier for the next command to be
+///        appended to a command list.
+/// 
+/// @details
+///     - This function may only be called for a mutable command list.
+///     - This function may not be called on a closed command list.
+///     - This function may be called from simultaneous threads with the same
+///       command list handle.
+///     - The implementation of this function should be lock-free.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hCommandList`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == desc`
+///         + `nullptr == pCommandId`
+///     - ::ZE_RESULT_ERROR_INVALID_ENUMERATION
+///         + `0xff < desc->flags`
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zeCommandListGetNextCommandIdExp(
+    ze_command_list_handle_t hCommandList,                                  ///< [in] handle of the command list
+    const ze_mutable_command_id_exp_desc_t* desc,                           ///< [in] pointer to mutable command identifier descriptor
+    uint64_t* pCommandId                                                    ///< [out] pointer to mutable command identifier to be written
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Returns a unique command identifier for the next command to be
+///        appended to a command list. Provides possible kernel handles for
+///        kernel mutation when ::ZE_MUTABLE_COMMAND_EXP_FLAG_KERNEL_INSTRUCTION
+///        flag is present.
+/// 
+/// @details
+///     - This function may only be called for a mutable command list.
+///     - This function may not be called on a closed command list.
+///     - This function may be called from simultaneous threads with the same
+///       command list handle.
+///     - The implementation of this function should be lock-free.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hCommandList`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == desc`
+///         + `nullptr == pCommandId`
+///     - ::ZE_RESULT_ERROR_INVALID_ENUMERATION
+///         + `0xff < desc->flags`
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zeCommandListGetNextCommandIdWithKernelsExp(
+    ze_command_list_handle_t hCommandList,                                  ///< [in] handle of the command list
+    const ze_mutable_command_id_exp_desc_t* desc,                           ///< [in][out] pointer to mutable command identifier descriptor
+    uint32_t numKernels,                                                    ///< [in][optional] number of entries on phKernels list
+    ze_kernel_handle_t* phKernels,                                          ///< [in][optional][range(0, numKernels)] list of kernels that user can
+                                                                            ///< switch between using ::zeCommandListUpdateMutableCommandKernelsExp
+                                                                            ///< call
+    uint64_t* pCommandId                                                    ///< [out] pointer to mutable command identifier to be written
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Updates mutable commands.
+/// 
+/// @details
+///     - This function may only be called for a mutable command list.
+///     - The application must synchronize mutable command list execution before
+///       calling this function.
+///     - The application must close a mutable command list after completing all
+///       updates.
+///     - This function must not be called from simultaneous threads with the
+///       same command list handle.
+///     - The implementation of this function should be lock-free.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hCommandList`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == desc`
+///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
+///         + Invalid kernel argument or not matching update descriptor provided
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zeCommandListUpdateMutableCommandsExp(
+    ze_command_list_handle_t hCommandList,                                  ///< [in] handle of the command list
+    const ze_mutable_commands_exp_desc_t* desc                              ///< [in] pointer to mutable commands descriptor; multiple descriptors may
+                                                                            ///< be chained via `pNext` member
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Updates the signal event for a mutable command in a mutable command
+///        list.
+/// 
+/// @details
+///     - This function may only be called for a mutable command list.
+///     - The type, scope and flags of the signal event must match those of the
+///       source command.
+///     - The application must synchronize mutable command list execution before
+///       calling this function.
+///     - The application must close a mutable command list after completing all
+///       updates.
+///     - This function must not be called from simultaneous threads with the
+///       same command list handle.
+///     - The implementation of this function should be lock-free.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hCommandList`
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zeCommandListUpdateMutableCommandSignalEventExp(
+    ze_command_list_handle_t hCommandList,                                  ///< [in] handle of the command list
+    uint64_t commandId,                                                     ///< [in] command identifier
+    ze_event_handle_t hSignalEvent                                          ///< [in][optional] handle of the event to signal on completion
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Updates the wait events for a mutable command in a mutable command
+///        list.
+/// 
+/// @details
+///     - This function may only be called for a mutable command list.
+///     - The number of wait events must match that of the source command.
+///     - The type, scope and flags of the wait events must match those of the
+///       source command.
+///     - Passing `nullptr` as the wait events will update the command to not
+///       wait on any events prior to dispatch.
+///     - Passing `nullptr` as an event on event wait list will remove event
+///       dependency from this wait list slot.
+///     - The application must synchronize mutable command list execution before
+///       calling this function.
+///     - The application must close a mutable command list after completing all
+///       updates.
+///     - This function must not be called from simultaneous threads with the
+///       same command list handle.
+///     - The implementation of this function should be lock-free.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hCommandList`
+///     - ::ZE_RESULT_ERROR_INVALID_SIZE
+///         + The `numWaitEvents` parameter does not match that of the original command.
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zeCommandListUpdateMutableCommandWaitEventsExp(
+    ze_command_list_handle_t hCommandList,                                  ///< [in] handle of the command list
+    uint64_t commandId,                                                     ///< [in] command identifier
+    uint32_t numWaitEvents,                                                 ///< [in][optional] the number of wait events
+    ze_event_handle_t* phWaitEvents                                         ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
+                                                                            ///< on before launching
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Updates the kernel for a mutable command in a mutable command list.
+/// 
+/// @details
+///     - This function may only be called for a mutable command list.
+///     - The kernel handle must be from the provided list for given command id.
+///     - The application must synchronize mutable command list execution before
+///       calling this function.
+///     - The application must close a mutable command list after completing all
+///       updates.
+///     - This function must not be called from simultaneous threads with the
+///       same command list handle.
+///     - This function must be called before updating kernel arguments and
+///       dispatch parameters, when kernel is mutated.
+///     - The implementation of this function should be lock-free.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hCommandList`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == pCommandId`
+///         + `nullptr == phKernels`
+///     - ::ZE_RESULT_ERROR_INVALID_KERNEL_HANDLE
+///         + Invalid kernel handle provided for the mutation kernel instruction operation.
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zeCommandListUpdateMutableCommandKernelsExp(
+    ze_command_list_handle_t hCommandList,                                  ///< [in] handle of the command list
+    uint32_t numKernels,                                                    ///< [in] the number of kernels to update
+    uint64_t* pCommandId,                                                   ///< [in][range(0, numKernels)] command identifier
+    ze_kernel_handle_t* phKernels                                           ///< [in][range(0, numKernels)] handle of the kernel for a command
+                                                                            ///< identifier to switch to
+    );
+
+#if !defined(__GNUC__)
+#pragma endregion
+#endif
 // Intel 'oneAPI' Level-Zero Extension for supporting relaxed allocation limits.
 #if !defined(__GNUC__)
 #pragma region relaxedAllocLimits
@@ -10777,290 +11270,6 @@ zeCommandListImmediateAppendCommandListsExp(
                                                                             ///< on before executing appended command lists.
                                                                             ///<    - if not null, all wait events must be satisfied prior to the start
                                                                             ///< of any appended command list(s)
-    );
-
-#if !defined(__GNUC__)
-#pragma endregion
-#endif
-// Intel 'oneAPI' Level-Zero Extension for supporting compute graphs with dynamic properties.
-#if !defined(__GNUC__)
-#pragma region mutableCommandList
-#endif
-///////////////////////////////////////////////////////////////////////////////
-#ifndef ZE_MUTABLE_COMMAND_LIST_EXP_NAME
-/// @brief Mutable Command List Extension Name
-#define ZE_MUTABLE_COMMAND_LIST_EXP_NAME  "ZE_experimental_mutable_command_list"
-#endif // ZE_MUTABLE_COMMAND_LIST_EXP_NAME
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Mutable Command List Extension Version(s)
-typedef enum _ze_mutable_command_list_exp_version_t
-{
-    ZE_MUTABLE_COMMAND_LIST_EXP_VERSION_1_0 = ZE_MAKE_VERSION( 1, 0 ),      ///< version 1.0
-    ZE_MUTABLE_COMMAND_LIST_EXP_VERSION_CURRENT = ZE_MAKE_VERSION( 1, 0 ),  ///< latest known version
-    ZE_MUTABLE_COMMAND_LIST_EXP_VERSION_FORCE_UINT32 = 0x7fffffff
-
-} ze_mutable_command_list_exp_version_t;
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Mutable command flags
-typedef uint32_t ze_mutable_command_exp_flags_t;
-typedef enum _ze_mutable_command_exp_flag_t
-{
-    ZE_MUTABLE_COMMAND_EXP_FLAG_KERNEL_ARGUMENTS = ZE_BIT(0),               ///< kernel arguments
-    ZE_MUTABLE_COMMAND_EXP_FLAG_GROUP_COUNT = ZE_BIT(1),                    ///< kernel group count
-    ZE_MUTABLE_COMMAND_EXP_FLAG_GROUP_SIZE = ZE_BIT(2),                     ///< kernel group size
-    ZE_MUTABLE_COMMAND_EXP_FLAG_GLOBAL_OFFSET = ZE_BIT(3),                  ///< kernel global offset
-    ZE_MUTABLE_COMMAND_EXP_FLAG_SIGNAL_EVENT = ZE_BIT(4),                   ///< command signal event
-    ZE_MUTABLE_COMMAND_EXP_FLAG_WAIT_EVENTS = ZE_BIT(5),                    ///< command wait events
-    ZE_MUTABLE_COMMAND_EXP_FLAG_FORCE_UINT32 = 0x7fffffff
-
-} ze_mutable_command_exp_flag_t;
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Mutable command identifier descriptor
-typedef struct _ze_mutable_command_id_exp_desc_t
-{
-    ze_structure_type_t stype;                                              ///< [in] type of this structure
-    const void* pNext;                                                      ///< [in][optional] must be null or a pointer to an extension-specific
-                                                                            ///< structure (i.e. contains stype and pNext).
-    ze_mutable_command_exp_flags_t flags;                                   ///< [in] mutable command flags.
-                                                                            ///<  - must be 0 (default, equivalent to setting all flags), or a valid
-                                                                            ///< combination of ::ze_mutable_command_exp_flag_t
-
-} ze_mutable_command_id_exp_desc_t;
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Mutable command list flags
-typedef uint32_t ze_mutable_command_list_exp_flags_t;
-typedef enum _ze_mutable_command_list_exp_flag_t
-{
-    ZE_MUTABLE_COMMAND_LIST_EXP_FLAG_RESERVED = ZE_BIT(0),                  ///< reserved
-    ZE_MUTABLE_COMMAND_LIST_EXP_FLAG_FORCE_UINT32 = 0x7fffffff
-
-} ze_mutable_command_list_exp_flag_t;
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Mutable command list properties
-typedef struct _ze_mutable_command_list_exp_properties_t
-{
-    ze_structure_type_t stype;                                              ///< [in] type of this structure
-    void* pNext;                                                            ///< [in,out][optional] must be null or a pointer to an extension-specific
-                                                                            ///< structure (i.e. contains stype and pNext).
-    ze_mutable_command_list_exp_flags_t mutableCommandListFlags;            ///< [out] mutable command list flags
-    ze_mutable_command_exp_flags_t mutableCommandFlags;                     ///< [out] mutable command flags
-
-} ze_mutable_command_list_exp_properties_t;
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Mutable command list descriptor
-typedef struct _ze_mutable_command_list_exp_desc_t
-{
-    ze_structure_type_t stype;                                              ///< [in] type of this structure
-    const void* pNext;                                                      ///< [in][optional] must be null or a pointer to an extension-specific
-                                                                            ///< structure (i.e. contains stype and pNext).
-    ze_mutable_command_list_exp_flags_t flags;                              ///< [in] mutable command list flags.
-                                                                            ///<  - must be 0 (default) or a valid combination of ::ze_mutable_command_list_exp_flag_t
-
-} ze_mutable_command_list_exp_desc_t;
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Mutable commands descriptor
-typedef struct _ze_mutable_commands_exp_desc_t
-{
-    ze_structure_type_t stype;                                              ///< [in] type of this structure
-    const void* pNext;                                                      ///< [in][optional] must be null or a pointer to an extension-specific
-                                                                            ///< structure (i.e. contains stype and pNext).
-    uint32_t flags;                                                         ///< [in] must be 0, this field is reserved for future use
-
-} ze_mutable_commands_exp_desc_t;
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Mutable kernel argument descriptor
-typedef struct _ze_mutable_kernel_argument_exp_desc_t
-{
-    ze_structure_type_t stype;                                              ///< [in] type of this structure
-    const void* pNext;                                                      ///< [in][optional] must be null or a pointer to an extension-specific
-                                                                            ///< structure (i.e. contains stype and pNext).
-    uint64_t commandId;                                                     ///< [in] command identifier
-    uint32_t argIndex;                                                      ///< [in] kernel argument index
-    size_t argSize;                                                         ///< [in] kernel argument size
-    const void* pArgValue;                                                  ///< [in] pointer to kernel argument value
-
-} ze_mutable_kernel_argument_exp_desc_t;
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Mutable kernel group count descriptor
-typedef struct _ze_mutable_group_count_exp_desc_t
-{
-    ze_structure_type_t stype;                                              ///< [in] type of this structure
-    const void* pNext;                                                      ///< [in][optional] must be null or a pointer to an extension-specific
-                                                                            ///< structure (i.e. contains stype and pNext).
-    uint64_t commandId;                                                     ///< [in] command identifier
-    const ze_group_count_t* pGroupCount;                                    ///< [in] pointer to group count
-
-} ze_mutable_group_count_exp_desc_t;
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Mutable kernel group size descriptor
-typedef struct _ze_mutable_group_size_exp_desc_t
-{
-    ze_structure_type_t stype;                                              ///< [in] type of this structure
-    const void* pNext;                                                      ///< [in][optional] must be null or a pointer to an extension-specific
-                                                                            ///< structure (i.e. contains stype and pNext).
-    uint64_t commandId;                                                     ///< [in] command identifier
-    uint32_t groupSizeX;                                                    ///< [in] group size for X dimension to use for the kernel
-    uint32_t groupSizeY;                                                    ///< [in] group size for Y dimension to use for the kernel
-    uint32_t groupSizeZ;                                                    ///< [in] group size for Z dimension to use for the kernel
-
-} ze_mutable_group_size_exp_desc_t;
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Mutable kernel global offset descriptor
-typedef struct _ze_mutable_global_offset_exp_desc_t
-{
-    ze_structure_type_t stype;                                              ///< [in] type of this structure
-    const void* pNext;                                                      ///< [in][optional] must be null or a pointer to an extension-specific
-                                                                            ///< structure (i.e. contains stype and pNext).
-    uint64_t commandId;                                                     ///< [in] command identifier
-    uint32_t offsetX;                                                       ///< [in] global offset for X dimension to use for this kernel
-    uint32_t offsetY;                                                       ///< [in] global offset for Y dimension to use for this kernel
-    uint32_t offsetZ;                                                       ///< [in] global offset for Z dimension to use for this kernel
-
-} ze_mutable_global_offset_exp_desc_t;
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Returns a unique command identifier for the next command to be
-///        appended to a command list.
-/// 
-/// @details
-///     - This function may only be called for a mutable command list.
-///     - This function may not be called on a closed command list.
-///     - This function may be called from simultaneous threads with the same
-///       command list handle.
-///     - The implementation of this function should be lock-free.
-/// 
-/// @returns
-///     - ::ZE_RESULT_SUCCESS
-///     - ::ZE_RESULT_ERROR_UNINITIALIZED
-///     - ::ZE_RESULT_ERROR_DEVICE_LOST
-///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
-///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
-///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
-///         + `nullptr == hCommandList`
-///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
-///         + `nullptr == desc`
-///         + `nullptr == pCommandId`
-///     - ::ZE_RESULT_ERROR_INVALID_ENUMERATION
-///         + `0x3f < desc->flags`
-ZE_APIEXPORT ze_result_t ZE_APICALL
-zeCommandListGetNextCommandIdExp(
-    ze_command_list_handle_t hCommandList,                                  ///< [in] handle of the command list
-    const ze_mutable_command_id_exp_desc_t* desc,                           ///< [in] pointer to mutable command identifier descriptor
-    uint64_t* pCommandId                                                    ///< [out] pointer to mutable command identifier to be written
-    );
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Updates mutable commands.
-/// 
-/// @details
-///     - This function may only be called for a mutable command list.
-///     - The application must synchronize mutable command list execution before
-///       calling this function.
-///     - The application must close a mutable command list after completing all
-///       updates.
-///     - This function must not be called from simultaneous threads with the
-///       same command list handle.
-///     - The implementation of this function should be lock-free.
-/// 
-/// @returns
-///     - ::ZE_RESULT_SUCCESS
-///     - ::ZE_RESULT_ERROR_UNINITIALIZED
-///     - ::ZE_RESULT_ERROR_DEVICE_LOST
-///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
-///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
-///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
-///         + `nullptr == hCommandList`
-///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
-///         + `nullptr == desc`
-ZE_APIEXPORT ze_result_t ZE_APICALL
-zeCommandListUpdateMutableCommandsExp(
-    ze_command_list_handle_t hCommandList,                                  ///< [in] handle of the command list
-    const ze_mutable_commands_exp_desc_t* desc                              ///< [in] pointer to mutable commands descriptor; multiple descriptors may
-                                                                            ///< be chained via `pNext` member
-    );
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Updates the signal event for a mutable command in a mutable command
-///        list.
-/// 
-/// @details
-///     - This function may only be called for a mutable command list.
-///     - The type, scope and flags of the signal event must match those of the
-///       source command.
-///     - Passing a null pointer as the signal event will update the command to
-///       not issue a signal.
-///     - The application must synchronize mutable command list execution before
-///       calling this function.
-///     - The application must close a mutable command list after completing all
-///       updates.
-///     - This function must not be called from simultaneous threads with the
-///       same command list handle.
-///     - The implementation of this function should be lock-free.
-/// 
-/// @returns
-///     - ::ZE_RESULT_SUCCESS
-///     - ::ZE_RESULT_ERROR_UNINITIALIZED
-///     - ::ZE_RESULT_ERROR_DEVICE_LOST
-///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
-///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
-///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
-///         + `nullptr == hCommandList`
-ZE_APIEXPORT ze_result_t ZE_APICALL
-zeCommandListUpdateMutableCommandSignalEventExp(
-    ze_command_list_handle_t hCommandList,                                  ///< [in] handle of the command list
-    uint64_t commandId,                                                     ///< [in] command identifier
-    ze_event_handle_t hSignalEvent                                          ///< [in][optional] handle of the event to signal on completion
-    );
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Updates the wait events for a mutable command in a mutable command
-///        list.
-/// 
-/// @details
-///     - This function may only be called for a mutable command list.
-///     - The number of wait events must match that of the source command.
-///     - The type, scope and flags of the wait events must match those of the
-///       source command.
-///     - Passing `nullptr` as the wait events will update the command to not
-///       wait on any events prior to dispatch.
-///     - Passing `nullptr` as an event on event wait list will remove event
-///       dependency from this wait list slot.
-///     - The application must synchronize mutable command list execution before
-///       calling this function.
-///     - The application must close a mutable command list after completing all
-///       updates.
-///     - This function must not be called from simultaneous threads with the
-///       same command list handle.
-///     - The implementation of this function should be lock-free.
-/// 
-/// @returns
-///     - ::ZE_RESULT_SUCCESS
-///     - ::ZE_RESULT_ERROR_UNINITIALIZED
-///     - ::ZE_RESULT_ERROR_DEVICE_LOST
-///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
-///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
-///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
-///         + `nullptr == hCommandList`
-///     - ::ZE_RESULT_ERROR_INVALID_SIZE
-///         + The `numWaitEvents` parameter does not match that of the original command.
-ZE_APIEXPORT ze_result_t ZE_APICALL
-zeCommandListUpdateMutableCommandWaitEventsExp(
-    ze_command_list_handle_t hCommandList,                                  ///< [in] handle of the command list
-    uint64_t commandId,                                                     ///< [in] command identifier
-    uint32_t numWaitEvents,                                                 ///< [in][optional] the number of wait events
-    ze_event_handle_t* phWaitEvents                                         ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
-                                                                            ///< on before launching
     );
 
 #if !defined(__GNUC__)

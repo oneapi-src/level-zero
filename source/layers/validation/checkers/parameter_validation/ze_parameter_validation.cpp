@@ -70,6 +70,33 @@ namespace validation_layer
 
 
     ze_result_t
+    ZEParameterValidation::zeInitDriversPrologue(
+        uint32_t* pCount,                               ///< [in,out] pointer to the number of driver instances.
+                                                        ///< if count is zero, then the loader shall update the value with the
+                                                        ///< total number of drivers available.
+                                                        ///< if count is greater than the number of drivers available, then the
+                                                        ///< loader shall update the value with the correct number of drivers available.
+        ze_driver_handle_t* phDrivers,                  ///< [in,out][optional][range(0, *pCount)] array of driver instance handles.
+                                                        ///< if count is less than the number of drivers available, then the loader
+                                                        ///< shall only retrieve that number of drivers.
+        ze_init_driver_type_desc_t* desc                ///< [in] descriptor containing the driver type initialization details
+                                                        ///< including ::ze_init_driver_type_flag_t combinations.
+        )
+    {
+        if( nullptr == pCount )
+            return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+        if( nullptr == desc )
+            return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+        if( 0x0 == desc->flags )
+            return ZE_RESULT_ERROR_INVALID_ENUMERATION;
+
+        return ParameterValidation::validateExtensions(desc);
+    }
+
+
+    ze_result_t
     ZEParameterValidation::zeDriverGetApiVersionPrologue(
         ze_driver_handle_t hDriver,                     ///< [in] handle of the driver instance
         ze_api_version_t* version                       ///< [out] api version
@@ -3017,6 +3044,125 @@ namespace validation_layer
 
 
     ze_result_t
+    ZEParameterValidation::zeCommandListGetNextCommandIdExpPrologue(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
+        const ze_mutable_command_id_exp_desc_t* desc,   ///< [in] pointer to mutable command identifier descriptor
+        uint64_t* pCommandId                            ///< [out] pointer to mutable command identifier to be written
+        )
+    {
+        if( nullptr == hCommandList )
+            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+        if( nullptr == desc )
+            return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+        if( nullptr == pCommandId )
+            return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+        if( 0xff < desc->flags )
+            return ZE_RESULT_ERROR_INVALID_ENUMERATION;
+
+        return ParameterValidation::validateExtensions(desc);
+    }
+
+
+    ze_result_t
+    ZEParameterValidation::zeCommandListGetNextCommandIdWithKernelsExpPrologue(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
+        const ze_mutable_command_id_exp_desc_t* desc,   ///< [in][out] pointer to mutable command identifier descriptor
+        uint32_t numKernels,                            ///< [in][optional] number of entries on phKernels list
+        ze_kernel_handle_t* phKernels,                  ///< [in][optional][range(0, numKernels)] list of kernels that user can
+                                                        ///< switch between using ::zeCommandListUpdateMutableCommandKernelsExp
+                                                        ///< call
+        uint64_t* pCommandId                            ///< [out] pointer to mutable command identifier to be written
+        )
+    {
+        if( nullptr == hCommandList )
+            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+        if( nullptr == desc )
+            return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+        if( nullptr == pCommandId )
+            return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+        if( 0xff < desc->flags )
+            return ZE_RESULT_ERROR_INVALID_ENUMERATION;
+
+        return ParameterValidation::validateExtensions(desc);
+    }
+
+
+    ze_result_t
+    ZEParameterValidation::zeCommandListUpdateMutableCommandsExpPrologue(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
+        const ze_mutable_commands_exp_desc_t* desc      ///< [in] pointer to mutable commands descriptor; multiple descriptors may
+                                                        ///< be chained via `pNext` member
+        )
+    {
+        if( nullptr == hCommandList )
+            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+        if( nullptr == desc )
+            return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+        return ParameterValidation::validateExtensions(desc);
+    }
+
+
+    ze_result_t
+    ZEParameterValidation::zeCommandListUpdateMutableCommandSignalEventExpPrologue(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
+        uint64_t commandId,                             ///< [in] command identifier
+        ze_event_handle_t hSignalEvent                  ///< [in][optional] handle of the event to signal on completion
+        )
+    {
+        if( nullptr == hCommandList )
+            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+        return ZE_RESULT_SUCCESS;
+    }
+
+
+    ze_result_t
+    ZEParameterValidation::zeCommandListUpdateMutableCommandWaitEventsExpPrologue(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
+        uint64_t commandId,                             ///< [in] command identifier
+        uint32_t numWaitEvents,                         ///< [in][optional] the number of wait events
+        ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
+                                                        ///< on before launching
+        )
+    {
+        if( nullptr == hCommandList )
+            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+        return ZE_RESULT_SUCCESS;
+    }
+
+
+    ze_result_t
+    ZEParameterValidation::zeCommandListUpdateMutableCommandKernelsExpPrologue(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
+        uint32_t numKernels,                            ///< [in] the number of kernels to update
+        uint64_t* pCommandId,                           ///< [in][range(0, numKernels)] command identifier
+        ze_kernel_handle_t* phKernels                   ///< [in][range(0, numKernels)] handle of the kernel for a command
+                                                        ///< identifier to switch to
+        )
+    {
+        if( nullptr == hCommandList )
+            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+        if( nullptr == pCommandId )
+            return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+        if( nullptr == phKernels )
+            return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+        return ZE_RESULT_SUCCESS;
+    }
+
+
+    ze_result_t
     ZEParameterValidation::zeDeviceReserveCacheExtPrologue(
         ze_device_handle_t hDevice,                     ///< [in] handle of the device object
         size_t cacheLevel,                              ///< [in] cache level where application want to reserve. If zero, then the
@@ -3789,76 +3935,6 @@ namespace validation_layer
 
         if( nullptr == phCommandLists )
             return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
-
-        return ZE_RESULT_SUCCESS;
-    }
-
-
-    ze_result_t
-    ZEParameterValidation::zeCommandListGetNextCommandIdExpPrologue(
-        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
-        const ze_mutable_command_id_exp_desc_t* desc,   ///< [in] pointer to mutable command identifier descriptor
-        uint64_t* pCommandId                            ///< [out] pointer to mutable command identifier to be written
-        )
-    {
-        if( nullptr == hCommandList )
-            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
-
-        if( nullptr == desc )
-            return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
-
-        if( nullptr == pCommandId )
-            return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
-
-        if( 0x3f < desc->flags )
-            return ZE_RESULT_ERROR_INVALID_ENUMERATION;
-
-        return ParameterValidation::validateExtensions(desc);
-    }
-
-
-    ze_result_t
-    ZEParameterValidation::zeCommandListUpdateMutableCommandsExpPrologue(
-        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
-        const ze_mutable_commands_exp_desc_t* desc      ///< [in] pointer to mutable commands descriptor; multiple descriptors may
-                                                        ///< be chained via `pNext` member
-        )
-    {
-        if( nullptr == hCommandList )
-            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
-
-        if( nullptr == desc )
-            return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
-
-        return ParameterValidation::validateExtensions(desc);
-    }
-
-
-    ze_result_t
-    ZEParameterValidation::zeCommandListUpdateMutableCommandSignalEventExpPrologue(
-        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
-        uint64_t commandId,                             ///< [in] command identifier
-        ze_event_handle_t hSignalEvent                  ///< [in][optional] handle of the event to signal on completion
-        )
-    {
-        if( nullptr == hCommandList )
-            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
-
-        return ZE_RESULT_SUCCESS;
-    }
-
-
-    ze_result_t
-    ZEParameterValidation::zeCommandListUpdateMutableCommandWaitEventsExpPrologue(
-        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
-        uint64_t commandId,                             ///< [in] command identifier
-        uint32_t numWaitEvents,                         ///< [in][optional] the number of wait events
-        ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
-                                                        ///< on before launching
-        )
-    {
-        if( nullptr == hCommandList )
-            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
 
         return ZE_RESULT_SUCCESS;
     }

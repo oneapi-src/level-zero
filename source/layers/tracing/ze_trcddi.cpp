@@ -88,6 +88,51 @@ namespace tracing_layer
     }
 
     ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeInitDrivers
+    __zedlllocal ze_result_t ZE_APICALL
+    zeInitDrivers(
+        uint32_t* pCount,                               ///< [in,out] pointer to the number of driver instances.
+                                                        ///< if count is zero, then the loader shall update the value with the
+                                                        ///< total number of drivers available.
+                                                        ///< if count is greater than the number of drivers available, then the
+                                                        ///< loader shall update the value with the correct number of drivers available.
+        ze_driver_handle_t* phDrivers,                  ///< [in,out][optional][range(0, *pCount)] array of driver instance handles.
+                                                        ///< if count is less than the number of drivers available, then the loader
+                                                        ///< shall only retrieve that number of drivers.
+        ze_init_driver_type_desc_t* desc                ///< [in] descriptor containing the driver type initialization details
+                                                        ///< including ::ze_init_driver_type_flag_t combinations.
+        )
+    {
+        auto pfnInitDrivers = context.zeDdiTable.Global.pfnInitDrivers;
+
+        if( nullptr == pfnInitDrivers)
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.Global.pfnInitDrivers, pCount, phDrivers, desc);
+
+        // capture parameters
+        ze_init_drivers_params_t tracerParams = {
+            &pCount,
+            &phDrivers,
+            &desc
+        };
+
+        tracing_layer::APITracerCallbackDataImp<ze_pfnInitDriversCb_t> apiCallbackData;
+
+        ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnInitDriversCb_t, Global, pfnInitDriversCb);
+
+
+        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.Global.pfnInitDrivers,
+                                                  &tracerParams,
+                                                  apiCallbackData.apiOrdinal,
+                                                  apiCallbackData.prologCallbacks,
+                                                  apiCallbackData.epilogCallbacks,
+                                                  *tracerParams.ppCount,
+                                                  *tracerParams.pphDrivers,
+                                                  *tracerParams.pdesc);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
     /// @brief Intercept function for zeDriverGetApiVersion
     __zedlllocal ze_result_t ZE_APICALL
     zeDriverGetApiVersion(
@@ -5782,6 +5827,248 @@ namespace tracing_layer
     }
 
     ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeCommandListGetNextCommandIdExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zeCommandListGetNextCommandIdExp(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
+        const ze_mutable_command_id_exp_desc_t* desc,   ///< [in] pointer to mutable command identifier descriptor
+        uint64_t* pCommandId                            ///< [out] pointer to mutable command identifier to be written
+        )
+    {
+        auto pfnGetNextCommandIdExp = context.zeDdiTable.CommandListExp.pfnGetNextCommandIdExp;
+
+        if( nullptr == pfnGetNextCommandIdExp)
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.CommandListExp.pfnGetNextCommandIdExp, hCommandList, desc, pCommandId);
+
+        // capture parameters
+        ze_command_list_get_next_command_id_exp_params_t tracerParams = {
+            &hCommandList,
+            &desc,
+            &pCommandId
+        };
+
+        tracing_layer::APITracerCallbackDataImp<ze_pfnCommandListGetNextCommandIdExpCb_t> apiCallbackData;
+
+        ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnCommandListGetNextCommandIdExpCb_t, CommandList, pfnGetNextCommandIdExpCb);
+
+
+        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.CommandListExp.pfnGetNextCommandIdExp,
+                                                  &tracerParams,
+                                                  apiCallbackData.apiOrdinal,
+                                                  apiCallbackData.prologCallbacks,
+                                                  apiCallbackData.epilogCallbacks,
+                                                  *tracerParams.phCommandList,
+                                                  *tracerParams.pdesc,
+                                                  *tracerParams.ppCommandId);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeCommandListGetNextCommandIdWithKernelsExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zeCommandListGetNextCommandIdWithKernelsExp(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
+        const ze_mutable_command_id_exp_desc_t* desc,   ///< [in][out] pointer to mutable command identifier descriptor
+        uint32_t numKernels,                            ///< [in][optional] number of entries on phKernels list
+        ze_kernel_handle_t* phKernels,                  ///< [in][optional][range(0, numKernels)] list of kernels that user can
+                                                        ///< switch between using ::zeCommandListUpdateMutableCommandKernelsExp
+                                                        ///< call
+        uint64_t* pCommandId                            ///< [out] pointer to mutable command identifier to be written
+        )
+    {
+        auto pfnGetNextCommandIdWithKernelsExp = context.zeDdiTable.CommandListExp.pfnGetNextCommandIdWithKernelsExp;
+
+        if( nullptr == pfnGetNextCommandIdWithKernelsExp)
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.CommandListExp.pfnGetNextCommandIdWithKernelsExp, hCommandList, desc, numKernels, phKernels, pCommandId);
+
+        // capture parameters
+        ze_command_list_get_next_command_id_with_kernels_exp_params_t tracerParams = {
+            &hCommandList,
+            &desc,
+            &numKernels,
+            &phKernels,
+            &pCommandId
+        };
+
+        tracing_layer::APITracerCallbackDataImp<ze_pfnCommandListGetNextCommandIdWithKernelsExpCb_t> apiCallbackData;
+
+        ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnCommandListGetNextCommandIdWithKernelsExpCb_t, CommandList, pfnGetNextCommandIdWithKernelsExpCb);
+
+
+        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.CommandListExp.pfnGetNextCommandIdWithKernelsExp,
+                                                  &tracerParams,
+                                                  apiCallbackData.apiOrdinal,
+                                                  apiCallbackData.prologCallbacks,
+                                                  apiCallbackData.epilogCallbacks,
+                                                  *tracerParams.phCommandList,
+                                                  *tracerParams.pdesc,
+                                                  *tracerParams.pnumKernels,
+                                                  *tracerParams.pphKernels,
+                                                  *tracerParams.ppCommandId);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeCommandListUpdateMutableCommandsExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zeCommandListUpdateMutableCommandsExp(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
+        const ze_mutable_commands_exp_desc_t* desc      ///< [in] pointer to mutable commands descriptor; multiple descriptors may
+                                                        ///< be chained via `pNext` member
+        )
+    {
+        auto pfnUpdateMutableCommandsExp = context.zeDdiTable.CommandListExp.pfnUpdateMutableCommandsExp;
+
+        if( nullptr == pfnUpdateMutableCommandsExp)
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.CommandListExp.pfnUpdateMutableCommandsExp, hCommandList, desc);
+
+        // capture parameters
+        ze_command_list_update_mutable_commands_exp_params_t tracerParams = {
+            &hCommandList,
+            &desc
+        };
+
+        tracing_layer::APITracerCallbackDataImp<ze_pfnCommandListUpdateMutableCommandsExpCb_t> apiCallbackData;
+
+        ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnCommandListUpdateMutableCommandsExpCb_t, CommandList, pfnUpdateMutableCommandsExpCb);
+
+
+        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.CommandListExp.pfnUpdateMutableCommandsExp,
+                                                  &tracerParams,
+                                                  apiCallbackData.apiOrdinal,
+                                                  apiCallbackData.prologCallbacks,
+                                                  apiCallbackData.epilogCallbacks,
+                                                  *tracerParams.phCommandList,
+                                                  *tracerParams.pdesc);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeCommandListUpdateMutableCommandSignalEventExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zeCommandListUpdateMutableCommandSignalEventExp(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
+        uint64_t commandId,                             ///< [in] command identifier
+        ze_event_handle_t hSignalEvent                  ///< [in][optional] handle of the event to signal on completion
+        )
+    {
+        auto pfnUpdateMutableCommandSignalEventExp = context.zeDdiTable.CommandListExp.pfnUpdateMutableCommandSignalEventExp;
+
+        if( nullptr == pfnUpdateMutableCommandSignalEventExp)
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.CommandListExp.pfnUpdateMutableCommandSignalEventExp, hCommandList, commandId, hSignalEvent);
+
+        // capture parameters
+        ze_command_list_update_mutable_command_signal_event_exp_params_t tracerParams = {
+            &hCommandList,
+            &commandId,
+            &hSignalEvent
+        };
+
+        tracing_layer::APITracerCallbackDataImp<ze_pfnCommandListUpdateMutableCommandSignalEventExpCb_t> apiCallbackData;
+
+        ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnCommandListUpdateMutableCommandSignalEventExpCb_t, CommandList, pfnUpdateMutableCommandSignalEventExpCb);
+
+
+        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.CommandListExp.pfnUpdateMutableCommandSignalEventExp,
+                                                  &tracerParams,
+                                                  apiCallbackData.apiOrdinal,
+                                                  apiCallbackData.prologCallbacks,
+                                                  apiCallbackData.epilogCallbacks,
+                                                  *tracerParams.phCommandList,
+                                                  *tracerParams.pcommandId,
+                                                  *tracerParams.phSignalEvent);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeCommandListUpdateMutableCommandWaitEventsExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zeCommandListUpdateMutableCommandWaitEventsExp(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
+        uint64_t commandId,                             ///< [in] command identifier
+        uint32_t numWaitEvents,                         ///< [in][optional] the number of wait events
+        ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
+                                                        ///< on before launching
+        )
+    {
+        auto pfnUpdateMutableCommandWaitEventsExp = context.zeDdiTable.CommandListExp.pfnUpdateMutableCommandWaitEventsExp;
+
+        if( nullptr == pfnUpdateMutableCommandWaitEventsExp)
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.CommandListExp.pfnUpdateMutableCommandWaitEventsExp, hCommandList, commandId, numWaitEvents, phWaitEvents);
+
+        // capture parameters
+        ze_command_list_update_mutable_command_wait_events_exp_params_t tracerParams = {
+            &hCommandList,
+            &commandId,
+            &numWaitEvents,
+            &phWaitEvents
+        };
+
+        tracing_layer::APITracerCallbackDataImp<ze_pfnCommandListUpdateMutableCommandWaitEventsExpCb_t> apiCallbackData;
+
+        ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnCommandListUpdateMutableCommandWaitEventsExpCb_t, CommandList, pfnUpdateMutableCommandWaitEventsExpCb);
+
+
+        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.CommandListExp.pfnUpdateMutableCommandWaitEventsExp,
+                                                  &tracerParams,
+                                                  apiCallbackData.apiOrdinal,
+                                                  apiCallbackData.prologCallbacks,
+                                                  apiCallbackData.epilogCallbacks,
+                                                  *tracerParams.phCommandList,
+                                                  *tracerParams.pcommandId,
+                                                  *tracerParams.pnumWaitEvents,
+                                                  *tracerParams.pphWaitEvents);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeCommandListUpdateMutableCommandKernelsExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zeCommandListUpdateMutableCommandKernelsExp(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
+        uint32_t numKernels,                            ///< [in] the number of kernels to update
+        uint64_t* pCommandId,                           ///< [in][range(0, numKernels)] command identifier
+        ze_kernel_handle_t* phKernels                   ///< [in][range(0, numKernels)] handle of the kernel for a command
+                                                        ///< identifier to switch to
+        )
+    {
+        auto pfnUpdateMutableCommandKernelsExp = context.zeDdiTable.CommandListExp.pfnUpdateMutableCommandKernelsExp;
+
+        if( nullptr == pfnUpdateMutableCommandKernelsExp)
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.CommandListExp.pfnUpdateMutableCommandKernelsExp, hCommandList, numKernels, pCommandId, phKernels);
+
+        // capture parameters
+        ze_command_list_update_mutable_command_kernels_exp_params_t tracerParams = {
+            &hCommandList,
+            &numKernels,
+            &pCommandId,
+            &phKernels
+        };
+
+        tracing_layer::APITracerCallbackDataImp<ze_pfnCommandListUpdateMutableCommandKernelsExpCb_t> apiCallbackData;
+
+        ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnCommandListUpdateMutableCommandKernelsExpCb_t, CommandList, pfnUpdateMutableCommandKernelsExpCb);
+
+
+        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.CommandListExp.pfnUpdateMutableCommandKernelsExp,
+                                                  &tracerParams,
+                                                  apiCallbackData.apiOrdinal,
+                                                  apiCallbackData.prologCallbacks,
+                                                  apiCallbackData.epilogCallbacks,
+                                                  *tracerParams.phCommandList,
+                                                  *tracerParams.pnumKernels,
+                                                  *tracerParams.ppCommandId,
+                                                  *tracerParams.pphKernels);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
     /// @brief Intercept function for zeDeviceReserveCacheExt
     __zedlllocal ze_result_t ZE_APICALL
     zeDeviceReserveCacheExt(
@@ -7224,160 +7511,6 @@ namespace tracing_layer
                                                   *tracerParams.pphWaitEvents);
     }
 
-    ///////////////////////////////////////////////////////////////////////////////
-    /// @brief Intercept function for zeCommandListGetNextCommandIdExp
-    __zedlllocal ze_result_t ZE_APICALL
-    zeCommandListGetNextCommandIdExp(
-        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
-        const ze_mutable_command_id_exp_desc_t* desc,   ///< [in] pointer to mutable command identifier descriptor
-        uint64_t* pCommandId                            ///< [out] pointer to mutable command identifier to be written
-        )
-    {
-        auto pfnGetNextCommandIdExp = context.zeDdiTable.CommandListExp.pfnGetNextCommandIdExp;
-
-        if( nullptr == pfnGetNextCommandIdExp)
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-
-        ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.CommandListExp.pfnGetNextCommandIdExp, hCommandList, desc, pCommandId);
-
-        // capture parameters
-        ze_command_list_get_next_command_id_exp_params_t tracerParams = {
-            &hCommandList,
-            &desc,
-            &pCommandId
-        };
-
-        tracing_layer::APITracerCallbackDataImp<ze_pfnCommandListGetNextCommandIdExpCb_t> apiCallbackData;
-
-        ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnCommandListGetNextCommandIdExpCb_t, CommandList, pfnGetNextCommandIdExpCb);
-
-
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.CommandListExp.pfnGetNextCommandIdExp,
-                                                  &tracerParams,
-                                                  apiCallbackData.apiOrdinal,
-                                                  apiCallbackData.prologCallbacks,
-                                                  apiCallbackData.epilogCallbacks,
-                                                  *tracerParams.phCommandList,
-                                                  *tracerParams.pdesc,
-                                                  *tracerParams.ppCommandId);
-    }
-
-    ///////////////////////////////////////////////////////////////////////////////
-    /// @brief Intercept function for zeCommandListUpdateMutableCommandsExp
-    __zedlllocal ze_result_t ZE_APICALL
-    zeCommandListUpdateMutableCommandsExp(
-        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
-        const ze_mutable_commands_exp_desc_t* desc      ///< [in] pointer to mutable commands descriptor; multiple descriptors may
-                                                        ///< be chained via `pNext` member
-        )
-    {
-        auto pfnUpdateMutableCommandsExp = context.zeDdiTable.CommandListExp.pfnUpdateMutableCommandsExp;
-
-        if( nullptr == pfnUpdateMutableCommandsExp)
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-
-        ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.CommandListExp.pfnUpdateMutableCommandsExp, hCommandList, desc);
-
-        // capture parameters
-        ze_command_list_update_mutable_commands_exp_params_t tracerParams = {
-            &hCommandList,
-            &desc
-        };
-
-        tracing_layer::APITracerCallbackDataImp<ze_pfnCommandListUpdateMutableCommandsExpCb_t> apiCallbackData;
-
-        ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnCommandListUpdateMutableCommandsExpCb_t, CommandList, pfnUpdateMutableCommandsExpCb);
-
-
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.CommandListExp.pfnUpdateMutableCommandsExp,
-                                                  &tracerParams,
-                                                  apiCallbackData.apiOrdinal,
-                                                  apiCallbackData.prologCallbacks,
-                                                  apiCallbackData.epilogCallbacks,
-                                                  *tracerParams.phCommandList,
-                                                  *tracerParams.pdesc);
-    }
-
-    ///////////////////////////////////////////////////////////////////////////////
-    /// @brief Intercept function for zeCommandListUpdateMutableCommandSignalEventExp
-    __zedlllocal ze_result_t ZE_APICALL
-    zeCommandListUpdateMutableCommandSignalEventExp(
-        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
-        uint64_t commandId,                             ///< [in] command identifier
-        ze_event_handle_t hSignalEvent                  ///< [in][optional] handle of the event to signal on completion
-        )
-    {
-        auto pfnUpdateMutableCommandSignalEventExp = context.zeDdiTable.CommandListExp.pfnUpdateMutableCommandSignalEventExp;
-
-        if( nullptr == pfnUpdateMutableCommandSignalEventExp)
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-
-        ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.CommandListExp.pfnUpdateMutableCommandSignalEventExp, hCommandList, commandId, hSignalEvent);
-
-        // capture parameters
-        ze_command_list_update_mutable_command_signal_event_exp_params_t tracerParams = {
-            &hCommandList,
-            &commandId,
-            &hSignalEvent
-        };
-
-        tracing_layer::APITracerCallbackDataImp<ze_pfnCommandListUpdateMutableCommandSignalEventExpCb_t> apiCallbackData;
-
-        ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnCommandListUpdateMutableCommandSignalEventExpCb_t, CommandList, pfnUpdateMutableCommandSignalEventExpCb);
-
-
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.CommandListExp.pfnUpdateMutableCommandSignalEventExp,
-                                                  &tracerParams,
-                                                  apiCallbackData.apiOrdinal,
-                                                  apiCallbackData.prologCallbacks,
-                                                  apiCallbackData.epilogCallbacks,
-                                                  *tracerParams.phCommandList,
-                                                  *tracerParams.pcommandId,
-                                                  *tracerParams.phSignalEvent);
-    }
-
-    ///////////////////////////////////////////////////////////////////////////////
-    /// @brief Intercept function for zeCommandListUpdateMutableCommandWaitEventsExp
-    __zedlllocal ze_result_t ZE_APICALL
-    zeCommandListUpdateMutableCommandWaitEventsExp(
-        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
-        uint64_t commandId,                             ///< [in] command identifier
-        uint32_t numWaitEvents,                         ///< [in][optional] the number of wait events
-        ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
-                                                        ///< on before launching
-        )
-    {
-        auto pfnUpdateMutableCommandWaitEventsExp = context.zeDdiTable.CommandListExp.pfnUpdateMutableCommandWaitEventsExp;
-
-        if( nullptr == pfnUpdateMutableCommandWaitEventsExp)
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-
-        ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.CommandListExp.pfnUpdateMutableCommandWaitEventsExp, hCommandList, commandId, numWaitEvents, phWaitEvents);
-
-        // capture parameters
-        ze_command_list_update_mutable_command_wait_events_exp_params_t tracerParams = {
-            &hCommandList,
-            &commandId,
-            &numWaitEvents,
-            &phWaitEvents
-        };
-
-        tracing_layer::APITracerCallbackDataImp<ze_pfnCommandListUpdateMutableCommandWaitEventsExpCb_t> apiCallbackData;
-
-        ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnCommandListUpdateMutableCommandWaitEventsExpCb_t, CommandList, pfnUpdateMutableCommandWaitEventsExpCb);
-
-
-        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.CommandListExp.pfnUpdateMutableCommandWaitEventsExp,
-                                                  &tracerParams,
-                                                  apiCallbackData.apiOrdinal,
-                                                  apiCallbackData.prologCallbacks,
-                                                  apiCallbackData.epilogCallbacks,
-                                                  *tracerParams.phCommandList,
-                                                  *tracerParams.pcommandId,
-                                                  *tracerParams.pnumWaitEvents,
-                                                  *tracerParams.pphWaitEvents);
-    }
-
 } // namespace tracing_layer
 
 #if defined(__cplusplus)
@@ -7411,6 +7544,9 @@ zeGetGlobalProcAddrTable(
 
     dditable.pfnInit                                     = pDdiTable->pfnInit;
     pDdiTable->pfnInit                                   = tracing_layer::zeInit;
+
+    dditable.pfnInitDrivers                              = pDdiTable->pfnInitDrivers;
+    pDdiTable->pfnInitDrivers                            = tracing_layer::zeInitDrivers;
 
     return result;
 }
@@ -7947,14 +8083,8 @@ zeGetCommandListExpProcAddrTable(
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
-    dditable.pfnCreateCloneExp                           = pDdiTable->pfnCreateCloneExp;
-    pDdiTable->pfnCreateCloneExp                         = tracing_layer::zeCommandListCreateCloneExp;
-
-    dditable.pfnImmediateAppendCommandListsExp           = pDdiTable->pfnImmediateAppendCommandListsExp;
-    pDdiTable->pfnImmediateAppendCommandListsExp         = tracing_layer::zeCommandListImmediateAppendCommandListsExp;
-
-    dditable.pfnGetNextCommandIdExp                      = pDdiTable->pfnGetNextCommandIdExp;
-    pDdiTable->pfnGetNextCommandIdExp                    = tracing_layer::zeCommandListGetNextCommandIdExp;
+    dditable.pfnGetNextCommandIdWithKernelsExp           = pDdiTable->pfnGetNextCommandIdWithKernelsExp;
+    pDdiTable->pfnGetNextCommandIdWithKernelsExp         = tracing_layer::zeCommandListGetNextCommandIdWithKernelsExp;
 
     dditable.pfnUpdateMutableCommandsExp                 = pDdiTable->pfnUpdateMutableCommandsExp;
     pDdiTable->pfnUpdateMutableCommandsExp               = tracing_layer::zeCommandListUpdateMutableCommandsExp;
@@ -7962,8 +8092,20 @@ zeGetCommandListExpProcAddrTable(
     dditable.pfnUpdateMutableCommandSignalEventExp       = pDdiTable->pfnUpdateMutableCommandSignalEventExp;
     pDdiTable->pfnUpdateMutableCommandSignalEventExp     = tracing_layer::zeCommandListUpdateMutableCommandSignalEventExp;
 
+    dditable.pfnUpdateMutableCommandKernelsExp           = pDdiTable->pfnUpdateMutableCommandKernelsExp;
+    pDdiTable->pfnUpdateMutableCommandKernelsExp         = tracing_layer::zeCommandListUpdateMutableCommandKernelsExp;
+
+    dditable.pfnCreateCloneExp                           = pDdiTable->pfnCreateCloneExp;
+    pDdiTable->pfnCreateCloneExp                         = tracing_layer::zeCommandListCreateCloneExp;
+
+    dditable.pfnGetNextCommandIdExp                      = pDdiTable->pfnGetNextCommandIdExp;
+    pDdiTable->pfnGetNextCommandIdExp                    = tracing_layer::zeCommandListGetNextCommandIdExp;
+
     dditable.pfnUpdateMutableCommandWaitEventsExp        = pDdiTable->pfnUpdateMutableCommandWaitEventsExp;
     pDdiTable->pfnUpdateMutableCommandWaitEventsExp      = tracing_layer::zeCommandListUpdateMutableCommandWaitEventsExp;
+
+    dditable.pfnImmediateAppendCommandListsExp           = pDdiTable->pfnImmediateAppendCommandListsExp;
+    pDdiTable->pfnImmediateAppendCommandListsExp         = tracing_layer::zeCommandListImmediateAppendCommandListsExp;
 
     return result;
 }

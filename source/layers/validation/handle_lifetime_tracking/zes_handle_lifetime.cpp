@@ -2040,7 +2040,7 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZESHandleLifetimeValidation::zesDeviceEnumActiveVFExpPrologue(
+    ZESHandleLifetimeValidation::zesDeviceEnumEnabledVFExpPrologue(
         zes_device_handle_t hDevice,                    ///< [in] Sysman handle of the device.
         uint32_t* pCount,                               ///< [in,out] pointer to the number of components of this type.
                                                         ///< if count is zero, then the driver shall update the value with the
@@ -2062,9 +2062,9 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZESHandleLifetimeValidation::zesVFManagementGetVFPropertiesExpPrologue(
+    ZESHandleLifetimeValidation::zesVFManagementGetVFCapabilitiesExpPrologue(
         zes_vf_handle_t hVFhandle,                      ///< [in] Sysman handle for the VF component.
-        zes_vf_exp_properties_t* pProperties            ///< [in,out] Will contain VF properties.
+        zes_vf_exp_capabilities_t* pCapability          ///< [in,out] Will contain VF capability.
         )
     { 
         
@@ -2082,8 +2082,6 @@ namespace validation_layer
                                                         ///<  - if count is greater than the total number of memory stats
                                                         ///< available, the driver shall update the value with the correct number
                                                         ///< of memory stats available.
-                                                        ///<  - The count returned is the sum of number of VF instances currently
-                                                        ///< available and the PF instance.
         zes_vf_util_mem_exp_t* pMemUtil                 ///< [in,out][optional][range(0, *pCount)] array of memory group activity counters.
                                                         ///<  - if count is less than the total number of memory stats available,
                                                         ///< then driver shall only retrieve that number of stats.
@@ -2106,41 +2104,11 @@ namespace validation_layer
                                                         ///<  - if count is greater than the total number of engine stats
                                                         ///< available, the driver shall update the value with the correct number
                                                         ///< of engine stats available.
-                                                        ///<  - The count returned is the sum of number of VF instances currently
-                                                        ///< available and the PF instance.
         zes_vf_util_engine_exp_t* pEngineUtil           ///< [in,out][optional][range(0, *pCount)] array of engine group activity counters.
                                                         ///<  - if count is less than the total number of engine stats available,
                                                         ///< then driver shall only retrieve that number of stats.
                                                         ///<  - the implementation shall populate the vector pCount-1 number of VF
                                                         ///< engine stats.
-        )
-    { 
-        
-        if ( !context.handleLifetime->isHandleValid( hVFhandle )){
-                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
-        }
-        return ZE_RESULT_SUCCESS;
-    }
-    ze_result_t
-    ZESHandleLifetimeValidation::zesVFManagementSetVFTelemetryModeExpPrologue(
-        zes_vf_handle_t hVFhandle,                      ///< [in] Sysman handle for the component.
-        zes_vf_info_util_exp_flags_t flags,             ///< [in] utilization flags to enable or disable. May be 0 or a valid
-                                                        ///< combination of ::zes_vf_info_util_exp_flag_t.
-        ze_bool_t enable                                ///< [in] Enable utilization telemetry.
-        )
-    { 
-        
-        if ( !context.handleLifetime->isHandleValid( hVFhandle )){
-                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
-        }
-        return ZE_RESULT_SUCCESS;
-    }
-    ze_result_t
-    ZESHandleLifetimeValidation::zesVFManagementSetVFTelemetrySamplingIntervalExpPrologue(
-        zes_vf_handle_t hVFhandle,                      ///< [in] Sysman handle for the component.
-        zes_vf_info_util_exp_flags_t flag,              ///< [in] utilization flags to set sampling interval. May be 0 or a valid
-                                                        ///< combination of ::zes_vf_info_util_exp_flag_t.
-        uint64_t samplingInterval                       ///< [in] Sampling interval value.
         )
     { 
         

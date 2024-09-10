@@ -19,7 +19,7 @@ namespace validation_layer
 
     class ZEHandleLifetimeValidation : public ZEValidationEntryPoints {
     public:
-                        ze_result_t zeDriverGetApiVersionPrologue( ze_driver_handle_t hDriver, ze_api_version_t* version ) override;
+                                ze_result_t zeDriverGetApiVersionPrologue( ze_driver_handle_t hDriver, ze_api_version_t* version ) override;
         ze_result_t zeDriverGetPropertiesPrologue( ze_driver_handle_t hDriver, ze_driver_properties_t* pDriverProperties ) override;
         ze_result_t zeDriverGetIpcPropertiesPrologue( ze_driver_handle_t hDriver, ze_driver_ipc_properties_t* pIpcProperties ) override;
         ze_result_t zeDriverGetExtensionPropertiesPrologue( ze_driver_handle_t hDriver, uint32_t* pCount, ze_driver_extension_properties_t* pExtensionProperties ) override;
@@ -162,6 +162,12 @@ namespace validation_layer
         ze_result_t zeVirtualMemSetAccessAttributePrologue( ze_context_handle_t hContext, const void* ptr, size_t size, ze_memory_access_attribute_t access ) override;
         ze_result_t zeVirtualMemGetAccessAttributePrologue( ze_context_handle_t hContext, const void* ptr, size_t size, ze_memory_access_attribute_t* access, size_t* outSize ) override;
         ze_result_t zeKernelSetGlobalOffsetExpPrologue( ze_kernel_handle_t hKernel, uint32_t offsetX, uint32_t offsetY, uint32_t offsetZ ) override;
+        ze_result_t zeCommandListGetNextCommandIdExpPrologue( ze_command_list_handle_t hCommandList, const ze_mutable_command_id_exp_desc_t* desc, uint64_t* pCommandId ) override;
+        ze_result_t zeCommandListGetNextCommandIdWithKernelsExpPrologue( ze_command_list_handle_t hCommandList, const ze_mutable_command_id_exp_desc_t* desc, uint32_t numKernels, ze_kernel_handle_t* phKernels, uint64_t* pCommandId ) override;
+        ze_result_t zeCommandListUpdateMutableCommandsExpPrologue( ze_command_list_handle_t hCommandList, const ze_mutable_commands_exp_desc_t* desc ) override;
+        ze_result_t zeCommandListUpdateMutableCommandSignalEventExpPrologue( ze_command_list_handle_t hCommandList, uint64_t commandId, ze_event_handle_t hSignalEvent ) override;
+        ze_result_t zeCommandListUpdateMutableCommandWaitEventsExpPrologue( ze_command_list_handle_t hCommandList, uint64_t commandId, uint32_t numWaitEvents, ze_event_handle_t* phWaitEvents ) override;
+        ze_result_t zeCommandListUpdateMutableCommandKernelsExpPrologue( ze_command_list_handle_t hCommandList, uint32_t numKernels, uint64_t* pCommandId, ze_kernel_handle_t* phKernels ) override;
         ze_result_t zeDeviceReserveCacheExtPrologue( ze_device_handle_t hDevice, size_t cacheLevel, size_t cacheReservationSize ) override;
         ze_result_t zeDeviceSetCacheAdviceExtPrologue( ze_device_handle_t hDevice, void* ptr, size_t regionSize, ze_cache_ext_region_t cacheRegion ) override;
         ze_result_t zeEventQueryTimestampsExpPrologue( ze_event_handle_t hEvent, ze_device_handle_t hDevice, uint32_t* pCount, ze_kernel_timestamp_result_t* pTimestamps ) override;
@@ -197,10 +203,6 @@ namespace validation_layer
         ze_result_t zeImageGetDeviceOffsetExpPrologue( ze_image_handle_t hImage, uint64_t* pDeviceOffset ) override;
         ze_result_t zeCommandListCreateCloneExpPrologue( ze_command_list_handle_t hCommandList, ze_command_list_handle_t* phClonedCommandList ) override;
         ze_result_t zeCommandListImmediateAppendCommandListsExpPrologue( ze_command_list_handle_t hCommandListImmediate, uint32_t numCommandLists, ze_command_list_handle_t* phCommandLists, ze_event_handle_t hSignalEvent, uint32_t numWaitEvents, ze_event_handle_t* phWaitEvents ) override;
-        ze_result_t zeCommandListGetNextCommandIdExpPrologue( ze_command_list_handle_t hCommandList, const ze_mutable_command_id_exp_desc_t* desc, uint64_t* pCommandId ) override;
-        ze_result_t zeCommandListUpdateMutableCommandsExpPrologue( ze_command_list_handle_t hCommandList, const ze_mutable_commands_exp_desc_t* desc ) override;
-        ze_result_t zeCommandListUpdateMutableCommandSignalEventExpPrologue( ze_command_list_handle_t hCommandList, uint64_t commandId, ze_event_handle_t hSignalEvent ) override;
-        ze_result_t zeCommandListUpdateMutableCommandWaitEventsExpPrologue( ze_command_list_handle_t hCommandList, uint64_t commandId, uint32_t numWaitEvents, ze_event_handle_t* phWaitEvents ) override;
     };
 
 }
