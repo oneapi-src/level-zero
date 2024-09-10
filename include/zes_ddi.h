@@ -5,7 +5,7 @@
  * SPDX-License-Identifier: MIT
  *
  * @file zes_ddi.h
- * @version v1.9-r1.9.3
+ * @version v1.10-r1.10.0
  *
  */
 #ifndef _ZES_DDI_H
@@ -411,8 +411,8 @@ typedef ze_result_t (ZE_APICALL *zes_pfnDeviceGetSubDevicePropertiesExp_t)(
     );
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Function-pointer for zesDeviceEnumActiveVFExp 
-typedef ze_result_t (ZE_APICALL *zes_pfnDeviceEnumActiveVFExp_t)(
+/// @brief Function-pointer for zesDeviceEnumEnabledVFExp 
+typedef ze_result_t (ZE_APICALL *zes_pfnDeviceEnumEnabledVFExp_t)(
     zes_device_handle_t,
     uint32_t*,
     zes_vf_handle_t*
@@ -423,7 +423,7 @@ typedef ze_result_t (ZE_APICALL *zes_pfnDeviceEnumActiveVFExp_t)(
 typedef struct _zes_device_exp_dditable_t
 {
     zes_pfnDeviceGetSubDevicePropertiesExp_t                    pfnGetSubDevicePropertiesExp;
-    zes_pfnDeviceEnumActiveVFExp_t                              pfnEnumActiveVFExp;
+    zes_pfnDeviceEnumEnabledVFExp_t                             pfnEnumEnabledVFExp;
 } zes_device_exp_dditable_t;
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1848,10 +1848,10 @@ typedef ze_result_t (ZE_APICALL *zes_pfnGetDiagnosticsProcAddrTable_t)(
     );
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Function-pointer for zesVFManagementGetVFPropertiesExp 
-typedef ze_result_t (ZE_APICALL *zes_pfnVFManagementGetVFPropertiesExp_t)(
+/// @brief Function-pointer for zesVFManagementGetVFCapabilitiesExp 
+typedef ze_result_t (ZE_APICALL *zes_pfnVFManagementGetVFCapabilitiesExp_t)(
     zes_vf_handle_t,
-    zes_vf_exp_properties_t*
+    zes_vf_exp_capabilities_t*
     );
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1871,30 +1871,12 @@ typedef ze_result_t (ZE_APICALL *zes_pfnVFManagementGetVFEngineUtilizationExp_t)
     );
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Function-pointer for zesVFManagementSetVFTelemetryModeExp 
-typedef ze_result_t (ZE_APICALL *zes_pfnVFManagementSetVFTelemetryModeExp_t)(
-    zes_vf_handle_t,
-    zes_vf_info_util_exp_flags_t,
-    ze_bool_t
-    );
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Function-pointer for zesVFManagementSetVFTelemetrySamplingIntervalExp 
-typedef ze_result_t (ZE_APICALL *zes_pfnVFManagementSetVFTelemetrySamplingIntervalExp_t)(
-    zes_vf_handle_t,
-    zes_vf_info_util_exp_flags_t,
-    uint64_t
-    );
-
-///////////////////////////////////////////////////////////////////////////////
 /// @brief Table of VFManagementExp functions pointers
 typedef struct _zes_vf_management_exp_dditable_t
 {
-    zes_pfnVFManagementGetVFPropertiesExp_t                     pfnGetVFPropertiesExp;
+    zes_pfnVFManagementGetVFCapabilitiesExp_t                   pfnGetVFCapabilitiesExp;
     zes_pfnVFManagementGetVFMemoryUtilizationExp_t              pfnGetVFMemoryUtilizationExp;
     zes_pfnVFManagementGetVFEngineUtilizationExp_t              pfnGetVFEngineUtilizationExp;
-    zes_pfnVFManagementSetVFTelemetryModeExp_t                  pfnSetVFTelemetryModeExp;
-    zes_pfnVFManagementSetVFTelemetrySamplingIntervalExp_t      pfnSetVFTelemetrySamplingIntervalExp;
 } zes_vf_management_exp_dditable_t;
 
 ///////////////////////////////////////////////////////////////////////////////

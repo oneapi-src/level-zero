@@ -58,6 +58,16 @@ namespace validation_layer
         ze_result_t zetTracerExpSetProloguesPrologue( zet_tracer_exp_handle_t hTracer, zet_core_callbacks_t* pCoreCbs ) override;
         ze_result_t zetTracerExpSetEpiloguesPrologue( zet_tracer_exp_handle_t hTracer, zet_core_callbacks_t* pCoreCbs ) override;
         ze_result_t zetTracerExpSetEnabledPrologue( zet_tracer_exp_handle_t hTracer, ze_bool_t enable ) override;
+        ze_result_t zetDeviceGetConcurrentMetricGroupsExpPrologue( zet_device_handle_t hDevice, uint32_t metricGroupCount, zet_metric_group_handle_t * phMetricGroups, uint32_t * pMetricGroupsCountPerConcurrentGroup, uint32_t * pConcurrentGroupCount ) override;
+        ze_result_t zetMetricTracerCreateExpPrologue( zet_context_handle_t hContext, zet_device_handle_t hDevice, uint32_t metricGroupCount, zet_metric_group_handle_t* phMetricGroups, zet_metric_tracer_exp_desc_t* desc, ze_event_handle_t hNotificationEvent, zet_metric_tracer_exp_handle_t* phMetricTracer ) override;
+        ze_result_t zetMetricTracerDestroyExpPrologue( zet_metric_tracer_exp_handle_t hMetricTracer ) override;
+        ze_result_t zetMetricTracerEnableExpPrologue( zet_metric_tracer_exp_handle_t hMetricTracer, ze_bool_t synchronous ) override;
+        ze_result_t zetMetricTracerDisableExpPrologue( zet_metric_tracer_exp_handle_t hMetricTracer, ze_bool_t synchronous ) override;
+        ze_result_t zetMetricTracerReadDataExpPrologue( zet_metric_tracer_exp_handle_t hMetricTracer, size_t* pRawDataSize, uint8_t* pRawData ) override;
+        ze_result_t zetMetricDecoderCreateExpPrologue( zet_metric_tracer_exp_handle_t hMetricTracer, zet_metric_decoder_exp_handle_t* phMetricDecoder ) override;
+        ze_result_t zetMetricDecoderDestroyExpPrologue( zet_metric_decoder_exp_handle_t phMetricDecoder ) override;
+        ze_result_t zetMetricDecoderGetDecodableMetricsExpPrologue( zet_metric_decoder_exp_handle_t hMetricDecoder, uint32_t* pCount, zet_metric_handle_t* phMetrics ) override;
+        ze_result_t zetMetricTracerDecodeExpPrologue( zet_metric_decoder_exp_handle_t phMetricDecoder, size_t* pRawDataSize, uint8_t* pRawData, uint32_t metricsCount, zet_metric_handle_t* phMetrics, uint32_t* pSetCount, uint32_t* pMetricEntriesCountPerSet, uint32_t* pMetricEntriesCount, zet_metric_entry_exp_t* pMetricEntries ) override;
         ze_result_t zetMetricGroupCalculateMultipleMetricValuesExpPrologue( zet_metric_group_handle_t hMetricGroup, zet_metric_group_calculation_type_t type, size_t rawDataSize, const uint8_t* pRawData, uint32_t* pSetCount, uint32_t* pTotalMetricValueCount, uint32_t* pMetricCounts, zet_typed_value_t* pMetricValues ) override;
         ze_result_t zetMetricGroupGetGlobalTimestampsExpPrologue( zet_metric_group_handle_t hMetricGroup, ze_bool_t synchronizedWithHost, uint64_t* globalTimestamp, uint64_t* metricTimestamp ) override;
         ze_result_t zetMetricGroupGetExportDataExpPrologue( zet_metric_group_handle_t hMetricGroup, const uint8_t* pRawData, size_t rawDataSize, size_t* pExportDataSize, uint8_t * pExportData ) override;
@@ -66,8 +76,8 @@ namespace validation_layer
         ze_result_t zetMetricProgrammableGetPropertiesExpPrologue( zet_metric_programmable_exp_handle_t hMetricProgrammable, zet_metric_programmable_exp_properties_t* pProperties ) override;
         ze_result_t zetMetricProgrammableGetParamInfoExpPrologue( zet_metric_programmable_exp_handle_t hMetricProgrammable, uint32_t* pParameterCount, zet_metric_programmable_param_info_exp_t* pParameterInfo ) override;
         ze_result_t zetMetricProgrammableGetParamValueInfoExpPrologue( zet_metric_programmable_exp_handle_t hMetricProgrammable, uint32_t parameterOrdinal, uint32_t* pValueInfoCount, zet_metric_programmable_param_value_info_exp_t* pValueInfo ) override;
-        ze_result_t zetMetricCreateFromProgrammableExpPrologue( zet_metric_programmable_exp_handle_t hMetricProgrammable, zet_metric_programmable_param_value_exp_t* pParameterValues, uint32_t parameterCount, const char* pName, const char* pDescription, uint32_t* pMetricHandleCount, zet_metric_handle_t* phMetricHandles ) override;
-        ze_result_t zetMetricGroupCreateExpPrologue( zet_device_handle_t hDevice, const char* pName, const char* pDescription, zet_metric_group_sampling_type_flags_t samplingType, zet_metric_group_handle_t* phMetricGroup ) override;
+        ze_result_t zetMetricCreateFromProgrammableExpPrologue( zet_metric_programmable_exp_handle_t hMetricProgrammable, uint32_t parameterCount, zet_metric_programmable_param_value_exp_t* pParameterValues, const char* pName, const char* pDescription, uint32_t* pMetricHandleCount, zet_metric_handle_t* phMetricHandles ) override;
+        ze_result_t zetDeviceCreateMetricGroupsFromMetricsExpPrologue( zet_device_handle_t hDevice, uint32_t metricCount, zet_metric_handle_t * phMetrics, const char * pMetricGroupNamePrefix, const char * pDescription, uint32_t * pMetricGroupCount, zet_metric_group_handle_t* phMetricGroup ) override;
         ze_result_t zetMetricGroupAddMetricExpPrologue( zet_metric_group_handle_t hMetricGroup, zet_metric_handle_t hMetric, size_t * pErrorStringSize, char* pErrorString ) override;
         ze_result_t zetMetricGroupRemoveMetricExpPrologue( zet_metric_group_handle_t hMetricGroup, zet_metric_handle_t hMetric ) override;
         ze_result_t zetMetricGroupCloseExpPrologue( zet_metric_group_handle_t hMetricGroup ) override;

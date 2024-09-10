@@ -5,7 +5,7 @@
  * SPDX-License-Identifier: MIT
  *
  * @file ze_ddi.h
- * @version v1.9-r1.9.3
+ * @version v1.10-r1.10.0
  *
  */
 #ifndef _ZE_DDI_H
@@ -153,10 +153,19 @@ typedef ze_result_t (ZE_APICALL *ze_pfnInit_t)(
     );
 
 ///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zeInitDrivers 
+typedef ze_result_t (ZE_APICALL *ze_pfnInitDrivers_t)(
+    uint32_t*,
+    ze_driver_handle_t*,
+    ze_init_driver_type_desc_t*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
 /// @brief Table of Global functions pointers
 typedef struct _ze_global_dditable_t
 {
     ze_pfnInit_t                                                pfnInit;
+    ze_pfnInitDrivers_t                                         pfnInitDrivers;
 } ze_global_dditable_t;
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1119,28 +1128,12 @@ typedef ze_result_t (ZE_APICALL *ze_pfnGetCommandListProcAddrTable_t)(
     );
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Function-pointer for zeCommandListCreateCloneExp 
-typedef ze_result_t (ZE_APICALL *ze_pfnCommandListCreateCloneExp_t)(
-    ze_command_list_handle_t,
-    ze_command_list_handle_t*
-    );
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Function-pointer for zeCommandListImmediateAppendCommandListsExp 
-typedef ze_result_t (ZE_APICALL *ze_pfnCommandListImmediateAppendCommandListsExp_t)(
-    ze_command_list_handle_t,
-    uint32_t,
-    ze_command_list_handle_t*,
-    ze_event_handle_t,
-    uint32_t,
-    ze_event_handle_t*
-    );
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Function-pointer for zeCommandListGetNextCommandIdExp 
-typedef ze_result_t (ZE_APICALL *ze_pfnCommandListGetNextCommandIdExp_t)(
+/// @brief Function-pointer for zeCommandListGetNextCommandIdWithKernelsExp 
+typedef ze_result_t (ZE_APICALL *ze_pfnCommandListGetNextCommandIdWithKernelsExp_t)(
     ze_command_list_handle_t,
     const ze_mutable_command_id_exp_desc_t*,
+    uint32_t,
+    ze_kernel_handle_t*,
     uint64_t*
     );
 
@@ -1160,6 +1153,30 @@ typedef ze_result_t (ZE_APICALL *ze_pfnCommandListUpdateMutableCommandSignalEven
     );
 
 ///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zeCommandListUpdateMutableCommandKernelsExp 
+typedef ze_result_t (ZE_APICALL *ze_pfnCommandListUpdateMutableCommandKernelsExp_t)(
+    ze_command_list_handle_t,
+    uint32_t,
+    uint64_t*,
+    ze_kernel_handle_t*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zeCommandListCreateCloneExp 
+typedef ze_result_t (ZE_APICALL *ze_pfnCommandListCreateCloneExp_t)(
+    ze_command_list_handle_t,
+    ze_command_list_handle_t*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zeCommandListGetNextCommandIdExp 
+typedef ze_result_t (ZE_APICALL *ze_pfnCommandListGetNextCommandIdExp_t)(
+    ze_command_list_handle_t,
+    const ze_mutable_command_id_exp_desc_t*,
+    uint64_t*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
 /// @brief Function-pointer for zeCommandListUpdateMutableCommandWaitEventsExp 
 typedef ze_result_t (ZE_APICALL *ze_pfnCommandListUpdateMutableCommandWaitEventsExp_t)(
     ze_command_list_handle_t,
@@ -1169,15 +1186,28 @@ typedef ze_result_t (ZE_APICALL *ze_pfnCommandListUpdateMutableCommandWaitEvents
     );
 
 ///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zeCommandListImmediateAppendCommandListsExp 
+typedef ze_result_t (ZE_APICALL *ze_pfnCommandListImmediateAppendCommandListsExp_t)(
+    ze_command_list_handle_t,
+    uint32_t,
+    ze_command_list_handle_t*,
+    ze_event_handle_t,
+    uint32_t,
+    ze_event_handle_t*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
 /// @brief Table of CommandListExp functions pointers
 typedef struct _ze_command_list_exp_dditable_t
 {
-    ze_pfnCommandListCreateCloneExp_t                           pfnCreateCloneExp;
-    ze_pfnCommandListImmediateAppendCommandListsExp_t           pfnImmediateAppendCommandListsExp;
-    ze_pfnCommandListGetNextCommandIdExp_t                      pfnGetNextCommandIdExp;
+    ze_pfnCommandListGetNextCommandIdWithKernelsExp_t           pfnGetNextCommandIdWithKernelsExp;
     ze_pfnCommandListUpdateMutableCommandsExp_t                 pfnUpdateMutableCommandsExp;
     ze_pfnCommandListUpdateMutableCommandSignalEventExp_t       pfnUpdateMutableCommandSignalEventExp;
+    ze_pfnCommandListUpdateMutableCommandKernelsExp_t           pfnUpdateMutableCommandKernelsExp;
+    ze_pfnCommandListCreateCloneExp_t                           pfnCreateCloneExp;
+    ze_pfnCommandListGetNextCommandIdExp_t                      pfnGetNextCommandIdExp;
     ze_pfnCommandListUpdateMutableCommandWaitEventsExp_t        pfnUpdateMutableCommandWaitEventsExp;
+    ze_pfnCommandListImmediateAppendCommandListsExp_t           pfnImmediateAppendCommandListsExp;
 } ze_command_list_exp_dditable_t;
 
 ///////////////////////////////////////////////////////////////////////////////

@@ -155,12 +155,10 @@ namespace validation_layer
         ze_result_t zesFirmwareSetSecurityVersionExpPrologue( zes_firmware_handle_t hFirmware ) override;
         ze_result_t zesDeviceGetSubDevicePropertiesExpPrologue( zes_device_handle_t hDevice, uint32_t* pCount, zes_subdevice_exp_properties_t* pSubdeviceProps ) override;
         ze_result_t zesDriverGetDeviceByUuidExpPrologue( zes_driver_handle_t hDriver, zes_uuid_t uuid, zes_device_handle_t* phDevice, ze_bool_t* onSubdevice, uint32_t* subdeviceId ) override;
-        ze_result_t zesDeviceEnumActiveVFExpPrologue( zes_device_handle_t hDevice, uint32_t* pCount, zes_vf_handle_t* phVFhandle ) override;
-        ze_result_t zesVFManagementGetVFPropertiesExpPrologue( zes_vf_handle_t hVFhandle, zes_vf_exp_properties_t* pProperties ) override;
+        ze_result_t zesDeviceEnumEnabledVFExpPrologue( zes_device_handle_t hDevice, uint32_t* pCount, zes_vf_handle_t* phVFhandle ) override;
+        ze_result_t zesVFManagementGetVFCapabilitiesExpPrologue( zes_vf_handle_t hVFhandle, zes_vf_exp_capabilities_t* pCapability ) override;
         ze_result_t zesVFManagementGetVFMemoryUtilizationExpPrologue( zes_vf_handle_t hVFhandle, uint32_t* pCount, zes_vf_util_mem_exp_t* pMemUtil ) override;
         ze_result_t zesVFManagementGetVFEngineUtilizationExpPrologue( zes_vf_handle_t hVFhandle, uint32_t* pCount, zes_vf_util_engine_exp_t* pEngineUtil ) override;
-        ze_result_t zesVFManagementSetVFTelemetryModeExpPrologue( zes_vf_handle_t hVFhandle, zes_vf_info_util_exp_flags_t flags, ze_bool_t enable ) override;
-        ze_result_t zesVFManagementSetVFTelemetrySamplingIntervalExpPrologue( zes_vf_handle_t hVFhandle, zes_vf_info_util_exp_flags_t flag, uint64_t samplingInterval ) override;
     };
 
 }

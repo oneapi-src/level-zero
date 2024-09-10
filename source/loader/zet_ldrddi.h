@@ -51,6 +51,12 @@ namespace loader
     using zet_debug_session_object_t          = object_t < zet_debug_session_handle_t >;
     using zet_debug_session_factory_t         = singleton_factory_t < zet_debug_session_object_t, zet_debug_session_handle_t >;
 
+    using zet_metric_tracer_exp_object_t      = object_t < zet_metric_tracer_exp_handle_t >;
+    using zet_metric_tracer_exp_factory_t     = singleton_factory_t < zet_metric_tracer_exp_object_t, zet_metric_tracer_exp_handle_t >;
+
+    using zet_metric_decoder_exp_object_t     = object_t < zet_metric_decoder_exp_handle_t >;
+    using zet_metric_decoder_exp_factory_t    = singleton_factory_t < zet_metric_decoder_exp_object_t, zet_metric_decoder_exp_handle_t >;
+
     using zet_metric_programmable_exp_object_t    = object_t < zet_metric_programmable_exp_handle_t >;
     using zet_metric_programmable_exp_factory_t   = singleton_factory_t < zet_metric_programmable_exp_object_t, zet_metric_programmable_exp_handle_t >;
 

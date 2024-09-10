@@ -2496,6 +2496,110 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
+    ZEHandleLifetimeValidation::zeCommandListGetNextCommandIdExpPrologue(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
+        const ze_mutable_command_id_exp_desc_t* desc,   ///< [in] pointer to mutable command identifier descriptor
+        uint64_t* pCommandId                            ///< [out] pointer to mutable command identifier to be written
+        )
+    { 
+        
+        if ( !context.handleLifetime->isHandleValid( hCommandList )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    ze_result_t
+    ZEHandleLifetimeValidation::zeCommandListGetNextCommandIdWithKernelsExpPrologue(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
+        const ze_mutable_command_id_exp_desc_t* desc,   ///< [in][out] pointer to mutable command identifier descriptor
+        uint32_t numKernels,                            ///< [in][optional] number of entries on phKernels list
+        ze_kernel_handle_t* phKernels,                  ///< [in][optional][range(0, numKernels)] list of kernels that user can
+                                                        ///< switch between using ::zeCommandListUpdateMutableCommandKernelsExp
+                                                        ///< call
+        uint64_t* pCommandId                            ///< [out] pointer to mutable command identifier to be written
+        )
+    { 
+        
+        if ( !context.handleLifetime->isHandleValid( hCommandList )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        for (size_t i = 0; ( nullptr != phKernels) && (i < numKernels); ++i){
+            if (!context.handleLifetime->isHandleValid( phKernels[i] )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+            }
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    ze_result_t
+    ZEHandleLifetimeValidation::zeCommandListUpdateMutableCommandsExpPrologue(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
+        const ze_mutable_commands_exp_desc_t* desc      ///< [in] pointer to mutable commands descriptor; multiple descriptors may
+                                                        ///< be chained via `pNext` member
+        )
+    { 
+        
+        if ( !context.handleLifetime->isHandleValid( hCommandList )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    ze_result_t
+    ZEHandleLifetimeValidation::zeCommandListUpdateMutableCommandSignalEventExpPrologue(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
+        uint64_t commandId,                             ///< [in] command identifier
+        ze_event_handle_t hSignalEvent                  ///< [in][optional] handle of the event to signal on completion
+        )
+    { 
+        
+        if ( !context.handleLifetime->isHandleValid( hCommandList )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        if (hSignalEvent && !context.handleLifetime->isHandleValid( hSignalEvent )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    ze_result_t
+    ZEHandleLifetimeValidation::zeCommandListUpdateMutableCommandWaitEventsExpPrologue(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
+        uint64_t commandId,                             ///< [in] command identifier
+        uint32_t numWaitEvents,                         ///< [in][optional] the number of wait events
+        ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
+                                                        ///< on before launching
+        )
+    { 
+        
+        if ( !context.handleLifetime->isHandleValid( hCommandList )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        for (size_t i = 0; ( nullptr != phWaitEvents) && (i < numWaitEvents); ++i){
+            if (!context.handleLifetime->isHandleValid( phWaitEvents[i] )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+            }
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    ze_result_t
+    ZEHandleLifetimeValidation::zeCommandListUpdateMutableCommandKernelsExpPrologue(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
+        uint32_t numKernels,                            ///< [in] the number of kernels to update
+        uint64_t* pCommandId,                           ///< [in][range(0, numKernels)] command identifier
+        ze_kernel_handle_t* phKernels                   ///< [in][range(0, numKernels)] handle of the kernel for a command
+                                                        ///< identifier to switch to
+        )
+    { 
+        
+        if ( !context.handleLifetime->isHandleValid( hCommandList )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        for (size_t i = 0; ( nullptr != phKernels) && (i < numKernels); ++i){
+            if (!context.handleLifetime->isHandleValid( phKernels[i] )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+            }
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    ze_result_t
     ZEHandleLifetimeValidation::zeDeviceReserveCacheExtPrologue(
         ze_device_handle_t hDevice,                     ///< [in] handle of the device object
         size_t cacheLevel,                              ///< [in] cache level where application want to reserve. If zero, then the
@@ -3093,68 +3197,6 @@ namespace validation_layer
             }
         }
         if (hSignalEvent && !context.handleLifetime->isHandleValid( hSignalEvent )){
-                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
-        }
-        for (size_t i = 0; ( nullptr != phWaitEvents) && (i < numWaitEvents); ++i){
-            if (!context.handleLifetime->isHandleValid( phWaitEvents[i] )){
-                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
-            }
-        }
-        return ZE_RESULT_SUCCESS;
-    }
-    ze_result_t
-    ZEHandleLifetimeValidation::zeCommandListGetNextCommandIdExpPrologue(
-        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
-        const ze_mutable_command_id_exp_desc_t* desc,   ///< [in] pointer to mutable command identifier descriptor
-        uint64_t* pCommandId                            ///< [out] pointer to mutable command identifier to be written
-        )
-    { 
-        
-        if ( !context.handleLifetime->isHandleValid( hCommandList )){
-                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
-        }
-        return ZE_RESULT_SUCCESS;
-    }
-    ze_result_t
-    ZEHandleLifetimeValidation::zeCommandListUpdateMutableCommandsExpPrologue(
-        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
-        const ze_mutable_commands_exp_desc_t* desc      ///< [in] pointer to mutable commands descriptor; multiple descriptors may
-                                                        ///< be chained via `pNext` member
-        )
-    { 
-        
-        if ( !context.handleLifetime->isHandleValid( hCommandList )){
-                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
-        }
-        return ZE_RESULT_SUCCESS;
-    }
-    ze_result_t
-    ZEHandleLifetimeValidation::zeCommandListUpdateMutableCommandSignalEventExpPrologue(
-        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
-        uint64_t commandId,                             ///< [in] command identifier
-        ze_event_handle_t hSignalEvent                  ///< [in][optional] handle of the event to signal on completion
-        )
-    { 
-        
-        if ( !context.handleLifetime->isHandleValid( hCommandList )){
-                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
-        }
-        if (hSignalEvent && !context.handleLifetime->isHandleValid( hSignalEvent )){
-                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
-        }
-        return ZE_RESULT_SUCCESS;
-    }
-    ze_result_t
-    ZEHandleLifetimeValidation::zeCommandListUpdateMutableCommandWaitEventsExpPrologue(
-        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
-        uint64_t commandId,                             ///< [in] command identifier
-        uint32_t numWaitEvents,                         ///< [in][optional] the number of wait events
-        ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
-                                                        ///< on before launching
-        )
-    { 
-        
-        if ( !context.handleLifetime->isHandleValid( hCommandList )){
                 return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
         }
         for (size_t i = 0; ( nullptr != phWaitEvents) && (i < numWaitEvents); ++i){

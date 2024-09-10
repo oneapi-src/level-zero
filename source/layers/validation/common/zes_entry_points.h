@@ -293,18 +293,14 @@ public:
     virtual ze_result_t zesDeviceGetSubDevicePropertiesExpEpilogue( zes_device_handle_t hDevice, uint32_t* pCount, zes_subdevice_exp_properties_t* pSubdeviceProps ) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zesDriverGetDeviceByUuidExpPrologue( zes_driver_handle_t hDriver, zes_uuid_t uuid, zes_device_handle_t* phDevice, ze_bool_t* onSubdevice, uint32_t* subdeviceId ) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zesDriverGetDeviceByUuidExpEpilogue( zes_driver_handle_t hDriver, zes_uuid_t uuid, zes_device_handle_t* phDevice, ze_bool_t* onSubdevice, uint32_t* subdeviceId ) {return ZE_RESULT_SUCCESS;}
-    virtual ze_result_t zesDeviceEnumActiveVFExpPrologue( zes_device_handle_t hDevice, uint32_t* pCount, zes_vf_handle_t* phVFhandle ) {return ZE_RESULT_SUCCESS;}
-    virtual ze_result_t zesDeviceEnumActiveVFExpEpilogue( zes_device_handle_t hDevice, uint32_t* pCount, zes_vf_handle_t* phVFhandle ) {return ZE_RESULT_SUCCESS;}
-    virtual ze_result_t zesVFManagementGetVFPropertiesExpPrologue( zes_vf_handle_t hVFhandle, zes_vf_exp_properties_t* pProperties ) {return ZE_RESULT_SUCCESS;}
-    virtual ze_result_t zesVFManagementGetVFPropertiesExpEpilogue( zes_vf_handle_t hVFhandle, zes_vf_exp_properties_t* pProperties ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zesDeviceEnumEnabledVFExpPrologue( zes_device_handle_t hDevice, uint32_t* pCount, zes_vf_handle_t* phVFhandle ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zesDeviceEnumEnabledVFExpEpilogue( zes_device_handle_t hDevice, uint32_t* pCount, zes_vf_handle_t* phVFhandle ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zesVFManagementGetVFCapabilitiesExpPrologue( zes_vf_handle_t hVFhandle, zes_vf_exp_capabilities_t* pCapability ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zesVFManagementGetVFCapabilitiesExpEpilogue( zes_vf_handle_t hVFhandle, zes_vf_exp_capabilities_t* pCapability ) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zesVFManagementGetVFMemoryUtilizationExpPrologue( zes_vf_handle_t hVFhandle, uint32_t* pCount, zes_vf_util_mem_exp_t* pMemUtil ) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zesVFManagementGetVFMemoryUtilizationExpEpilogue( zes_vf_handle_t hVFhandle, uint32_t* pCount, zes_vf_util_mem_exp_t* pMemUtil ) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zesVFManagementGetVFEngineUtilizationExpPrologue( zes_vf_handle_t hVFhandle, uint32_t* pCount, zes_vf_util_engine_exp_t* pEngineUtil ) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zesVFManagementGetVFEngineUtilizationExpEpilogue( zes_vf_handle_t hVFhandle, uint32_t* pCount, zes_vf_util_engine_exp_t* pEngineUtil ) {return ZE_RESULT_SUCCESS;}
-    virtual ze_result_t zesVFManagementSetVFTelemetryModeExpPrologue( zes_vf_handle_t hVFhandle, zes_vf_info_util_exp_flags_t flags, ze_bool_t enable ) {return ZE_RESULT_SUCCESS;}
-    virtual ze_result_t zesVFManagementSetVFTelemetryModeExpEpilogue( zes_vf_handle_t hVFhandle, zes_vf_info_util_exp_flags_t flags, ze_bool_t enable ) {return ZE_RESULT_SUCCESS;}
-    virtual ze_result_t zesVFManagementSetVFTelemetrySamplingIntervalExpPrologue( zes_vf_handle_t hVFhandle, zes_vf_info_util_exp_flags_t flag, uint64_t samplingInterval ) {return ZE_RESULT_SUCCESS;}
-    virtual ze_result_t zesVFManagementSetVFTelemetrySamplingIntervalExpEpilogue( zes_vf_handle_t hVFhandle, zes_vf_info_util_exp_flags_t flag, uint64_t samplingInterval ) {return ZE_RESULT_SUCCESS;}
     virtual ~ZESValidationEntryPoints() {}
 };
 }
