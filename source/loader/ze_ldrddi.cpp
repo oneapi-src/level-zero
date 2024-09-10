@@ -127,18 +127,56 @@ namespace loader
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
 
-        bool atLeastOneDriverValid = false;
+        uint32_t total_driver_handle_count = 0;
+
         for( auto& drv : loader::context->zeDrivers )
         {
-            if(drv.initStatus != ZE_RESULT_SUCCESS)
+
+            if( ( 0 < *pCount ) && ( *pCount == total_driver_handle_count))
+                break;
+
+            uint32_t library_driver_handle_count = 0;
+
+            result = drv.dditable.ze.Global.pfnInitDrivers( &library_driver_handle_count, nullptr, desc );
+            if( ZE_RESULT_SUCCESS != result ) {
+                // If Get Drivers fails with Uninitialized, then update the driver init status to prevent reporting this driver in the next get call.
+                if (ZE_RESULT_ERROR_UNINITIALIZED == result) {
+                    drv.initStatus = result;
+                }
                 continue;
-            drv.initStatus = drv.dditable.ze.Global.pfnInitDrivers( pCount, phDrivers, desc );
-            if(drv.initStatus == ZE_RESULT_SUCCESS)
-                atLeastOneDriverValid = true;
+            }
+
+            if( nullptr != phDrivers && *pCount !=0)
+            {
+                if( total_driver_handle_count + library_driver_handle_count > *pCount) {
+                    library_driver_handle_count = *pCount - total_driver_handle_count;
+                }
+                result = drv.dditable.ze.Global.pfnInitDrivers( &library_driver_handle_count, &phDrivers[ total_driver_handle_count ], desc );
+                if( ZE_RESULT_SUCCESS != result ) break;
+
+                try
+                {
+                    for( uint32_t i = 0; i < library_driver_handle_count; ++i ) {
+                        uint32_t driver_index = total_driver_handle_count + i;
+                        phDrivers[ driver_index ] = reinterpret_cast<ze_driver_handle_t>(
+                            context->ze_driver_factory.getInstance( phDrivers[ driver_index ], &drv.dditable ) );
+                    }
+                }
+                catch( std::bad_alloc& )
+                {
+                    result = ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY;
+                }
+            }
+
+            total_driver_handle_count += library_driver_handle_count;
         }
 
-        if(!atLeastOneDriverValid)
-            result=ZE_RESULT_ERROR_UNINITIALIZED;
+        // If the last driver get failed, but at least one driver succeeded, then return success with total count.
+        if( ZE_RESULT_SUCCESS == result || total_driver_handle_count > 0)
+            *pCount = total_driver_handle_count;
+        if (total_driver_handle_count > 0) {
+            result = ZE_RESULT_SUCCESS;
+        }
 
         return result;
     }

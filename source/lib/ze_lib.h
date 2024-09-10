@@ -35,9 +35,10 @@ namespace ze_lib
         ~context_t();
 
         std::once_flag initOnce;
+        std::once_flag initOnceDrivers;
         std::once_flag initOnceSysMan;
 
-        ze_result_t Init(ze_init_flags_t flags, bool sysmanOnly);
+        ze_result_t Init(ze_init_flags_t flags, bool sysmanOnly, ze_init_driver_type_desc_t* desc);
 
         ze_result_t zeDdiTableInit();
         std::atomic<ze_dditable_t *>  zeDdiTable = {nullptr};

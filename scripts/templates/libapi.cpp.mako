@@ -58,7 +58,7 @@ ${th.make_func_name(n, tags, obj)}(
     static ${x}_result_t result = ${X}_RESULT_SUCCESS;
 %if re.match("zes", n): 
     std::call_once(${x}_lib::context->initOnceSysMan, [flags]() {
-        result = ${x}_lib::context->Init(flags, true);
+        result = ${x}_lib::context->Init(flags, true, nullptr);
 
     });
 
@@ -80,8 +80,40 @@ ${th.make_func_name(n, tags, obj)}(
     return ${th.make_pfn_name(n, tags, obj)}( ${", ".join(th.make_param_lines(n, tags, obj, format=["name"]))} );
 }
 %else:
+%if re.match("InitDrivers", obj['name']):
+    std::call_once(${x}_lib::context->initOnceDrivers, []() {
+        ze_init_flags_t all_enabled = UINT32_MAX;
+        ze_init_driver_type_desc_t all_enabled_desc = {ZE_STRUCTURE_TYPE_INIT_DRIVER_TYPE_DESC};
+        all_enabled_desc.pNext = nullptr;
+        all_enabled_desc.flags = UINT32_MAX;
+        result = ${x}_lib::context->Init(all_enabled, false, &all_enabled_desc);
+        return result;
+    });
+
+    if(ze_lib::context->inTeardown) {
+        return ${X}_RESULT_ERROR_UNINITIALIZED;
+    }
+
+    auto ${th.make_pfn_name(n, tags, obj)} = ${x}_lib::context->${n}DdiTable.load()->${th.get_table_name(n, tags, obj)}.${th.make_pfn_name(n, tags, obj)};
+    if( nullptr == ${th.make_pfn_name(n, tags, obj)} ) {
+        if(!ze_lib::context->isInitialized)
+            return ${X}_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ${X}_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    result = ${th.make_pfn_name(n, tags, obj)}( ${", ".join(th.make_param_lines(n, tags, obj, format=["name"]))} );
+
+    if (result == ${X}_RESULT_SUCCESS) {
+        if (phDrivers) {
+            ze_lib::context->${n}Inuse = true;
+        }
+    }
+
+    return result;
+%else:
     std::call_once(${x}_lib::context->initOnce, [flags]() {
-        result = ${x}_lib::context->Init(flags, false);
+        result = ${x}_lib::context->Init(flags, false, nullptr);
 
         if( ${X}_RESULT_SUCCESS != result )
             return result;
@@ -107,6 +139,7 @@ ${th.make_func_name(n, tags, obj)}(
     }
 
     return result;
+%endif
 }
 %endif
 %else:

@@ -117,10 +117,10 @@ namespace loader
         std::vector<zel_component_version_t> compVersions;
         const char *LOADER_COMP_NAME = "loader";
 
-        ze_result_t check_drivers(ze_init_flags_t flags, ze_global_dditable_t *globalInitStored, zes_global_dditable_t *sysmanGlobalInitStored, bool *requireDdiReinit, bool sysmanOnly);
+        ze_result_t check_drivers(ze_init_flags_t flags, ze_init_driver_type_desc_t* desc, ze_global_dditable_t *globalInitStored, zes_global_dditable_t *sysmanGlobalInitStored, bool *requireDdiReinit, bool sysmanOnly);
         void debug_trace_message(std::string errorMessage, std::string errorValue);
         ze_result_t init();
-        ze_result_t init_driver(driver_t &driver, ze_init_flags_t flags, ze_global_dditable_t *globalInitStored, zes_global_dditable_t *sysmanGlobalInitStored, bool sysmanOnly);
+        ze_result_t init_driver(driver_t &driver, ze_init_flags_t flags, ze_init_driver_type_desc_t* desc, ze_global_dditable_t *globalInitStored, zes_global_dditable_t *sysmanGlobalInitStored, bool sysmanOnly);
         void add_loader_version();
         ~context_t();
         bool intercept_enabled = false;

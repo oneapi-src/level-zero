@@ -38,7 +38,7 @@ namespace loader
         arrays_to_delete = []
     %>
 
-        %if re.match(r"Init", obj['name']):
+        %if re.match(r"Init", obj['name']) and not re.match(r"\w+InitDrivers$", th.make_func_name(n, tags, obj)):
         bool atLeastOneDriverValid = false;
         %if namespace != "zes":
         for( auto& drv : loader::context->zeDrivers )
@@ -56,7 +56,7 @@ namespace loader
         if(!atLeastOneDriverValid)
             result=ZE_RESULT_ERROR_UNINITIALIZED;
 
-        %elif re.match(r"\w+DriverGet$", th.make_func_name(n, tags, obj)):
+        %elif re.match(r"\w+DriverGet$", th.make_func_name(n, tags, obj)) or re.match(r"\w+InitDrivers$", th.make_func_name(n, tags, obj)):
         uint32_t total_driver_handle_count = 0;
 
         %if namespace != "zes":
@@ -65,15 +65,21 @@ namespace loader
         for( auto& drv : *loader::context->sysmanInstanceDrivers )
         %endif
         {
+            %if not re.match(r"\w+InitDrivers$", th.make_func_name(n, tags, obj)):
             if(drv.initStatus != ZE_RESULT_SUCCESS)
                 continue;
+            %endif
 
             if( ( 0 < *${obj['params'][0]['name']} ) && ( *${obj['params'][0]['name']} == total_driver_handle_count))
                 break;
 
             uint32_t library_driver_handle_count = 0;
 
+            %if re.match(r"\w+InitDrivers$", th.make_func_name(n, tags, obj)):
+            result = drv.dditable.${n}.${th.get_table_name(n, tags, obj)}.${th.make_pfn_name(n, tags, obj)}( &library_driver_handle_count, nullptr, desc );
+            %else:
             result = drv.dditable.${n}.${th.get_table_name(n, tags, obj)}.${th.make_pfn_name(n, tags, obj)}( &library_driver_handle_count, nullptr );
+            %endif
             if( ${X}_RESULT_SUCCESS != result ) {
                 // If Get Drivers fails with Uninitialized, then update the driver init status to prevent reporting this driver in the next get call.
                 if (${X}_RESULT_ERROR_UNINITIALIZED == result) {
@@ -87,7 +93,11 @@ namespace loader
                 if( total_driver_handle_count + library_driver_handle_count > *${obj['params'][0]['name']}) {
                     library_driver_handle_count = *${obj['params'][0]['name']} - total_driver_handle_count;
                 }
+                %if re.match(r"\w+InitDrivers$", th.make_func_name(n, tags, obj)):
+                result = drv.dditable.${n}.${th.get_table_name(n, tags, obj)}.${th.make_pfn_name(n, tags, obj)}( &library_driver_handle_count, &${obj['params'][1]['name']}[ total_driver_handle_count ], desc );
+                %else:
                 result = drv.dditable.${n}.${th.get_table_name(n, tags, obj)}.${th.make_pfn_name(n, tags, obj)}( &library_driver_handle_count, &${obj['params'][1]['name']}[ total_driver_handle_count ] );
+                %endif
                 if( ${X}_RESULT_SUCCESS != result ) break;
 
                 try

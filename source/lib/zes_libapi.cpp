@@ -50,7 +50,7 @@ zesInit(
 {
     static ze_result_t result = ZE_RESULT_SUCCESS;
     std::call_once(ze_lib::context->initOnceSysMan, [flags]() {
-        result = ze_lib::context->Init(flags, true);
+        result = ze_lib::context->Init(flags, true, nullptr);
 
     });
 

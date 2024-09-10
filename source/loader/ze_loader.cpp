@@ -124,14 +124,35 @@ namespace loader
         }
     }
 
-    ze_result_t context_t::check_drivers(ze_init_flags_t flags, ze_global_dditable_t *globalInitStored, zes_global_dditable_t *sysmanGlobalInitStored, bool *requireDdiReinit, bool sysmanOnly) {
+    std::string to_string(const ze_init_driver_type_desc_t *desc) {
+        std::string flags_value = "Driver Type Flags=";
+        if (desc->flags & ZE_INIT_DRIVER_TYPE_FLAG_GPU) {
+            flags_value + "|ZE_INIT_DRIVER_TYPE_FLAG_GPU|";
+        }
+        if (desc->flags & ZE_INIT_DRIVER_TYPE_FLAG_NPU) {
+            flags_value + "|ZE_INIT_DRIVER_TYPE_FLAG_NPU|";
+        }
+        flags_value + "\n";
+        return flags_value;
+    }
+
+    ze_result_t context_t::check_drivers(ze_init_flags_t flags, ze_init_driver_type_desc_t* desc, ze_global_dditable_t *globalInitStored, zes_global_dditable_t *sysmanGlobalInitStored, bool *requireDdiReinit, bool sysmanOnly) {
         if (debugTraceEnabled) {
-            std::string message = "check_drivers(" + std::string("flags=") + loader::to_string(flags) + ")";
-            debug_trace_message(message, "");
+            if (desc) {
+                std::string message = "check_drivers(" + std::string("desc->flags=") + loader::to_string(desc) + ")";
+                debug_trace_message(message, "");
+            } else {
+                std::string message = "check_drivers(" + std::string("flags=") + loader::to_string(flags) + ")";
+                debug_trace_message(message, "");
+            }
         }
         bool return_first_driver_result=false;
         std::string initName = "zeInit";
         driver_vector_t *drivers = &zeDrivers;
+        // If desc is set, then this is zeInitDrivers.
+        if (desc) {
+            initName = "zeInitDrivers";
+        }
         // If this is sysmanOnly check_drivers, then zesInit is being called and we need to use zesDrivers.
         if (sysmanOnly) {
             drivers = &zesDrivers;
@@ -144,7 +165,7 @@ namespace loader
         for(auto it = drivers->begin(); it != drivers->end(); )
         {
             std::string freeLibraryErrorValue;
-            ze_result_t result = init_driver(*it, flags, globalInitStored, sysmanGlobalInitStored, sysmanOnly);
+            ze_result_t result = init_driver(*it, flags, desc, globalInitStored, sysmanGlobalInitStored, sysmanOnly);
             if(result != ZE_RESULT_SUCCESS) {
                 if (debugTraceEnabled) {
                     std::string errorMessage = "Check Drivers Failed on " + it->name + " , driver will be removed. " + initName + " failed with ";
@@ -170,7 +191,7 @@ namespace loader
         return ZE_RESULT_SUCCESS;
     }
 
-    ze_result_t context_t::init_driver(driver_t &driver, ze_init_flags_t flags, ze_global_dditable_t *globalInitStored, zes_global_dditable_t *sysmanGlobalInitStored, bool sysmanOnly) {
+    ze_result_t context_t::init_driver(driver_t &driver, ze_init_flags_t flags, ze_init_driver_type_desc_t* desc, ze_global_dditable_t *globalInitStored, zes_global_dditable_t *sysmanGlobalInitStored, bool sysmanOnly) {
 
         if (sysmanOnly) {
             auto getTable = reinterpret_cast<zes_pfnGetGlobalProcAddrTable_t>(
@@ -233,34 +254,66 @@ namespace loader
                 return ZE_RESULT_ERROR_UNINITIALIZED;
             }
 
-            if(nullptr == global.pfnInit) {
-                if (debugTraceEnabled) {
-                    std::string errorMessage = "init driver " + driver.name + " failed, zeInit function pointer null. Returning ";
-                    debug_trace_message(errorMessage, loader::to_string(ZE_RESULT_ERROR_UNINITIALIZED));
+            if (!desc) {
+                if(nullptr == global.pfnInit) {
+                    if (debugTraceEnabled) {
+                        std::string errorMessage = "init driver " + driver.name + " failed, zeInit function pointer null. Returning ";
+                        debug_trace_message(errorMessage, loader::to_string(ZE_RESULT_ERROR_UNINITIALIZED));
+                    }
+                    return ZE_RESULT_ERROR_UNINITIALIZED;
                 }
-                return ZE_RESULT_ERROR_UNINITIALIZED;
-            }
 
-            auto pfnInit = global.pfnInit;
-            if(nullptr == pfnInit || globalInitStored->pfnInit == nullptr) {
-                if (debugTraceEnabled) {
-                    std::string errorMessage = "init driver " + driver.name + " failed, zeInit function pointer null. Returning ";
-                    debug_trace_message(errorMessage, loader::to_string(ZE_RESULT_ERROR_UNINITIALIZED));
+                auto pfnInit = global.pfnInit;
+                if(nullptr == pfnInit || globalInitStored->pfnInit == nullptr) {
+                    if (debugTraceEnabled) {
+                        std::string errorMessage = "init driver " + driver.name + " failed, zeInit function pointer null. Returning ";
+                        debug_trace_message(errorMessage, loader::to_string(ZE_RESULT_ERROR_UNINITIALIZED));
+                    }
+                    return ZE_RESULT_ERROR_UNINITIALIZED;
                 }
-                return ZE_RESULT_ERROR_UNINITIALIZED;
-            }
 
-            // Use the previously init ddi table pointer to zeInit to allow for intercept of the zeInit calls
-            ze_result_t res = globalInitStored->pfnInit(flags);
-            // Verify that this driver successfully init in the call above.
-            if (driver.initStatus != ZE_RESULT_SUCCESS) {
-                res = driver.initStatus;
+                // Use the previously init ddi table pointer to zeInit to allow for intercept of the zeInit calls
+                ze_result_t res = globalInitStored->pfnInit(flags);
+                // Verify that this driver successfully init in the call above.
+                if (driver.initStatus != ZE_RESULT_SUCCESS) {
+                    res = driver.initStatus;
+                }
+                if (debugTraceEnabled) {
+                    std::string message = "init driver " + driver.name + " zeInit(" + loader::to_string(flags) + ") returning ";
+                    debug_trace_message(message, loader::to_string(res));
+                }
+                return res;
+            } else {
+                if(nullptr == global.pfnInitDrivers) {
+                    if (debugTraceEnabled) {
+                        std::string errorMessage = "init driver " + driver.name + " failed, zeInitDrivers function pointer null. Returning ";
+                        debug_trace_message(errorMessage, loader::to_string(ZE_RESULT_ERROR_UNINITIALIZED));
+                    }
+                    return ZE_RESULT_ERROR_UNINITIALIZED;
+                }
+
+                auto pfnInitDrivers = global.pfnInitDrivers;
+                if(nullptr == pfnInitDrivers || globalInitStored->pfnInitDrivers == nullptr) {
+                    if (debugTraceEnabled) {
+                        std::string errorMessage = "init driver " + driver.name + " failed, pfnInitDrivers function pointer null. Returning ";
+                        debug_trace_message(errorMessage, loader::to_string(ZE_RESULT_ERROR_UNINITIALIZED));
+                    }
+                    return ZE_RESULT_ERROR_UNINITIALIZED;
+                }
+
+                // Use the previously init ddi table pointer to zeInit to allow for intercept of the zeInit calls
+                uint32_t pCount = 0;
+                ze_result_t res = globalInitStored->pfnInitDrivers(&pCount, nullptr, desc);
+                // Verify that this driver successfully init in the call above.
+                if (driver.initStatus != ZE_RESULT_SUCCESS) {
+                    res = driver.initStatus;
+                }
+                if (debugTraceEnabled) {
+                    std::string message = "init driver " + driver.name + " zeInitDrivers(" + loader::to_string(desc) + ") returning ";
+                    debug_trace_message(message, loader::to_string(res));
+                }
+                return res;
             }
-            if (debugTraceEnabled) {
-                std::string message = "init driver " + driver.name + " zeInit(" + loader::to_string(flags) + ") returning ";
-                debug_trace_message(message, loader::to_string(res));
-            }
-            return res;
         }
     }
 

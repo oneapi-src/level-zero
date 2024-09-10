@@ -46,7 +46,7 @@ zeInit(
 {
     static ze_result_t result = ZE_RESULT_SUCCESS;
     std::call_once(ze_lib::context->initOnce, [flags]() {
-        result = ze_lib::context->Init(flags, false);
+        result = ze_lib::context->Init(flags, false, nullptr);
 
         if( ZE_RESULT_SUCCESS != result )
             return result;
@@ -192,30 +192,33 @@ zeInitDrivers(
     )
 {
     static ze_result_t result = ZE_RESULT_SUCCESS;
-    std::call_once(ze_lib::context->initOnce, [flags]() {
-        result = ze_lib::context->Init(flags, false);
-
-        if( ZE_RESULT_SUCCESS != result )
-            return result;
-
-        if(ze_lib::context->inTeardown) {
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        }
-
-        auto pfnInitDrivers = ze_lib::context->zeDdiTable.load()->Global.pfnInitDrivers;
-        if( nullptr == pfnInitDrivers ) {
-            if(!ze_lib::context->isInitialized)
-                return ZE_RESULT_ERROR_UNINITIALIZED;
-            else
-                return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-        }
-
-        result = pfnInitDrivers( pCount, phDrivers, desc );
+    std::call_once(ze_lib::context->initOnceDrivers, []() {
+        ze_init_flags_t all_enabled = UINT32_MAX;
+        ze_init_driver_type_desc_t all_enabled_desc = {ZE_STRUCTURE_TYPE_INIT_DRIVER_TYPE_DESC};
+        all_enabled_desc.pNext = nullptr;
+        all_enabled_desc.flags = UINT32_MAX;
+        result = ze_lib::context->Init(all_enabled, false, &all_enabled_desc);
         return result;
     });
 
     if(ze_lib::context->inTeardown) {
-        result = ZE_RESULT_ERROR_UNINITIALIZED;
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
+    auto pfnInitDrivers = ze_lib::context->zeDdiTable.load()->Global.pfnInitDrivers;
+    if( nullptr == pfnInitDrivers ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    result = pfnInitDrivers( pCount, phDrivers, desc );
+
+    if (result == ZE_RESULT_SUCCESS) {
+        if (phDrivers) {
+            ze_lib::context->zeInuse = true;
+        }
     }
 
     return result;
