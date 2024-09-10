@@ -95,6 +95,8 @@ namespace loader
         zet_tracer_exp_factory_t            zet_tracer_exp_factory;
         zet_debug_session_factory_t         zet_debug_session_factory;
         zet_metric_programmable_exp_factory_t   zet_metric_programmable_exp_factory;
+        zet_metric_tracer_exp_factory_t     zet_metric_tracer_exp_factory;
+        zet_metric_decoder_exp_factory_t    zet_metric_decoder_exp_factory;
         ///////////////////////////////////////////////////////////////////////////////
         std::mutex image_handle_map_lock;
         std::mutex sampler_handle_map_lock;
