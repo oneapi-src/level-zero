@@ -82,6 +82,8 @@ namespace loader
                 result = drv.dditable.ze.Driver.pfnGet( &library_driver_handle_count, &phDrivers[ total_driver_handle_count ] );
                 if( ZE_RESULT_SUCCESS != result ) break;
 
+                drv.driverInuse = true;
+
                 try
                 {
                     for( uint32_t i = 0; i < library_driver_handle_count; ++i ) {
@@ -153,6 +155,8 @@ namespace loader
                 }
                 result = drv.dditable.ze.Global.pfnInitDrivers( &library_driver_handle_count, &phDrivers[ total_driver_handle_count ], desc );
                 if( ZE_RESULT_SUCCESS != result ) break;
+
+                drv.driverInuse = true;
 
                 try
                 {

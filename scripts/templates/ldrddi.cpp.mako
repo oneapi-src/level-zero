@@ -100,6 +100,8 @@ namespace loader
                 %endif
                 if( ${X}_RESULT_SUCCESS != result ) break;
 
+                drv.driverInuse = true;
+
                 try
                 {
                     for( uint32_t i = 0; i < library_driver_handle_count; ++i ) {

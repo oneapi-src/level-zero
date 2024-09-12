@@ -171,16 +171,20 @@ namespace loader
                     std::string errorMessage = "Check Drivers Failed on " + it->name + " , driver will be removed. " + initName + " failed with ";
                     debug_trace_message(errorMessage, loader::to_string(result));
                 }
-                it = drivers->erase(it);
-                // If the number of drivers is now ==1, then we need to reinit the ddi tables to pass through.
-                // If ZE_ENABLE_LOADER_INTERCEPT is set to 1, then even if drivers were removed, don't reinit the ddi tables.
-                if (drivers->size() == 1 && !loader::context->forceIntercept) {
-                    *requireDdiReinit = true;
+                // If the driver has already been init and handles are to be read, then this driver cannot be removed from the list.
+                if (!it->driverInuse) {
+                    it = drivers->erase(it);
+                    // If the number of drivers is now ==1, then we need to reinit the ddi tables to pass through.
+                    // If ZE_ENABLE_LOADER_INTERCEPT is set to 1, then even if drivers were removed, don't reinit the ddi tables.
+                    if (drivers->size() == 1 && !loader::context->forceIntercept) {
+                        *requireDdiReinit = true;
+                    }
                 }
                 if(return_first_driver_result)
                     return result;
-            }
-            else {
+            } else {
+                // If this is a single driver system, then the first success for this driver needs to be set.
+                it->driverInuse = true;
                 it++;
             }
         }

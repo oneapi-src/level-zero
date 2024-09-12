@@ -17,6 +17,7 @@ from templates import helper as th
  *
  */
 #include "${x}_null.h"
+#include <cstring>
 
 namespace driver
 {
@@ -46,6 +47,33 @@ namespace driver
         else
         {
             // generic implementation
+            %if re.match("Init", obj['name']):
+            %if re.match("InitDrivers", obj['name']):
+            auto driver_type = getenv_string( "ZEL_TEST_NULL_DRIVER_TYPE" );
+            if (std::strcmp(driver_type.c_str(), "GPU") == 0) {
+                if (!(desc->flags & ZE_INIT_DRIVER_TYPE_FLAG_GPU)) {
+                    return ${X}_RESULT_ERROR_UNINITIALIZED;
+                }
+            }
+            if (std::strcmp(driver_type.c_str(), "NPU") == 0) {
+                if (!(desc->flags & ZE_INIT_DRIVER_TYPE_FLAG_NPU)) {
+                    return ${X}_RESULT_ERROR_UNINITIALIZED;
+                }
+            }
+            %else:
+            auto driver_type = getenv_string( "ZEL_TEST_NULL_DRIVER_TYPE" );
+            if (std::strcmp(driver_type.c_str(), "GPU") == 0) {
+                if (!(flags & ZE_INIT_FLAG_GPU_ONLY)) {
+                    return ${X}_RESULT_ERROR_UNINITIALIZED;
+                }
+            }
+            if (std::strcmp(driver_type.c_str(), "NPU") == 0) {
+                if (!(flags & ZE_INIT_FLAG_VPU_ONLY)) {
+                    return ${X}_RESULT_ERROR_UNINITIALIZED;
+                }
+            }
+            %endif
+            %endif
             %for item in th.get_loader_epilogue(n, tags, obj, meta):
             %if 'range' in item:
             for( size_t i = ${item['range'][0]}; ( nullptr != ${item['name']} ) && ( i < ${item['range'][1]} ); ++i )

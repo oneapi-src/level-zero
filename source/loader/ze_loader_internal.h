@@ -33,6 +33,7 @@ namespace loader
         ze_result_t initStatus = ZE_RESULT_SUCCESS;
         dditable_t dditable = {};
         std::string name;
+        bool driverInuse = false;
     };
 
     using driver_vector_t = std::vector< driver_t >;

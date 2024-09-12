@@ -8,6 +8,7 @@
  *
  */
 #include "ze_null.h"
+#include <cstring>
 
 namespace driver
 {

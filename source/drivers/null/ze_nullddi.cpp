@@ -8,6 +8,7 @@
  *
  */
 #include "ze_null.h"
+#include <cstring>
 
 namespace driver
 {
@@ -30,6 +31,17 @@ namespace driver
         else
         {
             // generic implementation
+            auto driver_type = getenv_string( "ZEL_TEST_NULL_DRIVER_TYPE" );
+            if (std::strcmp(driver_type.c_str(), "GPU") == 0) {
+                if (!(flags & ZE_INIT_FLAG_GPU_ONLY)) {
+                    return ZE_RESULT_ERROR_UNINITIALIZED;
+                }
+            }
+            if (std::strcmp(driver_type.c_str(), "NPU") == 0) {
+                if (!(flags & ZE_INIT_FLAG_VPU_ONLY)) {
+                    return ZE_RESULT_ERROR_UNINITIALIZED;
+                }
+            }
         }
 
         return result;
@@ -95,6 +107,17 @@ namespace driver
         else
         {
             // generic implementation
+            auto driver_type = getenv_string( "ZEL_TEST_NULL_DRIVER_TYPE" );
+            if (std::strcmp(driver_type.c_str(), "GPU") == 0) {
+                if (!(desc->flags & ZE_INIT_DRIVER_TYPE_FLAG_GPU)) {
+                    return ZE_RESULT_ERROR_UNINITIALIZED;
+                }
+            }
+            if (std::strcmp(driver_type.c_str(), "NPU") == 0) {
+                if (!(desc->flags & ZE_INIT_DRIVER_TYPE_FLAG_NPU)) {
+                    return ZE_RESULT_ERROR_UNINITIALIZED;
+                }
+            }
             for( size_t i = 0; ( nullptr != phDrivers ) && ( i < *pCount ); ++i )
                 phDrivers[ i ] = reinterpret_cast<ze_driver_handle_t>( context.get() );
 
