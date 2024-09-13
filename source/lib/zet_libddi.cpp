@@ -221,7 +221,7 @@ namespace ze_lib
 
         if( ZE_RESULT_SUCCESS == result )
         {
-            result = zetGetMetricGroupExpProcAddrTable( ZE_API_VERSION_CURRENT, &initialzetDdiTable.MetricGroupExp );
+            result = zetGetMetricGroupExpProcAddrTable( ZE_API_VERSION_CURRENT, reinterpret_cast< zet_metric_group_exp_dditable_t *>(&initialzetDdiTable.MetricGroupExp) );
         }
 
         if( ZE_RESULT_SUCCESS == result )

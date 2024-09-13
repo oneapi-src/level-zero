@@ -3206,7 +3206,7 @@ zetGetMetricGroupExpProcAddrTable(
             GET_FUNCTION_PTR( drv.handle, "zetGetMetricGroupExpProcAddrTable") );
         if(!getTable) 
             continue; 
-        result = getTable( version, &drv.dditable.zet.MetricGroupExp);
+        result = getTable( version, reinterpret_cast<zet_metric_group_exp_dditable_t*>(&drv.dditable.zet.MetricGroupExp));
     }
 
 
@@ -3227,7 +3227,7 @@ zetGetMetricGroupExpProcAddrTable(
         else
         {
             // return pointers directly to driver's DDIs
-            *pDdiTable = loader::context->zeDrivers.front().dditable.zet.MetricGroupExp;
+            pDdiTable = reinterpret_cast<zet_metric_group_exp_dditable_t*>(&loader::context->zeDrivers.front().dditable.zet.MetricGroupExp);
         }
     }
 

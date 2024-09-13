@@ -9,13 +9,14 @@
  */
 #pragma once
 #include "ze_singleton.h"
+#include "../lib/ze_loader_compat.h"
 
 //////////////////////////////////////////////////////////////////////////
 struct dditable_t
 {
     ze_dditable_t   ze;
-    zet_dditable_t  zet;
-    zes_dditable_t  zes;
+    zet_dditable_compat_t  zet;
+    zes_dditable_compat_t  zes;
 };
 
 //////////////////////////////////////////////////////////////////////////
