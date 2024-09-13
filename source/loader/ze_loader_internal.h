@@ -115,6 +115,7 @@ namespace loader
         bool driverEnvironmentQueried = false;
 
         bool forceIntercept = false;
+        bool initDriversSupport = false;
         std::vector<zel_component_version_t> compVersions;
         const char *LOADER_COMP_NAME = "loader";
 

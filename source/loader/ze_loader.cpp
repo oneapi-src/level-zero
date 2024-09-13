@@ -167,12 +167,13 @@ namespace loader
             std::string freeLibraryErrorValue;
             ze_result_t result = init_driver(*it, flags, desc, globalInitStored, sysmanGlobalInitStored, sysmanOnly);
             if(result != ZE_RESULT_SUCCESS) {
-                if (debugTraceEnabled) {
-                    std::string errorMessage = "Check Drivers Failed on " + it->name + " , driver will be removed. " + initName + " failed with ";
-                    debug_trace_message(errorMessage, loader::to_string(result));
-                }
                 // If the driver has already been init and handles are to be read, then this driver cannot be removed from the list.
-                if (!it->driverInuse) {
+                // Also, if any driver supports zeInitDrivers, then no driver can be removed to allow for different sets of drivers.
+                if (!it->driverInuse && !loader::context->initDriversSupport) {
+                    if (debugTraceEnabled) {
+                        std::string errorMessage = "Check Drivers Failed on " + it->name + " , driver will be removed. " + initName + " failed with ";
+                        debug_trace_message(errorMessage, loader::to_string(result));
+                    }
                     it = drivers->erase(it);
                     // If the number of drivers is now ==1, then we need to reinit the ddi tables to pass through.
                     // If ZE_ENABLE_LOADER_INTERCEPT is set to 1, then even if drivers were removed, don't reinit the ddi tables.

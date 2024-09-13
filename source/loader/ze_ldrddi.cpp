@@ -6352,6 +6352,9 @@ zeGetGlobalProcAddrTable(
             atLeastOneDriverValid = true;
         else
             drv.initStatus = getTableResult;
+        if (drv.dditable.ze.Global.pfnInitDrivers) {
+            loader::context->initDriversSupport = true;
+        }
     }
 
     if(!atLeastOneDriverValid)

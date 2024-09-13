@@ -364,6 +364,13 @@ ${tbl['export']['name']}(
             atLeastOneDriverValid = true;
         else
             drv.initStatus = getTableResult;
+        %if namespace != "zes":
+        %if tbl['name'] == "Global":
+        if (drv.dditable.ze.Global.pfnInitDrivers) {
+            loader::context->initDriversSupport = true;
+        }
+        %endif
+        %endif
         %else:
         result = getTable( version, &drv.dditable.${n}.${tbl['name']});
         %endif
