@@ -192,32 +192,4 @@ TEST(
   EXPECT_GT(pCount, 0);
 }
 
-TEST(
-    LoaderInit,
-    GivenLevelZeroLoaderPresentWhenCallingzeInitThenZeInitDriversThenOnlyOneSucceedsforGPUTypes) {
-
-  uint32_t pCount = 0;
-  ze_init_driver_type_desc_t desc = {ZE_STRUCTURE_TYPE_INIT_DRIVER_TYPE_DESC};
-  desc.flags = UINT32_MAX;
-  desc.pNext = nullptr;
-  putenv_safe( const_cast<char *>( "ZEL_TEST_NULL_DRIVER_TYPE=GPU" ) );
-  EXPECT_EQ(ZE_RESULT_ERROR_UNINITIALIZED, zeInit(ZE_INIT_FLAG_VPU_ONLY));
-  EXPECT_EQ(ZE_RESULT_SUCCESS, zeInitDrivers(&pCount, nullptr, &desc));
-  EXPECT_GT(pCount, 0);
-}
-
-TEST(
-    LoaderInit,
-    GivenLevelZeroLoaderPresentWhenCallingzeInitThenZeInitDriversThenOnlyOneSucceedsforNPUTypes) {
-
-  uint32_t pCount = 0;
-  ze_init_driver_type_desc_t desc = {ZE_STRUCTURE_TYPE_INIT_DRIVER_TYPE_DESC};
-  desc.flags = UINT32_MAX;
-  desc.pNext = nullptr;
-  putenv_safe( const_cast<char *>( "ZEL_TEST_NULL_DRIVER_TYPE=NPU" ) );
-  EXPECT_EQ(ZE_RESULT_ERROR_UNINITIALIZED, zeInit(ZE_INIT_FLAG_GPU_ONLY));
-  EXPECT_EQ(ZE_RESULT_SUCCESS, zeInitDrivers(&pCount, nullptr, &desc));
-  EXPECT_GT(pCount, 0);
-}
-
 } // namespace

@@ -134,9 +134,11 @@ namespace loader
         for( auto& drv : loader::context->zeDrivers )
         {
             if (!drv.dditable.ze.Global.pfnInitDrivers) {
-                drv.initStatus = ZE_RESULT_ERROR_UNINITIALIZED;
+                drv.initDriversStatus = ZE_RESULT_ERROR_UNINITIALIZED;
                 continue;
             }
+            if(drv.initDriversStatus != ZE_RESULT_SUCCESS)
+                continue;
 
             if( ( 0 < *pCount ) && ( *pCount == total_driver_handle_count))
                 break;
@@ -147,7 +149,7 @@ namespace loader
             if( ZE_RESULT_SUCCESS != result ) {
                 // If Get Drivers fails with Uninitialized, then update the driver init status to prevent reporting this driver in the next get call.
                 if (ZE_RESULT_ERROR_UNINITIALIZED == result) {
-                    drv.initStatus = result;
+                    drv.initDriversStatus = result;
                 }
                 continue;
             }

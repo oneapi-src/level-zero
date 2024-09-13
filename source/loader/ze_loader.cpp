@@ -179,6 +179,8 @@ namespace loader
                     if (drivers->size() == 1 && !loader::context->forceIntercept) {
                         *requireDdiReinit = true;
                     }
+                } else {
+                    it++;
                 }
                 if(return_first_driver_result)
                     return result;
@@ -309,8 +311,8 @@ namespace loader
                 uint32_t pCount = 0;
                 ze_result_t res = globalInitStored->pfnInitDrivers(&pCount, nullptr, desc);
                 // Verify that this driver successfully init in the call above.
-                if (driver.initStatus != ZE_RESULT_SUCCESS) {
-                    res = driver.initStatus;
+                if (driver.initDriversStatus != ZE_RESULT_SUCCESS) {
+                    res = driver.initDriversStatus;
                 }
                 if (debugTraceEnabled) {
                     std::string message = "init driver " + driver.name + " zeInitDrivers(" + loader::to_string(desc) + ") returning ";
