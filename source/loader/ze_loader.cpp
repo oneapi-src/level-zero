@@ -125,14 +125,13 @@ namespace loader
     }
 
     std::string to_string(const ze_init_driver_type_desc_t *desc) {
-        std::string flags_value = "Driver Type Flags=";
+        std::string flags_value;
         if (desc->flags & ZE_INIT_DRIVER_TYPE_FLAG_GPU) {
-            flags_value + "|ZE_INIT_DRIVER_TYPE_FLAG_GPU|";
+            flags_value+= "|ZE_INIT_DRIVER_TYPE_FLAG_GPU|";
         }
         if (desc->flags & ZE_INIT_DRIVER_TYPE_FLAG_NPU) {
-            flags_value + "|ZE_INIT_DRIVER_TYPE_FLAG_NPU|";
+            flags_value+= "|ZE_INIT_DRIVER_TYPE_FLAG_NPU|";
         }
-        flags_value + "\n";
         return flags_value;
     }
 
