@@ -60,6 +60,10 @@ namespace driver
                     return ${X}_RESULT_ERROR_UNINITIALIZED;
                 }
             }
+
+            if (phDrivers == nullptr) {
+                *pCount = 1;
+            }
             %else:
             auto driver_type = getenv_string( "ZEL_TEST_NULL_DRIVER_TYPE" );
             if (std::strcmp(driver_type.c_str(), "GPU") == 0) {

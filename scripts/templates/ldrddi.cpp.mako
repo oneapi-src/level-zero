@@ -68,6 +68,11 @@ namespace loader
             %if not re.match(r"\w+InitDrivers$", th.make_func_name(n, tags, obj)):
             if(drv.initStatus != ZE_RESULT_SUCCESS)
                 continue;
+            %else:
+            if (!drv.dditable.${n}.${th.get_table_name(n, tags, obj)}.${th.make_pfn_name(n, tags, obj)}) {
+                drv.initStatus = ${X}_RESULT_ERROR_UNINITIALIZED;
+                continue;
+            }
             %endif
 
             if( ( 0 < *${obj['params'][0]['name']} ) && ( *${obj['params'][0]['name']} == total_driver_handle_count))

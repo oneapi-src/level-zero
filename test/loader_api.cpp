@@ -49,7 +49,7 @@ TEST(
 }
 
 TEST(
-    LoaderAPI,
+    LoaderInit,
     GivenLevelZeroLoaderPresentWhenCallingZeInitDriversWithGPUTypeThenExpectPassWithGPUorAllOnly) {
 
   uint32_t pCount = 0;
@@ -68,7 +68,7 @@ TEST(
 }
 
 TEST(
-    LoaderAPI,
+    LoaderInit,
     GivenLevelZeroLoaderPresentWhenCallingZeInitDriversWithNPUTypeThenExpectPassWithNPUorAllOnly) {
 
   uint32_t pCount = 0;
@@ -87,7 +87,7 @@ TEST(
 }
 
 TEST(
-    LoaderAPI,
+    LoaderInit,
     GivenLevelZeroLoaderPresentWhenCallingZeInitDriversWithAnyTypeWithNullDriverAcceptingAllThenExpectatLeast1Driver) {
 
   uint32_t pCount = 0;
@@ -109,7 +109,7 @@ TEST(
 }
 
 TEST(
-    LoaderAPI,
+    LoaderInit,
     GivenLevelZeroLoaderPresentWhenCallingZeInitDriversThenzeInitThenBothCallsSucceedWithAllTypes) {
 
   uint32_t pCount = 0;
@@ -123,7 +123,7 @@ TEST(
 }
 
 TEST(
-    LoaderAPI,
+    LoaderInit,
     GivenLevelZeroLoaderPresentWhenCallingZeInitDriversThenzeInitThenBothCallsSucceedWithGPUTypes) {
 
   uint32_t pCount = 0;
@@ -137,7 +137,7 @@ TEST(
 }
 
 TEST(
-    LoaderAPI,
+    LoaderInit,
     GivenLevelZeroLoaderPresentWhenCallingZeInitDriversThenzeInitThenBothCallsSucceedWithNPUTypes) {
 
   uint32_t pCount = 0;
@@ -151,7 +151,7 @@ TEST(
 }
 
 TEST(
-    LoaderAPI,
+    LoaderInit,
     GivenLevelZeroLoaderPresentWhenCallingzeInitThenZeInitDriversThenBothCallsSucceedWithAllTypes) {
 
   uint32_t pCount = 0;
@@ -165,7 +165,7 @@ TEST(
 }
 
 TEST(
-    LoaderAPI,
+    LoaderInit,
     GivenLevelZeroLoaderPresentWhenCallingzeInitThenZeInitDriversThenBothCallsSucceedWithGPUTypes) {
 
   uint32_t pCount = 0;
@@ -179,7 +179,7 @@ TEST(
 }
 
 TEST(
-    LoaderAPI,
+    LoaderInit,
     GivenLevelZeroLoaderPresentWhenCallingzeInitThenZeInitDriversThenBothCallsSucceedWithNPUTypes) {
 
   uint32_t pCount = 0;
@@ -193,7 +193,7 @@ TEST(
 }
 
 TEST(
-    LoaderAPI,
+    LoaderInit,
     GivenLevelZeroLoaderPresentWhenCallingzeInitThenZeInitDriversThenOnlyOneSucceedsforGPUTypes) {
 
   uint32_t pCount = 0;
@@ -207,7 +207,7 @@ TEST(
 }
 
 TEST(
-    LoaderAPI,
+    LoaderInit,
     GivenLevelZeroLoaderPresentWhenCallingzeInitThenZeInitDriversThenOnlyOneSucceedsforNPUTypes) {
 
   uint32_t pCount = 0;

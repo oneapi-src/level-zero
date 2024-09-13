@@ -133,6 +133,10 @@ namespace loader
 
         for( auto& drv : loader::context->zeDrivers )
         {
+            if (!drv.dditable.ze.Global.pfnInitDrivers) {
+                drv.initStatus = ZE_RESULT_ERROR_UNINITIALIZED;
+                continue;
+            }
 
             if( ( 0 < *pCount ) && ( *pCount == total_driver_handle_count))
                 break;

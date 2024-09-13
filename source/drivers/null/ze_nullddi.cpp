@@ -118,6 +118,10 @@ namespace driver
                     return ZE_RESULT_ERROR_UNINITIALIZED;
                 }
             }
+
+            if (phDrivers == nullptr) {
+                *pCount = 1;
+            }
             for( size_t i = 0; ( nullptr != phDrivers ) && ( i < *pCount ); ++i )
                 phDrivers[ i ] = reinterpret_cast<ze_driver_handle_t>( context.get() );
 
