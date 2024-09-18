@@ -10,53 +10,12 @@ if(MSVC AND (MSVC_VERSION LESS 1900))
 message(FATAL_ERROR "Visual Studio Compiler Version >= 1900 Required to build.")
 endif()
 
-# This project follows semantic versioning (https://semver.org/). Only set the
-# major and minor version here - patch version is determined dynamically.
-project(level-zero VERSION 1.17)
+# This project follows semantic versioning (https://semver.org/)
+project(level-zero VERSION 1.17.43)
 
 include(GNUInstallDirs)
 
-# Patch version corresponds to # of commits on master since last version
-# major/minor tag (e.g., v1.0). If not building in a git repository, then get
-# the patch version from a VERSION_PATCH file that would be shipped with a
-# source distribution. Otherwise, use 0.
-set(PROJECT_VERSION_PATCH 0)
 find_package(Git)
-if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/VERSION_PATCH")
-	file(READ "${CMAKE_CURRENT_SOURCE_DIR}/VERSION_PATCH" VERSION_PATCH)
-	string(STRIP "${VERSION_PATCH}" PROJECT_VERSION_PATCH)
-	message(STATUS "Using patch version from VERSION_PATCH file in source tree: ${PROJECT_VERSION_PATCH}")
-elseif(Git_FOUND)
-	if(NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/.git")
-		message(WARNING "Cannot determine patch version - VERSION_PATCH file is not in source tree and source tree does not appear to be a git repository. Using 0 as patch version.")
-		set(PROJECT_VERSION_PATCH 0)
-	else()
-		set(GIT_TAG "v${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}")
-		if(MSVC)
-			set(grep_string \\[CI\\] )
-			execute_process(
-				COMMAND CMD /c ${GIT_EXECUTABLE} rev-list ${GIT_TAG}..HEAD --grep=${grep_string} --invert-grep --count
-				OUTPUT_VARIABLE VERSION_PATCH
-				WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-			)
-		else()
-			set(grep_string "\\[CI\\] ")
-			execute_process(
-				COMMAND ${GIT_EXECUTABLE} rev-list ${GIT_TAG}..HEAD --grep=${grep_string} --invert-grep --count
-				OUTPUT_VARIABLE VERSION_PATCH
-				WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-			)
-		endif()
-		string(STRIP "${VERSION_PATCH}" PROJECT_VERSION_PATCH)
-		if(PROJECT_VERSION_PATCH STREQUAL "")
-			message(WARNING "Cannot determine patch version - couldn't find ${GIT_TAG} tag in repository. Using 0 as patch version.")
-			set(PROJECT_VERSION_PATCH 0)
-		else()
-			message(STATUS "Using patch version from commit count in git repository: ${PROJECT_VERSION_PATCH}")
-		endif()
-	endif()
-endif()
-
 if(Git_FOUND)
 	if(MSVC)
 		execute_process(
