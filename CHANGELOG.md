@@ -1,5 +1,9 @@
 # Level zero loader changelog
 
+## v1.17.43
+* Switch to monotonically increasing patch numbers
+* Fix warning by updating min cmake version to 3.5
+* Add missing guards around debug messages
 ## v1.17.42
 * Fix SysMan driver pointers given no sysman env and no zesInit (#193)
 * Prevent reinit when zes/ze handles have already been retrieved (#192)
