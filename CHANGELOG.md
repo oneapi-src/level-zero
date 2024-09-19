@@ -1,5 +1,7 @@
 # Level zero loader changelog
 
+## v1.17.44
+* Add missing guard around debug message
 ## v1.17.43
 * Switch to monotonically increasing patch numbers
 * Fix warning by updating min cmake version to 3.5
