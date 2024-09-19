@@ -389,8 +389,10 @@ namespace loader
             }
         }
         if(allDrivers.size()==0){
-            std::string message = "0 Drivers Discovered";
-            debug_trace_message(message, "");
+            if (debugTraceEnabled) {
+                std::string message = "0 Drivers Discovered";
+                debug_trace_message(message, "");
+            }
             zel_logger->log_error("0 Drivers Discovered");
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
