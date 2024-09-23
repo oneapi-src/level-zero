@@ -49,6 +49,35 @@ std::vector<DriverLibraryPath> discoverEnabledDrivers() {
     return enabledDrivers;
 }
 
+bool isStagedDriverPathSetForDisplayAdapter(DEVINST dnDevNode) {
+    static constexpr char stagedDriverPathKey[] = "LevelZeroStagedDriverPath";
+
+    HKEY hkey = {};
+    CONFIGRET configErr = CM_Open_DevNode_Key(dnDevNode, KEY_QUERY_VALUE, 0,
+                                              RegDisposition_OpenExisting, &hkey,
+                                              CM_REGISTRY_SOFTWARE);
+
+    if (CR_SUCCESS != configErr) {
+        assert(false && "CM_Open_DevNode_Key failed");
+        return false;
+    }
+
+    DWORD regValueType = {};
+    DWORD pathSize = {};
+    LSTATUS regOpStatus = RegQueryValueExA(hkey, stagedDriverPathKey, NULL,
+                                           &regValueType, NULL, &pathSize);
+
+    bool isStagedDriverPathSet = false;
+    if (ERROR_SUCCESS == regOpStatus) {
+        isStagedDriverPathSet = true;
+    }
+
+    regOpStatus = RegCloseKey(hkey);
+    assert((ERROR_SUCCESS == regOpStatus) && "RegCloseKey failed");
+
+    return isStagedDriverPathSet;
+}
+
 bool isDeviceAvailable(DEVINST devnode) {
     ULONG devStatus = {};
     ULONG devProblem = {};
@@ -61,7 +90,9 @@ bool isDeviceAvailable(DEVINST devnode) {
 
     bool isInInvalidState = (devStatus & DN_HAS_PROBLEM)
                             && (devProblem == CM_PROB_NEED_RESTART);
-    isInInvalidState |= (DN_NEED_RESTART == (devStatus & DN_NEED_RESTART));
+    if (! isStagedDriverPathSetForDisplayAdapter(devnode)) {
+        isInInvalidState |= (DN_NEED_RESTART == (devStatus & DN_NEED_RESTART));
+    }
     isInInvalidState |= (devStatus & DN_HAS_PROBLEM)
                              && (devProblem == CM_PROB_DISABLED);
 
