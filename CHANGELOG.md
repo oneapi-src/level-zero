@@ -1,5 +1,7 @@
 # Level zero loader changelog
 
+## v1.17.45
+* windows: do not exclude DN_NEED_RESTART drivers if LevelZeroStagedDriverPath is set
 ## v1.17.44
 * Add missing guard around debug message
 ## v1.17.43
