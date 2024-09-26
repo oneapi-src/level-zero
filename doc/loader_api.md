@@ -21,6 +21,12 @@ There are currently 3 versioned components assigned the following name strings:
 - `"validation layer"`
 - `"loader"`
 
+### zelReloadDrivers
+
+Close, reload, and re-initialize through zeInit all driver libraries currently loaded.
+
+- __flags__  init flags that will be passed to each driver's implementation of zeInit, it should match what was previously provided at the first zeInit.
+
 
 ### zelLoaderTranslateHandle
 

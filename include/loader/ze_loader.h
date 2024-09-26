@@ -39,6 +39,10 @@ zelLoaderGetVersions(
    size_t *num_elems,                     //Pointer to num versions to get.  
    zel_component_version_t *versions);    //Pointer to array of versions. If set to NULL, num_elems is returned
 
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zelReloadDrivers(
+    ze_init_flags_t flags);   //Init flags, should match flags used in zeInit
+
 typedef enum _zel_handle_type_t {
    ZEL_HANDLE_DRIVER,
    ZEL_HANDLE_DEVICE,

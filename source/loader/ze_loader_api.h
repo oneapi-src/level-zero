@@ -69,6 +69,11 @@ zelLoaderGetVersionsInternal(
 
 
 ZE_DLLEXPORT ze_result_t ZE_APICALL
+zelReloadDriversInternal(
+   ze_init_flags_t flags);
+
+
+ZE_DLLEXPORT ze_result_t ZE_APICALL
 zelLoaderTranslateHandleInternal(
    zel_handle_type_t handleType,         //Handle type
    void *handleIn,                        //Input: handle to translate from loader handle to driver handle 
