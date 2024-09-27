@@ -47,9 +47,13 @@ namespace validation_layer
         std::vector<validationChecker *> validationHandlers;
         std::unique_ptr<HandleLifetimeValidation> handleLifetime;
 
+        static context_t& getInstance() {
+            static context_t instance;
+            return instance;
+        }
         context_t();
         ~context_t();
     };
 
-    extern context_t context;
+    extern context_t& context;
 } // namespace validation_layer

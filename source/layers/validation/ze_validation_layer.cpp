@@ -13,7 +13,7 @@
 
 namespace validation_layer
 {
-    context_t context;
+    context_t& context = context_t::getInstance();
 
     ///////////////////////////////////////////////////////////////////////////////
     context_t::context_t()
