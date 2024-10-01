@@ -20,7 +20,6 @@
 #include <vector>
 #include <mutex>
 #include <atomic>
-#include "ze_loader_compat.h"
 
 namespace ze_lib
 {
@@ -45,17 +44,17 @@ namespace ze_lib
         std::atomic<ze_dditable_t *>  zeDdiTable = {nullptr};
 
         ze_result_t zetDdiTableInit();
-        std::atomic<zet_dditable_compat_t *> zetDdiTable = {nullptr};
+        std::atomic<zet_dditable_t *> zetDdiTable = {nullptr};
 
         ze_result_t zesDdiTableInit();
-        std::atomic<zes_dditable_compat_t *> zesDdiTable = {nullptr};
+        std::atomic<zes_dditable_t *> zesDdiTable = {nullptr};
 
         ze_result_t zelTracingDdiTableInit();
         zel_tracing_dditable_t  zelTracingDdiTable = {};
         std::atomic<ze_dditable_t *> pTracingZeDdiTable = {nullptr};
         ze_dditable_t initialzeDdiTable;
-        zet_dditable_compat_t initialzetDdiTable;
-        zes_dditable_compat_t initialzesDdiTable;
+        zet_dditable_t initialzetDdiTable;
+        zes_dditable_t initialzesDdiTable;
         std::atomic_uint32_t tracingLayerEnableCounter{0};
 
         HMODULE tracing_lib = nullptr;

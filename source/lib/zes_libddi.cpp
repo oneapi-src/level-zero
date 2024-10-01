@@ -208,7 +208,7 @@ namespace ze_lib
 
         if( ZE_RESULT_SUCCESS == result )
         {
-            result = zesGetDeviceExpProcAddrTable( ZE_API_VERSION_CURRENT, reinterpret_cast<zes_device_exp_dditable_t *>(&initialzesDdiTable.DeviceExp) );
+            result = zesGetDeviceExpProcAddrTable( ZE_API_VERSION_CURRENT, &initialzesDdiTable.DeviceExp );
         }
 
         if( ZE_RESULT_SUCCESS == result )
@@ -313,7 +313,7 @@ namespace ze_lib
 
         if( ZE_RESULT_SUCCESS == result )
         {
-            result = zesGetVFManagementExpProcAddrTable( ZE_API_VERSION_CURRENT, reinterpret_cast<zes_vf_management_exp_dditable_t *>(&initialzesDdiTable.VFManagementExp) );
+            result = zesGetVFManagementExpProcAddrTable( ZE_API_VERSION_CURRENT, &initialzesDdiTable.VFManagementExp );
         }
 
         return result;

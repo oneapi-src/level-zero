@@ -4570,7 +4570,7 @@ zesGetDeviceExpProcAddrTable(
             GET_FUNCTION_PTR( drv.handle, "zesGetDeviceExpProcAddrTable") );
         if(!getTable) 
             continue; 
-        result = getTable( version, reinterpret_cast<zes_device_exp_dditable_t*>(&drv.dditable.zes.DeviceExp));
+        result = getTable( version, &drv.dditable.zes.DeviceExp);
     }
 
 
@@ -4585,7 +4585,7 @@ zesGetDeviceExpProcAddrTable(
         else
         {
             // return pointers directly to driver's DDIs
-            pDdiTable = reinterpret_cast<zes_device_exp_dditable_t*>(&loader::context->sysmanInstanceDrivers->front().dditable.zes.DeviceExp);
+            *pDdiTable = loader::context->sysmanInstanceDrivers->front().dditable.zes.DeviceExp;
         }
     }
 
@@ -6214,7 +6214,7 @@ zesGetVFManagementExpProcAddrTable(
             GET_FUNCTION_PTR( drv.handle, "zesGetVFManagementExpProcAddrTable") );
         if(!getTable) 
             continue; 
-        result = getTable( version, reinterpret_cast<zes_vf_management_exp_dditable_t*>(&drv.dditable.zes.VFManagementExp));
+        result = getTable( version, &drv.dditable.zes.VFManagementExp);
     }
 
 
@@ -6230,7 +6230,7 @@ zesGetVFManagementExpProcAddrTable(
         else
         {
             // return pointers directly to driver's DDIs
-            pDdiTable = reinterpret_cast<zes_vf_management_exp_dditable_t*>(&loader::context->sysmanInstanceDrivers->front().dditable.zes.VFManagementExp);
+            *pDdiTable = loader::context->sysmanInstanceDrivers->front().dditable.zes.VFManagementExp;
         }
     }
 
