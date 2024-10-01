@@ -5,7 +5,7 @@
  * SPDX-License-Identifier: MIT
  *
  * @file ze_api.h
- * @version v1.10-r1.10.0
+ * @version v1.11-r1.11.0
  *
  */
 #ifndef _ZE_API_H
@@ -1148,7 +1148,9 @@ typedef enum _ze_api_version_t
     ZE_API_VERSION_1_7 = ZE_MAKE_VERSION( 1, 7 ),                           ///< version 1.7
     ZE_API_VERSION_1_8 = ZE_MAKE_VERSION( 1, 8 ),                           ///< version 1.8
     ZE_API_VERSION_1_9 = ZE_MAKE_VERSION( 1, 9 ),                           ///< version 1.9
-    ZE_API_VERSION_CURRENT = ZE_MAKE_VERSION( 1, 9 ),                       ///< latest known version
+    ZE_API_VERSION_1_10 = ZE_MAKE_VERSION( 1, 10 ),                         ///< version 1.10
+    ZE_API_VERSION_1_11 = ZE_MAKE_VERSION( 1, 11 ),                         ///< version 1.11
+    ZE_API_VERSION_CURRENT = ZE_MAKE_VERSION( 1, 11 ),                      ///< latest known version
     ZE_API_VERSION_FORCE_UINT32 = 0x7fffffff
 
 } ze_api_version_t;
@@ -1156,7 +1158,7 @@ typedef enum _ze_api_version_t
 ///////////////////////////////////////////////////////////////////////////////
 #ifndef ZE_API_VERSION_CURRENT_M
 /// @brief Current API version as a macro
-#define ZE_API_VERSION_CURRENT_M  ZE_MAKE_VERSION( 1, 10 )
+#define ZE_API_VERSION_CURRENT_M  ZE_MAKE_VERSION( 1, 11 )
 #endif // ZE_API_VERSION_CURRENT_M
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -2275,13 +2277,15 @@ zeDeviceGetStatus(
 ///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
 ///         + `nullptr == hostTimestamp`
 ///         + `nullptr == deviceTimestamp`
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
+///         + The feature is not supported by the underlying platform.
 ZE_APIEXPORT ze_result_t ZE_APICALL
 zeDeviceGetGlobalTimestamps(
     ze_device_handle_t hDevice,                                             ///< [in] handle of the device
     uint64_t* hostTimestamp,                                                ///< [out] value of the Host's global timestamp that correlates with the
-                                                                            ///< Device's global timestamp value
+                                                                            ///< Device's global timestamp value.
     uint64_t* deviceTimestamp                                               ///< [out] value of the Device's global timestamp that correlates with the
-                                                                            ///< Host's global timestamp value
+                                                                            ///< Host's global timestamp value.
     );
 
 #if !defined(__GNUC__)
@@ -7250,7 +7254,8 @@ zeVirtualMemQueryPageSize(
 typedef uint32_t ze_physical_mem_flags_t;
 typedef enum _ze_physical_mem_flag_t
 {
-    ZE_PHYSICAL_MEM_FLAG_TBD = ZE_BIT(0),                                   ///< reserved for future use.
+    ZE_PHYSICAL_MEM_FLAG_ALLOCATE_ON_DEVICE = ZE_BIT(0),                    ///< [default] allocate physical device memory.
+    ZE_PHYSICAL_MEM_FLAG_ALLOCATE_ON_HOST = ZE_BIT(1),                      ///< Allocate physical host memory instead.
     ZE_PHYSICAL_MEM_FLAG_FORCE_UINT32 = 0x7fffffff
 
 } ze_physical_mem_flag_t;
@@ -7263,7 +7268,8 @@ typedef struct _ze_physical_mem_desc_t
     const void* pNext;                                                      ///< [in][optional] must be null or a pointer to an extension-specific
                                                                             ///< structure (i.e. contains stype and pNext).
     ze_physical_mem_flags_t flags;                                          ///< [in] creation flags.
-                                                                            ///< must be 0 (default) or a valid combination of ::ze_physical_mem_flag_t.
+                                                                            ///< must be 0 (default) or a valid combination of
+                                                                            ///< ::ze_physical_mem_flag_t; default is to create physical device memory.
     size_t size;                                                            ///< [in] size in bytes to reserve; must be page aligned.
 
 } ze_physical_mem_desc_t;
@@ -7274,7 +7280,9 @@ typedef struct _ze_physical_mem_desc_t
 /// @details
 ///     - The application must only use the physical memory object on the
 ///       context for which it was created.
-///     - The size must be page aligned. See ::zeVirtualMemQueryPageSize.
+///     - The size must be page aligned. For host memory, the operating system
+///       page size should be used. For device memory, see
+///       ::zeVirtualMemQueryPageSize.
 ///     - The application may call this function from simultaneous threads.
 ///     - The implementation of this function must be thread-safe.
 /// 
@@ -7291,14 +7299,15 @@ typedef struct _ze_physical_mem_desc_t
 ///         + `nullptr == desc`
 ///         + `nullptr == phPhysicalMemory`
 ///     - ::ZE_RESULT_ERROR_INVALID_ENUMERATION
-///         + `0x1 < desc->flags`
+///         + `0x3 < desc->flags`
 ///     - ::ZE_RESULT_ERROR_UNSUPPORTED_SIZE
 ///         + `0 == desc->size`
 ///     - ::ZE_RESULT_ERROR_UNSUPPORTED_ALIGNMENT
 ZE_APIEXPORT ze_result_t ZE_APICALL
 zePhysicalMemCreate(
     ze_context_handle_t hContext,                                           ///< [in] handle of the context object
-    ze_device_handle_t hDevice,                                             ///< [in] handle of the device object
+    ze_device_handle_t hDevice,                                             ///< [in] handle of the device object, can be `nullptr` if creating
+                                                                            ///< physical host memory.
     ze_physical_mem_desc_t* desc,                                           ///< [in] pointer to physical memory descriptor.
     ze_physical_mem_handle_t* phPhysicalMemory                              ///< [out] pointer to handle of physical memory object created
     );
@@ -8013,6 +8022,19 @@ typedef struct _ze_relaxed_allocation_limits_exp_desc_t
                                                                             ///< must be 0 (default) or a valid combination of ::ze_relaxed_allocation_limits_exp_flag_t;
 
 } ze_relaxed_allocation_limits_exp_desc_t;
+
+#if !defined(__GNUC__)
+#pragma endregion
+#endif
+// Intel 'oneAPI' Level-Zero Extension for retrieving kernel binary program data.
+#if !defined(__GNUC__)
+#pragma region kernelBinary
+#endif
+///////////////////////////////////////////////////////////////////////////////
+#ifndef ZE_GET_KERNEL_BINARY_EXP_NAME
+/// @brief Get Kernel Binary Extension Name
+#define ZE_GET_KERNEL_BINARY_EXP_NAME  "ZE_extension_kernel_binary_exp"
+#endif // ZE_GET_KERNEL_BINARY_EXP_NAME
 
 #if !defined(__GNUC__)
 #pragma endregion

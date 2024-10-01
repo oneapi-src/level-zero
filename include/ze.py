@@ -4,7 +4,7 @@
  SPDX-License-Identifier: MIT
 
  @file ze.py
- @version v1.10-r1.10.0
+ @version v1.11-r1.11.0
 
  """
 import platform
@@ -483,7 +483,9 @@ class ze_api_version_v(IntEnum):
     _1_7 = ZE_MAKE_VERSION( 1, 7 )                                          ## version 1.7
     _1_8 = ZE_MAKE_VERSION( 1, 8 )                                          ## version 1.8
     _1_9 = ZE_MAKE_VERSION( 1, 9 )                                          ## version 1.9
-    CURRENT = ZE_MAKE_VERSION( 1, 9 )                                       ## latest known version
+    _1_10 = ZE_MAKE_VERSION( 1, 10 )                                        ## version 1.10
+    _1_11 = ZE_MAKE_VERSION( 1, 11 )                                        ## version 1.11
+    CURRENT = ZE_MAKE_VERSION( 1, 11 )                                      ## latest known version
 
 class ze_api_version_t(c_int):
     def __str__(self):
@@ -492,7 +494,7 @@ class ze_api_version_t(c_int):
 
 ###############################################################################
 ## @brief Current API version as a macro
-ZE_API_VERSION_CURRENT_M = ZE_MAKE_VERSION( 1, 10 )
+ZE_API_VERSION_CURRENT_M = ZE_MAKE_VERSION( 1, 11 )
 
 ###############################################################################
 ## @brief Maximum driver universal unique id (UUID) size in bytes
@@ -1979,7 +1981,8 @@ class ze_memory_access_attribute_t(c_int):
 ###############################################################################
 ## @brief Supported physical memory creation flags
 class ze_physical_mem_flags_v(IntEnum):
-    TBD = ZE_BIT(0)                                                         ## reserved for future use.
+    ALLOCATE_ON_DEVICE = ZE_BIT(0)                                          ## [default] allocate physical device memory.
+    ALLOCATE_ON_HOST = ZE_BIT(1)                                            ## Allocate physical host memory instead.
 
 class ze_physical_mem_flags_t(c_int):
     def __str__(self):
@@ -1994,7 +1997,8 @@ class ze_physical_mem_desc_t(Structure):
         ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
                                                                         ## structure (i.e. contains stype and pNext).
         ("flags", ze_physical_mem_flags_t),                             ## [in] creation flags.
-                                                                        ## must be 0 (default) or a valid combination of ::ze_physical_mem_flag_t.
+                                                                        ## must be 0 (default) or a valid combination of
+                                                                        ## ::ze_physical_mem_flag_t; default is to create physical device memory.
         ("size", c_size_t)                                              ## [in] size in bytes to reserve; must be page aligned.
     ]
 
@@ -2256,6 +2260,10 @@ class ze_relaxed_allocation_limits_exp_desc_t(Structure):
         ("flags", ze_relaxed_allocation_limits_exp_flags_t)             ## [in] flags specifying allocation limits to relax.
                                                                         ## must be 0 (default) or a valid combination of ::ze_relaxed_allocation_limits_exp_flag_t;
     ]
+
+###############################################################################
+## @brief Get Kernel Binary Extension Name
+ZE_GET_KERNEL_BINARY_EXP_NAME = "ZE_extension_kernel_binary_exp"
 
 ###############################################################################
 ## @brief Cache_Reservation Extension Name

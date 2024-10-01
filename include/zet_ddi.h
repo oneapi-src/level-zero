@@ -5,7 +5,7 @@
  * SPDX-License-Identifier: MIT
  *
  * @file zet_ddi.h
- * @version v1.10-r1.10.0
+ * @version v1.11-r1.11.0
  *
  */
 #ifndef _ZET_DDI_H
@@ -502,11 +502,24 @@ typedef ze_result_t (ZE_APICALL *zet_pfnMetricGetProperties_t)(
     );
 
 ///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zetMetricCreateFromProgrammableExp2 
+typedef ze_result_t (ZE_APICALL *zet_pfnMetricCreateFromProgrammableExp2_t)(
+    zet_metric_programmable_exp_handle_t,
+    uint32_t,
+    zet_metric_programmable_param_value_exp_t*,
+    const char*,
+    const char*,
+    uint32_t*,
+    zet_metric_handle_t*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
 /// @brief Table of Metric functions pointers
 typedef struct _zet_metric_dditable_t
 {
     zet_pfnMetricGet_t                                          pfnGet;
     zet_pfnMetricGetProperties_t                                pfnGetProperties;
+    zet_pfnMetricCreateFromProgrammableExp2_t                   pfnCreateFromProgrammableExp2;
 } zet_metric_dditable_t;
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -535,8 +548,8 @@ typedef ze_result_t (ZE_APICALL *zet_pfnGetMetricProcAddrTable_t)(
 /// @brief Function-pointer for zetMetricCreateFromProgrammableExp 
 typedef ze_result_t (ZE_APICALL *zet_pfnMetricCreateFromProgrammableExp_t)(
     zet_metric_programmable_exp_handle_t,
-    uint32_t,
     zet_metric_programmable_param_value_exp_t*,
+    uint32_t,
     const char*,
     const char*,
     uint32_t*,
@@ -637,6 +650,16 @@ typedef ze_result_t (ZE_APICALL *zet_pfnGetMetricGroupProcAddrTable_t)(
     );
 
 ///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zetMetricGroupCreateExp 
+typedef ze_result_t (ZE_APICALL *zet_pfnMetricGroupCreateExp_t)(
+    zet_device_handle_t,
+    const char*,
+    const char*,
+    zet_metric_group_sampling_type_flags_t,
+    zet_metric_group_handle_t*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
 /// @brief Function-pointer for zetMetricGroupCalculateMultipleMetricValuesExp 
 typedef ze_result_t (ZE_APICALL *zet_pfnMetricGroupCalculateMultipleMetricValuesExp_t)(
     zet_metric_group_handle_t,
@@ -714,6 +737,7 @@ typedef ze_result_t (ZE_APICALL *zet_pfnMetricGroupDestroyExp_t)(
 /// @brief Table of MetricGroupExp functions pointers
 typedef struct _zet_metric_group_exp_dditable_t
 {
+    zet_pfnMetricGroupCreateExp_t                               pfnCreateExp;
     zet_pfnMetricGroupCalculateMultipleMetricValuesExp_t        pfnCalculateMultipleMetricValuesExp;
     zet_pfnMetricGroupGetGlobalTimestampsExp_t                  pfnGetGlobalTimestampsExp;
     zet_pfnMetricGroupGetExportDataExp_t                        pfnGetExportDataExp;

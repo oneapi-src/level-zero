@@ -6117,6 +6117,285 @@ zesDriverGetDeviceByUuidExp(
 /// @brief Get handle of virtual function modules
 /// 
 /// @details
+///     - [DEPRECATED] No longer supported. Use ::zesDeviceEnumEnabledVFExp.
+///     - The application may call this function from simultaneous threads.
+///     - The implementation of this function should be lock-free.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hDevice`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == pCount`
+ze_result_t ZE_APICALL
+zesDeviceEnumActiveVFExp(
+    zes_device_handle_t hDevice,                    ///< [in] Sysman handle of the device.
+    uint32_t* pCount,                               ///< [in,out] pointer to the number of components of this type.
+                                                    ///< if count is zero, then the driver shall update the value with the
+                                                    ///< total number of components of this type that are available.
+                                                    ///< if count is greater than the number of components of this type that
+                                                    ///< are available, then the driver shall update the value with the correct
+                                                    ///< number of components.
+    zes_vf_handle_t* phVFhandle                     ///< [in,out][optional][range(0, *pCount)] array of handle of components of
+                                                    ///< this type.
+                                                    ///< if count is less than the number of components of this type that are
+                                                    ///< available, then the driver shall only retrieve that number of
+                                                    ///< component handles.
+    )
+{
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
+    auto pfnEnumActiveVFExp = ze_lib::context->zesDdiTable.load()->DeviceExp.pfnEnumActiveVFExp;
+    if( nullptr == pfnEnumActiveVFExp ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    return pfnEnumActiveVFExp( hDevice, pCount, phVFhandle );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Get virtual function management properties
+/// 
+/// @details
+///     - [DEPRECATED] No longer supported. Use
+///       ::zesVFManagementGetVFCapabilitiesExp.
+///     - The application may call this function from simultaneous threads.
+///     - The implementation of this function should be lock-free.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hVFhandle`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == pProperties`
+ze_result_t ZE_APICALL
+zesVFManagementGetVFPropertiesExp(
+    zes_vf_handle_t hVFhandle,                      ///< [in] Sysman handle for the VF component.
+    zes_vf_exp_properties_t* pProperties            ///< [in,out] Will contain VF properties.
+    )
+{
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
+    auto pfnGetVFPropertiesExp = ze_lib::context->zesDdiTable.load()->VFManagementExp.pfnGetVFPropertiesExp;
+    if( nullptr == pfnGetVFPropertiesExp ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    return pfnGetVFPropertiesExp( hVFhandle, pProperties );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Get memory activity stats for each available memory types associated
+///        with Virtual Function (VF)
+/// 
+/// @details
+///     - [DEPRECATED] No longer supported. Use
+///       ::zesVFManagementGetVFMemoryUtilizationExp2.
+///     - The application may call this function from simultaneous threads.
+///     - The implementation of this function should be lock-free.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hVFhandle`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == pCount`
+ze_result_t ZE_APICALL
+zesVFManagementGetVFMemoryUtilizationExp(
+    zes_vf_handle_t hVFhandle,                      ///< [in] Sysman handle for the component.
+    uint32_t* pCount,                               ///< [in,out] Pointer to the number of VF memory stats descriptors.
+                                                    ///<  - if count is zero, the driver shall update the value with the total
+                                                    ///< number of memory stats available.
+                                                    ///<  - if count is greater than the total number of memory stats
+                                                    ///< available, the driver shall update the value with the correct number
+                                                    ///< of memory stats available.
+                                                    ///<  - The count returned is the sum of number of VF instances currently
+                                                    ///< available and the PF instance.
+    zes_vf_util_mem_exp_t* pMemUtil                 ///< [in,out][optional][range(0, *pCount)] array of memory group activity counters.
+                                                    ///<  - if count is less than the total number of memory stats available,
+                                                    ///< then driver shall only retrieve that number of stats.
+                                                    ///<  - the implementation shall populate the vector pCount-1 number of VF
+                                                    ///< memory stats.
+    )
+{
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
+    auto pfnGetVFMemoryUtilizationExp = ze_lib::context->zesDdiTable.load()->VFManagementExp.pfnGetVFMemoryUtilizationExp;
+    if( nullptr == pfnGetVFMemoryUtilizationExp ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    return pfnGetVFMemoryUtilizationExp( hVFhandle, pCount, pMemUtil );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Get engine activity stats for each available engine group associated
+///        with Virtual Function (VF)
+/// 
+/// @details
+///     - [DEPRECATED] No longer supported. Use
+///       ::zesVFManagementGetVFEngineUtilizationExp2.
+///     - The application may call this function from simultaneous threads.
+///     - The implementation of this function should be lock-free.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hVFhandle`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == pCount`
+ze_result_t ZE_APICALL
+zesVFManagementGetVFEngineUtilizationExp(
+    zes_vf_handle_t hVFhandle,                      ///< [in] Sysman handle for the component.
+    uint32_t* pCount,                               ///< [in,out] Pointer to the number of VF engine stats descriptors.
+                                                    ///<  - if count is zero, the driver shall update the value with the total
+                                                    ///< number of engine stats available.
+                                                    ///<  - if count is greater than the total number of engine stats
+                                                    ///< available, the driver shall update the value with the correct number
+                                                    ///< of engine stats available.
+                                                    ///<  - The count returned is the sum of number of VF instances currently
+                                                    ///< available and the PF instance.
+    zes_vf_util_engine_exp_t* pEngineUtil           ///< [in,out][optional][range(0, *pCount)] array of engine group activity counters.
+                                                    ///<  - if count is less than the total number of engine stats available,
+                                                    ///< then driver shall only retrieve that number of stats.
+                                                    ///<  - the implementation shall populate the vector pCount-1 number of VF
+                                                    ///< engine stats.
+    )
+{
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
+    auto pfnGetVFEngineUtilizationExp = ze_lib::context->zesDdiTable.load()->VFManagementExp.pfnGetVFEngineUtilizationExp;
+    if( nullptr == pfnGetVFEngineUtilizationExp ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    return pfnGetVFEngineUtilizationExp( hVFhandle, pCount, pEngineUtil );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Configure utilization telemetry enabled or disabled associated with
+///        Virtual Function (VF)
+/// 
+/// @details
+///     - [DEPRECATED] No longer supported.
+///     - The application may call this function from simultaneous threads.
+///     - The implementation of this function should be lock-free.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hVFhandle`
+///     - ::ZE_RESULT_ERROR_INVALID_ENUMERATION
+///         + `0xf < flags`
+ze_result_t ZE_APICALL
+zesVFManagementSetVFTelemetryModeExp(
+    zes_vf_handle_t hVFhandle,                      ///< [in] Sysman handle for the component.
+    zes_vf_info_util_exp_flags_t flags,             ///< [in] utilization flags to enable or disable. May be 0 or a valid
+                                                    ///< combination of ::zes_vf_info_util_exp_flag_t.
+    ze_bool_t enable                                ///< [in] Enable utilization telemetry.
+    )
+{
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
+    auto pfnSetVFTelemetryModeExp = ze_lib::context->zesDdiTable.load()->VFManagementExp.pfnSetVFTelemetryModeExp;
+    if( nullptr == pfnSetVFTelemetryModeExp ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    return pfnSetVFTelemetryModeExp( hVFhandle, flags, enable );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Set sampling interval to monitor for a particular utilization
+///        telemetry associated with Virtual Function (VF)
+/// 
+/// @details
+///     - [DEPRECATED] No longer supported.
+///     - The application may call this function from simultaneous threads.
+///     - The implementation of this function should be lock-free.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hVFhandle`
+///     - ::ZE_RESULT_ERROR_INVALID_ENUMERATION
+///         + `0xf < flag`
+ze_result_t ZE_APICALL
+zesVFManagementSetVFTelemetrySamplingIntervalExp(
+    zes_vf_handle_t hVFhandle,                      ///< [in] Sysman handle for the component.
+    zes_vf_info_util_exp_flags_t flag,              ///< [in] utilization flags to set sampling interval. May be 0 or a valid
+                                                    ///< combination of ::zes_vf_info_util_exp_flag_t.
+    uint64_t samplingInterval                       ///< [in] Sampling interval value.
+    )
+{
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
+    auto pfnSetVFTelemetrySamplingIntervalExp = ze_lib::context->zesDdiTable.load()->VFManagementExp.pfnSetVFTelemetrySamplingIntervalExp;
+    if( nullptr == pfnSetVFTelemetrySamplingIntervalExp ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    return pfnSetVFTelemetrySamplingIntervalExp( hVFhandle, flag, samplingInterval );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Get handle of virtual function modules
+/// 
+/// @details
 ///     - The application may call this function from simultaneous threads.
 ///     - The implementation of this function should be lock-free.
 /// 
@@ -6219,7 +6498,7 @@ zesVFManagementGetVFCapabilitiesExp(
 ///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
 ///         + `nullptr == pCount`
 ze_result_t ZE_APICALL
-zesVFManagementGetVFMemoryUtilizationExp(
+zesVFManagementGetVFMemoryUtilizationExp2(
     zes_vf_handle_t hVFhandle,                      ///< [in] Sysman handle for the component.
     uint32_t* pCount,                               ///< [in,out] Pointer to the number of VF memory stats descriptors.
                                                     ///<  - if count is zero, the driver shall update the value with the total
@@ -6227,7 +6506,7 @@ zesVFManagementGetVFMemoryUtilizationExp(
                                                     ///<  - if count is greater than the total number of memory stats
                                                     ///< available, the driver shall update the value with the correct number
                                                     ///< of memory stats available.
-    zes_vf_util_mem_exp_t* pMemUtil                 ///< [in,out][optional][range(0, *pCount)] array of memory group activity counters.
+    zes_vf_util_mem_exp2_t* pMemUtil                ///< [in,out][optional][range(0, *pCount)] array of memory group activity counters.
                                                     ///<  - if count is less than the total number of memory stats available,
                                                     ///< then driver shall only retrieve that number of stats.
                                                     ///<  - the implementation shall populate the vector pCount-1 number of VF
@@ -6238,15 +6517,15 @@ zesVFManagementGetVFMemoryUtilizationExp(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnGetVFMemoryUtilizationExp = ze_lib::context->zesDdiTable.load()->VFManagementExp.pfnGetVFMemoryUtilizationExp;
-    if( nullptr == pfnGetVFMemoryUtilizationExp ) {
+    auto pfnGetVFMemoryUtilizationExp2 = ze_lib::context->zesDdiTable.load()->VFManagement.pfnGetVFMemoryUtilizationExp2;
+    if( nullptr == pfnGetVFMemoryUtilizationExp2 ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
         else
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
 
-    return pfnGetVFMemoryUtilizationExp( hVFhandle, pCount, pMemUtil );
+    return pfnGetVFMemoryUtilizationExp2( hVFhandle, pCount, pMemUtil );
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -6269,7 +6548,7 @@ zesVFManagementGetVFMemoryUtilizationExp(
 ///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
 ///         + `nullptr == pCount`
 ze_result_t ZE_APICALL
-zesVFManagementGetVFEngineUtilizationExp(
+zesVFManagementGetVFEngineUtilizationExp2(
     zes_vf_handle_t hVFhandle,                      ///< [in] Sysman handle for the component.
     uint32_t* pCount,                               ///< [in,out] Pointer to the number of VF engine stats descriptors.
                                                     ///<  - if count is zero, the driver shall update the value with the total
@@ -6277,7 +6556,7 @@ zesVFManagementGetVFEngineUtilizationExp(
                                                     ///<  - if count is greater than the total number of engine stats
                                                     ///< available, the driver shall update the value with the correct number
                                                     ///< of engine stats available.
-    zes_vf_util_engine_exp_t* pEngineUtil           ///< [in,out][optional][range(0, *pCount)] array of engine group activity counters.
+    zes_vf_util_engine_exp2_t* pEngineUtil          ///< [in,out][optional][range(0, *pCount)] array of engine group activity counters.
                                                     ///<  - if count is less than the total number of engine stats available,
                                                     ///< then driver shall only retrieve that number of stats.
                                                     ///<  - the implementation shall populate the vector pCount-1 number of VF
@@ -6288,15 +6567,15 @@ zesVFManagementGetVFEngineUtilizationExp(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnGetVFEngineUtilizationExp = ze_lib::context->zesDdiTable.load()->VFManagementExp.pfnGetVFEngineUtilizationExp;
-    if( nullptr == pfnGetVFEngineUtilizationExp ) {
+    auto pfnGetVFEngineUtilizationExp2 = ze_lib::context->zesDdiTable.load()->VFManagement.pfnGetVFEngineUtilizationExp2;
+    if( nullptr == pfnGetVFEngineUtilizationExp2 ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
         else
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
 
-    return pfnGetVFEngineUtilizationExp( hVFhandle, pCount, pEngineUtil );
+    return pfnGetVFEngineUtilizationExp2( hVFhandle, pCount, pEngineUtil );
 }
 
 } // extern "C"

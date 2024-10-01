@@ -1192,13 +1192,15 @@ zeDeviceGetStatus(
 ///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
 ///         + `nullptr == hostTimestamp`
 ///         + `nullptr == deviceTimestamp`
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_FEATURE
+///         + The feature is not supported by the underlying platform.
 ze_result_t ZE_APICALL
 zeDeviceGetGlobalTimestamps(
     ze_device_handle_t hDevice,                     ///< [in] handle of the device
     uint64_t* hostTimestamp,                        ///< [out] value of the Host's global timestamp that correlates with the
-                                                    ///< Device's global timestamp value
+                                                    ///< Device's global timestamp value.
     uint64_t* deviceTimestamp                       ///< [out] value of the Device's global timestamp that correlates with the
-                                                    ///< Host's global timestamp value
+                                                    ///< Host's global timestamp value.
     )
 {
     if(ze_lib::context->inTeardown) {
@@ -6707,7 +6709,9 @@ zeVirtualMemQueryPageSize(
 /// @details
 ///     - The application must only use the physical memory object on the
 ///       context for which it was created.
-///     - The size must be page aligned. See ::zeVirtualMemQueryPageSize.
+///     - The size must be page aligned. For host memory, the operating system
+///       page size should be used. For device memory, see
+///       ::zeVirtualMemQueryPageSize.
 ///     - The application may call this function from simultaneous threads.
 ///     - The implementation of this function must be thread-safe.
 /// 
@@ -6724,14 +6728,15 @@ zeVirtualMemQueryPageSize(
 ///         + `nullptr == desc`
 ///         + `nullptr == phPhysicalMemory`
 ///     - ::ZE_RESULT_ERROR_INVALID_ENUMERATION
-///         + `0x1 < desc->flags`
+///         + `0x3 < desc->flags`
 ///     - ::ZE_RESULT_ERROR_UNSUPPORTED_SIZE
 ///         + `0 == desc->size`
 ///     - ::ZE_RESULT_ERROR_UNSUPPORTED_ALIGNMENT
 ze_result_t ZE_APICALL
 zePhysicalMemCreate(
     ze_context_handle_t hContext,                   ///< [in] handle of the context object
-    ze_device_handle_t hDevice,                     ///< [in] handle of the device object
+    ze_device_handle_t hDevice,                     ///< [in] handle of the device object, can be `nullptr` if creating
+                                                    ///< physical host memory.
     ze_physical_mem_desc_t* desc,                   ///< [in] pointer to physical memory descriptor.
     ze_physical_mem_handle_t* phPhysicalMemory      ///< [out] pointer to handle of physical memory object created
     )

@@ -5,7 +5,7 @@
  * SPDX-License-Identifier: MIT
  *
  * @file zet_api.h
- * @version v1.10-r1.10.0
+ * @version v1.11-r1.11.0
  *
  */
 #ifndef _ZET_API_H
@@ -99,7 +99,9 @@ typedef enum _zet_structure_type_t
     ZET_STRUCTURE_TYPE_METRIC_PROGRAMMABLE_EXP_PROPERTIES = 0x00010003,     ///< ::zet_metric_programmable_exp_properties_t
     ZET_STRUCTURE_TYPE_METRIC_PROGRAMMABLE_PARAM_INFO_EXP = 0x00010004,     ///< ::zet_metric_programmable_param_info_exp_t
     ZET_STRUCTURE_TYPE_METRIC_PROGRAMMABLE_PARAM_VALUE_INFO_EXP = 0x00010005,   ///< ::zet_metric_programmable_param_value_info_exp_t
-    ZET_STRUCTURE_TYPE_METRIC_TRACER_EXP_DESC = 0x00010006,                 ///< ::zet_metric_tracer_exp_desc_t
+    ZET_STRUCTURE_TYPE_METRIC_GROUP_TYPE_EXP = 0x00010006,                  ///< ::zet_metric_group_type_exp_t
+    ZET_STRUCTURE_TYPE_EXPORT_DMA_EXP_PROPERTIES = 0x00010007,              ///< ::zet_export_dma_buf_exp_properties_t
+    ZET_STRUCTURE_TYPE_METRIC_TRACER_EXP_DESC = 0x00010008,                 ///< ::zet_metric_tracer_exp_desc_t
     ZET_STRUCTURE_TYPE_FORCE_UINT32 = 0x7fffffff
 
 } zet_structure_type_t;
@@ -258,6 +260,14 @@ typedef struct _zet_metric_tracer_exp_desc_t zet_metric_tracer_exp_desc_t;
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief Forward-declare zet_metric_entry_exp_t
 typedef struct _zet_metric_entry_exp_t zet_metric_entry_exp_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Forward-declare zet_metric_group_type_exp_t
+typedef struct _zet_metric_group_type_exp_t zet_metric_group_type_exp_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Forward-declare zet_export_dma_buf_exp_properties_t
+typedef struct _zet_export_dma_buf_exp_properties_t zet_export_dma_buf_exp_properties_t;
 
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief Forward-declare zet_metric_global_timestamps_resolution_exp_t
@@ -1008,6 +1018,8 @@ typedef enum _zet_metric_type_t
     ZET_METRIC_TYPE_EVENT_EXP_TIMESTAMP = 10,                               ///< Metric type: event with only timestamp and value has no meaning
     ZET_METRIC_TYPE_EVENT_EXP_START = 11,                                   ///< Metric type: the first event of a start/end event pair
     ZET_METRIC_TYPE_EVENT_EXP_END = 12,                                     ///< Metric type: the second event of a start/end event pair
+    ZET_METRIC_TYPE_EXPORT_DMA_BUF = 0x7ffffffd,                            ///< Metric which exports linux dma_buf, which could be imported/mapped to
+                                                                            ///< the host process
     ZET_METRIC_TYPE_EVENT_EXP_MONOTONIC_WRAPS_VALUE = 0x7ffffffe,           ///< Metric type: value of the event is a monotonically increasing value
                                                                             ///< that can wrap around
     ZET_METRIC_TYPE_FORCE_UINT32 = 0x7fffffff
@@ -2267,6 +2279,54 @@ zetMetricTracerDecodeExp(
 #if !defined(__GNUC__)
 #pragma endregion
 #endif
+// Intel 'oneAPI' Level-Zero Tool Experimental Extension for Metrics/Metric Groups which export Memory
+#if !defined(__GNUC__)
+#pragma region metricExportMemory
+#endif
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Metric group type
+typedef uint32_t zet_metric_group_type_exp_flags_t;
+typedef enum _zet_metric_group_type_exp_flag_t
+{
+    ZET_METRIC_GROUP_TYPE_EXP_FLAG_EXPORT_DMA_BUF = ZE_BIT(0),              ///< Metric group and metrics exports memory using linux dma-buf, which
+                                                                            ///< could be imported/mapped to the host process. Properties of the
+                                                                            ///< dma_buf could be queried using ::zet_export_dma_buf_exp_properties_t.
+    ZET_METRIC_GROUP_TYPE_EXP_FLAG_USER_CREATED = ZE_BIT(1),                ///< Metric group created using ::zetMetricGroupCreateExp
+    ZET_METRIC_GROUP_TYPE_EXP_FLAG_OTHER = ZE_BIT(2),                       ///< Metric group which has a collection of metrics
+    ZET_METRIC_GROUP_TYPE_EXP_FLAG_FORCE_UINT32 = 0x7fffffff
+
+} zet_metric_group_type_exp_flag_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Query the metric group type using `pNext` of
+///        ::zet_metric_group_properties_t
+typedef struct _zet_metric_group_type_exp_t
+{
+    zet_structure_type_t stype;                                             ///< [in] type of this structure
+    void* pNext;                                                            ///< [in,out][optional] must be null or a pointer to an extension-specific
+                                                                            ///< structure (i.e. contains stype and pNext).
+    zet_metric_group_type_exp_flags_t type;                                 ///< [out] metric group type.
+                                                                            ///< returns a combination of ::zet_metric_group_type_exp_flags_t.
+
+} zet_metric_group_type_exp_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Exported dma_buf properties queried using `pNext` of
+///        ::zet_metric_group_properties_t or ::zet_metric_properties_t
+typedef struct _zet_export_dma_buf_exp_properties_t
+{
+    zet_structure_type_t stype;                                             ///< [in] type of this structure
+    void* pNext;                                                            ///< [in,out][optional] must be null or a pointer to an extension-specific
+                                                                            ///< structure (i.e. contains stype and pNext).
+    int fd;                                                                 ///< [out] the file descriptor handle that could be used to import the
+                                                                            ///< memory by the host process.
+    size_t size;                                                            ///< [out] size in bytes of the dma_buf
+
+} zet_export_dma_buf_exp_properties_t;
+
+#if !defined(__GNUC__)
+#pragma endregion
+#endif
 // Intel 'oneAPI' Level-Zero Tool Experimental Extension for Calculating Multiple Metrics
 #if !defined(__GNUC__)
 #pragma region multiMetricValues
@@ -2893,10 +2953,52 @@ zetMetricProgrammableGetParamValueInfoExp(
 ///         + `nullptr == pDescription`
 ///         + `nullptr == pMetricHandleCount`
 ZE_APIEXPORT ze_result_t ZE_APICALL
-zetMetricCreateFromProgrammableExp(
+zetMetricCreateFromProgrammableExp2(
     zet_metric_programmable_exp_handle_t hMetricProgrammable,               ///< [in] handle of the metric programmable
     uint32_t parameterCount,                                                ///< [in] Count of parameters to set.
     zet_metric_programmable_param_value_exp_t* pParameterValues,            ///< [in] list of parameter values to be set.
+    const char* pName,                                                      ///< [in] pointer to metric name to be used. Must point to a
+                                                                            ///< null-terminated character array no longer than ::ZET_MAX_METRIC_NAME.
+    const char* pDescription,                                               ///< [in] pointer to metric description to be used. Must point to a
+                                                                            ///< null-terminated character array no longer than
+                                                                            ///< ::ZET_MAX_METRIC_DESCRIPTION.
+    uint32_t* pMetricHandleCount,                                           ///< [in,out] Pointer to the number of metric handles.
+                                                                            ///< if count is zero, then the driver shall update the value with the
+                                                                            ///< number of metric handles available for this programmable.
+                                                                            ///< if count is greater than the number of metric handles available, then
+                                                                            ///< the driver shall update the value with the correct number of metric
+                                                                            ///< handles available.
+    zet_metric_handle_t* phMetricHandles                                    ///< [in,out][optional][range(0,*pMetricHandleCount)] array of handle of metrics.
+                                                                            ///< if count is less than the number of metrics available, then driver
+                                                                            ///< shall only retrieve that number of metric handles.
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Create metric handles by applying parameter values on the metric
+///        programmable handle.
+/// 
+/// @details
+///     - This API is deprecated. Please use
+///       ::zetMetricCreateFromProgrammableExp2()
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hMetricProgrammable`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == pParameterValues`
+///         + `nullptr == pName`
+///         + `nullptr == pDescription`
+///         + `nullptr == pMetricHandleCount`
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zetMetricCreateFromProgrammableExp(
+    zet_metric_programmable_exp_handle_t hMetricProgrammable,               ///< [in] handle of the metric programmable
+    zet_metric_programmable_param_value_exp_t* pParameterValues,            ///< [in] list of parameter values to be set.
+    uint32_t parameterCount,                                                ///< [in] Count of parameters to set.
     const char* pName,                                                      ///< [in] pointer to metric name to be used. Must point to a
                                                                             ///< null-terminated character array no longer than ::ZET_MAX_METRIC_NAME.
     const char* pDescription,                                               ///< [in] pointer to metric description to be used. Must point to a
@@ -2918,7 +3020,7 @@ zetMetricCreateFromProgrammableExp(
 /// 
 /// @details
 ///     - Creates multiple metric groups from metrics which were created using
-///       ::zetMetricCreateFromProgrammableExp().
+///       ::zetMetricCreateFromProgrammableExp2().
 ///     - Metrics whose Hardware resources do not overlap are added to same
 ///       metric group.
 ///     - The metric groups created using this API are managed by the
@@ -2958,6 +3060,39 @@ zetDeviceCreateMetricGroupsFromMetricsExp(
     zet_metric_group_handle_t* phMetricGroup                                ///< [in,out][optional][range(0, *pMetricGroupCount)] array of handle of
                                                                             ///< metric group handles.
                                                                             ///< Created Metric group handles.
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Create metric group handle.
+/// 
+/// @details
+///     - This API is deprecated. Please use
+///       ::zetCreateMetricGroupsFromMetricsExp() 
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hDevice`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == pName`
+///         + `nullptr == pDescription`
+///         + `nullptr == phMetricGroup`
+///     - ::ZE_RESULT_ERROR_INVALID_ENUMERATION
+///         + `0x7 < samplingType`
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zetMetricGroupCreateExp(
+    zet_device_handle_t hDevice,                                            ///< [in] handle of the device
+    const char* pName,                                                      ///< [in] pointer to metric group name. Must point to a null-terminated
+                                                                            ///< character array no longer than ::ZET_MAX_METRIC_GROUP_NAME.
+    const char* pDescription,                                               ///< [in] pointer to metric group description. Must point to a
+                                                                            ///< null-terminated character array no longer than
+                                                                            ///< ::ZET_MAX_METRIC_GROUP_DESCRIPTION.
+    zet_metric_group_sampling_type_flags_t samplingType,                    ///< [in] Sampling type for the metric group.
+    zet_metric_group_handle_t* phMetricGroup                                ///< [in,out] Created Metric group handle
     );
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -3067,11 +3202,11 @@ zetMetricGroupCloseExp(
 /// @brief Destroy a metric group created using ::zetMetricGroupCreateExp.
 /// 
 /// @details
-///     - Metric handles created using ::zetMetricCreateFromProgrammableExp and
+///     - Metric handles created using ::zetMetricCreateFromProgrammableExp2 and
 ///       are part of the metricGroup are not destroyed.
 ///     - It is necessary to call ::zetMetricDestroyExp for each of the metric
-///       handles (created from ::zetMetricCreateFromProgrammableExp) to destroy
-///       them.
+///       handles (created from ::zetMetricCreateFromProgrammableExp2) to
+///       destroy them.
 /// 
 /// @returns
 ///     - ::ZE_RESULT_SUCCESS
@@ -3091,7 +3226,7 @@ zetMetricGroupDestroyExp(
     );
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Destroy a metric created using ::zetMetricCreateFromProgrammableExp.
+/// @brief Destroy a metric created using ::zetMetricCreateFromProgrammableExp2.
 /// 
 /// @details
 ///     - If a metric is added to a metric group, the metric has to be removed

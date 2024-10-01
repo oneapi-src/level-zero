@@ -4,7 +4,7 @@
  SPDX-License-Identifier: MIT
 
  @file zet.py
- @version v1.10-r1.10.0
+ @version v1.11-r1.11.0
 
  """
 import platform
@@ -100,7 +100,9 @@ class zet_structure_type_v(IntEnum):
     METRIC_PROGRAMMABLE_EXP_PROPERTIES = 0x00010003                         ## ::zet_metric_programmable_exp_properties_t
     METRIC_PROGRAMMABLE_PARAM_INFO_EXP = 0x00010004                         ## ::zet_metric_programmable_param_info_exp_t
     METRIC_PROGRAMMABLE_PARAM_VALUE_INFO_EXP = 0x00010005                   ## ::zet_metric_programmable_param_value_info_exp_t
-    METRIC_TRACER_EXP_DESC = 0x00010006                                     ## ::zet_metric_tracer_exp_desc_t
+    METRIC_GROUP_TYPE_EXP = 0x00010006                                      ## ::zet_metric_group_type_exp_t
+    EXPORT_DMA_EXP_PROPERTIES = 0x00010007                                  ## ::zet_export_dma_buf_exp_properties_t
+    METRIC_TRACER_EXP_DESC = 0x00010008                                     ## ::zet_metric_tracer_exp_desc_t
 
 class zet_structure_type_t(c_int):
     def __str__(self):
@@ -421,6 +423,8 @@ class zet_metric_type_v(IntEnum):
     EVENT_EXP_TIMESTAMP = 10                                                ## Metric type: event with only timestamp and value has no meaning
     EVENT_EXP_START = 11                                                    ## Metric type: the first event of a start/end event pair
     EVENT_EXP_END = 12                                                      ## Metric type: the second event of a start/end event pair
+    EXPORT_DMA_BUF = 0x7ffffffd                                             ## Metric which exports linux dma_buf, which could be imported/mapped to
+                                                                            ## the host process
     EVENT_EXP_MONOTONIC_WRAPS_VALUE = 0x7ffffffe                            ## Metric type: value of the event is a monotonically increasing value
                                                                             ## that can wrap around
 
@@ -662,6 +666,45 @@ class zet_metric_entry_exp_t(Structure):
                                                                         ## device on which the metric tracer was opened does not have
                                                                         ## sub-devices.
         ("subdeviceId", c_ulong)                                        ## [out] If onSubdevice is true, this gives the ID of the sub-device.
+    ]
+
+###############################################################################
+## @brief Metric group type
+class zet_metric_group_type_exp_flags_v(IntEnum):
+    EXPORT_DMA_BUF = ZE_BIT(0)                                              ## Metric group and metrics exports memory using linux dma-buf, which
+                                                                            ## could be imported/mapped to the host process. Properties of the
+                                                                            ## dma_buf could be queried using ::zet_export_dma_buf_exp_properties_t.
+    USER_CREATED = ZE_BIT(1)                                                ## Metric group created using ::zetMetricGroupCreateExp
+    OTHER = ZE_BIT(2)                                                       ## Metric group which has a collection of metrics
+
+class zet_metric_group_type_exp_flags_t(c_int):
+    def __str__(self):
+        return hex(self.value)
+
+
+###############################################################################
+## @brief Query the metric group type using `pNext` of
+##        ::zet_metric_group_properties_t
+class zet_metric_group_type_exp_t(Structure):
+    _fields_ = [
+        ("stype", zet_structure_type_t),                                ## [in] type of this structure
+        ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains stype and pNext).
+        ("type", zet_metric_group_type_exp_flags_t)                     ## [out] metric group type.
+                                                                        ## returns a combination of ::zet_metric_group_type_exp_flags_t.
+    ]
+
+###############################################################################
+## @brief Exported dma_buf properties queried using `pNext` of
+##        ::zet_metric_group_properties_t or ::zet_metric_properties_t
+class zet_export_dma_buf_exp_properties_t(Structure):
+    _fields_ = [
+        ("stype", zet_structure_type_t),                                ## [in] type of this structure
+        ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains stype and pNext).
+        ("fd", c_int),                                                  ## [out] the file descriptor handle that could be used to import the
+                                                                        ## memory by the host process.
+        ("size", c_size_t)                                              ## [out] size in bytes of the dma_buf
     ]
 
 ###############################################################################
@@ -1177,21 +1220,29 @@ if __use_win_types:
 else:
     _zetMetricGetProperties_t = CFUNCTYPE( ze_result_t, zet_metric_handle_t, POINTER(zet_metric_properties_t) )
 
+###############################################################################
+## @brief Function-pointer for zetMetricCreateFromProgrammableExp2
+if __use_win_types:
+    _zetMetricCreateFromProgrammableExp2_t = WINFUNCTYPE( ze_result_t, zet_metric_programmable_exp_handle_t, c_ulong, POINTER(zet_metric_programmable_param_value_exp_t), c_char_p, c_char_p, POINTER(c_ulong), POINTER(zet_metric_handle_t) )
+else:
+    _zetMetricCreateFromProgrammableExp2_t = CFUNCTYPE( ze_result_t, zet_metric_programmable_exp_handle_t, c_ulong, POINTER(zet_metric_programmable_param_value_exp_t), c_char_p, c_char_p, POINTER(c_ulong), POINTER(zet_metric_handle_t) )
+
 
 ###############################################################################
 ## @brief Table of Metric functions pointers
 class _zet_metric_dditable_t(Structure):
     _fields_ = [
         ("pfnGet", c_void_p),                                           ## _zetMetricGet_t
-        ("pfnGetProperties", c_void_p)                                  ## _zetMetricGetProperties_t
+        ("pfnGetProperties", c_void_p),                                 ## _zetMetricGetProperties_t
+        ("pfnCreateFromProgrammableExp2", c_void_p)                     ## _zetMetricCreateFromProgrammableExp2_t
     ]
 
 ###############################################################################
 ## @brief Function-pointer for zetMetricCreateFromProgrammableExp
 if __use_win_types:
-    _zetMetricCreateFromProgrammableExp_t = WINFUNCTYPE( ze_result_t, zet_metric_programmable_exp_handle_t, c_ulong, POINTER(zet_metric_programmable_param_value_exp_t), c_char_p, c_char_p, POINTER(c_ulong), POINTER(zet_metric_handle_t) )
+    _zetMetricCreateFromProgrammableExp_t = WINFUNCTYPE( ze_result_t, zet_metric_programmable_exp_handle_t, POINTER(zet_metric_programmable_param_value_exp_t), c_ulong, c_char_p, c_char_p, POINTER(c_ulong), POINTER(zet_metric_handle_t) )
 else:
-    _zetMetricCreateFromProgrammableExp_t = CFUNCTYPE( ze_result_t, zet_metric_programmable_exp_handle_t, c_ulong, POINTER(zet_metric_programmable_param_value_exp_t), c_char_p, c_char_p, POINTER(c_ulong), POINTER(zet_metric_handle_t) )
+    _zetMetricCreateFromProgrammableExp_t = CFUNCTYPE( ze_result_t, zet_metric_programmable_exp_handle_t, POINTER(zet_metric_programmable_param_value_exp_t), c_ulong, c_char_p, c_char_p, POINTER(c_ulong), POINTER(zet_metric_handle_t) )
 
 ###############################################################################
 ## @brief Function-pointer for zetMetricDestroyExp
@@ -1239,6 +1290,13 @@ class _zet_metric_group_dditable_t(Structure):
         ("pfnGetProperties", c_void_p),                                 ## _zetMetricGroupGetProperties_t
         ("pfnCalculateMetricValues", c_void_p)                          ## _zetMetricGroupCalculateMetricValues_t
     ]
+
+###############################################################################
+## @brief Function-pointer for zetMetricGroupCreateExp
+if __use_win_types:
+    _zetMetricGroupCreateExp_t = WINFUNCTYPE( ze_result_t, zet_device_handle_t, c_char_p, c_char_p, zet_metric_group_sampling_type_flags_t, POINTER(zet_metric_group_handle_t) )
+else:
+    _zetMetricGroupCreateExp_t = CFUNCTYPE( ze_result_t, zet_device_handle_t, c_char_p, c_char_p, zet_metric_group_sampling_type_flags_t, POINTER(zet_metric_group_handle_t) )
 
 ###############################################################################
 ## @brief Function-pointer for zetMetricGroupCalculateMultipleMetricValuesExp
@@ -1301,6 +1359,7 @@ else:
 ## @brief Table of MetricGroupExp functions pointers
 class _zet_metric_group_exp_dditable_t(Structure):
     _fields_ = [
+        ("pfnCreateExp", c_void_p),                                     ## _zetMetricGroupCreateExp_t
         ("pfnCalculateMultipleMetricValuesExp", c_void_p),              ## _zetMetricGroupCalculateMultipleMetricValuesExp_t
         ("pfnGetGlobalTimestampsExp", c_void_p),                        ## _zetMetricGroupGetGlobalTimestampsExp_t
         ("pfnGetExportDataExp", c_void_p),                              ## _zetMetricGroupGetExportDataExp_t
@@ -1704,6 +1763,7 @@ class ZET_DDI:
         # attach function interface to function address
         self.zetMetricGet = _zetMetricGet_t(self.__dditable.Metric.pfnGet)
         self.zetMetricGetProperties = _zetMetricGetProperties_t(self.__dditable.Metric.pfnGetProperties)
+        self.zetMetricCreateFromProgrammableExp2 = _zetMetricCreateFromProgrammableExp2_t(self.__dditable.Metric.pfnCreateFromProgrammableExp2)
 
         # call driver to get function pointers
         _MetricExp = _zet_metric_exp_dditable_t()
@@ -1736,6 +1796,7 @@ class ZET_DDI:
         self.__dditable.MetricGroupExp = _MetricGroupExp
 
         # attach function interface to function address
+        self.zetMetricGroupCreateExp = _zetMetricGroupCreateExp_t(self.__dditable.MetricGroupExp.pfnCreateExp)
         self.zetMetricGroupCalculateMultipleMetricValuesExp = _zetMetricGroupCalculateMultipleMetricValuesExp_t(self.__dditable.MetricGroupExp.pfnCalculateMultipleMetricValuesExp)
         self.zetMetricGroupGetGlobalTimestampsExp = _zetMetricGroupGetGlobalTimestampsExp_t(self.__dditable.MetricGroupExp.pfnGetGlobalTimestampsExp)
         self.zetMetricGroupGetExportDataExp = _zetMetricGroupGetExportDataExp_t(self.__dditable.MetricGroupExp.pfnGetExportDataExp)

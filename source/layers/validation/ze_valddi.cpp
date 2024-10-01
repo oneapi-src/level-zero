@@ -1076,9 +1076,9 @@ namespace validation_layer
     zeDeviceGetGlobalTimestamps(
         ze_device_handle_t hDevice,                     ///< [in] handle of the device
         uint64_t* hostTimestamp,                        ///< [out] value of the Host's global timestamp that correlates with the
-                                                        ///< Device's global timestamp value
+                                                        ///< Device's global timestamp value.
         uint64_t* deviceTimestamp                       ///< [out] value of the Device's global timestamp that correlates with the
-                                                        ///< Host's global timestamp value
+                                                        ///< Host's global timestamp value.
         )
     {
         auto pfnGetGlobalTimestamps = context.zeDdiTable.Device.pfnGetGlobalTimestamps;
@@ -6077,7 +6077,8 @@ namespace validation_layer
     __zedlllocal ze_result_t ZE_APICALL
     zePhysicalMemCreate(
         ze_context_handle_t hContext,                   ///< [in] handle of the context object
-        ze_device_handle_t hDevice,                     ///< [in] handle of the device object
+        ze_device_handle_t hDevice,                     ///< [in] handle of the device object, can be `nullptr` if creating
+                                                        ///< physical host memory.
         ze_physical_mem_desc_t* desc,                   ///< [in] pointer to physical memory descriptor.
         ze_physical_mem_handle_t* phPhysicalMemory      ///< [out] pointer to handle of physical memory object created
         )

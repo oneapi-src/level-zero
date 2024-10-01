@@ -134,11 +134,9 @@ namespace loader
         for( auto& drv : loader::context->zeDrivers )
         {
             if (!drv.dditable.ze.Global.pfnInitDrivers) {
-                drv.initDriversStatus = ZE_RESULT_ERROR_UNINITIALIZED;
+                drv.initStatus = ZE_RESULT_ERROR_UNINITIALIZED;
                 continue;
             }
-            if(drv.initDriversStatus != ZE_RESULT_SUCCESS)
-                continue;
 
             if( ( 0 < *pCount ) && ( *pCount == total_driver_handle_count))
                 break;
@@ -149,7 +147,7 @@ namespace loader
             if( ZE_RESULT_SUCCESS != result ) {
                 // If Get Drivers fails with Uninitialized, then update the driver init status to prevent reporting this driver in the next get call.
                 if (ZE_RESULT_ERROR_UNINITIALIZED == result) {
-                    drv.initDriversStatus = result;
+                    drv.initStatus = result;
                 }
                 continue;
             }
@@ -825,9 +823,9 @@ namespace loader
     zeDeviceGetGlobalTimestamps(
         ze_device_handle_t hDevice,                     ///< [in] handle of the device
         uint64_t* hostTimestamp,                        ///< [out] value of the Host's global timestamp that correlates with the
-                                                        ///< Device's global timestamp value
+                                                        ///< Device's global timestamp value.
         uint64_t* deviceTimestamp                       ///< [out] value of the Device's global timestamp that correlates with the
-                                                        ///< Host's global timestamp value
+                                                        ///< Host's global timestamp value.
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
@@ -4642,7 +4640,8 @@ namespace loader
     __zedlllocal ze_result_t ZE_APICALL
     zePhysicalMemCreate(
         ze_context_handle_t hContext,                   ///< [in] handle of the context object
-        ze_device_handle_t hDevice,                     ///< [in] handle of the device object
+        ze_device_handle_t hDevice,                     ///< [in] handle of the device object, can be `nullptr` if creating
+                                                        ///< physical host memory.
         ze_physical_mem_desc_t* desc,                   ///< [in] pointer to physical memory descriptor.
         ze_physical_mem_handle_t* phPhysicalMemory      ///< [out] pointer to handle of physical memory object created
         )

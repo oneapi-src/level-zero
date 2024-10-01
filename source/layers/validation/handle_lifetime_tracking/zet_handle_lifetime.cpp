@@ -1040,10 +1040,37 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
-    ZETHandleLifetimeValidation::zetMetricCreateFromProgrammableExpPrologue(
+    ZETHandleLifetimeValidation::zetMetricCreateFromProgrammableExp2Prologue(
         zet_metric_programmable_exp_handle_t hMetricProgrammable,   ///< [in] handle of the metric programmable
         uint32_t parameterCount,                        ///< [in] Count of parameters to set.
         zet_metric_programmable_param_value_exp_t* pParameterValues,///< [in] list of parameter values to be set.
+        const char* pName,                              ///< [in] pointer to metric name to be used. Must point to a
+                                                        ///< null-terminated character array no longer than ::ZET_MAX_METRIC_NAME.
+        const char* pDescription,                       ///< [in] pointer to metric description to be used. Must point to a
+                                                        ///< null-terminated character array no longer than
+                                                        ///< ::ZET_MAX_METRIC_DESCRIPTION.
+        uint32_t* pMetricHandleCount,                   ///< [in,out] Pointer to the number of metric handles.
+                                                        ///< if count is zero, then the driver shall update the value with the
+                                                        ///< number of metric handles available for this programmable.
+                                                        ///< if count is greater than the number of metric handles available, then
+                                                        ///< the driver shall update the value with the correct number of metric
+                                                        ///< handles available.
+        zet_metric_handle_t* phMetricHandles            ///< [in,out][optional][range(0,*pMetricHandleCount)] array of handle of metrics.
+                                                        ///< if count is less than the number of metrics available, then driver
+                                                        ///< shall only retrieve that number of metric handles.
+        )
+    { 
+        
+        if ( !context.handleLifetime->isHandleValid( hMetricProgrammable )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    ze_result_t
+    ZETHandleLifetimeValidation::zetMetricCreateFromProgrammableExpPrologue(
+        zet_metric_programmable_exp_handle_t hMetricProgrammable,   ///< [in] handle of the metric programmable
+        zet_metric_programmable_param_value_exp_t* pParameterValues,///< [in] list of parameter values to be set.
+        uint32_t parameterCount,                        ///< [in] Count of parameters to set.
         const char* pName,                              ///< [in] pointer to metric name to be used. Must point to a
                                                         ///< null-terminated character array no longer than ::ZET_MAX_METRIC_NAME.
         const char* pDescription,                       ///< [in] pointer to metric description to be used. Must point to a
@@ -1088,6 +1115,24 @@ namespace validation_layer
         zet_metric_group_handle_t* phMetricGroup        ///< [in,out][optional][range(0, *pMetricGroupCount)] array of handle of
                                                         ///< metric group handles.
                                                         ///< Created Metric group handles.
+        )
+    { 
+        
+        if ( !context.handleLifetime->isHandleValid( hDevice )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    ze_result_t
+    ZETHandleLifetimeValidation::zetMetricGroupCreateExpPrologue(
+        zet_device_handle_t hDevice,                    ///< [in] handle of the device
+        const char* pName,                              ///< [in] pointer to metric group name. Must point to a null-terminated
+                                                        ///< character array no longer than ::ZET_MAX_METRIC_GROUP_NAME.
+        const char* pDescription,                       ///< [in] pointer to metric group description. Must point to a
+                                                        ///< null-terminated character array no longer than
+                                                        ///< ::ZET_MAX_METRIC_GROUP_DESCRIPTION.
+        zet_metric_group_sampling_type_flags_t samplingType,///< [in] Sampling type for the metric group.
+        zet_metric_group_handle_t* phMetricGroup        ///< [in,out] Created Metric group handle
         )
     { 
         
