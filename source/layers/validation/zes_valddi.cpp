@@ -6249,6 +6249,200 @@ namespace validation_layer
         return result;
     }
 
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesDeviceEnumEnabledVFExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zesDeviceEnumEnabledVFExp(
+        zes_device_handle_t hDevice,                    ///< [in] Sysman handle of the device.
+        uint32_t* pCount,                               ///< [in,out] pointer to the number of components of this type.
+                                                        ///< if count is zero, then the driver shall update the value with the
+                                                        ///< total number of components of this type that are available.
+                                                        ///< if count is greater than the number of components of this type that
+                                                        ///< are available, then the driver shall update the value with the correct
+                                                        ///< number of components.
+        zes_vf_handle_t* phVFhandle                     ///< [in,out][optional][range(0, *pCount)] array of handle of components of
+                                                        ///< this type.
+                                                        ///< if count is less than the number of components of this type that are
+                                                        ///< available, then the driver shall only retrieve that number of
+                                                        ///< component handles.
+        )
+    {
+        auto pfnEnumEnabledVFExp = context.zesDdiTable.DeviceExp.pfnEnumEnabledVFExp;
+
+        if( nullptr == pfnEnumEnabledVFExp )
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zesValidation->zesDeviceEnumEnabledVFExpPrologue( hDevice, pCount, phVFhandle );
+            if(result!=ZE_RESULT_SUCCESS) return result;
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zesHandleLifetime.zesDeviceEnumEnabledVFExpPrologue( hDevice, pCount, phVFhandle );
+            if(result!=ZE_RESULT_SUCCESS) return result;
+        }
+
+        auto result = pfnEnumEnabledVFExp( hDevice, pCount, phVFhandle );
+
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zesValidation->zesDeviceEnumEnabledVFExpEpilogue( hDevice, pCount, phVFhandle );
+            if(result!=ZE_RESULT_SUCCESS) return result;
+        }
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesVFManagementGetVFCapabilitiesExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zesVFManagementGetVFCapabilitiesExp(
+        zes_vf_handle_t hVFhandle,                      ///< [in] Sysman handle for the VF component.
+        zes_vf_exp_capabilities_t* pCapability          ///< [in,out] Will contain VF capability.
+        )
+    {
+        auto pfnGetVFCapabilitiesExp = context.zesDdiTable.VFManagementExp.pfnGetVFCapabilitiesExp;
+
+        if( nullptr == pfnGetVFCapabilitiesExp )
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zesValidation->zesVFManagementGetVFCapabilitiesExpPrologue( hVFhandle, pCapability );
+            if(result!=ZE_RESULT_SUCCESS) return result;
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zesHandleLifetime.zesVFManagementGetVFCapabilitiesExpPrologue( hVFhandle, pCapability );
+            if(result!=ZE_RESULT_SUCCESS) return result;
+        }
+
+        auto result = pfnGetVFCapabilitiesExp( hVFhandle, pCapability );
+
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zesValidation->zesVFManagementGetVFCapabilitiesExpEpilogue( hVFhandle, pCapability );
+            if(result!=ZE_RESULT_SUCCESS) return result;
+        }
+
+
+        if( result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
+            
+        }
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesVFManagementGetVFMemoryUtilizationExp2
+    __zedlllocal ze_result_t ZE_APICALL
+    zesVFManagementGetVFMemoryUtilizationExp2(
+        zes_vf_handle_t hVFhandle,                      ///< [in] Sysman handle for the component.
+        uint32_t* pCount,                               ///< [in,out] Pointer to the number of VF memory stats descriptors.
+                                                        ///<  - if count is zero, the driver shall update the value with the total
+                                                        ///< number of memory stats available.
+                                                        ///<  - if count is greater than the total number of memory stats
+                                                        ///< available, the driver shall update the value with the correct number
+                                                        ///< of memory stats available.
+        zes_vf_util_mem_exp2_t* pMemUtil                ///< [in,out][optional][range(0, *pCount)] array of memory group activity counters.
+                                                        ///<  - if count is less than the total number of memory stats available,
+                                                        ///< then driver shall only retrieve that number of stats.
+                                                        ///<  - the implementation shall populate the vector pCount-1 number of VF
+                                                        ///< memory stats.
+        )
+    {
+        auto pfnGetVFMemoryUtilizationExp2 = context.zesDdiTable.VFManagement.pfnGetVFMemoryUtilizationExp2;
+
+        if( nullptr == pfnGetVFMemoryUtilizationExp2 )
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zesValidation->zesVFManagementGetVFMemoryUtilizationExp2Prologue( hVFhandle, pCount, pMemUtil );
+            if(result!=ZE_RESULT_SUCCESS) return result;
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zesHandleLifetime.zesVFManagementGetVFMemoryUtilizationExp2Prologue( hVFhandle, pCount, pMemUtil );
+            if(result!=ZE_RESULT_SUCCESS) return result;
+        }
+
+        auto result = pfnGetVFMemoryUtilizationExp2( hVFhandle, pCount, pMemUtil );
+
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zesValidation->zesVFManagementGetVFMemoryUtilizationExp2Epilogue( hVFhandle, pCount, pMemUtil );
+            if(result!=ZE_RESULT_SUCCESS) return result;
+        }
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesVFManagementGetVFEngineUtilizationExp2
+    __zedlllocal ze_result_t ZE_APICALL
+    zesVFManagementGetVFEngineUtilizationExp2(
+        zes_vf_handle_t hVFhandle,                      ///< [in] Sysman handle for the component.
+        uint32_t* pCount,                               ///< [in,out] Pointer to the number of VF engine stats descriptors.
+                                                        ///<  - if count is zero, the driver shall update the value with the total
+                                                        ///< number of engine stats available.
+                                                        ///<  - if count is greater than the total number of engine stats
+                                                        ///< available, the driver shall update the value with the correct number
+                                                        ///< of engine stats available.
+        zes_vf_util_engine_exp2_t* pEngineUtil          ///< [in,out][optional][range(0, *pCount)] array of engine group activity counters.
+                                                        ///<  - if count is less than the total number of engine stats available,
+                                                        ///< then driver shall only retrieve that number of stats.
+                                                        ///<  - the implementation shall populate the vector pCount-1 number of VF
+                                                        ///< engine stats.
+        )
+    {
+        auto pfnGetVFEngineUtilizationExp2 = context.zesDdiTable.VFManagement.pfnGetVFEngineUtilizationExp2;
+
+        if( nullptr == pfnGetVFEngineUtilizationExp2 )
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zesValidation->zesVFManagementGetVFEngineUtilizationExp2Prologue( hVFhandle, pCount, pEngineUtil );
+            if(result!=ZE_RESULT_SUCCESS) return result;
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zesHandleLifetime.zesVFManagementGetVFEngineUtilizationExp2Prologue( hVFhandle, pCount, pEngineUtil );
+            if(result!=ZE_RESULT_SUCCESS) return result;
+        }
+
+        auto result = pfnGetVFEngineUtilizationExp2( hVFhandle, pCount, pEngineUtil );
+
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zesValidation->zesVFManagementGetVFEngineUtilizationExp2Epilogue( hVFhandle, pCount, pEngineUtil );
+            if(result!=ZE_RESULT_SUCCESS) return result;
+        }
+
+        return result;
+    }
+
 } // namespace validation_layer
 
 #if defined(__cplusplus)
@@ -6449,6 +6643,9 @@ zesGetDeviceExpProcAddrTable(
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
+
+    dditable.pfnEnumEnabledVFExp                         = pDdiTable->pfnEnumEnabledVFExp;
+    pDdiTable->pfnEnumEnabledVFExp                       = validation_layer::zesDeviceEnumEnabledVFExp;
 
     dditable.pfnGetSubDevicePropertiesExp                = pDdiTable->pfnGetSubDevicePropertiesExp;
     pDdiTable->pfnGetSubDevicePropertiesExp              = validation_layer::zesDeviceGetSubDevicePropertiesExp;
@@ -7317,6 +7514,40 @@ zesGetTemperatureProcAddrTable(
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+/// @brief Exported function for filling application's VFManagement table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+ZE_DLLEXPORT ze_result_t ZE_APICALL
+zesGetVFManagementProcAddrTable(
+    ze_api_version_t version,                       ///< [in] API version requested
+    zes_vf_management_dditable_t* pDdiTable         ///< [in,out] pointer to table of DDI function pointers
+    )
+{
+    auto& dditable = validation_layer::context.zesDdiTable.VFManagement;
+
+    if( nullptr == pDdiTable )
+        return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+    if (ZE_MAJOR_VERSION(validation_layer::context.version) != ZE_MAJOR_VERSION(version) ||
+        ZE_MINOR_VERSION(validation_layer::context.version) > ZE_MINOR_VERSION(version))
+        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+
+    ze_result_t result = ZE_RESULT_SUCCESS;
+
+    dditable.pfnGetVFMemoryUtilizationExp2               = pDdiTable->pfnGetVFMemoryUtilizationExp2;
+    pDdiTable->pfnGetVFMemoryUtilizationExp2             = validation_layer::zesVFManagementGetVFMemoryUtilizationExp2;
+
+    dditable.pfnGetVFEngineUtilizationExp2               = pDdiTable->pfnGetVFEngineUtilizationExp2;
+    pDdiTable->pfnGetVFEngineUtilizationExp2             = validation_layer::zesVFManagementGetVFEngineUtilizationExp2;
+
+    return result;
+}
+
+///////////////////////////////////////////////////////////////////////////////
 /// @brief Exported function for filling application's VFManagementExp table
 ///        with current process' addresses
 ///
@@ -7340,6 +7571,9 @@ zesGetVFManagementExpProcAddrTable(
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
+
+    dditable.pfnGetVFCapabilitiesExp                     = pDdiTable->pfnGetVFCapabilitiesExp;
+    pDdiTable->pfnGetVFCapabilitiesExp                   = validation_layer::zesVFManagementGetVFCapabilitiesExp;
 
     dditable.pfnGetVFPropertiesExp                       = pDdiTable->pfnGetVFPropertiesExp;
     pDdiTable->pfnGetVFPropertiesExp                     = validation_layer::zesVFManagementGetVFPropertiesExp;

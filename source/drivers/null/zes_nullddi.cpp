@@ -8,6 +8,7 @@
  *
  */
 #include "ze_null.h"
+#include <cstring>
 
 namespace driver
 {
@@ -30,6 +31,17 @@ namespace driver
         else
         {
             // generic implementation
+            auto driver_type = getenv_string( "ZEL_TEST_NULL_DRIVER_TYPE" );
+            if (std::strcmp(driver_type.c_str(), "GPU") == 0) {
+                if (!(flags & ZE_INIT_FLAG_GPU_ONLY)) {
+                    return ZE_RESULT_ERROR_UNINITIALIZED;
+                }
+            }
+            if (std::strcmp(driver_type.c_str(), "NPU") == 0) {
+                if (!(flags & ZE_INIT_FLAG_VPU_ONLY)) {
+                    return ZE_RESULT_ERROR_UNINITIALIZED;
+                }
+            }
         }
 
         return result;
@@ -3951,6 +3963,135 @@ namespace driver
         return result;
     }
 
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesDeviceEnumEnabledVFExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zesDeviceEnumEnabledVFExp(
+        zes_device_handle_t hDevice,                    ///< [in] Sysman handle of the device.
+        uint32_t* pCount,                               ///< [in,out] pointer to the number of components of this type.
+                                                        ///< if count is zero, then the driver shall update the value with the
+                                                        ///< total number of components of this type that are available.
+                                                        ///< if count is greater than the number of components of this type that
+                                                        ///< are available, then the driver shall update the value with the correct
+                                                        ///< number of components.
+        zes_vf_handle_t* phVFhandle                     ///< [in,out][optional][range(0, *pCount)] array of handle of components of
+                                                        ///< this type.
+                                                        ///< if count is less than the number of components of this type that are
+                                                        ///< available, then the driver shall only retrieve that number of
+                                                        ///< component handles.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnEnumEnabledVFExp = context.zesDdiTable.DeviceExp.pfnEnumEnabledVFExp;
+        if( nullptr != pfnEnumEnabledVFExp )
+        {
+            result = pfnEnumEnabledVFExp( hDevice, pCount, phVFhandle );
+        }
+        else
+        {
+            // generic implementation
+            for( size_t i = 0; ( nullptr != phVFhandle ) && ( i < *pCount ); ++i )
+                phVFhandle[ i ] = reinterpret_cast<zes_vf_handle_t>( context.get() );
+
+        }
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesVFManagementGetVFCapabilitiesExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zesVFManagementGetVFCapabilitiesExp(
+        zes_vf_handle_t hVFhandle,                      ///< [in] Sysman handle for the VF component.
+        zes_vf_exp_capabilities_t* pCapability          ///< [in,out] Will contain VF capability.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnGetVFCapabilitiesExp = context.zesDdiTable.VFManagementExp.pfnGetVFCapabilitiesExp;
+        if( nullptr != pfnGetVFCapabilitiesExp )
+        {
+            result = pfnGetVFCapabilitiesExp( hVFhandle, pCapability );
+        }
+        else
+        {
+            // generic implementation
+        }
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesVFManagementGetVFMemoryUtilizationExp2
+    __zedlllocal ze_result_t ZE_APICALL
+    zesVFManagementGetVFMemoryUtilizationExp2(
+        zes_vf_handle_t hVFhandle,                      ///< [in] Sysman handle for the component.
+        uint32_t* pCount,                               ///< [in,out] Pointer to the number of VF memory stats descriptors.
+                                                        ///<  - if count is zero, the driver shall update the value with the total
+                                                        ///< number of memory stats available.
+                                                        ///<  - if count is greater than the total number of memory stats
+                                                        ///< available, the driver shall update the value with the correct number
+                                                        ///< of memory stats available.
+        zes_vf_util_mem_exp2_t* pMemUtil                ///< [in,out][optional][range(0, *pCount)] array of memory group activity counters.
+                                                        ///<  - if count is less than the total number of memory stats available,
+                                                        ///< then driver shall only retrieve that number of stats.
+                                                        ///<  - the implementation shall populate the vector pCount-1 number of VF
+                                                        ///< memory stats.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnGetVFMemoryUtilizationExp2 = context.zesDdiTable.VFManagement.pfnGetVFMemoryUtilizationExp2;
+        if( nullptr != pfnGetVFMemoryUtilizationExp2 )
+        {
+            result = pfnGetVFMemoryUtilizationExp2( hVFhandle, pCount, pMemUtil );
+        }
+        else
+        {
+            // generic implementation
+        }
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesVFManagementGetVFEngineUtilizationExp2
+    __zedlllocal ze_result_t ZE_APICALL
+    zesVFManagementGetVFEngineUtilizationExp2(
+        zes_vf_handle_t hVFhandle,                      ///< [in] Sysman handle for the component.
+        uint32_t* pCount,                               ///< [in,out] Pointer to the number of VF engine stats descriptors.
+                                                        ///<  - if count is zero, the driver shall update the value with the total
+                                                        ///< number of engine stats available.
+                                                        ///<  - if count is greater than the total number of engine stats
+                                                        ///< available, the driver shall update the value with the correct number
+                                                        ///< of engine stats available.
+        zes_vf_util_engine_exp2_t* pEngineUtil          ///< [in,out][optional][range(0, *pCount)] array of engine group activity counters.
+                                                        ///<  - if count is less than the total number of engine stats available,
+                                                        ///< then driver shall only retrieve that number of stats.
+                                                        ///<  - the implementation shall populate the vector pCount-1 number of VF
+                                                        ///< engine stats.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnGetVFEngineUtilizationExp2 = context.zesDdiTable.VFManagement.pfnGetVFEngineUtilizationExp2;
+        if( nullptr != pfnGetVFEngineUtilizationExp2 )
+        {
+            result = pfnGetVFEngineUtilizationExp2( hVFhandle, pCount, pEngineUtil );
+        }
+        else
+        {
+            // generic implementation
+        }
+
+        return result;
+    }
+
 } // namespace driver
 
 #if defined(__cplusplus)
@@ -4104,6 +4245,8 @@ zesGetDeviceExpProcAddrTable(
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
+
+    pDdiTable->pfnEnumEnabledVFExp                       = driver::zesDeviceEnumEnabledVFExp;
 
     pDdiTable->pfnGetSubDevicePropertiesExp              = driver::zesDeviceGetSubDevicePropertiesExp;
 
@@ -4811,6 +4954,35 @@ zesGetTemperatureProcAddrTable(
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+/// @brief Exported function for filling application's VFManagement table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+ZE_DLLEXPORT ze_result_t ZE_APICALL
+zesGetVFManagementProcAddrTable(
+    ze_api_version_t version,                       ///< [in] API version requested
+    zes_vf_management_dditable_t* pDdiTable         ///< [in,out] pointer to table of DDI function pointers
+    )
+{
+    if( nullptr == pDdiTable )
+        return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+    if( driver::context.version < version )
+        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+
+    ze_result_t result = ZE_RESULT_SUCCESS;
+
+    pDdiTable->pfnGetVFMemoryUtilizationExp2             = driver::zesVFManagementGetVFMemoryUtilizationExp2;
+
+    pDdiTable->pfnGetVFEngineUtilizationExp2             = driver::zesVFManagementGetVFEngineUtilizationExp2;
+
+    return result;
+}
+
+///////////////////////////////////////////////////////////////////////////////
 /// @brief Exported function for filling application's VFManagementExp table
 ///        with current process' addresses
 ///
@@ -4831,6 +5003,8 @@ zesGetVFManagementExpProcAddrTable(
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
+
+    pDdiTable->pfnGetVFCapabilitiesExp                   = driver::zesVFManagementGetVFCapabilitiesExp;
 
     pDdiTable->pfnGetVFPropertiesExp                     = driver::zesVFManagementGetVFPropertiesExp;
 

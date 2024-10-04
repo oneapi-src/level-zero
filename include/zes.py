@@ -4,7 +4,7 @@
  SPDX-License-Identifier: MIT
 
  @file zes.py
- @version v1.9-r1.9.3
+ @version v1.11-r1.11.0
 
  """
 import platform
@@ -165,6 +165,9 @@ class zes_structure_type_v(IntEnum):
     VF_EXP_PROPERTIES = 0x00020005                                          ## ::zes_vf_exp_properties_t
     VF_UTIL_MEM_EXP = 0x00020006                                            ## ::zes_vf_util_mem_exp_t
     VF_UTIL_ENGINE_EXP = 0x00020007                                         ## ::zes_vf_util_engine_exp_t
+    VF_EXP_CAPABILITIES = 0x00020008                                        ## ::zes_vf_exp_capabilities_t
+    VF_UTIL_MEM_EXP2 = 0x00020009                                           ## ::zes_vf_util_mem_exp2_t
+    VF_UTIL_ENGINE_EXP2 = 0x00020010                                        ## ::zes_vf_util_engine_exp2_t
 
 class zes_structure_type_t(c_int):
     def __str__(self):
@@ -2086,6 +2089,7 @@ class zes_temp_sensors_v(IntEnum):
     MEMORY_MIN = 5                                                          ## The minimum temperature across all sensors in the local device memory
     GPU_BOARD = 6                                                           ## The maximum temperature across all sensors in the GPU Board
     GPU_BOARD_MIN = 7                                                       ## The minimum temperature across all sensors in the GPU Board
+    VOLTAGE_REGULATOR = 8                                                   ## The maximum temperature across all sensors in the Voltage Regulator
 
 class zes_temp_sensors_t(c_int):
     def __str__(self):
@@ -2430,8 +2434,10 @@ ZES_VIRTUAL_FUNCTION_MANAGEMENT_EXP_NAME = "ZES_experimental_virtual_function_ma
 ###############################################################################
 ## @brief Virtual Function Management Extension Version(s)
 class zes_vf_management_exp_version_v(IntEnum):
-    _1_0 = ZE_MAKE_VERSION( 1, 0 )                                          ## version 1.0
-    CURRENT = ZE_MAKE_VERSION( 1, 0 )                                       ## latest known version
+    _1_0 = ZE_MAKE_VERSION( 1, 0 )                                          ## version 1.0 (deprecated)
+    _1_1 = ZE_MAKE_VERSION( 1, 1 )                                          ## version 1.1 (deprecated)
+    _1_2 = ZE_MAKE_VERSION( 1, 2 )                                          ## version 1.2
+    CURRENT = ZE_MAKE_VERSION( 1, 2 )                                       ## latest known version
 
 class zes_vf_management_exp_version_t(c_int):
     def __str__(self):
@@ -2439,7 +2445,7 @@ class zes_vf_management_exp_version_t(c_int):
 
 
 ###############################################################################
-## @brief Virtual function memory types
+## @brief Virtual function memory types (deprecated)
 class zes_vf_info_mem_type_exp_flags_v(IntEnum):
     MEM_TYPE_SYSTEM = ZE_BIT(0)                                             ## System memory
     MEM_TYPE_DEVICE = ZE_BIT(1)                                             ## Device local memory
@@ -2450,7 +2456,7 @@ class zes_vf_info_mem_type_exp_flags_t(c_int):
 
 
 ###############################################################################
-## @brief Virtual function utilization flag bit fields
+## @brief Virtual function utilization flag bit fields (deprecated)
 class zes_vf_info_util_exp_flags_v(IntEnum):
     INFO_NONE = ZE_BIT(0)                                                   ## No info associated with virtual function
     INFO_MEM_CPU = ZE_BIT(1)                                                ## System memory utilization associated with virtual function
@@ -2463,7 +2469,7 @@ class zes_vf_info_util_exp_flags_t(c_int):
 
 
 ###############################################################################
-## @brief Virtual function management properties
+## @brief Virtual function management properties (deprecated)
 class zes_vf_exp_properties_t(Structure):
     _fields_ = [
         ("stype", zes_structure_type_t),                                ## [in] type of this structure
@@ -2476,7 +2482,7 @@ class zes_vf_exp_properties_t(Structure):
     ]
 
 ###############################################################################
-## @brief Provides memory utilization values for a virtual function
+## @brief Provides memory utilization values for a virtual function (deprecated)
 class zes_vf_util_mem_exp_t(Structure):
     _fields_ = [
         ("stype", zes_structure_type_t),                                ## [in] type of this structure
@@ -2489,7 +2495,7 @@ class zes_vf_util_mem_exp_t(Structure):
     ]
 
 ###############################################################################
-## @brief Provides engine utilization values for a virtual function
+## @brief Provides engine utilization values for a virtual function (deprecated)
 class zes_vf_util_engine_exp_t(Structure):
     _fields_ = [
         ("stype", zes_structure_type_t),                                ## [in] type of this structure
@@ -2499,6 +2505,48 @@ class zes_vf_util_engine_exp_t(Structure):
         ("activeCounterValue", c_ulonglong),                            ## [out] Represents active counter.
         ("samplingCounterValue", c_ulonglong),                          ## [out] Represents counter value when activeCounterValue was sampled.
         ("timestamp", c_ulonglong)                                      ## [out] Wall clock time when the activeCounterValue was sampled.
+    ]
+
+###############################################################################
+## @brief Virtual function management capabilities
+class zes_vf_exp_capabilities_t(Structure):
+    _fields_ = [
+        ("stype", zes_structure_type_t),                                ## [in] type of this structure
+        ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains stype and pNext).
+        ("address", zes_pci_address_t),                                 ## [out] Virtual function BDF address
+        ("vfDeviceMemSize", c_ulong),                                   ## [out] Virtual function memory size in bytes
+        ("vfID", c_ulong)                                               ## [out] Virtual Function ID
+    ]
+
+###############################################################################
+## @brief Provides memory utilization values for a virtual function
+class zes_vf_util_mem_exp2_t(Structure):
+    _fields_ = [
+        ("stype", zes_structure_type_t),                                ## [in] type of this structure
+        ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains stype and pNext).
+        ("vfMemLocation", zes_mem_loc_t),                               ## [out] Location of this memory (system, device)
+        ("vfMemUtilized", c_ulonglong)                                  ## [out] Free memory size in bytes.
+    ]
+
+###############################################################################
+## @brief Provides engine utilization values for a virtual function
+## 
+## @details
+##     - Percent utilization is calculated by taking two snapshots (s1, s2) and
+##       using the equation: %util = (s2.activeCounterValue -
+##       s1.activeCounterValue) / (s2.samplingCounterValue -
+##       s1.samplingCounterValue)
+class zes_vf_util_engine_exp2_t(Structure):
+    _fields_ = [
+        ("stype", zes_structure_type_t),                                ## [in] type of this structure
+        ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains stype and pNext).
+        ("vfEngineType", zes_engine_group_t),                           ## [out] The engine group.
+        ("activeCounterValue", c_ulonglong),                            ## [out] Represents active counter.
+        ("samplingCounterValue", c_ulonglong)                           ## [out] Represents counter value when activeCounterValue was sampled.
+                                                                        ## Refer to the formulae above for calculating the utilization percent
     ]
 
 ###############################################################################
@@ -2823,6 +2871,13 @@ class _zes_device_dditable_t(Structure):
     ]
 
 ###############################################################################
+## @brief Function-pointer for zesDeviceEnumEnabledVFExp
+if __use_win_types:
+    _zesDeviceEnumEnabledVFExp_t = WINFUNCTYPE( ze_result_t, zes_device_handle_t, POINTER(c_ulong), POINTER(zes_vf_handle_t) )
+else:
+    _zesDeviceEnumEnabledVFExp_t = CFUNCTYPE( ze_result_t, zes_device_handle_t, POINTER(c_ulong), POINTER(zes_vf_handle_t) )
+
+###############################################################################
 ## @brief Function-pointer for zesDeviceGetSubDevicePropertiesExp
 if __use_win_types:
     _zesDeviceGetSubDevicePropertiesExp_t = WINFUNCTYPE( ze_result_t, zes_device_handle_t, POINTER(c_ulong), POINTER(zes_subdevice_exp_properties_t) )
@@ -2841,6 +2896,7 @@ else:
 ## @brief Table of DeviceExp functions pointers
 class _zes_device_exp_dditable_t(Structure):
     _fields_ = [
+        ("pfnEnumEnabledVFExp", c_void_p),                              ## _zesDeviceEnumEnabledVFExp_t
         ("pfnGetSubDevicePropertiesExp", c_void_p),                     ## _zesDeviceGetSubDevicePropertiesExp_t
         ("pfnEnumActiveVFExp", c_void_p)                                ## _zesDeviceEnumActiveVFExp_t
     ]
@@ -3778,6 +3834,36 @@ class _zes_diagnostics_dditable_t(Structure):
     ]
 
 ###############################################################################
+## @brief Function-pointer for zesVFManagementGetVFMemoryUtilizationExp2
+if __use_win_types:
+    _zesVFManagementGetVFMemoryUtilizationExp2_t = WINFUNCTYPE( ze_result_t, zes_vf_handle_t, POINTER(c_ulong), POINTER(zes_vf_util_mem_exp2_t) )
+else:
+    _zesVFManagementGetVFMemoryUtilizationExp2_t = CFUNCTYPE( ze_result_t, zes_vf_handle_t, POINTER(c_ulong), POINTER(zes_vf_util_mem_exp2_t) )
+
+###############################################################################
+## @brief Function-pointer for zesVFManagementGetVFEngineUtilizationExp2
+if __use_win_types:
+    _zesVFManagementGetVFEngineUtilizationExp2_t = WINFUNCTYPE( ze_result_t, zes_vf_handle_t, POINTER(c_ulong), POINTER(zes_vf_util_engine_exp2_t) )
+else:
+    _zesVFManagementGetVFEngineUtilizationExp2_t = CFUNCTYPE( ze_result_t, zes_vf_handle_t, POINTER(c_ulong), POINTER(zes_vf_util_engine_exp2_t) )
+
+
+###############################################################################
+## @brief Table of VFManagement functions pointers
+class _zes_vf_management_dditable_t(Structure):
+    _fields_ = [
+        ("pfnGetVFMemoryUtilizationExp2", c_void_p),                    ## _zesVFManagementGetVFMemoryUtilizationExp2_t
+        ("pfnGetVFEngineUtilizationExp2", c_void_p)                     ## _zesVFManagementGetVFEngineUtilizationExp2_t
+    ]
+
+###############################################################################
+## @brief Function-pointer for zesVFManagementGetVFCapabilitiesExp
+if __use_win_types:
+    _zesVFManagementGetVFCapabilitiesExp_t = WINFUNCTYPE( ze_result_t, zes_vf_handle_t, POINTER(zes_vf_exp_capabilities_t) )
+else:
+    _zesVFManagementGetVFCapabilitiesExp_t = CFUNCTYPE( ze_result_t, zes_vf_handle_t, POINTER(zes_vf_exp_capabilities_t) )
+
+###############################################################################
 ## @brief Function-pointer for zesVFManagementGetVFPropertiesExp
 if __use_win_types:
     _zesVFManagementGetVFPropertiesExp_t = WINFUNCTYPE( ze_result_t, zes_vf_handle_t, POINTER(zes_vf_exp_properties_t) )
@@ -3817,6 +3903,7 @@ else:
 ## @brief Table of VFManagementExp functions pointers
 class _zes_vf_management_exp_dditable_t(Structure):
     _fields_ = [
+        ("pfnGetVFCapabilitiesExp", c_void_p),                          ## _zesVFManagementGetVFCapabilitiesExp_t
         ("pfnGetVFPropertiesExp", c_void_p),                            ## _zesVFManagementGetVFPropertiesExp_t
         ("pfnGetVFMemoryUtilizationExp", c_void_p),                     ## _zesVFManagementGetVFMemoryUtilizationExp_t
         ("pfnGetVFEngineUtilizationExp", c_void_p),                     ## _zesVFManagementGetVFEngineUtilizationExp_t
@@ -3850,6 +3937,7 @@ class _zes_dditable_t(Structure):
         ("Ras", _zes_ras_dditable_t),
         ("RasExp", _zes_ras_exp_dditable_t),
         ("Diagnostics", _zes_diagnostics_dditable_t),
+        ("VFManagement", _zes_vf_management_dditable_t),
         ("VFManagementExp", _zes_vf_management_exp_dditable_t)
     ]
 
@@ -3930,6 +4018,7 @@ class ZES_DDI:
         self.__dditable.DeviceExp = _DeviceExp
 
         # attach function interface to function address
+        self.zesDeviceEnumEnabledVFExp = _zesDeviceEnumEnabledVFExp_t(self.__dditable.DeviceExp.pfnEnumEnabledVFExp)
         self.zesDeviceGetSubDevicePropertiesExp = _zesDeviceGetSubDevicePropertiesExp_t(self.__dditable.DeviceExp.pfnGetSubDevicePropertiesExp)
         self.zesDeviceEnumActiveVFExp = _zesDeviceEnumActiveVFExp_t(self.__dditable.DeviceExp.pfnEnumActiveVFExp)
 
@@ -4213,6 +4302,17 @@ class ZES_DDI:
         self.zesDiagnosticsRunTests = _zesDiagnosticsRunTests_t(self.__dditable.Diagnostics.pfnRunTests)
 
         # call driver to get function pointers
+        _VFManagement = _zes_vf_management_dditable_t()
+        r = ze_result_v(self.__dll.zesGetVFManagementProcAddrTable(version, byref(_VFManagement)))
+        if r != ze_result_v.SUCCESS:
+            raise Exception(r)
+        self.__dditable.VFManagement = _VFManagement
+
+        # attach function interface to function address
+        self.zesVFManagementGetVFMemoryUtilizationExp2 = _zesVFManagementGetVFMemoryUtilizationExp2_t(self.__dditable.VFManagement.pfnGetVFMemoryUtilizationExp2)
+        self.zesVFManagementGetVFEngineUtilizationExp2 = _zesVFManagementGetVFEngineUtilizationExp2_t(self.__dditable.VFManagement.pfnGetVFEngineUtilizationExp2)
+
+        # call driver to get function pointers
         _VFManagementExp = _zes_vf_management_exp_dditable_t()
         r = ze_result_v(self.__dll.zesGetVFManagementExpProcAddrTable(version, byref(_VFManagementExp)))
         if r != ze_result_v.SUCCESS:
@@ -4220,6 +4320,7 @@ class ZES_DDI:
         self.__dditable.VFManagementExp = _VFManagementExp
 
         # attach function interface to function address
+        self.zesVFManagementGetVFCapabilitiesExp = _zesVFManagementGetVFCapabilitiesExp_t(self.__dditable.VFManagementExp.pfnGetVFCapabilitiesExp)
         self.zesVFManagementGetVFPropertiesExp = _zesVFManagementGetVFPropertiesExp_t(self.__dditable.VFManagementExp.pfnGetVFPropertiesExp)
         self.zesVFManagementGetVFMemoryUtilizationExp = _zesVFManagementGetVFMemoryUtilizationExp_t(self.__dditable.VFManagementExp.pfnGetVFMemoryUtilizationExp)
         self.zesVFManagementGetVFEngineUtilizationExp = _zesVFManagementGetVFEngineUtilizationExp_t(self.__dditable.VFManagementExp.pfnGetVFEngineUtilizationExp)

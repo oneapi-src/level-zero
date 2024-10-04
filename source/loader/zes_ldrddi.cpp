@@ -83,6 +83,8 @@ namespace loader
                 result = drv.dditable.zes.Driver.pfnGet( &library_driver_handle_count, &phDrivers[ total_driver_handle_count ] );
                 if( ZE_RESULT_SUCCESS != result ) break;
 
+                drv.driverInuse = true;
+
                 try
                 {
                     for( uint32_t i = 0; i < library_driver_handle_count; ++i ) {
@@ -4392,6 +4394,151 @@ namespace loader
         return result;
     }
 
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesDeviceEnumEnabledVFExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zesDeviceEnumEnabledVFExp(
+        zes_device_handle_t hDevice,                    ///< [in] Sysman handle of the device.
+        uint32_t* pCount,                               ///< [in,out] pointer to the number of components of this type.
+                                                        ///< if count is zero, then the driver shall update the value with the
+                                                        ///< total number of components of this type that are available.
+                                                        ///< if count is greater than the number of components of this type that
+                                                        ///< are available, then the driver shall update the value with the correct
+                                                        ///< number of components.
+        zes_vf_handle_t* phVFhandle                     ///< [in,out][optional][range(0, *pCount)] array of handle of components of
+                                                        ///< this type.
+                                                        ///< if count is less than the number of components of this type that are
+                                                        ///< available, then the driver shall only retrieve that number of
+                                                        ///< component handles.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_device_object_t*>( hDevice )->dditable;
+        auto pfnEnumEnabledVFExp = dditable->zes.DeviceExp.pfnEnumEnabledVFExp;
+        if( nullptr == pfnEnumEnabledVFExp )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hDevice = reinterpret_cast<zes_device_object_t*>( hDevice )->handle;
+
+        // forward to device-driver
+        result = pfnEnumEnabledVFExp( hDevice, pCount, phVFhandle );
+
+        if( ZE_RESULT_SUCCESS != result )
+            return result;
+
+        try
+        {
+            // convert driver handles to loader handles
+            for( size_t i = 0; ( nullptr != phVFhandle ) && ( i < *pCount ); ++i )
+                phVFhandle[ i ] = reinterpret_cast<zes_vf_handle_t>(
+                    context->zes_vf_factory.getInstance( phVFhandle[ i ], dditable ) );
+        }
+        catch( std::bad_alloc& )
+        {
+            result = ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY;
+        }
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesVFManagementGetVFCapabilitiesExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zesVFManagementGetVFCapabilitiesExp(
+        zes_vf_handle_t hVFhandle,                      ///< [in] Sysman handle for the VF component.
+        zes_vf_exp_capabilities_t* pCapability          ///< [in,out] Will contain VF capability.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_vf_object_t*>( hVFhandle )->dditable;
+        auto pfnGetVFCapabilitiesExp = dditable->zes.VFManagementExp.pfnGetVFCapabilitiesExp;
+        if( nullptr == pfnGetVFCapabilitiesExp )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hVFhandle = reinterpret_cast<zes_vf_object_t*>( hVFhandle )->handle;
+
+        // forward to device-driver
+        result = pfnGetVFCapabilitiesExp( hVFhandle, pCapability );
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesVFManagementGetVFMemoryUtilizationExp2
+    __zedlllocal ze_result_t ZE_APICALL
+    zesVFManagementGetVFMemoryUtilizationExp2(
+        zes_vf_handle_t hVFhandle,                      ///< [in] Sysman handle for the component.
+        uint32_t* pCount,                               ///< [in,out] Pointer to the number of VF memory stats descriptors.
+                                                        ///<  - if count is zero, the driver shall update the value with the total
+                                                        ///< number of memory stats available.
+                                                        ///<  - if count is greater than the total number of memory stats
+                                                        ///< available, the driver shall update the value with the correct number
+                                                        ///< of memory stats available.
+        zes_vf_util_mem_exp2_t* pMemUtil                ///< [in,out][optional][range(0, *pCount)] array of memory group activity counters.
+                                                        ///<  - if count is less than the total number of memory stats available,
+                                                        ///< then driver shall only retrieve that number of stats.
+                                                        ///<  - the implementation shall populate the vector pCount-1 number of VF
+                                                        ///< memory stats.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_vf_object_t*>( hVFhandle )->dditable;
+        auto pfnGetVFMemoryUtilizationExp2 = dditable->zes.VFManagement.pfnGetVFMemoryUtilizationExp2;
+        if( nullptr == pfnGetVFMemoryUtilizationExp2 )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hVFhandle = reinterpret_cast<zes_vf_object_t*>( hVFhandle )->handle;
+
+        // forward to device-driver
+        result = pfnGetVFMemoryUtilizationExp2( hVFhandle, pCount, pMemUtil );
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesVFManagementGetVFEngineUtilizationExp2
+    __zedlllocal ze_result_t ZE_APICALL
+    zesVFManagementGetVFEngineUtilizationExp2(
+        zes_vf_handle_t hVFhandle,                      ///< [in] Sysman handle for the component.
+        uint32_t* pCount,                               ///< [in,out] Pointer to the number of VF engine stats descriptors.
+                                                        ///<  - if count is zero, the driver shall update the value with the total
+                                                        ///< number of engine stats available.
+                                                        ///<  - if count is greater than the total number of engine stats
+                                                        ///< available, the driver shall update the value with the correct number
+                                                        ///< of engine stats available.
+        zes_vf_util_engine_exp2_t* pEngineUtil          ///< [in,out][optional][range(0, *pCount)] array of engine group activity counters.
+                                                        ///<  - if count is less than the total number of engine stats available,
+                                                        ///< then driver shall only retrieve that number of stats.
+                                                        ///<  - the implementation shall populate the vector pCount-1 number of VF
+                                                        ///< engine stats.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_vf_object_t*>( hVFhandle )->dditable;
+        auto pfnGetVFEngineUtilizationExp2 = dditable->zes.VFManagement.pfnGetVFEngineUtilizationExp2;
+        if( nullptr == pfnGetVFEngineUtilizationExp2 )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hVFhandle = reinterpret_cast<zes_vf_object_t*>( hVFhandle )->handle;
+
+        // forward to device-driver
+        result = pfnGetVFEngineUtilizationExp2( hVFhandle, pCount, pEngineUtil );
+
+        return result;
+    }
+
 } // namespace loader
 
 #if defined(__cplusplus)
@@ -4635,6 +4782,7 @@ zesGetDeviceExpProcAddrTable(
         if( ( loader::context->sysmanInstanceDrivers->size() > 1 ) || loader::context->forceIntercept )
         {
             // return pointers to loader's DDIs
+            pDdiTable->pfnEnumEnabledVFExp                         = loader::zesDeviceEnumEnabledVFExp;
             pDdiTable->pfnGetSubDevicePropertiesExp                = loader::zesDeviceGetSubDevicePropertiesExp;
             pDdiTable->pfnEnumActiveVFExp                          = loader::zesDeviceEnumActiveVFExp;
         }
@@ -6235,6 +6383,83 @@ zesGetTemperatureProcAddrTable(
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+/// @brief Exported function for filling application's VFManagement table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+ZE_DLLEXPORT ze_result_t ZE_APICALL
+zesGetVFManagementProcAddrTable(
+    ze_api_version_t version,                       ///< [in] API version requested
+    zes_vf_management_dditable_t* pDdiTable         ///< [in,out] pointer to table of DDI function pointers
+    )
+{
+    if( loader::context->sysmanInstanceDrivers->size() < 1 )
+
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+
+    if( nullptr == pDdiTable )
+        return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+    if( loader::context->version < version )
+        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+
+    ze_result_t result = ZE_RESULT_SUCCESS;
+
+    bool atLeastOneDriverValid = false;
+    // Load the device-driver DDI tables
+    for( auto& drv : *loader::context->sysmanInstanceDrivers )
+    {
+        if(drv.initStatus != ZE_RESULT_SUCCESS)
+            continue;
+        auto getTable = reinterpret_cast<zes_pfnGetVFManagementProcAddrTable_t>(
+            GET_FUNCTION_PTR( drv.handle, "zesGetVFManagementProcAddrTable") );
+        if(!getTable) 
+            continue; 
+        auto getTableResult = getTable( version, &drv.dditable.zes.VFManagement);
+        if(getTableResult == ZE_RESULT_SUCCESS) 
+            atLeastOneDriverValid = true;
+        else
+            drv.initStatus = getTableResult;
+    }
+
+    if(!atLeastOneDriverValid)
+        result = ZE_RESULT_ERROR_UNINITIALIZED;
+    else
+        result = ZE_RESULT_SUCCESS;
+
+    if( ZE_RESULT_SUCCESS == result )
+    {
+        if( ( loader::context->sysmanInstanceDrivers->size() > 1 ) || loader::context->forceIntercept )
+        {
+            // return pointers to loader's DDIs
+            pDdiTable->pfnGetVFMemoryUtilizationExp2               = loader::zesVFManagementGetVFMemoryUtilizationExp2;
+            pDdiTable->pfnGetVFEngineUtilizationExp2               = loader::zesVFManagementGetVFEngineUtilizationExp2;
+        }
+        else
+        {
+            // return pointers directly to driver's DDIs
+            *pDdiTable = loader::context->sysmanInstanceDrivers->front().dditable.zes.VFManagement;
+        }
+    }
+
+    // If the validation layer is enabled, then intercept the loader's DDIs
+    if(( ZE_RESULT_SUCCESS == result ) && ( nullptr != loader::context->validationLayer ))
+    {
+        auto getTable = reinterpret_cast<zes_pfnGetVFManagementProcAddrTable_t>(
+            GET_FUNCTION_PTR(loader::context->validationLayer, "zesGetVFManagementProcAddrTable") );
+        if(!getTable)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        result = getTable( version, pDdiTable );
+    }
+
+    return result;
+}
+
+///////////////////////////////////////////////////////////////////////////////
 /// @brief Exported function for filling application's VFManagementExp table
 ///        with current process' addresses
 ///
@@ -6279,6 +6504,7 @@ zesGetVFManagementExpProcAddrTable(
         if( ( loader::context->sysmanInstanceDrivers->size() > 1 ) || loader::context->forceIntercept )
         {
             // return pointers to loader's DDIs
+            pDdiTable->pfnGetVFCapabilitiesExp                     = loader::zesVFManagementGetVFCapabilitiesExp;
             pDdiTable->pfnGetVFPropertiesExp                       = loader::zesVFManagementGetVFPropertiesExp;
             pDdiTable->pfnGetVFMemoryUtilizationExp                = loader::zesVFManagementGetVFMemoryUtilizationExp;
             pDdiTable->pfnGetVFEngineUtilizationExp                = loader::zesVFManagementGetVFEngineUtilizationExp;

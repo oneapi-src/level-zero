@@ -5,7 +5,7 @@
  * SPDX-License-Identifier: MIT
  *
  * @file zes_api.h
- * @version v1.9-r1.9.3
+ * @version v1.11-r1.11.0
  *
  */
 #ifndef _ZES_API_H
@@ -158,6 +158,9 @@ typedef enum _zes_structure_type_t
     ZES_STRUCTURE_TYPE_VF_EXP_PROPERTIES = 0x00020005,                      ///< ::zes_vf_exp_properties_t
     ZES_STRUCTURE_TYPE_VF_UTIL_MEM_EXP = 0x00020006,                        ///< ::zes_vf_util_mem_exp_t
     ZES_STRUCTURE_TYPE_VF_UTIL_ENGINE_EXP = 0x00020007,                     ///< ::zes_vf_util_engine_exp_t
+    ZES_STRUCTURE_TYPE_VF_EXP_CAPABILITIES = 0x00020008,                    ///< ::zes_vf_exp_capabilities_t
+    ZES_STRUCTURE_TYPE_VF_UTIL_MEM_EXP2 = 0x00020009,                       ///< ::zes_vf_util_mem_exp2_t
+    ZES_STRUCTURE_TYPE_VF_UTIL_ENGINE_EXP2 = 0x00020010,                    ///< ::zes_vf_util_engine_exp2_t
     ZES_STRUCTURE_TYPE_FORCE_UINT32 = 0x7fffffff
 
 } zes_structure_type_t;
@@ -547,6 +550,18 @@ typedef struct _zes_vf_util_mem_exp_t zes_vf_util_mem_exp_t;
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief Forward-declare zes_vf_util_engine_exp_t
 typedef struct _zes_vf_util_engine_exp_t zes_vf_util_engine_exp_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Forward-declare zes_vf_exp_capabilities_t
+typedef struct _zes_vf_exp_capabilities_t zes_vf_exp_capabilities_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Forward-declare zes_vf_util_mem_exp2_t
+typedef struct _zes_vf_util_mem_exp2_t zes_vf_util_mem_exp2_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Forward-declare zes_vf_util_engine_exp2_t
+typedef struct _zes_vf_util_engine_exp2_t zes_vf_util_engine_exp2_t;
 
 
 #if !defined(__GNUC__)
@@ -6192,6 +6207,7 @@ typedef enum _zes_temp_sensors_t
     ZES_TEMP_SENSORS_MEMORY_MIN = 5,                                        ///< The minimum temperature across all sensors in the local device memory
     ZES_TEMP_SENSORS_GPU_BOARD = 6,                                         ///< The maximum temperature across all sensors in the GPU Board
     ZES_TEMP_SENSORS_GPU_BOARD_MIN = 7,                                     ///< The minimum temperature across all sensors in the GPU Board
+    ZES_TEMP_SENSORS_VOLTAGE_REGULATOR = 8,                                 ///< The maximum temperature across all sensors in the Voltage Regulator
     ZES_TEMP_SENSORS_FORCE_UINT32 = 0x7fffffff
 
 } zes_temp_sensors_t;
@@ -7052,14 +7068,16 @@ zesDriverGetDeviceByUuidExp(
 /// @brief Virtual Function Management Extension Version(s)
 typedef enum _zes_vf_management_exp_version_t
 {
-    ZES_VF_MANAGEMENT_EXP_VERSION_1_0 = ZE_MAKE_VERSION( 1, 0 ),            ///< version 1.0
-    ZES_VF_MANAGEMENT_EXP_VERSION_CURRENT = ZE_MAKE_VERSION( 1, 0 ),        ///< latest known version
+    ZES_VF_MANAGEMENT_EXP_VERSION_1_0 = ZE_MAKE_VERSION( 1, 0 ),            ///< version 1.0 (deprecated)
+    ZES_VF_MANAGEMENT_EXP_VERSION_1_1 = ZE_MAKE_VERSION( 1, 1 ),            ///< version 1.1 (deprecated)
+    ZES_VF_MANAGEMENT_EXP_VERSION_1_2 = ZE_MAKE_VERSION( 1, 2 ),            ///< version 1.2
+    ZES_VF_MANAGEMENT_EXP_VERSION_CURRENT = ZE_MAKE_VERSION( 1, 2 ),        ///< latest known version
     ZES_VF_MANAGEMENT_EXP_VERSION_FORCE_UINT32 = 0x7fffffff
 
 } zes_vf_management_exp_version_t;
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Virtual function memory types
+/// @brief Virtual function memory types (deprecated)
 typedef uint32_t zes_vf_info_mem_type_exp_flags_t;
 typedef enum _zes_vf_info_mem_type_exp_flag_t
 {
@@ -7070,7 +7088,7 @@ typedef enum _zes_vf_info_mem_type_exp_flag_t
 } zes_vf_info_mem_type_exp_flag_t;
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Virtual function utilization flag bit fields
+/// @brief Virtual function utilization flag bit fields (deprecated)
 typedef uint32_t zes_vf_info_util_exp_flags_t;
 typedef enum _zes_vf_info_util_exp_flag_t
 {
@@ -7083,7 +7101,7 @@ typedef enum _zes_vf_info_util_exp_flag_t
 } zes_vf_info_util_exp_flag_t;
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Virtual function management properties
+/// @brief Virtual function management properties (deprecated)
 typedef struct _zes_vf_exp_properties_t
 {
     zes_structure_type_t stype;                                             ///< [in] type of this structure
@@ -7097,7 +7115,7 @@ typedef struct _zes_vf_exp_properties_t
 } zes_vf_exp_properties_t;
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Provides memory utilization values for a virtual function
+/// @brief Provides memory utilization values for a virtual function (deprecated)
 typedef struct _zes_vf_util_mem_exp_t
 {
     zes_structure_type_t stype;                                             ///< [in] type of this structure
@@ -7111,7 +7129,7 @@ typedef struct _zes_vf_util_mem_exp_t
 } zes_vf_util_mem_exp_t;
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Provides engine utilization values for a virtual function
+/// @brief Provides engine utilization values for a virtual function (deprecated)
 typedef struct _zes_vf_util_engine_exp_t
 {
     zes_structure_type_t stype;                                             ///< [in] type of this structure
@@ -7125,9 +7143,55 @@ typedef struct _zes_vf_util_engine_exp_t
 } zes_vf_util_engine_exp_t;
 
 ///////////////////////////////////////////////////////////////////////////////
+/// @brief Virtual function management capabilities
+typedef struct _zes_vf_exp_capabilities_t
+{
+    zes_structure_type_t stype;                                             ///< [in] type of this structure
+    void* pNext;                                                            ///< [in,out][optional] must be null or a pointer to an extension-specific
+                                                                            ///< structure (i.e. contains stype and pNext).
+    zes_pci_address_t address;                                              ///< [out] Virtual function BDF address
+    uint32_t vfDeviceMemSize;                                               ///< [out] Virtual function memory size in bytes
+    uint32_t vfID;                                                          ///< [out] Virtual Function ID
+
+} zes_vf_exp_capabilities_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Provides memory utilization values for a virtual function
+typedef struct _zes_vf_util_mem_exp2_t
+{
+    zes_structure_type_t stype;                                             ///< [in] type of this structure
+    const void* pNext;                                                      ///< [in][optional] must be null or a pointer to an extension-specific
+                                                                            ///< structure (i.e. contains stype and pNext).
+    zes_mem_loc_t vfMemLocation;                                            ///< [out] Location of this memory (system, device)
+    uint64_t vfMemUtilized;                                                 ///< [out] Free memory size in bytes.
+
+} zes_vf_util_mem_exp2_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Provides engine utilization values for a virtual function
+/// 
+/// @details
+///     - Percent utilization is calculated by taking two snapshots (s1, s2) and
+///       using the equation: %util = (s2.activeCounterValue -
+///       s1.activeCounterValue) / (s2.samplingCounterValue -
+///       s1.samplingCounterValue)
+typedef struct _zes_vf_util_engine_exp2_t
+{
+    zes_structure_type_t stype;                                             ///< [in] type of this structure
+    const void* pNext;                                                      ///< [in][optional] must be null or a pointer to an extension-specific
+                                                                            ///< structure (i.e. contains stype and pNext).
+    zes_engine_group_t vfEngineType;                                        ///< [out] The engine group.
+    uint64_t activeCounterValue;                                            ///< [out] Represents active counter.
+    uint64_t samplingCounterValue;                                          ///< [out] Represents counter value when activeCounterValue was sampled.
+                                                                            ///< Refer to the formulae above for calculating the utilization percent
+
+} zes_vf_util_engine_exp2_t;
+
+///////////////////////////////////////////////////////////////////////////////
 /// @brief Get handle of virtual function modules
 /// 
 /// @details
+///     - [DEPRECATED] No longer supported. Use ::zesDeviceEnumEnabledVFExp.
 ///     - The application may call this function from simultaneous threads.
 ///     - The implementation of this function should be lock-free.
 /// 
@@ -7161,6 +7225,8 @@ zesDeviceEnumActiveVFExp(
 /// @brief Get virtual function management properties
 /// 
 /// @details
+///     - [DEPRECATED] No longer supported. Use
+///       ::zesVFManagementGetVFCapabilitiesExp.
 ///     - The application may call this function from simultaneous threads.
 ///     - The implementation of this function should be lock-free.
 /// 
@@ -7185,6 +7251,8 @@ zesVFManagementGetVFPropertiesExp(
 ///        with Virtual Function (VF)
 /// 
 /// @details
+///     - [DEPRECATED] No longer supported. Use
+///       ::zesVFManagementGetVFMemoryUtilizationExp2.
 ///     - The application may call this function from simultaneous threads.
 ///     - The implementation of this function should be lock-free.
 /// 
@@ -7221,6 +7289,8 @@ zesVFManagementGetVFMemoryUtilizationExp(
 ///        with Virtual Function (VF)
 /// 
 /// @details
+///     - [DEPRECATED] No longer supported. Use
+///       ::zesVFManagementGetVFEngineUtilizationExp2.
 ///     - The application may call this function from simultaneous threads.
 ///     - The implementation of this function should be lock-free.
 /// 
@@ -7257,6 +7327,7 @@ zesVFManagementGetVFEngineUtilizationExp(
 ///        Virtual Function (VF)
 /// 
 /// @details
+///     - [DEPRECATED] No longer supported.
 ///     - The application may call this function from simultaneous threads.
 ///     - The implementation of this function should be lock-free.
 /// 
@@ -7283,6 +7354,7 @@ zesVFManagementSetVFTelemetryModeExp(
 ///        telemetry associated with Virtual Function (VF)
 /// 
 /// @details
+///     - [DEPRECATED] No longer supported.
 ///     - The application may call this function from simultaneous threads.
 ///     - The implementation of this function should be lock-free.
 /// 
@@ -7302,6 +7374,132 @@ zesVFManagementSetVFTelemetrySamplingIntervalExp(
     zes_vf_info_util_exp_flags_t flag,                                      ///< [in] utilization flags to set sampling interval. May be 0 or a valid
                                                                             ///< combination of ::zes_vf_info_util_exp_flag_t.
     uint64_t samplingInterval                                               ///< [in] Sampling interval value.
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Get handle of virtual function modules
+/// 
+/// @details
+///     - The application may call this function from simultaneous threads.
+///     - The implementation of this function should be lock-free.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hDevice`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == pCount`
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zesDeviceEnumEnabledVFExp(
+    zes_device_handle_t hDevice,                                            ///< [in] Sysman handle of the device.
+    uint32_t* pCount,                                                       ///< [in,out] pointer to the number of components of this type.
+                                                                            ///< if count is zero, then the driver shall update the value with the
+                                                                            ///< total number of components of this type that are available.
+                                                                            ///< if count is greater than the number of components of this type that
+                                                                            ///< are available, then the driver shall update the value with the correct
+                                                                            ///< number of components.
+    zes_vf_handle_t* phVFhandle                                             ///< [in,out][optional][range(0, *pCount)] array of handle of components of
+                                                                            ///< this type.
+                                                                            ///< if count is less than the number of components of this type that are
+                                                                            ///< available, then the driver shall only retrieve that number of
+                                                                            ///< component handles.
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Get virtual function management capabilities
+/// 
+/// @details
+///     - The application may call this function from simultaneous threads.
+///     - The implementation of this function should be lock-free.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hVFhandle`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == pCapability`
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zesVFManagementGetVFCapabilitiesExp(
+    zes_vf_handle_t hVFhandle,                                              ///< [in] Sysman handle for the VF component.
+    zes_vf_exp_capabilities_t* pCapability                                  ///< [in,out] Will contain VF capability.
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Get memory activity stats for each available memory types associated
+///        with Virtual Function (VF)
+/// 
+/// @details
+///     - The application may call this function from simultaneous threads.
+///     - The implementation of this function should be lock-free.
+///     - If VF is disable/pause/not active, utilization will give zero value.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hVFhandle`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == pCount`
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zesVFManagementGetVFMemoryUtilizationExp2(
+    zes_vf_handle_t hVFhandle,                                              ///< [in] Sysman handle for the component.
+    uint32_t* pCount,                                                       ///< [in,out] Pointer to the number of VF memory stats descriptors.
+                                                                            ///<  - if count is zero, the driver shall update the value with the total
+                                                                            ///< number of memory stats available.
+                                                                            ///<  - if count is greater than the total number of memory stats
+                                                                            ///< available, the driver shall update the value with the correct number
+                                                                            ///< of memory stats available.
+    zes_vf_util_mem_exp2_t* pMemUtil                                        ///< [in,out][optional][range(0, *pCount)] array of memory group activity counters.
+                                                                            ///<  - if count is less than the total number of memory stats available,
+                                                                            ///< then driver shall only retrieve that number of stats.
+                                                                            ///<  - the implementation shall populate the vector pCount-1 number of VF
+                                                                            ///< memory stats.
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Get engine activity stats for each available engine group associated
+///        with Virtual Function (VF)
+/// 
+/// @details
+///     - The application may call this function from simultaneous threads.
+///     - The implementation of this function should be lock-free.
+///     - If VF is disable/pause/not active, utilization will give zero value.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hVFhandle`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == pCount`
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zesVFManagementGetVFEngineUtilizationExp2(
+    zes_vf_handle_t hVFhandle,                                              ///< [in] Sysman handle for the component.
+    uint32_t* pCount,                                                       ///< [in,out] Pointer to the number of VF engine stats descriptors.
+                                                                            ///<  - if count is zero, the driver shall update the value with the total
+                                                                            ///< number of engine stats available.
+                                                                            ///<  - if count is greater than the total number of engine stats
+                                                                            ///< available, the driver shall update the value with the correct number
+                                                                            ///< of engine stats available.
+    zes_vf_util_engine_exp2_t* pEngineUtil                                  ///< [in,out][optional][range(0, *pCount)] array of engine group activity counters.
+                                                                            ///<  - if count is less than the total number of engine stats available,
+                                                                            ///< then driver shall only retrieve that number of stats.
+                                                                            ///<  - the implementation shall populate the vector pCount-1 number of VF
+                                                                            ///< engine stats.
     );
 
 #if !defined(__GNUC__)

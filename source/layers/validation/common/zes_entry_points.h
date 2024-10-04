@@ -305,6 +305,14 @@ public:
     virtual ze_result_t zesVFManagementSetVFTelemetryModeExpEpilogue( zes_vf_handle_t hVFhandle, zes_vf_info_util_exp_flags_t flags, ze_bool_t enable ) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zesVFManagementSetVFTelemetrySamplingIntervalExpPrologue( zes_vf_handle_t hVFhandle, zes_vf_info_util_exp_flags_t flag, uint64_t samplingInterval ) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zesVFManagementSetVFTelemetrySamplingIntervalExpEpilogue( zes_vf_handle_t hVFhandle, zes_vf_info_util_exp_flags_t flag, uint64_t samplingInterval ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zesDeviceEnumEnabledVFExpPrologue( zes_device_handle_t hDevice, uint32_t* pCount, zes_vf_handle_t* phVFhandle ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zesDeviceEnumEnabledVFExpEpilogue( zes_device_handle_t hDevice, uint32_t* pCount, zes_vf_handle_t* phVFhandle ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zesVFManagementGetVFCapabilitiesExpPrologue( zes_vf_handle_t hVFhandle, zes_vf_exp_capabilities_t* pCapability ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zesVFManagementGetVFCapabilitiesExpEpilogue( zes_vf_handle_t hVFhandle, zes_vf_exp_capabilities_t* pCapability ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zesVFManagementGetVFMemoryUtilizationExp2Prologue( zes_vf_handle_t hVFhandle, uint32_t* pCount, zes_vf_util_mem_exp2_t* pMemUtil ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zesVFManagementGetVFMemoryUtilizationExp2Epilogue( zes_vf_handle_t hVFhandle, uint32_t* pCount, zes_vf_util_mem_exp2_t* pMemUtil ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zesVFManagementGetVFEngineUtilizationExp2Prologue( zes_vf_handle_t hVFhandle, uint32_t* pCount, zes_vf_util_engine_exp2_t* pEngineUtil ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zesVFManagementGetVFEngineUtilizationExp2Epilogue( zes_vf_handle_t hVFhandle, uint32_t* pCount, zes_vf_util_engine_exp2_t* pEngineUtil ) {return ZE_RESULT_SUCCESS;}
     virtual ~ZESValidationEntryPoints() {}
 };
 }

@@ -82,6 +82,86 @@ namespace loader
                 result = drv.dditable.ze.Driver.pfnGet( &library_driver_handle_count, &phDrivers[ total_driver_handle_count ] );
                 if( ZE_RESULT_SUCCESS != result ) break;
 
+                drv.driverInuse = true;
+
+                try
+                {
+                    for( uint32_t i = 0; i < library_driver_handle_count; ++i ) {
+                        uint32_t driver_index = total_driver_handle_count + i;
+                        phDrivers[ driver_index ] = reinterpret_cast<ze_driver_handle_t>(
+                            context->ze_driver_factory.getInstance( phDrivers[ driver_index ], &drv.dditable ) );
+                    }
+                }
+                catch( std::bad_alloc& )
+                {
+                    result = ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY;
+                }
+            }
+
+            total_driver_handle_count += library_driver_handle_count;
+        }
+
+        // If the last driver get failed, but at least one driver succeeded, then return success with total count.
+        if( ZE_RESULT_SUCCESS == result || total_driver_handle_count > 0)
+            *pCount = total_driver_handle_count;
+        if (total_driver_handle_count > 0) {
+            result = ZE_RESULT_SUCCESS;
+        }
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeInitDrivers
+    __zedlllocal ze_result_t ZE_APICALL
+    zeInitDrivers(
+        uint32_t* pCount,                               ///< [in,out] pointer to the number of driver instances.
+                                                        ///< if count is zero, then the loader shall update the value with the
+                                                        ///< total number of drivers available.
+                                                        ///< if count is greater than the number of drivers available, then the
+                                                        ///< loader shall update the value with the correct number of drivers available.
+        ze_driver_handle_t* phDrivers,                  ///< [in,out][optional][range(0, *pCount)] array of driver instance handles.
+                                                        ///< if count is less than the number of drivers available, then the loader
+                                                        ///< shall only retrieve that number of drivers.
+        ze_init_driver_type_desc_t* desc                ///< [in] descriptor containing the driver type initialization details
+                                                        ///< including ::ze_init_driver_type_flag_t combinations.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        uint32_t total_driver_handle_count = 0;
+
+        for( auto& drv : loader::context->zeDrivers )
+        {
+            if (!drv.dditable.ze.Global.pfnInitDrivers) {
+                drv.initStatus = ZE_RESULT_ERROR_UNINITIALIZED;
+                continue;
+            }
+
+            if( ( 0 < *pCount ) && ( *pCount == total_driver_handle_count))
+                break;
+
+            uint32_t library_driver_handle_count = 0;
+
+            result = drv.dditable.ze.Global.pfnInitDrivers( &library_driver_handle_count, nullptr, desc );
+            if( ZE_RESULT_SUCCESS != result ) {
+                // If Get Drivers fails with Uninitialized, then update the driver init status to prevent reporting this driver in the next get call.
+                if (ZE_RESULT_ERROR_UNINITIALIZED == result) {
+                    drv.initStatus = result;
+                }
+                continue;
+            }
+
+            if( nullptr != phDrivers && *pCount !=0)
+            {
+                if( total_driver_handle_count + library_driver_handle_count > *pCount) {
+                    library_driver_handle_count = *pCount - total_driver_handle_count;
+                }
+                result = drv.dditable.ze.Global.pfnInitDrivers( &library_driver_handle_count, &phDrivers[ total_driver_handle_count ], desc );
+                if( ZE_RESULT_SUCCESS != result ) break;
+
+                drv.driverInuse = true;
+
                 try
                 {
                     for( uint32_t i = 0; i < library_driver_handle_count; ++i ) {
@@ -743,9 +823,9 @@ namespace loader
     zeDeviceGetGlobalTimestamps(
         ze_device_handle_t hDevice,                     ///< [in] handle of the device
         uint64_t* hostTimestamp,                        ///< [out] value of the Host's global timestamp that correlates with the
-                                                        ///< Device's global timestamp value
+                                                        ///< Device's global timestamp value.
         uint64_t* deviceTimestamp                       ///< [out] value of the Device's global timestamp that correlates with the
-                                                        ///< Host's global timestamp value
+                                                        ///< Host's global timestamp value.
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
@@ -4560,7 +4640,8 @@ namespace loader
     __zedlllocal ze_result_t ZE_APICALL
     zePhysicalMemCreate(
         ze_context_handle_t hContext,                   ///< [in] handle of the context object
-        ze_device_handle_t hDevice,                     ///< [in] handle of the device object
+        ze_device_handle_t hDevice,                     ///< [in] handle of the device object, can be `nullptr` if creating
+                                                        ///< physical host memory.
         ze_physical_mem_desc_t* desc,                   ///< [in] pointer to physical memory descriptor.
         ze_physical_mem_handle_t* phPhysicalMemory      ///< [out] pointer to handle of physical memory object created
         )
@@ -4774,6 +4855,191 @@ namespace loader
 
         // forward to device-driver
         result = pfnSetGlobalOffsetExp( hKernel, offsetX, offsetY, offsetZ );
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeCommandListGetNextCommandIdExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zeCommandListGetNextCommandIdExp(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
+        const ze_mutable_command_id_exp_desc_t* desc,   ///< [in] pointer to mutable command identifier descriptor
+        uint64_t* pCommandId                            ///< [out] pointer to mutable command identifier to be written
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<ze_command_list_object_t*>( hCommandList )->dditable;
+        auto pfnGetNextCommandIdExp = dditable->ze.CommandListExp.pfnGetNextCommandIdExp;
+        if( nullptr == pfnGetNextCommandIdExp )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hCommandList = reinterpret_cast<ze_command_list_object_t*>( hCommandList )->handle;
+
+        // forward to device-driver
+        result = pfnGetNextCommandIdExp( hCommandList, desc, pCommandId );
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeCommandListGetNextCommandIdWithKernelsExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zeCommandListGetNextCommandIdWithKernelsExp(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
+        const ze_mutable_command_id_exp_desc_t* desc,   ///< [in][out] pointer to mutable command identifier descriptor
+        uint32_t numKernels,                            ///< [in][optional] number of entries on phKernels list
+        ze_kernel_handle_t* phKernels,                  ///< [in][optional][range(0, numKernels)] list of kernels that user can
+                                                        ///< switch between using ::zeCommandListUpdateMutableCommandKernelsExp
+                                                        ///< call
+        uint64_t* pCommandId                            ///< [out] pointer to mutable command identifier to be written
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<ze_command_list_object_t*>( hCommandList )->dditable;
+        auto pfnGetNextCommandIdWithKernelsExp = dditable->ze.CommandListExp.pfnGetNextCommandIdWithKernelsExp;
+        if( nullptr == pfnGetNextCommandIdWithKernelsExp )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hCommandList = reinterpret_cast<ze_command_list_object_t*>( hCommandList )->handle;
+
+        // convert loader handles to driver handles
+        auto phKernelsLocal = new ze_kernel_handle_t [numKernels];
+        for( size_t i = 0; ( nullptr != phKernels ) && ( i < numKernels ); ++i )
+            phKernelsLocal[ i ] = reinterpret_cast<ze_kernel_object_t*>( phKernels[ i ] )->handle;
+
+        // forward to device-driver
+        result = pfnGetNextCommandIdWithKernelsExp( hCommandList, desc, numKernels, phKernelsLocal, pCommandId );
+        delete []phKernelsLocal;
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeCommandListUpdateMutableCommandsExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zeCommandListUpdateMutableCommandsExp(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
+        const ze_mutable_commands_exp_desc_t* desc      ///< [in] pointer to mutable commands descriptor; multiple descriptors may
+                                                        ///< be chained via `pNext` member
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<ze_command_list_object_t*>( hCommandList )->dditable;
+        auto pfnUpdateMutableCommandsExp = dditable->ze.CommandListExp.pfnUpdateMutableCommandsExp;
+        if( nullptr == pfnUpdateMutableCommandsExp )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hCommandList = reinterpret_cast<ze_command_list_object_t*>( hCommandList )->handle;
+
+        // forward to device-driver
+        result = pfnUpdateMutableCommandsExp( hCommandList, desc );
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeCommandListUpdateMutableCommandSignalEventExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zeCommandListUpdateMutableCommandSignalEventExp(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
+        uint64_t commandId,                             ///< [in] command identifier
+        ze_event_handle_t hSignalEvent                  ///< [in][optional] handle of the event to signal on completion
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<ze_command_list_object_t*>( hCommandList )->dditable;
+        auto pfnUpdateMutableCommandSignalEventExp = dditable->ze.CommandListExp.pfnUpdateMutableCommandSignalEventExp;
+        if( nullptr == pfnUpdateMutableCommandSignalEventExp )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hCommandList = reinterpret_cast<ze_command_list_object_t*>( hCommandList )->handle;
+
+        // convert loader handle to driver handle
+        hSignalEvent = ( hSignalEvent ) ? reinterpret_cast<ze_event_object_t*>( hSignalEvent )->handle : nullptr;
+
+        // forward to device-driver
+        result = pfnUpdateMutableCommandSignalEventExp( hCommandList, commandId, hSignalEvent );
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeCommandListUpdateMutableCommandWaitEventsExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zeCommandListUpdateMutableCommandWaitEventsExp(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
+        uint64_t commandId,                             ///< [in] command identifier
+        uint32_t numWaitEvents,                         ///< [in][optional] the number of wait events
+        ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
+                                                        ///< on before launching
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<ze_command_list_object_t*>( hCommandList )->dditable;
+        auto pfnUpdateMutableCommandWaitEventsExp = dditable->ze.CommandListExp.pfnUpdateMutableCommandWaitEventsExp;
+        if( nullptr == pfnUpdateMutableCommandWaitEventsExp )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hCommandList = reinterpret_cast<ze_command_list_object_t*>( hCommandList )->handle;
+
+        // convert loader handles to driver handles
+        auto phWaitEventsLocal = new ze_event_handle_t [numWaitEvents];
+        for( size_t i = 0; ( nullptr != phWaitEvents ) && ( i < numWaitEvents ); ++i )
+            phWaitEventsLocal[ i ] = reinterpret_cast<ze_event_object_t*>( phWaitEvents[ i ] )->handle;
+
+        // forward to device-driver
+        result = pfnUpdateMutableCommandWaitEventsExp( hCommandList, commandId, numWaitEvents, phWaitEventsLocal );
+        delete []phWaitEventsLocal;
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeCommandListUpdateMutableCommandKernelsExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zeCommandListUpdateMutableCommandKernelsExp(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
+        uint32_t numKernels,                            ///< [in] the number of kernels to update
+        uint64_t* pCommandId,                           ///< [in][range(0, numKernels)] command identifier
+        ze_kernel_handle_t* phKernels                   ///< [in][range(0, numKernels)] handle of the kernel for a command
+                                                        ///< identifier to switch to
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<ze_command_list_object_t*>( hCommandList )->dditable;
+        auto pfnUpdateMutableCommandKernelsExp = dditable->ze.CommandListExp.pfnUpdateMutableCommandKernelsExp;
+        if( nullptr == pfnUpdateMutableCommandKernelsExp )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hCommandList = reinterpret_cast<ze_command_list_object_t*>( hCommandList )->handle;
+
+        // convert loader handles to driver handles
+        auto phKernelsLocal = new ze_kernel_handle_t [numKernels];
+        for( size_t i = 0; ( nullptr != phKernels ) && ( i < numKernels ); ++i )
+            phKernelsLocal[ i ] = reinterpret_cast<ze_kernel_object_t*>( phKernels[ i ] )->handle;
+
+        // forward to device-driver
+        result = pfnUpdateMutableCommandKernelsExp( hCommandList, numKernels, pCommandId, phKernelsLocal );
+        delete []phKernelsLocal;
 
         return result;
     }
@@ -6039,121 +6305,6 @@ namespace loader
         return result;
     }
 
-    ///////////////////////////////////////////////////////////////////////////////
-    /// @brief Intercept function for zeCommandListGetNextCommandIdExp
-    __zedlllocal ze_result_t ZE_APICALL
-    zeCommandListGetNextCommandIdExp(
-        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
-        const ze_mutable_command_id_exp_desc_t* desc,   ///< [in] pointer to mutable command identifier descriptor
-        uint64_t* pCommandId                            ///< [out] pointer to mutable command identifier to be written
-        )
-    {
-        ze_result_t result = ZE_RESULT_SUCCESS;
-
-        // extract driver's function pointer table
-        auto dditable = reinterpret_cast<ze_command_list_object_t*>( hCommandList )->dditable;
-        auto pfnGetNextCommandIdExp = dditable->ze.CommandListExp.pfnGetNextCommandIdExp;
-        if( nullptr == pfnGetNextCommandIdExp )
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-
-        // convert loader handle to driver handle
-        hCommandList = reinterpret_cast<ze_command_list_object_t*>( hCommandList )->handle;
-
-        // forward to device-driver
-        result = pfnGetNextCommandIdExp( hCommandList, desc, pCommandId );
-
-        return result;
-    }
-
-    ///////////////////////////////////////////////////////////////////////////////
-    /// @brief Intercept function for zeCommandListUpdateMutableCommandsExp
-    __zedlllocal ze_result_t ZE_APICALL
-    zeCommandListUpdateMutableCommandsExp(
-        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
-        const ze_mutable_commands_exp_desc_t* desc      ///< [in] pointer to mutable commands descriptor; multiple descriptors may
-                                                        ///< be chained via `pNext` member
-        )
-    {
-        ze_result_t result = ZE_RESULT_SUCCESS;
-
-        // extract driver's function pointer table
-        auto dditable = reinterpret_cast<ze_command_list_object_t*>( hCommandList )->dditable;
-        auto pfnUpdateMutableCommandsExp = dditable->ze.CommandListExp.pfnUpdateMutableCommandsExp;
-        if( nullptr == pfnUpdateMutableCommandsExp )
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-
-        // convert loader handle to driver handle
-        hCommandList = reinterpret_cast<ze_command_list_object_t*>( hCommandList )->handle;
-
-        // forward to device-driver
-        result = pfnUpdateMutableCommandsExp( hCommandList, desc );
-
-        return result;
-    }
-
-    ///////////////////////////////////////////////////////////////////////////////
-    /// @brief Intercept function for zeCommandListUpdateMutableCommandSignalEventExp
-    __zedlllocal ze_result_t ZE_APICALL
-    zeCommandListUpdateMutableCommandSignalEventExp(
-        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
-        uint64_t commandId,                             ///< [in] command identifier
-        ze_event_handle_t hSignalEvent                  ///< [in][optional] handle of the event to signal on completion
-        )
-    {
-        ze_result_t result = ZE_RESULT_SUCCESS;
-
-        // extract driver's function pointer table
-        auto dditable = reinterpret_cast<ze_command_list_object_t*>( hCommandList )->dditable;
-        auto pfnUpdateMutableCommandSignalEventExp = dditable->ze.CommandListExp.pfnUpdateMutableCommandSignalEventExp;
-        if( nullptr == pfnUpdateMutableCommandSignalEventExp )
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-
-        // convert loader handle to driver handle
-        hCommandList = reinterpret_cast<ze_command_list_object_t*>( hCommandList )->handle;
-
-        // convert loader handle to driver handle
-        hSignalEvent = ( hSignalEvent ) ? reinterpret_cast<ze_event_object_t*>( hSignalEvent )->handle : nullptr;
-
-        // forward to device-driver
-        result = pfnUpdateMutableCommandSignalEventExp( hCommandList, commandId, hSignalEvent );
-
-        return result;
-    }
-
-    ///////////////////////////////////////////////////////////////////////////////
-    /// @brief Intercept function for zeCommandListUpdateMutableCommandWaitEventsExp
-    __zedlllocal ze_result_t ZE_APICALL
-    zeCommandListUpdateMutableCommandWaitEventsExp(
-        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
-        uint64_t commandId,                             ///< [in] command identifier
-        uint32_t numWaitEvents,                         ///< [in][optional] the number of wait events
-        ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
-                                                        ///< on before launching
-        )
-    {
-        ze_result_t result = ZE_RESULT_SUCCESS;
-
-        // extract driver's function pointer table
-        auto dditable = reinterpret_cast<ze_command_list_object_t*>( hCommandList )->dditable;
-        auto pfnUpdateMutableCommandWaitEventsExp = dditable->ze.CommandListExp.pfnUpdateMutableCommandWaitEventsExp;
-        if( nullptr == pfnUpdateMutableCommandWaitEventsExp )
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-
-        // convert loader handle to driver handle
-        hCommandList = reinterpret_cast<ze_command_list_object_t*>( hCommandList )->handle;
-
-        // convert loader handles to driver handles
-        auto phWaitEventsLocal = new ze_event_handle_t [numWaitEvents];
-        for( size_t i = 0; ( nullptr != phWaitEvents ) && ( i < numWaitEvents ); ++i )
-            phWaitEventsLocal[ i ] = reinterpret_cast<ze_event_object_t*>( phWaitEvents[ i ] )->handle;
-
-        // forward to device-driver
-        result = pfnUpdateMutableCommandWaitEventsExp( hCommandList, commandId, numWaitEvents, phWaitEventsLocal );
-        delete []phWaitEventsLocal;
-
-        return result;
-    }
-
 } // namespace loader
 
 #if defined(__cplusplus)
@@ -6202,6 +6353,9 @@ zeGetGlobalProcAddrTable(
             atLeastOneDriverValid = true;
         else
             drv.initStatus = getTableResult;
+        if (drv.dditable.ze.Global.pfnInitDrivers) {
+            loader::context->initDriversSupport = true;
+        }
     }
 
     if(!atLeastOneDriverValid)
@@ -6215,6 +6369,7 @@ zeGetGlobalProcAddrTable(
         {
             // return pointers to loader's DDIs
             pDdiTable->pfnInit                                     = loader::zeInit;
+            pDdiTable->pfnInitDrivers                              = loader::zeInitDrivers;
         }
         else
         {
@@ -7165,12 +7320,14 @@ zeGetCommandListExpProcAddrTable(
         if( ( loader::context->zeDrivers.size() > 1 ) || loader::context->forceIntercept )
         {
             // return pointers to loader's DDIs
-            pDdiTable->pfnCreateCloneExp                           = loader::zeCommandListCreateCloneExp;
-            pDdiTable->pfnImmediateAppendCommandListsExp           = loader::zeCommandListImmediateAppendCommandListsExp;
-            pDdiTable->pfnGetNextCommandIdExp                      = loader::zeCommandListGetNextCommandIdExp;
+            pDdiTable->pfnGetNextCommandIdWithKernelsExp           = loader::zeCommandListGetNextCommandIdWithKernelsExp;
             pDdiTable->pfnUpdateMutableCommandsExp                 = loader::zeCommandListUpdateMutableCommandsExp;
             pDdiTable->pfnUpdateMutableCommandSignalEventExp       = loader::zeCommandListUpdateMutableCommandSignalEventExp;
+            pDdiTable->pfnUpdateMutableCommandKernelsExp           = loader::zeCommandListUpdateMutableCommandKernelsExp;
+            pDdiTable->pfnCreateCloneExp                           = loader::zeCommandListCreateCloneExp;
+            pDdiTable->pfnGetNextCommandIdExp                      = loader::zeCommandListGetNextCommandIdExp;
             pDdiTable->pfnUpdateMutableCommandWaitEventsExp        = loader::zeCommandListUpdateMutableCommandWaitEventsExp;
+            pDdiTable->pfnImmediateAppendCommandListsExp           = loader::zeCommandListImmediateAppendCommandListsExp;
         }
         else
         {

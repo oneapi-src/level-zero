@@ -1,5 +1,10 @@
 # Level zero loader changelog
 
+## v1.18.0
+* v1.11 Spec Changes for the L0 Loader
+* Wrap linker flags on Windows for IntelLLVM
+* Ensure validation_layer::context has init before usage
+* Replace exception with error string return in zello_log.h
 ## v1.17.45
 * windows: do not exclude DN_NEED_RESTART drivers if LevelZeroStagedDriverPath is set
 ## v1.17.44

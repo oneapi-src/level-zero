@@ -35,7 +35,7 @@ namespace ze_lib
     };
 
     //////////////////////////////////////////////////////////////////////////
-    __zedlllocal ze_result_t context_t::Init(ze_init_flags_t flags, bool sysmanOnly)
+    __zedlllocal ze_result_t context_t::Init(ze_init_flags_t flags, bool sysmanOnly, ze_init_driver_type_desc_t* desc)
     {
         ze_result_t result;
 #ifdef DYNAMIC_LOAD_LOADER
@@ -114,7 +114,7 @@ namespace ze_lib
             // Check which drivers support the ze_driver_flag_t specified
             // No need to check if only initializing sysman
             bool requireDdiReinit = false;
-            result = zelLoaderDriverCheck(flags, &ze_lib::context->initialzeDdiTable.Global, &ze_lib::context->initialzesDdiTable.Global, &requireDdiReinit, sysmanOnly);
+            result = zelLoaderDriverCheck(flags, desc, &ze_lib::context->initialzeDdiTable.Global, &ze_lib::context->initialzesDdiTable.Global, &requireDdiReinit, sysmanOnly);
             // If a driver was removed from the driver list, then the ddi tables need to be reinit to allow for passthru directly to the driver.
             if (requireDdiReinit) {
                 // If a user has already called the core apis, then ddi table reinit is not possible due to handles already being read by the user.

@@ -161,6 +161,10 @@ namespace validation_layer
         ze_result_t zesVFManagementGetVFEngineUtilizationExpPrologue( zes_vf_handle_t hVFhandle, uint32_t* pCount, zes_vf_util_engine_exp_t* pEngineUtil ) override;
         ze_result_t zesVFManagementSetVFTelemetryModeExpPrologue( zes_vf_handle_t hVFhandle, zes_vf_info_util_exp_flags_t flags, ze_bool_t enable ) override;
         ze_result_t zesVFManagementSetVFTelemetrySamplingIntervalExpPrologue( zes_vf_handle_t hVFhandle, zes_vf_info_util_exp_flags_t flag, uint64_t samplingInterval ) override;
+        ze_result_t zesDeviceEnumEnabledVFExpPrologue( zes_device_handle_t hDevice, uint32_t* pCount, zes_vf_handle_t* phVFhandle ) override;
+        ze_result_t zesVFManagementGetVFCapabilitiesExpPrologue( zes_vf_handle_t hVFhandle, zes_vf_exp_capabilities_t* pCapability ) override;
+        ze_result_t zesVFManagementGetVFMemoryUtilizationExp2Prologue( zes_vf_handle_t hVFhandle, uint32_t* pCount, zes_vf_util_mem_exp2_t* pMemUtil ) override;
+        ze_result_t zesVFManagementGetVFEngineUtilizationExp2Prologue( zes_vf_handle_t hVFhandle, uint32_t* pCount, zes_vf_util_engine_exp2_t* pEngineUtil ) override;
     };
 
 }
