@@ -1,5 +1,7 @@
 # Level zero loader changelog
 
+## v1.18.1
+* Fix check for new ddi table in 1.11 and fix space in driver count check.
 ## v1.18.0
 * v1.11 Spec Changes for the L0 Loader
 * Wrap linker flags on Windows for IntelLLVM
