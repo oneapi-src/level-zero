@@ -1937,4 +1937,4 @@ Public:
 """
 def isNewProcTable(tableName):
 
-    return tableName in ["zesGetGlobalProcAddrTable","zesGetOverclockProcAddrTable"]
+    return tableName in ["zesGetGlobalProcAddrTable","zesGetOverclockProcAddrTable","zesGetVFManagementProcAddrTable"]

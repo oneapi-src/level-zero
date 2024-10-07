@@ -6326,9 +6326,9 @@ zeGetGlobalProcAddrTable(
     ze_global_dditable_t* pDdiTable                 ///< [in,out] pointer to table of DDI function pointers
     )
 {
-    if( loader::context->zeDrivers.size() < 1 )
-
+    if( loader::context->zeDrivers.size() < 1 ) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
 
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
@@ -6422,9 +6422,9 @@ zeGetRTASBuilderExpProcAddrTable(
     ze_rtas_builder_exp_dditable_t* pDdiTable       ///< [in,out] pointer to table of DDI function pointers
     )
 {
-    if( loader::context->zeDrivers.size() < 1 )
-
+    if( loader::context->zeDrivers.size() < 1 ) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
 
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
@@ -6508,9 +6508,9 @@ zeGetRTASParallelOperationExpProcAddrTable(
     ze_rtas_parallel_operation_exp_dditable_t* pDdiTable///< [in,out] pointer to table of DDI function pointers
     )
 {
-    if( loader::context->zeDrivers.size() < 1 )
-
+    if( loader::context->zeDrivers.size() < 1 ) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
 
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
@@ -6594,9 +6594,9 @@ zeGetDriverProcAddrTable(
     ze_driver_dditable_t* pDdiTable                 ///< [in,out] pointer to table of DDI function pointers
     )
 {
-    if( loader::context->zeDrivers.size() < 1 )
-
+    if( loader::context->zeDrivers.size() < 1 ) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
 
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
@@ -6692,9 +6692,9 @@ zeGetDriverExpProcAddrTable(
     ze_driver_exp_dditable_t* pDdiTable             ///< [in,out] pointer to table of DDI function pointers
     )
 {
-    if( loader::context->zeDrivers.size() < 1 )
-
+    if( loader::context->zeDrivers.size() < 1 ) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
 
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
@@ -6775,9 +6775,9 @@ zeGetDeviceProcAddrTable(
     ze_device_dditable_t* pDdiTable                 ///< [in,out] pointer to table of DDI function pointers
     )
 {
-    if( loader::context->zeDrivers.size() < 1 )
-
+    if( loader::context->zeDrivers.size() < 1 ) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
 
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
@@ -6885,9 +6885,9 @@ zeGetDeviceExpProcAddrTable(
     ze_device_exp_dditable_t* pDdiTable             ///< [in,out] pointer to table of DDI function pointers
     )
 {
-    if( loader::context->zeDrivers.size() < 1 )
-
+    if( loader::context->zeDrivers.size() < 1 ) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
 
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
@@ -6968,9 +6968,9 @@ zeGetContextProcAddrTable(
     ze_context_dditable_t* pDdiTable                ///< [in,out] pointer to table of DDI function pointers
     )
 {
-    if( loader::context->zeDrivers.size() < 1 )
-
+    if( loader::context->zeDrivers.size() < 1 ) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
 
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
@@ -7068,9 +7068,9 @@ zeGetCommandQueueProcAddrTable(
     ze_command_queue_dditable_t* pDdiTable          ///< [in,out] pointer to table of DDI function pointers
     )
 {
-    if( loader::context->zeDrivers.size() < 1 )
-
+    if( loader::context->zeDrivers.size() < 1 ) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
 
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
@@ -7165,9 +7165,9 @@ zeGetCommandListProcAddrTable(
     ze_command_list_dditable_t* pDdiTable           ///< [in,out] pointer to table of DDI function pointers
     )
 {
-    if( loader::context->zeDrivers.size() < 1 )
-
+    if( loader::context->zeDrivers.size() < 1 ) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
 
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
@@ -7290,9 +7290,9 @@ zeGetCommandListExpProcAddrTable(
     ze_command_list_exp_dditable_t* pDdiTable       ///< [in,out] pointer to table of DDI function pointers
     )
 {
-    if( loader::context->zeDrivers.size() < 1 )
-
+    if( loader::context->zeDrivers.size() < 1 ) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
 
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
@@ -7380,9 +7380,9 @@ zeGetEventProcAddrTable(
     ze_event_dditable_t* pDdiTable                  ///< [in,out] pointer to table of DDI function pointers
     )
 {
-    if( loader::context->zeDrivers.size() < 1 )
-
+    if( loader::context->zeDrivers.size() < 1 ) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
 
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
@@ -7482,9 +7482,9 @@ zeGetEventExpProcAddrTable(
     ze_event_exp_dditable_t* pDdiTable              ///< [in,out] pointer to table of DDI function pointers
     )
 {
-    if( loader::context->zeDrivers.size() < 1 )
-
+    if( loader::context->zeDrivers.size() < 1 ) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
 
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
@@ -7565,9 +7565,9 @@ zeGetEventPoolProcAddrTable(
     ze_event_pool_dditable_t* pDdiTable             ///< [in,out] pointer to table of DDI function pointers
     )
 {
-    if( loader::context->zeDrivers.size() < 1 )
-
+    if( loader::context->zeDrivers.size() < 1 ) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
 
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
@@ -7664,9 +7664,9 @@ zeGetFenceProcAddrTable(
     ze_fence_dditable_t* pDdiTable                  ///< [in,out] pointer to table of DDI function pointers
     )
 {
-    if( loader::context->zeDrivers.size() < 1 )
-
+    if( loader::context->zeDrivers.size() < 1 ) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
 
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
@@ -7760,9 +7760,9 @@ zeGetImageProcAddrTable(
     ze_image_dditable_t* pDdiTable                  ///< [in,out] pointer to table of DDI function pointers
     )
 {
-    if( loader::context->zeDrivers.size() < 1 )
-
+    if( loader::context->zeDrivers.size() < 1 ) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
 
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
@@ -7856,9 +7856,9 @@ zeGetImageExpProcAddrTable(
     ze_image_exp_dditable_t* pDdiTable              ///< [in,out] pointer to table of DDI function pointers
     )
 {
-    if( loader::context->zeDrivers.size() < 1 )
-
+    if( loader::context->zeDrivers.size() < 1 ) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
 
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
@@ -7941,9 +7941,9 @@ zeGetKernelProcAddrTable(
     ze_kernel_dditable_t* pDdiTable                 ///< [in,out] pointer to table of DDI function pointers
     )
 {
-    if( loader::context->zeDrivers.size() < 1 )
-
+    if( loader::context->zeDrivers.size() < 1 ) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
 
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
@@ -8044,9 +8044,9 @@ zeGetKernelExpProcAddrTable(
     ze_kernel_exp_dditable_t* pDdiTable             ///< [in,out] pointer to table of DDI function pointers
     )
 {
-    if( loader::context->zeDrivers.size() < 1 )
-
+    if( loader::context->zeDrivers.size() < 1 ) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
 
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
@@ -8128,9 +8128,9 @@ zeGetMemProcAddrTable(
     ze_mem_dditable_t* pDdiTable                    ///< [in,out] pointer to table of DDI function pointers
     )
 {
-    if( loader::context->zeDrivers.size() < 1 )
-
+    if( loader::context->zeDrivers.size() < 1 ) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
 
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
@@ -8231,9 +8231,9 @@ zeGetMemExpProcAddrTable(
     ze_mem_exp_dditable_t* pDdiTable                ///< [in,out] pointer to table of DDI function pointers
     )
 {
-    if( loader::context->zeDrivers.size() < 1 )
-
+    if( loader::context->zeDrivers.size() < 1 ) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
 
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
@@ -8317,9 +8317,9 @@ zeGetModuleProcAddrTable(
     ze_module_dditable_t* pDdiTable                 ///< [in,out] pointer to table of DDI function pointers
     )
 {
-    if( loader::context->zeDrivers.size() < 1 )
-
+    if( loader::context->zeDrivers.size() < 1 ) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
 
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
@@ -8417,9 +8417,9 @@ zeGetModuleBuildLogProcAddrTable(
     ze_module_build_log_dditable_t* pDdiTable       ///< [in,out] pointer to table of DDI function pointers
     )
 {
-    if( loader::context->zeDrivers.size() < 1 )
-
+    if( loader::context->zeDrivers.size() < 1 ) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
 
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
@@ -8510,9 +8510,9 @@ zeGetPhysicalMemProcAddrTable(
     ze_physical_mem_dditable_t* pDdiTable           ///< [in,out] pointer to table of DDI function pointers
     )
 {
-    if( loader::context->zeDrivers.size() < 1 )
-
+    if( loader::context->zeDrivers.size() < 1 ) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
 
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
@@ -8603,9 +8603,9 @@ zeGetSamplerProcAddrTable(
     ze_sampler_dditable_t* pDdiTable                ///< [in,out] pointer to table of DDI function pointers
     )
 {
-    if( loader::context->zeDrivers.size() < 1 )
-
+    if( loader::context->zeDrivers.size() < 1 ) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
 
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
@@ -8696,9 +8696,9 @@ zeGetVirtualMemProcAddrTable(
     ze_virtual_mem_dditable_t* pDdiTable            ///< [in,out] pointer to table of DDI function pointers
     )
 {
-    if( loader::context->zeDrivers.size() < 1 )
-
+    if( loader::context->zeDrivers.size() < 1 ) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
 
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
@@ -8794,9 +8794,9 @@ zeGetFabricEdgeExpProcAddrTable(
     ze_fabric_edge_exp_dditable_t* pDdiTable        ///< [in,out] pointer to table of DDI function pointers
     )
 {
-    if( loader::context->zeDrivers.size() < 1 )
-
+    if( loader::context->zeDrivers.size() < 1 ) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
 
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
@@ -8879,9 +8879,9 @@ zeGetFabricVertexExpProcAddrTable(
     ze_fabric_vertex_exp_dditable_t* pDdiTable      ///< [in,out] pointer to table of DDI function pointers
     )
 {
-    if( loader::context->zeDrivers.size() < 1 )
-
+    if( loader::context->zeDrivers.size() < 1 ) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
 
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;

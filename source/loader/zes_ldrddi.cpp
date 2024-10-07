@@ -4560,9 +4560,9 @@ zesGetGlobalProcAddrTable(
     zes_global_dditable_t* pDdiTable                ///< [in,out] pointer to table of DDI function pointers
     )
 {
-    if( loader::context->sysmanInstanceDrivers->size() < 1 )
-
+    if( loader::context->sysmanInstanceDrivers->size() < 1 ) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
 
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
@@ -4640,9 +4640,9 @@ zesGetDeviceProcAddrTable(
     zes_device_dditable_t* pDdiTable                ///< [in,out] pointer to table of DDI function pointers
     )
 {
-    if( loader::context->sysmanInstanceDrivers->size() < 1 )
-
+    if( loader::context->sysmanInstanceDrivers->size() < 1 ) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
 
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
@@ -4752,9 +4752,9 @@ zesGetDeviceExpProcAddrTable(
     zes_device_exp_dditable_t* pDdiTable            ///< [in,out] pointer to table of DDI function pointers
     )
 {
-    if( loader::context->sysmanInstanceDrivers->size() < 1 )
-
+    if( loader::context->sysmanInstanceDrivers->size() < 1 ) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
 
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
@@ -4821,9 +4821,9 @@ zesGetDriverProcAddrTable(
     zes_driver_dditable_t* pDdiTable                ///< [in,out] pointer to table of DDI function pointers
     )
 {
-    if( loader::context->sysmanInstanceDrivers->size() < 1 )
-
+    if( loader::context->sysmanInstanceDrivers->size() < 1 ) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
 
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
@@ -4901,9 +4901,9 @@ zesGetDriverExpProcAddrTable(
     zes_driver_exp_dditable_t* pDdiTable            ///< [in,out] pointer to table of DDI function pointers
     )
 {
-    if( loader::context->sysmanInstanceDrivers->size() < 1 )
-
+    if( loader::context->sysmanInstanceDrivers->size() < 1 ) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
 
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
@@ -4968,9 +4968,9 @@ zesGetDiagnosticsProcAddrTable(
     zes_diagnostics_dditable_t* pDdiTable           ///< [in,out] pointer to table of DDI function pointers
     )
 {
-    if( loader::context->sysmanInstanceDrivers->size() < 1 )
-
+    if( loader::context->sysmanInstanceDrivers->size() < 1 ) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
 
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
@@ -5046,9 +5046,9 @@ zesGetEngineProcAddrTable(
     zes_engine_dditable_t* pDdiTable                ///< [in,out] pointer to table of DDI function pointers
     )
 {
-    if( loader::context->sysmanInstanceDrivers->size() < 1 )
-
+    if( loader::context->sysmanInstanceDrivers->size() < 1 ) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
 
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
@@ -5124,9 +5124,9 @@ zesGetFabricPortProcAddrTable(
     zes_fabric_port_dditable_t* pDdiTable           ///< [in,out] pointer to table of DDI function pointers
     )
 {
-    if( loader::context->sysmanInstanceDrivers->size() < 1 )
-
+    if( loader::context->sysmanInstanceDrivers->size() < 1 ) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
 
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
@@ -5207,9 +5207,9 @@ zesGetFanProcAddrTable(
     zes_fan_dditable_t* pDdiTable                   ///< [in,out] pointer to table of DDI function pointers
     )
 {
-    if( loader::context->sysmanInstanceDrivers->size() < 1 )
-
+    if( loader::context->sysmanInstanceDrivers->size() < 1 ) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
 
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
@@ -5288,9 +5288,9 @@ zesGetFirmwareProcAddrTable(
     zes_firmware_dditable_t* pDdiTable              ///< [in,out] pointer to table of DDI function pointers
     )
 {
-    if( loader::context->sysmanInstanceDrivers->size() < 1 )
-
+    if( loader::context->sysmanInstanceDrivers->size() < 1 ) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
 
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
@@ -5367,9 +5367,9 @@ zesGetFirmwareExpProcAddrTable(
     zes_firmware_exp_dditable_t* pDdiTable          ///< [in,out] pointer to table of DDI function pointers
     )
 {
-    if( loader::context->sysmanInstanceDrivers->size() < 1 )
-
+    if( loader::context->sysmanInstanceDrivers->size() < 1 ) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
 
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
@@ -5435,9 +5435,9 @@ zesGetFrequencyProcAddrTable(
     zes_frequency_dditable_t* pDdiTable             ///< [in,out] pointer to table of DDI function pointers
     )
 {
-    if( loader::context->sysmanInstanceDrivers->size() < 1 )
-
+    if( loader::context->sysmanInstanceDrivers->size() < 1 ) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
 
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
@@ -5527,9 +5527,9 @@ zesGetLedProcAddrTable(
     zes_led_dditable_t* pDdiTable                   ///< [in,out] pointer to table of DDI function pointers
     )
 {
-    if( loader::context->sysmanInstanceDrivers->size() < 1 )
-
+    if( loader::context->sysmanInstanceDrivers->size() < 1 ) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
 
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
@@ -5606,9 +5606,9 @@ zesGetMemoryProcAddrTable(
     zes_memory_dditable_t* pDdiTable                ///< [in,out] pointer to table of DDI function pointers
     )
 {
-    if( loader::context->sysmanInstanceDrivers->size() < 1 )
-
+    if( loader::context->sysmanInstanceDrivers->size() < 1 ) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
 
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
@@ -5684,9 +5684,9 @@ zesGetOverclockProcAddrTable(
     zes_overclock_dditable_t* pDdiTable             ///< [in,out] pointer to table of DDI function pointers
     )
 {
-    if( loader::context->sysmanInstanceDrivers->size() < 1 )
-
+    if( loader::context->sysmanInstanceDrivers->size() < 1 ) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
 
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
@@ -5772,9 +5772,9 @@ zesGetPerformanceFactorProcAddrTable(
     zes_performance_factor_dditable_t* pDdiTable    ///< [in,out] pointer to table of DDI function pointers
     )
 {
-    if( loader::context->sysmanInstanceDrivers->size() < 1 )
-
+    if( loader::context->sysmanInstanceDrivers->size() < 1 ) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
 
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
@@ -5850,9 +5850,9 @@ zesGetPowerProcAddrTable(
     zes_power_dditable_t* pDdiTable                 ///< [in,out] pointer to table of DDI function pointers
     )
 {
-    if( loader::context->sysmanInstanceDrivers->size() < 1 )
-
+    if( loader::context->sysmanInstanceDrivers->size() < 1 ) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
 
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
@@ -5933,9 +5933,9 @@ zesGetPsuProcAddrTable(
     zes_psu_dditable_t* pDdiTable                   ///< [in,out] pointer to table of DDI function pointers
     )
 {
-    if( loader::context->sysmanInstanceDrivers->size() < 1 )
-
+    if( loader::context->sysmanInstanceDrivers->size() < 1 ) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
 
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
@@ -6010,9 +6010,9 @@ zesGetRasProcAddrTable(
     zes_ras_dditable_t* pDdiTable                   ///< [in,out] pointer to table of DDI function pointers
     )
 {
-    if( loader::context->sysmanInstanceDrivers->size() < 1 )
-
+    if( loader::context->sysmanInstanceDrivers->size() < 1 ) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
 
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
@@ -6089,9 +6089,9 @@ zesGetRasExpProcAddrTable(
     zes_ras_exp_dditable_t* pDdiTable               ///< [in,out] pointer to table of DDI function pointers
     )
 {
-    if( loader::context->sysmanInstanceDrivers->size() < 1 )
-
+    if( loader::context->sysmanInstanceDrivers->size() < 1 ) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
 
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
@@ -6157,9 +6157,9 @@ zesGetSchedulerProcAddrTable(
     zes_scheduler_dditable_t* pDdiTable             ///< [in,out] pointer to table of DDI function pointers
     )
 {
-    if( loader::context->sysmanInstanceDrivers->size() < 1 )
-
+    if( loader::context->sysmanInstanceDrivers->size() < 1 ) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
 
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
@@ -6240,9 +6240,9 @@ zesGetStandbyProcAddrTable(
     zes_standby_dditable_t* pDdiTable               ///< [in,out] pointer to table of DDI function pointers
     )
 {
-    if( loader::context->sysmanInstanceDrivers->size() < 1 )
-
+    if( loader::context->sysmanInstanceDrivers->size() < 1 ) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
 
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
@@ -6318,9 +6318,9 @@ zesGetTemperatureProcAddrTable(
     zes_temperature_dditable_t* pDdiTable           ///< [in,out] pointer to table of DDI function pointers
     )
 {
-    if( loader::context->sysmanInstanceDrivers->size() < 1 )
-
+    if( loader::context->sysmanInstanceDrivers->size() < 1 ) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
 
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
@@ -6397,9 +6397,9 @@ zesGetVFManagementProcAddrTable(
     zes_vf_management_dditable_t* pDdiTable         ///< [in,out] pointer to table of DDI function pointers
     )
 {
-    if( loader::context->sysmanInstanceDrivers->size() < 1 )
-
+    if( loader::context->sysmanInstanceDrivers->size() < 1 ) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
 
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
@@ -6418,7 +6418,11 @@ zesGetVFManagementProcAddrTable(
         auto getTable = reinterpret_cast<zes_pfnGetVFManagementProcAddrTable_t>(
             GET_FUNCTION_PTR( drv.handle, "zesGetVFManagementProcAddrTable") );
         if(!getTable) 
+        {
+            atLeastOneDriverValid = true;
+            //It is valid to not have this proc addr table
             continue; 
+        }
         auto getTableResult = getTable( version, &drv.dditable.zes.VFManagement);
         if(getTableResult == ZE_RESULT_SUCCESS) 
             atLeastOneDriverValid = true;
@@ -6474,9 +6478,9 @@ zesGetVFManagementExpProcAddrTable(
     zes_vf_management_exp_dditable_t* pDdiTable     ///< [in,out] pointer to table of DDI function pointers
     )
 {
-    if( loader::context->sysmanInstanceDrivers->size() < 1 )
-
+    if( loader::context->sysmanInstanceDrivers->size() < 1 ) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
 
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;

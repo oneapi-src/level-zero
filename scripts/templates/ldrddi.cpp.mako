@@ -319,12 +319,12 @@ ${tbl['export']['name']}(
     )
 {
     %if namespace != "zes":
-    if( loader::context->zeDrivers.size() < 1 )
+    if( loader::context->zeDrivers.size() < 1 ) {
     %else:
-    if( loader::context->sysmanInstanceDrivers->size() < 1 )
+    if( loader::context->sysmanInstanceDrivers->size() < 1 ) {
     %endif
-
         return ${X}_RESULT_ERROR_UNINITIALIZED;
+    }
 
     if( nullptr == pDdiTable )
         return ${X}_RESULT_ERROR_INVALID_NULL_POINTER;
