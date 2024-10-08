@@ -4,7 +4,7 @@
  SPDX-License-Identifier: MIT
 
  @file zet.py
- @version v1.11-r1.11.0
+ @version v1.11-r1.11.1
 
  """
 import platform
@@ -1220,22 +1220,21 @@ if __use_win_types:
 else:
     _zetMetricGetProperties_t = CFUNCTYPE( ze_result_t, zet_metric_handle_t, POINTER(zet_metric_properties_t) )
 
-###############################################################################
-## @brief Function-pointer for zetMetricCreateFromProgrammableExp2
-if __use_win_types:
-    _zetMetricCreateFromProgrammableExp2_t = WINFUNCTYPE( ze_result_t, zet_metric_programmable_exp_handle_t, c_ulong, POINTER(zet_metric_programmable_param_value_exp_t), c_char_p, c_char_p, POINTER(c_ulong), POINTER(zet_metric_handle_t) )
-else:
-    _zetMetricCreateFromProgrammableExp2_t = CFUNCTYPE( ze_result_t, zet_metric_programmable_exp_handle_t, c_ulong, POINTER(zet_metric_programmable_param_value_exp_t), c_char_p, c_char_p, POINTER(c_ulong), POINTER(zet_metric_handle_t) )
-
 
 ###############################################################################
 ## @brief Table of Metric functions pointers
 class _zet_metric_dditable_t(Structure):
     _fields_ = [
         ("pfnGet", c_void_p),                                           ## _zetMetricGet_t
-        ("pfnGetProperties", c_void_p),                                 ## _zetMetricGetProperties_t
-        ("pfnCreateFromProgrammableExp2", c_void_p)                     ## _zetMetricCreateFromProgrammableExp2_t
+        ("pfnGetProperties", c_void_p)                                  ## _zetMetricGetProperties_t
     ]
+
+###############################################################################
+## @brief Function-pointer for zetMetricCreateFromProgrammableExp2
+if __use_win_types:
+    _zetMetricCreateFromProgrammableExp2_t = WINFUNCTYPE( ze_result_t, zet_metric_programmable_exp_handle_t, c_ulong, POINTER(zet_metric_programmable_param_value_exp_t), c_char_p, c_char_p, POINTER(c_ulong), POINTER(zet_metric_handle_t) )
+else:
+    _zetMetricCreateFromProgrammableExp2_t = CFUNCTYPE( ze_result_t, zet_metric_programmable_exp_handle_t, c_ulong, POINTER(zet_metric_programmable_param_value_exp_t), c_char_p, c_char_p, POINTER(c_ulong), POINTER(zet_metric_handle_t) )
 
 ###############################################################################
 ## @brief Function-pointer for zetMetricCreateFromProgrammableExp
@@ -1256,6 +1255,7 @@ else:
 ## @brief Table of MetricExp functions pointers
 class _zet_metric_exp_dditable_t(Structure):
     _fields_ = [
+        ("pfnCreateFromProgrammableExp2", c_void_p),                    ## _zetMetricCreateFromProgrammableExp2_t
         ("pfnCreateFromProgrammableExp", c_void_p),                     ## _zetMetricCreateFromProgrammableExp_t
         ("pfnDestroyExp", c_void_p)                                     ## _zetMetricDestroyExp_t
     ]
@@ -1763,7 +1763,6 @@ class ZET_DDI:
         # attach function interface to function address
         self.zetMetricGet = _zetMetricGet_t(self.__dditable.Metric.pfnGet)
         self.zetMetricGetProperties = _zetMetricGetProperties_t(self.__dditable.Metric.pfnGetProperties)
-        self.zetMetricCreateFromProgrammableExp2 = _zetMetricCreateFromProgrammableExp2_t(self.__dditable.Metric.pfnCreateFromProgrammableExp2)
 
         # call driver to get function pointers
         _MetricExp = _zet_metric_exp_dditable_t()
@@ -1773,6 +1772,7 @@ class ZET_DDI:
         self.__dditable.MetricExp = _MetricExp
 
         # attach function interface to function address
+        self.zetMetricCreateFromProgrammableExp2 = _zetMetricCreateFromProgrammableExp2_t(self.__dditable.MetricExp.pfnCreateFromProgrammableExp2)
         self.zetMetricCreateFromProgrammableExp = _zetMetricCreateFromProgrammableExp_t(self.__dditable.MetricExp.pfnCreateFromProgrammableExp)
         self.zetMetricDestroyExp = _zetMetricDestroyExp_t(self.__dditable.MetricExp.pfnDestroyExp)
 

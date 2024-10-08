@@ -1697,7 +1697,7 @@ namespace driver
         ze_result_t result = ZE_RESULT_SUCCESS;
 
         // if the driver has created a custom function, then call it instead of using the generic path
-        auto pfnCreateFromProgrammableExp2 = context.zetDdiTable.Metric.pfnCreateFromProgrammableExp2;
+        auto pfnCreateFromProgrammableExp2 = context.zetDdiTable.MetricExp.pfnCreateFromProgrammableExp2;
         if( nullptr != pfnCreateFromProgrammableExp2 )
         {
             result = pfnCreateFromProgrammableExp2( hMetricProgrammable, parameterCount, pParameterValues, pName, pDescription, pMetricHandleCount, phMetricHandles );
@@ -2308,8 +2308,6 @@ zetGetMetricProcAddrTable(
 
     pDdiTable->pfnGetProperties                          = driver::zetMetricGetProperties;
 
-    pDdiTable->pfnCreateFromProgrammableExp2             = driver::zetMetricCreateFromProgrammableExp2;
-
     return result;
 }
 
@@ -2334,6 +2332,8 @@ zetGetMetricExpProcAddrTable(
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
+
+    pDdiTable->pfnCreateFromProgrammableExp2             = driver::zetMetricCreateFromProgrammableExp2;
 
     pDdiTable->pfnCreateFromProgrammableExp              = driver::zetMetricCreateFromProgrammableExp;
 

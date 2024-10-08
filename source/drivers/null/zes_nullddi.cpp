@@ -4045,7 +4045,7 @@ namespace driver
         ze_result_t result = ZE_RESULT_SUCCESS;
 
         // if the driver has created a custom function, then call it instead of using the generic path
-        auto pfnGetVFMemoryUtilizationExp2 = context.zesDdiTable.VFManagement.pfnGetVFMemoryUtilizationExp2;
+        auto pfnGetVFMemoryUtilizationExp2 = context.zesDdiTable.VFManagementExp.pfnGetVFMemoryUtilizationExp2;
         if( nullptr != pfnGetVFMemoryUtilizationExp2 )
         {
             result = pfnGetVFMemoryUtilizationExp2( hVFhandle, pCount, pMemUtil );
@@ -4079,7 +4079,7 @@ namespace driver
         ze_result_t result = ZE_RESULT_SUCCESS;
 
         // if the driver has created a custom function, then call it instead of using the generic path
-        auto pfnGetVFEngineUtilizationExp2 = context.zesDdiTable.VFManagement.pfnGetVFEngineUtilizationExp2;
+        auto pfnGetVFEngineUtilizationExp2 = context.zesDdiTable.VFManagementExp.pfnGetVFEngineUtilizationExp2;
         if( nullptr != pfnGetVFEngineUtilizationExp2 )
         {
             result = pfnGetVFEngineUtilizationExp2( hVFhandle, pCount, pEngineUtil );
@@ -4954,35 +4954,6 @@ zesGetTemperatureProcAddrTable(
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Exported function for filling application's VFManagement table
-///        with current process' addresses
-///
-/// @returns
-///     - ::ZE_RESULT_SUCCESS
-///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
-///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
-ZE_DLLEXPORT ze_result_t ZE_APICALL
-zesGetVFManagementProcAddrTable(
-    ze_api_version_t version,                       ///< [in] API version requested
-    zes_vf_management_dditable_t* pDdiTable         ///< [in,out] pointer to table of DDI function pointers
-    )
-{
-    if( nullptr == pDdiTable )
-        return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
-
-    if( driver::context.version < version )
-        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-
-    ze_result_t result = ZE_RESULT_SUCCESS;
-
-    pDdiTable->pfnGetVFMemoryUtilizationExp2             = driver::zesVFManagementGetVFMemoryUtilizationExp2;
-
-    pDdiTable->pfnGetVFEngineUtilizationExp2             = driver::zesVFManagementGetVFEngineUtilizationExp2;
-
-    return result;
-}
-
-///////////////////////////////////////////////////////////////////////////////
 /// @brief Exported function for filling application's VFManagementExp table
 ///        with current process' addresses
 ///
@@ -5005,6 +4976,10 @@ zesGetVFManagementExpProcAddrTable(
     ze_result_t result = ZE_RESULT_SUCCESS;
 
     pDdiTable->pfnGetVFCapabilitiesExp                   = driver::zesVFManagementGetVFCapabilitiesExp;
+
+    pDdiTable->pfnGetVFMemoryUtilizationExp2             = driver::zesVFManagementGetVFMemoryUtilizationExp2;
+
+    pDdiTable->pfnGetVFEngineUtilizationExp2             = driver::zesVFManagementGetVFEngineUtilizationExp2;
 
     pDdiTable->pfnGetVFPropertiesExp                     = driver::zesVFManagementGetVFPropertiesExp;
 

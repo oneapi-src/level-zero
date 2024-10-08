@@ -4491,7 +4491,7 @@ namespace loader
 
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zes_vf_object_t*>( hVFhandle )->dditable;
-        auto pfnGetVFMemoryUtilizationExp2 = dditable->zes.VFManagement.pfnGetVFMemoryUtilizationExp2;
+        auto pfnGetVFMemoryUtilizationExp2 = dditable->zes.VFManagementExp.pfnGetVFMemoryUtilizationExp2;
         if( nullptr == pfnGetVFMemoryUtilizationExp2 )
             return ZE_RESULT_ERROR_UNINITIALIZED;
 
@@ -4526,7 +4526,7 @@ namespace loader
 
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zes_vf_object_t*>( hVFhandle )->dditable;
-        auto pfnGetVFEngineUtilizationExp2 = dditable->zes.VFManagement.pfnGetVFEngineUtilizationExp2;
+        auto pfnGetVFEngineUtilizationExp2 = dditable->zes.VFManagementExp.pfnGetVFEngineUtilizationExp2;
         if( nullptr == pfnGetVFEngineUtilizationExp2 )
             return ZE_RESULT_ERROR_UNINITIALIZED;
 
@@ -6383,87 +6383,6 @@ zesGetTemperatureProcAddrTable(
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Exported function for filling application's VFManagement table
-///        with current process' addresses
-///
-/// @returns
-///     - ::ZE_RESULT_SUCCESS
-///     - ::ZE_RESULT_ERROR_UNINITIALIZED
-///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
-///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
-ZE_DLLEXPORT ze_result_t ZE_APICALL
-zesGetVFManagementProcAddrTable(
-    ze_api_version_t version,                       ///< [in] API version requested
-    zes_vf_management_dditable_t* pDdiTable         ///< [in,out] pointer to table of DDI function pointers
-    )
-{
-    if( loader::context->sysmanInstanceDrivers->size() < 1 ) {
-        return ZE_RESULT_ERROR_UNINITIALIZED;
-    }
-
-    if( nullptr == pDdiTable )
-        return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
-
-    if( loader::context->version < version )
-        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-
-    ze_result_t result = ZE_RESULT_SUCCESS;
-
-    bool atLeastOneDriverValid = false;
-    // Load the device-driver DDI tables
-    for( auto& drv : *loader::context->sysmanInstanceDrivers )
-    {
-        if(drv.initStatus != ZE_RESULT_SUCCESS)
-            continue;
-        auto getTable = reinterpret_cast<zes_pfnGetVFManagementProcAddrTable_t>(
-            GET_FUNCTION_PTR( drv.handle, "zesGetVFManagementProcAddrTable") );
-        if(!getTable) 
-        {
-            atLeastOneDriverValid = true;
-            //It is valid to not have this proc addr table
-            continue; 
-        }
-        auto getTableResult = getTable( version, &drv.dditable.zes.VFManagement);
-        if(getTableResult == ZE_RESULT_SUCCESS) 
-            atLeastOneDriverValid = true;
-        else
-            drv.initStatus = getTableResult;
-    }
-
-    if(!atLeastOneDriverValid)
-        result = ZE_RESULT_ERROR_UNINITIALIZED;
-    else
-        result = ZE_RESULT_SUCCESS;
-
-    if( ZE_RESULT_SUCCESS == result )
-    {
-        if( ( loader::context->sysmanInstanceDrivers->size() > 1 ) || loader::context->forceIntercept )
-        {
-            // return pointers to loader's DDIs
-            pDdiTable->pfnGetVFMemoryUtilizationExp2               = loader::zesVFManagementGetVFMemoryUtilizationExp2;
-            pDdiTable->pfnGetVFEngineUtilizationExp2               = loader::zesVFManagementGetVFEngineUtilizationExp2;
-        }
-        else
-        {
-            // return pointers directly to driver's DDIs
-            *pDdiTable = loader::context->sysmanInstanceDrivers->front().dditable.zes.VFManagement;
-        }
-    }
-
-    // If the validation layer is enabled, then intercept the loader's DDIs
-    if(( ZE_RESULT_SUCCESS == result ) && ( nullptr != loader::context->validationLayer ))
-    {
-        auto getTable = reinterpret_cast<zes_pfnGetVFManagementProcAddrTable_t>(
-            GET_FUNCTION_PTR(loader::context->validationLayer, "zesGetVFManagementProcAddrTable") );
-        if(!getTable)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        result = getTable( version, pDdiTable );
-    }
-
-    return result;
-}
-
-///////////////////////////////////////////////////////////////////////////////
 /// @brief Exported function for filling application's VFManagementExp table
 ///        with current process' addresses
 ///
@@ -6509,6 +6428,8 @@ zesGetVFManagementExpProcAddrTable(
         {
             // return pointers to loader's DDIs
             pDdiTable->pfnGetVFCapabilitiesExp                     = loader::zesVFManagementGetVFCapabilitiesExp;
+            pDdiTable->pfnGetVFMemoryUtilizationExp2               = loader::zesVFManagementGetVFMemoryUtilizationExp2;
+            pDdiTable->pfnGetVFEngineUtilizationExp2               = loader::zesVFManagementGetVFEngineUtilizationExp2;
             pDdiTable->pfnGetVFPropertiesExp                       = loader::zesVFManagementGetVFPropertiesExp;
             pDdiTable->pfnGetVFMemoryUtilizationExp                = loader::zesVFManagementGetVFMemoryUtilizationExp;
             pDdiTable->pfnGetVFEngineUtilizationExp                = loader::zesVFManagementGetVFEngineUtilizationExp;

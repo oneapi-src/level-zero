@@ -2685,7 +2685,7 @@ namespace validation_layer
                                                         ///< shall only retrieve that number of metric handles.
         )
     {
-        auto pfnCreateFromProgrammableExp2 = context.zetDdiTable.Metric.pfnCreateFromProgrammableExp2;
+        auto pfnCreateFromProgrammableExp2 = context.zetDdiTable.MetricExp.pfnCreateFromProgrammableExp2;
 
         if( nullptr == pfnCreateFromProgrammableExp2 )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
@@ -3541,9 +3541,6 @@ zetGetMetricProcAddrTable(
     dditable.pfnGetProperties                            = pDdiTable->pfnGetProperties;
     pDdiTable->pfnGetProperties                          = validation_layer::zetMetricGetProperties;
 
-    dditable.pfnCreateFromProgrammableExp2               = pDdiTable->pfnCreateFromProgrammableExp2;
-    pDdiTable->pfnCreateFromProgrammableExp2             = validation_layer::zetMetricCreateFromProgrammableExp2;
-
     return result;
 }
 
@@ -3571,6 +3568,9 @@ zetGetMetricExpProcAddrTable(
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
+
+    dditable.pfnCreateFromProgrammableExp2               = pDdiTable->pfnCreateFromProgrammableExp2;
+    pDdiTable->pfnCreateFromProgrammableExp2             = validation_layer::zetMetricCreateFromProgrammableExp2;
 
     dditable.pfnCreateFromProgrammableExp                = pDdiTable->pfnCreateFromProgrammableExp;
     pDdiTable->pfnCreateFromProgrammableExp              = validation_layer::zetMetricCreateFromProgrammableExp;

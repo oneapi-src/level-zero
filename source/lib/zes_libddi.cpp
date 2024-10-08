@@ -184,13 +184,6 @@ namespace ze_lib
 
         if( ZE_RESULT_SUCCESS == result )
         {
-            auto getTable = reinterpret_cast<zes_pfnGetVFManagementProcAddrTable_t>(
-                GET_FUNCTION_PTR(loader, "zesGetVFManagementProcAddrTable") );
-            result = getTable( ZE_API_VERSION_CURRENT, &initialzesDdiTable.VFManagement );
-        }
-
-        if( ZE_RESULT_SUCCESS == result )
-        {
             auto getTable = reinterpret_cast<zes_pfnGetVFManagementExpProcAddrTable_t>(
                 GET_FUNCTION_PTR(loader, "zesGetVFManagementExpProcAddrTable") );
             result = getTable( ZE_API_VERSION_CURRENT, &initialzesDdiTable.VFManagementExp );
@@ -316,11 +309,6 @@ namespace ze_lib
         if( ZE_RESULT_SUCCESS == result )
         {
             result = zesGetTemperatureProcAddrTable( ZE_API_VERSION_CURRENT, &initialzesDdiTable.Temperature );
-        }
-
-        if( ZE_RESULT_SUCCESS == result )
-        {
-            result = zesGetVFManagementProcAddrTable( ZE_API_VERSION_CURRENT, &initialzesDdiTable.VFManagement );
         }
 
         if( ZE_RESULT_SUCCESS == result )

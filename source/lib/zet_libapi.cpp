@@ -2600,7 +2600,7 @@ zetMetricCreateFromProgrammableExp2(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnCreateFromProgrammableExp2 = ze_lib::context->zetDdiTable.load()->Metric.pfnCreateFromProgrammableExp2;
+    auto pfnCreateFromProgrammableExp2 = ze_lib::context->zetDdiTable.load()->MetricExp.pfnCreateFromProgrammableExp2;
     if( nullptr == pfnCreateFromProgrammableExp2 ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
