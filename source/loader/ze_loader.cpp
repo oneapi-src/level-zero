@@ -340,7 +340,8 @@ namespace loader
             loaderLibraryPath = readLevelZeroLoaderLibraryPath();
         }
 #endif
-        debug_trace_message("Using Loader Library Path: ", loaderLibraryPath);
+        if (debugTraceEnabled)
+            debug_trace_message("Using Loader Library Path: ", loaderLibraryPath);
 
         // To allow for two different sets of drivers to be in use between sysman and core/tools, we use and store the drivers in two vectors.
         // alldrivers stores all the drivers for cleanup when the library exits.
@@ -388,8 +389,10 @@ namespace loader
             }
         }
         if(allDrivers.size()==0){
-            std::string message = "0 Drivers Discovered";
-            debug_trace_message(message, "");
+            if (debugTraceEnabled) {
+                std::string message = "0 Drivers Discovered";
+                debug_trace_message(message, "");
+            }
             zel_logger->log_error("0 Drivers Discovered");
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
