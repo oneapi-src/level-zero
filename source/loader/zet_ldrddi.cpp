@@ -1971,7 +1971,7 @@ namespace loader
 
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zet_metric_programmable_exp_object_t*>( hMetricProgrammable )->dditable;
-        auto pfnCreateFromProgrammableExp2 = dditable->zet.Metric.pfnCreateFromProgrammableExp2;
+        auto pfnCreateFromProgrammableExp2 = dditable->zet.MetricExp.pfnCreateFromProgrammableExp2;
         if( nullptr == pfnCreateFromProgrammableExp2 )
             return ZE_RESULT_ERROR_UNINITIALIZED;
 
@@ -3103,7 +3103,6 @@ zetGetMetricProcAddrTable(
             // return pointers to loader's DDIs
             pDdiTable->pfnGet                                      = loader::zetMetricGet;
             pDdiTable->pfnGetProperties                            = loader::zetMetricGetProperties;
-            pDdiTable->pfnCreateFromProgrammableExp2               = loader::zetMetricCreateFromProgrammableExp2;
         }
         else
         {
@@ -3170,6 +3169,7 @@ zetGetMetricExpProcAddrTable(
         if( ( loader::context->zeDrivers.size() > 1 ) || loader::context->forceIntercept )
         {
             // return pointers to loader's DDIs
+            pDdiTable->pfnCreateFromProgrammableExp2               = loader::zetMetricCreateFromProgrammableExp2;
             pDdiTable->pfnCreateFromProgrammableExp                = loader::zetMetricCreateFromProgrammableExp;
             pDdiTable->pfnDestroyExp                               = loader::zetMetricDestroyExp;
         }

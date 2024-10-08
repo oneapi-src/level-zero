@@ -4,7 +4,7 @@
  SPDX-License-Identifier: MIT
 
  @file zes.py
- @version v1.11-r1.11.0
+ @version v1.11-r1.11.1
 
  """
 import platform
@@ -3834,6 +3834,13 @@ class _zes_diagnostics_dditable_t(Structure):
     ]
 
 ###############################################################################
+## @brief Function-pointer for zesVFManagementGetVFCapabilitiesExp
+if __use_win_types:
+    _zesVFManagementGetVFCapabilitiesExp_t = WINFUNCTYPE( ze_result_t, zes_vf_handle_t, POINTER(zes_vf_exp_capabilities_t) )
+else:
+    _zesVFManagementGetVFCapabilitiesExp_t = CFUNCTYPE( ze_result_t, zes_vf_handle_t, POINTER(zes_vf_exp_capabilities_t) )
+
+###############################################################################
 ## @brief Function-pointer for zesVFManagementGetVFMemoryUtilizationExp2
 if __use_win_types:
     _zesVFManagementGetVFMemoryUtilizationExp2_t = WINFUNCTYPE( ze_result_t, zes_vf_handle_t, POINTER(c_ulong), POINTER(zes_vf_util_mem_exp2_t) )
@@ -3846,22 +3853,6 @@ if __use_win_types:
     _zesVFManagementGetVFEngineUtilizationExp2_t = WINFUNCTYPE( ze_result_t, zes_vf_handle_t, POINTER(c_ulong), POINTER(zes_vf_util_engine_exp2_t) )
 else:
     _zesVFManagementGetVFEngineUtilizationExp2_t = CFUNCTYPE( ze_result_t, zes_vf_handle_t, POINTER(c_ulong), POINTER(zes_vf_util_engine_exp2_t) )
-
-
-###############################################################################
-## @brief Table of VFManagement functions pointers
-class _zes_vf_management_dditable_t(Structure):
-    _fields_ = [
-        ("pfnGetVFMemoryUtilizationExp2", c_void_p),                    ## _zesVFManagementGetVFMemoryUtilizationExp2_t
-        ("pfnGetVFEngineUtilizationExp2", c_void_p)                     ## _zesVFManagementGetVFEngineUtilizationExp2_t
-    ]
-
-###############################################################################
-## @brief Function-pointer for zesVFManagementGetVFCapabilitiesExp
-if __use_win_types:
-    _zesVFManagementGetVFCapabilitiesExp_t = WINFUNCTYPE( ze_result_t, zes_vf_handle_t, POINTER(zes_vf_exp_capabilities_t) )
-else:
-    _zesVFManagementGetVFCapabilitiesExp_t = CFUNCTYPE( ze_result_t, zes_vf_handle_t, POINTER(zes_vf_exp_capabilities_t) )
 
 ###############################################################################
 ## @brief Function-pointer for zesVFManagementGetVFPropertiesExp
@@ -3904,6 +3895,8 @@ else:
 class _zes_vf_management_exp_dditable_t(Structure):
     _fields_ = [
         ("pfnGetVFCapabilitiesExp", c_void_p),                          ## _zesVFManagementGetVFCapabilitiesExp_t
+        ("pfnGetVFMemoryUtilizationExp2", c_void_p),                    ## _zesVFManagementGetVFMemoryUtilizationExp2_t
+        ("pfnGetVFEngineUtilizationExp2", c_void_p),                    ## _zesVFManagementGetVFEngineUtilizationExp2_t
         ("pfnGetVFPropertiesExp", c_void_p),                            ## _zesVFManagementGetVFPropertiesExp_t
         ("pfnGetVFMemoryUtilizationExp", c_void_p),                     ## _zesVFManagementGetVFMemoryUtilizationExp_t
         ("pfnGetVFEngineUtilizationExp", c_void_p),                     ## _zesVFManagementGetVFEngineUtilizationExp_t
@@ -3937,7 +3930,6 @@ class _zes_dditable_t(Structure):
         ("Ras", _zes_ras_dditable_t),
         ("RasExp", _zes_ras_exp_dditable_t),
         ("Diagnostics", _zes_diagnostics_dditable_t),
-        ("VFManagement", _zes_vf_management_dditable_t),
         ("VFManagementExp", _zes_vf_management_exp_dditable_t)
     ]
 
@@ -4302,17 +4294,6 @@ class ZES_DDI:
         self.zesDiagnosticsRunTests = _zesDiagnosticsRunTests_t(self.__dditable.Diagnostics.pfnRunTests)
 
         # call driver to get function pointers
-        _VFManagement = _zes_vf_management_dditable_t()
-        r = ze_result_v(self.__dll.zesGetVFManagementProcAddrTable(version, byref(_VFManagement)))
-        if r != ze_result_v.SUCCESS:
-            raise Exception(r)
-        self.__dditable.VFManagement = _VFManagement
-
-        # attach function interface to function address
-        self.zesVFManagementGetVFMemoryUtilizationExp2 = _zesVFManagementGetVFMemoryUtilizationExp2_t(self.__dditable.VFManagement.pfnGetVFMemoryUtilizationExp2)
-        self.zesVFManagementGetVFEngineUtilizationExp2 = _zesVFManagementGetVFEngineUtilizationExp2_t(self.__dditable.VFManagement.pfnGetVFEngineUtilizationExp2)
-
-        # call driver to get function pointers
         _VFManagementExp = _zes_vf_management_exp_dditable_t()
         r = ze_result_v(self.__dll.zesGetVFManagementExpProcAddrTable(version, byref(_VFManagementExp)))
         if r != ze_result_v.SUCCESS:
@@ -4321,6 +4302,8 @@ class ZES_DDI:
 
         # attach function interface to function address
         self.zesVFManagementGetVFCapabilitiesExp = _zesVFManagementGetVFCapabilitiesExp_t(self.__dditable.VFManagementExp.pfnGetVFCapabilitiesExp)
+        self.zesVFManagementGetVFMemoryUtilizationExp2 = _zesVFManagementGetVFMemoryUtilizationExp2_t(self.__dditable.VFManagementExp.pfnGetVFMemoryUtilizationExp2)
+        self.zesVFManagementGetVFEngineUtilizationExp2 = _zesVFManagementGetVFEngineUtilizationExp2_t(self.__dditable.VFManagementExp.pfnGetVFEngineUtilizationExp2)
         self.zesVFManagementGetVFPropertiesExp = _zesVFManagementGetVFPropertiesExp_t(self.__dditable.VFManagementExp.pfnGetVFPropertiesExp)
         self.zesVFManagementGetVFMemoryUtilizationExp = _zesVFManagementGetVFMemoryUtilizationExp_t(self.__dditable.VFManagementExp.pfnGetVFMemoryUtilizationExp)
         self.zesVFManagementGetVFEngineUtilizationExp = _zesVFManagementGetVFEngineUtilizationExp_t(self.__dditable.VFManagementExp.pfnGetVFEngineUtilizationExp)

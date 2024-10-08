@@ -6517,7 +6517,7 @@ zesVFManagementGetVFMemoryUtilizationExp2(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnGetVFMemoryUtilizationExp2 = ze_lib::context->zesDdiTable.load()->VFManagement.pfnGetVFMemoryUtilizationExp2;
+    auto pfnGetVFMemoryUtilizationExp2 = ze_lib::context->zesDdiTable.load()->VFManagementExp.pfnGetVFMemoryUtilizationExp2;
     if( nullptr == pfnGetVFMemoryUtilizationExp2 ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -6567,7 +6567,7 @@ zesVFManagementGetVFEngineUtilizationExp2(
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
-    auto pfnGetVFEngineUtilizationExp2 = ze_lib::context->zesDdiTable.load()->VFManagement.pfnGetVFEngineUtilizationExp2;
+    auto pfnGetVFEngineUtilizationExp2 = ze_lib::context->zesDdiTable.load()->VFManagementExp.pfnGetVFEngineUtilizationExp2;
     if( nullptr == pfnGetVFEngineUtilizationExp2 ) {
         if(!ze_lib::context->isInitialized)
             return ZE_RESULT_ERROR_UNINITIALIZED;

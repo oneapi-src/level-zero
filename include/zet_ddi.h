@@ -5,7 +5,7 @@
  * SPDX-License-Identifier: MIT
  *
  * @file zet_ddi.h
- * @version v1.11-r1.11.0
+ * @version v1.11-r1.11.1
  *
  */
 #ifndef _ZET_DDI_H
@@ -502,24 +502,11 @@ typedef ze_result_t (ZE_APICALL *zet_pfnMetricGetProperties_t)(
     );
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Function-pointer for zetMetricCreateFromProgrammableExp2 
-typedef ze_result_t (ZE_APICALL *zet_pfnMetricCreateFromProgrammableExp2_t)(
-    zet_metric_programmable_exp_handle_t,
-    uint32_t,
-    zet_metric_programmable_param_value_exp_t*,
-    const char*,
-    const char*,
-    uint32_t*,
-    zet_metric_handle_t*
-    );
-
-///////////////////////////////////////////////////////////////////////////////
 /// @brief Table of Metric functions pointers
 typedef struct _zet_metric_dditable_t
 {
     zet_pfnMetricGet_t                                          pfnGet;
     zet_pfnMetricGetProperties_t                                pfnGetProperties;
-    zet_pfnMetricCreateFromProgrammableExp2_t                   pfnCreateFromProgrammableExp2;
 } zet_metric_dditable_t;
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -545,6 +532,18 @@ typedef ze_result_t (ZE_APICALL *zet_pfnGetMetricProcAddrTable_t)(
     );
 
 ///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zetMetricCreateFromProgrammableExp2 
+typedef ze_result_t (ZE_APICALL *zet_pfnMetricCreateFromProgrammableExp2_t)(
+    zet_metric_programmable_exp_handle_t,
+    uint32_t,
+    zet_metric_programmable_param_value_exp_t*,
+    const char*,
+    const char*,
+    uint32_t*,
+    zet_metric_handle_t*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
 /// @brief Function-pointer for zetMetricCreateFromProgrammableExp 
 typedef ze_result_t (ZE_APICALL *zet_pfnMetricCreateFromProgrammableExp_t)(
     zet_metric_programmable_exp_handle_t,
@@ -566,6 +565,7 @@ typedef ze_result_t (ZE_APICALL *zet_pfnMetricDestroyExp_t)(
 /// @brief Table of MetricExp functions pointers
 typedef struct _zet_metric_exp_dditable_t
 {
+    zet_pfnMetricCreateFromProgrammableExp2_t                   pfnCreateFromProgrammableExp2;
     zet_pfnMetricCreateFromProgrammableExp_t                    pfnCreateFromProgrammableExp;
     zet_pfnMetricDestroyExp_t                                   pfnDestroyExp;
 } zet_metric_exp_dditable_t;

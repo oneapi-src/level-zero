@@ -6361,7 +6361,7 @@ namespace validation_layer
                                                         ///< memory stats.
         )
     {
-        auto pfnGetVFMemoryUtilizationExp2 = context.zesDdiTable.VFManagement.pfnGetVFMemoryUtilizationExp2;
+        auto pfnGetVFMemoryUtilizationExp2 = context.zesDdiTable.VFManagementExp.pfnGetVFMemoryUtilizationExp2;
 
         if( nullptr == pfnGetVFMemoryUtilizationExp2 )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
@@ -6411,7 +6411,7 @@ namespace validation_layer
                                                         ///< engine stats.
         )
     {
-        auto pfnGetVFEngineUtilizationExp2 = context.zesDdiTable.VFManagement.pfnGetVFEngineUtilizationExp2;
+        auto pfnGetVFEngineUtilizationExp2 = context.zesDdiTable.VFManagementExp.pfnGetVFEngineUtilizationExp2;
 
         if( nullptr == pfnGetVFEngineUtilizationExp2 )
             return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
@@ -7514,40 +7514,6 @@ zesGetTemperatureProcAddrTable(
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Exported function for filling application's VFManagement table
-///        with current process' addresses
-///
-/// @returns
-///     - ::ZE_RESULT_SUCCESS
-///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
-///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
-ZE_DLLEXPORT ze_result_t ZE_APICALL
-zesGetVFManagementProcAddrTable(
-    ze_api_version_t version,                       ///< [in] API version requested
-    zes_vf_management_dditable_t* pDdiTable         ///< [in,out] pointer to table of DDI function pointers
-    )
-{
-    auto& dditable = validation_layer::context.zesDdiTable.VFManagement;
-
-    if( nullptr == pDdiTable )
-        return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
-
-    if (ZE_MAJOR_VERSION(validation_layer::context.version) != ZE_MAJOR_VERSION(version) ||
-        ZE_MINOR_VERSION(validation_layer::context.version) > ZE_MINOR_VERSION(version))
-        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-
-    ze_result_t result = ZE_RESULT_SUCCESS;
-
-    dditable.pfnGetVFMemoryUtilizationExp2               = pDdiTable->pfnGetVFMemoryUtilizationExp2;
-    pDdiTable->pfnGetVFMemoryUtilizationExp2             = validation_layer::zesVFManagementGetVFMemoryUtilizationExp2;
-
-    dditable.pfnGetVFEngineUtilizationExp2               = pDdiTable->pfnGetVFEngineUtilizationExp2;
-    pDdiTable->pfnGetVFEngineUtilizationExp2             = validation_layer::zesVFManagementGetVFEngineUtilizationExp2;
-
-    return result;
-}
-
-///////////////////////////////////////////////////////////////////////////////
 /// @brief Exported function for filling application's VFManagementExp table
 ///        with current process' addresses
 ///
@@ -7574,6 +7540,12 @@ zesGetVFManagementExpProcAddrTable(
 
     dditable.pfnGetVFCapabilitiesExp                     = pDdiTable->pfnGetVFCapabilitiesExp;
     pDdiTable->pfnGetVFCapabilitiesExp                   = validation_layer::zesVFManagementGetVFCapabilitiesExp;
+
+    dditable.pfnGetVFMemoryUtilizationExp2               = pDdiTable->pfnGetVFMemoryUtilizationExp2;
+    pDdiTable->pfnGetVFMemoryUtilizationExp2             = validation_layer::zesVFManagementGetVFMemoryUtilizationExp2;
+
+    dditable.pfnGetVFEngineUtilizationExp2               = pDdiTable->pfnGetVFEngineUtilizationExp2;
+    pDdiTable->pfnGetVFEngineUtilizationExp2             = validation_layer::zesVFManagementGetVFEngineUtilizationExp2;
 
     dditable.pfnGetVFPropertiesExp                       = pDdiTable->pfnGetVFPropertiesExp;
     pDdiTable->pfnGetVFPropertiesExp                     = validation_layer::zesVFManagementGetVFPropertiesExp;

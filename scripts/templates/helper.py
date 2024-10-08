@@ -39,7 +39,7 @@ class obj_traits:
     @staticmethod
     def is_experimental(obj):
         try:
-            return True if re.search("Exp$", obj['name']) else False
+            return True if re.search("Exp[0-9]*$", obj['name']) else False
         except:
             return False
 
