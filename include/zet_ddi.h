@@ -565,9 +565,9 @@ typedef ze_result_t (ZE_APICALL *zet_pfnMetricDestroyExp_t)(
 /// @brief Table of MetricExp functions pointers
 typedef struct _zet_metric_exp_dditable_t
 {
-    zet_pfnMetricCreateFromProgrammableExp2_t                   pfnCreateFromProgrammableExp2;
     zet_pfnMetricCreateFromProgrammableExp_t                    pfnCreateFromProgrammableExp;
     zet_pfnMetricDestroyExp_t                                   pfnDestroyExp;
+    zet_pfnMetricCreateFromProgrammableExp2_t                   pfnCreateFromProgrammableExp2;
 } zet_metric_exp_dditable_t;
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -737,11 +737,11 @@ typedef ze_result_t (ZE_APICALL *zet_pfnMetricGroupDestroyExp_t)(
 /// @brief Table of MetricGroupExp functions pointers
 typedef struct _zet_metric_group_exp_dditable_t
 {
-    zet_pfnMetricGroupCreateExp_t                               pfnCreateExp;
     zet_pfnMetricGroupCalculateMultipleMetricValuesExp_t        pfnCalculateMultipleMetricValuesExp;
     zet_pfnMetricGroupGetGlobalTimestampsExp_t                  pfnGetGlobalTimestampsExp;
     zet_pfnMetricGroupGetExportDataExp_t                        pfnGetExportDataExp;
     zet_pfnMetricGroupCalculateMetricExportDataExp_t            pfnCalculateMetricExportDataExp;
+    zet_pfnMetricGroupCreateExp_t                               pfnCreateExp;
     zet_pfnMetricGroupAddMetricExp_t                            pfnAddMetricExp;
     zet_pfnMetricGroupRemoveMetricExp_t                         pfnRemoveMetricExp;
     zet_pfnMetricGroupCloseExp_t                                pfnCloseExp;
@@ -1148,10 +1148,7 @@ typedef ze_result_t (ZE_APICALL *zet_pfnGetDebugProcAddrTable_t)(
 typedef struct _zet_dditable_t
 {
     zet_metric_programmable_exp_dditable_t  MetricProgrammableExp;
-    zet_metric_tracer_exp_dditable_t    MetricTracerExp;
-    zet_metric_decoder_exp_dditable_t   MetricDecoderExp;
     zet_device_dditable_t               Device;
-    zet_device_exp_dditable_t           DeviceExp;
     zet_context_dditable_t              Context;
     zet_command_list_dditable_t         CommandList;
     zet_module_dditable_t               Module;
@@ -1165,6 +1162,9 @@ typedef struct _zet_dditable_t
     zet_metric_query_dditable_t         MetricQuery;
     zet_tracer_exp_dditable_t           TracerExp;
     zet_debug_dditable_t                Debug;
+    zet_metric_tracer_exp_dditable_t    MetricTracerExp;
+    zet_metric_decoder_exp_dditable_t   MetricDecoderExp;
+    zet_device_exp_dditable_t           DeviceExp;
 } zet_dditable_t;
 
 #if defined(__cplusplus)

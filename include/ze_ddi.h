@@ -1200,14 +1200,14 @@ typedef ze_result_t (ZE_APICALL *ze_pfnCommandListImmediateAppendCommandListsExp
 /// @brief Table of CommandListExp functions pointers
 typedef struct _ze_command_list_exp_dditable_t
 {
-    ze_pfnCommandListGetNextCommandIdWithKernelsExp_t           pfnGetNextCommandIdWithKernelsExp;
+    ze_pfnCommandListCreateCloneExp_t                           pfnCreateCloneExp;
+    ze_pfnCommandListImmediateAppendCommandListsExp_t           pfnImmediateAppendCommandListsExp;
+    ze_pfnCommandListGetNextCommandIdExp_t                      pfnGetNextCommandIdExp;
     ze_pfnCommandListUpdateMutableCommandsExp_t                 pfnUpdateMutableCommandsExp;
     ze_pfnCommandListUpdateMutableCommandSignalEventExp_t       pfnUpdateMutableCommandSignalEventExp;
-    ze_pfnCommandListUpdateMutableCommandKernelsExp_t           pfnUpdateMutableCommandKernelsExp;
-    ze_pfnCommandListCreateCloneExp_t                           pfnCreateCloneExp;
-    ze_pfnCommandListGetNextCommandIdExp_t                      pfnGetNextCommandIdExp;
     ze_pfnCommandListUpdateMutableCommandWaitEventsExp_t        pfnUpdateMutableCommandWaitEventsExp;
-    ze_pfnCommandListImmediateAppendCommandListsExp_t           pfnImmediateAppendCommandListsExp;
+    ze_pfnCommandListGetNextCommandIdWithKernelsExp_t           pfnGetNextCommandIdWithKernelsExp;
+    ze_pfnCommandListUpdateMutableCommandKernelsExp_t           pfnUpdateMutableCommandKernelsExp;
 } ze_command_list_exp_dditable_t;
 
 ///////////////////////////////////////////////////////////////////////////////

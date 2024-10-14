@@ -1922,14 +1922,14 @@ typedef ze_result_t (ZE_APICALL *zes_pfnVFManagementSetVFTelemetrySamplingInterv
 /// @brief Table of VFManagementExp functions pointers
 typedef struct _zes_vf_management_exp_dditable_t
 {
-    zes_pfnVFManagementGetVFCapabilitiesExp_t                   pfnGetVFCapabilitiesExp;
-    zes_pfnVFManagementGetVFMemoryUtilizationExp2_t             pfnGetVFMemoryUtilizationExp2;
-    zes_pfnVFManagementGetVFEngineUtilizationExp2_t             pfnGetVFEngineUtilizationExp2;
     zes_pfnVFManagementGetVFPropertiesExp_t                     pfnGetVFPropertiesExp;
     zes_pfnVFManagementGetVFMemoryUtilizationExp_t              pfnGetVFMemoryUtilizationExp;
     zes_pfnVFManagementGetVFEngineUtilizationExp_t              pfnGetVFEngineUtilizationExp;
     zes_pfnVFManagementSetVFTelemetryModeExp_t                  pfnSetVFTelemetryModeExp;
     zes_pfnVFManagementSetVFTelemetrySamplingIntervalExp_t      pfnSetVFTelemetrySamplingIntervalExp;
+    zes_pfnVFManagementGetVFCapabilitiesExp_t                   pfnGetVFCapabilitiesExp;
+    zes_pfnVFManagementGetVFMemoryUtilizationExp2_t             pfnGetVFMemoryUtilizationExp2;
+    zes_pfnVFManagementGetVFEngineUtilizationExp2_t             pfnGetVFEngineUtilizationExp2;
 } zes_vf_management_exp_dditable_t;
 
 ///////////////////////////////////////////////////////////////////////////////
