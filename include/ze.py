@@ -4,7 +4,7 @@
  SPDX-License-Identifier: MIT
 
  @file ze.py
- @version v1.11-r1.11.3
+ @version v1.11-r1.11.4
 
  """
 import platform
@@ -2067,157 +2067,6 @@ class ze_global_offset_exp_version_t(c_int):
 
 
 ###############################################################################
-## @brief Mutable Command List Extension Name
-ZE_MUTABLE_COMMAND_LIST_EXP_NAME = "ZE_experimental_mutable_command_list"
-
-###############################################################################
-## @brief Mutable Command List Extension Version(s)
-class ze_mutable_command_list_exp_version_v(IntEnum):
-    _1_0 = ZE_MAKE_VERSION( 1, 0 )                                          ## version 1.0
-    _1_1 = ZE_MAKE_VERSION( 1, 1 )                                          ## version 1.1
-    CURRENT = ZE_MAKE_VERSION( 1, 1 )                                       ## latest known version
-
-class ze_mutable_command_list_exp_version_t(c_int):
-    def __str__(self):
-        return str(ze_mutable_command_list_exp_version_v(self.value))
-
-
-###############################################################################
-## @brief Mutable command flags
-class ze_mutable_command_exp_flags_v(IntEnum):
-    KERNEL_ARGUMENTS = ZE_BIT(0)                                            ## kernel arguments
-    GROUP_COUNT = ZE_BIT(1)                                                 ## kernel group count
-    GROUP_SIZE = ZE_BIT(2)                                                  ## kernel group size
-    GLOBAL_OFFSET = ZE_BIT(3)                                               ## kernel global offset
-    SIGNAL_EVENT = ZE_BIT(4)                                                ## command signal event
-    WAIT_EVENTS = ZE_BIT(5)                                                 ## command wait events
-    KERNEL_INSTRUCTION = ZE_BIT(6)                                          ## command kernel
-    GRAPH_ARGUMENTS = ZE_BIT(7)                                             ## graph arguments
-
-class ze_mutable_command_exp_flags_t(c_int):
-    def __str__(self):
-        return hex(self.value)
-
-
-###############################################################################
-## @brief Mutable command identifier descriptor
-class ze_mutable_command_id_exp_desc_t(Structure):
-    _fields_ = [
-        ("stype", ze_structure_type_t),                                 ## [in] type of this structure
-        ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
-                                                                        ## structure (i.e. contains stype and pNext).
-        ("flags", ze_mutable_command_exp_flags_t)                       ## [in] mutable command flags.
-                                                                        ##  - must be 0 (default, equivalent to setting all flags bar kernel
-                                                                        ## instruction), or a valid combination of ::ze_mutable_command_exp_flag_t
-                                                                        ##  - in order to include kernel instruction mutation,
-                                                                        ## ::ZE_MUTABLE_COMMAND_EXP_FLAG_KERNEL_INSTRUCTION must be explictly included
-    ]
-
-###############################################################################
-## @brief Mutable command list flags
-class ze_mutable_command_list_exp_flags_v(IntEnum):
-    RESERVED = ZE_BIT(0)                                                    ## reserved
-
-class ze_mutable_command_list_exp_flags_t(c_int):
-    def __str__(self):
-        return hex(self.value)
-
-
-###############################################################################
-## @brief Mutable command list properties
-class ze_mutable_command_list_exp_properties_t(Structure):
-    _fields_ = [
-        ("stype", ze_structure_type_t),                                 ## [in] type of this structure
-        ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
-                                                                        ## structure (i.e. contains stype and pNext).
-        ("mutableCommandListFlags", ze_mutable_command_list_exp_flags_t),   ## [out] mutable command list flags
-        ("mutableCommandFlags", ze_mutable_command_exp_flags_t)         ## [out] mutable command flags
-    ]
-
-###############################################################################
-## @brief Mutable command list descriptor
-class ze_mutable_command_list_exp_desc_t(Structure):
-    _fields_ = [
-        ("stype", ze_structure_type_t),                                 ## [in] type of this structure
-        ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
-                                                                        ## structure (i.e. contains stype and pNext).
-        ("flags", ze_mutable_command_list_exp_flags_t)                  ## [in] mutable command list flags.
-                                                                        ##  - must be 0 (default) or a valid combination of ::ze_mutable_command_list_exp_flag_t
-    ]
-
-###############################################################################
-## @brief Mutable commands descriptor
-class ze_mutable_commands_exp_desc_t(Structure):
-    _fields_ = [
-        ("stype", ze_structure_type_t),                                 ## [in] type of this structure
-        ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
-                                                                        ## structure (i.e. contains stype and pNext).
-        ("flags", c_ulong)                                              ## [in] must be 0, this field is reserved for future use
-    ]
-
-###############################################################################
-## @brief Mutable kernel argument descriptor
-class ze_mutable_kernel_argument_exp_desc_t(Structure):
-    _fields_ = [
-        ("stype", ze_structure_type_t),                                 ## [in] type of this structure
-        ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
-                                                                        ## structure (i.e. contains stype and pNext).
-        ("commandId", c_ulonglong),                                     ## [in] command identifier
-        ("argIndex", c_ulong),                                          ## [in] kernel argument index
-        ("argSize", c_size_t),                                          ## [in] kernel argument size
-        ("pArgValue", c_void_p)                                         ## [in] pointer to kernel argument value
-    ]
-
-###############################################################################
-## @brief Mutable kernel group count descriptor
-class ze_mutable_group_count_exp_desc_t(Structure):
-    _fields_ = [
-        ("stype", ze_structure_type_t),                                 ## [in] type of this structure
-        ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
-                                                                        ## structure (i.e. contains stype and pNext).
-        ("commandId", c_ulonglong),                                     ## [in] command identifier
-        ("pGroupCount", POINTER(ze_group_count_t))                      ## [in] pointer to group count
-    ]
-
-###############################################################################
-## @brief Mutable kernel group size descriptor
-class ze_mutable_group_size_exp_desc_t(Structure):
-    _fields_ = [
-        ("stype", ze_structure_type_t),                                 ## [in] type of this structure
-        ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
-                                                                        ## structure (i.e. contains stype and pNext).
-        ("commandId", c_ulonglong),                                     ## [in] command identifier
-        ("groupSizeX", c_ulong),                                        ## [in] group size for X dimension to use for the kernel
-        ("groupSizeY", c_ulong),                                        ## [in] group size for Y dimension to use for the kernel
-        ("groupSizeZ", c_ulong)                                         ## [in] group size for Z dimension to use for the kernel
-    ]
-
-###############################################################################
-## @brief Mutable kernel global offset descriptor
-class ze_mutable_global_offset_exp_desc_t(Structure):
-    _fields_ = [
-        ("stype", ze_structure_type_t),                                 ## [in] type of this structure
-        ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
-                                                                        ## structure (i.e. contains stype and pNext).
-        ("commandId", c_ulonglong),                                     ## [in] command identifier
-        ("offsetX", c_ulong),                                           ## [in] global offset for X dimension to use for this kernel
-        ("offsetY", c_ulong),                                           ## [in] global offset for Y dimension to use for this kernel
-        ("offsetZ", c_ulong)                                            ## [in] global offset for Z dimension to use for this kernel
-    ]
-
-###############################################################################
-## @brief Mutable graph argument descriptor
-class ze_mutable_graph_argument_exp_desc_t(Structure):
-    _fields_ = [
-        ("stype", ze_structure_type_t),                                 ## [in] type of this structure
-        ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
-                                                                        ## structure (i.e. contains stype and pNext).
-        ("commandId", c_ulonglong),                                     ## [in] command identifier
-        ("argIndex", c_ulong),                                          ## [in] graph argument index
-        ("pArgValue", c_void_p)                                         ## [in] pointer to graph argument value
-    ]
-
-###############################################################################
 ## @brief Relaxed Allocation Limits Extension Name
 ZE_RELAXED_ALLOCATION_LIMITS_EXP_NAME = "ZE_experimental_relaxed_allocation_limits"
 
@@ -4014,6 +3863,157 @@ class ze_immediate_command_list_append_exp_version_t(c_int):
 
 
 ###############################################################################
+## @brief Mutable Command List Extension Name
+ZE_MUTABLE_COMMAND_LIST_EXP_NAME = "ZE_experimental_mutable_command_list"
+
+###############################################################################
+## @brief Mutable Command List Extension Version(s)
+class ze_mutable_command_list_exp_version_v(IntEnum):
+    _1_0 = ZE_MAKE_VERSION( 1, 0 )                                          ## version 1.0
+    _1_1 = ZE_MAKE_VERSION( 1, 1 )                                          ## version 1.1
+    CURRENT = ZE_MAKE_VERSION( 1, 1 )                                       ## latest known version
+
+class ze_mutable_command_list_exp_version_t(c_int):
+    def __str__(self):
+        return str(ze_mutable_command_list_exp_version_v(self.value))
+
+
+###############################################################################
+## @brief Mutable command flags
+class ze_mutable_command_exp_flags_v(IntEnum):
+    KERNEL_ARGUMENTS = ZE_BIT(0)                                            ## kernel arguments
+    GROUP_COUNT = ZE_BIT(1)                                                 ## kernel group count
+    GROUP_SIZE = ZE_BIT(2)                                                  ## kernel group size
+    GLOBAL_OFFSET = ZE_BIT(3)                                               ## kernel global offset
+    SIGNAL_EVENT = ZE_BIT(4)                                                ## command signal event
+    WAIT_EVENTS = ZE_BIT(5)                                                 ## command wait events
+    KERNEL_INSTRUCTION = ZE_BIT(6)                                          ## command kernel
+    GRAPH_ARGUMENTS = ZE_BIT(7)                                             ## graph arguments
+
+class ze_mutable_command_exp_flags_t(c_int):
+    def __str__(self):
+        return hex(self.value)
+
+
+###############################################################################
+## @brief Mutable command identifier descriptor
+class ze_mutable_command_id_exp_desc_t(Structure):
+    _fields_ = [
+        ("stype", ze_structure_type_t),                                 ## [in] type of this structure
+        ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains stype and pNext).
+        ("flags", ze_mutable_command_exp_flags_t)                       ## [in] mutable command flags.
+                                                                        ##  - must be 0 (default, equivalent to setting all flags bar kernel
+                                                                        ## instruction), or a valid combination of ::ze_mutable_command_exp_flag_t
+                                                                        ##  - in order to include kernel instruction mutation,
+                                                                        ## ::ZE_MUTABLE_COMMAND_EXP_FLAG_KERNEL_INSTRUCTION must be explictly included
+    ]
+
+###############################################################################
+## @brief Mutable command list flags
+class ze_mutable_command_list_exp_flags_v(IntEnum):
+    RESERVED = ZE_BIT(0)                                                    ## reserved
+
+class ze_mutable_command_list_exp_flags_t(c_int):
+    def __str__(self):
+        return hex(self.value)
+
+
+###############################################################################
+## @brief Mutable command list properties
+class ze_mutable_command_list_exp_properties_t(Structure):
+    _fields_ = [
+        ("stype", ze_structure_type_t),                                 ## [in] type of this structure
+        ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains stype and pNext).
+        ("mutableCommandListFlags", ze_mutable_command_list_exp_flags_t),   ## [out] mutable command list flags
+        ("mutableCommandFlags", ze_mutable_command_exp_flags_t)         ## [out] mutable command flags
+    ]
+
+###############################################################################
+## @brief Mutable command list descriptor
+class ze_mutable_command_list_exp_desc_t(Structure):
+    _fields_ = [
+        ("stype", ze_structure_type_t),                                 ## [in] type of this structure
+        ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains stype and pNext).
+        ("flags", ze_mutable_command_list_exp_flags_t)                  ## [in] mutable command list flags.
+                                                                        ##  - must be 0 (default) or a valid combination of ::ze_mutable_command_list_exp_flag_t
+    ]
+
+###############################################################################
+## @brief Mutable commands descriptor
+class ze_mutable_commands_exp_desc_t(Structure):
+    _fields_ = [
+        ("stype", ze_structure_type_t),                                 ## [in] type of this structure
+        ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains stype and pNext).
+        ("flags", c_ulong)                                              ## [in] must be 0, this field is reserved for future use
+    ]
+
+###############################################################################
+## @brief Mutable kernel argument descriptor
+class ze_mutable_kernel_argument_exp_desc_t(Structure):
+    _fields_ = [
+        ("stype", ze_structure_type_t),                                 ## [in] type of this structure
+        ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains stype and pNext).
+        ("commandId", c_ulonglong),                                     ## [in] command identifier
+        ("argIndex", c_ulong),                                          ## [in] kernel argument index
+        ("argSize", c_size_t),                                          ## [in] kernel argument size
+        ("pArgValue", c_void_p)                                         ## [in] pointer to kernel argument value
+    ]
+
+###############################################################################
+## @brief Mutable kernel group count descriptor
+class ze_mutable_group_count_exp_desc_t(Structure):
+    _fields_ = [
+        ("stype", ze_structure_type_t),                                 ## [in] type of this structure
+        ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains stype and pNext).
+        ("commandId", c_ulonglong),                                     ## [in] command identifier
+        ("pGroupCount", POINTER(ze_group_count_t))                      ## [in] pointer to group count
+    ]
+
+###############################################################################
+## @brief Mutable kernel group size descriptor
+class ze_mutable_group_size_exp_desc_t(Structure):
+    _fields_ = [
+        ("stype", ze_structure_type_t),                                 ## [in] type of this structure
+        ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains stype and pNext).
+        ("commandId", c_ulonglong),                                     ## [in] command identifier
+        ("groupSizeX", c_ulong),                                        ## [in] group size for X dimension to use for the kernel
+        ("groupSizeY", c_ulong),                                        ## [in] group size for Y dimension to use for the kernel
+        ("groupSizeZ", c_ulong)                                         ## [in] group size for Z dimension to use for the kernel
+    ]
+
+###############################################################################
+## @brief Mutable kernel global offset descriptor
+class ze_mutable_global_offset_exp_desc_t(Structure):
+    _fields_ = [
+        ("stype", ze_structure_type_t),                                 ## [in] type of this structure
+        ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains stype and pNext).
+        ("commandId", c_ulonglong),                                     ## [in] command identifier
+        ("offsetX", c_ulong),                                           ## [in] global offset for X dimension to use for this kernel
+        ("offsetY", c_ulong),                                           ## [in] global offset for Y dimension to use for this kernel
+        ("offsetZ", c_ulong)                                            ## [in] global offset for Z dimension to use for this kernel
+    ]
+
+###############################################################################
+## @brief Mutable graph argument descriptor
+class ze_mutable_graph_argument_exp_desc_t(Structure):
+    _fields_ = [
+        ("stype", ze_structure_type_t),                                 ## [in] type of this structure
+        ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains stype and pNext).
+        ("commandId", c_ulonglong),                                     ## [in] command identifier
+        ("argIndex", c_ulong),                                          ## [in] graph argument index
+        ("pArgValue", c_void_p)                                         ## [in] pointer to graph argument value
+    ]
+
+###############################################################################
 __use_win_types = "Windows" == platform.uname()[0]
 
 ###############################################################################
@@ -4790,20 +4790,6 @@ else:
     _zeCommandListCreateCloneExp_t = CFUNCTYPE( ze_result_t, ze_command_list_handle_t, POINTER(ze_command_list_handle_t) )
 
 ###############################################################################
-## @brief Function-pointer for zeCommandListGetNextCommandIdExp
-if __use_win_types:
-    _zeCommandListGetNextCommandIdExp_t = WINFUNCTYPE( ze_result_t, ze_command_list_handle_t, POINTER(ze_mutable_command_id_exp_desc_t), POINTER(c_ulonglong) )
-else:
-    _zeCommandListGetNextCommandIdExp_t = CFUNCTYPE( ze_result_t, ze_command_list_handle_t, POINTER(ze_mutable_command_id_exp_desc_t), POINTER(c_ulonglong) )
-
-###############################################################################
-## @brief Function-pointer for zeCommandListUpdateMutableCommandWaitEventsExp
-if __use_win_types:
-    _zeCommandListUpdateMutableCommandWaitEventsExp_t = WINFUNCTYPE( ze_result_t, ze_command_list_handle_t, c_ulonglong, c_ulong, POINTER(ze_event_handle_t) )
-else:
-    _zeCommandListUpdateMutableCommandWaitEventsExp_t = CFUNCTYPE( ze_result_t, ze_command_list_handle_t, c_ulonglong, c_ulong, POINTER(ze_event_handle_t) )
-
-###############################################################################
 ## @brief Function-pointer for zeCommandListImmediateAppendCommandListsExp
 if __use_win_types:
     _zeCommandListImmediateAppendCommandListsExp_t = WINFUNCTYPE( ze_result_t, ze_command_list_handle_t, c_ulong, POINTER(ze_command_list_handle_t), ze_event_handle_t, c_ulong, POINTER(ze_event_handle_t) )
@@ -4811,11 +4797,11 @@ else:
     _zeCommandListImmediateAppendCommandListsExp_t = CFUNCTYPE( ze_result_t, ze_command_list_handle_t, c_ulong, POINTER(ze_command_list_handle_t), ze_event_handle_t, c_ulong, POINTER(ze_event_handle_t) )
 
 ###############################################################################
-## @brief Function-pointer for zeCommandListGetNextCommandIdWithKernelsExp
+## @brief Function-pointer for zeCommandListGetNextCommandIdExp
 if __use_win_types:
-    _zeCommandListGetNextCommandIdWithKernelsExp_t = WINFUNCTYPE( ze_result_t, ze_command_list_handle_t, POINTER(ze_mutable_command_id_exp_desc_t), c_ulong, POINTER(ze_kernel_handle_t), POINTER(c_ulonglong) )
+    _zeCommandListGetNextCommandIdExp_t = WINFUNCTYPE( ze_result_t, ze_command_list_handle_t, POINTER(ze_mutable_command_id_exp_desc_t), POINTER(c_ulonglong) )
 else:
-    _zeCommandListGetNextCommandIdWithKernelsExp_t = CFUNCTYPE( ze_result_t, ze_command_list_handle_t, POINTER(ze_mutable_command_id_exp_desc_t), c_ulong, POINTER(ze_kernel_handle_t), POINTER(c_ulonglong) )
+    _zeCommandListGetNextCommandIdExp_t = CFUNCTYPE( ze_result_t, ze_command_list_handle_t, POINTER(ze_mutable_command_id_exp_desc_t), POINTER(c_ulonglong) )
 
 ###############################################################################
 ## @brief Function-pointer for zeCommandListUpdateMutableCommandsExp
@@ -4832,6 +4818,20 @@ else:
     _zeCommandListUpdateMutableCommandSignalEventExp_t = CFUNCTYPE( ze_result_t, ze_command_list_handle_t, c_ulonglong, ze_event_handle_t )
 
 ###############################################################################
+## @brief Function-pointer for zeCommandListUpdateMutableCommandWaitEventsExp
+if __use_win_types:
+    _zeCommandListUpdateMutableCommandWaitEventsExp_t = WINFUNCTYPE( ze_result_t, ze_command_list_handle_t, c_ulonglong, c_ulong, POINTER(ze_event_handle_t) )
+else:
+    _zeCommandListUpdateMutableCommandWaitEventsExp_t = CFUNCTYPE( ze_result_t, ze_command_list_handle_t, c_ulonglong, c_ulong, POINTER(ze_event_handle_t) )
+
+###############################################################################
+## @brief Function-pointer for zeCommandListGetNextCommandIdWithKernelsExp
+if __use_win_types:
+    _zeCommandListGetNextCommandIdWithKernelsExp_t = WINFUNCTYPE( ze_result_t, ze_command_list_handle_t, POINTER(ze_mutable_command_id_exp_desc_t), c_ulong, POINTER(ze_kernel_handle_t), POINTER(c_ulonglong) )
+else:
+    _zeCommandListGetNextCommandIdWithKernelsExp_t = CFUNCTYPE( ze_result_t, ze_command_list_handle_t, POINTER(ze_mutable_command_id_exp_desc_t), c_ulong, POINTER(ze_kernel_handle_t), POINTER(c_ulonglong) )
+
+###############################################################################
 ## @brief Function-pointer for zeCommandListUpdateMutableCommandKernelsExp
 if __use_win_types:
     _zeCommandListUpdateMutableCommandKernelsExp_t = WINFUNCTYPE( ze_result_t, ze_command_list_handle_t, c_ulong, POINTER(c_ulonglong), POINTER(ze_kernel_handle_t) )
@@ -4844,12 +4844,12 @@ else:
 class _ze_command_list_exp_dditable_t(Structure):
     _fields_ = [
         ("pfnCreateCloneExp", c_void_p),                                ## _zeCommandListCreateCloneExp_t
-        ("pfnGetNextCommandIdExp", c_void_p),                           ## _zeCommandListGetNextCommandIdExp_t
-        ("pfnUpdateMutableCommandWaitEventsExp", c_void_p),             ## _zeCommandListUpdateMutableCommandWaitEventsExp_t
         ("pfnImmediateAppendCommandListsExp", c_void_p),                ## _zeCommandListImmediateAppendCommandListsExp_t
-        ("pfnGetNextCommandIdWithKernelsExp", c_void_p),                ## _zeCommandListGetNextCommandIdWithKernelsExp_t
+        ("pfnGetNextCommandIdExp", c_void_p),                           ## _zeCommandListGetNextCommandIdExp_t
         ("pfnUpdateMutableCommandsExp", c_void_p),                      ## _zeCommandListUpdateMutableCommandsExp_t
         ("pfnUpdateMutableCommandSignalEventExp", c_void_p),            ## _zeCommandListUpdateMutableCommandSignalEventExp_t
+        ("pfnUpdateMutableCommandWaitEventsExp", c_void_p),             ## _zeCommandListUpdateMutableCommandWaitEventsExp_t
+        ("pfnGetNextCommandIdWithKernelsExp", c_void_p),                ## _zeCommandListGetNextCommandIdWithKernelsExp_t
         ("pfnUpdateMutableCommandKernelsExp", c_void_p)                 ## _zeCommandListUpdateMutableCommandKernelsExp_t
     ]
 
@@ -5940,12 +5940,12 @@ class ZE_DDI:
 
         # attach function interface to function address
         self.zeCommandListCreateCloneExp = _zeCommandListCreateCloneExp_t(self.__dditable.CommandListExp.pfnCreateCloneExp)
-        self.zeCommandListGetNextCommandIdExp = _zeCommandListGetNextCommandIdExp_t(self.__dditable.CommandListExp.pfnGetNextCommandIdExp)
-        self.zeCommandListUpdateMutableCommandWaitEventsExp = _zeCommandListUpdateMutableCommandWaitEventsExp_t(self.__dditable.CommandListExp.pfnUpdateMutableCommandWaitEventsExp)
         self.zeCommandListImmediateAppendCommandListsExp = _zeCommandListImmediateAppendCommandListsExp_t(self.__dditable.CommandListExp.pfnImmediateAppendCommandListsExp)
-        self.zeCommandListGetNextCommandIdWithKernelsExp = _zeCommandListGetNextCommandIdWithKernelsExp_t(self.__dditable.CommandListExp.pfnGetNextCommandIdWithKernelsExp)
+        self.zeCommandListGetNextCommandIdExp = _zeCommandListGetNextCommandIdExp_t(self.__dditable.CommandListExp.pfnGetNextCommandIdExp)
         self.zeCommandListUpdateMutableCommandsExp = _zeCommandListUpdateMutableCommandsExp_t(self.__dditable.CommandListExp.pfnUpdateMutableCommandsExp)
         self.zeCommandListUpdateMutableCommandSignalEventExp = _zeCommandListUpdateMutableCommandSignalEventExp_t(self.__dditable.CommandListExp.pfnUpdateMutableCommandSignalEventExp)
+        self.zeCommandListUpdateMutableCommandWaitEventsExp = _zeCommandListUpdateMutableCommandWaitEventsExp_t(self.__dditable.CommandListExp.pfnUpdateMutableCommandWaitEventsExp)
+        self.zeCommandListGetNextCommandIdWithKernelsExp = _zeCommandListGetNextCommandIdWithKernelsExp_t(self.__dditable.CommandListExp.pfnGetNextCommandIdWithKernelsExp)
         self.zeCommandListUpdateMutableCommandKernelsExp = _zeCommandListUpdateMutableCommandKernelsExp_t(self.__dditable.CommandListExp.pfnUpdateMutableCommandKernelsExp)
 
         # call driver to get function pointers

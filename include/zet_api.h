@@ -5,7 +5,7 @@
  * SPDX-License-Identifier: MIT
  *
  * @file zet_api.h
- * @version v1.11-r1.11.3
+ * @version v1.11-r1.11.4
  *
  */
 #ifndef _ZET_API_H
