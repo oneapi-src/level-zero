@@ -19,7 +19,7 @@ jobs:
     - name: Checkout base
       uses: actions/checkout@v3
       with:
-        ref: ${{ github.base_ref }}
+        ref: v1.17.45
         clean: true
         path: base
     - name: Checkout head
@@ -27,7 +27,7 @@ jobs:
       with:
         clean: true
         path: head
-        ref: ${{ github.event.pull_request.head.sha }}
+        ref: head
     - name: Build debug base
       run: |
         mkdir base/build
