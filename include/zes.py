@@ -4,7 +4,7 @@
  SPDX-License-Identifier: MIT
 
  @file zes.py
- @version v1.11-r1.11.1
+ @version v1.11-r1.11.3
 
  """
 import platform
@@ -2871,13 +2871,6 @@ class _zes_device_dditable_t(Structure):
     ]
 
 ###############################################################################
-## @brief Function-pointer for zesDeviceEnumEnabledVFExp
-if __use_win_types:
-    _zesDeviceEnumEnabledVFExp_t = WINFUNCTYPE( ze_result_t, zes_device_handle_t, POINTER(c_ulong), POINTER(zes_vf_handle_t) )
-else:
-    _zesDeviceEnumEnabledVFExp_t = CFUNCTYPE( ze_result_t, zes_device_handle_t, POINTER(c_ulong), POINTER(zes_vf_handle_t) )
-
-###############################################################################
 ## @brief Function-pointer for zesDeviceGetSubDevicePropertiesExp
 if __use_win_types:
     _zesDeviceGetSubDevicePropertiesExp_t = WINFUNCTYPE( ze_result_t, zes_device_handle_t, POINTER(c_ulong), POINTER(zes_subdevice_exp_properties_t) )
@@ -2891,14 +2884,21 @@ if __use_win_types:
 else:
     _zesDeviceEnumActiveVFExp_t = CFUNCTYPE( ze_result_t, zes_device_handle_t, POINTER(c_ulong), POINTER(zes_vf_handle_t) )
 
+###############################################################################
+## @brief Function-pointer for zesDeviceEnumEnabledVFExp
+if __use_win_types:
+    _zesDeviceEnumEnabledVFExp_t = WINFUNCTYPE( ze_result_t, zes_device_handle_t, POINTER(c_ulong), POINTER(zes_vf_handle_t) )
+else:
+    _zesDeviceEnumEnabledVFExp_t = CFUNCTYPE( ze_result_t, zes_device_handle_t, POINTER(c_ulong), POINTER(zes_vf_handle_t) )
+
 
 ###############################################################################
 ## @brief Table of DeviceExp functions pointers
 class _zes_device_exp_dditable_t(Structure):
     _fields_ = [
-        ("pfnEnumEnabledVFExp", c_void_p),                              ## _zesDeviceEnumEnabledVFExp_t
         ("pfnGetSubDevicePropertiesExp", c_void_p),                     ## _zesDeviceGetSubDevicePropertiesExp_t
-        ("pfnEnumActiveVFExp", c_void_p)                                ## _zesDeviceEnumActiveVFExp_t
+        ("pfnEnumActiveVFExp", c_void_p),                               ## _zesDeviceEnumActiveVFExp_t
+        ("pfnEnumEnabledVFExp", c_void_p)                               ## _zesDeviceEnumEnabledVFExp_t
     ]
 
 ###############################################################################
@@ -3834,27 +3834,6 @@ class _zes_diagnostics_dditable_t(Structure):
     ]
 
 ###############################################################################
-## @brief Function-pointer for zesVFManagementGetVFCapabilitiesExp
-if __use_win_types:
-    _zesVFManagementGetVFCapabilitiesExp_t = WINFUNCTYPE( ze_result_t, zes_vf_handle_t, POINTER(zes_vf_exp_capabilities_t) )
-else:
-    _zesVFManagementGetVFCapabilitiesExp_t = CFUNCTYPE( ze_result_t, zes_vf_handle_t, POINTER(zes_vf_exp_capabilities_t) )
-
-###############################################################################
-## @brief Function-pointer for zesVFManagementGetVFMemoryUtilizationExp2
-if __use_win_types:
-    _zesVFManagementGetVFMemoryUtilizationExp2_t = WINFUNCTYPE( ze_result_t, zes_vf_handle_t, POINTER(c_ulong), POINTER(zes_vf_util_mem_exp2_t) )
-else:
-    _zesVFManagementGetVFMemoryUtilizationExp2_t = CFUNCTYPE( ze_result_t, zes_vf_handle_t, POINTER(c_ulong), POINTER(zes_vf_util_mem_exp2_t) )
-
-###############################################################################
-## @brief Function-pointer for zesVFManagementGetVFEngineUtilizationExp2
-if __use_win_types:
-    _zesVFManagementGetVFEngineUtilizationExp2_t = WINFUNCTYPE( ze_result_t, zes_vf_handle_t, POINTER(c_ulong), POINTER(zes_vf_util_engine_exp2_t) )
-else:
-    _zesVFManagementGetVFEngineUtilizationExp2_t = CFUNCTYPE( ze_result_t, zes_vf_handle_t, POINTER(c_ulong), POINTER(zes_vf_util_engine_exp2_t) )
-
-###############################################################################
 ## @brief Function-pointer for zesVFManagementGetVFPropertiesExp
 if __use_win_types:
     _zesVFManagementGetVFPropertiesExp_t = WINFUNCTYPE( ze_result_t, zes_vf_handle_t, POINTER(zes_vf_exp_properties_t) )
@@ -3889,19 +3868,40 @@ if __use_win_types:
 else:
     _zesVFManagementSetVFTelemetrySamplingIntervalExp_t = CFUNCTYPE( ze_result_t, zes_vf_handle_t, zes_vf_info_util_exp_flags_t, c_ulonglong )
 
+###############################################################################
+## @brief Function-pointer for zesVFManagementGetVFCapabilitiesExp
+if __use_win_types:
+    _zesVFManagementGetVFCapabilitiesExp_t = WINFUNCTYPE( ze_result_t, zes_vf_handle_t, POINTER(zes_vf_exp_capabilities_t) )
+else:
+    _zesVFManagementGetVFCapabilitiesExp_t = CFUNCTYPE( ze_result_t, zes_vf_handle_t, POINTER(zes_vf_exp_capabilities_t) )
+
+###############################################################################
+## @brief Function-pointer for zesVFManagementGetVFMemoryUtilizationExp2
+if __use_win_types:
+    _zesVFManagementGetVFMemoryUtilizationExp2_t = WINFUNCTYPE( ze_result_t, zes_vf_handle_t, POINTER(c_ulong), POINTER(zes_vf_util_mem_exp2_t) )
+else:
+    _zesVFManagementGetVFMemoryUtilizationExp2_t = CFUNCTYPE( ze_result_t, zes_vf_handle_t, POINTER(c_ulong), POINTER(zes_vf_util_mem_exp2_t) )
+
+###############################################################################
+## @brief Function-pointer for zesVFManagementGetVFEngineUtilizationExp2
+if __use_win_types:
+    _zesVFManagementGetVFEngineUtilizationExp2_t = WINFUNCTYPE( ze_result_t, zes_vf_handle_t, POINTER(c_ulong), POINTER(zes_vf_util_engine_exp2_t) )
+else:
+    _zesVFManagementGetVFEngineUtilizationExp2_t = CFUNCTYPE( ze_result_t, zes_vf_handle_t, POINTER(c_ulong), POINTER(zes_vf_util_engine_exp2_t) )
+
 
 ###############################################################################
 ## @brief Table of VFManagementExp functions pointers
 class _zes_vf_management_exp_dditable_t(Structure):
     _fields_ = [
-        ("pfnGetVFCapabilitiesExp", c_void_p),                          ## _zesVFManagementGetVFCapabilitiesExp_t
-        ("pfnGetVFMemoryUtilizationExp2", c_void_p),                    ## _zesVFManagementGetVFMemoryUtilizationExp2_t
-        ("pfnGetVFEngineUtilizationExp2", c_void_p),                    ## _zesVFManagementGetVFEngineUtilizationExp2_t
         ("pfnGetVFPropertiesExp", c_void_p),                            ## _zesVFManagementGetVFPropertiesExp_t
         ("pfnGetVFMemoryUtilizationExp", c_void_p),                     ## _zesVFManagementGetVFMemoryUtilizationExp_t
         ("pfnGetVFEngineUtilizationExp", c_void_p),                     ## _zesVFManagementGetVFEngineUtilizationExp_t
         ("pfnSetVFTelemetryModeExp", c_void_p),                         ## _zesVFManagementSetVFTelemetryModeExp_t
-        ("pfnSetVFTelemetrySamplingIntervalExp", c_void_p)              ## _zesVFManagementSetVFTelemetrySamplingIntervalExp_t
+        ("pfnSetVFTelemetrySamplingIntervalExp", c_void_p),             ## _zesVFManagementSetVFTelemetrySamplingIntervalExp_t
+        ("pfnGetVFCapabilitiesExp", c_void_p),                          ## _zesVFManagementGetVFCapabilitiesExp_t
+        ("pfnGetVFMemoryUtilizationExp2", c_void_p),                    ## _zesVFManagementGetVFMemoryUtilizationExp2_t
+        ("pfnGetVFEngineUtilizationExp2", c_void_p)                     ## _zesVFManagementGetVFEngineUtilizationExp2_t
     ]
 
 ###############################################################################
@@ -4010,9 +4010,9 @@ class ZES_DDI:
         self.__dditable.DeviceExp = _DeviceExp
 
         # attach function interface to function address
-        self.zesDeviceEnumEnabledVFExp = _zesDeviceEnumEnabledVFExp_t(self.__dditable.DeviceExp.pfnEnumEnabledVFExp)
         self.zesDeviceGetSubDevicePropertiesExp = _zesDeviceGetSubDevicePropertiesExp_t(self.__dditable.DeviceExp.pfnGetSubDevicePropertiesExp)
         self.zesDeviceEnumActiveVFExp = _zesDeviceEnumActiveVFExp_t(self.__dditable.DeviceExp.pfnEnumActiveVFExp)
+        self.zesDeviceEnumEnabledVFExp = _zesDeviceEnumEnabledVFExp_t(self.__dditable.DeviceExp.pfnEnumEnabledVFExp)
 
         # call driver to get function pointers
         _Driver = _zes_driver_dditable_t()
@@ -4301,13 +4301,13 @@ class ZES_DDI:
         self.__dditable.VFManagementExp = _VFManagementExp
 
         # attach function interface to function address
-        self.zesVFManagementGetVFCapabilitiesExp = _zesVFManagementGetVFCapabilitiesExp_t(self.__dditable.VFManagementExp.pfnGetVFCapabilitiesExp)
-        self.zesVFManagementGetVFMemoryUtilizationExp2 = _zesVFManagementGetVFMemoryUtilizationExp2_t(self.__dditable.VFManagementExp.pfnGetVFMemoryUtilizationExp2)
-        self.zesVFManagementGetVFEngineUtilizationExp2 = _zesVFManagementGetVFEngineUtilizationExp2_t(self.__dditable.VFManagementExp.pfnGetVFEngineUtilizationExp2)
         self.zesVFManagementGetVFPropertiesExp = _zesVFManagementGetVFPropertiesExp_t(self.__dditable.VFManagementExp.pfnGetVFPropertiesExp)
         self.zesVFManagementGetVFMemoryUtilizationExp = _zesVFManagementGetVFMemoryUtilizationExp_t(self.__dditable.VFManagementExp.pfnGetVFMemoryUtilizationExp)
         self.zesVFManagementGetVFEngineUtilizationExp = _zesVFManagementGetVFEngineUtilizationExp_t(self.__dditable.VFManagementExp.pfnGetVFEngineUtilizationExp)
         self.zesVFManagementSetVFTelemetryModeExp = _zesVFManagementSetVFTelemetryModeExp_t(self.__dditable.VFManagementExp.pfnSetVFTelemetryModeExp)
         self.zesVFManagementSetVFTelemetrySamplingIntervalExp = _zesVFManagementSetVFTelemetrySamplingIntervalExp_t(self.__dditable.VFManagementExp.pfnSetVFTelemetrySamplingIntervalExp)
+        self.zesVFManagementGetVFCapabilitiesExp = _zesVFManagementGetVFCapabilitiesExp_t(self.__dditable.VFManagementExp.pfnGetVFCapabilitiesExp)
+        self.zesVFManagementGetVFMemoryUtilizationExp2 = _zesVFManagementGetVFMemoryUtilizationExp2_t(self.__dditable.VFManagementExp.pfnGetVFMemoryUtilizationExp2)
+        self.zesVFManagementGetVFEngineUtilizationExp2 = _zesVFManagementGetVFEngineUtilizationExp2_t(self.__dditable.VFManagementExp.pfnGetVFEngineUtilizationExp2)
 
         # success!
