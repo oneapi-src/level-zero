@@ -1,5 +1,8 @@
 # Level zero loader changelog
 
+## v1.18.3
+* Update loader headers to spec 1.11 with fixed ddi ordering
+* Remove preload of all drivers given zeInitDrivers and update unit tests
 ## v1.18.2
 * Fix code generation of EXP tables and EXP functions to remove invalid new ddi tables and apis.
 ## v1.18.1
