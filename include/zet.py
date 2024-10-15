@@ -4,7 +4,7 @@
  SPDX-License-Identifier: MIT
 
  @file zet.py
- @version v1.11-r1.11.1
+ @version v1.11-r1.11.3
 
  """
 import platform
@@ -1230,6 +1230,13 @@ class _zet_metric_dditable_t(Structure):
     ]
 
 ###############################################################################
+## @brief Function-pointer for zetMetricDestroyExp
+if __use_win_types:
+    _zetMetricDestroyExp_t = WINFUNCTYPE( ze_result_t, zet_metric_handle_t )
+else:
+    _zetMetricDestroyExp_t = CFUNCTYPE( ze_result_t, zet_metric_handle_t )
+
+###############################################################################
 ## @brief Function-pointer for zetMetricCreateFromProgrammableExp2
 if __use_win_types:
     _zetMetricCreateFromProgrammableExp2_t = WINFUNCTYPE( ze_result_t, zet_metric_programmable_exp_handle_t, c_ulong, POINTER(zet_metric_programmable_param_value_exp_t), c_char_p, c_char_p, POINTER(c_ulong), POINTER(zet_metric_handle_t) )
@@ -1243,21 +1250,14 @@ if __use_win_types:
 else:
     _zetMetricCreateFromProgrammableExp_t = CFUNCTYPE( ze_result_t, zet_metric_programmable_exp_handle_t, POINTER(zet_metric_programmable_param_value_exp_t), c_ulong, c_char_p, c_char_p, POINTER(c_ulong), POINTER(zet_metric_handle_t) )
 
-###############################################################################
-## @brief Function-pointer for zetMetricDestroyExp
-if __use_win_types:
-    _zetMetricDestroyExp_t = WINFUNCTYPE( ze_result_t, zet_metric_handle_t )
-else:
-    _zetMetricDestroyExp_t = CFUNCTYPE( ze_result_t, zet_metric_handle_t )
-
 
 ###############################################################################
 ## @brief Table of MetricExp functions pointers
 class _zet_metric_exp_dditable_t(Structure):
     _fields_ = [
+        ("pfnDestroyExp", c_void_p),                                    ## _zetMetricDestroyExp_t
         ("pfnCreateFromProgrammableExp2", c_void_p),                    ## _zetMetricCreateFromProgrammableExp2_t
-        ("pfnCreateFromProgrammableExp", c_void_p),                     ## _zetMetricCreateFromProgrammableExp_t
-        ("pfnDestroyExp", c_void_p)                                     ## _zetMetricDestroyExp_t
+        ("pfnCreateFromProgrammableExp", c_void_p)                      ## _zetMetricCreateFromProgrammableExp_t
     ]
 
 ###############################################################################
@@ -1290,13 +1290,6 @@ class _zet_metric_group_dditable_t(Structure):
         ("pfnGetProperties", c_void_p),                                 ## _zetMetricGroupGetProperties_t
         ("pfnCalculateMetricValues", c_void_p)                          ## _zetMetricGroupCalculateMetricValues_t
     ]
-
-###############################################################################
-## @brief Function-pointer for zetMetricGroupCreateExp
-if __use_win_types:
-    _zetMetricGroupCreateExp_t = WINFUNCTYPE( ze_result_t, zet_device_handle_t, c_char_p, c_char_p, zet_metric_group_sampling_type_flags_t, POINTER(zet_metric_group_handle_t) )
-else:
-    _zetMetricGroupCreateExp_t = CFUNCTYPE( ze_result_t, zet_device_handle_t, c_char_p, c_char_p, zet_metric_group_sampling_type_flags_t, POINTER(zet_metric_group_handle_t) )
 
 ###############################################################################
 ## @brief Function-pointer for zetMetricGroupCalculateMultipleMetricValuesExp
@@ -1354,12 +1347,18 @@ if __use_win_types:
 else:
     _zetMetricGroupDestroyExp_t = CFUNCTYPE( ze_result_t, zet_metric_group_handle_t )
 
+###############################################################################
+## @brief Function-pointer for zetMetricGroupCreateExp
+if __use_win_types:
+    _zetMetricGroupCreateExp_t = WINFUNCTYPE( ze_result_t, zet_device_handle_t, c_char_p, c_char_p, zet_metric_group_sampling_type_flags_t, POINTER(zet_metric_group_handle_t) )
+else:
+    _zetMetricGroupCreateExp_t = CFUNCTYPE( ze_result_t, zet_device_handle_t, c_char_p, c_char_p, zet_metric_group_sampling_type_flags_t, POINTER(zet_metric_group_handle_t) )
+
 
 ###############################################################################
 ## @brief Table of MetricGroupExp functions pointers
 class _zet_metric_group_exp_dditable_t(Structure):
     _fields_ = [
-        ("pfnCreateExp", c_void_p),                                     ## _zetMetricGroupCreateExp_t
         ("pfnCalculateMultipleMetricValuesExp", c_void_p),              ## _zetMetricGroupCalculateMultipleMetricValuesExp_t
         ("pfnGetGlobalTimestampsExp", c_void_p),                        ## _zetMetricGroupGetGlobalTimestampsExp_t
         ("pfnGetExportDataExp", c_void_p),                              ## _zetMetricGroupGetExportDataExp_t
@@ -1367,7 +1366,8 @@ class _zet_metric_group_exp_dditable_t(Structure):
         ("pfnAddMetricExp", c_void_p),                                  ## _zetMetricGroupAddMetricExp_t
         ("pfnRemoveMetricExp", c_void_p),                               ## _zetMetricGroupRemoveMetricExp_t
         ("pfnCloseExp", c_void_p),                                      ## _zetMetricGroupCloseExp_t
-        ("pfnDestroyExp", c_void_p)                                     ## _zetMetricGroupDestroyExp_t
+        ("pfnDestroyExp", c_void_p),                                    ## _zetMetricGroupDestroyExp_t
+        ("pfnCreateExp", c_void_p)                                      ## _zetMetricGroupCreateExp_t
     ]
 
 ###############################################################################
@@ -1772,9 +1772,9 @@ class ZET_DDI:
         self.__dditable.MetricExp = _MetricExp
 
         # attach function interface to function address
+        self.zetMetricDestroyExp = _zetMetricDestroyExp_t(self.__dditable.MetricExp.pfnDestroyExp)
         self.zetMetricCreateFromProgrammableExp2 = _zetMetricCreateFromProgrammableExp2_t(self.__dditable.MetricExp.pfnCreateFromProgrammableExp2)
         self.zetMetricCreateFromProgrammableExp = _zetMetricCreateFromProgrammableExp_t(self.__dditable.MetricExp.pfnCreateFromProgrammableExp)
-        self.zetMetricDestroyExp = _zetMetricDestroyExp_t(self.__dditable.MetricExp.pfnDestroyExp)
 
         # call driver to get function pointers
         _MetricGroup = _zet_metric_group_dditable_t()
@@ -1796,7 +1796,6 @@ class ZET_DDI:
         self.__dditable.MetricGroupExp = _MetricGroupExp
 
         # attach function interface to function address
-        self.zetMetricGroupCreateExp = _zetMetricGroupCreateExp_t(self.__dditable.MetricGroupExp.pfnCreateExp)
         self.zetMetricGroupCalculateMultipleMetricValuesExp = _zetMetricGroupCalculateMultipleMetricValuesExp_t(self.__dditable.MetricGroupExp.pfnCalculateMultipleMetricValuesExp)
         self.zetMetricGroupGetGlobalTimestampsExp = _zetMetricGroupGetGlobalTimestampsExp_t(self.__dditable.MetricGroupExp.pfnGetGlobalTimestampsExp)
         self.zetMetricGroupGetExportDataExp = _zetMetricGroupGetExportDataExp_t(self.__dditable.MetricGroupExp.pfnGetExportDataExp)
@@ -1805,6 +1804,7 @@ class ZET_DDI:
         self.zetMetricGroupRemoveMetricExp = _zetMetricGroupRemoveMetricExp_t(self.__dditable.MetricGroupExp.pfnRemoveMetricExp)
         self.zetMetricGroupCloseExp = _zetMetricGroupCloseExp_t(self.__dditable.MetricGroupExp.pfnCloseExp)
         self.zetMetricGroupDestroyExp = _zetMetricGroupDestroyExp_t(self.__dditable.MetricGroupExp.pfnDestroyExp)
+        self.zetMetricGroupCreateExp = _zetMetricGroupCreateExp_t(self.__dditable.MetricGroupExp.pfnCreateExp)
 
         # call driver to get function pointers
         _MetricStreamer = _zet_metric_streamer_dditable_t()

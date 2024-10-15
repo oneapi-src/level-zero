@@ -4,7 +4,7 @@
  SPDX-License-Identifier: MIT
 
  @file ze.py
- @version v1.11-r1.11.1
+ @version v1.11-r1.11.3
 
  """
 import platform
@@ -4783,34 +4783,6 @@ class _ze_command_list_dditable_t(Structure):
     ]
 
 ###############################################################################
-## @brief Function-pointer for zeCommandListGetNextCommandIdWithKernelsExp
-if __use_win_types:
-    _zeCommandListGetNextCommandIdWithKernelsExp_t = WINFUNCTYPE( ze_result_t, ze_command_list_handle_t, POINTER(ze_mutable_command_id_exp_desc_t), c_ulong, POINTER(ze_kernel_handle_t), POINTER(c_ulonglong) )
-else:
-    _zeCommandListGetNextCommandIdWithKernelsExp_t = CFUNCTYPE( ze_result_t, ze_command_list_handle_t, POINTER(ze_mutable_command_id_exp_desc_t), c_ulong, POINTER(ze_kernel_handle_t), POINTER(c_ulonglong) )
-
-###############################################################################
-## @brief Function-pointer for zeCommandListUpdateMutableCommandsExp
-if __use_win_types:
-    _zeCommandListUpdateMutableCommandsExp_t = WINFUNCTYPE( ze_result_t, ze_command_list_handle_t, POINTER(ze_mutable_commands_exp_desc_t) )
-else:
-    _zeCommandListUpdateMutableCommandsExp_t = CFUNCTYPE( ze_result_t, ze_command_list_handle_t, POINTER(ze_mutable_commands_exp_desc_t) )
-
-###############################################################################
-## @brief Function-pointer for zeCommandListUpdateMutableCommandSignalEventExp
-if __use_win_types:
-    _zeCommandListUpdateMutableCommandSignalEventExp_t = WINFUNCTYPE( ze_result_t, ze_command_list_handle_t, c_ulonglong, ze_event_handle_t )
-else:
-    _zeCommandListUpdateMutableCommandSignalEventExp_t = CFUNCTYPE( ze_result_t, ze_command_list_handle_t, c_ulonglong, ze_event_handle_t )
-
-###############################################################################
-## @brief Function-pointer for zeCommandListUpdateMutableCommandKernelsExp
-if __use_win_types:
-    _zeCommandListUpdateMutableCommandKernelsExp_t = WINFUNCTYPE( ze_result_t, ze_command_list_handle_t, c_ulong, POINTER(c_ulonglong), POINTER(ze_kernel_handle_t) )
-else:
-    _zeCommandListUpdateMutableCommandKernelsExp_t = CFUNCTYPE( ze_result_t, ze_command_list_handle_t, c_ulong, POINTER(c_ulonglong), POINTER(ze_kernel_handle_t) )
-
-###############################################################################
 ## @brief Function-pointer for zeCommandListCreateCloneExp
 if __use_win_types:
     _zeCommandListCreateCloneExp_t = WINFUNCTYPE( ze_result_t, ze_command_list_handle_t, POINTER(ze_command_list_handle_t) )
@@ -4838,19 +4810,47 @@ if __use_win_types:
 else:
     _zeCommandListImmediateAppendCommandListsExp_t = CFUNCTYPE( ze_result_t, ze_command_list_handle_t, c_ulong, POINTER(ze_command_list_handle_t), ze_event_handle_t, c_ulong, POINTER(ze_event_handle_t) )
 
+###############################################################################
+## @brief Function-pointer for zeCommandListGetNextCommandIdWithKernelsExp
+if __use_win_types:
+    _zeCommandListGetNextCommandIdWithKernelsExp_t = WINFUNCTYPE( ze_result_t, ze_command_list_handle_t, POINTER(ze_mutable_command_id_exp_desc_t), c_ulong, POINTER(ze_kernel_handle_t), POINTER(c_ulonglong) )
+else:
+    _zeCommandListGetNextCommandIdWithKernelsExp_t = CFUNCTYPE( ze_result_t, ze_command_list_handle_t, POINTER(ze_mutable_command_id_exp_desc_t), c_ulong, POINTER(ze_kernel_handle_t), POINTER(c_ulonglong) )
+
+###############################################################################
+## @brief Function-pointer for zeCommandListUpdateMutableCommandsExp
+if __use_win_types:
+    _zeCommandListUpdateMutableCommandsExp_t = WINFUNCTYPE( ze_result_t, ze_command_list_handle_t, POINTER(ze_mutable_commands_exp_desc_t) )
+else:
+    _zeCommandListUpdateMutableCommandsExp_t = CFUNCTYPE( ze_result_t, ze_command_list_handle_t, POINTER(ze_mutable_commands_exp_desc_t) )
+
+###############################################################################
+## @brief Function-pointer for zeCommandListUpdateMutableCommandSignalEventExp
+if __use_win_types:
+    _zeCommandListUpdateMutableCommandSignalEventExp_t = WINFUNCTYPE( ze_result_t, ze_command_list_handle_t, c_ulonglong, ze_event_handle_t )
+else:
+    _zeCommandListUpdateMutableCommandSignalEventExp_t = CFUNCTYPE( ze_result_t, ze_command_list_handle_t, c_ulonglong, ze_event_handle_t )
+
+###############################################################################
+## @brief Function-pointer for zeCommandListUpdateMutableCommandKernelsExp
+if __use_win_types:
+    _zeCommandListUpdateMutableCommandKernelsExp_t = WINFUNCTYPE( ze_result_t, ze_command_list_handle_t, c_ulong, POINTER(c_ulonglong), POINTER(ze_kernel_handle_t) )
+else:
+    _zeCommandListUpdateMutableCommandKernelsExp_t = CFUNCTYPE( ze_result_t, ze_command_list_handle_t, c_ulong, POINTER(c_ulonglong), POINTER(ze_kernel_handle_t) )
+
 
 ###############################################################################
 ## @brief Table of CommandListExp functions pointers
 class _ze_command_list_exp_dditable_t(Structure):
     _fields_ = [
-        ("pfnGetNextCommandIdWithKernelsExp", c_void_p),                ## _zeCommandListGetNextCommandIdWithKernelsExp_t
-        ("pfnUpdateMutableCommandsExp", c_void_p),                      ## _zeCommandListUpdateMutableCommandsExp_t
-        ("pfnUpdateMutableCommandSignalEventExp", c_void_p),            ## _zeCommandListUpdateMutableCommandSignalEventExp_t
-        ("pfnUpdateMutableCommandKernelsExp", c_void_p),                ## _zeCommandListUpdateMutableCommandKernelsExp_t
         ("pfnCreateCloneExp", c_void_p),                                ## _zeCommandListCreateCloneExp_t
         ("pfnGetNextCommandIdExp", c_void_p),                           ## _zeCommandListGetNextCommandIdExp_t
         ("pfnUpdateMutableCommandWaitEventsExp", c_void_p),             ## _zeCommandListUpdateMutableCommandWaitEventsExp_t
-        ("pfnImmediateAppendCommandListsExp", c_void_p)                 ## _zeCommandListImmediateAppendCommandListsExp_t
+        ("pfnImmediateAppendCommandListsExp", c_void_p),                ## _zeCommandListImmediateAppendCommandListsExp_t
+        ("pfnGetNextCommandIdWithKernelsExp", c_void_p),                ## _zeCommandListGetNextCommandIdWithKernelsExp_t
+        ("pfnUpdateMutableCommandsExp", c_void_p),                      ## _zeCommandListUpdateMutableCommandsExp_t
+        ("pfnUpdateMutableCommandSignalEventExp", c_void_p),            ## _zeCommandListUpdateMutableCommandSignalEventExp_t
+        ("pfnUpdateMutableCommandKernelsExp", c_void_p)                 ## _zeCommandListUpdateMutableCommandKernelsExp_t
     ]
 
 ###############################################################################
@@ -5939,14 +5939,14 @@ class ZE_DDI:
         self.__dditable.CommandListExp = _CommandListExp
 
         # attach function interface to function address
-        self.zeCommandListGetNextCommandIdWithKernelsExp = _zeCommandListGetNextCommandIdWithKernelsExp_t(self.__dditable.CommandListExp.pfnGetNextCommandIdWithKernelsExp)
-        self.zeCommandListUpdateMutableCommandsExp = _zeCommandListUpdateMutableCommandsExp_t(self.__dditable.CommandListExp.pfnUpdateMutableCommandsExp)
-        self.zeCommandListUpdateMutableCommandSignalEventExp = _zeCommandListUpdateMutableCommandSignalEventExp_t(self.__dditable.CommandListExp.pfnUpdateMutableCommandSignalEventExp)
-        self.zeCommandListUpdateMutableCommandKernelsExp = _zeCommandListUpdateMutableCommandKernelsExp_t(self.__dditable.CommandListExp.pfnUpdateMutableCommandKernelsExp)
         self.zeCommandListCreateCloneExp = _zeCommandListCreateCloneExp_t(self.__dditable.CommandListExp.pfnCreateCloneExp)
         self.zeCommandListGetNextCommandIdExp = _zeCommandListGetNextCommandIdExp_t(self.__dditable.CommandListExp.pfnGetNextCommandIdExp)
         self.zeCommandListUpdateMutableCommandWaitEventsExp = _zeCommandListUpdateMutableCommandWaitEventsExp_t(self.__dditable.CommandListExp.pfnUpdateMutableCommandWaitEventsExp)
         self.zeCommandListImmediateAppendCommandListsExp = _zeCommandListImmediateAppendCommandListsExp_t(self.__dditable.CommandListExp.pfnImmediateAppendCommandListsExp)
+        self.zeCommandListGetNextCommandIdWithKernelsExp = _zeCommandListGetNextCommandIdWithKernelsExp_t(self.__dditable.CommandListExp.pfnGetNextCommandIdWithKernelsExp)
+        self.zeCommandListUpdateMutableCommandsExp = _zeCommandListUpdateMutableCommandsExp_t(self.__dditable.CommandListExp.pfnUpdateMutableCommandsExp)
+        self.zeCommandListUpdateMutableCommandSignalEventExp = _zeCommandListUpdateMutableCommandSignalEventExp_t(self.__dditable.CommandListExp.pfnUpdateMutableCommandSignalEventExp)
+        self.zeCommandListUpdateMutableCommandKernelsExp = _zeCommandListUpdateMutableCommandKernelsExp_t(self.__dditable.CommandListExp.pfnUpdateMutableCommandKernelsExp)
 
         # call driver to get function pointers
         _Image = _ze_image_dditable_t()

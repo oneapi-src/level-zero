@@ -5,7 +5,7 @@
  * SPDX-License-Identifier: MIT
  *
  * @file ze_ddi.h
- * @version v1.11-r1.11.1
+ * @version v1.11-r1.11.3
  *
  */
 #ifndef _ZE_DDI_H
@@ -1128,40 +1128,6 @@ typedef ze_result_t (ZE_APICALL *ze_pfnGetCommandListProcAddrTable_t)(
     );
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Function-pointer for zeCommandListGetNextCommandIdWithKernelsExp 
-typedef ze_result_t (ZE_APICALL *ze_pfnCommandListGetNextCommandIdWithKernelsExp_t)(
-    ze_command_list_handle_t,
-    const ze_mutable_command_id_exp_desc_t*,
-    uint32_t,
-    ze_kernel_handle_t*,
-    uint64_t*
-    );
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Function-pointer for zeCommandListUpdateMutableCommandsExp 
-typedef ze_result_t (ZE_APICALL *ze_pfnCommandListUpdateMutableCommandsExp_t)(
-    ze_command_list_handle_t,
-    const ze_mutable_commands_exp_desc_t*
-    );
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Function-pointer for zeCommandListUpdateMutableCommandSignalEventExp 
-typedef ze_result_t (ZE_APICALL *ze_pfnCommandListUpdateMutableCommandSignalEventExp_t)(
-    ze_command_list_handle_t,
-    uint64_t,
-    ze_event_handle_t
-    );
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Function-pointer for zeCommandListUpdateMutableCommandKernelsExp 
-typedef ze_result_t (ZE_APICALL *ze_pfnCommandListUpdateMutableCommandKernelsExp_t)(
-    ze_command_list_handle_t,
-    uint32_t,
-    uint64_t*,
-    ze_kernel_handle_t*
-    );
-
-///////////////////////////////////////////////////////////////////////////////
 /// @brief Function-pointer for zeCommandListCreateCloneExp 
 typedef ze_result_t (ZE_APICALL *ze_pfnCommandListCreateCloneExp_t)(
     ze_command_list_handle_t,
@@ -1197,17 +1163,51 @@ typedef ze_result_t (ZE_APICALL *ze_pfnCommandListImmediateAppendCommandListsExp
     );
 
 ///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zeCommandListGetNextCommandIdWithKernelsExp 
+typedef ze_result_t (ZE_APICALL *ze_pfnCommandListGetNextCommandIdWithKernelsExp_t)(
+    ze_command_list_handle_t,
+    const ze_mutable_command_id_exp_desc_t*,
+    uint32_t,
+    ze_kernel_handle_t*,
+    uint64_t*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zeCommandListUpdateMutableCommandsExp 
+typedef ze_result_t (ZE_APICALL *ze_pfnCommandListUpdateMutableCommandsExp_t)(
+    ze_command_list_handle_t,
+    const ze_mutable_commands_exp_desc_t*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zeCommandListUpdateMutableCommandSignalEventExp 
+typedef ze_result_t (ZE_APICALL *ze_pfnCommandListUpdateMutableCommandSignalEventExp_t)(
+    ze_command_list_handle_t,
+    uint64_t,
+    ze_event_handle_t
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zeCommandListUpdateMutableCommandKernelsExp 
+typedef ze_result_t (ZE_APICALL *ze_pfnCommandListUpdateMutableCommandKernelsExp_t)(
+    ze_command_list_handle_t,
+    uint32_t,
+    uint64_t*,
+    ze_kernel_handle_t*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
 /// @brief Table of CommandListExp functions pointers
 typedef struct _ze_command_list_exp_dditable_t
 {
-    ze_pfnCommandListGetNextCommandIdWithKernelsExp_t           pfnGetNextCommandIdWithKernelsExp;
-    ze_pfnCommandListUpdateMutableCommandsExp_t                 pfnUpdateMutableCommandsExp;
-    ze_pfnCommandListUpdateMutableCommandSignalEventExp_t       pfnUpdateMutableCommandSignalEventExp;
-    ze_pfnCommandListUpdateMutableCommandKernelsExp_t           pfnUpdateMutableCommandKernelsExp;
     ze_pfnCommandListCreateCloneExp_t                           pfnCreateCloneExp;
     ze_pfnCommandListGetNextCommandIdExp_t                      pfnGetNextCommandIdExp;
     ze_pfnCommandListUpdateMutableCommandWaitEventsExp_t        pfnUpdateMutableCommandWaitEventsExp;
     ze_pfnCommandListImmediateAppendCommandListsExp_t           pfnImmediateAppendCommandListsExp;
+    ze_pfnCommandListGetNextCommandIdWithKernelsExp_t           pfnGetNextCommandIdWithKernelsExp;
+    ze_pfnCommandListUpdateMutableCommandsExp_t                 pfnUpdateMutableCommandsExp;
+    ze_pfnCommandListUpdateMutableCommandSignalEventExp_t       pfnUpdateMutableCommandSignalEventExp;
+    ze_pfnCommandListUpdateMutableCommandKernelsExp_t           pfnUpdateMutableCommandKernelsExp;
 } ze_command_list_exp_dditable_t;
 
 ///////////////////////////////////////////////////////////////////////////////
