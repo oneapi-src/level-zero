@@ -192,12 +192,8 @@ zeInitDrivers(
     )
 {
     static ze_result_t result = ZE_RESULT_SUCCESS;
-    std::call_once(ze_lib::context->initOnceDrivers, []() {
-        ze_init_flags_t all_enabled = UINT32_MAX;
-        ze_init_driver_type_desc_t all_enabled_desc = {ZE_STRUCTURE_TYPE_INIT_DRIVER_TYPE_DESC};
-        all_enabled_desc.pNext = nullptr;
-        all_enabled_desc.flags = UINT32_MAX;
-        result = ze_lib::context->Init(all_enabled, false, &all_enabled_desc);
+    std::call_once(ze_lib::context->initOnceDrivers, [desc]() {
+        result = ze_lib::context->Init(0, false, desc);
         return result;
     });
 
