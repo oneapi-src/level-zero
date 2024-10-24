@@ -50,6 +50,17 @@ zeLoaderGetTracingHandle()
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+/// @brief Get pointer to Loader Context
+///
+/// @returns
+///     - ::Pointer to the Loader's Context
+ZE_DLLEXPORT loader::context_t *ZE_APICALL
+zelLoaderGetContext() {
+    printf("zelLoaderGetContext\n");
+    return loader::context;
+}
+
+///////////////////////////////////////////////////////////////////////////////
 /// @brief Internal function for Setting the ddi table for the Tracing Layer.
 ///
 ZE_DLLEXPORT ze_result_t ZE_APICALL
