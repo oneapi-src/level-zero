@@ -20,7 +20,7 @@ namespace ze_lib
     __zedlllocal ze_result_t context_t::zeDdiTableInit()
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        printf("calling static loader ddi init\n");
         if( ZE_RESULT_SUCCESS == result )
         {
             auto getTable = reinterpret_cast<ze_pfnGetGlobalProcAddrTable_t>(
