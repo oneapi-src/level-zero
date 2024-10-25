@@ -51,6 +51,14 @@ zelLoaderTracingLayerInit(std::atomic<ze_dditable_t *> &zeDdiTable);
 ZE_DLLEXPORT HMODULE ZE_APICALL
 zeLoaderGetTracingHandle();
 
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Get pointer to Loader Context
+///
+/// @returns
+///     - ::handle to tracing library
+ZE_DLLEXPORT loader::context_t *ZE_APICALL
+zelLoaderGetContext();
+
 
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief Exported function for getting version
