@@ -11,7 +11,7 @@ message(FATAL_ERROR "Visual Studio Compiler Version >= 1900 Required to build.")
 endif()
 
 # This project follows semantic versioning (https://semver.org/)
-project(level-zero VERSION 1.18.3)
+project(level-zero VERSION 1.18.4)
 
 include(GNUInstallDirs)
 

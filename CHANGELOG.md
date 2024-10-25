@@ -1,5 +1,7 @@
 # Level zero loader changelog
 
+## v1.18.4
+* Fix Backwards compatibility in ddi structs for EXP features
 ## v1.18.3
 * Update loader headers to spec 1.11 with fixed ddi ordering
 * Remove preload of all drivers given zeInitDrivers and update unit tests
