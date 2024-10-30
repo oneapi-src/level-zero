@@ -620,59 +620,6 @@ typedef void (ZE_APICALL *ze_pfnCommandListGetNextCommandIdWithKernelsExpCb_t)(
     );
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Callback function parameters for zeCommandListUpdateMutableCommandsExp
-/// @details Each entry is a pointer to the parameter passed to the function;
-///     allowing the callback the ability to modify the parameter's value
-
-typedef struct _ze_command_list_update_mutable_commands_exp_params_t
-{
-    ze_command_list_handle_t* phCommandList;
-    const ze_mutable_commands_exp_desc_t** pdesc;
-} ze_command_list_update_mutable_commands_exp_params_t;
-
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Callback function-pointer for zeCommandListUpdateMutableCommandsExp
-/// @param[in] params Parameters passed to this instance
-/// @param[in] result Return value
-/// @param[in] pTracerUserData Per-Tracer user data
-/// @param[in,out] ppTracerInstanceUserData Per-Tracer, Per-Instance user data
-
-typedef void (ZE_APICALL *ze_pfnCommandListUpdateMutableCommandsExpCb_t)(
-    ze_command_list_update_mutable_commands_exp_params_t* params,
-    ze_result_t result,
-    void* pTracerUserData,
-    void** ppTracerInstanceUserData
-    );
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Callback function parameters for zeCommandListUpdateMutableCommandSignalEventExp
-/// @details Each entry is a pointer to the parameter passed to the function;
-///     allowing the callback the ability to modify the parameter's value
-
-typedef struct _ze_command_list_update_mutable_command_signal_event_exp_params_t
-{
-    ze_command_list_handle_t* phCommandList;
-    uint64_t* pcommandId;
-    ze_event_handle_t* phSignalEvent;
-} ze_command_list_update_mutable_command_signal_event_exp_params_t;
-
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Callback function-pointer for zeCommandListUpdateMutableCommandSignalEventExp
-/// @param[in] params Parameters passed to this instance
-/// @param[in] result Return value
-/// @param[in] pTracerUserData Per-Tracer user data
-/// @param[in,out] ppTracerInstanceUserData Per-Tracer, Per-Instance user data
-
-typedef void (ZE_APICALL *ze_pfnCommandListUpdateMutableCommandSignalEventExpCb_t)(
-    ze_command_list_update_mutable_command_signal_event_exp_params_t* params,
-    ze_result_t result,
-    void* pTracerUserData,
-    void** ppTracerInstanceUserData
-    );
-
-///////////////////////////////////////////////////////////////////////////////
 /// @brief Callback function parameters for zeCommandListUpdateMutableCommandKernelsExp
 /// @details Each entry is a pointer to the parameter passed to the function;
 ///     allowing the callback the ability to modify the parameter's value
@@ -949,6 +896,36 @@ typedef void (ZE_APICALL *ze_pfnCommandListIsImmediateCb_t)(
     );
 
 ///////////////////////////////////////////////////////////////////////////////
+/// @brief Callback function parameters for zeCommandListImmediateAppendCommandListsExp
+/// @details Each entry is a pointer to the parameter passed to the function;
+///     allowing the callback the ability to modify the parameter's value
+
+typedef struct _ze_command_list_immediate_append_command_lists_exp_params_t
+{
+    ze_command_list_handle_t* phCommandListImmediate;
+    uint32_t* pnumCommandLists;
+    ze_command_list_handle_t** pphCommandLists;
+    ze_event_handle_t* phSignalEvent;
+    uint32_t* pnumWaitEvents;
+    ze_event_handle_t** pphWaitEvents;
+} ze_command_list_immediate_append_command_lists_exp_params_t;
+
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Callback function-pointer for zeCommandListImmediateAppendCommandListsExp
+/// @param[in] params Parameters passed to this instance
+/// @param[in] result Return value
+/// @param[in] pTracerUserData Per-Tracer user data
+/// @param[in,out] ppTracerInstanceUserData Per-Tracer, Per-Instance user data
+
+typedef void (ZE_APICALL *ze_pfnCommandListImmediateAppendCommandListsExpCb_t)(
+    ze_command_list_immediate_append_command_lists_exp_params_t* params,
+    ze_result_t result,
+    void* pTracerUserData,
+    void** ppTracerInstanceUserData
+    );
+
+///////////////////////////////////////////////////////////////////////////////
 /// @brief Callback function parameters for zeCommandListGetNextCommandIdExp
 /// @details Each entry is a pointer to the parameter passed to the function;
 ///     allowing the callback the ability to modify the parameter's value
@@ -970,6 +947,59 @@ typedef struct _ze_command_list_get_next_command_id_exp_params_t
 
 typedef void (ZE_APICALL *ze_pfnCommandListGetNextCommandIdExpCb_t)(
     ze_command_list_get_next_command_id_exp_params_t* params,
+    ze_result_t result,
+    void* pTracerUserData,
+    void** ppTracerInstanceUserData
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Callback function parameters for zeCommandListUpdateMutableCommandsExp
+/// @details Each entry is a pointer to the parameter passed to the function;
+///     allowing the callback the ability to modify the parameter's value
+
+typedef struct _ze_command_list_update_mutable_commands_exp_params_t
+{
+    ze_command_list_handle_t* phCommandList;
+    const ze_mutable_commands_exp_desc_t** pdesc;
+} ze_command_list_update_mutable_commands_exp_params_t;
+
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Callback function-pointer for zeCommandListUpdateMutableCommandsExp
+/// @param[in] params Parameters passed to this instance
+/// @param[in] result Return value
+/// @param[in] pTracerUserData Per-Tracer user data
+/// @param[in,out] ppTracerInstanceUserData Per-Tracer, Per-Instance user data
+
+typedef void (ZE_APICALL *ze_pfnCommandListUpdateMutableCommandsExpCb_t)(
+    ze_command_list_update_mutable_commands_exp_params_t* params,
+    ze_result_t result,
+    void* pTracerUserData,
+    void** ppTracerInstanceUserData
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Callback function parameters for zeCommandListUpdateMutableCommandSignalEventExp
+/// @details Each entry is a pointer to the parameter passed to the function;
+///     allowing the callback the ability to modify the parameter's value
+
+typedef struct _ze_command_list_update_mutable_command_signal_event_exp_params_t
+{
+    ze_command_list_handle_t* phCommandList;
+    uint64_t* pcommandId;
+    ze_event_handle_t* phSignalEvent;
+} ze_command_list_update_mutable_command_signal_event_exp_params_t;
+
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Callback function-pointer for zeCommandListUpdateMutableCommandSignalEventExp
+/// @param[in] params Parameters passed to this instance
+/// @param[in] result Return value
+/// @param[in] pTracerUserData Per-Tracer user data
+/// @param[in,out] ppTracerInstanceUserData Per-Tracer, Per-Instance user data
+
+typedef void (ZE_APICALL *ze_pfnCommandListUpdateMutableCommandSignalEventExpCb_t)(
+    ze_command_list_update_mutable_command_signal_event_exp_params_t* params,
     ze_result_t result,
     void* pTracerUserData,
     void** ppTracerInstanceUserData
@@ -998,36 +1028,6 @@ typedef struct _ze_command_list_update_mutable_command_wait_events_exp_params_t
 
 typedef void (ZE_APICALL *ze_pfnCommandListUpdateMutableCommandWaitEventsExpCb_t)(
     ze_command_list_update_mutable_command_wait_events_exp_params_t* params,
-    ze_result_t result,
-    void* pTracerUserData,
-    void** ppTracerInstanceUserData
-    );
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Callback function parameters for zeCommandListImmediateAppendCommandListsExp
-/// @details Each entry is a pointer to the parameter passed to the function;
-///     allowing the callback the ability to modify the parameter's value
-
-typedef struct _ze_command_list_immediate_append_command_lists_exp_params_t
-{
-    ze_command_list_handle_t* phCommandListImmediate;
-    uint32_t* pnumCommandLists;
-    ze_command_list_handle_t** pphCommandLists;
-    ze_event_handle_t* phSignalEvent;
-    uint32_t* pnumWaitEvents;
-    ze_event_handle_t** pphWaitEvents;
-} ze_command_list_immediate_append_command_lists_exp_params_t;
-
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Callback function-pointer for zeCommandListImmediateAppendCommandListsExp
-/// @param[in] params Parameters passed to this instance
-/// @param[in] result Return value
-/// @param[in] pTracerUserData Per-Tracer user data
-/// @param[in,out] ppTracerInstanceUserData Per-Tracer, Per-Instance user data
-
-typedef void (ZE_APICALL *ze_pfnCommandListImmediateAppendCommandListsExpCb_t)(
-    ze_command_list_immediate_append_command_lists_exp_params_t* params,
     ze_result_t result,
     void* pTracerUserData,
     void** ppTracerInstanceUserData
@@ -3024,54 +3024,6 @@ zelTracerKernelSetGlobalOffsetExpRegisterCallback(
 
 
 ZE_APIEXPORT ze_result_t ZE_APICALL
-zelTracerCommandListGetNextCommandIdExpRegisterCallback(
-    zel_tracer_handle_t hTracer,
-    zel_tracer_reg_t callback_type,
-    ze_pfnCommandListGetNextCommandIdExpCb_t pfnGetNextCommandIdExpCb
-    );
-
-
-ZE_APIEXPORT ze_result_t ZE_APICALL
-zelTracerCommandListGetNextCommandIdWithKernelsExpRegisterCallback(
-    zel_tracer_handle_t hTracer,
-    zel_tracer_reg_t callback_type,
-    ze_pfnCommandListGetNextCommandIdWithKernelsExpCb_t pfnGetNextCommandIdWithKernelsExpCb
-    );
-
-
-ZE_APIEXPORT ze_result_t ZE_APICALL
-zelTracerCommandListUpdateMutableCommandsExpRegisterCallback(
-    zel_tracer_handle_t hTracer,
-    zel_tracer_reg_t callback_type,
-    ze_pfnCommandListUpdateMutableCommandsExpCb_t pfnUpdateMutableCommandsExpCb
-    );
-
-
-ZE_APIEXPORT ze_result_t ZE_APICALL
-zelTracerCommandListUpdateMutableCommandSignalEventExpRegisterCallback(
-    zel_tracer_handle_t hTracer,
-    zel_tracer_reg_t callback_type,
-    ze_pfnCommandListUpdateMutableCommandSignalEventExpCb_t pfnUpdateMutableCommandSignalEventExpCb
-    );
-
-
-ZE_APIEXPORT ze_result_t ZE_APICALL
-zelTracerCommandListUpdateMutableCommandWaitEventsExpRegisterCallback(
-    zel_tracer_handle_t hTracer,
-    zel_tracer_reg_t callback_type,
-    ze_pfnCommandListUpdateMutableCommandWaitEventsExpCb_t pfnUpdateMutableCommandWaitEventsExpCb
-    );
-
-
-ZE_APIEXPORT ze_result_t ZE_APICALL
-zelTracerCommandListUpdateMutableCommandKernelsExpRegisterCallback(
-    zel_tracer_handle_t hTracer,
-    zel_tracer_reg_t callback_type,
-    ze_pfnCommandListUpdateMutableCommandKernelsExpCb_t pfnUpdateMutableCommandKernelsExpCb
-    );
-
-
-ZE_APIEXPORT ze_result_t ZE_APICALL
 zelTracerDeviceReserveCacheExtRegisterCallback(
     zel_tracer_handle_t hTracer,
     zel_tracer_reg_t callback_type,
@@ -3348,6 +3300,54 @@ zelTracerCommandListImmediateAppendCommandListsExpRegisterCallback(
     zel_tracer_handle_t hTracer,
     zel_tracer_reg_t callback_type,
     ze_pfnCommandListImmediateAppendCommandListsExpCb_t pfnImmediateAppendCommandListsExpCb
+    );
+
+
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zelTracerCommandListGetNextCommandIdExpRegisterCallback(
+    zel_tracer_handle_t hTracer,
+    zel_tracer_reg_t callback_type,
+    ze_pfnCommandListGetNextCommandIdExpCb_t pfnGetNextCommandIdExpCb
+    );
+
+
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zelTracerCommandListGetNextCommandIdWithKernelsExpRegisterCallback(
+    zel_tracer_handle_t hTracer,
+    zel_tracer_reg_t callback_type,
+    ze_pfnCommandListGetNextCommandIdWithKernelsExpCb_t pfnGetNextCommandIdWithKernelsExpCb
+    );
+
+
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zelTracerCommandListUpdateMutableCommandsExpRegisterCallback(
+    zel_tracer_handle_t hTracer,
+    zel_tracer_reg_t callback_type,
+    ze_pfnCommandListUpdateMutableCommandsExpCb_t pfnUpdateMutableCommandsExpCb
+    );
+
+
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zelTracerCommandListUpdateMutableCommandSignalEventExpRegisterCallback(
+    zel_tracer_handle_t hTracer,
+    zel_tracer_reg_t callback_type,
+    ze_pfnCommandListUpdateMutableCommandSignalEventExpCb_t pfnUpdateMutableCommandSignalEventExpCb
+    );
+
+
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zelTracerCommandListUpdateMutableCommandWaitEventsExpRegisterCallback(
+    zel_tracer_handle_t hTracer,
+    zel_tracer_reg_t callback_type,
+    ze_pfnCommandListUpdateMutableCommandWaitEventsExpCb_t pfnUpdateMutableCommandWaitEventsExpCb
+    );
+
+
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zelTracerCommandListUpdateMutableCommandKernelsExpRegisterCallback(
+    zel_tracer_handle_t hTracer,
+    zel_tracer_reg_t callback_type,
+    ze_pfnCommandListUpdateMutableCommandKernelsExpCb_t pfnUpdateMutableCommandKernelsExpCb
     );
 
 
