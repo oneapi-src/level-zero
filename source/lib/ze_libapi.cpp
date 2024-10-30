@@ -7043,305 +7043,6 @@ zeKernelSetGlobalOffsetExp(
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Returns a unique command identifier for the next command to be
-///        appended to a command list.
-/// 
-/// @details
-///     - This function may only be called for a mutable command list.
-///     - This function may not be called on a closed command list.
-///     - This function may be called from simultaneous threads with the same
-///       command list handle.
-///     - The implementation of this function should be lock-free.
-/// 
-/// @returns
-///     - ::ZE_RESULT_SUCCESS
-///     - ::ZE_RESULT_ERROR_UNINITIALIZED
-///     - ::ZE_RESULT_ERROR_DEVICE_LOST
-///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
-///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
-///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
-///         + `nullptr == hCommandList`
-///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
-///         + `nullptr == desc`
-///         + `nullptr == pCommandId`
-///     - ::ZE_RESULT_ERROR_INVALID_ENUMERATION
-///         + `0xff < desc->flags`
-ze_result_t ZE_APICALL
-zeCommandListGetNextCommandIdExp(
-    ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
-    const ze_mutable_command_id_exp_desc_t* desc,   ///< [in] pointer to mutable command identifier descriptor
-    uint64_t* pCommandId                            ///< [out] pointer to mutable command identifier to be written
-    )
-{
-    if(ze_lib::context->inTeardown) {
-        return ZE_RESULT_ERROR_UNINITIALIZED;
-    }
-
-    auto pfnGetNextCommandIdExp = ze_lib::context->zeDdiTable.load()->CommandListExp.pfnGetNextCommandIdExp;
-    if( nullptr == pfnGetNextCommandIdExp ) {
-        if(!ze_lib::context->isInitialized)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        else
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-    }
-
-    return pfnGetNextCommandIdExp( hCommandList, desc, pCommandId );
-}
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Returns a unique command identifier for the next command to be
-///        appended to a command list. Provides possible kernel handles for
-///        kernel mutation when ::ZE_MUTABLE_COMMAND_EXP_FLAG_KERNEL_INSTRUCTION
-///        flag is present.
-/// 
-/// @details
-///     - This function may only be called for a mutable command list.
-///     - This function may not be called on a closed command list.
-///     - This function may be called from simultaneous threads with the same
-///       command list handle.
-///     - The implementation of this function should be lock-free.
-/// 
-/// @returns
-///     - ::ZE_RESULT_SUCCESS
-///     - ::ZE_RESULT_ERROR_UNINITIALIZED
-///     - ::ZE_RESULT_ERROR_DEVICE_LOST
-///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
-///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
-///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
-///         + `nullptr == hCommandList`
-///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
-///         + `nullptr == desc`
-///         + `nullptr == pCommandId`
-///     - ::ZE_RESULT_ERROR_INVALID_ENUMERATION
-///         + `0xff < desc->flags`
-ze_result_t ZE_APICALL
-zeCommandListGetNextCommandIdWithKernelsExp(
-    ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
-    const ze_mutable_command_id_exp_desc_t* desc,   ///< [in][out] pointer to mutable command identifier descriptor
-    uint32_t numKernels,                            ///< [in][optional] number of entries on phKernels list
-    ze_kernel_handle_t* phKernels,                  ///< [in][optional][range(0, numKernels)] list of kernels that user can
-                                                    ///< switch between using ::zeCommandListUpdateMutableCommandKernelsExp
-                                                    ///< call
-    uint64_t* pCommandId                            ///< [out] pointer to mutable command identifier to be written
-    )
-{
-    if(ze_lib::context->inTeardown) {
-        return ZE_RESULT_ERROR_UNINITIALIZED;
-    }
-
-    auto pfnGetNextCommandIdWithKernelsExp = ze_lib::context->zeDdiTable.load()->CommandListExp.pfnGetNextCommandIdWithKernelsExp;
-    if( nullptr == pfnGetNextCommandIdWithKernelsExp ) {
-        if(!ze_lib::context->isInitialized)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        else
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-    }
-
-    return pfnGetNextCommandIdWithKernelsExp( hCommandList, desc, numKernels, phKernels, pCommandId );
-}
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Updates mutable commands.
-/// 
-/// @details
-///     - This function may only be called for a mutable command list.
-///     - The application must synchronize mutable command list execution before
-///       calling this function.
-///     - The application must close a mutable command list after completing all
-///       updates.
-///     - This function must not be called from simultaneous threads with the
-///       same command list handle.
-///     - The implementation of this function should be lock-free.
-/// 
-/// @returns
-///     - ::ZE_RESULT_SUCCESS
-///     - ::ZE_RESULT_ERROR_UNINITIALIZED
-///     - ::ZE_RESULT_ERROR_DEVICE_LOST
-///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
-///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
-///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
-///         + `nullptr == hCommandList`
-///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
-///         + `nullptr == desc`
-///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
-///         + Invalid kernel argument or not matching update descriptor provided
-ze_result_t ZE_APICALL
-zeCommandListUpdateMutableCommandsExp(
-    ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
-    const ze_mutable_commands_exp_desc_t* desc      ///< [in] pointer to mutable commands descriptor; multiple descriptors may
-                                                    ///< be chained via `pNext` member
-    )
-{
-    if(ze_lib::context->inTeardown) {
-        return ZE_RESULT_ERROR_UNINITIALIZED;
-    }
-
-    auto pfnUpdateMutableCommandsExp = ze_lib::context->zeDdiTable.load()->CommandListExp.pfnUpdateMutableCommandsExp;
-    if( nullptr == pfnUpdateMutableCommandsExp ) {
-        if(!ze_lib::context->isInitialized)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        else
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-    }
-
-    return pfnUpdateMutableCommandsExp( hCommandList, desc );
-}
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Updates the signal event for a mutable command in a mutable command
-///        list.
-/// 
-/// @details
-///     - This function may only be called for a mutable command list.
-///     - The type, scope and flags of the signal event must match those of the
-///       source command.
-///     - The application must synchronize mutable command list execution before
-///       calling this function.
-///     - The application must close a mutable command list after completing all
-///       updates.
-///     - This function must not be called from simultaneous threads with the
-///       same command list handle.
-///     - The implementation of this function should be lock-free.
-/// 
-/// @returns
-///     - ::ZE_RESULT_SUCCESS
-///     - ::ZE_RESULT_ERROR_UNINITIALIZED
-///     - ::ZE_RESULT_ERROR_DEVICE_LOST
-///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
-///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
-///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
-///         + `nullptr == hCommandList`
-ze_result_t ZE_APICALL
-zeCommandListUpdateMutableCommandSignalEventExp(
-    ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
-    uint64_t commandId,                             ///< [in] command identifier
-    ze_event_handle_t hSignalEvent                  ///< [in][optional] handle of the event to signal on completion
-    )
-{
-    if(ze_lib::context->inTeardown) {
-        return ZE_RESULT_ERROR_UNINITIALIZED;
-    }
-
-    auto pfnUpdateMutableCommandSignalEventExp = ze_lib::context->zeDdiTable.load()->CommandListExp.pfnUpdateMutableCommandSignalEventExp;
-    if( nullptr == pfnUpdateMutableCommandSignalEventExp ) {
-        if(!ze_lib::context->isInitialized)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        else
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-    }
-
-    return pfnUpdateMutableCommandSignalEventExp( hCommandList, commandId, hSignalEvent );
-}
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Updates the wait events for a mutable command in a mutable command
-///        list.
-/// 
-/// @details
-///     - This function may only be called for a mutable command list.
-///     - The number of wait events must match that of the source command.
-///     - The type, scope and flags of the wait events must match those of the
-///       source command.
-///     - Passing `nullptr` as the wait events will update the command to not
-///       wait on any events prior to dispatch.
-///     - Passing `nullptr` as an event on event wait list will remove event
-///       dependency from this wait list slot.
-///     - The application must synchronize mutable command list execution before
-///       calling this function.
-///     - The application must close a mutable command list after completing all
-///       updates.
-///     - This function must not be called from simultaneous threads with the
-///       same command list handle.
-///     - The implementation of this function should be lock-free.
-/// 
-/// @returns
-///     - ::ZE_RESULT_SUCCESS
-///     - ::ZE_RESULT_ERROR_UNINITIALIZED
-///     - ::ZE_RESULT_ERROR_DEVICE_LOST
-///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
-///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
-///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
-///         + `nullptr == hCommandList`
-///     - ::ZE_RESULT_ERROR_INVALID_SIZE
-///         + The `numWaitEvents` parameter does not match that of the original command.
-ze_result_t ZE_APICALL
-zeCommandListUpdateMutableCommandWaitEventsExp(
-    ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
-    uint64_t commandId,                             ///< [in] command identifier
-    uint32_t numWaitEvents,                         ///< [in][optional] the number of wait events
-    ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
-                                                    ///< on before launching
-    )
-{
-    if(ze_lib::context->inTeardown) {
-        return ZE_RESULT_ERROR_UNINITIALIZED;
-    }
-
-    auto pfnUpdateMutableCommandWaitEventsExp = ze_lib::context->zeDdiTable.load()->CommandListExp.pfnUpdateMutableCommandWaitEventsExp;
-    if( nullptr == pfnUpdateMutableCommandWaitEventsExp ) {
-        if(!ze_lib::context->isInitialized)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        else
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-    }
-
-    return pfnUpdateMutableCommandWaitEventsExp( hCommandList, commandId, numWaitEvents, phWaitEvents );
-}
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Updates the kernel for a mutable command in a mutable command list.
-/// 
-/// @details
-///     - This function may only be called for a mutable command list.
-///     - The kernel handle must be from the provided list for given command id.
-///     - The application must synchronize mutable command list execution before
-///       calling this function.
-///     - The application must close a mutable command list after completing all
-///       updates.
-///     - This function must not be called from simultaneous threads with the
-///       same command list handle.
-///     - This function must be called before updating kernel arguments and
-///       dispatch parameters, when kernel is mutated.
-///     - The implementation of this function should be lock-free.
-/// 
-/// @returns
-///     - ::ZE_RESULT_SUCCESS
-///     - ::ZE_RESULT_ERROR_UNINITIALIZED
-///     - ::ZE_RESULT_ERROR_DEVICE_LOST
-///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
-///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
-///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
-///         + `nullptr == hCommandList`
-///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
-///         + `nullptr == pCommandId`
-///         + `nullptr == phKernels`
-///     - ::ZE_RESULT_ERROR_INVALID_KERNEL_HANDLE
-///         + Invalid kernel handle provided for the mutation kernel instruction operation.
-ze_result_t ZE_APICALL
-zeCommandListUpdateMutableCommandKernelsExp(
-    ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
-    uint32_t numKernels,                            ///< [in] the number of kernels to update
-    uint64_t* pCommandId,                           ///< [in][range(0, numKernels)] command identifier
-    ze_kernel_handle_t* phKernels                   ///< [in][range(0, numKernels)] handle of the kernel for a command
-                                                    ///< identifier to switch to
-    )
-{
-    if(ze_lib::context->inTeardown) {
-        return ZE_RESULT_ERROR_UNINITIALIZED;
-    }
-
-    auto pfnUpdateMutableCommandKernelsExp = ze_lib::context->zeDdiTable.load()->CommandListExp.pfnUpdateMutableCommandKernelsExp;
-    if( nullptr == pfnUpdateMutableCommandKernelsExp ) {
-        if(!ze_lib::context->isInitialized)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        else
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
-    }
-
-    return pfnUpdateMutableCommandKernelsExp( hCommandList, numKernels, pCommandId, phKernels );
-}
-
-///////////////////////////////////////////////////////////////////////////////
 /// @brief Reserve Cache on Device
 /// 
 /// @details
@@ -9076,6 +8777,305 @@ zeCommandListImmediateAppendCommandListsExp(
     }
 
     return pfnImmediateAppendCommandListsExp( hCommandListImmediate, numCommandLists, phCommandLists, hSignalEvent, numWaitEvents, phWaitEvents );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Returns a unique command identifier for the next command to be
+///        appended to a command list.
+/// 
+/// @details
+///     - This function may only be called for a mutable command list.
+///     - This function may not be called on a closed command list.
+///     - This function may be called from simultaneous threads with the same
+///       command list handle.
+///     - The implementation of this function should be lock-free.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hCommandList`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == desc`
+///         + `nullptr == pCommandId`
+///     - ::ZE_RESULT_ERROR_INVALID_ENUMERATION
+///         + `0xff < desc->flags`
+ze_result_t ZE_APICALL
+zeCommandListGetNextCommandIdExp(
+    ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
+    const ze_mutable_command_id_exp_desc_t* desc,   ///< [in] pointer to mutable command identifier descriptor
+    uint64_t* pCommandId                            ///< [out] pointer to mutable command identifier to be written
+    )
+{
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
+    auto pfnGetNextCommandIdExp = ze_lib::context->zeDdiTable.load()->CommandListExp.pfnGetNextCommandIdExp;
+    if( nullptr == pfnGetNextCommandIdExp ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    return pfnGetNextCommandIdExp( hCommandList, desc, pCommandId );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Returns a unique command identifier for the next command to be
+///        appended to a command list. Provides possible kernel handles for
+///        kernel mutation when ::ZE_MUTABLE_COMMAND_EXP_FLAG_KERNEL_INSTRUCTION
+///        flag is present.
+/// 
+/// @details
+///     - This function may only be called for a mutable command list.
+///     - This function may not be called on a closed command list.
+///     - This function may be called from simultaneous threads with the same
+///       command list handle.
+///     - The implementation of this function should be lock-free.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hCommandList`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == desc`
+///         + `nullptr == pCommandId`
+///     - ::ZE_RESULT_ERROR_INVALID_ENUMERATION
+///         + `0xff < desc->flags`
+ze_result_t ZE_APICALL
+zeCommandListGetNextCommandIdWithKernelsExp(
+    ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
+    const ze_mutable_command_id_exp_desc_t* desc,   ///< [in][out] pointer to mutable command identifier descriptor
+    uint32_t numKernels,                            ///< [in][optional] number of entries on phKernels list
+    ze_kernel_handle_t* phKernels,                  ///< [in][optional][range(0, numKernels)] list of kernels that user can
+                                                    ///< switch between using ::zeCommandListUpdateMutableCommandKernelsExp
+                                                    ///< call
+    uint64_t* pCommandId                            ///< [out] pointer to mutable command identifier to be written
+    )
+{
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
+    auto pfnGetNextCommandIdWithKernelsExp = ze_lib::context->zeDdiTable.load()->CommandListExp.pfnGetNextCommandIdWithKernelsExp;
+    if( nullptr == pfnGetNextCommandIdWithKernelsExp ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    return pfnGetNextCommandIdWithKernelsExp( hCommandList, desc, numKernels, phKernels, pCommandId );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Updates mutable commands.
+/// 
+/// @details
+///     - This function may only be called for a mutable command list.
+///     - The application must synchronize mutable command list execution before
+///       calling this function.
+///     - The application must close a mutable command list after completing all
+///       updates.
+///     - This function must not be called from simultaneous threads with the
+///       same command list handle.
+///     - The implementation of this function should be lock-free.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hCommandList`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == desc`
+///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
+///         + Invalid kernel argument or not matching update descriptor provided
+ze_result_t ZE_APICALL
+zeCommandListUpdateMutableCommandsExp(
+    ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
+    const ze_mutable_commands_exp_desc_t* desc      ///< [in] pointer to mutable commands descriptor; multiple descriptors may
+                                                    ///< be chained via `pNext` member
+    )
+{
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
+    auto pfnUpdateMutableCommandsExp = ze_lib::context->zeDdiTable.load()->CommandListExp.pfnUpdateMutableCommandsExp;
+    if( nullptr == pfnUpdateMutableCommandsExp ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    return pfnUpdateMutableCommandsExp( hCommandList, desc );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Updates the signal event for a mutable command in a mutable command
+///        list.
+/// 
+/// @details
+///     - This function may only be called for a mutable command list.
+///     - The type, scope and flags of the signal event must match those of the
+///       source command.
+///     - The application must synchronize mutable command list execution before
+///       calling this function.
+///     - The application must close a mutable command list after completing all
+///       updates.
+///     - This function must not be called from simultaneous threads with the
+///       same command list handle.
+///     - The implementation of this function should be lock-free.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hCommandList`
+ze_result_t ZE_APICALL
+zeCommandListUpdateMutableCommandSignalEventExp(
+    ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
+    uint64_t commandId,                             ///< [in] command identifier
+    ze_event_handle_t hSignalEvent                  ///< [in][optional] handle of the event to signal on completion
+    )
+{
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
+    auto pfnUpdateMutableCommandSignalEventExp = ze_lib::context->zeDdiTable.load()->CommandListExp.pfnUpdateMutableCommandSignalEventExp;
+    if( nullptr == pfnUpdateMutableCommandSignalEventExp ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    return pfnUpdateMutableCommandSignalEventExp( hCommandList, commandId, hSignalEvent );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Updates the wait events for a mutable command in a mutable command
+///        list.
+/// 
+/// @details
+///     - This function may only be called for a mutable command list.
+///     - The number of wait events must match that of the source command.
+///     - The type, scope and flags of the wait events must match those of the
+///       source command.
+///     - Passing `nullptr` as the wait events will update the command to not
+///       wait on any events prior to dispatch.
+///     - Passing `nullptr` as an event on event wait list will remove event
+///       dependency from this wait list slot.
+///     - The application must synchronize mutable command list execution before
+///       calling this function.
+///     - The application must close a mutable command list after completing all
+///       updates.
+///     - This function must not be called from simultaneous threads with the
+///       same command list handle.
+///     - The implementation of this function should be lock-free.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hCommandList`
+///     - ::ZE_RESULT_ERROR_INVALID_SIZE
+///         + The `numWaitEvents` parameter does not match that of the original command.
+ze_result_t ZE_APICALL
+zeCommandListUpdateMutableCommandWaitEventsExp(
+    ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
+    uint64_t commandId,                             ///< [in] command identifier
+    uint32_t numWaitEvents,                         ///< [in][optional] the number of wait events
+    ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
+                                                    ///< on before launching
+    )
+{
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
+    auto pfnUpdateMutableCommandWaitEventsExp = ze_lib::context->zeDdiTable.load()->CommandListExp.pfnUpdateMutableCommandWaitEventsExp;
+    if( nullptr == pfnUpdateMutableCommandWaitEventsExp ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    return pfnUpdateMutableCommandWaitEventsExp( hCommandList, commandId, numWaitEvents, phWaitEvents );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Updates the kernel for a mutable command in a mutable command list.
+/// 
+/// @details
+///     - This function may only be called for a mutable command list.
+///     - The kernel handle must be from the provided list for given command id.
+///     - The application must synchronize mutable command list execution before
+///       calling this function.
+///     - The application must close a mutable command list after completing all
+///       updates.
+///     - This function must not be called from simultaneous threads with the
+///       same command list handle.
+///     - This function must be called before updating kernel arguments and
+///       dispatch parameters, when kernel is mutated.
+///     - The implementation of this function should be lock-free.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hCommandList`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == pCommandId`
+///         + `nullptr == phKernels`
+///     - ::ZE_RESULT_ERROR_INVALID_KERNEL_HANDLE
+///         + Invalid kernel handle provided for the mutation kernel instruction operation.
+ze_result_t ZE_APICALL
+zeCommandListUpdateMutableCommandKernelsExp(
+    ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
+    uint32_t numKernels,                            ///< [in] the number of kernels to update
+    uint64_t* pCommandId,                           ///< [in][range(0, numKernels)] command identifier
+    ze_kernel_handle_t* phKernels                   ///< [in][range(0, numKernels)] handle of the kernel for a command
+                                                    ///< identifier to switch to
+    )
+{
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
+    auto pfnUpdateMutableCommandKernelsExp = ze_lib::context->zeDdiTable.load()->CommandListExp.pfnUpdateMutableCommandKernelsExp;
+    if( nullptr == pfnUpdateMutableCommandKernelsExp ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    return pfnUpdateMutableCommandKernelsExp( hCommandList, numKernels, pCommandId, phKernels );
 }
 
 } // extern "C"

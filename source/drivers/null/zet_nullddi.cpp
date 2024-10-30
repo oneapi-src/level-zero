@@ -2395,8 +2395,6 @@ zetGetMetricGroupExpProcAddrTable(
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
-    pDdiTable->pfnCreateExp                              = driver::zetMetricGroupCreateExp;
-
     pDdiTable->pfnCalculateMultipleMetricValuesExp       = driver::zetMetricGroupCalculateMultipleMetricValuesExp;
 
     pDdiTable->pfnGetGlobalTimestampsExp                 = driver::zetMetricGroupGetGlobalTimestampsExp;
@@ -2404,6 +2402,8 @@ zetGetMetricGroupExpProcAddrTable(
     pDdiTable->pfnGetExportDataExp                       = driver::zetMetricGroupGetExportDataExp;
 
     pDdiTable->pfnCalculateMetricExportDataExp           = driver::zetMetricGroupCalculateMetricExportDataExp;
+
+    pDdiTable->pfnCreateExp                              = driver::zetMetricGroupCreateExp;
 
     pDdiTable->pfnAddMetricExp                           = driver::zetMetricGroupAddMetricExp;
 

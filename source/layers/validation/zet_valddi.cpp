@@ -3643,9 +3643,6 @@ zetGetMetricGroupExpProcAddrTable(
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
-    dditable.pfnCreateExp                                = pDdiTable->pfnCreateExp;
-    pDdiTable->pfnCreateExp                              = validation_layer::zetMetricGroupCreateExp;
-
     dditable.pfnCalculateMultipleMetricValuesExp         = pDdiTable->pfnCalculateMultipleMetricValuesExp;
     pDdiTable->pfnCalculateMultipleMetricValuesExp       = validation_layer::zetMetricGroupCalculateMultipleMetricValuesExp;
 
@@ -3657,6 +3654,9 @@ zetGetMetricGroupExpProcAddrTable(
 
     dditable.pfnCalculateMetricExportDataExp             = pDdiTable->pfnCalculateMetricExportDataExp;
     pDdiTable->pfnCalculateMetricExportDataExp           = validation_layer::zetMetricGroupCalculateMetricExportDataExp;
+
+    dditable.pfnCreateExp                                = pDdiTable->pfnCreateExp;
+    pDdiTable->pfnCreateExp                              = validation_layer::zetMetricGroupCreateExp;
 
     dditable.pfnAddMetricExp                             = pDdiTable->pfnAddMetricExp;
     pDdiTable->pfnAddMetricExp                           = validation_layer::zetMetricGroupAddMetricExp;
