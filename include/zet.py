@@ -4,7 +4,7 @@
  SPDX-License-Identifier: MIT
 
  @file zet.py
- @version v1.11-r1.11.4
+ @version v1.11-r1.11.5
 
  """
 import platform
@@ -417,16 +417,16 @@ class zet_metric_type_v(IntEnum):
     FLAG = 5                                                                ## Metric type: flag
     RATIO = 6                                                               ## Metric type: ratio
     RAW = 7                                                                 ## Metric type: raw
-    IP_EXP = 8                                                              ## Metric type: instruction pointer. Deprecated, use
-                                                                            ## ::ZET_METRIC_TYPE_IP.
-    IP = 9                                                                  ## Metric type: instruction pointer
-    EVENT_EXP_TIMESTAMP = 10                                                ## Metric type: event with only timestamp and value has no meaning
-    EVENT_EXP_START = 11                                                    ## Metric type: the first event of a start/end event pair
-    EVENT_EXP_END = 12                                                      ## Metric type: the second event of a start/end event pair
-    EXPORT_DMA_BUF = 0x7ffffffd                                             ## Metric which exports linux dma_buf, which could be imported/mapped to
-                                                                            ## the host process
-    EVENT_EXP_MONOTONIC_WRAPS_VALUE = 0x7ffffffe                            ## Metric type: value of the event is a monotonically increasing value
+    EVENT_EXP_TIMESTAMP = 0x7ffffff9                                        ## Metric type: event with only timestamp and value has no meaning
+    EVENT_EXP_START = 0x7ffffffa                                            ## Metric type: the first event of a start/end event pair
+    EVENT_EXP_END = 0x7ffffffb                                              ## Metric type: the second event of a start/end event pair
+    EVENT_EXP_MONOTONIC_WRAPS_VALUE = 0x7ffffffc                            ## Metric type: value of the event is a monotonically increasing value
                                                                             ## that can wrap around
+    EXP_EXPORT_DMA_BUF = 0x7ffffffd                                         ## Metric which exports linux dma_buf, which could be imported/mapped to
+                                                                            ## the host process
+    IP_EXP = 0x7ffffffe                                                     ## Metric type: instruction pointer. Deprecated, use
+                                                                            ## ::ZET_METRIC_TYPE_IP.
+    IP = 0x7ffffffe                                                         ## Metric type: instruction pointer
 
 class zet_metric_type_t(c_int):
     def __str__(self):
