@@ -144,8 +144,6 @@ typedef struct _zel_command_list_callbacks_t
     ze_pfnCommandListAppendLaunchKernelIndirectCb_t                 pfnAppendLaunchKernelIndirectCb;
     ze_pfnCommandListAppendLaunchMultipleKernelsIndirectCb_t        pfnAppendLaunchMultipleKernelsIndirectCb;
     ze_pfnCommandListGetNextCommandIdWithKernelsExpCb_t             pfnGetNextCommandIdWithKernelsExpCb;
-    ze_pfnCommandListUpdateMutableCommandsExpCb_t                   pfnUpdateMutableCommandsExpCb;
-    ze_pfnCommandListUpdateMutableCommandSignalEventExpCb_t         pfnUpdateMutableCommandSignalEventExpCb;
     ze_pfnCommandListUpdateMutableCommandKernelsExpCb_t             pfnUpdateMutableCommandKernelsExpCb;
     ze_pfnCommandListAppendImageCopyToMemoryExtCb_t                 pfnAppendImageCopyToMemoryExtCb;
     ze_pfnCommandListAppendImageCopyFromMemoryExtCb_t               pfnAppendImageCopyFromMemoryExtCb;
@@ -156,9 +154,11 @@ typedef struct _zel_command_list_callbacks_t
     ze_pfnCommandListGetOrdinalCb_t                                 pfnGetOrdinalCb;
     ze_pfnCommandListImmediateGetIndexCb_t                          pfnImmediateGetIndexCb;
     ze_pfnCommandListIsImmediateCb_t                                pfnIsImmediateCb;
-    ze_pfnCommandListGetNextCommandIdExpCb_t                        pfnGetNextCommandIdExpCb;
-    ze_pfnCommandListUpdateMutableCommandWaitEventsExpCb_t          pfnUpdateMutableCommandWaitEventsExpCb;
     ze_pfnCommandListImmediateAppendCommandListsExpCb_t             pfnImmediateAppendCommandListsExpCb;
+    ze_pfnCommandListGetNextCommandIdExpCb_t                        pfnGetNextCommandIdExpCb;
+    ze_pfnCommandListUpdateMutableCommandsExpCb_t                   pfnUpdateMutableCommandsExpCb;
+    ze_pfnCommandListUpdateMutableCommandSignalEventExpCb_t         pfnUpdateMutableCommandSignalEventExpCb;
+    ze_pfnCommandListUpdateMutableCommandWaitEventsExpCb_t          pfnUpdateMutableCommandWaitEventsExpCb;
 } zel_command_list_callbacks_t;
 
 ///////////////////////////////////////////////////////////////////////////////

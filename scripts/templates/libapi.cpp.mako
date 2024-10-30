@@ -81,12 +81,8 @@ ${th.make_func_name(n, tags, obj)}(
 }
 %else:
 %if re.match("InitDrivers", obj['name']):
-    std::call_once(${x}_lib::context->initOnceDrivers, []() {
-        ze_init_flags_t all_enabled = UINT32_MAX;
-        ze_init_driver_type_desc_t all_enabled_desc = {ZE_STRUCTURE_TYPE_INIT_DRIVER_TYPE_DESC};
-        all_enabled_desc.pNext = nullptr;
-        all_enabled_desc.flags = UINT32_MAX;
-        result = ${x}_lib::context->Init(all_enabled, false, &all_enabled_desc);
+    std::call_once(${x}_lib::context->initOnceDrivers, [desc]() {
+        result = ${x}_lib::context->Init(0, false, desc);
         return result;
     });
 

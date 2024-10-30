@@ -3316,11 +3316,11 @@ zetGetMetricGroupExpProcAddrTable(
         if( ( loader::context->zeDrivers.size() > 1 ) || loader::context->forceIntercept )
         {
             // return pointers to loader's DDIs
-            pDdiTable->pfnCreateExp                                = loader::zetMetricGroupCreateExp;
             pDdiTable->pfnCalculateMultipleMetricValuesExp         = loader::zetMetricGroupCalculateMultipleMetricValuesExp;
             pDdiTable->pfnGetGlobalTimestampsExp                   = loader::zetMetricGroupGetGlobalTimestampsExp;
             pDdiTable->pfnGetExportDataExp                         = loader::zetMetricGroupGetExportDataExp;
             pDdiTable->pfnCalculateMetricExportDataExp             = loader::zetMetricGroupCalculateMetricExportDataExp;
+            pDdiTable->pfnCreateExp                                = loader::zetMetricGroupCreateExp;
             pDdiTable->pfnAddMetricExp                             = loader::zetMetricGroupAddMetricExp;
             pDdiTable->pfnRemoveMetricExp                          = loader::zetMetricGroupRemoveMetricExp;
             pDdiTable->pfnCloseExp                                 = loader::zetMetricGroupCloseExp;
