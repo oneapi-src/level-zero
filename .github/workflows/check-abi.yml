@@ -15,7 +15,7 @@ jobs:
     - name: Install dependencies
       run: |
         sudo apt update
-        sudo apt install -y elfutils universal-ctags
+        sudo apt install -y elfutils universal-ctags vtable-dumper
     - uses: actions/checkout@v2
       with:
         fetch-depth: 0 # Required due to the way Git works, without it this action won't be able to find any or the correct tags
@@ -39,19 +39,18 @@ jobs:
       run: |
         mkdir base/build
         cd base/build
-        cmake -DCMAKE_BUILD_TYPE=Debug ..
+        cmake -E env CXXFLAGS="-Og -g" cmake -DCMAKE_BUILD_TYPE=Debug ..
         make -j$(nproc)
     - name: Build debug head
       run: |
         mkdir head/build
         cd head/build
-        cmake -DCMAKE_BUILD_TYPE=Debug ..
+        cmake -E env CXXFLAGS="-Og -g" cmake -DCMAKE_BUILD_TYPE=Debug ..
         make -j$(nproc)
     - name: Download and setup abi-dumper
       run: |
-        wget https://github.com/lvc/abi-dumper/archive/refs/tags/1.2.tar.gz -O abi-dumper.tar.gz
-        tar -xzf abi-dumper.tar.gz
-        cp abi-dumper-*/abi-dumper.pl .
+        git clone https://github.com/lvc/abi-dumper.git abi-dumper
+        cp abi-dumper/abi-dumper.pl .
         chmod +x abi-dumper.pl
     - name: Generate dump for base
       run: |
@@ -64,7 +63,7 @@ jobs:
       run: |
         ./abi-dumper.pl \
           ./head/build/lib/libze_loader.so \
-          -lver $(cat ./head/build/VERSION) \
+          -lver $(cat ./head/build/VERSION)-1 \
           -public-headers ./head/include \
           -o ./head.dump
     - name: Download and setup abi-compliance-checker
@@ -91,7 +90,7 @@ jobs:
     - name: Install dependencies
       run: |
         sudo apt update
-        sudo apt install -y elfutils universal-ctags
+        sudo apt install -y elfutils universal-ctags vtable-dumper
     - name: Checkout base
       uses: actions/checkout@v3
       with:
@@ -108,19 +107,18 @@ jobs:
       run: |
         mkdir base/build
         cd base/build
-        cmake -DCMAKE_BUILD_TYPE=Debug ..
+        cmake -E env CXXFLAGS="-Og -g" cmake -DCMAKE_BUILD_TYPE=Debug ..
         make -j$(nproc)
     - name: Build debug head
       run: |
         mkdir head/build
         cd head/build
-        cmake -DCMAKE_BUILD_TYPE=Debug ..
+        cmake -E env CXXFLAGS="-Og -g" cmake -DCMAKE_BUILD_TYPE=Debug ..
         make -j$(nproc)
     - name: Download and setup abi-dumper
       run: |
-        wget https://github.com/lvc/abi-dumper/archive/refs/tags/1.2.tar.gz -O abi-dumper.tar.gz
-        tar -xzf abi-dumper.tar.gz
-        cp abi-dumper-*/abi-dumper.pl .
+        git clone https://github.com/lvc/abi-dumper.git abi-dumper
+        cp abi-dumper/abi-dumper.pl .
         chmod +x abi-dumper.pl
     - name: Generate dump for base
       run: |
@@ -133,7 +131,7 @@ jobs:
       run: |
         ./abi-dumper.pl \
           ./head/build/lib/libze_loader.so \
-          -lver $(cat ./head/build/VERSION) \
+          -lver $(cat ./head/build/VERSION)-1 \
           -public-headers ./head/include \
           -o ./head.dump
     - name: Download and setup abi-compliance-checker
