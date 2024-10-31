@@ -1,5 +1,10 @@
 # Level zero loader changelog
 
+## v1.18.5
+* Fix metric types for new experimental types
+* Fix/Regenerate the Loader files incorrectly reordered by the scripts.
+* Fix ABI checker build/tests
+* Update workflows to ABI check with last released tag
 ## v1.18.4
 * Fix Backwards compatibility in ddi structs for EXP features
 ## v1.18.3
