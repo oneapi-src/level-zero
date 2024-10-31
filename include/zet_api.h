@@ -5,7 +5,7 @@
  * SPDX-License-Identifier: MIT
  *
  * @file zet_api.h
- * @version v1.11-r1.11.4
+ * @version v1.11-r1.11.5
  *
  */
 #ifndef _ZET_API_H
@@ -1012,16 +1012,16 @@ typedef enum _zet_metric_type_t
     ZET_METRIC_TYPE_FLAG = 5,                                               ///< Metric type: flag
     ZET_METRIC_TYPE_RATIO = 6,                                              ///< Metric type: ratio
     ZET_METRIC_TYPE_RAW = 7,                                                ///< Metric type: raw
-    ZET_METRIC_TYPE_IP_EXP = 8,                                             ///< Metric type: instruction pointer. Deprecated, use
-                                                                            ///< ::ZET_METRIC_TYPE_IP.
-    ZET_METRIC_TYPE_IP = 9,                                                 ///< Metric type: instruction pointer
-    ZET_METRIC_TYPE_EVENT_EXP_TIMESTAMP = 10,                               ///< Metric type: event with only timestamp and value has no meaning
-    ZET_METRIC_TYPE_EVENT_EXP_START = 11,                                   ///< Metric type: the first event of a start/end event pair
-    ZET_METRIC_TYPE_EVENT_EXP_END = 12,                                     ///< Metric type: the second event of a start/end event pair
-    ZET_METRIC_TYPE_EXPORT_DMA_BUF = 0x7ffffffd,                            ///< Metric which exports linux dma_buf, which could be imported/mapped to
-                                                                            ///< the host process
-    ZET_METRIC_TYPE_EVENT_EXP_MONOTONIC_WRAPS_VALUE = 0x7ffffffe,           ///< Metric type: value of the event is a monotonically increasing value
+    ZET_METRIC_TYPE_EVENT_EXP_TIMESTAMP = 0x7ffffff9,                       ///< Metric type: event with only timestamp and value has no meaning
+    ZET_METRIC_TYPE_EVENT_EXP_START = 0x7ffffffa,                           ///< Metric type: the first event of a start/end event pair
+    ZET_METRIC_TYPE_EVENT_EXP_END = 0x7ffffffb,                             ///< Metric type: the second event of a start/end event pair
+    ZET_METRIC_TYPE_EVENT_EXP_MONOTONIC_WRAPS_VALUE = 0x7ffffffc,           ///< Metric type: value of the event is a monotonically increasing value
                                                                             ///< that can wrap around
+    ZET_METRIC_TYPE_EXP_EXPORT_DMA_BUF = 0x7ffffffd,                        ///< Metric which exports linux dma_buf, which could be imported/mapped to
+                                                                            ///< the host process
+    ZET_METRIC_TYPE_IP_EXP = 0x7ffffffe,                                    ///< Metric type: instruction pointer. Deprecated, use
+                                                                            ///< ::ZET_METRIC_TYPE_IP.
+    ZET_METRIC_TYPE_IP = 0x7ffffffe,                                        ///< Metric type: instruction pointer
     ZET_METRIC_TYPE_FORCE_UINT32 = 0x7fffffff
 
 } zet_metric_type_t;
