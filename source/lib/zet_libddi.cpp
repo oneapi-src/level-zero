@@ -23,23 +23,26 @@ namespace ze_lib
 
         if( ZE_RESULT_SUCCESS == result )
         {
+            // Optional
             auto getTable = reinterpret_cast<zet_pfnGetMetricDecoderExpProcAddrTable_t>(
                 GET_FUNCTION_PTR(loader, "zetGetMetricDecoderExpProcAddrTable") );
-            result = getTable( ZE_API_VERSION_CURRENT, &initialzetDdiTable.MetricDecoderExp );
+            getTable( ZE_API_VERSION_CURRENT, &initialzetDdiTable.MetricDecoderExp );
         }
 
         if( ZE_RESULT_SUCCESS == result )
         {
+            // Optional
             auto getTable = reinterpret_cast<zet_pfnGetMetricProgrammableExpProcAddrTable_t>(
                 GET_FUNCTION_PTR(loader, "zetGetMetricProgrammableExpProcAddrTable") );
-            result = getTable( ZE_API_VERSION_CURRENT, &initialzetDdiTable.MetricProgrammableExp );
+            getTable( ZE_API_VERSION_CURRENT, &initialzetDdiTable.MetricProgrammableExp );
         }
 
         if( ZE_RESULT_SUCCESS == result )
         {
+            // Optional
             auto getTable = reinterpret_cast<zet_pfnGetMetricTracerExpProcAddrTable_t>(
                 GET_FUNCTION_PTR(loader, "zetGetMetricTracerExpProcAddrTable") );
-            result = getTable( ZE_API_VERSION_CURRENT, &initialzetDdiTable.MetricTracerExp );
+            getTable( ZE_API_VERSION_CURRENT, &initialzetDdiTable.MetricTracerExp );
         }
 
         if( ZE_RESULT_SUCCESS == result )
@@ -51,9 +54,10 @@ namespace ze_lib
 
         if( ZE_RESULT_SUCCESS == result )
         {
+            // Optional
             auto getTable = reinterpret_cast<zet_pfnGetDeviceExpProcAddrTable_t>(
                 GET_FUNCTION_PTR(loader, "zetGetDeviceExpProcAddrTable") );
-            result = getTable( ZE_API_VERSION_CURRENT, &initialzetDdiTable.DeviceExp );
+            getTable( ZE_API_VERSION_CURRENT, &initialzetDdiTable.DeviceExp );
         }
 
         if( ZE_RESULT_SUCCESS == result )
@@ -100,9 +104,10 @@ namespace ze_lib
 
         if( ZE_RESULT_SUCCESS == result )
         {
+            // Optional
             auto getTable = reinterpret_cast<zet_pfnGetMetricExpProcAddrTable_t>(
                 GET_FUNCTION_PTR(loader, "zetGetMetricExpProcAddrTable") );
-            result = getTable( ZE_API_VERSION_CURRENT, &initialzetDdiTable.MetricExp );
+            getTable( ZE_API_VERSION_CURRENT, &initialzetDdiTable.MetricExp );
         }
 
         if( ZE_RESULT_SUCCESS == result )
@@ -114,9 +119,10 @@ namespace ze_lib
 
         if( ZE_RESULT_SUCCESS == result )
         {
+            // Optional
             auto getTable = reinterpret_cast<zet_pfnGetMetricGroupExpProcAddrTable_t>(
                 GET_FUNCTION_PTR(loader, "zetGetMetricGroupExpProcAddrTable") );
-            result = getTable( ZE_API_VERSION_CURRENT, &initialzetDdiTable.MetricGroupExp );
+            getTable( ZE_API_VERSION_CURRENT, &initialzetDdiTable.MetricGroupExp );
         }
 
         if( ZE_RESULT_SUCCESS == result )
@@ -156,17 +162,20 @@ namespace ze_lib
 
         if( ZE_RESULT_SUCCESS == result )
         {
-            result = zetGetMetricDecoderExpProcAddrTable( ZE_API_VERSION_CURRENT, &initialzetDdiTable.MetricDecoderExp );
+            // Optional
+            zetGetMetricDecoderExpProcAddrTable( ZE_API_VERSION_CURRENT, &initialzetDdiTable.MetricDecoderExp );
         }
 
         if( ZE_RESULT_SUCCESS == result )
         {
-            result = zetGetMetricProgrammableExpProcAddrTable( ZE_API_VERSION_CURRENT, &initialzetDdiTable.MetricProgrammableExp );
+            // Optional
+            zetGetMetricProgrammableExpProcAddrTable( ZE_API_VERSION_CURRENT, &initialzetDdiTable.MetricProgrammableExp );
         }
 
         if( ZE_RESULT_SUCCESS == result )
         {
-            result = zetGetMetricTracerExpProcAddrTable( ZE_API_VERSION_CURRENT, &initialzetDdiTable.MetricTracerExp );
+            // Optional
+            zetGetMetricTracerExpProcAddrTable( ZE_API_VERSION_CURRENT, &initialzetDdiTable.MetricTracerExp );
         }
 
         if( ZE_RESULT_SUCCESS == result )
@@ -176,7 +185,8 @@ namespace ze_lib
 
         if( ZE_RESULT_SUCCESS == result )
         {
-            result = zetGetDeviceExpProcAddrTable( ZE_API_VERSION_CURRENT, &initialzetDdiTable.DeviceExp );
+            // Optional
+            zetGetDeviceExpProcAddrTable( ZE_API_VERSION_CURRENT, &initialzetDdiTable.DeviceExp );
         }
 
         if( ZE_RESULT_SUCCESS == result )
@@ -211,7 +221,8 @@ namespace ze_lib
 
         if( ZE_RESULT_SUCCESS == result )
         {
-            result = zetGetMetricExpProcAddrTable( ZE_API_VERSION_CURRENT, &initialzetDdiTable.MetricExp );
+            // Optional
+            zetGetMetricExpProcAddrTable( ZE_API_VERSION_CURRENT, &initialzetDdiTable.MetricExp );
         }
 
         if( ZE_RESULT_SUCCESS == result )
@@ -221,7 +232,8 @@ namespace ze_lib
 
         if( ZE_RESULT_SUCCESS == result )
         {
-            result = zetGetMetricGroupExpProcAddrTable( ZE_API_VERSION_CURRENT, &initialzetDdiTable.MetricGroupExp );
+            // Optional
+            zetGetMetricGroupExpProcAddrTable( ZE_API_VERSION_CURRENT, &initialzetDdiTable.MetricGroupExp );
         }
 
         if( ZE_RESULT_SUCCESS == result )
