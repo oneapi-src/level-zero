@@ -130,6 +130,16 @@ ${tbl['export']['name']}(
 
     ${x}_result_t result = ${X}_RESULT_SUCCESS;
 
+% if tbl['name'] == 'Global' and n == 'ze':
+    pDdiTable->pfnInit                                   = driver::zeInit;
+
+    auto missing_api = getenv_string( "ZEL_TEST_MISSING_API" );
+    if (std::strcmp(missing_api.c_str(), "zeInitDrivers") == 0) {
+        pDdiTable->pfnInitDrivers                            = nullptr;
+    } else {
+        pDdiTable->pfnInitDrivers                            = driver::zeInitDrivers;
+    }
+%else:
     %for obj in tbl['functions']:
     %if 'condition' in obj:
 #if ${th.subt(n, tags, obj['condition'])}
@@ -142,6 +152,7 @@ ${tbl['export']['name']}(
     %endif
 
     %endfor
+%endif
     return result;
 }
 

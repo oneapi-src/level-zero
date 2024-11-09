@@ -145,6 +145,19 @@ TEST(
 
 TEST(
     LoaderInit,
+    GivenLevelZeroLoaderPresentWhenCallingZeInitDriversThenzeInitWithzeInitDriversUnsupportedOnTheDriverThenzeInitSucceeds) {
+
+  uint32_t pCount = 0;
+  ze_init_driver_type_desc_t desc = {ZE_STRUCTURE_TYPE_INIT_DRIVER_TYPE_DESC};
+  desc.flags = UINT32_MAX;
+  desc.pNext = nullptr;
+  putenv_safe( const_cast<char *>( "ZEL_TEST_MISSING_API=zeInitDrivers" ) );
+  EXPECT_EQ(ZE_RESULT_ERROR_UNINITIALIZED, zeInitDrivers(&pCount, nullptr, &desc));
+  EXPECT_EQ(ZE_RESULT_SUCCESS, zeInit(0));
+}
+
+TEST(
+    LoaderInit,
     GivenLevelZeroLoaderPresentWhenCallingZeInitDriversThenzeInitThenBothCallsSucceedWithNPUTypes) {
 
   uint32_t pCount = 0;

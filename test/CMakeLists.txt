@@ -38,3 +38,5 @@ add_test(NAME tests_both_gpu COMMAND tests --gtest_filter=*GivenLevelZeroLoaderP
 set_property(TEST tests_both_gpu PROPERTY ENVIRONMENT "ZE_ENABLE_NULL_DRIVER=1")
 add_test(NAME tests_both_npu COMMAND tests --gtest_filter=*GivenLevelZeroLoaderPresentWhenCallingzeInitThenZeInitDriversThenBothCallsSucceedWithNPUTypes*)
 set_property(TEST tests_both_npu PROPERTY ENVIRONMENT "ZE_ENABLE_NULL_DRIVER=1")
+add_test(NAME tests_missing_api COMMAND tests --gtest_filter=*GivenLevelZeroLoaderPresentWhenCallingZeInitDriversThenzeInitWithzeInitDriversUnsupportedOnTheDriverThenzeInitSucceeds*)
+set_property(TEST tests_missing_api PROPERTY ENVIRONMENT "ZE_ENABLE_NULL_DRIVER=1")

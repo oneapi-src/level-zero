@@ -145,6 +145,14 @@ namespace loader
                 debug_trace_message(message, "");
             }
         }
+        // If zeInitDrivers is not supported by this driver, but zeInitDrivers is called first, then return uninitialized.
+        if (desc && !loader::context->initDriversSupport) {
+            std::string message = "zeInitDrivers called first, but not supported by driver, returning uninitialized.";
+            debug_trace_message(message, "");
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
+
+
         bool return_first_driver_result=false;
         std::string initName = "zeInit";
         driver_vector_t *drivers = &zeDrivers;
