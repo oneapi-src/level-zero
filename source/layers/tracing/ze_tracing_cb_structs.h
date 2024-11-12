@@ -235,6 +235,7 @@ typedef struct _zel_kernel_callbacks_t
     ze_pfnKernelGetPropertiesCb_t                                   pfnGetPropertiesCb;
     ze_pfnKernelGetNameCb_t                                         pfnGetNameCb;
     ze_pfnKernelSetGlobalOffsetExpCb_t                              pfnSetGlobalOffsetExpCb;
+    ze_pfnKernelGetBinaryExpCb_t                                    pfnGetBinaryExpCb;
     ze_pfnKernelSchedulingHintExpCb_t                               pfnSchedulingHintExpCb;
 } zel_kernel_callbacks_t;
 

@@ -2497,6 +2497,19 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
+    ZEHandleLifetimeValidation::zeKernelGetBinaryExpPrologue(
+        ze_kernel_handle_t hKernel,                     ///< [in] Kernel handle.
+        size_t* pSize,                                  ///< [in,out] pointer to variable with size of GEN ISA binary.
+        uint8_t* pKernelBinary                          ///< [in,out] pointer to storage area for GEN ISA binary function.
+        )
+    { 
+        
+        if ( !context.handleLifetime->isHandleValid( hKernel )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    ze_result_t
     ZEHandleLifetimeValidation::zeDeviceReserveCacheExtPrologue(
         ze_device_handle_t hDevice,                     ///< [in] handle of the device object
         size_t cacheLevel,                              ///< [in] cache level where application want to reserve. If zero, then the

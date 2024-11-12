@@ -3970,6 +3970,31 @@ namespace driver
     }
 
     ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeKernelGetBinaryExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zeKernelGetBinaryExp(
+        ze_kernel_handle_t hKernel,                     ///< [in] Kernel handle.
+        size_t* pSize,                                  ///< [in,out] pointer to variable with size of GEN ISA binary.
+        uint8_t* pKernelBinary                          ///< [in,out] pointer to storage area for GEN ISA binary function.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnGetBinaryExp = context.zeDdiTable.KernelExp.pfnGetBinaryExp;
+        if( nullptr != pfnGetBinaryExp )
+        {
+            result = pfnGetBinaryExp( hKernel, pSize, pKernelBinary );
+        }
+        else
+        {
+            // generic implementation
+        }
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
     /// @brief Intercept function for zeDeviceReserveCacheExt
     __zedlllocal ze_result_t ZE_APICALL
     zeDeviceReserveCacheExt(
@@ -5875,6 +5900,8 @@ zeGetKernelExpProcAddrTable(
     ze_result_t result = ZE_RESULT_SUCCESS;
 
     pDdiTable->pfnSetGlobalOffsetExp                     = driver::zeKernelSetGlobalOffsetExp;
+
+    pDdiTable->pfnGetBinaryExp                           = driver::zeKernelGetBinaryExp;
 
     pDdiTable->pfnSchedulingHintExp                      = driver::zeKernelSchedulingHintExp;
 

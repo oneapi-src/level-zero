@@ -4,7 +4,7 @@
  SPDX-License-Identifier: MIT
 
  @file ze.py
- @version v1.11-r1.11.5
+ @version v1.11-r1.11.8
 
  """
 import platform
@@ -5520,13 +5520,21 @@ if __use_win_types:
 else:
     _zeKernelSchedulingHintExp_t = CFUNCTYPE( ze_result_t, ze_kernel_handle_t, POINTER(ze_scheduling_hint_exp_desc_t) )
 
+###############################################################################
+## @brief Function-pointer for zeKernelGetBinaryExp
+if __use_win_types:
+    _zeKernelGetBinaryExp_t = WINFUNCTYPE( ze_result_t, ze_kernel_handle_t, POINTER(c_size_t), POINTER(c_ubyte) )
+else:
+    _zeKernelGetBinaryExp_t = CFUNCTYPE( ze_result_t, ze_kernel_handle_t, POINTER(c_size_t), POINTER(c_ubyte) )
+
 
 ###############################################################################
 ## @brief Table of KernelExp functions pointers
 class _ze_kernel_exp_dditable_t(Structure):
     _fields_ = [
         ("pfnSetGlobalOffsetExp", c_void_p),                            ## _zeKernelSetGlobalOffsetExp_t
-        ("pfnSchedulingHintExp", c_void_p)                              ## _zeKernelSchedulingHintExp_t
+        ("pfnSchedulingHintExp", c_void_p),                             ## _zeKernelSchedulingHintExp_t
+        ("pfnGetBinaryExp", c_void_p)                                   ## _zeKernelGetBinaryExp_t
     ]
 
 ###############################################################################
@@ -6129,6 +6137,7 @@ class ZE_DDI:
         # attach function interface to function address
         self.zeKernelSetGlobalOffsetExp = _zeKernelSetGlobalOffsetExp_t(self.__dditable.KernelExp.pfnSetGlobalOffsetExp)
         self.zeKernelSchedulingHintExp = _zeKernelSchedulingHintExp_t(self.__dditable.KernelExp.pfnSchedulingHintExp)
+        self.zeKernelGetBinaryExp = _zeKernelGetBinaryExp_t(self.__dditable.KernelExp.pfnGetBinaryExp)
 
         # call driver to get function pointers
         _Sampler = _ze_sampler_dditable_t()

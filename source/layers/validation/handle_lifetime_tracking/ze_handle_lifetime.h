@@ -162,6 +162,7 @@ namespace validation_layer
         ze_result_t zeVirtualMemSetAccessAttributePrologue( ze_context_handle_t hContext, const void* ptr, size_t size, ze_memory_access_attribute_t access ) override;
         ze_result_t zeVirtualMemGetAccessAttributePrologue( ze_context_handle_t hContext, const void* ptr, size_t size, ze_memory_access_attribute_t* access, size_t* outSize ) override;
         ze_result_t zeKernelSetGlobalOffsetExpPrologue( ze_kernel_handle_t hKernel, uint32_t offsetX, uint32_t offsetY, uint32_t offsetZ ) override;
+        ze_result_t zeKernelGetBinaryExpPrologue( ze_kernel_handle_t hKernel, size_t* pSize, uint8_t* pKernelBinary ) override;
         ze_result_t zeDeviceReserveCacheExtPrologue( ze_device_handle_t hDevice, size_t cacheLevel, size_t cacheReservationSize ) override;
         ze_result_t zeDeviceSetCacheAdviceExtPrologue( ze_device_handle_t hDevice, void* ptr, size_t regionSize, ze_cache_ext_region_t cacheRegion ) override;
         ze_result_t zeEventQueryTimestampsExpPrologue( ze_event_handle_t hEvent, ze_device_handle_t hDevice, uint32_t* pCount, ze_kernel_timestamp_result_t* pTimestamps ) override;

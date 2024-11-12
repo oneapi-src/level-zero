@@ -5828,6 +5828,44 @@ namespace tracing_layer
     }
 
     ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeKernelGetBinaryExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zeKernelGetBinaryExp(
+        ze_kernel_handle_t hKernel,                     ///< [in] Kernel handle.
+        size_t* pSize,                                  ///< [in,out] pointer to variable with size of GEN ISA binary.
+        uint8_t* pKernelBinary                          ///< [in,out] pointer to storage area for GEN ISA binary function.
+        )
+    {
+        auto pfnGetBinaryExp = context.zeDdiTable.KernelExp.pfnGetBinaryExp;
+
+        if( nullptr == pfnGetBinaryExp)
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.KernelExp.pfnGetBinaryExp, hKernel, pSize, pKernelBinary);
+
+        // capture parameters
+        ze_kernel_get_binary_exp_params_t tracerParams = {
+            &hKernel,
+            &pSize,
+            &pKernelBinary
+        };
+
+        tracing_layer::APITracerCallbackDataImp<ze_pfnKernelGetBinaryExpCb_t> apiCallbackData;
+
+        ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnKernelGetBinaryExpCb_t, Kernel, pfnGetBinaryExpCb);
+
+
+        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.KernelExp.pfnGetBinaryExp,
+                                                  &tracerParams,
+                                                  apiCallbackData.apiOrdinal,
+                                                  apiCallbackData.prologCallbacks,
+                                                  apiCallbackData.epilogCallbacks,
+                                                  *tracerParams.phKernel,
+                                                  *tracerParams.ppSize,
+                                                  *tracerParams.ppKernelBinary);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
     /// @brief Intercept function for zeDeviceReserveCacheExt
     __zedlllocal ze_result_t ZE_APICALL
     zeDeviceReserveCacheExt(
@@ -8469,6 +8507,9 @@ zeGetKernelExpProcAddrTable(
 
     dditable.pfnSetGlobalOffsetExp                       = pDdiTable->pfnSetGlobalOffsetExp;
     pDdiTable->pfnSetGlobalOffsetExp                     = tracing_layer::zeKernelSetGlobalOffsetExp;
+
+    dditable.pfnGetBinaryExp                             = pDdiTable->pfnGetBinaryExp;
+    pDdiTable->pfnGetBinaryExp                           = tracing_layer::zeKernelGetBinaryExp;
 
     dditable.pfnSchedulingHintExp                        = pDdiTable->pfnSchedulingHintExp;
     pDdiTable->pfnSchedulingHintExp                      = tracing_layer::zeKernelSchedulingHintExp;
