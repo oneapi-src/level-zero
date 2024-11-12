@@ -145,7 +145,7 @@ TEST(
 
 TEST(
     LoaderInit,
-    GivenLevelZeroLoaderPresentWhenCallingZeInitDriversThenzeInitWithzeInitDriversUnsupportedOnTheDriverThenzeInitSucceeds) {
+    GivenZeInitDriversUnsupportedOnTheDriverWhenCallingZeInitDriversThenUninitializedReturned) {
 
   uint32_t pCount = 0;
   ze_init_driver_type_desc_t desc = {ZE_STRUCTURE_TYPE_INIT_DRIVER_TYPE_DESC};
