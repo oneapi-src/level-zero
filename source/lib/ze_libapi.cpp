@@ -197,6 +197,10 @@ zeInitDrivers(
         return result;
     });
 
+    if (result != ZE_RESULT_SUCCESS) {
+        return result;
+    }
+
     if(ze_lib::context->inTeardown) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }

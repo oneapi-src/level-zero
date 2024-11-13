@@ -86,6 +86,10 @@ ${th.make_func_name(n, tags, obj)}(
         return result;
     });
 
+    if (result != ${X}_RESULT_SUCCESS) {
+        return result;
+    }
+
     if(ze_lib::context->inTeardown) {
         return ${X}_RESULT_ERROR_UNINITIALIZED;
     }

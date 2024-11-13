@@ -5142,8 +5142,12 @@ zeGetGlobalProcAddrTable(
 
     pDdiTable->pfnInit                                   = driver::zeInit;
 
-    pDdiTable->pfnInitDrivers                            = driver::zeInitDrivers;
-
+    auto missing_api = getenv_string( "ZEL_TEST_MISSING_API" );
+    if (std::strcmp(missing_api.c_str(), "zeInitDrivers") == 0) {
+        pDdiTable->pfnInitDrivers                            = nullptr;
+    } else {
+        pDdiTable->pfnInitDrivers                            = driver::zeInitDrivers;
+    }
     return result;
 }
 
