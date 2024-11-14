@@ -70,7 +70,11 @@ namespace loader
                 continue;
             %else:
             if (!drv.dditable.${n}.${th.get_table_name(n, tags, obj)}.${th.make_pfn_name(n, tags, obj)}) {
+                %if re.match(r"\w+InitDrivers$", th.make_func_name(n, tags, obj)):
+                drv.initDriversStatus = ${X}_RESULT_ERROR_UNINITIALIZED;
+                %else:
                 drv.initStatus = ${X}_RESULT_ERROR_UNINITIALIZED;
+                %endif
                 continue;
             }
             %endif
@@ -88,7 +92,11 @@ namespace loader
             if( ${X}_RESULT_SUCCESS != result ) {
                 // If Get Drivers fails with Uninitialized, then update the driver init status to prevent reporting this driver in the next get call.
                 if (${X}_RESULT_ERROR_UNINITIALIZED == result) {
+                    %if re.match(r"\w+InitDrivers$", th.make_func_name(n, tags, obj)):
+                    drv.initDriversStatus = result;
+                    %else:
                     drv.initStatus = result;
+                    %endif
                 }
                 continue;
             }
