@@ -5,7 +5,7 @@
  * SPDX-License-Identifier: MIT
  *
  * @file ze_ddi.h
- * @version v1.11-r1.11.5
+ * @version v1.11-r1.11.8
  *
  */
 #ifndef _ZE_DDI_H
@@ -2197,11 +2197,20 @@ typedef ze_result_t (ZE_APICALL *ze_pfnKernelSchedulingHintExp_t)(
     );
 
 ///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zeKernelGetBinaryExp 
+typedef ze_result_t (ZE_APICALL *ze_pfnKernelGetBinaryExp_t)(
+    ze_kernel_handle_t,
+    size_t*,
+    uint8_t*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
 /// @brief Table of KernelExp functions pointers
 typedef struct _ze_kernel_exp_dditable_t
 {
     ze_pfnKernelSetGlobalOffsetExp_t                            pfnSetGlobalOffsetExp;
     ze_pfnKernelSchedulingHintExp_t                             pfnSchedulingHintExp;
+    ze_pfnKernelGetBinaryExp_t                                  pfnGetBinaryExp;
 } ze_kernel_exp_dditable_t;
 
 ///////////////////////////////////////////////////////////////////////////////

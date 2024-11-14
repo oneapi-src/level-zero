@@ -5,7 +5,7 @@
  * SPDX-License-Identifier: MIT
  *
  * @file ze_api.h
- * @version v1.11-r1.11.5
+ * @version v1.11-r1.11.8
  *
  */
 #ifndef _ZE_API_H
@@ -968,8 +968,9 @@ typedef enum _ze_init_flag_t
 /// @brief Initialize the 'oneAPI' driver(s)
 /// 
 /// @details
-///     - The application must call this function before calling any other
-///       function.
+///     - @deprecated since 1.10. Please use zeInitDrivers()
+///     - The application must call this function or zeInitDrivers before
+///       calling any other function.
 ///     - If this function is not called then all other functions will return
 ///       ::ZE_RESULT_ERROR_UNINITIALIZED.
 ///     - Only one instance of each driver will be initialized per process.
@@ -999,6 +1000,10 @@ zeInit(
 /// @brief Retrieves driver instances
 /// 
 /// @details
+///     - @deprecated since 1.10. Please use zeInitDrivers()
+///     - Usage of zeInitDrivers and zeDriverGet is mutually exclusive and
+///       should not be used together. Usage of them together will result in
+///       undefined behavior.
 ///     - A driver represents a collection of physical devices.
 ///     - Multiple calls to this function will return identical driver handles,
 ///       in the same order.
@@ -1075,20 +1080,20 @@ typedef struct _ze_init_driver_type_desc_t
 /// 
 /// @details
 ///     - The application must call this function or zeInit before calling any
-///       other function.
-///     - The application can call InitDrivers or zeInit to init the drivers on
-///       the system.
-///     - Calls to zeInit or InitDrivers will not alter the drivers retrieved
-///       thru either api.
-///     - Drivers init thru zeInit or InitDrivers will not be reInitialized once
-///       init in an application. The Loader will determine if the already init
-///       driver needs to be delivered to the user thru the init type flags.
+///       other function. (zeInit is [Deprecated] and is replaced by
+///       zeInitDrivers)
+///     - Calls to zeInit[Deprecated] or InitDrivers will not alter the drivers
+///       retrieved thru either api.
+///     - Drivers init thru zeInit[Deprecated] or InitDrivers will not be
+///       reInitialized once init in an application. The Loader will determine
+///       if the already init driver needs to be delivered to the user thru the
+///       init type flags.
 ///     - Already init Drivers will not be uninitialized if the call to
 ///       InitDrivers does not include that driver's type. Those init drivers
 ///       which don't match the init flags will not have their driver handles
 ///       returned to the user in that InitDrivers call.
-///     - If this function or zeInit is not called, then all other functions
-///       will return ::ZE_RESULT_ERROR_UNINITIALIZED.
+///     - If this function or zeInit[Deprecated] is not called, then all other
+///       functions will return ::ZE_RESULT_ERROR_UNINITIALIZED.
 ///     - Only one instance of each driver will be initialized per process.
 ///     - A driver represents a collection of physical devices.
 ///     - Multiple calls to this function will return identical driver handles,
@@ -7658,6 +7663,34 @@ typedef struct _ze_relaxed_allocation_limits_exp_desc_t
 /// @brief Get Kernel Binary Extension Name
 #define ZE_GET_KERNEL_BINARY_EXP_NAME  "ZE_extension_kernel_binary_exp"
 #endif // ZE_GET_KERNEL_BINARY_EXP_NAME
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Retrieves kernel binary program data (ISA GEN format).
+/// 
+/// @details
+///     - A valid kernel handle must be created with ::zeKernelCreate.
+///     - Returns Intel Graphics Assembly (GEN ISA) format binary program data
+///       for kernel handle.
+///     - The application may call this function from simultaneous threads.
+///     - The implementation of this function must be thread-safe.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hKernel`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == pSize`
+///         + `nullptr == pKernelBinary`
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zeKernelGetBinaryExp(
+    ze_kernel_handle_t hKernel,                                             ///< [in] Kernel handle.
+    size_t* pSize,                                                          ///< [in,out] pointer to variable with size of GEN ISA binary.
+    uint8_t* pKernelBinary                                                  ///< [in,out] pointer to storage area for GEN ISA binary function.
+    );
 
 #if !defined(__GNUC__)
 #pragma endregion
