@@ -23,9 +23,10 @@ namespace ze_lib
 
         if( ZE_RESULT_SUCCESS == result )
         {
+            // Optional
             auto getTable = reinterpret_cast<zes_pfnGetGlobalProcAddrTable_t>(
                 GET_FUNCTION_PTR(loader, "zesGetGlobalProcAddrTable") );
-            result = getTable( ZE_API_VERSION_CURRENT, &initialzesDdiTable.Global );
+            getTable( ZE_API_VERSION_CURRENT, &initialzesDdiTable.Global );
         }
 
         if( ZE_RESULT_SUCCESS == result )
@@ -37,9 +38,10 @@ namespace ze_lib
 
         if( ZE_RESULT_SUCCESS == result )
         {
+            // Optional
             auto getTable = reinterpret_cast<zes_pfnGetDeviceExpProcAddrTable_t>(
                 GET_FUNCTION_PTR(loader, "zesGetDeviceExpProcAddrTable") );
-            result = getTable( ZE_API_VERSION_CURRENT, &initialzesDdiTable.DeviceExp );
+            getTable( ZE_API_VERSION_CURRENT, &initialzesDdiTable.DeviceExp );
         }
 
         if( ZE_RESULT_SUCCESS == result )
@@ -51,9 +53,10 @@ namespace ze_lib
 
         if( ZE_RESULT_SUCCESS == result )
         {
+            // Optional
             auto getTable = reinterpret_cast<zes_pfnGetDriverExpProcAddrTable_t>(
                 GET_FUNCTION_PTR(loader, "zesGetDriverExpProcAddrTable") );
-            result = getTable( ZE_API_VERSION_CURRENT, &initialzesDdiTable.DriverExp );
+            getTable( ZE_API_VERSION_CURRENT, &initialzesDdiTable.DriverExp );
         }
 
         if( ZE_RESULT_SUCCESS == result )
@@ -93,9 +96,10 @@ namespace ze_lib
 
         if( ZE_RESULT_SUCCESS == result )
         {
+            // Optional
             auto getTable = reinterpret_cast<zes_pfnGetFirmwareExpProcAddrTable_t>(
                 GET_FUNCTION_PTR(loader, "zesGetFirmwareExpProcAddrTable") );
-            result = getTable( ZE_API_VERSION_CURRENT, &initialzesDdiTable.FirmwareExp );
+            getTable( ZE_API_VERSION_CURRENT, &initialzesDdiTable.FirmwareExp );
         }
 
         if( ZE_RESULT_SUCCESS == result )
@@ -121,9 +125,10 @@ namespace ze_lib
 
         if( ZE_RESULT_SUCCESS == result )
         {
+            // Optional
             auto getTable = reinterpret_cast<zes_pfnGetOverclockProcAddrTable_t>(
                 GET_FUNCTION_PTR(loader, "zesGetOverclockProcAddrTable") );
-            result = getTable( ZE_API_VERSION_CURRENT, &initialzesDdiTable.Overclock );
+            getTable( ZE_API_VERSION_CURRENT, &initialzesDdiTable.Overclock );
         }
 
         if( ZE_RESULT_SUCCESS == result )
@@ -156,9 +161,10 @@ namespace ze_lib
 
         if( ZE_RESULT_SUCCESS == result )
         {
+            // Optional
             auto getTable = reinterpret_cast<zes_pfnGetRasExpProcAddrTable_t>(
                 GET_FUNCTION_PTR(loader, "zesGetRasExpProcAddrTable") );
-            result = getTable( ZE_API_VERSION_CURRENT, &initialzesDdiTable.RasExp );
+            getTable( ZE_API_VERSION_CURRENT, &initialzesDdiTable.RasExp );
         }
 
         if( ZE_RESULT_SUCCESS == result )
@@ -184,9 +190,10 @@ namespace ze_lib
 
         if( ZE_RESULT_SUCCESS == result )
         {
+            // Optional
             auto getTable = reinterpret_cast<zes_pfnGetVFManagementExpProcAddrTable_t>(
                 GET_FUNCTION_PTR(loader, "zesGetVFManagementExpProcAddrTable") );
-            result = getTable( ZE_API_VERSION_CURRENT, &initialzesDdiTable.VFManagementExp );
+            getTable( ZE_API_VERSION_CURRENT, &initialzesDdiTable.VFManagementExp );
         }
 
         return result;
@@ -198,7 +205,8 @@ namespace ze_lib
 
         if( ZE_RESULT_SUCCESS == result )
         {
-            result = zesGetGlobalProcAddrTable( ZE_API_VERSION_CURRENT, &initialzesDdiTable.Global );
+            // Optional
+            zesGetGlobalProcAddrTable( ZE_API_VERSION_CURRENT, &initialzesDdiTable.Global );
         }
 
         if( ZE_RESULT_SUCCESS == result )
@@ -208,7 +216,8 @@ namespace ze_lib
 
         if( ZE_RESULT_SUCCESS == result )
         {
-            result = zesGetDeviceExpProcAddrTable( ZE_API_VERSION_CURRENT, &initialzesDdiTable.DeviceExp );
+            // Optional
+            zesGetDeviceExpProcAddrTable( ZE_API_VERSION_CURRENT, &initialzesDdiTable.DeviceExp );
         }
 
         if( ZE_RESULT_SUCCESS == result )
@@ -218,7 +227,8 @@ namespace ze_lib
 
         if( ZE_RESULT_SUCCESS == result )
         {
-            result = zesGetDriverExpProcAddrTable( ZE_API_VERSION_CURRENT, &initialzesDdiTable.DriverExp );
+            // Optional
+            zesGetDriverExpProcAddrTable( ZE_API_VERSION_CURRENT, &initialzesDdiTable.DriverExp );
         }
 
         if( ZE_RESULT_SUCCESS == result )
@@ -248,7 +258,8 @@ namespace ze_lib
 
         if( ZE_RESULT_SUCCESS == result )
         {
-            result = zesGetFirmwareExpProcAddrTable( ZE_API_VERSION_CURRENT, &initialzesDdiTable.FirmwareExp );
+            // Optional
+            zesGetFirmwareExpProcAddrTable( ZE_API_VERSION_CURRENT, &initialzesDdiTable.FirmwareExp );
         }
 
         if( ZE_RESULT_SUCCESS == result )
@@ -268,7 +279,8 @@ namespace ze_lib
 
         if( ZE_RESULT_SUCCESS == result )
         {
-            result = zesGetOverclockProcAddrTable( ZE_API_VERSION_CURRENT, &initialzesDdiTable.Overclock );
+            // Optional
+            zesGetOverclockProcAddrTable( ZE_API_VERSION_CURRENT, &initialzesDdiTable.Overclock );
         }
 
         if( ZE_RESULT_SUCCESS == result )
@@ -293,7 +305,8 @@ namespace ze_lib
 
         if( ZE_RESULT_SUCCESS == result )
         {
-            result = zesGetRasExpProcAddrTable( ZE_API_VERSION_CURRENT, &initialzesDdiTable.RasExp );
+            // Optional
+            zesGetRasExpProcAddrTable( ZE_API_VERSION_CURRENT, &initialzesDdiTable.RasExp );
         }
 
         if( ZE_RESULT_SUCCESS == result )
@@ -313,7 +326,8 @@ namespace ze_lib
 
         if( ZE_RESULT_SUCCESS == result )
         {
-            result = zesGetVFManagementExpProcAddrTable( ZE_API_VERSION_CURRENT, &initialzesDdiTable.VFManagementExp );
+            // Optional
+            zesGetVFManagementExpProcAddrTable( ZE_API_VERSION_CURRENT, &initialzesDdiTable.VFManagementExp );
         }
 
         return result;
