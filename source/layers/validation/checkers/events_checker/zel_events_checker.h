@@ -88,7 +88,7 @@ class __zedlllocal eventsChecker : public validationChecker {
     class ZESeventsChecker : public ZESValidationEntryPoints {};
     class ZETeventsChecker : public ZETValidationEntryPoints {};
 
-    bool enableEventsDeadlock = false;
+    bool enableEvents = false;
 };
-extern class eventsChecker eventsDeadlock_checker;
+extern class eventsChecker events_checker;
 } // namespace validation_layer

@@ -12,28 +12,28 @@
 #include <sstream>
 
 namespace validation_layer {
-class eventsChecker eventsDeadlock_checker;
+class eventsChecker events_checker;
 
 eventsChecker::eventsChecker() {
 
-    enableEventsDeadlock = getenv_tobool("ZEL_ENABLE_EVENTS_CHECKER");
-    if (enableEventsDeadlock) {
+    enableEvents = getenv_tobool("ZEL_ENABLE_EVENTS_CHECKER");
+    if (enableEvents) {
         eventsChecker::ZEeventsChecker *zeChecker = new eventsChecker::ZEeventsChecker;
         eventsChecker::ZESeventsChecker *zesChecker = new eventsChecker::ZESeventsChecker;
         eventsChecker::ZETeventsChecker *zetChecker = new eventsChecker::ZETeventsChecker;
-        eventsDeadlock_checker.zeValidation = zeChecker;
-        eventsDeadlock_checker.zesValidation = zesChecker;
-        eventsDeadlock_checker.zetValidation = zetChecker;
+        events_checker.zeValidation = zeChecker;
+        events_checker.zesValidation = zesChecker;
+        events_checker.zetValidation = zetChecker;
 
-        validation_layer::context.validationHandlers.push_back(&eventsDeadlock_checker);
+        validation_layer::context.validationHandlers.push_back(&events_checker);
     }
 }
 
 eventsChecker::~eventsChecker() {
-    if (enableEventsDeadlock) {
-        delete eventsDeadlock_checker.zeValidation;
-        delete eventsDeadlock_checker.zesValidation;
-        delete eventsDeadlock_checker.zetValidation;
+    if (enableEvents) {
+        delete events_checker.zeValidation;
+        delete events_checker.zesValidation;
+        delete events_checker.zetValidation;
     }
 }
 
