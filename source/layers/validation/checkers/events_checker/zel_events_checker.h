@@ -30,8 +30,8 @@ class __zedlllocal eventsChecker : public validationChecker {
 
     class ZEeventsChecker : public ZEValidationEntryPoints {
       public:
-        ze_result_t zeEventCreateEpilogue(ze_event_pool_handle_t hEventPool, const ze_event_desc_t *desc, ze_event_handle_t *phEvent) override;
-        ze_result_t zeEventDestroyEpilogue(ze_event_handle_t hEvent) override;
+        ze_result_t zeEventCreateEpilogue(ze_event_pool_handle_t hEventPool, const ze_event_desc_t *desc, ze_event_handle_t *phEvent, ze_result_t result) override;
+        ze_result_t zeEventDestroyEpilogue(ze_event_handle_t hEvent, ze_result_t result) override;
         ze_result_t zeCommandListAppendMemoryCopyPrologue(ze_command_list_handle_t hCommandList, void *dstptr, const void *srcptr, size_t size, ze_event_handle_t hSignalEvent, uint32_t numWaitEvents, ze_event_handle_t *phWaitEvents) override;
         ze_result_t zeCommandListAppendWriteGlobalTimestampPrologue(ze_command_list_handle_t hCommandList, uint64_t *dstptr, ze_event_handle_t hSignalEvent, uint32_t numWaitEvents, ze_event_handle_t *phWaitEvents) override;
         ze_result_t zeCommandListAppendBarrierPrologue(ze_command_list_handle_t hCommandList, ze_event_handle_t hSignalEvent, uint32_t numWaitEvents, ze_event_handle_t *phWaitEvents) override;
