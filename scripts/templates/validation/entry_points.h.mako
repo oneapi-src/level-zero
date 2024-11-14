@@ -36,7 +36,7 @@ ${line} \
 %for line in th.make_param_lines(n, tags, obj, format=["type", "name", "delim"]):
 ${line} \
 %endfor
-) {return ZE_RESULT_SUCCESS;}
+, ze_result_t result) {return ZE_RESULT_SUCCESS;}
     %endfor
     virtual ~${N}ValidationEntryPoints() {}
 };
