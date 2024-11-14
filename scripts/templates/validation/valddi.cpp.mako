@@ -69,7 +69,6 @@ ${line} \
         }
 
         auto driver_result = ${th.make_pfn_name(n, tags, obj)}( ${", ".join(th.make_param_lines(n, tags, obj, format=["name"]))} );
-        auto result = driver_result;
 
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->${n}Validation->${th.make_func_name(n, tags, obj)}Epilogue( \
@@ -82,7 +81,7 @@ ${line} \
 
         %if generate_post_call:
 
-        if( result == ${X}_RESULT_SUCCESS && context.enableHandleLifetime ){
+        if( driver_result == ${X}_RESULT_SUCCESS && context.enableHandleLifetime ){
             ## Add 'Created' handles/objects to dependent maps
             <% lines = th.make_param_lines(n, tags, obj, format=['name','delim'])
             %>
@@ -112,7 +111,7 @@ ${line} \
             %endfor
         }
         %endif
-        return result;
+        return driver_result;
     }
     %if 'condition' in obj:
     #endif // ${th.subt(n, tags, obj['condition'])}
