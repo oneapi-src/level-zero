@@ -13,16 +13,7 @@
 
 namespace ze_lib
 {
-#ifdef DYNAMIC_LOAD_LOADER
-    export "C" BOOL APIENTRY DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved) {
-        if (fdwReason == DLL_PROCESS_DETACH) {
-            delete context;
-        } else if (fdwReason == DLL_PROCESS_ATTACH) {
-            context = new context_t;
-        }
-        return TRUE;
-    }       
-#else
+#ifndef DYNAMIC_LOAD_LOADER
     extern "C" BOOL APIENTRY DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved) {
         if (fdwReason == DLL_PROCESS_DETACH) {
             delete context;
