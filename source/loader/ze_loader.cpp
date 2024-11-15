@@ -439,12 +439,19 @@ namespace loader
         for( auto name : discoveredDrivers )
         {
             auto handle = LOAD_DRIVER_LIBRARY( name.c_str() );
-            if (debugTraceEnabled) {
-                std::string message = "Loading Driver " + name;
-                debug_trace_message(message, "");
-            }
             if( NULL != handle )
             {
+                if (debugTraceEnabled) {
+                    std::string message = "Loading Driver " + name + " succeeded";
+#ifndef _WIN32
+                    // TODO: implement same message for windows, move dlinfo to ze_util.h as a macro
+                    struct link_map *dlinfo_map;
+                    if (dlinfo(handle, RTLD_DI_LINKMAP, &dlinfo_map) == 0) {
+                        message += " from: " + std::string(dlinfo_map->l_name);
+                    }
+#endif
+                    debug_trace_message(message, "");
+                }
                 allDrivers.emplace_back();
                 allDrivers.rbegin()->handle = handle;
                 allDrivers.rbegin()->name = name;
