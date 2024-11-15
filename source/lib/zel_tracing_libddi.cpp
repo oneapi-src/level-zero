@@ -15,7 +15,7 @@ namespace ze_lib
     ///////////////////////////////////////////////////////////////////////////////
 
 #ifdef DYNAMIC_LOAD_LOADER
-    __zedlllocal ze_result_t context_t::zelTracingDdiTableInit()
+    __zedlllocal ze_result_t context_t::zelTracingDdiTableInit(ze_api_version_t version)
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
 
@@ -23,13 +23,13 @@ namespace ze_lib
         {
             auto getTable = reinterpret_cast<zel_pfnGetTracerApiProcAddrTable_t>(
                 GET_FUNCTION_PTR(loader, "zelGetTracerApiProcAddrTable") );
-            result = getTable( ZE_API_VERSION_CURRENT, &zelTracingDdiTable.Tracer);
+            result = getTableWithCheck(getTable, version, &zelTracingDdiTable.Tracer);
         }
 
         return result;
     }
 #else
-    __zedlllocal ze_result_t context_t::zelTracingDdiTableInit()
+    __zedlllocal ze_result_t context_t::zelTracingDdiTableInit(ze_api_version_t version)
     {
         ze_result_t result;
         result = zelGetTracerApiProcAddrTable( ZE_API_VERSION_CURRENT, &zelTracingDdiTable.Tracer);

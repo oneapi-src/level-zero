@@ -12,7 +12,7 @@ configure_file(
     @ONLY)
 
 include(GNUInstallDirs)
-if (DYNAMIC_LOAD_LOADER)
+if (BUILD_STATIC)
     message(STATUS "Building loader as static library")
     add_library(${TARGET_LOADER_NAME}
         STATIC

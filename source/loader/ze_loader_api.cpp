@@ -56,7 +56,6 @@ zeLoaderGetTracingHandle()
 ///     - ::Pointer to the Loader's Context
 ZE_DLLEXPORT loader::context_t *ZE_APICALL
 zelLoaderGetContext() {
-    printf("zelLoaderGetContext\n");
     return loader::context;
 }
 
