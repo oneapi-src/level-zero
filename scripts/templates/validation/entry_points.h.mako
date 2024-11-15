@@ -11,7 +11,7 @@ from templates import helper as th
  * ***THIS FILE IS GENERATED. ***
  * See entry_points.h.mako for modifications
  *
- * Copyright (C) 2019-2023 Intel Corporation
+ * Copyright (C) 2019-2024 Intel Corporation
  *
  * SPDX-License-Identifier: MIT
  *
@@ -36,7 +36,7 @@ ${line} \
 %for line in th.make_param_lines(n, tags, obj, format=["type", "name", "delim"]):
 ${line} \
 %endfor
-) {return ZE_RESULT_SUCCESS;}
+, ze_result_t result) {return ZE_RESULT_SUCCESS;}
     %endfor
     virtual ~${N}ValidationEntryPoints() {}
 };

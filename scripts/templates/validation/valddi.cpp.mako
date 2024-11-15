@@ -11,7 +11,7 @@ from templates import helper as th
  * ***THIS FILE IS GENERATED. ***
  * See valddi.cpp.mako for modifications
  *
- * Copyright (C) 2019-2023 Intel Corporation
+ * Copyright (C) 2019-2024 Intel Corporation
  *
  * SPDX-License-Identifier: MIT
  *
@@ -68,20 +68,20 @@ ${line} \
             if(result!=${X}_RESULT_SUCCESS) return result;
         }
 
-        auto result = ${th.make_pfn_name(n, tags, obj)}( ${", ".join(th.make_param_lines(n, tags, obj, format=["name"]))} );
+        auto driver_result = ${th.make_pfn_name(n, tags, obj)}( ${", ".join(th.make_param_lines(n, tags, obj, format=["name"]))} );
 
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->${n}Validation->${th.make_func_name(n, tags, obj)}Epilogue( \
 % for line in th.make_param_lines(n, tags, obj, format=['name','delim']):
 ${line} \
 %endfor
-);
+,driver_result);
             if(result!=${X}_RESULT_SUCCESS) return result;
         }
 
         %if generate_post_call:
 
-        if( result == ${X}_RESULT_SUCCESS && context.enableHandleLifetime ){
+        if( driver_result == ${X}_RESULT_SUCCESS && context.enableHandleLifetime ){
             ## Add 'Created' handles/objects to dependent maps
             <% lines = th.make_param_lines(n, tags, obj, format=['name','delim'])
             %>
@@ -111,7 +111,7 @@ ${line} \
             %endfor
         }
         %endif
-        return result;
+        return driver_result;
     }
     %if 'condition' in obj:
     #endif // ${th.subt(n, tags, obj['condition'])}
