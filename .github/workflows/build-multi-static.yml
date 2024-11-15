@@ -148,6 +148,7 @@ jobs:
         	  -D CMAKE_C_COMPILER_LAUNCHER=ccache \
         	  -D CMAKE_CXX_COMPILER_LAUNCHER=ccache \
         	  -D CMAKE_BUILD_TYPE=Release \
+        	  -D BUILD_STATIC=1 \
         	  -D CMAKE_INSTALL_PREFIX=${{ matrix.target == 'install' && '../level-zero-install' || matrix.target == 'package' && '/usr' || '' }} \
         	  -D CPACK_OUTPUT_FILE_PREFIX=${MOUNT_TARGET}/level-zero-package \
         	  ..
