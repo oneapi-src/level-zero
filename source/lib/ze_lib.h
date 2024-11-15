@@ -34,22 +34,31 @@ namespace ze_lib
         context_t();
         ~context_t();
 
+        ///////////////////////////////////////////////////////////////////////////////
+        template <typename T, typename TableType>
+        ze_result_t getTableWithCheck(T getTable, ze_api_version_t version, TableType* table) {
+            if (getTable == nullptr) {
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+            }
+            return getTable(version, table);
+        }
+
         std::once_flag initOnce;
         std::once_flag initOnceDrivers;
         std::once_flag initOnceSysMan;
 
         ze_result_t Init(ze_init_flags_t flags, bool sysmanOnly, ze_init_driver_type_desc_t* desc);
 
-        ze_result_t zeDdiTableInit();
+        ze_result_t zeDdiTableInit(ze_api_version_t version);
         std::atomic<ze_dditable_t *>  zeDdiTable = {nullptr};
 
-        ze_result_t zetDdiTableInit();
+        ze_result_t zetDdiTableInit(ze_api_version_t version);
         std::atomic<zet_dditable_t *> zetDdiTable = {nullptr};
 
-        ze_result_t zesDdiTableInit();
+        ze_result_t zesDdiTableInit(ze_api_version_t version);
         std::atomic<zes_dditable_t *> zesDdiTable = {nullptr};
 
-        ze_result_t zelTracingDdiTableInit();
+        ze_result_t zelTracingDdiTableInit(ze_api_version_t version);
         zel_tracing_dditable_t  zelTracingDdiTable = {};
         std::atomic<ze_dditable_t *> pTracingZeDdiTable = {nullptr};
         ze_dditable_t initialzeDdiTable;
