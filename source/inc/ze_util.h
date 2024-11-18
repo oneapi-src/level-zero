@@ -39,6 +39,7 @@ inline void getLastErrorString(std::string &errorValue) {
 #  define GET_FUNCTION_PTR(LIB, FUNC_NAME) GetProcAddress(LIB, FUNC_NAME)
 #  define string_copy_s strncpy_s
 #else
+#  include <link.h>
 #  include <dlfcn.h>
 #  define HMODULE void*
 #  define MAKE_LIBRARY_NAME(NAME, VERSION)    "lib" NAME ".so." VERSION
