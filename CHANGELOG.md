@@ -1,5 +1,14 @@
 # Level zero loader changelog
 
+## v1.19.0
+* logging full path of loaded library in traces
+* Fix utils build
+* feature: events deadlock detection in validation layer
+* Add Passing in the Result to Validation Checkers at Epilogue
+* Disconnect zeInitDrivers and zeDriverGet
+* Fix backwards compatibility usage of Get*ProcAddrTable
+* Fix to add missing zeKernelGetExp API and header updates
+* Fix zeInit Compatibility when zeInitDrivers is undefined
 ## v1.18.5
 * Fix metric types for new experimental types
 * Fix/Regenerate the Loader files incorrectly reordered by the scripts.
