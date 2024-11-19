@@ -1,5 +1,7 @@
 # Level zero loader changelog
 
+## v1.19.1
+* Fix to Use relative paths for events deadlock detection third party headers 
 ## v1.19.0
 * logging full path of loaded library in traces
 * Fix utils build
