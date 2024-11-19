@@ -3,10 +3,10 @@ target_sources(${TARGET_NAME}
         ${CMAKE_CURRENT_LIST_DIR}/zel_events_checker.h
         ${CMAKE_CURRENT_LIST_DIR}/zel_events_checker.cpp
 
-        ${CMAKE_SOURCE_DIR}/third_party/xla/graphcycles.cc
+        ${THIRD_PARTY_SOURCE_DIR}/xla/graphcycles.cc
 )
 
 target_include_directories(${TARGET_NAME} 
     PRIVATE
-        ${CMAKE_SOURCE_DIR}/third_party
+        ${THIRD_PARTY_SOURCE_DIR}
 )

@@ -6,6 +6,8 @@ set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
+set(THIRD_PARTY_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/third_party)
+
 if(MSVC AND (MSVC_VERSION LESS 1900))
 message(FATAL_ERROR "Visual Studio Compiler Version >= 1900 Required to build.")
 endif()
