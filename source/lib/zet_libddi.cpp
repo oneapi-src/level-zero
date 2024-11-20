@@ -14,10 +14,9 @@
 
 namespace ze_lib
 {
-    ///////////////////////////////////////////////////////////////////////////////
 
 #ifdef DYNAMIC_LOAD_LOADER
-    __zedlllocal ze_result_t context_t::zetDdiTableInit()
+    __zedlllocal ze_result_t context_t::zetDdiTableInit(ze_api_version_t version)
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
 
@@ -26,7 +25,7 @@ namespace ze_lib
             // Optional
             auto getTable = reinterpret_cast<zet_pfnGetMetricDecoderExpProcAddrTable_t>(
                 GET_FUNCTION_PTR(loader, "zetGetMetricDecoderExpProcAddrTable") );
-            getTable( ZE_API_VERSION_CURRENT, &initialzetDdiTable.MetricDecoderExp );
+            getTableWithCheck(getTable, version, &initialzetDdiTable.MetricDecoderExp );
         }
 
         if( ZE_RESULT_SUCCESS == result )
@@ -34,7 +33,7 @@ namespace ze_lib
             // Optional
             auto getTable = reinterpret_cast<zet_pfnGetMetricProgrammableExpProcAddrTable_t>(
                 GET_FUNCTION_PTR(loader, "zetGetMetricProgrammableExpProcAddrTable") );
-            getTable( ZE_API_VERSION_CURRENT, &initialzetDdiTable.MetricProgrammableExp );
+            getTableWithCheck(getTable, version, &initialzetDdiTable.MetricProgrammableExp );
         }
 
         if( ZE_RESULT_SUCCESS == result )
@@ -42,14 +41,14 @@ namespace ze_lib
             // Optional
             auto getTable = reinterpret_cast<zet_pfnGetMetricTracerExpProcAddrTable_t>(
                 GET_FUNCTION_PTR(loader, "zetGetMetricTracerExpProcAddrTable") );
-            getTable( ZE_API_VERSION_CURRENT, &initialzetDdiTable.MetricTracerExp );
+            getTableWithCheck(getTable, version, &initialzetDdiTable.MetricTracerExp );
         }
 
         if( ZE_RESULT_SUCCESS == result )
         {
             auto getTable = reinterpret_cast<zet_pfnGetDeviceProcAddrTable_t>(
                 GET_FUNCTION_PTR(loader, "zetGetDeviceProcAddrTable") );
-            result = getTable( ZE_API_VERSION_CURRENT, &initialzetDdiTable.Device );
+            result = getTableWithCheck(getTable, version, &initialzetDdiTable.Device );
         }
 
         if( ZE_RESULT_SUCCESS == result )
@@ -57,49 +56,49 @@ namespace ze_lib
             // Optional
             auto getTable = reinterpret_cast<zet_pfnGetDeviceExpProcAddrTable_t>(
                 GET_FUNCTION_PTR(loader, "zetGetDeviceExpProcAddrTable") );
-            getTable( ZE_API_VERSION_CURRENT, &initialzetDdiTable.DeviceExp );
+            getTableWithCheck(getTable, version, &initialzetDdiTable.DeviceExp );
         }
 
         if( ZE_RESULT_SUCCESS == result )
         {
             auto getTable = reinterpret_cast<zet_pfnGetContextProcAddrTable_t>(
                 GET_FUNCTION_PTR(loader, "zetGetContextProcAddrTable") );
-            result = getTable( ZE_API_VERSION_CURRENT, &initialzetDdiTable.Context );
+            result = getTableWithCheck(getTable, version, &initialzetDdiTable.Context );
         }
 
         if( ZE_RESULT_SUCCESS == result )
         {
             auto getTable = reinterpret_cast<zet_pfnGetCommandListProcAddrTable_t>(
                 GET_FUNCTION_PTR(loader, "zetGetCommandListProcAddrTable") );
-            result = getTable( ZE_API_VERSION_CURRENT, &initialzetDdiTable.CommandList );
+            result = getTableWithCheck(getTable, version, &initialzetDdiTable.CommandList );
         }
 
         if( ZE_RESULT_SUCCESS == result )
         {
             auto getTable = reinterpret_cast<zet_pfnGetKernelProcAddrTable_t>(
                 GET_FUNCTION_PTR(loader, "zetGetKernelProcAddrTable") );
-            result = getTable( ZE_API_VERSION_CURRENT, &initialzetDdiTable.Kernel );
+            result = getTableWithCheck(getTable, version, &initialzetDdiTable.Kernel );
         }
 
         if( ZE_RESULT_SUCCESS == result )
         {
             auto getTable = reinterpret_cast<zet_pfnGetModuleProcAddrTable_t>(
                 GET_FUNCTION_PTR(loader, "zetGetModuleProcAddrTable") );
-            result = getTable( ZE_API_VERSION_CURRENT, &initialzetDdiTable.Module );
+            result = getTableWithCheck(getTable, version, &initialzetDdiTable.Module );
         }
 
         if( ZE_RESULT_SUCCESS == result )
         {
             auto getTable = reinterpret_cast<zet_pfnGetDebugProcAddrTable_t>(
                 GET_FUNCTION_PTR(loader, "zetGetDebugProcAddrTable") );
-            result = getTable( ZE_API_VERSION_CURRENT, &initialzetDdiTable.Debug );
+            result = getTableWithCheck(getTable, version, &initialzetDdiTable.Debug );
         }
 
         if( ZE_RESULT_SUCCESS == result )
         {
             auto getTable = reinterpret_cast<zet_pfnGetMetricProcAddrTable_t>(
                 GET_FUNCTION_PTR(loader, "zetGetMetricProcAddrTable") );
-            result = getTable( ZE_API_VERSION_CURRENT, &initialzetDdiTable.Metric );
+            result = getTableWithCheck(getTable, version, &initialzetDdiTable.Metric );
         }
 
         if( ZE_RESULT_SUCCESS == result )
@@ -107,14 +106,14 @@ namespace ze_lib
             // Optional
             auto getTable = reinterpret_cast<zet_pfnGetMetricExpProcAddrTable_t>(
                 GET_FUNCTION_PTR(loader, "zetGetMetricExpProcAddrTable") );
-            getTable( ZE_API_VERSION_CURRENT, &initialzetDdiTable.MetricExp );
+            getTableWithCheck(getTable, version, &initialzetDdiTable.MetricExp );
         }
 
         if( ZE_RESULT_SUCCESS == result )
         {
             auto getTable = reinterpret_cast<zet_pfnGetMetricGroupProcAddrTable_t>(
                 GET_FUNCTION_PTR(loader, "zetGetMetricGroupProcAddrTable") );
-            result = getTable( ZE_API_VERSION_CURRENT, &initialzetDdiTable.MetricGroup );
+            result = getTableWithCheck(getTable, version, &initialzetDdiTable.MetricGroup );
         }
 
         if( ZE_RESULT_SUCCESS == result )
@@ -122,41 +121,41 @@ namespace ze_lib
             // Optional
             auto getTable = reinterpret_cast<zet_pfnGetMetricGroupExpProcAddrTable_t>(
                 GET_FUNCTION_PTR(loader, "zetGetMetricGroupExpProcAddrTable") );
-            getTable( ZE_API_VERSION_CURRENT, &initialzetDdiTable.MetricGroupExp );
+            getTableWithCheck(getTable, version, &initialzetDdiTable.MetricGroupExp );
         }
 
         if( ZE_RESULT_SUCCESS == result )
         {
             auto getTable = reinterpret_cast<zet_pfnGetMetricQueryProcAddrTable_t>(
                 GET_FUNCTION_PTR(loader, "zetGetMetricQueryProcAddrTable") );
-            result = getTable( ZE_API_VERSION_CURRENT, &initialzetDdiTable.MetricQuery );
+            result = getTableWithCheck(getTable, version, &initialzetDdiTable.MetricQuery );
         }
 
         if( ZE_RESULT_SUCCESS == result )
         {
             auto getTable = reinterpret_cast<zet_pfnGetMetricQueryPoolProcAddrTable_t>(
                 GET_FUNCTION_PTR(loader, "zetGetMetricQueryPoolProcAddrTable") );
-            result = getTable( ZE_API_VERSION_CURRENT, &initialzetDdiTable.MetricQueryPool );
+            result = getTableWithCheck(getTable, version, &initialzetDdiTable.MetricQueryPool );
         }
 
         if( ZE_RESULT_SUCCESS == result )
         {
             auto getTable = reinterpret_cast<zet_pfnGetMetricStreamerProcAddrTable_t>(
                 GET_FUNCTION_PTR(loader, "zetGetMetricStreamerProcAddrTable") );
-            result = getTable( ZE_API_VERSION_CURRENT, &initialzetDdiTable.MetricStreamer );
+            result = getTableWithCheck(getTable, version, &initialzetDdiTable.MetricStreamer );
         }
 
         if( ZE_RESULT_SUCCESS == result )
         {
             auto getTable = reinterpret_cast<zet_pfnGetTracerExpProcAddrTable_t>(
                 GET_FUNCTION_PTR(loader, "zetGetTracerExpProcAddrTable") );
-            result = getTable( ZE_API_VERSION_CURRENT, &initialzetDdiTable.TracerExp );
+            result = getTableWithCheck(getTable, version, &initialzetDdiTable.TracerExp );
         }
 
         return result;
     }
 #else
-    __zedlllocal ze_result_t context_t::zetDdiTableInit()
+    __zedlllocal ze_result_t context_t::zetDdiTableInit(ze_api_version_t version)
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
 
