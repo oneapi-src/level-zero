@@ -23,30 +23,24 @@ add_subdirectory(loader)
 add_subdirectory(layers)
 add_subdirectory(drivers)
 add_subdirectory(utils)
-target_include_directories(${TARGET_LOADER_NAME} PRIVATE utils)
 
 set_target_properties(${TARGET_LOADER_NAME} PROPERTIES
     VERSION "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH}"
     SOVERSION "${PROJECT_VERSION_MAJOR}"
 )
 
-target_link_libraries(${TARGET_LOADER_NAME}
-    ${CMAKE_DL_LIBS}
-)
+target_link_libraries(${TARGET_LOADER_NAME} PRIVATE ${CMAKE_DL_LIBS} level_zero_utils)
 
 if (UNIX)
     set(CMAKE_THREAD_PREFER_PTHREAD TRUE)
     set(THREADS_PREFER_PTHREAD_FLAG TRUE)
     find_package(Threads REQUIRED)
-    target_link_libraries (${TARGET_LOADER_NAME} Threads::Threads)
+    target_link_libraries (${TARGET_LOADER_NAME} PRIVATE Threads::Threads)
 endif()
 
 if(WIN32)
-    target_link_libraries (${TARGET_LOADER_NAME} cfgmgr32.lib)
+    target_link_libraries (${TARGET_LOADER_NAME} PRIVATE cfgmgr32.lib)
 endif()
-
-# Link against utility sublibrary
-target_link_libraries(${TARGET_LOADER_NAME} utils)
 
 install(TARGETS ze_loader
     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR} COMPONENT level-zero-devel
@@ -56,6 +50,9 @@ install(TARGETS ze_loader
 )
 
 if(UNIX)
+    file(RELATIVE_PATH ze_loader_include_dir "${CMAKE_INSTALL_FULL_LIBDIR}/pkgconfig" "${CMAKE_INSTALL_FULL_INCLUDEDIR}")
+    file(RELATIVE_PATH ze_loader_lib_dir "${CMAKE_INSTALL_FULL_LIBDIR}/pkgconfig" "${CMAKE_INSTALL_FULL_LIBDIR}")
+
     configure_file(
         ${CMAKE_CURRENT_SOURCE_DIR}/libze_loader.pc.in
         ${CMAKE_CURRENT_BINARY_DIR}/libze_loader.pc
