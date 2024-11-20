@@ -1,5 +1,7 @@
 # Level zero loader changelog
 
+## v1.19.2
+* Remove static result in InitDrivers given first init fails
 ## v1.19.1
 * Fix to Use relative paths for events deadlock detection third party headers 
 ## v1.19.0

@@ -55,8 +55,8 @@ ${th.make_func_name(n, tags, obj)}(
     )
 {
 %if re.match("Init", obj['name']):
+%if re.match("zes", n):
     static ${x}_result_t result = ${X}_RESULT_SUCCESS;
-%if re.match("zes", n): 
     std::call_once(${x}_lib::context->initOnceSysMan, [flags]() {
         result = ${x}_lib::context->Init(flags, true, nullptr);
 
@@ -81,7 +81,8 @@ ${th.make_func_name(n, tags, obj)}(
 }
 %else:
 %if re.match("InitDrivers", obj['name']):
-    std::call_once(${x}_lib::context->initOnceDrivers, [desc]() {
+    ${x}_result_t result = ${X}_RESULT_SUCCESS;
+    std::call_once(${x}_lib::context->initOnceDrivers, [desc,&result]() {
         result = ${x}_lib::context->Init(0, false, desc);
         return result;
     });
@@ -112,6 +113,7 @@ ${th.make_func_name(n, tags, obj)}(
 
     return result;
 %else:
+    static ${x}_result_t result = ${X}_RESULT_SUCCESS;
     std::call_once(${x}_lib::context->initOnce, [flags]() {
         result = ${x}_lib::context->Init(flags, false, nullptr);
 

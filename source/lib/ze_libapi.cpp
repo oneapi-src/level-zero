@@ -196,8 +196,8 @@ zeInitDrivers(
                                                     ///< including ::ze_init_driver_type_flag_t combinations.
     )
 {
-    static ze_result_t result = ZE_RESULT_SUCCESS;
-    std::call_once(ze_lib::context->initOnceDrivers, [desc]() {
+    ze_result_t result = ZE_RESULT_SUCCESS;
+    std::call_once(ze_lib::context->initOnceDrivers, [desc,&result]() {
         result = ze_lib::context->Init(0, false, desc);
         return result;
     });
