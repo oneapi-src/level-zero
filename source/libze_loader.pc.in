@@ -1,5 +1,6 @@
-includedir=@CMAKE_INSTALL_FULL_INCLUDEDIR@
-libdir=@CMAKE_INSTALL_FULL_LIBDIR@
+pc_path=${pcfiledir}
+includedir=${pc_path}/@ze_loader_include_dir@
+libdir=${pc_path}/@ze_loader_lib_dir@
 
 
 Name: Level Zero Loader
