@@ -41,6 +41,8 @@ add_test(NAME tests_both_npu COMMAND tests --gtest_filter=*GivenLevelZeroLoaderP
 set_property(TEST tests_both_npu PROPERTY ENVIRONMENT "ZE_ENABLE_NULL_DRIVER=1")
 add_test(NAME tests_missing_api COMMAND tests --gtest_filter=*GivenZeInitDriversUnsupportedOnTheDriverWhenCallingZeInitDriversThenUninitializedReturned*)
 set_property(TEST tests_missing_api PROPERTY ENVIRONMENT "ZE_ENABLE_NULL_DRIVER=1")
+add_test(NAME tests_multi_call_failure COMMAND tests --gtest_filter=*GivenLevelZeroLoaderPresentWhenCallingZeInitDriversWithTypesUnsupportedWithFailureThenSupportedTypesThenSuccessReturned*)
+set_property(TEST tests_multi_call_failure PROPERTY ENVIRONMENT "ZE_ENABLE_NULL_DRIVER=1")
 
 # These tests are currently not supported on Windows. The reason is that the std::cerr is not being redirected to a pipe in Windows to be then checked against the expected output.
 if(NOT MSVC)

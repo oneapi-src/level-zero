@@ -50,6 +50,23 @@ TEST(
 
 TEST(
     LoaderInit,
+    GivenLevelZeroLoaderPresentWhenCallingZeInitDriversWithTypesUnsupportedWithFailureThenSupportedTypesThenSuccessReturned) {
+
+  uint32_t pCount = 0;
+  ze_init_driver_type_desc_t desc = {ZE_STRUCTURE_TYPE_INIT_DRIVER_TYPE_DESC};
+  desc.flags = ZE_INIT_DRIVER_TYPE_FLAG_NPU;
+  desc.pNext = nullptr;
+  putenv_safe( const_cast<char *>( "ZEL_TEST_NULL_DRIVER_TYPE=GPU" ) );
+  EXPECT_EQ(ZE_RESULT_ERROR_UNINITIALIZED, zeInitDrivers(&pCount, nullptr, &desc));
+  EXPECT_EQ(pCount, 0);
+  pCount = 0;
+  desc.flags = UINT32_MAX;
+  EXPECT_EQ(ZE_RESULT_SUCCESS, zeInitDrivers(&pCount, nullptr, &desc));
+  EXPECT_GT(pCount, 0);
+}
+
+TEST(
+    LoaderInit,
     GivenLevelZeroLoaderPresentWhenCallingZeInitDriversWithGPUTypeThenExpectPassWithGPUorAllOnly) {
 
   uint32_t pCount = 0;
