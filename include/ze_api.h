@@ -5,7 +5,7 @@
  * SPDX-License-Identifier: MIT
  *
  * @file ze_api.h
- * @version v1.11-r1.11.8
+ * @version v1.12-r1.11.11
  *
  */
 #ifndef _ZE_API_H
@@ -345,6 +345,7 @@ typedef enum _ze_structure_type_t
     ZE_STRUCTURE_TYPE_PITCHED_IMAGE_EXP_DESC = 0x0002001F,                  ///< ::ze_image_pitched_exp_desc_t
     ZE_STRUCTURE_TYPE_MUTABLE_GRAPH_ARGUMENT_EXP_DESC = 0x00020020,         ///< ::ze_mutable_graph_argument_exp_desc_t
     ZE_STRUCTURE_TYPE_INIT_DRIVER_TYPE_DESC = 0x00020021,                   ///< ::ze_init_driver_type_desc_t
+    ZE_STRUCTURE_TYPE_DRIVER_DDI_HANDLES_EXT_PROPERTIES = 0x00020022,       ///< ::ze_driver_ddi_handles_ext_properties_t
     ZE_STRUCTURE_TYPE_FORCE_UINT32 = 0x7fffffff
 
 } ze_structure_type_t;
@@ -688,6 +689,10 @@ typedef struct _ze_float_atomic_ext_properties_t ze_float_atomic_ext_properties_
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief Forward-declare ze_relaxed_allocation_limits_exp_desc_t
 typedef struct _ze_relaxed_allocation_limits_exp_desc_t ze_relaxed_allocation_limits_exp_desc_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Forward-declare ze_driver_ddi_handles_ext_properties_t
+typedef struct _ze_driver_ddi_handles_ext_properties_t ze_driver_ddi_handles_ext_properties_t;
 
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief Forward-declare ze_cache_reservation_ext_desc_t
@@ -7691,6 +7696,54 @@ zeKernelGetBinaryExp(
     size_t* pSize,                                                          ///< [in,out] pointer to variable with size of GEN ISA binary.
     uint8_t* pKernelBinary                                                  ///< [in,out] pointer to storage area for GEN ISA binary function.
     );
+
+#if !defined(__GNUC__)
+#pragma endregion
+#endif
+// Intel 'oneAPI' Level-Zero Extension for Driver Direct Device Interface (DDI) Handles
+#if !defined(__GNUC__)
+#pragma region driverDDIHandles
+#endif
+///////////////////////////////////////////////////////////////////////////////
+#ifndef ZE_DRIVER_DDI_HANDLES_EXT_NAME
+/// @brief Driver Direct Device Interface (DDI) Handles Extension Name
+#define ZE_DRIVER_DDI_HANDLES_EXT_NAME  "ZE_extension_driver_ddi_handles"
+#endif // ZE_DRIVER_DDI_HANDLES_EXT_NAME
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Driver Direct Device Interface (DDI) Handles Extension Version(s)
+typedef enum _ze_driver_ddi_handles_ext_version_t
+{
+    ZE_DRIVER_DDI_HANDLES_EXT_VERSION_1_0 = ZE_MAKE_VERSION( 1, 0 ),        ///< version 1.0
+    ZE_DRIVER_DDI_HANDLES_EXT_VERSION_CURRENT = ZE_MAKE_VERSION( 1, 0 ),    ///< latest known version
+    ZE_DRIVER_DDI_HANDLES_EXT_VERSION_FORCE_UINT32 = 0x7fffffff
+
+} ze_driver_ddi_handles_ext_version_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Driver Direct Device Interface (DDI) Handle Extension Flags
+typedef uint32_t ze_driver_ddi_handle_ext_flags_t;
+typedef enum _ze_driver_ddi_handle_ext_flag_t
+{
+    ZE_DRIVER_DDI_HANDLE_EXT_FLAG_DDI_HANDLE_EXT_SUPPORTED = ZE_BIT(0),     ///< Driver Supports DDI Handles Extension
+    ZE_DRIVER_DDI_HANDLE_EXT_FLAG_FORCE_UINT32 = 0x7fffffff
+
+} ze_driver_ddi_handle_ext_flag_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Driver DDI Handles properties queried using ::zeDriverGetProperties
+/// 
+/// @details
+///     - This structure may be returned from ::zeDriverGetProperties, via the
+///       `pNext` member of ::ze_driver_properties_t.
+typedef struct _ze_driver_ddi_handles_ext_properties_t
+{
+    ze_structure_type_t stype;                                              ///< [in] type of this structure
+    void* pNext;                                                            ///< [in,out][optional] must be null or a pointer to an extension-specific
+                                                                            ///< structure (i.e. contains stype and pNext).
+    ze_driver_ddi_handle_ext_flags_t flags;                                 ///< [out] 0 (none) or a valid combination of ::ze_driver_ddi_handle_ext_flags_t
+
+} ze_driver_ddi_handles_ext_properties_t;
 
 #if !defined(__GNUC__)
 #pragma endregion

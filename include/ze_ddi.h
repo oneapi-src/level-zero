@@ -5,7 +5,7 @@
  * SPDX-License-Identifier: MIT
  *
  * @file ze_ddi.h
- * @version v1.11-r1.11.8
+ * @version v1.12-r1.11.11
  *
  */
 #ifndef _ZE_DDI_H
@@ -2575,6 +2575,45 @@ typedef struct _ze_dditable_t
     ze_fabric_vertex_exp_dditable_t     FabricVertexExp;
     ze_fabric_edge_exp_dditable_t       FabricEdgeExp;
 } ze_dditable_t;
+/// @brief Container for all DDI tables with version and tables set by the Driver
+typedef struct _ze_dditable_driver_t
+{
+    ze_api_version_t    version;
+    ze_rtas_builder_exp_dditable_t *    RTASBuilderExp;
+    ze_rtas_parallel_operation_exp_dditable_t * RTASParallelOperationExp;
+    ze_global_dditable_t *              Global;
+    ze_driver_dditable_t *              Driver;
+    ze_driver_exp_dditable_t *          DriverExp;
+    ze_device_dditable_t *              Device;
+    ze_device_exp_dditable_t *          DeviceExp;
+    ze_context_dditable_t *             Context;
+    ze_command_queue_dditable_t *       CommandQueue;
+    ze_command_list_dditable_t *        CommandList;
+    ze_command_list_exp_dditable_t *    CommandListExp;
+    ze_image_dditable_t *               Image;
+    ze_image_exp_dditable_t *           ImageExp;
+    ze_mem_dditable_t *                 Mem;
+    ze_mem_exp_dditable_t *             MemExp;
+    ze_fence_dditable_t *               Fence;
+    ze_event_pool_dditable_t *          EventPool;
+    ze_event_dditable_t *               Event;
+    ze_event_exp_dditable_t *           EventExp;
+    ze_module_dditable_t *              Module;
+    ze_module_build_log_dditable_t *    ModuleBuildLog;
+    ze_kernel_dditable_t *              Kernel;
+    ze_kernel_exp_dditable_t *          KernelExp;
+    ze_sampler_dditable_t *             Sampler;
+    ze_physical_mem_dditable_t *        PhysicalMem;
+    ze_virtual_mem_dditable_t *         VirtualMem;
+    ze_fabric_vertex_exp_dditable_t *   FabricVertexExp;
+    ze_fabric_edge_exp_dditable_t *     FabricEdgeExp;
+} ze_dditable_driver_t;
+
+/// @brief Handle with pointer to Dispatch Container allocated by the driver at the beginning of every ZE handle
+typedef struct _ze_handle_t
+{
+    ze_dditable_driver_t *pDispatch; // [in] pointer to _ze_dditable_t_ object related to this handle
+} ze_handle_t;
 
 #if defined(__cplusplus)
 } // extern "C"

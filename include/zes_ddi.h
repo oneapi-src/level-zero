@@ -5,7 +5,7 @@
  * SPDX-License-Identifier: MIT
  *
  * @file zes_ddi.h
- * @version v1.11-r1.11.8
+ * @version v1.12-r1.11.11
  *
  */
 #ifndef _ZES_DDI_H
@@ -1983,6 +1983,41 @@ typedef struct _zes_dditable_t
     zes_diagnostics_dditable_t          Diagnostics;
     zes_vf_management_exp_dditable_t    VFManagementExp;
 } zes_dditable_t;
+/// @brief Container for all DDI tables with version and tables set by the Driver
+typedef struct _zes_dditable_driver_t
+{
+    ze_api_version_t    version;
+    zes_global_dditable_t *             Global;
+    zes_device_dditable_t *             Device;
+    zes_device_exp_dditable_t *         DeviceExp;
+    zes_driver_dditable_t *             Driver;
+    zes_driver_exp_dditable_t *         DriverExp;
+    zes_overclock_dditable_t *          Overclock;
+    zes_scheduler_dditable_t *          Scheduler;
+    zes_performance_factor_dditable_t * PerformanceFactor;
+    zes_power_dditable_t *              Power;
+    zes_frequency_dditable_t *          Frequency;
+    zes_engine_dditable_t *             Engine;
+    zes_standby_dditable_t *            Standby;
+    zes_firmware_dditable_t *           Firmware;
+    zes_firmware_exp_dditable_t *       FirmwareExp;
+    zes_memory_dditable_t *             Memory;
+    zes_fabric_port_dditable_t *        FabricPort;
+    zes_temperature_dditable_t *        Temperature;
+    zes_psu_dditable_t *                Psu;
+    zes_fan_dditable_t *                Fan;
+    zes_led_dditable_t *                Led;
+    zes_ras_dditable_t *                Ras;
+    zes_ras_exp_dditable_t *            RasExp;
+    zes_diagnostics_dditable_t *        Diagnostics;
+    zes_vf_management_exp_dditable_t *  VFManagementExp;
+} zes_dditable_driver_t;
+
+/// @brief Handle with pointer to Dispatch Container allocated by the driver at the beginning of every ZES handle
+typedef struct _zes_handle_t
+{
+    zes_dditable_driver_t *pDispatch; // [in] pointer to _zes_dditable_t_ object related to this handle
+} zes_handle_t;
 
 #if defined(__cplusplus)
 } // extern "C"

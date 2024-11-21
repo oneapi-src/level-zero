@@ -4,7 +4,7 @@
  SPDX-License-Identifier: MIT
 
  @file ze.py
- @version v1.11-r1.11.8
+ @version v1.12-r1.11.11
 
  """
 import platform
@@ -316,6 +316,7 @@ class ze_structure_type_v(IntEnum):
     PITCHED_IMAGE_EXP_DESC = 0x0002001F                                     ## ::ze_image_pitched_exp_desc_t
     MUTABLE_GRAPH_ARGUMENT_EXP_DESC = 0x00020020                            ## ::ze_mutable_graph_argument_exp_desc_t
     INIT_DRIVER_TYPE_DESC = 0x00020021                                      ## ::ze_init_driver_type_desc_t
+    DRIVER_DDI_HANDLES_EXT_PROPERTIES = 0x00020022                          ## ::ze_driver_ddi_handles_ext_properties_t
 
 class ze_structure_type_t(c_int):
     def __str__(self):
@@ -2113,6 +2114,45 @@ class ze_relaxed_allocation_limits_exp_desc_t(Structure):
 ###############################################################################
 ## @brief Get Kernel Binary Extension Name
 ZE_GET_KERNEL_BINARY_EXP_NAME = "ZE_extension_kernel_binary_exp"
+
+###############################################################################
+## @brief Driver Direct Device Interface (DDI) Handles Extension Name
+ZE_DRIVER_DDI_HANDLES_EXT_NAME = "ZE_extension_driver_ddi_handles"
+
+###############################################################################
+## @brief Driver Direct Device Interface (DDI) Handles Extension Version(s)
+class ze_driver_ddi_handles_ext_version_v(IntEnum):
+    _1_0 = ZE_MAKE_VERSION( 1, 0 )                                          ## version 1.0
+    CURRENT = ZE_MAKE_VERSION( 1, 0 )                                       ## latest known version
+
+class ze_driver_ddi_handles_ext_version_t(c_int):
+    def __str__(self):
+        return str(ze_driver_ddi_handles_ext_version_v(self.value))
+
+
+###############################################################################
+## @brief Driver Direct Device Interface (DDI) Handle Extension Flags
+class ze_driver_ddi_handle_ext_flags_v(IntEnum):
+    DDI_HANDLE_EXT_SUPPORTED = ZE_BIT(0)                                    ## Driver Supports DDI Handles Extension
+
+class ze_driver_ddi_handle_ext_flags_t(c_int):
+    def __str__(self):
+        return hex(self.value)
+
+
+###############################################################################
+## @brief Driver DDI Handles properties queried using ::zeDriverGetProperties
+## 
+## @details
+##     - This structure may be returned from ::zeDriverGetProperties, via the
+##       `pNext` member of ::ze_driver_properties_t.
+class ze_driver_ddi_handles_ext_properties_t(Structure):
+    _fields_ = [
+        ("stype", ze_structure_type_t),                                 ## [in] type of this structure
+        ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains stype and pNext).
+        ("flags", ze_driver_ddi_handle_ext_flags_t)                     ## [out] 0 (none) or a valid combination of ::ze_driver_ddi_handle_ext_flags_t
+    ]
 
 ###############################################################################
 ## @brief Cache_Reservation Extension Name
