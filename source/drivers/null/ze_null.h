@@ -14,6 +14,7 @@
 #include "zet_ddi.h"
 #include "zes_ddi.h"
 #include "ze_util.h"
+#include "ze_ddi_common.h"
 
 namespace driver
 {

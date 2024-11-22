@@ -11,6 +11,7 @@
 #include "ze_ddi.h"
 #include "zet_ddi.h"
 #include "zes_ddi.h"
+#include "ze_ddi_common.h"
 #include "ze_util.h"
 #include "loader/ze_loader.h"
 #include "handle_lifetime.h"
