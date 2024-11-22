@@ -5,7 +5,7 @@
  * SPDX-License-Identifier: MIT
  *
  * @file zet_ddi.h
- * @version v1.12-r1.11.11
+ * @version v1.12-r1.11.12
  *
  */
 #ifndef _ZET_DDI_H
@@ -1170,6 +1170,7 @@ typedef struct _zet_dditable_t
 typedef struct _zet_dditable_driver_t
 {
     ze_api_version_t    version;
+    uint8_t             isValidFlag;
     zet_metric_programmable_exp_dditable_t *    MetricProgrammableExp;
     zet_metric_tracer_exp_dditable_t *  MetricTracerExp;
     zet_metric_decoder_exp_dditable_t * MetricDecoderExp;

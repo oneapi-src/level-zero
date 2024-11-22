@@ -5,7 +5,7 @@
  * SPDX-License-Identifier: MIT
  *
  * @file ze_ddi.h
- * @version v1.12-r1.11.11
+ * @version v1.12-r1.11.12
  *
  */
 #ifndef _ZE_DDI_H
@@ -2579,6 +2579,7 @@ typedef struct _ze_dditable_t
 typedef struct _ze_dditable_driver_t
 {
     ze_api_version_t    version;
+    uint8_t             isValidFlag;
     ze_rtas_builder_exp_dditable_t *    RTASBuilderExp;
     ze_rtas_parallel_operation_exp_dditable_t * RTASParallelOperationExp;
     ze_global_dditable_t *              Global;

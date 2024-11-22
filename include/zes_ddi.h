@@ -5,7 +5,7 @@
  * SPDX-License-Identifier: MIT
  *
  * @file zes_ddi.h
- * @version v1.12-r1.11.11
+ * @version v1.12-r1.11.12
  *
  */
 #ifndef _ZES_DDI_H
@@ -1987,6 +1987,7 @@ typedef struct _zes_dditable_t
 typedef struct _zes_dditable_driver_t
 {
     ze_api_version_t    version;
+    uint8_t             isValidFlag;
     zes_global_dditable_t *             Global;
     zes_device_dditable_t *             Device;
     zes_device_exp_dditable_t *         DeviceExp;
