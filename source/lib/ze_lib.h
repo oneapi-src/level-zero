@@ -10,6 +10,7 @@
 #pragma once
 #include "ze_api.h"
 #include "ze_ddi.h"
+#include "ze_ddi_common.h"
 #include "zet_api.h"
 #include "zet_ddi.h"
 #include "zes_api.h"

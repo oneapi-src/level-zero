@@ -10,6 +10,7 @@
 #include "ze_lib.h"
 #ifndef DYNAMIC_LOAD_LOADER
 #include "ze_ddi.h"
+#include "ze_ddi_common.h"
 #endif
 
 namespace ze_lib
