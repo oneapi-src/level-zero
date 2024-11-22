@@ -4,7 +4,7 @@
  SPDX-License-Identifier: MIT
 
  @file zes.py
- @version v1.12-r1.11.12
+ @version v1.12-r1.11.13
 
  """
 import platform

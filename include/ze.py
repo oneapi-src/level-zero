@@ -4,7 +4,7 @@
  SPDX-License-Identifier: MIT
 
  @file ze.py
- @version v1.12-r1.11.12
+ @version v1.12-r1.11.13
 
  """
 import platform
@@ -316,7 +316,7 @@ class ze_structure_type_v(IntEnum):
     PITCHED_IMAGE_EXP_DESC = 0x0002001F                                     ## ::ze_image_pitched_exp_desc_t
     MUTABLE_GRAPH_ARGUMENT_EXP_DESC = 0x00020020                            ## ::ze_mutable_graph_argument_exp_desc_t
     INIT_DRIVER_TYPE_DESC = 0x00020021                                      ## ::ze_init_driver_type_desc_t
-    DRIVER_DDI_HANDLES_EXT_PROPERTIES = 0x00020022                          ## ::ze_driver_ddi_handles_ext_properties_t
+    DRIVER_DDI_HANDLES_EXT_PROPERTIES = 0x20022                             ## ::ze_driver_ddi_handles_ext_properties_t
 
 class ze_structure_type_t(c_int):
     def __str__(self):
