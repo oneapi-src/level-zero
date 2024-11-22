@@ -1190,12 +1190,6 @@ typedef struct _zet_dditable_driver_t
     zet_debug_dditable_t *              Debug;
 } zet_dditable_driver_t;
 
-/// @brief Handle with pointer to Dispatch Container allocated by the driver at the beginning of every ZET handle
-typedef struct _zet_handle_t
-{
-    zet_dditable_driver_t *pDispatch; // [in] pointer to _zet_dditable_t_ object related to this handle
-} zet_handle_t;
-
 #if defined(__cplusplus)
 } // extern "C"
 #endif

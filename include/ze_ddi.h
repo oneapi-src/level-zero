@@ -2609,12 +2609,6 @@ typedef struct _ze_dditable_driver_t
     ze_fabric_edge_exp_dditable_t *     FabricEdgeExp;
 } ze_dditable_driver_t;
 
-/// @brief Handle with pointer to Dispatch Container allocated by the driver at the beginning of every ZE handle
-typedef struct _ze_handle_t
-{
-    ze_dditable_driver_t *pDispatch; // [in] pointer to _ze_dditable_t_ object related to this handle
-} ze_handle_t;
-
 #if defined(__cplusplus)
 } // extern "C"
 #endif

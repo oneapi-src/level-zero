@@ -2013,12 +2013,6 @@ typedef struct _zes_dditable_driver_t
     zes_vf_management_exp_dditable_t *  VFManagementExp;
 } zes_dditable_driver_t;
 
-/// @brief Handle with pointer to Dispatch Container allocated by the driver at the beginning of every ZES handle
-typedef struct _zes_handle_t
-{
-    zes_dditable_driver_t *pDispatch; // [in] pointer to _zes_dditable_t_ object related to this handle
-} zes_handle_t;
-
 #if defined(__cplusplus)
 } // extern "C"
 #endif
