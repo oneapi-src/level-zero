@@ -4539,6 +4539,31 @@ namespace loader
         return result;
     }
 
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesVFManagementGetVFCapabilitiesExp2
+    __zedlllocal ze_result_t ZE_APICALL
+    zesVFManagementGetVFCapabilitiesExp2(
+        zes_vf_handle_t hVFhandle,                      ///< [in] Sysman handle for the VF component.
+        zes_vf_exp2_capabilities_t* pCapability         ///< [in,out] Will contain VF capability.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_vf_object_t*>( hVFhandle )->dditable;
+        auto pfnGetVFCapabilitiesExp2 = dditable->zes.VFManagementExp.pfnGetVFCapabilitiesExp2;
+        if( nullptr == pfnGetVFCapabilitiesExp2 )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hVFhandle = reinterpret_cast<zes_vf_object_t*>( hVFhandle )->handle;
+
+        // forward to device-driver
+        result = pfnGetVFCapabilitiesExp2( hVFhandle, pCapability );
+
+        return result;
+    }
+
 } // namespace loader
 
 #if defined(__cplusplus)
@@ -6430,6 +6455,7 @@ zesGetVFManagementExpProcAddrTable(
             pDdiTable->pfnGetVFCapabilitiesExp                     = loader::zesVFManagementGetVFCapabilitiesExp;
             pDdiTable->pfnGetVFMemoryUtilizationExp2               = loader::zesVFManagementGetVFMemoryUtilizationExp2;
             pDdiTable->pfnGetVFEngineUtilizationExp2               = loader::zesVFManagementGetVFEngineUtilizationExp2;
+            pDdiTable->pfnGetVFCapabilitiesExp2                    = loader::zesVFManagementGetVFCapabilitiesExp2;
             pDdiTable->pfnGetVFPropertiesExp                       = loader::zesVFManagementGetVFPropertiesExp;
             pDdiTable->pfnGetVFMemoryUtilizationExp                = loader::zesVFManagementGetVFMemoryUtilizationExp;
             pDdiTable->pfnGetVFEngineUtilizationExp                = loader::zesVFManagementGetVFEngineUtilizationExp;

@@ -4,7 +4,7 @@
  SPDX-License-Identifier: MIT
 
  @file ze.py
- @version v1.11-r1.11.8
+ @version v1.12-r1.12.0
 
  """
 import platform
@@ -316,6 +316,12 @@ class ze_structure_type_v(IntEnum):
     PITCHED_IMAGE_EXP_DESC = 0x0002001F                                     ## ::ze_image_pitched_exp_desc_t
     MUTABLE_GRAPH_ARGUMENT_EXP_DESC = 0x00020020                            ## ::ze_mutable_graph_argument_exp_desc_t
     INIT_DRIVER_TYPE_DESC = 0x00020021                                      ## ::ze_init_driver_type_desc_t
+    EXTERNAL_SEMAPHORE_EXT_DESC = 0x00020022                                ## ::ze_external_semaphore_ext_desc_t
+    EXTERNAL_SEMAPHORE_WIN32_EXT_DESC = 0x00020023                          ## ::ze_external_semaphore_win32_ext_desc_t
+    EXTERNAL_SEMAPHORE_FD_EXT_DESC = 0x00020024                             ## ::ze_external_semaphore_fd_ext_desc_t
+    EXTERNAL_SEMAPHORE_SIGNAL_PARAMS_EXT = 0x00020025                       ## ::ze_external_semaphore_signal_params_ext_t
+    EXTERNAL_SEMAPHORE_WAIT_PARAMS_EXT = 0x00020026                         ## ::ze_external_semaphore_wait_params_ext_t
+    DRIVER_DDI_HANDLES_EXT_PROPERTIES = 0x00020027                          ## ::ze_driver_ddi_handles_ext_properties_t
 
 class ze_structure_type_t(c_int):
     def __str__(self):
@@ -485,7 +491,8 @@ class ze_api_version_v(IntEnum):
     _1_9 = ZE_MAKE_VERSION( 1, 9 )                                          ## version 1.9
     _1_10 = ZE_MAKE_VERSION( 1, 10 )                                        ## version 1.10
     _1_11 = ZE_MAKE_VERSION( 1, 11 )                                        ## version 1.11
-    CURRENT = ZE_MAKE_VERSION( 1, 11 )                                      ## latest known version
+    _1_12 = ZE_MAKE_VERSION( 1, 12 )                                        ## version 1.12
+    CURRENT = ZE_MAKE_VERSION( 1, 12 )                                      ## latest known version
 
 class ze_api_version_t(c_int):
     def __str__(self):
@@ -494,7 +501,7 @@ class ze_api_version_t(c_int):
 
 ###############################################################################
 ## @brief Current API version as a macro
-ZE_API_VERSION_CURRENT_M = ZE_MAKE_VERSION( 1, 11 )
+ZE_API_VERSION_CURRENT_M = ZE_MAKE_VERSION( 1, 12 )
 
 ###############################################################################
 ## @brief Maximum driver universal unique id (UUID) size in bytes
@@ -2113,6 +2120,144 @@ class ze_relaxed_allocation_limits_exp_desc_t(Structure):
 ###############################################################################
 ## @brief Get Kernel Binary Extension Name
 ZE_GET_KERNEL_BINARY_EXP_NAME = "ZE_extension_kernel_binary_exp"
+
+###############################################################################
+## @brief Driver Direct Device Interface (DDI) Handles Extension Name
+ZE_DRIVER_DDI_HANDLES_EXT_NAME = "ZE_extension_driver_ddi_handles"
+
+###############################################################################
+## @brief Driver Direct Device Interface (DDI) Handles Extension Version(s)
+class ze_driver_ddi_handles_ext_version_v(IntEnum):
+    _1_0 = ZE_MAKE_VERSION( 1, 0 )                                          ## version 1.0
+    CURRENT = ZE_MAKE_VERSION( 1, 0 )                                       ## latest known version
+
+class ze_driver_ddi_handles_ext_version_t(c_int):
+    def __str__(self):
+        return str(ze_driver_ddi_handles_ext_version_v(self.value))
+
+
+###############################################################################
+## @brief Driver Direct Device Interface (DDI) Handle Extension Flags
+class ze_driver_ddi_handle_ext_flags_v(IntEnum):
+    DDI_HANDLE_EXT_SUPPORTED = ZE_BIT(0)                                    ## Driver Supports DDI Handles Extension
+
+class ze_driver_ddi_handle_ext_flags_t(c_int):
+    def __str__(self):
+        return hex(self.value)
+
+
+###############################################################################
+## @brief Driver DDI Handles properties queried using ::zeDriverGetProperties
+## 
+## @details
+##     - This structure may be returned from ::zeDriverGetProperties, via the
+##       `pNext` member of ::ze_driver_properties_t.
+class ze_driver_ddi_handles_ext_properties_t(Structure):
+    _fields_ = [
+        ("stype", ze_structure_type_t),                                 ## [in] type of this structure
+        ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains stype and pNext).
+        ("flags", ze_driver_ddi_handle_ext_flags_t)                     ## [out] 0 (none) or a valid combination of ::ze_driver_ddi_handle_ext_flags_t
+    ]
+
+###############################################################################
+## @brief External Semaphores Extension Name
+ZE_EXTERNAL_SEMAPHORES_EXTENSION_NAME = "ZE_extension_external_semaphores"
+
+###############################################################################
+## @brief External Semaphores Extension Version
+class ze_external_semaphore_ext_version_v(IntEnum):
+    _1_0 = ZE_MAKE_VERSION( 1, 0 )                                          ## version 1.0
+    CURRENT = ZE_MAKE_VERSION( 1, 0 )                                       ## latest known version
+
+class ze_external_semaphore_ext_version_t(c_int):
+    def __str__(self):
+        return str(ze_external_semaphore_ext_version_v(self.value))
+
+
+###############################################################################
+## @brief Handle of external semaphore object
+class ze_external_semaphore_ext_handle_t(c_void_p):
+    pass
+
+###############################################################################
+## @brief External Semaphores Type Flags
+class ze_external_semaphore_ext_flags_v(IntEnum):
+    OPAQUE_FD = ZE_BIT(0)                                                   ## Semaphore is an Linux opaque file descriptor
+    OPAQUE_WIN32 = ZE_BIT(1)                                                ## Semaphore is an opaque Win32 handle for monitored fence
+    OPAQUE_WIN32_KMT = ZE_BIT(2)                                            ## Semaphore is an opaque Win32 KMT handle for monitored fence
+    D3D12_FENCE = ZE_BIT(3)                                                 ## Semaphore is a D3D12 fence
+    D3D11_FENCE = ZE_BIT(4)                                                 ## Semaphore is a D3D11 fence
+    KEYED_MUTEX = ZE_BIT(5)                                                 ## Semaphore is a keyed mutex for Win32
+    KEYED_MUTEX_KMT = ZE_BIT(6)                                             ## Semaphore is a keyed mutex for Win32 KMT
+    VK_TIMELINE_SEMAPHORE_FD = ZE_BIT(7)                                    ## Semaphore is a Vulkan Timeline semaphore for Linux
+    VK_TIMELINE_SEMAPHORE_WIN32 = ZE_BIT(8)                                 ## Semaphore is a Vulkan Timeline semaphore for Win32
+
+class ze_external_semaphore_ext_flags_t(c_int):
+    def __str__(self):
+        return hex(self.value)
+
+
+###############################################################################
+## @brief External Semaphore Descriptor
+class ze_external_semaphore_ext_desc_t(Structure):
+    _fields_ = [
+        ("stype", ze_structure_type_t),                                 ## [in] type of this structure
+        ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains stype and pNext).
+        ("flags", ze_external_semaphore_ext_flags_t)                    ## [in] The flags describing the type of the semaphore.
+                                                                        ## must be 0 (default) or a valid combination of ::ze_external_semaphore_ext_flag_t.
+                                                                        ## When importing a semaphore, pNext should be pointing to one of the
+                                                                        ## following structures: ::ze_external_semaphore_win32_ext_desc_t or ::ze_external_semaphore_fd_ext_desc_t.
+    ]
+
+###############################################################################
+## @brief External Semaphore Win32 Descriptor
+class ze_external_semaphore_win32_ext_desc_t(Structure):
+    _fields_ = [
+        ("stype", ze_structure_type_t),                                 ## [in] type of this structure
+        ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains stype and pNext).
+        ("handle", c_void_p),                                           ## [in] Win32 handle of the semaphore.
+                                                                        ## Must be a valid Win32 handle.
+        ("name", c_char_p)                                              ## [in] Name of the semaphore.
+                                                                        ## Must be a valid null-terminated string.
+    ]
+
+###############################################################################
+## @brief External Semaphore FD Descriptor
+class ze_external_semaphore_fd_ext_desc_t(Structure):
+    _fields_ = [
+        ("stype", ze_structure_type_t),                                 ## [in] type of this structure
+        ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains stype and pNext).
+        ("fd", c_int)                                                   ## [in] File descriptor of the semaphore.
+                                                                        ## Must be a valid file descriptor.
+    ]
+
+###############################################################################
+## @brief External Semaphore Signal parameters
+class ze_external_semaphore_signal_params_ext_t(Structure):
+    _fields_ = [
+        ("stype", ze_structure_type_t),                                 ## [in] type of this structure
+        ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains stype and pNext).
+        ("value", c_ulonglong)                                          ## [in] [optional] Value to signal.
+                                                                        ## Specified by user as an expected value with some of semaphore types,
+                                                                        ## such as ::ZE_EXTERNAL_SEMAPHORE_EXT_FLAG_D3D12_FENCE.
+    ]
+
+###############################################################################
+## @brief External Semaphore Wait parameters
+class ze_external_semaphore_wait_params_ext_t(Structure):
+    _fields_ = [
+        ("stype", ze_structure_type_t),                                 ## [in] type of this structure
+        ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains stype and pNext).
+        ("value", c_ulonglong)                                          ## [in] [optional] Value to wait for.
+                                                                        ## Specified by user as an expected value with some of semaphore types,
+                                                                        ## such as ::ZE_EXTERNAL_SEMAPHORE_EXT_FLAG_D3D12_FENCE.
+    ]
 
 ###############################################################################
 ## @brief Cache_Reservation Extension Name
@@ -4328,6 +4473,20 @@ if __use_win_types:
 else:
     _zeDeviceGetRootDevice_t = CFUNCTYPE( ze_result_t, ze_device_handle_t, POINTER(ze_device_handle_t) )
 
+###############################################################################
+## @brief Function-pointer for zeDeviceImportExternalSemaphoreExt
+if __use_win_types:
+    _zeDeviceImportExternalSemaphoreExt_t = WINFUNCTYPE( ze_result_t, ze_device_handle_t, POINTER(ze_external_semaphore_ext_desc_t), POINTER(ze_external_semaphore_ext_handle_t) )
+else:
+    _zeDeviceImportExternalSemaphoreExt_t = CFUNCTYPE( ze_result_t, ze_device_handle_t, POINTER(ze_external_semaphore_ext_desc_t), POINTER(ze_external_semaphore_ext_handle_t) )
+
+###############################################################################
+## @brief Function-pointer for zeDeviceReleaseExternalSemaphoreExt
+if __use_win_types:
+    _zeDeviceReleaseExternalSemaphoreExt_t = WINFUNCTYPE( ze_result_t, ze_external_semaphore_ext_handle_t )
+else:
+    _zeDeviceReleaseExternalSemaphoreExt_t = CFUNCTYPE( ze_result_t, ze_external_semaphore_ext_handle_t )
+
 
 ###############################################################################
 ## @brief Table of Device functions pointers
@@ -4351,7 +4510,9 @@ class _ze_device_dditable_t(Structure):
         ("pfnReserveCacheExt", c_void_p),                               ## _zeDeviceReserveCacheExt_t
         ("pfnSetCacheAdviceExt", c_void_p),                             ## _zeDeviceSetCacheAdviceExt_t
         ("pfnPciGetPropertiesExt", c_void_p),                           ## _zeDevicePciGetPropertiesExt_t
-        ("pfnGetRootDevice", c_void_p)                                  ## _zeDeviceGetRootDevice_t
+        ("pfnGetRootDevice", c_void_p),                                 ## _zeDeviceGetRootDevice_t
+        ("pfnImportExternalSemaphoreExt", c_void_p),                    ## _zeDeviceImportExternalSemaphoreExt_t
+        ("pfnReleaseExternalSemaphoreExt", c_void_p)                    ## _zeDeviceReleaseExternalSemaphoreExt_t
     ]
 
 ###############################################################################
@@ -4741,6 +4902,20 @@ if __use_win_types:
 else:
     _zeCommandListIsImmediate_t = CFUNCTYPE( ze_result_t, ze_command_list_handle_t, POINTER(ze_bool_t) )
 
+###############################################################################
+## @brief Function-pointer for zeCommandListAppendSignalExternalSemaphoreExt
+if __use_win_types:
+    _zeCommandListAppendSignalExternalSemaphoreExt_t = WINFUNCTYPE( ze_result_t, ze_command_list_handle_t, c_ulong, POINTER(ze_external_semaphore_ext_handle_t), POINTER(ze_external_semaphore_signal_params_ext_t), ze_event_handle_t, c_ulong, POINTER(ze_event_handle_t) )
+else:
+    _zeCommandListAppendSignalExternalSemaphoreExt_t = CFUNCTYPE( ze_result_t, ze_command_list_handle_t, c_ulong, POINTER(ze_external_semaphore_ext_handle_t), POINTER(ze_external_semaphore_signal_params_ext_t), ze_event_handle_t, c_ulong, POINTER(ze_event_handle_t) )
+
+###############################################################################
+## @brief Function-pointer for zeCommandListAppendWaitExternalSemaphoreExt
+if __use_win_types:
+    _zeCommandListAppendWaitExternalSemaphoreExt_t = WINFUNCTYPE( ze_result_t, ze_command_list_handle_t, c_ulong, POINTER(ze_external_semaphore_ext_handle_t), POINTER(ze_external_semaphore_wait_params_ext_t), ze_event_handle_t, c_ulong, POINTER(ze_event_handle_t) )
+else:
+    _zeCommandListAppendWaitExternalSemaphoreExt_t = CFUNCTYPE( ze_result_t, ze_command_list_handle_t, c_ulong, POINTER(ze_external_semaphore_ext_handle_t), POINTER(ze_external_semaphore_wait_params_ext_t), ze_event_handle_t, c_ulong, POINTER(ze_event_handle_t) )
+
 
 ###############################################################################
 ## @brief Table of CommandList functions pointers
@@ -4779,7 +4954,9 @@ class _ze_command_list_dditable_t(Structure):
         ("pfnGetContextHandle", c_void_p),                              ## _zeCommandListGetContextHandle_t
         ("pfnGetOrdinal", c_void_p),                                    ## _zeCommandListGetOrdinal_t
         ("pfnImmediateGetIndex", c_void_p),                             ## _zeCommandListImmediateGetIndex_t
-        ("pfnIsImmediate", c_void_p)                                    ## _zeCommandListIsImmediate_t
+        ("pfnIsImmediate", c_void_p),                                   ## _zeCommandListIsImmediate_t
+        ("pfnAppendSignalExternalSemaphoreExt", c_void_p),              ## _zeCommandListAppendSignalExternalSemaphoreExt_t
+        ("pfnAppendWaitExternalSemaphoreExt", c_void_p)                 ## _zeCommandListAppendWaitExternalSemaphoreExt_t
     ]
 
 ###############################################################################
@@ -5852,6 +6029,8 @@ class ZE_DDI:
         self.zeDeviceSetCacheAdviceExt = _zeDeviceSetCacheAdviceExt_t(self.__dditable.Device.pfnSetCacheAdviceExt)
         self.zeDevicePciGetPropertiesExt = _zeDevicePciGetPropertiesExt_t(self.__dditable.Device.pfnPciGetPropertiesExt)
         self.zeDeviceGetRootDevice = _zeDeviceGetRootDevice_t(self.__dditable.Device.pfnGetRootDevice)
+        self.zeDeviceImportExternalSemaphoreExt = _zeDeviceImportExternalSemaphoreExt_t(self.__dditable.Device.pfnImportExternalSemaphoreExt)
+        self.zeDeviceReleaseExternalSemaphoreExt = _zeDeviceReleaseExternalSemaphoreExt_t(self.__dditable.Device.pfnReleaseExternalSemaphoreExt)
 
         # call driver to get function pointers
         _DeviceExp = _ze_device_exp_dditable_t()
@@ -5938,6 +6117,8 @@ class ZE_DDI:
         self.zeCommandListGetOrdinal = _zeCommandListGetOrdinal_t(self.__dditable.CommandList.pfnGetOrdinal)
         self.zeCommandListImmediateGetIndex = _zeCommandListImmediateGetIndex_t(self.__dditable.CommandList.pfnImmediateGetIndex)
         self.zeCommandListIsImmediate = _zeCommandListIsImmediate_t(self.__dditable.CommandList.pfnIsImmediate)
+        self.zeCommandListAppendSignalExternalSemaphoreExt = _zeCommandListAppendSignalExternalSemaphoreExt_t(self.__dditable.CommandList.pfnAppendSignalExternalSemaphoreExt)
+        self.zeCommandListAppendWaitExternalSemaphoreExt = _zeCommandListAppendWaitExternalSemaphoreExt_t(self.__dditable.CommandList.pfnAppendWaitExternalSemaphoreExt)
 
         # call driver to get function pointers
         _CommandListExp = _ze_command_list_exp_dditable_t()
