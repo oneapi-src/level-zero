@@ -6444,6 +6444,8 @@ zesDeviceEnumEnabledVFExp(
 /// @brief Get virtual function management capabilities
 /// 
 /// @details
+///     - [DEPRECATED] No longer supported. Use
+///       ::zesVFManagementGetVFCapabilitiesExp2.
 ///     - The application may call this function from simultaneous threads.
 ///     - The implementation of this function should be lock-free.
 /// 
@@ -6576,6 +6578,44 @@ zesVFManagementGetVFEngineUtilizationExp2(
     }
 
     return pfnGetVFEngineUtilizationExp2( hVFhandle, pCount, pEngineUtil );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Get virtual function management capabilities
+/// 
+/// @details
+///     - The application may call this function from simultaneous threads.
+///     - The implementation of this function should be lock-free.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hVFhandle`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == pCapability`
+ze_result_t ZE_APICALL
+zesVFManagementGetVFCapabilitiesExp2(
+    zes_vf_handle_t hVFhandle,                      ///< [in] Sysman handle for the VF component.
+    zes_vf_exp2_capabilities_t* pCapability         ///< [in,out] Will contain VF capability.
+    )
+{
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
+    auto pfnGetVFCapabilitiesExp2 = ze_lib::context->zesDdiTable.load()->VFManagementExp.pfnGetVFCapabilitiesExp2;
+    if( nullptr == pfnGetVFCapabilitiesExp2 ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    return pfnGetVFCapabilitiesExp2( hVFhandle, pCapability );
 }
 
 } // extern "C"

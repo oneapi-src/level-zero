@@ -313,6 +313,8 @@ public:
     virtual ze_result_t zesVFManagementGetVFMemoryUtilizationExp2Epilogue( zes_vf_handle_t hVFhandle, uint32_t* pCount, zes_vf_util_mem_exp2_t* pMemUtil , ze_result_t result) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zesVFManagementGetVFEngineUtilizationExp2Prologue( zes_vf_handle_t hVFhandle, uint32_t* pCount, zes_vf_util_engine_exp2_t* pEngineUtil ) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zesVFManagementGetVFEngineUtilizationExp2Epilogue( zes_vf_handle_t hVFhandle, uint32_t* pCount, zes_vf_util_engine_exp2_t* pEngineUtil , ze_result_t result) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zesVFManagementGetVFCapabilitiesExp2Prologue( zes_vf_handle_t hVFhandle, zes_vf_exp2_capabilities_t* pCapability ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zesVFManagementGetVFCapabilitiesExp2Epilogue( zes_vf_handle_t hVFhandle, zes_vf_exp2_capabilities_t* pCapability , ze_result_t result) {return ZE_RESULT_SUCCESS;}
     virtual ~ZESValidationEntryPoints() {}
 };
 }
