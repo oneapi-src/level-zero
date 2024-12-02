@@ -7095,6 +7095,203 @@ zeKernelGetBinaryExp(
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+/// @brief Import an external semaphore
+/// 
+/// @details
+///     - Imports an external semaphore.
+///     - This function may be called from simultaneous threads with the same
+///       device handle.
+///     - The implementation of this function should be lock-free.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hDevice`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == desc`
+///         + `nullptr == phSemaphore`
+///     - ::ZE_RESULT_ERROR_INVALID_ENUMERATION
+///         + `0x1ff < desc->flags`
+ze_result_t ZE_APICALL
+zeDeviceImportExternalSemaphoreExt(
+    ze_device_handle_t hDevice,                     ///< [in] The device handle.
+    const ze_external_semaphore_ext_desc_t* desc,   ///< [in] The pointer to external semaphore descriptor.
+    ze_external_semaphore_ext_handle_t* phSemaphore ///< [out] The handle of the external semaphore imported.
+    )
+{
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
+    auto pfnImportExternalSemaphoreExt = ze_lib::context->zeDdiTable.load()->Device.pfnImportExternalSemaphoreExt;
+    if( nullptr == pfnImportExternalSemaphoreExt ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    return pfnImportExternalSemaphoreExt( hDevice, desc, phSemaphore );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Release an external semaphore
+/// 
+/// @details
+///     - The application must ensure the device is not currently referencing
+///       the semaphore before it is released.
+///     - The application must **not** call this function from simultaneous
+///       threads with the same semaphore handle.
+///     - The implementation of this function must be thread-safe.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hSemaphore`
+///     - ::ZE_RESULT_ERROR_HANDLE_OBJECT_IN_USE
+ze_result_t ZE_APICALL
+zeDeviceReleaseExternalSemaphoreExt(
+    ze_external_semaphore_ext_handle_t hSemaphore   ///< [in] The handle of the external semaphore.
+    )
+{
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
+    auto pfnReleaseExternalSemaphoreExt = ze_lib::context->zeDdiTable.load()->Device.pfnReleaseExternalSemaphoreExt;
+    if( nullptr == pfnReleaseExternalSemaphoreExt ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    return pfnReleaseExternalSemaphoreExt( hSemaphore );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Signal an external semaphore
+/// 
+/// @details
+///     - Signals an external semaphore.
+///     - This function must only be used with an immediate command list.
+///     - This function may be called from simultaneous threads with the same
+///       command list handle.
+///     - The implementation of this function should be lock-free.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hCommandList`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == phSemaphores`
+///         + `nullptr == signalParams`
+///     - ::ZE_RESULT_ERROR_INVALID_SYNCHRONIZATION_OBJECT
+///     - ::ZE_RESULT_ERROR_INVALID_SIZE
+///         + `(nullptr == phWaitEvents) && (0 < numWaitEvents)`
+///         + `(nullptr == phSemaphores) && (0 < numSemaphores)`
+///         + `(nullptr == signalParams) && (0 < numSemaphores)`
+///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
+///         + Commandlist handle does not correspond to an immediate command list
+ze_result_t ZE_APICALL
+zeCommandListAppendSignalExternalSemaphoreExt(
+    ze_command_list_handle_t hCommandList,          ///< [in] The command list handle.
+    uint32_t numSemaphores,                         ///< [in] The number of external semaphores.
+    ze_external_semaphore_ext_handle_t* phSemaphores,   ///< [in][range(0, numSemaphores)] The vector of external semaphore handles
+                                                    ///< to be appended into command list.
+    ze_external_semaphore_signal_params_ext_t* signalParams,///< [in] Signal parameters.
+    ze_event_handle_t hSignalEvent,                 ///< [in][optional] handle of the event to signal on completion
+    uint32_t numWaitEvents,                         ///< [in][optional] number of events to wait on before launching; must be 0
+                                                    ///< if `nullptr == phWaitEvents`
+    ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
+                                                    ///< on before launching
+    )
+{
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
+    auto pfnAppendSignalExternalSemaphoreExt = ze_lib::context->zeDdiTable.load()->CommandList.pfnAppendSignalExternalSemaphoreExt;
+    if( nullptr == pfnAppendSignalExternalSemaphoreExt ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    return pfnAppendSignalExternalSemaphoreExt( hCommandList, numSemaphores, phSemaphores, signalParams, hSignalEvent, numWaitEvents, phWaitEvents );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Wait on external semaphores
+/// 
+/// @details
+///     - Waits on external semaphores.
+///     - This function must only be used with an immediate command list.
+///     - This function may be called from simultaneous threads with the same
+///       command list handle.
+///     - The implementation of this function should be lock-free.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hCommandList`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == phSemaphores`
+///         + `nullptr == waitParams`
+///     - ::ZE_RESULT_ERROR_INVALID_SYNCHRONIZATION_OBJECT
+///     - ::ZE_RESULT_ERROR_INVALID_SIZE
+///         + `(nullptr == phWaitEvents) && (0 < numWaitEvents)`
+///         + `(nullptr == phSemaphores) && (0 < numSemaphores)`
+///         + `(nullptr == waitParams) && (0 < numSemaphores)`
+///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
+///         + Commandlist handle does not correspond to an immediate command list
+ze_result_t ZE_APICALL
+zeCommandListAppendWaitExternalSemaphoreExt(
+    ze_command_list_handle_t hCommandList,          ///< [in] The command list handle.
+    uint32_t numSemaphores,                         ///< [in] The number of external semaphores.
+    ze_external_semaphore_ext_handle_t* phSemaphores,   ///< [in] [range(0,numSemaphores)] The vector of external semaphore handles
+                                                    ///< to append into command list.
+    ze_external_semaphore_wait_params_ext_t* waitParams,///< [in] Wait parameters.
+    ze_event_handle_t hSignalEvent,                 ///< [in][optional] handle of the event to signal on completion
+    uint32_t numWaitEvents,                         ///< [in][optional] number of events to wait on before launching; must be 0
+                                                    ///< if `nullptr == phWaitEvents`
+    ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
+                                                    ///< on before launching
+    )
+{
+    if(ze_lib::context->inTeardown) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
+    auto pfnAppendWaitExternalSemaphoreExt = ze_lib::context->zeDdiTable.load()->CommandList.pfnAppendWaitExternalSemaphoreExt;
+    if( nullptr == pfnAppendWaitExternalSemaphoreExt ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    return pfnAppendWaitExternalSemaphoreExt( hCommandList, numSemaphores, phSemaphores, waitParams, hSignalEvent, numWaitEvents, phWaitEvents );
+}
+
+///////////////////////////////////////////////////////////////////////////////
 /// @brief Reserve Cache on Device
 /// 
 /// @details

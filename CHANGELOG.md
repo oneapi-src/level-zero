@@ -1,5 +1,7 @@
 # Level zero loader changelog
 
+## v1.20.0
+* Update to spec 1.12
 ## v1.19.2
 * Remove static result in InitDrivers given first init fails
 ## v1.19.1

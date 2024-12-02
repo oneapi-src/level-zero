@@ -165,6 +165,7 @@ namespace validation_layer
         ze_result_t zesVFManagementGetVFCapabilitiesExpPrologue( zes_vf_handle_t hVFhandle, zes_vf_exp_capabilities_t* pCapability ) override;
         ze_result_t zesVFManagementGetVFMemoryUtilizationExp2Prologue( zes_vf_handle_t hVFhandle, uint32_t* pCount, zes_vf_util_mem_exp2_t* pMemUtil ) override;
         ze_result_t zesVFManagementGetVFEngineUtilizationExp2Prologue( zes_vf_handle_t hVFhandle, uint32_t* pCount, zes_vf_util_engine_exp2_t* pEngineUtil ) override;
+        ze_result_t zesVFManagementGetVFCapabilitiesExp2Prologue( zes_vf_handle_t hVFhandle, zes_vf_exp2_capabilities_t* pCapability ) override;
     };
 
 }
