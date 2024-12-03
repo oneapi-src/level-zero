@@ -3995,6 +3995,120 @@ namespace driver
     }
 
     ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeDeviceImportExternalSemaphoreExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeDeviceImportExternalSemaphoreExt(
+        ze_device_handle_t hDevice,                     ///< [in] The device handle.
+        const ze_external_semaphore_ext_desc_t* desc,   ///< [in] The pointer to external semaphore descriptor.
+        ze_external_semaphore_ext_handle_t* phSemaphore ///< [out] The handle of the external semaphore imported.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnImportExternalSemaphoreExt = context.zeDdiTable.Device.pfnImportExternalSemaphoreExt;
+        if( nullptr != pfnImportExternalSemaphoreExt )
+        {
+            result = pfnImportExternalSemaphoreExt( hDevice, desc, phSemaphore );
+        }
+        else
+        {
+            // generic implementation
+            *phSemaphore = reinterpret_cast<ze_external_semaphore_ext_handle_t>( context.get() );
+
+        }
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeDeviceReleaseExternalSemaphoreExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeDeviceReleaseExternalSemaphoreExt(
+        ze_external_semaphore_ext_handle_t hSemaphore   ///< [in] The handle of the external semaphore.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnReleaseExternalSemaphoreExt = context.zeDdiTable.Device.pfnReleaseExternalSemaphoreExt;
+        if( nullptr != pfnReleaseExternalSemaphoreExt )
+        {
+            result = pfnReleaseExternalSemaphoreExt( hSemaphore );
+        }
+        else
+        {
+            // generic implementation
+        }
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeCommandListAppendSignalExternalSemaphoreExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeCommandListAppendSignalExternalSemaphoreExt(
+        ze_command_list_handle_t hCommandList,          ///< [in] The command list handle.
+        uint32_t numSemaphores,                         ///< [in] The number of external semaphores.
+        ze_external_semaphore_ext_handle_t* phSemaphores,   ///< [in][range(0, numSemaphores)] The vector of external semaphore handles
+                                                        ///< to be appended into command list.
+        ze_external_semaphore_signal_params_ext_t* signalParams,///< [in] Signal parameters.
+        ze_event_handle_t hSignalEvent,                 ///< [in][optional] handle of the event to signal on completion
+        uint32_t numWaitEvents,                         ///< [in][optional] number of events to wait on before launching; must be 0
+                                                        ///< if `nullptr == phWaitEvents`
+        ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
+                                                        ///< on before launching
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnAppendSignalExternalSemaphoreExt = context.zeDdiTable.CommandList.pfnAppendSignalExternalSemaphoreExt;
+        if( nullptr != pfnAppendSignalExternalSemaphoreExt )
+        {
+            result = pfnAppendSignalExternalSemaphoreExt( hCommandList, numSemaphores, phSemaphores, signalParams, hSignalEvent, numWaitEvents, phWaitEvents );
+        }
+        else
+        {
+            // generic implementation
+        }
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeCommandListAppendWaitExternalSemaphoreExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeCommandListAppendWaitExternalSemaphoreExt(
+        ze_command_list_handle_t hCommandList,          ///< [in] The command list handle.
+        uint32_t numSemaphores,                         ///< [in] The number of external semaphores.
+        ze_external_semaphore_ext_handle_t* phSemaphores,   ///< [in] [range(0,numSemaphores)] The vector of external semaphore handles
+                                                        ///< to append into command list.
+        ze_external_semaphore_wait_params_ext_t* waitParams,///< [in] Wait parameters.
+        ze_event_handle_t hSignalEvent,                 ///< [in][optional] handle of the event to signal on completion
+        uint32_t numWaitEvents,                         ///< [in][optional] number of events to wait on before launching; must be 0
+                                                        ///< if `nullptr == phWaitEvents`
+        ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
+                                                        ///< on before launching
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnAppendWaitExternalSemaphoreExt = context.zeDdiTable.CommandList.pfnAppendWaitExternalSemaphoreExt;
+        if( nullptr != pfnAppendWaitExternalSemaphoreExt )
+        {
+            result = pfnAppendWaitExternalSemaphoreExt( hCommandList, numSemaphores, phSemaphores, waitParams, hSignalEvent, numWaitEvents, phWaitEvents );
+        }
+        else
+        {
+            // generic implementation
+        }
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
     /// @brief Intercept function for zeDeviceReserveCacheExt
     __zedlllocal ze_result_t ZE_APICALL
     zeDeviceReserveCacheExt(
@@ -5360,6 +5474,10 @@ zeGetDeviceProcAddrTable(
 
     pDdiTable->pfnGetGlobalTimestamps                    = driver::zeDeviceGetGlobalTimestamps;
 
+    pDdiTable->pfnImportExternalSemaphoreExt             = driver::zeDeviceImportExternalSemaphoreExt;
+
+    pDdiTable->pfnReleaseExternalSemaphoreExt            = driver::zeDeviceReleaseExternalSemaphoreExt;
+
     pDdiTable->pfnReserveCacheExt                        = driver::zeDeviceReserveCacheExt;
 
     pDdiTable->pfnSetCacheAdviceExt                      = driver::zeDeviceSetCacheAdviceExt;
@@ -5551,6 +5669,10 @@ zeGetCommandListProcAddrTable(
     pDdiTable->pfnAppendLaunchKernelIndirect             = driver::zeCommandListAppendLaunchKernelIndirect;
 
     pDdiTable->pfnAppendLaunchMultipleKernelsIndirect    = driver::zeCommandListAppendLaunchMultipleKernelsIndirect;
+
+    pDdiTable->pfnAppendSignalExternalSemaphoreExt       = driver::zeCommandListAppendSignalExternalSemaphoreExt;
+
+    pDdiTable->pfnAppendWaitExternalSemaphoreExt         = driver::zeCommandListAppendWaitExternalSemaphoreExt;
 
     pDdiTable->pfnAppendImageCopyToMemoryExt             = driver::zeCommandListAppendImageCopyToMemoryExt;
 

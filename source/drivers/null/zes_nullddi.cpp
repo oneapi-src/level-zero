@@ -4092,6 +4092,30 @@ namespace driver
         return result;
     }
 
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesVFManagementGetVFCapabilitiesExp2
+    __zedlllocal ze_result_t ZE_APICALL
+    zesVFManagementGetVFCapabilitiesExp2(
+        zes_vf_handle_t hVFhandle,                      ///< [in] Sysman handle for the VF component.
+        zes_vf_exp2_capabilities_t* pCapability         ///< [in,out] Will contain VF capability.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnGetVFCapabilitiesExp2 = context.zesDdiTable.VFManagementExp.pfnGetVFCapabilitiesExp2;
+        if( nullptr != pfnGetVFCapabilitiesExp2 )
+        {
+            result = pfnGetVFCapabilitiesExp2( hVFhandle, pCapability );
+        }
+        else
+        {
+            // generic implementation
+        }
+
+        return result;
+    }
+
 } // namespace driver
 
 #if defined(__cplusplus)
@@ -4980,6 +5004,8 @@ zesGetVFManagementExpProcAddrTable(
     pDdiTable->pfnGetVFMemoryUtilizationExp2             = driver::zesVFManagementGetVFMemoryUtilizationExp2;
 
     pDdiTable->pfnGetVFEngineUtilizationExp2             = driver::zesVFManagementGetVFEngineUtilizationExp2;
+
+    pDdiTable->pfnGetVFCapabilitiesExp2                  = driver::zesVFManagementGetVFCapabilitiesExp2;
 
     pDdiTable->pfnGetVFPropertiesExp                     = driver::zesVFManagementGetVFPropertiesExp;
 
