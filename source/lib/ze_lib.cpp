@@ -22,7 +22,9 @@ namespace ze_lib
 
     ///////////////////////////////////////////////////////////////////////////////
     context_t::context_t()
-    {};
+    {
+        debugTraceEnabled = getenv_tobool( "ZE_ENABLE_LOADER_DEBUG_TRACE" );
+    };
 
     ///////////////////////////////////////////////////////////////////////////////
     context_t::~context_t()
@@ -34,12 +36,6 @@ namespace ze_lib
 #endif
         ze_lib::destruction = true;
     };
-
-    //////////////////////////////////////////////////////////////////////////
-    void debug_trace_message(const std::string &message, const std::string &extra)
-    {
-        std::cerr << message << " " << extra << std::endl;
-    }
 
     //////////////////////////////////////////////////////////////////////////
     __zedlllocal ze_result_t context_t::Init(ze_init_flags_t flags, bool sysmanOnly, ze_init_driver_type_desc_t* desc)
@@ -55,8 +51,8 @@ namespace ze_lib
         loader = LOAD_DRIVER_LIBRARY(loaderFullLibraryPath.c_str());
 
         if( NULL == loader ) {
-            std::string message = "ze_lib Context Init() Loader Library Load Failed";
-            debug_trace_message(message, "");
+            std::string message = "ze_lib Context Init() Loader Library Load Failed with ";
+            debug_trace_message(message, to_string(ZE_RESULT_ERROR_UNINITIALIZED));
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
 
@@ -65,16 +61,16 @@ namespace ze_lib
                 GET_FUNCTION_PTR(loader, "zeLoaderInit") );
         result = loaderInit();
         if( ZE_RESULT_SUCCESS != result ) {
-            std::string message = "ze_lib Context Init() Loader Init Failed";
-            debug_trace_message(message, "");
+            std::string message = "ze_lib Context Init() Loader Init Failed with ";
+            debug_trace_message(message, to_string(result));
             return result;
         }
         typedef HMODULE (ZE_APICALL *getTracing_t)();
         auto getTracing = reinterpret_cast<getTracing_t>(
             GET_FUNCTION_PTR(loader, "zeLoaderGetTracingHandle") );
         if (getTracing == nullptr) {
-            std::string message = "ze_lib Context Init() zeLoaderGetTracingHandle missing";
-            debug_trace_message(message, "");
+            std::string message = "ze_lib Context Init() zeLoaderGetTracingHandle missing, returning ";
+            debug_trace_message(message, to_string(ZE_RESULT_ERROR_UNINITIALIZED));
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         tracing_lib = getTracing();
@@ -82,8 +78,8 @@ namespace ze_lib
         auto loaderTracingLayerInit = reinterpret_cast<zelLoaderTracingLayerInit_t>(
                 GET_FUNCTION_PTR(loader, "zelLoaderTracingLayerInit") );
         if (loaderTracingLayerInit == nullptr) {
-            std::string message = "ze_lib Context Init() zelLoaderTracingLayerInit missing";
-            debug_trace_message(message, "");
+            std::string message = "ze_lib Context Init() zelLoaderTracingLayerInit missing, returning ";
+            debug_trace_message(message, to_string(ZE_RESULT_ERROR_UNINITIALIZED));
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         typedef loader::context_t * (ZE_APICALL *zelLoaderGetContext_t)();
@@ -97,16 +93,16 @@ namespace ze_lib
         size_t size = 0;
         result = zelLoaderGetVersions(&size, nullptr);
         if (ZE_RESULT_SUCCESS != result) {
-            std::string message = "ze_lib Context Init() zelLoaderGetVersions Failed";
-            debug_trace_message(message, "");
+            std::string message = "ze_lib Context Init() zelLoaderGetVersions Failed with";
+            debug_trace_message(message, to_string(result));
             return result;
         }
 
         std::vector<zel_component_version_t> versions(size);
         result = zelLoaderGetVersions(&size, versions.data());
         if (ZE_RESULT_SUCCESS != result) {
-            std::string message = "ze_lib Context Init() zelLoaderGetVersions Failed to read component versions";
-            debug_trace_message(message, "");
+            std::string message = "ze_lib Context Init() zelLoaderGetVersions Failed to read component versions with ";
+            debug_trace_message(message, to_string(result));
             return result;
         }
         bool zeInitDriversSupport = true;
@@ -121,12 +117,14 @@ namespace ze_lib
                         zeInitDriversSupport = false;
                     }
                 } else {
-                    std::string message = "ze_lib Context Init() Loader version is too new";
-                    debug_trace_message(message, "");
+                    std::string message = "ze_lib Context Init() Loader version is too new, returning ";
+                    debug_trace_message(message, to_string(ZE_RESULT_ERROR_UNSUPPORTED_VERSION));
                     return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
                 }
             }
         }
+        std::string version_message = "Loader API Version to be requested is v" + std::to_string(ZE_MAJOR_VERSION(version)) + "." + std::to_string(ZE_MINOR_VERSION(version));
+        debug_trace_message(version_message, "");
 #else
         result = zeLoaderInit();
         if( ZE_RESULT_SUCCESS == result ) {
@@ -162,8 +160,8 @@ namespace ze_lib
         {
             result = zeDdiTableInit(version);
             if (result != ZE_RESULT_SUCCESS) {
-                std::string message = "ze_lib Context Init() zeDdiTableInit failed";
-                debug_trace_message(message, "");
+                std::string message = "ze_lib Context Init() zeDdiTableInit failed with ";
+                debug_trace_message(message, to_string(result));
             }
         }
         // Init the ZET DDI Tables
@@ -171,8 +169,8 @@ namespace ze_lib
         {
             result = zetDdiTableInit(version);
             if( ZE_RESULT_SUCCESS != result ) {
-                std::string message = "ze_lib Context Init() zetDdiTableInit failed";
-                debug_trace_message(message, "");
+                std::string message = "ze_lib Context Init() zetDdiTableInit failed with ";
+                debug_trace_message(message, to_string(result));
             }
         }
         // Init the ZES DDI Tables
@@ -180,8 +178,8 @@ namespace ze_lib
         {
             result = zesDdiTableInit(version);
             if (result != ZE_RESULT_SUCCESS) {
-                std::string message = "ze_lib Context Init() zesDdiTableInit failed";
-                debug_trace_message(message, "");
+                std::string message = "ze_lib Context Init() zesDdiTableInit failed with ";
+                debug_trace_message(message, to_string(result));
             }
         }
         // Init the Tracing API DDI Tables
@@ -189,8 +187,8 @@ namespace ze_lib
         {
             result = zelTracingDdiTableInit(version);
             if (result != ZE_RESULT_SUCCESS) {
-                std::string message = "ze_lib Context Init() zelTracingDdiTableInit failed";
-                debug_trace_message(message, "");
+                std::string message = "ze_lib Context Init() zelTracingDdiTableInit failed with ";
+                debug_trace_message(message, to_string(result));
             }
         }
         // Init the stored ddi tables for the tracing layer
@@ -216,8 +214,8 @@ namespace ze_lib
                 auto loaderDriverCheck = reinterpret_cast<zelLoaderDriverCheck_t>(
                         GET_FUNCTION_PTR(loader, "zelLoaderDriverCheck") );
                 if (loaderDriverCheck == nullptr) {
-                    std::string message = "ze_lib Context Init() zelLoaderDriverCheck missing";
-                    debug_trace_message(message, "");
+                    std::string message = "ze_lib Context Init() zelLoaderDriverCheck missing, returning ";
+                    debug_trace_message(message, to_string(ZE_RESULT_ERROR_UNINITIALIZED));
                     return ZE_RESULT_ERROR_UNINITIALIZED;
                 }
                 result = loaderDriverCheck(flags, desc, &ze_lib::context->initialzeDdiTable.Global, &ze_lib::context->initialzesDdiTable.Global, &requireDdiReinit, sysmanOnly);
@@ -226,8 +224,8 @@ namespace ze_lib
                 auto loaderDriverCheck = reinterpret_cast<zelLoaderDriverCheck_t>(
                         GET_FUNCTION_PTR(loader, "zelLoaderDriverCheck") );
                 if (loaderDriverCheck == nullptr) {
-                    std::string message = "ze_lib Context Init() zelLoaderDriverCheck missing";
-                    debug_trace_message(message, "");
+                    std::string message = "ze_lib Context Init() zelLoaderDriverCheck missing, returning ";
+                    debug_trace_message(message, to_string(ZE_RESULT_ERROR_UNINITIALIZED));
                     return ZE_RESULT_ERROR_UNINITIALIZED;
                 }
                 result = loaderDriverCheck(flags, &ze_lib::context->initialzeDdiTable.Global, &ze_lib::context->initialzesDdiTable.Global, &requireDdiReinit, sysmanOnly);
@@ -236,8 +234,8 @@ namespace ze_lib
             result = zelLoaderDriverCheck(flags, desc, &ze_lib::context->initialzeDdiTable.Global, &ze_lib::context->initialzesDdiTable.Global, &requireDdiReinit, sysmanOnly);
             #endif
             if (result != ZE_RESULT_SUCCESS) {
-                std::string message = "ze_lib Context Init() zelLoaderDriverCheck failed";
-                debug_trace_message(message, "");
+                std::string message = "ze_lib Context Init() zelLoaderDriverCheck failed with ";
+                debug_trace_message(message, to_string(result));
             }
             // If a driver was removed from the driver list, then the ddi tables need to be reinit to allow for passthru directly to the driver.
             if (requireDdiReinit && loaderContextAccessAllowed) {

@@ -53,13 +53,22 @@ endif()
 include(FetchContent)
 
 if(BUILD_L0_LOADER_TESTS)
-	FetchContent_Declare(
-		googletest
-		URL https://github.com/google/googletest/archive/refs/tags/v1.14.0.zip
-	)
+    FetchContent_Declare(
+        googletest
+        GIT_REPOSITORY https://github.com/google/googletest.git
+        GIT_TAG        v1.14.0
+    )
+    add_library(GTest::GTest INTERFACE IMPORTED)
+    target_link_libraries(GTest::GTest INTERFACE gtest_main)
 
 	# For Windows: Prevent overriding the parent project's compiler/linker settings
-	set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+    if(MSVC)
+        if (BUILD_STATIC)
+            set(gtest_force_shared_crt OFF CACHE BOOL "" FORCE)
+        else()
+            set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+        endif()
+    endif()
 
 	FetchContent_MakeAvailable(googletest)
 
