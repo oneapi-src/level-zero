@@ -38,12 +38,11 @@ eventsChecker::~eventsChecker() {
 }
 
 ze_result_t eventsChecker::ZEeventsChecker::zeEventCreateEpilogue(
-    ze_event_pool_handle_t hEventPool,  ///< [in] handle of the event pool
-    const ze_event_desc_t *desc,        ///< [in] pointer to event descriptor
-    ze_event_handle_t *phEvent,         ///< [out] pointer to handle of event object created
-    ze_result_t result
-) {
-    if(result != ZE_RESULT_SUCCESS) {
+    ze_event_pool_handle_t hEventPool, ///< [in] handle of the event pool
+    const ze_event_desc_t *desc,       ///< [in] pointer to event descriptor
+    ze_event_handle_t *phEvent,        ///< [out] pointer to handle of event object created
+    ze_result_t result) {
+    if (result != ZE_RESULT_SUCCESS) {
         return ZE_RESULT_SUCCESS;
     }
     eventToDagID[*phEvent] = invalidDagID;
@@ -54,9 +53,8 @@ ze_result_t eventsChecker::ZEeventsChecker::zeEventCreateEpilogue(
 ze_result_t
 eventsChecker::ZEeventsChecker::zeEventDestroyEpilogue(
     ze_event_handle_t hEvent, ///< [in][release] handle of event object to destroy
-    ze_result_t result
-) {
-    if(result != ZE_RESULT_SUCCESS) {
+    ze_result_t result) {
+    if (result != ZE_RESULT_SUCCESS) {
         return ZE_RESULT_SUCCESS;
     }
 
@@ -559,7 +557,10 @@ void eventsChecker::ZEeventsChecker::checkForDeadlock(
     // Form the dependency in the DAG
     for (uint32_t i = 0; i < numWaitEvents; i++) {
         auto it = eventToDagID.find(phWaitEvents[i]);
-
+        if (it == eventToDagID.end()) {
+            std::cerr << "Warning: phWaitEvents {" << phWaitEvents[i] << "} might be an invalid event in call to " << zeCallDisc << std::endl;
+            return;
+        }
         uint32_t dagID = it->second;
         if (dagID == invalidDagID) {
             // Create a new node in the DAG for this wait event. That action will be created some time in the future.
