@@ -56,7 +56,10 @@ class OrderedSet {
   // set.
   void Erase(T value) {
     auto it = value_to_index_.find(value);
-    assert(it != value_to_index_.end());
+    if (it == value_to_index_.end()) {
+      std::cerr << "Value not found in OrderedSet" << std::endl;
+      exit(0);
+    }
 
     auto index = it->second;
     // Since we don't want to move values around in `value_sequence_` we swap
