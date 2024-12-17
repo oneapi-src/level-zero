@@ -38,12 +38,12 @@ eventsChecker::~eventsChecker() {
 }
 
 ze_result_t eventsChecker::ZEeventsChecker::zeEventCreateEpilogue(
-    ze_event_pool_handle_t hEventPool, ///< [in] handle of the event pool
-    const ze_event_desc_t *desc,       ///< [in] pointer to event descriptor
-    ze_event_handle_t *phEvent,        ///< [out] pointer to handle of event object created
+    ze_event_pool_handle_t hEventPool,  ///< [in] handle of the event pool
+    const ze_event_desc_t *desc,        ///< [in] pointer to event descriptor
+    ze_event_handle_t *phEvent,         ///< [out] pointer to handle of event object created
     ze_result_t result
 ) {
-    if (result != ZE_RESULT_SUCCESS) {
+    if(result != ZE_RESULT_SUCCESS) {
         return ZE_RESULT_SUCCESS;
     }
     eventToDagID[*phEvent] = invalidDagID;
@@ -56,7 +56,7 @@ eventsChecker::ZEeventsChecker::zeEventDestroyEpilogue(
     ze_event_handle_t hEvent, ///< [in][release] handle of event object to destroy
     ze_result_t result
 ) {
-    if (result != ZE_RESULT_SUCCESS) {
+    if(result != ZE_RESULT_SUCCESS) {
         return ZE_RESULT_SUCCESS;
     }
 
