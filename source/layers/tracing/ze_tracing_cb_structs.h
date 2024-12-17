@@ -79,6 +79,8 @@ typedef struct _zel_device_callbacks_t
     ze_pfnDeviceCanAccessPeerCb_t                                   pfnCanAccessPeerCb;
     ze_pfnDeviceGetStatusCb_t                                       pfnGetStatusCb;
     ze_pfnDeviceGetGlobalTimestampsCb_t                             pfnGetGlobalTimestampsCb;
+    ze_pfnDeviceImportExternalSemaphoreExtCb_t                      pfnImportExternalSemaphoreExtCb;
+    ze_pfnDeviceReleaseExternalSemaphoreExtCb_t                     pfnReleaseExternalSemaphoreExtCb;
     ze_pfnDeviceReserveCacheExtCb_t                                 pfnReserveCacheExtCb;
     ze_pfnDeviceSetCacheAdviceExtCb_t                               pfnSetCacheAdviceExtCb;
     ze_pfnDevicePciGetPropertiesExtCb_t                             pfnPciGetPropertiesExtCb;
@@ -145,6 +147,8 @@ typedef struct _zel_command_list_callbacks_t
     ze_pfnCommandListAppendLaunchMultipleKernelsIndirectCb_t        pfnAppendLaunchMultipleKernelsIndirectCb;
     ze_pfnCommandListGetNextCommandIdWithKernelsExpCb_t             pfnGetNextCommandIdWithKernelsExpCb;
     ze_pfnCommandListUpdateMutableCommandKernelsExpCb_t             pfnUpdateMutableCommandKernelsExpCb;
+    ze_pfnCommandListAppendSignalExternalSemaphoreExtCb_t           pfnAppendSignalExternalSemaphoreExtCb;
+    ze_pfnCommandListAppendWaitExternalSemaphoreExtCb_t             pfnAppendWaitExternalSemaphoreExtCb;
     ze_pfnCommandListAppendImageCopyToMemoryExtCb_t                 pfnAppendImageCopyToMemoryExtCb;
     ze_pfnCommandListAppendImageCopyFromMemoryExtCb_t               pfnAppendImageCopyFromMemoryExtCb;
     ze_pfnCommandListHostSynchronizeCb_t                            pfnHostSynchronizeCb;

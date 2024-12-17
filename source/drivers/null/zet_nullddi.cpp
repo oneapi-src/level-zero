@@ -1360,7 +1360,7 @@ namespace driver
         zet_metric_handle_t* phMetrics,                 ///< [in] [range(0, metricsCount)] array of handles of decodable metrics in
                                                         ///< the decoder for which the hMetricDecoder handle was 
                                                         ///< provided. Metrics handles are expected to be for decodable metrics,
-                                                        ///< see ::zetMetricDecoderGetDecodableMetrics() 
+                                                        ///< see ::zetMetricDecoderGetDecodableMetricsExp() 
         uint32_t* pSetCount,                            ///< [in,out] pointer to number of metric sets. If count is zero, then the
                                                         ///< driver shall update the value with the total
                                                         ///< number of metric sets to be decoded. If count is greater than the
@@ -1764,7 +1764,7 @@ namespace driver
         zet_metric_handle_t * phMetrics,                ///< [in] metric handles to be added to the metric groups.
         const char * pMetricGroupNamePrefix,            ///< [in] prefix to the name created for the metric groups. Must point to a
                                                         ///< null-terminated character array no longer than
-                                                        ///< ZEX_MAX_METRIC_GROUP_NAME_PREFIX.
+                                                        ///< ::ZET_MAX_METRIC_GROUP_NAME_PREFIX_EXP.
         const char * pDescription,                      ///< [in] pointer to description of the metric groups. Must point to a
                                                         ///< null-terminated character array no longer than
                                                         ///< ::ZET_MAX_METRIC_GROUP_DESCRIPTION.
