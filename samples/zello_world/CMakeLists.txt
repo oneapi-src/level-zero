@@ -12,7 +12,7 @@ if(MSVC)
     )
 endif()
 
-target_link_libraries(${TARGET_NAME}
+target_link_libraries(${TARGET_NAME} PRIVATE
     ${TARGET_LOADER_NAME}
     ${CMAKE_DL_LIBS}
 )
