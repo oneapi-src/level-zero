@@ -559,7 +559,10 @@ void eventsChecker::ZEeventsChecker::checkForDeadlock(
     // Form the dependency in the DAG
     for (uint32_t i = 0; i < numWaitEvents; i++) {
         auto it = eventToDagID.find(phWaitEvents[i]);
-
+        if (it == eventToDagID.end()) {
+            std::cerr << "Warning: phWaitEvents {" << phWaitEvents[i] << "} might be an invalid event in call to " << zeCallDisc << std::endl;
+            return;
+        }
         uint32_t dagID = it->second;
         if (dagID == invalidDagID) {
             // Create a new node in the DAG for this wait event. That action will be created some time in the future.
