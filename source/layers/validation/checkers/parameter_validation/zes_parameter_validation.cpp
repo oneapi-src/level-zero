@@ -2873,4 +2873,20 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
 
+
+    ze_result_t
+    ZESParameterValidation::zesVFManagementGetVFCapabilitiesExp2Prologue(
+        zes_vf_handle_t hVFhandle,                      ///< [in] Sysman handle for the VF component.
+        zes_vf_exp2_capabilities_t* pCapability         ///< [in,out] Will contain VF capability.
+        )
+    {
+        if( nullptr == hVFhandle )
+            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+        if( nullptr == pCapability )
+            return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+        return ParameterValidation::validateExtensions(pCapability);
+    }
+
 }
