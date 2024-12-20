@@ -10,7 +10,7 @@
 
 namespace loader
 {
-
+#ifndef DYNAMIC_LOAD_LOADER
     void __attribute__((constructor)) createLoaderContext() {
         context = new context_t;
     }
@@ -18,5 +18,5 @@ namespace loader
     void __attribute__((destructor)) deleteLoaderContext() {
         delete context;
     }
-
+#endif
 }

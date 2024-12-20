@@ -16,7 +16,11 @@ target_link_libraries(
 # For some reason the MSVC runtime libraries used by googletest and test
 # binaries don't match, so force the test binary to use the dynamic runtime.
 if(MSVC)
+  if (BUILD_STATIC)
+    target_compile_options(tests PRIVATE "/MT$<$<CONFIG:Debug>:d>")
+  else()
     target_compile_options(tests PRIVATE "/MD$<$<CONFIG:Debug>:d>")
+  endif()
 endif()
 
 add_test(NAME tests_api COMMAND tests --gtest_filter=*GivenLevelZeroLoaderPresentWhenCallingzeGetLoaderVersionsAPIThenValidVersionIsReturned*)
