@@ -11,7 +11,7 @@ This project is part of the larger [oneAPI](https://www.oneapi.com/) project.
 
 See the [oneAPI specification](https://spec.oneapi.com/versions/latest/introduction.html) for more information about the oneAPI project.
 
-See the [Level Zero specification](https://spec.oneapi.io/level-zero/latest/index.html) for more information about Level Zero.
+See the [Level Zero specification](https://oneapi-src.github.io/level-zero-spec/level-zero/latest/index.html) for more information about Level Zero.
 
 See the [Level Zero specification repo](https://github.com/oneapi-src/level-zero-spec) for contributing to the specification.
 

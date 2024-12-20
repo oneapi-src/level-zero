@@ -4,7 +4,7 @@ We encourage anyone who wants to contribute to submit
 [Issues](https://github.com/oneapi-src/level-zero/issues) and
 [Pull Requests](https://github.com/oneapi-src/level-zero/pulls). We will help
 review these for proper alignment with the
-[Level Zero Specification](https://spec.oneapi.com/level-zero/latest/index.html).
+[Level Zero Specification](https://oneapi-src.github.io/level-zero-spec/level-zero/latest/index.html).
 
 ## C++ Coding Standards
 
