@@ -60,6 +60,7 @@ namespace loader
         ze_physical_mem_factory_t           ze_physical_mem_factory;
         ze_fabric_vertex_factory_t          ze_fabric_vertex_factory;
         ze_fabric_edge_factory_t            ze_fabric_edge_factory;
+        ze_external_semaphore_ext_factory_t ze_external_semaphore_ext_factory;
         ze_rtas_builder_exp_factory_t       ze_rtas_builder_exp_factory;
         ze_rtas_parallel_operation_exp_factory_t    ze_rtas_parallel_operation_exp_factory;
         ///////////////////////////////////////////////////////////////////////////////
