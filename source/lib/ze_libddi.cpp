@@ -30,18 +30,16 @@ namespace ze_lib
 
         if( ZE_RESULT_SUCCESS == result )
         {
-            // Optional
             auto getTable = reinterpret_cast<ze_pfnGetRTASBuilderExpProcAddrTable_t>(
                 GET_FUNCTION_PTR(loader, "zeGetRTASBuilderExpProcAddrTable") );
-            getTable( ZE_API_VERSION_CURRENT, &initialzeDdiTable.RTASBuilderExp );
+            result = getTable( ZE_API_VERSION_CURRENT, &initialzeDdiTable.RTASBuilderExp );
         }
 
         if( ZE_RESULT_SUCCESS == result )
         {
-            // Optional
             auto getTable = reinterpret_cast<ze_pfnGetRTASParallelOperationExpProcAddrTable_t>(
                 GET_FUNCTION_PTR(loader, "zeGetRTASParallelOperationExpProcAddrTable") );
-            getTable( ZE_API_VERSION_CURRENT, &initialzeDdiTable.RTASParallelOperationExp );
+            result = getTable( ZE_API_VERSION_CURRENT, &initialzeDdiTable.RTASParallelOperationExp );
         }
 
         if( ZE_RESULT_SUCCESS == result )
@@ -53,10 +51,9 @@ namespace ze_lib
 
         if( ZE_RESULT_SUCCESS == result )
         {
-            // Optional
             auto getTable = reinterpret_cast<ze_pfnGetDriverExpProcAddrTable_t>(
                 GET_FUNCTION_PTR(loader, "zeGetDriverExpProcAddrTable") );
-            getTable( ZE_API_VERSION_CURRENT, &initialzeDdiTable.DriverExp );
+            result = getTable( ZE_API_VERSION_CURRENT, &initialzeDdiTable.DriverExp );
         }
 
         if( ZE_RESULT_SUCCESS == result )
@@ -68,10 +65,9 @@ namespace ze_lib
 
         if( ZE_RESULT_SUCCESS == result )
         {
-            // Optional
             auto getTable = reinterpret_cast<ze_pfnGetDeviceExpProcAddrTable_t>(
                 GET_FUNCTION_PTR(loader, "zeGetDeviceExpProcAddrTable") );
-            getTable( ZE_API_VERSION_CURRENT, &initialzeDdiTable.DeviceExp );
+            result = getTable( ZE_API_VERSION_CURRENT, &initialzeDdiTable.DeviceExp );
         }
 
         if( ZE_RESULT_SUCCESS == result )
@@ -97,10 +93,9 @@ namespace ze_lib
 
         if( ZE_RESULT_SUCCESS == result )
         {
-            // Optional
             auto getTable = reinterpret_cast<ze_pfnGetCommandListExpProcAddrTable_t>(
                 GET_FUNCTION_PTR(loader, "zeGetCommandListExpProcAddrTable") );
-            getTable( ZE_API_VERSION_CURRENT, &initialzeDdiTable.CommandListExp );
+            result = getTable( ZE_API_VERSION_CURRENT, &initialzeDdiTable.CommandListExp );
         }
 
         if( ZE_RESULT_SUCCESS == result )
@@ -112,10 +107,9 @@ namespace ze_lib
 
         if( ZE_RESULT_SUCCESS == result )
         {
-            // Optional
             auto getTable = reinterpret_cast<ze_pfnGetEventExpProcAddrTable_t>(
                 GET_FUNCTION_PTR(loader, "zeGetEventExpProcAddrTable") );
-            getTable( ZE_API_VERSION_CURRENT, &initialzeDdiTable.EventExp );
+            result = getTable( ZE_API_VERSION_CURRENT, &initialzeDdiTable.EventExp );
         }
 
         if( ZE_RESULT_SUCCESS == result )
@@ -141,10 +135,9 @@ namespace ze_lib
 
         if( ZE_RESULT_SUCCESS == result )
         {
-            // Optional
             auto getTable = reinterpret_cast<ze_pfnGetImageExpProcAddrTable_t>(
                 GET_FUNCTION_PTR(loader, "zeGetImageExpProcAddrTable") );
-            getTable( ZE_API_VERSION_CURRENT, &initialzeDdiTable.ImageExp );
+            result = getTable( ZE_API_VERSION_CURRENT, &initialzeDdiTable.ImageExp );
         }
 
         if( ZE_RESULT_SUCCESS == result )
@@ -156,10 +149,9 @@ namespace ze_lib
 
         if( ZE_RESULT_SUCCESS == result )
         {
-            // Optional
             auto getTable = reinterpret_cast<ze_pfnGetKernelExpProcAddrTable_t>(
                 GET_FUNCTION_PTR(loader, "zeGetKernelExpProcAddrTable") );
-            getTable( ZE_API_VERSION_CURRENT, &initialzeDdiTable.KernelExp );
+            result = getTable( ZE_API_VERSION_CURRENT, &initialzeDdiTable.KernelExp );
         }
 
         if( ZE_RESULT_SUCCESS == result )
@@ -171,10 +163,9 @@ namespace ze_lib
 
         if( ZE_RESULT_SUCCESS == result )
         {
-            // Optional
             auto getTable = reinterpret_cast<ze_pfnGetMemExpProcAddrTable_t>(
                 GET_FUNCTION_PTR(loader, "zeGetMemExpProcAddrTable") );
-            getTable( ZE_API_VERSION_CURRENT, &initialzeDdiTable.MemExp );
+            result = getTable( ZE_API_VERSION_CURRENT, &initialzeDdiTable.MemExp );
         }
 
         if( ZE_RESULT_SUCCESS == result )
@@ -214,18 +205,16 @@ namespace ze_lib
 
         if( ZE_RESULT_SUCCESS == result )
         {
-            // Optional
             auto getTable = reinterpret_cast<ze_pfnGetFabricEdgeExpProcAddrTable_t>(
                 GET_FUNCTION_PTR(loader, "zeGetFabricEdgeExpProcAddrTable") );
-            getTable( ZE_API_VERSION_CURRENT, &initialzeDdiTable.FabricEdgeExp );
+            result = getTable( ZE_API_VERSION_CURRENT, &initialzeDdiTable.FabricEdgeExp );
         }
 
         if( ZE_RESULT_SUCCESS == result )
         {
-            // Optional
             auto getTable = reinterpret_cast<ze_pfnGetFabricVertexExpProcAddrTable_t>(
                 GET_FUNCTION_PTR(loader, "zeGetFabricVertexExpProcAddrTable") );
-            getTable( ZE_API_VERSION_CURRENT, &initialzeDdiTable.FabricVertexExp );
+            result = getTable( ZE_API_VERSION_CURRENT, &initialzeDdiTable.FabricVertexExp );
         }
 
         return result;
@@ -242,14 +231,12 @@ namespace ze_lib
 
         if( ZE_RESULT_SUCCESS == result )
         {
-            // Optional
-            zeGetRTASBuilderExpProcAddrTable( ZE_API_VERSION_CURRENT, &initialzeDdiTable.RTASBuilderExp );
+            result = zeGetRTASBuilderExpProcAddrTable( ZE_API_VERSION_CURRENT, &initialzeDdiTable.RTASBuilderExp );
         }
 
         if( ZE_RESULT_SUCCESS == result )
         {
-            // Optional
-            zeGetRTASParallelOperationExpProcAddrTable( ZE_API_VERSION_CURRENT, &initialzeDdiTable.RTASParallelOperationExp );
+            result = zeGetRTASParallelOperationExpProcAddrTable( ZE_API_VERSION_CURRENT, &initialzeDdiTable.RTASParallelOperationExp );
         }
 
         if( ZE_RESULT_SUCCESS == result )
@@ -259,8 +246,7 @@ namespace ze_lib
 
         if( ZE_RESULT_SUCCESS == result )
         {
-            // Optional
-            zeGetDriverExpProcAddrTable( ZE_API_VERSION_CURRENT, &initialzeDdiTable.DriverExp );
+            result = zeGetDriverExpProcAddrTable( ZE_API_VERSION_CURRENT, &initialzeDdiTable.DriverExp );
         }
 
         if( ZE_RESULT_SUCCESS == result )
@@ -270,8 +256,7 @@ namespace ze_lib
 
         if( ZE_RESULT_SUCCESS == result )
         {
-            // Optional
-            zeGetDeviceExpProcAddrTable( ZE_API_VERSION_CURRENT, &initialzeDdiTable.DeviceExp );
+            result = zeGetDeviceExpProcAddrTable( ZE_API_VERSION_CURRENT, &initialzeDdiTable.DeviceExp );
         }
 
         if( ZE_RESULT_SUCCESS == result )
@@ -291,8 +276,7 @@ namespace ze_lib
 
         if( ZE_RESULT_SUCCESS == result )
         {
-            // Optional
-            zeGetCommandListExpProcAddrTable( ZE_API_VERSION_CURRENT, &initialzeDdiTable.CommandListExp );
+            result = zeGetCommandListExpProcAddrTable( ZE_API_VERSION_CURRENT, &initialzeDdiTable.CommandListExp );
         }
 
         if( ZE_RESULT_SUCCESS == result )
@@ -302,8 +286,7 @@ namespace ze_lib
 
         if( ZE_RESULT_SUCCESS == result )
         {
-            // Optional
-            zeGetEventExpProcAddrTable( ZE_API_VERSION_CURRENT, &initialzeDdiTable.EventExp );
+            result = zeGetEventExpProcAddrTable( ZE_API_VERSION_CURRENT, &initialzeDdiTable.EventExp );
         }
 
         if( ZE_RESULT_SUCCESS == result )
@@ -323,8 +306,7 @@ namespace ze_lib
 
         if( ZE_RESULT_SUCCESS == result )
         {
-            // Optional
-            zeGetImageExpProcAddrTable( ZE_API_VERSION_CURRENT, &initialzeDdiTable.ImageExp );
+            result = zeGetImageExpProcAddrTable( ZE_API_VERSION_CURRENT, &initialzeDdiTable.ImageExp );
         }
 
         if( ZE_RESULT_SUCCESS == result )
@@ -334,8 +316,7 @@ namespace ze_lib
 
         if( ZE_RESULT_SUCCESS == result )
         {
-            // Optional
-            zeGetKernelExpProcAddrTable( ZE_API_VERSION_CURRENT, &initialzeDdiTable.KernelExp );
+            result = zeGetKernelExpProcAddrTable( ZE_API_VERSION_CURRENT, &initialzeDdiTable.KernelExp );
         }
 
         if( ZE_RESULT_SUCCESS == result )
@@ -345,8 +326,7 @@ namespace ze_lib
 
         if( ZE_RESULT_SUCCESS == result )
         {
-            // Optional
-            zeGetMemExpProcAddrTable( ZE_API_VERSION_CURRENT, &initialzeDdiTable.MemExp );
+            result = zeGetMemExpProcAddrTable( ZE_API_VERSION_CURRENT, &initialzeDdiTable.MemExp );
         }
 
         if( ZE_RESULT_SUCCESS == result )
@@ -376,14 +356,12 @@ namespace ze_lib
 
         if( ZE_RESULT_SUCCESS == result )
         {
-            // Optional
-            zeGetFabricEdgeExpProcAddrTable( ZE_API_VERSION_CURRENT, &initialzeDdiTable.FabricEdgeExp );
+            result = zeGetFabricEdgeExpProcAddrTable( ZE_API_VERSION_CURRENT, &initialzeDdiTable.FabricEdgeExp );
         }
 
         if( ZE_RESULT_SUCCESS == result )
         {
-            // Optional
-            zeGetFabricVertexExpProcAddrTable( ZE_API_VERSION_CURRENT, &initialzeDdiTable.FabricVertexExp );
+            result = zeGetFabricVertexExpProcAddrTable( ZE_API_VERSION_CURRENT, &initialzeDdiTable.FabricVertexExp );
         }
 
         return result;

@@ -4,7 +4,7 @@
  SPDX-License-Identifier: MIT
 
  @file zes.py
- @version v1.11-r1.11.8
+ @version v1.12-r1.12.11
 
  """
 import platform
@@ -168,6 +168,7 @@ class zes_structure_type_v(IntEnum):
     VF_EXP_CAPABILITIES = 0x00020008                                        ## ::zes_vf_exp_capabilities_t
     VF_UTIL_MEM_EXP2 = 0x00020009                                           ## ::zes_vf_util_mem_exp2_t
     VF_UTIL_ENGINE_EXP2 = 0x00020010                                        ## ::zes_vf_util_engine_exp2_t
+    VF_EXP2_CAPABILITIES = 0x00020011                                       ## ::zes_vf_exp2_capabilities_t
 
 class zes_structure_type_t(c_int):
     def __str__(self):
@@ -2508,14 +2509,26 @@ class zes_vf_util_engine_exp_t(Structure):
     ]
 
 ###############################################################################
-## @brief Virtual function management capabilities
+## @brief Virtual function management capabilities (deprecated)
 class zes_vf_exp_capabilities_t(Structure):
     _fields_ = [
         ("stype", zes_structure_type_t),                                ## [in] type of this structure
         ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
                                                                         ## structure (i.e. contains stype and pNext).
         ("address", zes_pci_address_t),                                 ## [out] Virtual function BDF address
-        ("vfDeviceMemSize", c_ulong),                                   ## [out] Virtual function memory size in bytes
+        ("vfDeviceMemSize", c_ulong),                                   ## [out] Virtual function memory size in kilo bytes
+        ("vfID", c_ulong)                                               ## [out] Virtual Function ID
+    ]
+
+###############################################################################
+## @brief Virtual function management capabilities
+class zes_vf_exp2_capabilities_t(Structure):
+    _fields_ = [
+        ("stype", zes_structure_type_t),                                ## [in] type of this structure
+        ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains stype and pNext).
+        ("address", zes_pci_address_t),                                 ## [out] Virtual function BDF address
+        ("vfDeviceMemSize", c_ulonglong),                               ## [out] Virtual function memory size in bytes
         ("vfID", c_ulong)                                               ## [out] Virtual Function ID
     ]
 
@@ -2527,7 +2540,7 @@ class zes_vf_util_mem_exp2_t(Structure):
         ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
                                                                         ## structure (i.e. contains stype and pNext).
         ("vfMemLocation", zes_mem_loc_t),                               ## [out] Location of this memory (system, device)
-        ("vfMemUtilized", c_ulonglong)                                  ## [out] Free memory size in bytes.
+        ("vfMemUtilized", c_ulonglong)                                  ## [out] Utilized memory size in bytes.
     ]
 
 ###############################################################################
@@ -3889,6 +3902,13 @@ if __use_win_types:
 else:
     _zesVFManagementGetVFEngineUtilizationExp2_t = CFUNCTYPE( ze_result_t, zes_vf_handle_t, POINTER(c_ulong), POINTER(zes_vf_util_engine_exp2_t) )
 
+###############################################################################
+## @brief Function-pointer for zesVFManagementGetVFCapabilitiesExp2
+if __use_win_types:
+    _zesVFManagementGetVFCapabilitiesExp2_t = WINFUNCTYPE( ze_result_t, zes_vf_handle_t, POINTER(zes_vf_exp2_capabilities_t) )
+else:
+    _zesVFManagementGetVFCapabilitiesExp2_t = CFUNCTYPE( ze_result_t, zes_vf_handle_t, POINTER(zes_vf_exp2_capabilities_t) )
+
 
 ###############################################################################
 ## @brief Table of VFManagementExp functions pointers
@@ -3901,7 +3921,8 @@ class _zes_vf_management_exp_dditable_t(Structure):
         ("pfnSetVFTelemetrySamplingIntervalExp", c_void_p),             ## _zesVFManagementSetVFTelemetrySamplingIntervalExp_t
         ("pfnGetVFCapabilitiesExp", c_void_p),                          ## _zesVFManagementGetVFCapabilitiesExp_t
         ("pfnGetVFMemoryUtilizationExp2", c_void_p),                    ## _zesVFManagementGetVFMemoryUtilizationExp2_t
-        ("pfnGetVFEngineUtilizationExp2", c_void_p)                     ## _zesVFManagementGetVFEngineUtilizationExp2_t
+        ("pfnGetVFEngineUtilizationExp2", c_void_p),                    ## _zesVFManagementGetVFEngineUtilizationExp2_t
+        ("pfnGetVFCapabilitiesExp2", c_void_p)                          ## _zesVFManagementGetVFCapabilitiesExp2_t
     ]
 
 ###############################################################################
@@ -4309,5 +4330,6 @@ class ZES_DDI:
         self.zesVFManagementGetVFCapabilitiesExp = _zesVFManagementGetVFCapabilitiesExp_t(self.__dditable.VFManagementExp.pfnGetVFCapabilitiesExp)
         self.zesVFManagementGetVFMemoryUtilizationExp2 = _zesVFManagementGetVFMemoryUtilizationExp2_t(self.__dditable.VFManagementExp.pfnGetVFMemoryUtilizationExp2)
         self.zesVFManagementGetVFEngineUtilizationExp2 = _zesVFManagementGetVFEngineUtilizationExp2_t(self.__dditable.VFManagementExp.pfnGetVFEngineUtilizationExp2)
+        self.zesVFManagementGetVFCapabilitiesExp2 = _zesVFManagementGetVFCapabilitiesExp2_t(self.__dditable.VFManagementExp.pfnGetVFCapabilitiesExp2)
 
         # success!
