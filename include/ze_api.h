@@ -5,7 +5,7 @@
  * SPDX-License-Identifier: MIT
  *
  * @file ze_api.h
- * @version v1.12-r1.12.0
+ * @version v1.12-r1.12.10
  *
  */
 #ifndef _ZE_API_H
@@ -7694,6 +7694,16 @@ typedef struct _ze_relaxed_allocation_limits_exp_desc_t
 /// @brief Get Kernel Binary Extension Name
 #define ZE_GET_KERNEL_BINARY_EXP_NAME  "ZE_extension_kernel_binary_exp"
 #endif // ZE_GET_KERNEL_BINARY_EXP_NAME
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Get Kernel Binary Extension Version(s)
+typedef enum _ze_kernel_get_binary_exp_version_t
+{
+    ZE_KERNEL_GET_BINARY_EXP_VERSION_1_0 = ZE_MAKE_VERSION( 1, 0 ),         ///< version 1.0
+    ZE_KERNEL_GET_BINARY_EXP_VERSION_CURRENT = ZE_MAKE_VERSION( 1, 0 ),     ///< latest known version
+    ZE_KERNEL_GET_BINARY_EXP_VERSION_FORCE_UINT32 = 0x7fffffff
+
+} ze_kernel_get_binary_exp_version_t;
 
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief Retrieves kernel binary program data (ISA GEN format).
