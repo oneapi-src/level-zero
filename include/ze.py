@@ -4,7 +4,7 @@
  SPDX-License-Identifier: MIT
 
  @file ze.py
- @version v1.12-r1.12.0
+ @version v1.12-r1.12.14
 
  """
 import platform
@@ -2120,6 +2120,17 @@ class ze_relaxed_allocation_limits_exp_desc_t(Structure):
 ###############################################################################
 ## @brief Get Kernel Binary Extension Name
 ZE_GET_KERNEL_BINARY_EXP_NAME = "ZE_extension_kernel_binary_exp"
+
+###############################################################################
+## @brief Get Kernel Binary Extension Version(s)
+class ze_kernel_get_binary_exp_version_v(IntEnum):
+    _1_0 = ZE_MAKE_VERSION( 1, 0 )                                          ## version 1.0
+    CURRENT = ZE_MAKE_VERSION( 1, 0 )                                       ## latest known version
+
+class ze_kernel_get_binary_exp_version_t(c_int):
+    def __str__(self):
+        return str(ze_kernel_get_binary_exp_version_v(self.value))
+
 
 ###############################################################################
 ## @brief Driver Direct Device Interface (DDI) Handles Extension Name
