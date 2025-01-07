@@ -36,7 +36,7 @@ inline void getLastErrorString(std::string &errorValue) {
 #  define GET_LIBRARY_ERROR(ERROR_STRING) getLastErrorString(ERROR_STRING)
 #  define FREE_DRIVER_LIBRARY(LIB)  FreeLibrary(LIB)
 #  define FREE_DRIVER_LIBRARY_FAILURE_CHECK(RESULT)  (RESULT) == 0 ? true : false
-#  define GET_FUNCTION_PTR(LIB, FUNC_NAME) GetProcAddress(LIB, FUNC_NAME)
+#  define GET_FUNCTION_PTR(LIB, FUNC_NAME) reinterpret_cast<void *>(GetProcAddress(LIB, FUNC_NAME))
 #  define string_copy_s strncpy_s
 #else
 #  include <link.h>
