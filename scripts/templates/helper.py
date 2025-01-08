@@ -1709,6 +1709,7 @@ Public:
 def get_class_function_objs_exp(specs, cname):
     objects = []
     exp_objects = []
+    optional = True
     for s in specs:
         for obj in s['objects']:
             is_function = obj_traits.is_function(obj)
@@ -1718,9 +1719,11 @@ def get_class_function_objs_exp(specs, cname):
                     exp_objects.append(obj)
                 else:
                     objects.append(obj)
+                if obj.get('version',"1.0") == "1.0":
+                    optional = False
     objects = sorted(objects, key=lambda obj: (float(obj.get('version',"1.0"))*10000) + int(obj.get('ordinal',"100")))
     exp_objects = sorted(exp_objects, key=lambda obj: (float(obj.get('version',"1.0"))*10000) + int(obj.get('ordinal',"100")))              
-    return objects, exp_objects
+    return objects, exp_objects, optional
 
 
 """
@@ -1752,7 +1755,7 @@ Public:
 def get_pfntables(specs, meta, namespace, tags):
     tables = []
     for cname in sorted(meta['class'], key=lambda x: meta['class'][x]['ordinal']):
-        objs, exp_objs = get_class_function_objs_exp(specs, cname)
+        objs, exp_objs, optional = get_class_function_objs_exp(specs, cname)
         if len(objs) > 0:
             name = get_table_name(namespace, tags, objs[0])
             table = "%s_%s_dditable_t"%(namespace, _camel_to_snake(name))
@@ -1781,7 +1784,8 @@ def get_pfntables(specs, meta, namespace, tags):
                 'export': export,
                 'pfn': pfn,
                 'functions': objs,
-                'experimental': False
+                'experimental': False,
+                'optional': optional
             })
         if len(exp_objs) > 0:
             name = get_table_name(namespace, tags, exp_objs[0])
@@ -1811,7 +1815,8 @@ def get_pfntables(specs, meta, namespace, tags):
                 'export': export,
                 'pfn': pfn,
                 'functions': exp_objs,
-                'experimental': True
+                'experimental': True,
+                'optional': True
             })
     return tables
 
