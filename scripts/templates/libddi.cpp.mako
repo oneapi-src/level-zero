@@ -33,9 +33,16 @@ namespace ${x}_lib
     %for tbl in th.get_pfntables(specs, meta, n, tags):
         if( ${X}_RESULT_SUCCESS == result )
         {
+    %if tbl['optional'] == True:
+            // Optional
+            auto getTable = reinterpret_cast<${tbl['pfn']}>(
+                GET_FUNCTION_PTR(loader, "${tbl['export']['name']}") );
+            getTable( ${X}_API_VERSION_CURRENT, &initial${n}DdiTable.${tbl['name']} );
+    %else:
             auto getTable = reinterpret_cast<${tbl['pfn']}>(
                 GET_FUNCTION_PTR(loader, "${tbl['export']['name']}") );
             result = getTable( ${X}_API_VERSION_CURRENT, &initial${n}DdiTable.${tbl['name']} );
+    %endif
         }
 
     %endfor
@@ -49,7 +56,12 @@ namespace ${x}_lib
     %for tbl in th.get_pfntables(specs, meta, n, tags):
         if( ${X}_RESULT_SUCCESS == result )
         {
+            %if tbl['optional'] == True:
+            // Optional
+            ${tbl['export']['name']}( ${X}_API_VERSION_CURRENT, &initial${n}DdiTable.${tbl['name']} );
+            %else:
             result = ${tbl['export']['name']}( ${X}_API_VERSION_CURRENT, &initial${n}DdiTable.${tbl['name']} );
+            %endif
         }
 
     %endfor
