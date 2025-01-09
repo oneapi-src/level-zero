@@ -1,7 +1,6 @@
-pc_path=${pcfiledir}
-includedir=${pc_path}/@ze_loader_include_dir@
-libdir=${pc_path}/@ze_loader_lib_dir@
-
+prefix=${pcfiledir}/@pkgconfig_prefix@
+includedir=${prefix}/@pkgconfig_include_dir@
+libdir=${prefix}/@pkgconfig_lib_dir@
 
 Name: Level Zero
 Description: Level Zero

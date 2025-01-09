@@ -49,18 +49,13 @@ install(TARGETS ze_loader
     NAMELINK_COMPONENT level-zero-devel
 )
 
-if(UNIX)
-    file(RELATIVE_PATH ze_loader_include_dir "${CMAKE_INSTALL_FULL_LIBDIR}/pkgconfig" "${CMAKE_INSTALL_FULL_INCLUDEDIR}")
-    file(RELATIVE_PATH ze_loader_lib_dir "${CMAKE_INSTALL_FULL_LIBDIR}/pkgconfig" "${CMAKE_INSTALL_FULL_LIBDIR}")
+file(RELATIVE_PATH pkgconfig_prefix "${CMAKE_INSTALL_FULL_LIBDIR}/pkgconfig" "${CMAKE_INSTALL_PREFIX}")
+file(RELATIVE_PATH pkgconfig_include_dir "${CMAKE_INSTALL_PREFIX}" "${CMAKE_INSTALL_FULL_INCLUDEDIR}")
+file(RELATIVE_PATH pkgconfig_lib_dir "${CMAKE_INSTALL_PREFIX}" "${CMAKE_INSTALL_FULL_LIBDIR}")
 
-    configure_file(
-        ${CMAKE_CURRENT_SOURCE_DIR}/libze_loader.pc.in
-        ${CMAKE_CURRENT_BINARY_DIR}/libze_loader.pc
-        @ONLY)
-    install(FILES "${CMAKE_CURRENT_BINARY_DIR}/libze_loader.pc" DESTINATION "${CMAKE_INSTALL_FULL_LIBDIR}/pkgconfig" COMPONENT level-zero-devel)
-    configure_file(
-        ${CMAKE_CURRENT_SOURCE_DIR}/level-zero.pc.in
-        ${CMAKE_CURRENT_BINARY_DIR}/level-zero.pc
-        @ONLY)
-    install(FILES "${CMAKE_CURRENT_BINARY_DIR}/level-zero.pc" DESTINATION "${CMAKE_INSTALL_FULL_LIBDIR}/pkgconfig" COMPONENT level-zero-devel)
-endif()
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/libze_loader.pc.in ${CMAKE_CURRENT_BINARY_DIR}/libze_loader.pc @ONLY)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/level-zero.pc.in ${CMAKE_CURRENT_BINARY_DIR}/level-zero.pc @ONLY)
+
+install(FILES "${CMAKE_CURRENT_BINARY_DIR}/libze_loader.pc"
+              "${CMAKE_CURRENT_BINARY_DIR}/level-zero.pc"
+        DESTINATION "${CMAKE_INSTALL_FULL_LIBDIR}/pkgconfig" COMPONENT level-zero-devel)
