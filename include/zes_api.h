@@ -5,7 +5,7 @@
  * SPDX-License-Identifier: MIT
  *
  * @file zes_api.h
- * @version v1.11-r1.11.8
+ * @version v1.12-r1.12.14
  *
  */
 #ifndef _ZES_API_H
@@ -161,6 +161,7 @@ typedef enum _zes_structure_type_t
     ZES_STRUCTURE_TYPE_VF_EXP_CAPABILITIES = 0x00020008,                    ///< ::zes_vf_exp_capabilities_t
     ZES_STRUCTURE_TYPE_VF_UTIL_MEM_EXP2 = 0x00020009,                       ///< ::zes_vf_util_mem_exp2_t
     ZES_STRUCTURE_TYPE_VF_UTIL_ENGINE_EXP2 = 0x00020010,                    ///< ::zes_vf_util_engine_exp2_t
+    ZES_STRUCTURE_TYPE_VF_EXP2_CAPABILITIES = 0x00020011,                   ///< ::zes_vf_exp2_capabilities_t
     ZES_STRUCTURE_TYPE_FORCE_UINT32 = 0x7fffffff
 
 } zes_structure_type_t;
@@ -554,6 +555,10 @@ typedef struct _zes_vf_util_engine_exp_t zes_vf_util_engine_exp_t;
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief Forward-declare zes_vf_exp_capabilities_t
 typedef struct _zes_vf_exp_capabilities_t zes_vf_exp_capabilities_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Forward-declare zes_vf_exp2_capabilities_t
+typedef struct _zes_vf_exp2_capabilities_t zes_vf_exp2_capabilities_t;
 
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief Forward-declare zes_vf_util_mem_exp2_t
@@ -7143,17 +7148,30 @@ typedef struct _zes_vf_util_engine_exp_t
 } zes_vf_util_engine_exp_t;
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Virtual function management capabilities
+/// @brief Virtual function management capabilities (deprecated)
 typedef struct _zes_vf_exp_capabilities_t
 {
     zes_structure_type_t stype;                                             ///< [in] type of this structure
     void* pNext;                                                            ///< [in,out][optional] must be null or a pointer to an extension-specific
                                                                             ///< structure (i.e. contains stype and pNext).
     zes_pci_address_t address;                                              ///< [out] Virtual function BDF address
-    uint32_t vfDeviceMemSize;                                               ///< [out] Virtual function memory size in bytes
+    uint32_t vfDeviceMemSize;                                               ///< [out] Virtual function memory size in kilo bytes
     uint32_t vfID;                                                          ///< [out] Virtual Function ID
 
 } zes_vf_exp_capabilities_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Virtual function management capabilities
+typedef struct _zes_vf_exp2_capabilities_t
+{
+    zes_structure_type_t stype;                                             ///< [in] type of this structure
+    void* pNext;                                                            ///< [in,out][optional] must be null or a pointer to an extension-specific
+                                                                            ///< structure (i.e. contains stype and pNext).
+    zes_pci_address_t address;                                              ///< [out] Virtual function BDF address
+    uint64_t vfDeviceMemSize;                                               ///< [out] Virtual function memory size in bytes
+    uint32_t vfID;                                                          ///< [out] Virtual Function ID
+
+} zes_vf_exp2_capabilities_t;
 
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief Provides memory utilization values for a virtual function
@@ -7163,7 +7181,7 @@ typedef struct _zes_vf_util_mem_exp2_t
     const void* pNext;                                                      ///< [in][optional] must be null or a pointer to an extension-specific
                                                                             ///< structure (i.e. contains stype and pNext).
     zes_mem_loc_t vfMemLocation;                                            ///< [out] Location of this memory (system, device)
-    uint64_t vfMemUtilized;                                                 ///< [out] Free memory size in bytes.
+    uint64_t vfMemUtilized;                                                 ///< [out] Utilized memory size in bytes.
 
 } zes_vf_util_mem_exp2_t;
 
@@ -7413,6 +7431,8 @@ zesDeviceEnumEnabledVFExp(
 /// @brief Get virtual function management capabilities
 /// 
 /// @details
+///     - [DEPRECATED] No longer supported. Use
+///       ::zesVFManagementGetVFCapabilitiesExp2.
 ///     - The application may call this function from simultaneous threads.
 ///     - The implementation of this function should be lock-free.
 /// 
@@ -7500,6 +7520,29 @@ zesVFManagementGetVFEngineUtilizationExp2(
                                                                             ///< then driver shall only retrieve that number of stats.
                                                                             ///<  - the implementation shall populate the vector pCount-1 number of VF
                                                                             ///< engine stats.
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Get virtual function management capabilities
+/// 
+/// @details
+///     - The application may call this function from simultaneous threads.
+///     - The implementation of this function should be lock-free.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hVFhandle`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == pCapability`
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zesVFManagementGetVFCapabilitiesExp2(
+    zes_vf_handle_t hVFhandle,                                              ///< [in] Sysman handle for the VF component.
+    zes_vf_exp2_capabilities_t* pCapability                                 ///< [in,out] Will contain VF capability.
     );
 
 #if !defined(__GNUC__)

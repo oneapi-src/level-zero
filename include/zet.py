@@ -4,7 +4,7 @@
  SPDX-License-Identifier: MIT
 
  @file zet.py
- @version v1.11-r1.11.8
+ @version v1.12-r1.12.14
 
  """
 import platform
@@ -674,7 +674,7 @@ class zet_metric_group_type_exp_flags_v(IntEnum):
     EXPORT_DMA_BUF = ZE_BIT(0)                                              ## Metric group and metrics exports memory using linux dma-buf, which
                                                                             ## could be imported/mapped to the host process. Properties of the
                                                                             ## dma_buf could be queried using ::zet_export_dma_buf_exp_properties_t.
-    USER_CREATED = ZE_BIT(1)                                                ## Metric group created using ::zetMetricGroupCreateExp
+    USER_CREATED = ZE_BIT(1)                                                ## Metric group created using ::zetDeviceCreateMetricGroupsFromMetricsExp
     OTHER = ZE_BIT(2)                                                       ## Metric group which has a collection of metrics
 
 class zet_metric_group_type_exp_flags_t(c_int):
@@ -811,6 +811,10 @@ ZET_MAX_PROGRAMMABLE_METRICS_ELEMENT_NAME_EXP = 256
 ZET_MAX_PROGRAMMABLE_METRICS_ELEMENT_DESCRIPTION_EXP = 256
 
 ###############################################################################
+## @brief Maximum count of characters in metric group name prefix
+ZET_MAX_METRIC_GROUP_NAME_PREFIX_EXP = 64
+
+###############################################################################
 ## @brief Maximum metric programmable name string size
 ZET_MAX_METRIC_PROGRAMMABLE_NAME_EXP = 128
 
@@ -869,6 +873,7 @@ class zet_metric_programmable_param_type_exp_v(IntEnum):
     NORMALIZATION_AVERAGE = 3                                               ## Produces normalization using raw_metric / HW instance_count.
     NORMALIZATION_RATE = 4                                                  ## Produces normalization average using raw_metric / timestamp.
     NORMALIZATION_BYTES = 5                                                 ## Produces normalization average using raw_metric * n bytes.
+    GENERIC = 6                                                             ## Generic Parameter type. Please refer the parameter's description.
 
 class zet_metric_programmable_param_type_exp_t(c_int):
     def __str__(self):

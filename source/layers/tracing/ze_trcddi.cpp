@@ -5866,6 +5866,182 @@ namespace tracing_layer
     }
 
     ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeDeviceImportExternalSemaphoreExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeDeviceImportExternalSemaphoreExt(
+        ze_device_handle_t hDevice,                     ///< [in] The device handle.
+        const ze_external_semaphore_ext_desc_t* desc,   ///< [in] The pointer to external semaphore descriptor.
+        ze_external_semaphore_ext_handle_t* phSemaphore ///< [out] The handle of the external semaphore imported.
+        )
+    {
+        auto pfnImportExternalSemaphoreExt = context.zeDdiTable.Device.pfnImportExternalSemaphoreExt;
+
+        if( nullptr == pfnImportExternalSemaphoreExt)
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.Device.pfnImportExternalSemaphoreExt, hDevice, desc, phSemaphore);
+
+        // capture parameters
+        ze_device_import_external_semaphore_ext_params_t tracerParams = {
+            &hDevice,
+            &desc,
+            &phSemaphore
+        };
+
+        tracing_layer::APITracerCallbackDataImp<ze_pfnDeviceImportExternalSemaphoreExtCb_t> apiCallbackData;
+
+        ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnDeviceImportExternalSemaphoreExtCb_t, Device, pfnImportExternalSemaphoreExtCb);
+
+
+        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.Device.pfnImportExternalSemaphoreExt,
+                                                  &tracerParams,
+                                                  apiCallbackData.apiOrdinal,
+                                                  apiCallbackData.prologCallbacks,
+                                                  apiCallbackData.epilogCallbacks,
+                                                  *tracerParams.phDevice,
+                                                  *tracerParams.pdesc,
+                                                  *tracerParams.pphSemaphore);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeDeviceReleaseExternalSemaphoreExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeDeviceReleaseExternalSemaphoreExt(
+        ze_external_semaphore_ext_handle_t hSemaphore   ///< [in] The handle of the external semaphore.
+        )
+    {
+        auto pfnReleaseExternalSemaphoreExt = context.zeDdiTable.Device.pfnReleaseExternalSemaphoreExt;
+
+        if( nullptr == pfnReleaseExternalSemaphoreExt)
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.Device.pfnReleaseExternalSemaphoreExt, hSemaphore);
+
+        // capture parameters
+        ze_device_release_external_semaphore_ext_params_t tracerParams = {
+            &hSemaphore
+        };
+
+        tracing_layer::APITracerCallbackDataImp<ze_pfnDeviceReleaseExternalSemaphoreExtCb_t> apiCallbackData;
+
+        ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnDeviceReleaseExternalSemaphoreExtCb_t, Device, pfnReleaseExternalSemaphoreExtCb);
+
+
+        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.Device.pfnReleaseExternalSemaphoreExt,
+                                                  &tracerParams,
+                                                  apiCallbackData.apiOrdinal,
+                                                  apiCallbackData.prologCallbacks,
+                                                  apiCallbackData.epilogCallbacks,
+                                                  *tracerParams.phSemaphore);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeCommandListAppendSignalExternalSemaphoreExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeCommandListAppendSignalExternalSemaphoreExt(
+        ze_command_list_handle_t hCommandList,          ///< [in] The command list handle.
+        uint32_t numSemaphores,                         ///< [in] The number of external semaphores.
+        ze_external_semaphore_ext_handle_t* phSemaphores,   ///< [in][range(0, numSemaphores)] The vector of external semaphore handles
+                                                        ///< to be appended into command list.
+        ze_external_semaphore_signal_params_ext_t* signalParams,///< [in] Signal parameters.
+        ze_event_handle_t hSignalEvent,                 ///< [in][optional] handle of the event to signal on completion
+        uint32_t numWaitEvents,                         ///< [in][optional] number of events to wait on before launching; must be 0
+                                                        ///< if `nullptr == phWaitEvents`
+        ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
+                                                        ///< on before launching
+        )
+    {
+        auto pfnAppendSignalExternalSemaphoreExt = context.zeDdiTable.CommandList.pfnAppendSignalExternalSemaphoreExt;
+
+        if( nullptr == pfnAppendSignalExternalSemaphoreExt)
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.CommandList.pfnAppendSignalExternalSemaphoreExt, hCommandList, numSemaphores, phSemaphores, signalParams, hSignalEvent, numWaitEvents, phWaitEvents);
+
+        // capture parameters
+        ze_command_list_append_signal_external_semaphore_ext_params_t tracerParams = {
+            &hCommandList,
+            &numSemaphores,
+            &phSemaphores,
+            &signalParams,
+            &hSignalEvent,
+            &numWaitEvents,
+            &phWaitEvents
+        };
+
+        tracing_layer::APITracerCallbackDataImp<ze_pfnCommandListAppendSignalExternalSemaphoreExtCb_t> apiCallbackData;
+
+        ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnCommandListAppendSignalExternalSemaphoreExtCb_t, CommandList, pfnAppendSignalExternalSemaphoreExtCb);
+
+
+        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.CommandList.pfnAppendSignalExternalSemaphoreExt,
+                                                  &tracerParams,
+                                                  apiCallbackData.apiOrdinal,
+                                                  apiCallbackData.prologCallbacks,
+                                                  apiCallbackData.epilogCallbacks,
+                                                  *tracerParams.phCommandList,
+                                                  *tracerParams.pnumSemaphores,
+                                                  *tracerParams.pphSemaphores,
+                                                  *tracerParams.psignalParams,
+                                                  *tracerParams.phSignalEvent,
+                                                  *tracerParams.pnumWaitEvents,
+                                                  *tracerParams.pphWaitEvents);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeCommandListAppendWaitExternalSemaphoreExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeCommandListAppendWaitExternalSemaphoreExt(
+        ze_command_list_handle_t hCommandList,          ///< [in] The command list handle.
+        uint32_t numSemaphores,                         ///< [in] The number of external semaphores.
+        ze_external_semaphore_ext_handle_t* phSemaphores,   ///< [in] [range(0,numSemaphores)] The vector of external semaphore handles
+                                                        ///< to append into command list.
+        ze_external_semaphore_wait_params_ext_t* waitParams,///< [in] Wait parameters.
+        ze_event_handle_t hSignalEvent,                 ///< [in][optional] handle of the event to signal on completion
+        uint32_t numWaitEvents,                         ///< [in][optional] number of events to wait on before launching; must be 0
+                                                        ///< if `nullptr == phWaitEvents`
+        ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
+                                                        ///< on before launching
+        )
+    {
+        auto pfnAppendWaitExternalSemaphoreExt = context.zeDdiTable.CommandList.pfnAppendWaitExternalSemaphoreExt;
+
+        if( nullptr == pfnAppendWaitExternalSemaphoreExt)
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        ZE_HANDLE_TRACER_RECURSION(context.zeDdiTable.CommandList.pfnAppendWaitExternalSemaphoreExt, hCommandList, numSemaphores, phSemaphores, waitParams, hSignalEvent, numWaitEvents, phWaitEvents);
+
+        // capture parameters
+        ze_command_list_append_wait_external_semaphore_ext_params_t tracerParams = {
+            &hCommandList,
+            &numSemaphores,
+            &phSemaphores,
+            &waitParams,
+            &hSignalEvent,
+            &numWaitEvents,
+            &phWaitEvents
+        };
+
+        tracing_layer::APITracerCallbackDataImp<ze_pfnCommandListAppendWaitExternalSemaphoreExtCb_t> apiCallbackData;
+
+        ZE_GEN_PER_API_CALLBACK_STATE(apiCallbackData, ze_pfnCommandListAppendWaitExternalSemaphoreExtCb_t, CommandList, pfnAppendWaitExternalSemaphoreExtCb);
+
+
+        return tracing_layer::APITracerWrapperImp(context.zeDdiTable.CommandList.pfnAppendWaitExternalSemaphoreExt,
+                                                  &tracerParams,
+                                                  apiCallbackData.apiOrdinal,
+                                                  apiCallbackData.prologCallbacks,
+                                                  apiCallbackData.epilogCallbacks,
+                                                  *tracerParams.phCommandList,
+                                                  *tracerParams.pnumSemaphores,
+                                                  *tracerParams.pphSemaphores,
+                                                  *tracerParams.pwaitParams,
+                                                  *tracerParams.phSignalEvent,
+                                                  *tracerParams.pnumWaitEvents,
+                                                  *tracerParams.pphWaitEvents);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
     /// @brief Intercept function for zeDeviceReserveCacheExt
     __zedlllocal ze_result_t ZE_APICALL
     zeDeviceReserveCacheExt(
@@ -7820,6 +7996,12 @@ zeGetDeviceProcAddrTable(
     dditable.pfnGetGlobalTimestamps                      = pDdiTable->pfnGetGlobalTimestamps;
     pDdiTable->pfnGetGlobalTimestamps                    = tracing_layer::zeDeviceGetGlobalTimestamps;
 
+    dditable.pfnImportExternalSemaphoreExt               = pDdiTable->pfnImportExternalSemaphoreExt;
+    pDdiTable->pfnImportExternalSemaphoreExt             = tracing_layer::zeDeviceImportExternalSemaphoreExt;
+
+    dditable.pfnReleaseExternalSemaphoreExt              = pDdiTable->pfnReleaseExternalSemaphoreExt;
+    pDdiTable->pfnReleaseExternalSemaphoreExt            = tracing_layer::zeDeviceReleaseExternalSemaphoreExt;
+
     dditable.pfnReserveCacheExt                          = pDdiTable->pfnReserveCacheExt;
     pDdiTable->pfnReserveCacheExt                        = tracing_layer::zeDeviceReserveCacheExt;
 
@@ -8069,6 +8251,12 @@ zeGetCommandListProcAddrTable(
 
     dditable.pfnAppendLaunchMultipleKernelsIndirect      = pDdiTable->pfnAppendLaunchMultipleKernelsIndirect;
     pDdiTable->pfnAppendLaunchMultipleKernelsIndirect    = tracing_layer::zeCommandListAppendLaunchMultipleKernelsIndirect;
+
+    dditable.pfnAppendSignalExternalSemaphoreExt         = pDdiTable->pfnAppendSignalExternalSemaphoreExt;
+    pDdiTable->pfnAppendSignalExternalSemaphoreExt       = tracing_layer::zeCommandListAppendSignalExternalSemaphoreExt;
+
+    dditable.pfnAppendWaitExternalSemaphoreExt           = pDdiTable->pfnAppendWaitExternalSemaphoreExt;
+    pDdiTable->pfnAppendWaitExternalSemaphoreExt         = tracing_layer::zeCommandListAppendWaitExternalSemaphoreExt;
 
     dditable.pfnAppendImageCopyToMemoryExt               = pDdiTable->pfnAppendImageCopyToMemoryExt;
     pDdiTable->pfnAppendImageCopyToMemoryExt             = tracing_layer::zeCommandListAppendImageCopyToMemoryExt;

@@ -6443,6 +6443,46 @@ namespace validation_layer
         return driver_result;
     }
 
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zesVFManagementGetVFCapabilitiesExp2
+    __zedlllocal ze_result_t ZE_APICALL
+    zesVFManagementGetVFCapabilitiesExp2(
+        zes_vf_handle_t hVFhandle,                      ///< [in] Sysman handle for the VF component.
+        zes_vf_exp2_capabilities_t* pCapability         ///< [in,out] Will contain VF capability.
+        )
+    {
+        auto pfnGetVFCapabilitiesExp2 = context.zesDdiTable.VFManagementExp.pfnGetVFCapabilitiesExp2;
+
+        if( nullptr == pfnGetVFCapabilitiesExp2 )
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zesValidation->zesVFManagementGetVFCapabilitiesExp2Prologue( hVFhandle, pCapability );
+            if(result!=ZE_RESULT_SUCCESS) return result;
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zesHandleLifetime.zesVFManagementGetVFCapabilitiesExp2Prologue( hVFhandle, pCapability );
+            if(result!=ZE_RESULT_SUCCESS) return result;
+        }
+
+        auto driver_result = pfnGetVFCapabilitiesExp2( hVFhandle, pCapability );
+
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zesValidation->zesVFManagementGetVFCapabilitiesExp2Epilogue( hVFhandle, pCapability ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return result;
+        }
+
+        return driver_result;
+    }
+
 } // namespace validation_layer
 
 #if defined(__cplusplus)
@@ -7546,6 +7586,9 @@ zesGetVFManagementExpProcAddrTable(
 
     dditable.pfnGetVFEngineUtilizationExp2               = pDdiTable->pfnGetVFEngineUtilizationExp2;
     pDdiTable->pfnGetVFEngineUtilizationExp2             = validation_layer::zesVFManagementGetVFEngineUtilizationExp2;
+
+    dditable.pfnGetVFCapabilitiesExp2                    = pDdiTable->pfnGetVFCapabilitiesExp2;
+    pDdiTable->pfnGetVFCapabilitiesExp2                  = validation_layer::zesVFManagementGetVFCapabilitiesExp2;
 
     dditable.pfnGetVFPropertiesExp                       = pDdiTable->pfnGetVFPropertiesExp;
     pDdiTable->pfnGetVFPropertiesExp                     = validation_layer::zesVFManagementGetVFPropertiesExp;
