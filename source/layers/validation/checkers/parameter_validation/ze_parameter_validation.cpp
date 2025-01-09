@@ -3065,6 +3065,113 @@ namespace validation_layer
 
 
     ze_result_t
+    ZEParameterValidation::zeDeviceImportExternalSemaphoreExtPrologue(
+        ze_device_handle_t hDevice,                     ///< [in] The device handle.
+        const ze_external_semaphore_ext_desc_t* desc,   ///< [in] The pointer to external semaphore descriptor.
+        ze_external_semaphore_ext_handle_t* phSemaphore ///< [out] The handle of the external semaphore imported.
+        )
+    {
+        if( nullptr == hDevice )
+            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+        if( nullptr == desc )
+            return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+        if( nullptr == phSemaphore )
+            return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+        if( 0x1ff < desc->flags )
+            return ZE_RESULT_ERROR_INVALID_ENUMERATION;
+
+        return ParameterValidation::validateExtensions(desc);
+    }
+
+
+    ze_result_t
+    ZEParameterValidation::zeDeviceReleaseExternalSemaphoreExtPrologue(
+        ze_external_semaphore_ext_handle_t hSemaphore   ///< [in] The handle of the external semaphore.
+        )
+    {
+        if( nullptr == hSemaphore )
+            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+        return ZE_RESULT_SUCCESS;
+    }
+
+
+    ze_result_t
+    ZEParameterValidation::zeCommandListAppendSignalExternalSemaphoreExtPrologue(
+        ze_command_list_handle_t hCommandList,          ///< [in] The command list handle.
+        uint32_t numSemaphores,                         ///< [in] The number of external semaphores.
+        ze_external_semaphore_ext_handle_t* phSemaphores,   ///< [in][range(0, numSemaphores)] The vector of external semaphore handles
+                                                        ///< to be appended into command list.
+        ze_external_semaphore_signal_params_ext_t* signalParams,///< [in] Signal parameters.
+        ze_event_handle_t hSignalEvent,                 ///< [in][optional] handle of the event to signal on completion
+        uint32_t numWaitEvents,                         ///< [in][optional] number of events to wait on before launching; must be 0
+                                                        ///< if `nullptr == phWaitEvents`
+        ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
+                                                        ///< on before launching
+        )
+    {
+        if( nullptr == hCommandList )
+            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+        if( nullptr == phSemaphores )
+            return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+        if( nullptr == signalParams )
+            return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+        if( (nullptr == phWaitEvents) && (0 < numWaitEvents) )
+            return ZE_RESULT_ERROR_INVALID_SIZE;
+
+        if( (nullptr == phSemaphores) && (0 < numSemaphores) )
+            return ZE_RESULT_ERROR_INVALID_SIZE;
+
+        if( (nullptr == signalParams) && (0 < numSemaphores) )
+            return ZE_RESULT_ERROR_INVALID_SIZE;
+
+        return ZE_RESULT_SUCCESS;
+    }
+
+
+    ze_result_t
+    ZEParameterValidation::zeCommandListAppendWaitExternalSemaphoreExtPrologue(
+        ze_command_list_handle_t hCommandList,          ///< [in] The command list handle.
+        uint32_t numSemaphores,                         ///< [in] The number of external semaphores.
+        ze_external_semaphore_ext_handle_t* phSemaphores,   ///< [in] [range(0,numSemaphores)] The vector of external semaphore handles
+                                                        ///< to append into command list.
+        ze_external_semaphore_wait_params_ext_t* waitParams,///< [in] Wait parameters.
+        ze_event_handle_t hSignalEvent,                 ///< [in][optional] handle of the event to signal on completion
+        uint32_t numWaitEvents,                         ///< [in][optional] number of events to wait on before launching; must be 0
+                                                        ///< if `nullptr == phWaitEvents`
+        ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
+                                                        ///< on before launching
+        )
+    {
+        if( nullptr == hCommandList )
+            return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+
+        if( nullptr == phSemaphores )
+            return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+        if( nullptr == waitParams )
+            return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+        if( (nullptr == phWaitEvents) && (0 < numWaitEvents) )
+            return ZE_RESULT_ERROR_INVALID_SIZE;
+
+        if( (nullptr == phSemaphores) && (0 < numSemaphores) )
+            return ZE_RESULT_ERROR_INVALID_SIZE;
+
+        if( (nullptr == waitParams) && (0 < numSemaphores) )
+            return ZE_RESULT_ERROR_INVALID_SIZE;
+
+        return ZE_RESULT_SUCCESS;
+    }
+
+
+    ze_result_t
     ZEParameterValidation::zeDeviceReserveCacheExtPrologue(
         ze_device_handle_t hDevice,                     ///< [in] handle of the device object
         size_t cacheLevel,                              ///< [in] cache level where application want to reserve. If zero, then the

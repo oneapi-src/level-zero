@@ -5,7 +5,7 @@
  * SPDX-License-Identifier: MIT
  *
  * @file ze_api.h
- * @version v1.11-r1.11.8
+ * @version v1.12-r1.12.14
  *
  */
 #ifndef _ZE_API_H
@@ -345,6 +345,12 @@ typedef enum _ze_structure_type_t
     ZE_STRUCTURE_TYPE_PITCHED_IMAGE_EXP_DESC = 0x0002001F,                  ///< ::ze_image_pitched_exp_desc_t
     ZE_STRUCTURE_TYPE_MUTABLE_GRAPH_ARGUMENT_EXP_DESC = 0x00020020,         ///< ::ze_mutable_graph_argument_exp_desc_t
     ZE_STRUCTURE_TYPE_INIT_DRIVER_TYPE_DESC = 0x00020021,                   ///< ::ze_init_driver_type_desc_t
+    ZE_STRUCTURE_TYPE_EXTERNAL_SEMAPHORE_EXT_DESC = 0x00020022,             ///< ::ze_external_semaphore_ext_desc_t
+    ZE_STRUCTURE_TYPE_EXTERNAL_SEMAPHORE_WIN32_EXT_DESC = 0x00020023,       ///< ::ze_external_semaphore_win32_ext_desc_t
+    ZE_STRUCTURE_TYPE_EXTERNAL_SEMAPHORE_FD_EXT_DESC = 0x00020024,          ///< ::ze_external_semaphore_fd_ext_desc_t
+    ZE_STRUCTURE_TYPE_EXTERNAL_SEMAPHORE_SIGNAL_PARAMS_EXT = 0x00020025,    ///< ::ze_external_semaphore_signal_params_ext_t
+    ZE_STRUCTURE_TYPE_EXTERNAL_SEMAPHORE_WAIT_PARAMS_EXT = 0x00020026,      ///< ::ze_external_semaphore_wait_params_ext_t
+    ZE_STRUCTURE_TYPE_DRIVER_DDI_HANDLES_EXT_PROPERTIES = 0x00020027,       ///< ::ze_driver_ddi_handles_ext_properties_t
     ZE_STRUCTURE_TYPE_FORCE_UINT32 = 0x7fffffff
 
 } ze_structure_type_t;
@@ -688,6 +694,30 @@ typedef struct _ze_float_atomic_ext_properties_t ze_float_atomic_ext_properties_
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief Forward-declare ze_relaxed_allocation_limits_exp_desc_t
 typedef struct _ze_relaxed_allocation_limits_exp_desc_t ze_relaxed_allocation_limits_exp_desc_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Forward-declare ze_driver_ddi_handles_ext_properties_t
+typedef struct _ze_driver_ddi_handles_ext_properties_t ze_driver_ddi_handles_ext_properties_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Forward-declare ze_external_semaphore_ext_desc_t
+typedef struct _ze_external_semaphore_ext_desc_t ze_external_semaphore_ext_desc_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Forward-declare ze_external_semaphore_win32_ext_desc_t
+typedef struct _ze_external_semaphore_win32_ext_desc_t ze_external_semaphore_win32_ext_desc_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Forward-declare ze_external_semaphore_fd_ext_desc_t
+typedef struct _ze_external_semaphore_fd_ext_desc_t ze_external_semaphore_fd_ext_desc_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Forward-declare ze_external_semaphore_signal_params_ext_t
+typedef struct _ze_external_semaphore_signal_params_ext_t ze_external_semaphore_signal_params_ext_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Forward-declare ze_external_semaphore_wait_params_ext_t
+typedef struct _ze_external_semaphore_wait_params_ext_t ze_external_semaphore_wait_params_ext_t;
 
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief Forward-declare ze_cache_reservation_ext_desc_t
@@ -1155,7 +1185,8 @@ typedef enum _ze_api_version_t
     ZE_API_VERSION_1_9 = ZE_MAKE_VERSION( 1, 9 ),                           ///< version 1.9
     ZE_API_VERSION_1_10 = ZE_MAKE_VERSION( 1, 10 ),                         ///< version 1.10
     ZE_API_VERSION_1_11 = ZE_MAKE_VERSION( 1, 11 ),                         ///< version 1.11
-    ZE_API_VERSION_CURRENT = ZE_MAKE_VERSION( 1, 11 ),                      ///< latest known version
+    ZE_API_VERSION_1_12 = ZE_MAKE_VERSION( 1, 12 ),                         ///< version 1.12
+    ZE_API_VERSION_CURRENT = ZE_MAKE_VERSION( 1, 12 ),                      ///< latest known version
     ZE_API_VERSION_FORCE_UINT32 = 0x7fffffff
 
 } ze_api_version_t;
@@ -1163,7 +1194,7 @@ typedef enum _ze_api_version_t
 ///////////////////////////////////////////////////////////////////////////////
 #ifndef ZE_API_VERSION_CURRENT_M
 /// @brief Current API version as a macro
-#define ZE_API_VERSION_CURRENT_M  ZE_MAKE_VERSION( 1, 11 )
+#define ZE_API_VERSION_CURRENT_M  ZE_MAKE_VERSION( 1, 12 )
 #endif // ZE_API_VERSION_CURRENT_M
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -7665,6 +7696,16 @@ typedef struct _ze_relaxed_allocation_limits_exp_desc_t
 #endif // ZE_GET_KERNEL_BINARY_EXP_NAME
 
 ///////////////////////////////////////////////////////////////////////////////
+/// @brief Get Kernel Binary Extension Version(s)
+typedef enum _ze_kernel_get_binary_exp_version_t
+{
+    ZE_KERNEL_GET_BINARY_EXP_VERSION_1_0 = ZE_MAKE_VERSION( 1, 0 ),         ///< version 1.0
+    ZE_KERNEL_GET_BINARY_EXP_VERSION_CURRENT = ZE_MAKE_VERSION( 1, 0 ),     ///< latest known version
+    ZE_KERNEL_GET_BINARY_EXP_VERSION_FORCE_UINT32 = 0x7fffffff
+
+} ze_kernel_get_binary_exp_version_t;
+
+///////////////////////////////////////////////////////////////////////////////
 /// @brief Retrieves kernel binary program data (ISA GEN format).
 /// 
 /// @details
@@ -7690,6 +7731,302 @@ zeKernelGetBinaryExp(
     ze_kernel_handle_t hKernel,                                             ///< [in] Kernel handle.
     size_t* pSize,                                                          ///< [in,out] pointer to variable with size of GEN ISA binary.
     uint8_t* pKernelBinary                                                  ///< [in,out] pointer to storage area for GEN ISA binary function.
+    );
+
+#if !defined(__GNUC__)
+#pragma endregion
+#endif
+// Intel 'oneAPI' Level-Zero Extension for Driver Direct Device Interface (DDI) Handles
+#if !defined(__GNUC__)
+#pragma region driverDDIHandles
+#endif
+///////////////////////////////////////////////////////////////////////////////
+#ifndef ZE_DRIVER_DDI_HANDLES_EXT_NAME
+/// @brief Driver Direct Device Interface (DDI) Handles Extension Name
+#define ZE_DRIVER_DDI_HANDLES_EXT_NAME  "ZE_extension_driver_ddi_handles"
+#endif // ZE_DRIVER_DDI_HANDLES_EXT_NAME
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Driver Direct Device Interface (DDI) Handles Extension Version(s)
+typedef enum _ze_driver_ddi_handles_ext_version_t
+{
+    ZE_DRIVER_DDI_HANDLES_EXT_VERSION_1_0 = ZE_MAKE_VERSION( 1, 0 ),        ///< version 1.0
+    ZE_DRIVER_DDI_HANDLES_EXT_VERSION_CURRENT = ZE_MAKE_VERSION( 1, 0 ),    ///< latest known version
+    ZE_DRIVER_DDI_HANDLES_EXT_VERSION_FORCE_UINT32 = 0x7fffffff
+
+} ze_driver_ddi_handles_ext_version_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Driver Direct Device Interface (DDI) Handle Extension Flags
+typedef uint32_t ze_driver_ddi_handle_ext_flags_t;
+typedef enum _ze_driver_ddi_handle_ext_flag_t
+{
+    ZE_DRIVER_DDI_HANDLE_EXT_FLAG_DDI_HANDLE_EXT_SUPPORTED = ZE_BIT(0),     ///< Driver Supports DDI Handles Extension
+    ZE_DRIVER_DDI_HANDLE_EXT_FLAG_FORCE_UINT32 = 0x7fffffff
+
+} ze_driver_ddi_handle_ext_flag_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Driver DDI Handles properties queried using ::zeDriverGetProperties
+/// 
+/// @details
+///     - This structure may be returned from ::zeDriverGetProperties, via the
+///       `pNext` member of ::ze_driver_properties_t.
+typedef struct _ze_driver_ddi_handles_ext_properties_t
+{
+    ze_structure_type_t stype;                                              ///< [in] type of this structure
+    void* pNext;                                                            ///< [in,out][optional] must be null or a pointer to an extension-specific
+                                                                            ///< structure (i.e. contains stype and pNext).
+    ze_driver_ddi_handle_ext_flags_t flags;                                 ///< [out] 0 (none) or a valid combination of ::ze_driver_ddi_handle_ext_flags_t
+
+} ze_driver_ddi_handles_ext_properties_t;
+
+#if !defined(__GNUC__)
+#pragma endregion
+#endif
+// Intel 'oneAPI' Level-Zero Extension for external semaphores
+#if !defined(__GNUC__)
+#pragma region externalSemaphores
+#endif
+///////////////////////////////////////////////////////////////////////////////
+#ifndef ZE_EXTERNAL_SEMAPHORES_EXTENSION_NAME
+/// @brief External Semaphores Extension Name
+#define ZE_EXTERNAL_SEMAPHORES_EXTENSION_NAME  "ZE_extension_external_semaphores"
+#endif // ZE_EXTERNAL_SEMAPHORES_EXTENSION_NAME
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief External Semaphores Extension Version
+typedef enum _ze_external_semaphore_ext_version_t
+{
+    ZE_EXTERNAL_SEMAPHORE_EXT_VERSION_1_0 = ZE_MAKE_VERSION( 1, 0 ),        ///< version 1.0
+    ZE_EXTERNAL_SEMAPHORE_EXT_VERSION_CURRENT = ZE_MAKE_VERSION( 1, 0 ),    ///< latest known version
+    ZE_EXTERNAL_SEMAPHORE_EXT_VERSION_FORCE_UINT32 = 0x7fffffff
+
+} ze_external_semaphore_ext_version_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Handle of external semaphore object
+typedef struct _ze_external_semaphore_ext_handle_t *ze_external_semaphore_ext_handle_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief External Semaphores Type Flags
+typedef uint32_t ze_external_semaphore_ext_flags_t;
+typedef enum _ze_external_semaphore_ext_flag_t
+{
+    ZE_EXTERNAL_SEMAPHORE_EXT_FLAG_OPAQUE_FD = ZE_BIT(0),                   ///< Semaphore is an Linux opaque file descriptor
+    ZE_EXTERNAL_SEMAPHORE_EXT_FLAG_OPAQUE_WIN32 = ZE_BIT(1),                ///< Semaphore is an opaque Win32 handle for monitored fence
+    ZE_EXTERNAL_SEMAPHORE_EXT_FLAG_OPAQUE_WIN32_KMT = ZE_BIT(2),            ///< Semaphore is an opaque Win32 KMT handle for monitored fence
+    ZE_EXTERNAL_SEMAPHORE_EXT_FLAG_D3D12_FENCE = ZE_BIT(3),                 ///< Semaphore is a D3D12 fence
+    ZE_EXTERNAL_SEMAPHORE_EXT_FLAG_D3D11_FENCE = ZE_BIT(4),                 ///< Semaphore is a D3D11 fence
+    ZE_EXTERNAL_SEMAPHORE_EXT_FLAG_KEYED_MUTEX = ZE_BIT(5),                 ///< Semaphore is a keyed mutex for Win32
+    ZE_EXTERNAL_SEMAPHORE_EXT_FLAG_KEYED_MUTEX_KMT = ZE_BIT(6),             ///< Semaphore is a keyed mutex for Win32 KMT
+    ZE_EXTERNAL_SEMAPHORE_EXT_FLAG_VK_TIMELINE_SEMAPHORE_FD = ZE_BIT(7),    ///< Semaphore is a Vulkan Timeline semaphore for Linux
+    ZE_EXTERNAL_SEMAPHORE_EXT_FLAG_VK_TIMELINE_SEMAPHORE_WIN32 = ZE_BIT(8), ///< Semaphore is a Vulkan Timeline semaphore for Win32
+    ZE_EXTERNAL_SEMAPHORE_EXT_FLAG_FORCE_UINT32 = 0x7fffffff
+
+} ze_external_semaphore_ext_flag_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief External Semaphore Descriptor
+typedef struct _ze_external_semaphore_ext_desc_t
+{
+    ze_structure_type_t stype;                                              ///< [in] type of this structure
+    const void* pNext;                                                      ///< [in][optional] must be null or a pointer to an extension-specific
+                                                                            ///< structure (i.e. contains stype and pNext).
+    ze_external_semaphore_ext_flags_t flags;                                ///< [in] The flags describing the type of the semaphore.
+                                                                            ///< must be 0 (default) or a valid combination of ::ze_external_semaphore_ext_flag_t.
+                                                                            ///< When importing a semaphore, pNext should be pointing to one of the
+                                                                            ///< following structures: ::ze_external_semaphore_win32_ext_desc_t or ::ze_external_semaphore_fd_ext_desc_t.
+
+} ze_external_semaphore_ext_desc_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief External Semaphore Win32 Descriptor
+typedef struct _ze_external_semaphore_win32_ext_desc_t
+{
+    ze_structure_type_t stype;                                              ///< [in] type of this structure
+    const void* pNext;                                                      ///< [in][optional] must be null or a pointer to an extension-specific
+                                                                            ///< structure (i.e. contains stype and pNext).
+    void* handle;                                                           ///< [in] Win32 handle of the semaphore.
+                                                                            ///< Must be a valid Win32 handle.
+    const char* name;                                                       ///< [in] Name of the semaphore.
+                                                                            ///< Must be a valid null-terminated string.
+
+} ze_external_semaphore_win32_ext_desc_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief External Semaphore FD Descriptor
+typedef struct _ze_external_semaphore_fd_ext_desc_t
+{
+    ze_structure_type_t stype;                                              ///< [in] type of this structure
+    const void* pNext;                                                      ///< [in][optional] must be null or a pointer to an extension-specific
+                                                                            ///< structure (i.e. contains stype and pNext).
+    int fd;                                                                 ///< [in] File descriptor of the semaphore.
+                                                                            ///< Must be a valid file descriptor.
+
+} ze_external_semaphore_fd_ext_desc_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief External Semaphore Signal parameters
+typedef struct _ze_external_semaphore_signal_params_ext_t
+{
+    ze_structure_type_t stype;                                              ///< [in] type of this structure
+    const void* pNext;                                                      ///< [in][optional] must be null or a pointer to an extension-specific
+                                                                            ///< structure (i.e. contains stype and pNext).
+    uint64_t value;                                                         ///< [in] [optional] Value to signal.
+                                                                            ///< Specified by user as an expected value with some of semaphore types,
+                                                                            ///< such as ::ZE_EXTERNAL_SEMAPHORE_EXT_FLAG_D3D12_FENCE.
+
+} ze_external_semaphore_signal_params_ext_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief External Semaphore Wait parameters
+typedef struct _ze_external_semaphore_wait_params_ext_t
+{
+    ze_structure_type_t stype;                                              ///< [in] type of this structure
+    const void* pNext;                                                      ///< [in][optional] must be null or a pointer to an extension-specific
+                                                                            ///< structure (i.e. contains stype and pNext).
+    uint64_t value;                                                         ///< [in] [optional] Value to wait for.
+                                                                            ///< Specified by user as an expected value with some of semaphore types,
+                                                                            ///< such as ::ZE_EXTERNAL_SEMAPHORE_EXT_FLAG_D3D12_FENCE.
+
+} ze_external_semaphore_wait_params_ext_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Import an external semaphore
+/// 
+/// @details
+///     - Imports an external semaphore.
+///     - This function may be called from simultaneous threads with the same
+///       device handle.
+///     - The implementation of this function should be lock-free.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hDevice`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == desc`
+///         + `nullptr == phSemaphore`
+///     - ::ZE_RESULT_ERROR_INVALID_ENUMERATION
+///         + `0x1ff < desc->flags`
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zeDeviceImportExternalSemaphoreExt(
+    ze_device_handle_t hDevice,                                             ///< [in] The device handle.
+    const ze_external_semaphore_ext_desc_t* desc,                           ///< [in] The pointer to external semaphore descriptor.
+    ze_external_semaphore_ext_handle_t* phSemaphore                         ///< [out] The handle of the external semaphore imported.
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Release an external semaphore
+/// 
+/// @details
+///     - The application must ensure the device is not currently referencing
+///       the semaphore before it is released.
+///     - The application must **not** call this function from simultaneous
+///       threads with the same semaphore handle.
+///     - The implementation of this function must be thread-safe.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hSemaphore`
+///     - ::ZE_RESULT_ERROR_HANDLE_OBJECT_IN_USE
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zeDeviceReleaseExternalSemaphoreExt(
+    ze_external_semaphore_ext_handle_t hSemaphore                           ///< [in] The handle of the external semaphore.
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Signal an external semaphore
+/// 
+/// @details
+///     - Signals an external semaphore.
+///     - This function must only be used with an immediate command list.
+///     - This function may be called from simultaneous threads with the same
+///       command list handle.
+///     - The implementation of this function should be lock-free.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hCommandList`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == phSemaphores`
+///         + `nullptr == signalParams`
+///     - ::ZE_RESULT_ERROR_INVALID_SYNCHRONIZATION_OBJECT
+///     - ::ZE_RESULT_ERROR_INVALID_SIZE
+///         + `(nullptr == phWaitEvents) && (0 < numWaitEvents)`
+///         + `(nullptr == phSemaphores) && (0 < numSemaphores)`
+///         + `(nullptr == signalParams) && (0 < numSemaphores)`
+///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
+///         + Commandlist handle does not correspond to an immediate command list
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zeCommandListAppendSignalExternalSemaphoreExt(
+    ze_command_list_handle_t hCommandList,                                  ///< [in] The command list handle.
+    uint32_t numSemaphores,                                                 ///< [in] The number of external semaphores.
+    ze_external_semaphore_ext_handle_t* phSemaphores,                       ///< [in][range(0, numSemaphores)] The vector of external semaphore handles
+                                                                            ///< to be appended into command list.
+    ze_external_semaphore_signal_params_ext_t* signalParams,                ///< [in] Signal parameters.
+    ze_event_handle_t hSignalEvent,                                         ///< [in][optional] handle of the event to signal on completion
+    uint32_t numWaitEvents,                                                 ///< [in][optional] number of events to wait on before launching; must be 0
+                                                                            ///< if `nullptr == phWaitEvents`
+    ze_event_handle_t* phWaitEvents                                         ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
+                                                                            ///< on before launching
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Wait on external semaphores
+/// 
+/// @details
+///     - Waits on external semaphores.
+///     - This function must only be used with an immediate command list.
+///     - This function may be called from simultaneous threads with the same
+///       command list handle.
+///     - The implementation of this function should be lock-free.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hCommandList`
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///         + `nullptr == phSemaphores`
+///         + `nullptr == waitParams`
+///     - ::ZE_RESULT_ERROR_INVALID_SYNCHRONIZATION_OBJECT
+///     - ::ZE_RESULT_ERROR_INVALID_SIZE
+///         + `(nullptr == phWaitEvents) && (0 < numWaitEvents)`
+///         + `(nullptr == phSemaphores) && (0 < numSemaphores)`
+///         + `(nullptr == waitParams) && (0 < numSemaphores)`
+///     - ::ZE_RESULT_ERROR_INVALID_ARGUMENT
+///         + Commandlist handle does not correspond to an immediate command list
+ZE_APIEXPORT ze_result_t ZE_APICALL
+zeCommandListAppendWaitExternalSemaphoreExt(
+    ze_command_list_handle_t hCommandList,                                  ///< [in] The command list handle.
+    uint32_t numSemaphores,                                                 ///< [in] The number of external semaphores.
+    ze_external_semaphore_ext_handle_t* phSemaphores,                       ///< [in] [range(0,numSemaphores)] The vector of external semaphore handles
+                                                                            ///< to append into command list.
+    ze_external_semaphore_wait_params_ext_t* waitParams,                    ///< [in] Wait parameters.
+    ze_event_handle_t hSignalEvent,                                         ///< [in][optional] handle of the event to signal on completion
+    uint32_t numWaitEvents,                                                 ///< [in][optional] number of events to wait on before launching; must be 0
+                                                                            ///< if `nullptr == phWaitEvents`
+    ze_event_handle_t* phWaitEvents                                         ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
+                                                                            ///< on before launching
     );
 
 #if !defined(__GNUC__)

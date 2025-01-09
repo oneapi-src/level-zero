@@ -5,7 +5,7 @@
  * SPDX-License-Identifier: MIT
  *
  * @file zet_ddi.h
- * @version v1.11-r1.11.8
+ * @version v1.12-r1.12.14
  *
  */
 #ifndef _ZET_DDI_H
@@ -1166,6 +1166,30 @@ typedef struct _zet_dditable_t
     zet_tracer_exp_dditable_t           TracerExp;
     zet_debug_dditable_t                Debug;
 } zet_dditable_t;
+/// @brief Container for all DDI tables with version and tables set by the Driver
+typedef struct _zet_dditable_driver_t
+{
+    ze_api_version_t    version;
+    uint8_t             isValidFlag;
+    zet_metric_programmable_exp_dditable_t *    MetricProgrammableExp;
+    zet_metric_tracer_exp_dditable_t *  MetricTracerExp;
+    zet_metric_decoder_exp_dditable_t * MetricDecoderExp;
+    zet_device_dditable_t *             Device;
+    zet_device_exp_dditable_t *         DeviceExp;
+    zet_context_dditable_t *            Context;
+    zet_command_list_dditable_t *       CommandList;
+    zet_module_dditable_t *             Module;
+    zet_kernel_dditable_t *             Kernel;
+    zet_metric_dditable_t *             Metric;
+    zet_metric_exp_dditable_t *         MetricExp;
+    zet_metric_group_dditable_t *       MetricGroup;
+    zet_metric_group_exp_dditable_t *   MetricGroupExp;
+    zet_metric_streamer_dditable_t *    MetricStreamer;
+    zet_metric_query_pool_dditable_t *  MetricQueryPool;
+    zet_metric_query_dditable_t *       MetricQuery;
+    zet_tracer_exp_dditable_t *         TracerExp;
+    zet_debug_dditable_t *              Debug;
+} zet_dditable_driver_t;
 
 #if defined(__cplusplus)
 } // extern "C"

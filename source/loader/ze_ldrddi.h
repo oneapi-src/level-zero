@@ -60,6 +60,9 @@ namespace loader
     using ze_fabric_edge_object_t             = object_t < ze_fabric_edge_handle_t >;
     using ze_fabric_edge_factory_t            = singleton_factory_t < ze_fabric_edge_object_t, ze_fabric_edge_handle_t >;
 
+    using ze_external_semaphore_ext_object_t  = object_t < ze_external_semaphore_ext_handle_t >;
+    using ze_external_semaphore_ext_factory_t = singleton_factory_t < ze_external_semaphore_ext_object_t, ze_external_semaphore_ext_handle_t >;
+
     using ze_rtas_builder_exp_object_t        = object_t < ze_rtas_builder_exp_handle_t >;
     using ze_rtas_builder_exp_factory_t       = singleton_factory_t < ze_rtas_builder_exp_object_t, ze_rtas_builder_exp_handle_t >;
 
