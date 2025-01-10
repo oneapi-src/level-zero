@@ -1,7 +1,15 @@
 # Level zero loader changelog
 
+## v1.20.1
+* Update to spec 1.12.15
+* Update Docs for spec links and corrections
 ## v1.20.0
 * Update to spec 1.12
+* Allow pkg-config files on Windows as well
+* Fix GET_FUNCTION_PTR warnings on windows
+* Fix libddi table query code generation
+* Fixed pkg-config files generation
+* fixed potential memory leaks in events checker
 ## v1.19.2
 * Remove static result in InitDrivers given first init fails
 ## v1.19.1

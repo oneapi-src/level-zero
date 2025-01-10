@@ -2,7 +2,7 @@
 
 ## Introduction
 
-The Level Zero driver implementations  [by design](https://spec.oneapi.io/level-zero/latest/core/INTRO.html#error-handling) do minimal error checking and do not guard against invalid API programming. 
+The Level Zero driver implementations  [by design](https://oneapi-src.github.io/level-zero-spec/level-zero/latest/core/INTRO.html#error-handling) do minimal error checking and do not guard against invalid API programming.
 
 The Level Zero Validation layer is intended to be the primary Level Zero API error handling mechanism. The validation layer can be enabled at runtime with environment settings. When validation layer is enabled, L0 loader will inject calls to validation layer into L0 API DDI tables. When validation layer is not enabled, it is completely removed from the call path and has no performance cost.  
 
@@ -19,9 +19,7 @@ By default, no validation modes will be enabled. The individual validation modes
 - `ZE_ENABLE_PARAMETER_VALIDATION`
 - `ZE_ENABLE_HANDLE_LIFETIME`
 - `ZEL_ENABLE_EVENTS_CHECKER`
-- `ZE_ENABLE_MEMORY_TRACKER` (Not yet Implemeneted)
-- `ZE_ENABLE_THREADING_VALIDATION` (Not yet Implemeneted)
-
+- `ZE_ENABLE_THREADING_VALIDATION` (Not yet Implemented)
 
 ## Validation Modes
 
