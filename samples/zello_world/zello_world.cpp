@@ -40,6 +40,7 @@ void print_loader_versions(){
 int main( int argc, char *argv[] )
 {
     bool tracing_runtime_enabled = false;
+    bool legacy_init = false;
     if( argparse( argc, argv, "-null", "--enable_null_driver" ) )
     {
         putenv_safe( const_cast<char *>( "ZE_ENABLE_NULL_DRIVER=1" ) );
@@ -61,13 +62,22 @@ int main( int argc, char *argv[] )
     {
         tracing_runtime_enabled = true;
     }
+    if( argparse( argc, argv, "-legacy", "--enable_legacy_init" ) )
+    {
+        legacy_init = true;
+    }
 
     ze_result_t status;
     const ze_device_type_t type = ZE_DEVICE_TYPE_GPU;
 
+    ze_init_driver_type_desc_t driverTypeDesc = {ZE_STRUCTURE_TYPE_INIT_DRIVER_TYPE_DESC};
+    driverTypeDesc.flags = ZE_INIT_DRIVER_TYPE_FLAG_GPU;
+    driverTypeDesc.pNext = nullptr;
+
     ze_driver_handle_t pDriver = nullptr;
     ze_device_handle_t pDevice = nullptr;
-    if( init_ze() )
+    uint32_t driverCount = 0;
+    if( init_ze(legacy_init, driverCount, driverTypeDesc) )
     {
 
         print_loader_versions();
@@ -81,18 +91,27 @@ int main( int argc, char *argv[] )
             }
         }
 
-        uint32_t driverCount = 0;
-        status = zeDriverGet(&driverCount, nullptr);
-        if(status != ZE_RESULT_SUCCESS) {
-            std::cout << "zeDriverGet Failed with return code: " << to_string(status) << std::endl;
-            exit(1);
-        }
+        std::vector<ze_driver_handle_t> drivers;
+        if (legacy_init) {
+            status = zeDriverGet(&driverCount, nullptr);
+            if(status != ZE_RESULT_SUCCESS) {
+                std::cout << "zeDriverGet Failed with return code: " << to_string(status) << std::endl;
+                exit(1);
+            }
 
-        std::vector<ze_driver_handle_t> drivers( driverCount );
-        status = zeDriverGet( &driverCount, drivers.data() );
-        if(status != ZE_RESULT_SUCCESS) {
-            std::cout << "zeDriverGet Failed with return code: " << to_string(status) << std::endl;
-            exit(1);
+            drivers.resize(driverCount);
+            status = zeDriverGet( &driverCount, drivers.data() );
+            if(status != ZE_RESULT_SUCCESS) {
+                std::cout << "zeDriverGet Failed with return code: " << to_string(status) << std::endl;
+                exit(1);
+            }
+        } else {
+            drivers.resize(driverCount);
+            status = zeInitDrivers( &driverCount, drivers.data(), &driverTypeDesc);
+            if(status != ZE_RESULT_SUCCESS) {
+                std::cout << "zeInitDrivers Failed with return code: " << to_string(status) << std::endl;
+                exit(1);
+            }
         }
 
         for( uint32_t driver = 0; driver < driverCount; ++driver )
