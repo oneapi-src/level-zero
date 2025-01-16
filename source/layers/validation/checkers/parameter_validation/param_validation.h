@@ -38,7 +38,7 @@ namespace validation_layer
                base->stype < ZE_STRUCTURE_TYPE_RELAXED_ALLOCATION_LIMITS_EXP_DESC) ||
                (base->stype > ZE_STRUCTURE_TYPE_MEMORY_SUB_ALLOCATIONS_EXP_PROPERTIES &&
                 base->stype < ZE_STRUCTURE_TYPE_MUTABLE_COMMAND_LIST_EXP_PROPERTIES) ||
-               base->stype > ZE_STRUCTURE_TYPE_MUTABLE_GLOBAL_OFFSET_EXP_DESC)
+               base->stype > ZE_STRUCTURE_TYPE_INIT_DRIVER_TYPE_DESC)
                 return ZE_RESULT_ERROR_INVALID_ARGUMENT;
             base = reinterpret_cast<const ze_base_properties_t*>(base->pNext);
         }
