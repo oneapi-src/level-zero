@@ -135,7 +135,7 @@ namespace loader
         return flags_value;
     }
 
-    bool driverSortComparitor(const driver_t &a, const driver_t &b) {
+    bool driverSortComparator(const driver_t &a, const driver_t &b) {
         if (a.pciOrderingRequested) {
             if (a.driverType == ZEL_DRIVER_TYPE_OTHER) {
                 return false;
@@ -162,7 +162,7 @@ namespace loader
      *    - If the number of drivers becomes one and interception is not forced, sets the `requireDdiReinit` flag to true.
      *    - If the initialization fails and `return_first_driver_result` is true, returns the result immediately.
      *    - If initialization succeeds, marks the driver as in use.
-     * 5. Sorts the drivers in ascending order of driver type using `driverSortComparitor`.
+     * 5. Sorts the drivers in ascending order of driver type using `driverSortComparator`.
      * 6. Logs the sorted driver list if debug tracing is enabled.
      * 7. If no drivers are left, returns `ZE_RESULT_ERROR_UNINITIALIZED`.
      * 8. Returns `ZE_RESULT_SUCCESS` if at least one driver is successfully initialized.
@@ -244,7 +244,7 @@ namespace loader
         }
 
         // Sort drivers in ascending order of driver type unless ZE_ENABLE_PCI_ID_DEVICE_ORDER, then in decending order with MIXED and OTHER at the end.
-        std::sort(drivers->begin(), drivers->end(), driverSortComparitor);
+        std::sort(drivers->begin(), drivers->end(), driverSortComparator);
 
         if (debugTraceEnabled) {
             std::string message = "Drivers after sorting:";
