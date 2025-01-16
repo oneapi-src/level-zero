@@ -62,7 +62,7 @@ int main( int argc, char *argv[] )
     {
         tracing_runtime_enabled = true;
     }
-    if( argparse( argc, argv, "-legacy", "--enable_legacy_init" ) )
+    if( argparse( argc, argv, "-legacy_init", "--enable_legacy_init" ) )
     {
         legacy_init = true;
     }

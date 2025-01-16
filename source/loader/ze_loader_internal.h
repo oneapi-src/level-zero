@@ -28,6 +28,9 @@ namespace loader
 {
     ///////////////////////////////////////////////////////////////////////////////
     /// @brief Driver Type Enumerations
+    /// @details The ordering of the drivers reported to the user is based on the order of the enumerations provided.
+    /// When additional driver types are added, they should be added to the end of the list to avoid reporting new device types
+    /// before known device types.
     typedef enum _zel_driver_type_t
     {
         ZEL_DRIVER_TYPE_DISCRETE_GPU= 0,          ///< The driver has Discrete GPUs only
