@@ -44,6 +44,8 @@ To generate the code from the scripts, run the following commands:
   * `cp level-zero-spec/include/* level-zero/include/`
 * Execute the json2src script in the level-zero repo with the input.json in the specification repo with the corresponding spec version, for example:
   * `./level-zero/scripts/json2src.py --ver 1.12 --api-json level-zero-spec/scripts/input.json .`
+* Execute the copy_headers script to copy the headers to their alternative location.
+  * `./level-zero/scripts/copy_headers.py .`
 
 These scripts update the code with what would be generated in the next specification update.
 
