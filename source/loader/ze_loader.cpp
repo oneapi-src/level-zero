@@ -136,8 +136,7 @@ namespace loader
     }
 
     bool driverSortComparitor(const driver_t &a, const driver_t &b) {
-        bool pciOrderingRequested = getenv_tobool( "ZE_ENABLE_PCI_ID_DEVICE_ORDER" );
-        if (pciOrderingRequested) {
+        if (a.pciOrderingRequested) {
             if (a.driverType == ZEL_DRIVER_TYPE_OTHER) {
                 return false;
             }
@@ -211,9 +210,11 @@ namespace loader
         if(drivers->size()==1) {
             return_first_driver_result=true;
         }
+        bool pciOrderingRequested = getenv_tobool( "ZE_ENABLE_PCI_ID_DEVICE_ORDER" );
 
         for(auto it = drivers->begin(); it != drivers->end(); )
         {
+            it->pciOrderingRequested = pciOrderingRequested;
             std::string freeLibraryErrorValue;
             ze_result_t result = init_driver(*it, flags, desc, globalInitStored, sysmanGlobalInitStored, sysmanOnly);
             if(result != ZE_RESULT_SUCCESS) {

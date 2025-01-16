@@ -49,6 +49,7 @@ namespace loader
         bool driverInuse = false;
         zel_driver_type_t driverType;
         ze_driver_properties_t properties;
+        bool pciOrderingRequested = false;
     };
 
     using driver_vector_t = std::vector< driver_t >;
