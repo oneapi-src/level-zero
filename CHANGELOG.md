@@ -1,5 +1,7 @@
 # Level zero loader changelog
 
+## v1.20.2
+* Fix to Validation Layer Param checking of Extensions for new desc types
 ## v1.20.1
 * Update to spec 1.12.15
 * Update Docs for spec links and corrections
