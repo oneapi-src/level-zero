@@ -58,6 +58,19 @@ user's home directory.
 
 This feature is in early development and is preview only.
 
+# Logging API calls
+The Level Zero Loader will log all API calls whenever logging level is set to `trace` and
+validation layer is enabled. Following variables need to be set to enable API logging:
+
+`ZEL_ENABLE_LOADER_LOGGING=1`
+
+`ZEL_LOADER_LOGGING_LEVEL=trace`
+
+`ZE_ENABLE_VALIDATION_LAYER=1`
+
+By default logs will be written to the log file, as described above. To print the logs
+to stderr instead, `ZEL_LOADER_LOG_CONSOLE=1` needs to be set.
+
 # Driver/Device Sorting
 
 As of v1.20.3 of the Loader, Drivers and Devices reported to the user are sorted to enable the first device to be the best available device.

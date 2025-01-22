@@ -23,6 +23,8 @@ namespace validation_layer
             handleLifetime = std::make_unique<HandleLifetimeValidation>();
         }
         enableThreadingValidation = getenv_tobool( "ZE_ENABLE_THREADING_VALIDATION" );
+
+        logger = loader::createLogger();
     }
 
     ///////////////////////////////////////////////////////////////////////////////

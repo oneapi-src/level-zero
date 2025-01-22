@@ -16,6 +16,7 @@
 #include "zes_ddi.h"
 #include "layers/zel_tracing_api.h"
 #include "layers/zel_tracing_ddi.h"
+#include "../utils/logging.h"
 #include "ze_util.h"
 #include <vector>
 #include <mutex>
