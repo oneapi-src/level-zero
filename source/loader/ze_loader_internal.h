@@ -26,6 +26,21 @@
 #include "spdlog/spdlog.h"
 namespace loader
 {
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Driver Type Enumerations
+    /// @details The ordering of the drivers reported to the user is based on the order of the enumerations provided.
+    /// When additional driver types are added, they should be added to the end of the list to avoid reporting new device types
+    /// before known device types.
+    typedef enum _zel_driver_type_t
+    {
+        ZEL_DRIVER_TYPE_DISCRETE_GPU= 0,          ///< The driver has Discrete GPUs only
+        ZEL_DRIVER_TYPE_GPU = 1,                  ///< The driver has Heterogenous GPU types
+        ZEL_DRIVER_TYPE_INTEGRATED_GPU = 2,       ///< The driver has Integrated GPUs only
+        ZEL_DRIVER_TYPE_MIXED = 3,                ///< The driver has Heterogenous driver types not limited to GPU or NPU.
+        ZEL_DRIVER_TYPE_OTHER = 4,                ///< The driver has No GPU Devices and has other device types only
+        ZEL_DRIVER_TYPE_FORCE_UINT32 = 0x7fffffff
+
+    } zel_driver_type_t;
     //////////////////////////////////////////////////////////////////////////
     struct driver_t
     {
@@ -35,6 +50,9 @@ namespace loader
         dditable_t dditable = {};
         std::string name;
         bool driverInuse = false;
+        zel_driver_type_t driverType;
+        ze_driver_properties_t properties;
+        bool pciOrderingRequested = false;
     };
 
     using driver_vector_t = std::vector< driver_t >;
