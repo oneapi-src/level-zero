@@ -20,6 +20,7 @@ namespace ze_lib
     __zedlllocal ze_result_t context_t::zeDdiTableInit(ze_api_version_t version)
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
+
         if( ZE_RESULT_SUCCESS == result )
         {
             auto getTable = reinterpret_cast<ze_pfnGetGlobalProcAddrTable_t>(
@@ -236,153 +237,153 @@ namespace ze_lib
 
         if( ZE_RESULT_SUCCESS == result )
         {
-            result = zeGetGlobalProcAddrTable( ZE_API_VERSION_CURRENT, &initialzeDdiTable.Global );
+            result = zeGetGlobalProcAddrTable( version, &initialzeDdiTable.Global );
         }
 
         if( ZE_RESULT_SUCCESS == result )
         {
             // Optional
-            zeGetRTASBuilderExpProcAddrTable( ZE_API_VERSION_CURRENT, &initialzeDdiTable.RTASBuilderExp );
+            zeGetRTASBuilderExpProcAddrTable( version, &initialzeDdiTable.RTASBuilderExp );
         }
 
         if( ZE_RESULT_SUCCESS == result )
         {
             // Optional
-            zeGetRTASParallelOperationExpProcAddrTable( ZE_API_VERSION_CURRENT, &initialzeDdiTable.RTASParallelOperationExp );
+            zeGetRTASParallelOperationExpProcAddrTable( version, &initialzeDdiTable.RTASParallelOperationExp );
         }
 
         if( ZE_RESULT_SUCCESS == result )
         {
-            result = zeGetDriverProcAddrTable( ZE_API_VERSION_CURRENT, &initialzeDdiTable.Driver );
-        }
-
-        if( ZE_RESULT_SUCCESS == result )
-        {
-            // Optional
-            zeGetDriverExpProcAddrTable( ZE_API_VERSION_CURRENT, &initialzeDdiTable.DriverExp );
-        }
-
-        if( ZE_RESULT_SUCCESS == result )
-        {
-            result = zeGetDeviceProcAddrTable( ZE_API_VERSION_CURRENT, &initialzeDdiTable.Device );
+            result = zeGetDriverProcAddrTable( version, &initialzeDdiTable.Driver );
         }
 
         if( ZE_RESULT_SUCCESS == result )
         {
             // Optional
-            zeGetDeviceExpProcAddrTable( ZE_API_VERSION_CURRENT, &initialzeDdiTable.DeviceExp );
+            zeGetDriverExpProcAddrTable( version, &initialzeDdiTable.DriverExp );
         }
 
         if( ZE_RESULT_SUCCESS == result )
         {
-            result = zeGetContextProcAddrTable( ZE_API_VERSION_CURRENT, &initialzeDdiTable.Context );
-        }
-
-        if( ZE_RESULT_SUCCESS == result )
-        {
-            result = zeGetCommandQueueProcAddrTable( ZE_API_VERSION_CURRENT, &initialzeDdiTable.CommandQueue );
-        }
-
-        if( ZE_RESULT_SUCCESS == result )
-        {
-            result = zeGetCommandListProcAddrTable( ZE_API_VERSION_CURRENT, &initialzeDdiTable.CommandList );
+            result = zeGetDeviceProcAddrTable( version, &initialzeDdiTable.Device );
         }
 
         if( ZE_RESULT_SUCCESS == result )
         {
             // Optional
-            zeGetCommandListExpProcAddrTable( ZE_API_VERSION_CURRENT, &initialzeDdiTable.CommandListExp );
+            zeGetDeviceExpProcAddrTable( version, &initialzeDdiTable.DeviceExp );
         }
 
         if( ZE_RESULT_SUCCESS == result )
         {
-            result = zeGetEventProcAddrTable( ZE_API_VERSION_CURRENT, &initialzeDdiTable.Event );
+            result = zeGetContextProcAddrTable( version, &initialzeDdiTable.Context );
         }
 
         if( ZE_RESULT_SUCCESS == result )
         {
-            // Optional
-            zeGetEventExpProcAddrTable( ZE_API_VERSION_CURRENT, &initialzeDdiTable.EventExp );
+            result = zeGetCommandQueueProcAddrTable( version, &initialzeDdiTable.CommandQueue );
         }
 
         if( ZE_RESULT_SUCCESS == result )
         {
-            result = zeGetEventPoolProcAddrTable( ZE_API_VERSION_CURRENT, &initialzeDdiTable.EventPool );
-        }
-
-        if( ZE_RESULT_SUCCESS == result )
-        {
-            result = zeGetFenceProcAddrTable( ZE_API_VERSION_CURRENT, &initialzeDdiTable.Fence );
-        }
-
-        if( ZE_RESULT_SUCCESS == result )
-        {
-            result = zeGetImageProcAddrTable( ZE_API_VERSION_CURRENT, &initialzeDdiTable.Image );
+            result = zeGetCommandListProcAddrTable( version, &initialzeDdiTable.CommandList );
         }
 
         if( ZE_RESULT_SUCCESS == result )
         {
             // Optional
-            zeGetImageExpProcAddrTable( ZE_API_VERSION_CURRENT, &initialzeDdiTable.ImageExp );
+            zeGetCommandListExpProcAddrTable( version, &initialzeDdiTable.CommandListExp );
         }
 
         if( ZE_RESULT_SUCCESS == result )
         {
-            result = zeGetKernelProcAddrTable( ZE_API_VERSION_CURRENT, &initialzeDdiTable.Kernel );
-        }
-
-        if( ZE_RESULT_SUCCESS == result )
-        {
-            // Optional
-            zeGetKernelExpProcAddrTable( ZE_API_VERSION_CURRENT, &initialzeDdiTable.KernelExp );
-        }
-
-        if( ZE_RESULT_SUCCESS == result )
-        {
-            result = zeGetMemProcAddrTable( ZE_API_VERSION_CURRENT, &initialzeDdiTable.Mem );
+            result = zeGetEventProcAddrTable( version, &initialzeDdiTable.Event );
         }
 
         if( ZE_RESULT_SUCCESS == result )
         {
             // Optional
-            zeGetMemExpProcAddrTable( ZE_API_VERSION_CURRENT, &initialzeDdiTable.MemExp );
+            zeGetEventExpProcAddrTable( version, &initialzeDdiTable.EventExp );
         }
 
         if( ZE_RESULT_SUCCESS == result )
         {
-            result = zeGetModuleProcAddrTable( ZE_API_VERSION_CURRENT, &initialzeDdiTable.Module );
+            result = zeGetEventPoolProcAddrTable( version, &initialzeDdiTable.EventPool );
         }
 
         if( ZE_RESULT_SUCCESS == result )
         {
-            result = zeGetModuleBuildLogProcAddrTable( ZE_API_VERSION_CURRENT, &initialzeDdiTable.ModuleBuildLog );
+            result = zeGetFenceProcAddrTable( version, &initialzeDdiTable.Fence );
         }
 
         if( ZE_RESULT_SUCCESS == result )
         {
-            result = zeGetPhysicalMemProcAddrTable( ZE_API_VERSION_CURRENT, &initialzeDdiTable.PhysicalMem );
-        }
-
-        if( ZE_RESULT_SUCCESS == result )
-        {
-            result = zeGetSamplerProcAddrTable( ZE_API_VERSION_CURRENT, &initialzeDdiTable.Sampler );
-        }
-
-        if( ZE_RESULT_SUCCESS == result )
-        {
-            result = zeGetVirtualMemProcAddrTable( ZE_API_VERSION_CURRENT, &initialzeDdiTable.VirtualMem );
+            result = zeGetImageProcAddrTable( version, &initialzeDdiTable.Image );
         }
 
         if( ZE_RESULT_SUCCESS == result )
         {
             // Optional
-            zeGetFabricEdgeExpProcAddrTable( ZE_API_VERSION_CURRENT, &initialzeDdiTable.FabricEdgeExp );
+            zeGetImageExpProcAddrTable( version, &initialzeDdiTable.ImageExp );
+        }
+
+        if( ZE_RESULT_SUCCESS == result )
+        {
+            result = zeGetKernelProcAddrTable( version, &initialzeDdiTable.Kernel );
         }
 
         if( ZE_RESULT_SUCCESS == result )
         {
             // Optional
-            zeGetFabricVertexExpProcAddrTable( ZE_API_VERSION_CURRENT, &initialzeDdiTable.FabricVertexExp );
+            zeGetKernelExpProcAddrTable( version, &initialzeDdiTable.KernelExp );
+        }
+
+        if( ZE_RESULT_SUCCESS == result )
+        {
+            result = zeGetMemProcAddrTable( version, &initialzeDdiTable.Mem );
+        }
+
+        if( ZE_RESULT_SUCCESS == result )
+        {
+            // Optional
+            zeGetMemExpProcAddrTable( version, &initialzeDdiTable.MemExp );
+        }
+
+        if( ZE_RESULT_SUCCESS == result )
+        {
+            result = zeGetModuleProcAddrTable( version, &initialzeDdiTable.Module );
+        }
+
+        if( ZE_RESULT_SUCCESS == result )
+        {
+            result = zeGetModuleBuildLogProcAddrTable( version, &initialzeDdiTable.ModuleBuildLog );
+        }
+
+        if( ZE_RESULT_SUCCESS == result )
+        {
+            result = zeGetPhysicalMemProcAddrTable( version, &initialzeDdiTable.PhysicalMem );
+        }
+
+        if( ZE_RESULT_SUCCESS == result )
+        {
+            result = zeGetSamplerProcAddrTable( version, &initialzeDdiTable.Sampler );
+        }
+
+        if( ZE_RESULT_SUCCESS == result )
+        {
+            result = zeGetVirtualMemProcAddrTable( version, &initialzeDdiTable.VirtualMem );
+        }
+
+        if( ZE_RESULT_SUCCESS == result )
+        {
+            // Optional
+            zeGetFabricEdgeExpProcAddrTable( version, &initialzeDdiTable.FabricEdgeExp );
+        }
+
+        if( ZE_RESULT_SUCCESS == result )
+        {
+            // Optional
+            zeGetFabricVertexExpProcAddrTable( version, &initialzeDdiTable.FabricVertexExp );
         }
 
         return result;

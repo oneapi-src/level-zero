@@ -206,128 +206,128 @@ namespace ze_lib
         if( ZE_RESULT_SUCCESS == result )
         {
             // Optional
-            zesGetGlobalProcAddrTable( ZE_API_VERSION_CURRENT, &initialzesDdiTable.Global );
+            zesGetGlobalProcAddrTable( version, &initialzesDdiTable.Global );
         }
 
         if( ZE_RESULT_SUCCESS == result )
         {
-            result = zesGetDeviceProcAddrTable( ZE_API_VERSION_CURRENT, &initialzesDdiTable.Device );
-        }
-
-        if( ZE_RESULT_SUCCESS == result )
-        {
-            // Optional
-            zesGetDeviceExpProcAddrTable( ZE_API_VERSION_CURRENT, &initialzesDdiTable.DeviceExp );
-        }
-
-        if( ZE_RESULT_SUCCESS == result )
-        {
-            result = zesGetDriverProcAddrTable( ZE_API_VERSION_CURRENT, &initialzesDdiTable.Driver );
+            result = zesGetDeviceProcAddrTable( version, &initialzesDdiTable.Device );
         }
 
         if( ZE_RESULT_SUCCESS == result )
         {
             // Optional
-            zesGetDriverExpProcAddrTable( ZE_API_VERSION_CURRENT, &initialzesDdiTable.DriverExp );
+            zesGetDeviceExpProcAddrTable( version, &initialzesDdiTable.DeviceExp );
         }
 
         if( ZE_RESULT_SUCCESS == result )
         {
-            result = zesGetDiagnosticsProcAddrTable( ZE_API_VERSION_CURRENT, &initialzesDdiTable.Diagnostics );
-        }
-
-        if( ZE_RESULT_SUCCESS == result )
-        {
-            result = zesGetEngineProcAddrTable( ZE_API_VERSION_CURRENT, &initialzesDdiTable.Engine );
-        }
-
-        if( ZE_RESULT_SUCCESS == result )
-        {
-            result = zesGetFabricPortProcAddrTable( ZE_API_VERSION_CURRENT, &initialzesDdiTable.FabricPort );
-        }
-
-        if( ZE_RESULT_SUCCESS == result )
-        {
-            result = zesGetFanProcAddrTable( ZE_API_VERSION_CURRENT, &initialzesDdiTable.Fan );
-        }
-
-        if( ZE_RESULT_SUCCESS == result )
-        {
-            result = zesGetFirmwareProcAddrTable( ZE_API_VERSION_CURRENT, &initialzesDdiTable.Firmware );
+            result = zesGetDriverProcAddrTable( version, &initialzesDdiTable.Driver );
         }
 
         if( ZE_RESULT_SUCCESS == result )
         {
             // Optional
-            zesGetFirmwareExpProcAddrTable( ZE_API_VERSION_CURRENT, &initialzesDdiTable.FirmwareExp );
+            zesGetDriverExpProcAddrTable( version, &initialzesDdiTable.DriverExp );
         }
 
         if( ZE_RESULT_SUCCESS == result )
         {
-            result = zesGetFrequencyProcAddrTable( ZE_API_VERSION_CURRENT, &initialzesDdiTable.Frequency );
+            result = zesGetDiagnosticsProcAddrTable( version, &initialzesDdiTable.Diagnostics );
         }
 
         if( ZE_RESULT_SUCCESS == result )
         {
-            result = zesGetLedProcAddrTable( ZE_API_VERSION_CURRENT, &initialzesDdiTable.Led );
+            result = zesGetEngineProcAddrTable( version, &initialzesDdiTable.Engine );
         }
 
         if( ZE_RESULT_SUCCESS == result )
         {
-            result = zesGetMemoryProcAddrTable( ZE_API_VERSION_CURRENT, &initialzesDdiTable.Memory );
+            result = zesGetFabricPortProcAddrTable( version, &initialzesDdiTable.FabricPort );
         }
 
         if( ZE_RESULT_SUCCESS == result )
         {
-            // Optional
-            zesGetOverclockProcAddrTable( ZE_API_VERSION_CURRENT, &initialzesDdiTable.Overclock );
+            result = zesGetFanProcAddrTable( version, &initialzesDdiTable.Fan );
         }
 
         if( ZE_RESULT_SUCCESS == result )
         {
-            result = zesGetPerformanceFactorProcAddrTable( ZE_API_VERSION_CURRENT, &initialzesDdiTable.PerformanceFactor );
-        }
-
-        if( ZE_RESULT_SUCCESS == result )
-        {
-            result = zesGetPowerProcAddrTable( ZE_API_VERSION_CURRENT, &initialzesDdiTable.Power );
-        }
-
-        if( ZE_RESULT_SUCCESS == result )
-        {
-            result = zesGetPsuProcAddrTable( ZE_API_VERSION_CURRENT, &initialzesDdiTable.Psu );
-        }
-
-        if( ZE_RESULT_SUCCESS == result )
-        {
-            result = zesGetRasProcAddrTable( ZE_API_VERSION_CURRENT, &initialzesDdiTable.Ras );
+            result = zesGetFirmwareProcAddrTable( version, &initialzesDdiTable.Firmware );
         }
 
         if( ZE_RESULT_SUCCESS == result )
         {
             // Optional
-            zesGetRasExpProcAddrTable( ZE_API_VERSION_CURRENT, &initialzesDdiTable.RasExp );
+            zesGetFirmwareExpProcAddrTable( version, &initialzesDdiTable.FirmwareExp );
         }
 
         if( ZE_RESULT_SUCCESS == result )
         {
-            result = zesGetSchedulerProcAddrTable( ZE_API_VERSION_CURRENT, &initialzesDdiTable.Scheduler );
+            result = zesGetFrequencyProcAddrTable( version, &initialzesDdiTable.Frequency );
         }
 
         if( ZE_RESULT_SUCCESS == result )
         {
-            result = zesGetStandbyProcAddrTable( ZE_API_VERSION_CURRENT, &initialzesDdiTable.Standby );
+            result = zesGetLedProcAddrTable( version, &initialzesDdiTable.Led );
         }
 
         if( ZE_RESULT_SUCCESS == result )
         {
-            result = zesGetTemperatureProcAddrTable( ZE_API_VERSION_CURRENT, &initialzesDdiTable.Temperature );
+            result = zesGetMemoryProcAddrTable( version, &initialzesDdiTable.Memory );
         }
 
         if( ZE_RESULT_SUCCESS == result )
         {
             // Optional
-            zesGetVFManagementExpProcAddrTable( ZE_API_VERSION_CURRENT, &initialzesDdiTable.VFManagementExp );
+            zesGetOverclockProcAddrTable( version, &initialzesDdiTable.Overclock );
+        }
+
+        if( ZE_RESULT_SUCCESS == result )
+        {
+            result = zesGetPerformanceFactorProcAddrTable( version, &initialzesDdiTable.PerformanceFactor );
+        }
+
+        if( ZE_RESULT_SUCCESS == result )
+        {
+            result = zesGetPowerProcAddrTable( version, &initialzesDdiTable.Power );
+        }
+
+        if( ZE_RESULT_SUCCESS == result )
+        {
+            result = zesGetPsuProcAddrTable( version, &initialzesDdiTable.Psu );
+        }
+
+        if( ZE_RESULT_SUCCESS == result )
+        {
+            result = zesGetRasProcAddrTable( version, &initialzesDdiTable.Ras );
+        }
+
+        if( ZE_RESULT_SUCCESS == result )
+        {
+            // Optional
+            zesGetRasExpProcAddrTable( version, &initialzesDdiTable.RasExp );
+        }
+
+        if( ZE_RESULT_SUCCESS == result )
+        {
+            result = zesGetSchedulerProcAddrTable( version, &initialzesDdiTable.Scheduler );
+        }
+
+        if( ZE_RESULT_SUCCESS == result )
+        {
+            result = zesGetStandbyProcAddrTable( version, &initialzesDdiTable.Standby );
+        }
+
+        if( ZE_RESULT_SUCCESS == result )
+        {
+            result = zesGetTemperatureProcAddrTable( version, &initialzesDdiTable.Temperature );
+        }
+
+        if( ZE_RESULT_SUCCESS == result )
+        {
+            // Optional
+            zesGetVFManagementExpProcAddrTable( version, &initialzesDdiTable.VFManagementExp );
         }
 
         return result;

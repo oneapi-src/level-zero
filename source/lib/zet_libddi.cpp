@@ -14,6 +14,7 @@
 
 namespace ze_lib
 {
+    ///////////////////////////////////////////////////////////////////////////////
 
 #ifdef DYNAMIC_LOAD_LOADER
     __zedlllocal ze_result_t context_t::zetDdiTableInit(ze_api_version_t version)
@@ -162,97 +163,97 @@ namespace ze_lib
         if( ZE_RESULT_SUCCESS == result )
         {
             // Optional
-            zetGetMetricDecoderExpProcAddrTable( ZE_API_VERSION_CURRENT, &initialzetDdiTable.MetricDecoderExp );
+            zetGetMetricDecoderExpProcAddrTable( version, &initialzetDdiTable.MetricDecoderExp );
         }
 
         if( ZE_RESULT_SUCCESS == result )
         {
             // Optional
-            zetGetMetricProgrammableExpProcAddrTable( ZE_API_VERSION_CURRENT, &initialzetDdiTable.MetricProgrammableExp );
+            zetGetMetricProgrammableExpProcAddrTable( version, &initialzetDdiTable.MetricProgrammableExp );
         }
 
         if( ZE_RESULT_SUCCESS == result )
         {
             // Optional
-            zetGetMetricTracerExpProcAddrTable( ZE_API_VERSION_CURRENT, &initialzetDdiTable.MetricTracerExp );
+            zetGetMetricTracerExpProcAddrTable( version, &initialzetDdiTable.MetricTracerExp );
         }
 
         if( ZE_RESULT_SUCCESS == result )
         {
-            result = zetGetDeviceProcAddrTable( ZE_API_VERSION_CURRENT, &initialzetDdiTable.Device );
-        }
-
-        if( ZE_RESULT_SUCCESS == result )
-        {
-            // Optional
-            zetGetDeviceExpProcAddrTable( ZE_API_VERSION_CURRENT, &initialzetDdiTable.DeviceExp );
-        }
-
-        if( ZE_RESULT_SUCCESS == result )
-        {
-            result = zetGetContextProcAddrTable( ZE_API_VERSION_CURRENT, &initialzetDdiTable.Context );
-        }
-
-        if( ZE_RESULT_SUCCESS == result )
-        {
-            result = zetGetCommandListProcAddrTable( ZE_API_VERSION_CURRENT, &initialzetDdiTable.CommandList );
-        }
-
-        if( ZE_RESULT_SUCCESS == result )
-        {
-            result = zetGetKernelProcAddrTable( ZE_API_VERSION_CURRENT, &initialzetDdiTable.Kernel );
-        }
-
-        if( ZE_RESULT_SUCCESS == result )
-        {
-            result = zetGetModuleProcAddrTable( ZE_API_VERSION_CURRENT, &initialzetDdiTable.Module );
-        }
-
-        if( ZE_RESULT_SUCCESS == result )
-        {
-            result = zetGetDebugProcAddrTable( ZE_API_VERSION_CURRENT, &initialzetDdiTable.Debug );
-        }
-
-        if( ZE_RESULT_SUCCESS == result )
-        {
-            result = zetGetMetricProcAddrTable( ZE_API_VERSION_CURRENT, &initialzetDdiTable.Metric );
+            result = zetGetDeviceProcAddrTable( version, &initialzetDdiTable.Device );
         }
 
         if( ZE_RESULT_SUCCESS == result )
         {
             // Optional
-            zetGetMetricExpProcAddrTable( ZE_API_VERSION_CURRENT, &initialzetDdiTable.MetricExp );
+            zetGetDeviceExpProcAddrTable( version, &initialzetDdiTable.DeviceExp );
         }
 
         if( ZE_RESULT_SUCCESS == result )
         {
-            result = zetGetMetricGroupProcAddrTable( ZE_API_VERSION_CURRENT, &initialzetDdiTable.MetricGroup );
+            result = zetGetContextProcAddrTable( version, &initialzetDdiTable.Context );
+        }
+
+        if( ZE_RESULT_SUCCESS == result )
+        {
+            result = zetGetCommandListProcAddrTable( version, &initialzetDdiTable.CommandList );
+        }
+
+        if( ZE_RESULT_SUCCESS == result )
+        {
+            result = zetGetKernelProcAddrTable( version, &initialzetDdiTable.Kernel );
+        }
+
+        if( ZE_RESULT_SUCCESS == result )
+        {
+            result = zetGetModuleProcAddrTable( version, &initialzetDdiTable.Module );
+        }
+
+        if( ZE_RESULT_SUCCESS == result )
+        {
+            result = zetGetDebugProcAddrTable( version, &initialzetDdiTable.Debug );
+        }
+
+        if( ZE_RESULT_SUCCESS == result )
+        {
+            result = zetGetMetricProcAddrTable( version, &initialzetDdiTable.Metric );
         }
 
         if( ZE_RESULT_SUCCESS == result )
         {
             // Optional
-            zetGetMetricGroupExpProcAddrTable( ZE_API_VERSION_CURRENT, &initialzetDdiTable.MetricGroupExp );
+            zetGetMetricExpProcAddrTable( version, &initialzetDdiTable.MetricExp );
         }
 
         if( ZE_RESULT_SUCCESS == result )
         {
-            result = zetGetMetricQueryProcAddrTable( ZE_API_VERSION_CURRENT, &initialzetDdiTable.MetricQuery );
+            result = zetGetMetricGroupProcAddrTable( version, &initialzetDdiTable.MetricGroup );
         }
 
         if( ZE_RESULT_SUCCESS == result )
         {
-            result = zetGetMetricQueryPoolProcAddrTable( ZE_API_VERSION_CURRENT, &initialzetDdiTable.MetricQueryPool );
+            // Optional
+            zetGetMetricGroupExpProcAddrTable( version, &initialzetDdiTable.MetricGroupExp );
         }
 
         if( ZE_RESULT_SUCCESS == result )
         {
-            result = zetGetMetricStreamerProcAddrTable( ZE_API_VERSION_CURRENT, &initialzetDdiTable.MetricStreamer );
+            result = zetGetMetricQueryProcAddrTable( version, &initialzetDdiTable.MetricQuery );
         }
 
         if( ZE_RESULT_SUCCESS == result )
         {
-            result = zetGetTracerExpProcAddrTable( ZE_API_VERSION_CURRENT, &initialzetDdiTable.TracerExp );
+            result = zetGetMetricQueryPoolProcAddrTable( version, &initialzetDdiTable.MetricQueryPool );
+        }
+
+        if( ZE_RESULT_SUCCESS == result )
+        {
+            result = zetGetMetricStreamerProcAddrTable( version, &initialzetDdiTable.MetricStreamer );
+        }
+
+        if( ZE_RESULT_SUCCESS == result )
+        {
+            result = zetGetTracerExpProcAddrTable( version, &initialzetDdiTable.TracerExp );
         }
 
         return result;
