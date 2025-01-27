@@ -52,7 +52,7 @@ endif()
 
 include(FetchContent)
 
-if(BUILD_L0_LOADER_TESTS)
+if(BUILD_L0_LOADER_TESTS AND (NOT MSVC OR (MSVC AND NOT BUILD_STATIC)))
     FetchContent_Declare(
         googletest
         GIT_REPOSITORY https://github.com/google/googletest.git
@@ -191,7 +191,7 @@ set(TARGET_LOADER_NAME ze_loader)
 add_subdirectory(source)
 add_subdirectory(samples)
 
-if(BUILD_L0_LOADER_TESTS)
+if(BUILD_L0_LOADER_TESTS AND (NOT MSVC OR (MSVC AND NOT BUILD_STATIC)))
     include(CTest)
     add_subdirectory(test)
 endif()
