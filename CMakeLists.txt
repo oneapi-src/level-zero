@@ -63,11 +63,7 @@ if(BUILD_L0_LOADER_TESTS AND (NOT MSVC OR (MSVC AND NOT BUILD_STATIC)))
 
 	# For Windows: Prevent overriding the parent project's compiler/linker settings
     if(MSVC)
-        if (BUILD_STATIC)
-            set(gtest_force_shared_crt OFF CACHE BOOL "" FORCE)
-        else()
-            set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
-        endif()
+        set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
     endif()
 
 	FetchContent_MakeAvailable(googletest)

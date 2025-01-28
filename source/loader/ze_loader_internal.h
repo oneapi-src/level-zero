@@ -150,7 +150,6 @@ namespace loader
         bool tracingLayerEnabled = false;
         dditable_t tracing_dditable = {};
         std::shared_ptr<Logger> zel_logger;
-        uint32_t init_counter = 0;
     };
 
     extern context_t *context;
