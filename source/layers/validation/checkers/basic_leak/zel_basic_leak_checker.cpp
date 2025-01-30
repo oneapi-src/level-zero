@@ -53,7 +53,7 @@ namespace validation_layer
             {"zeCommandListCreateImmediate", "zeCommandListCreate", "zeCommandListDestroy"},
             {"zeEventCreate",        "zeEventDestroy"},
             {"zeFenceCreate",        "zeFenceDestroy"},
-            {"zeImageCreate",        "zeImageDestroy"},
+            {"zeImageCreate", "zeImageViewCreateExt", "zeImageDestroy"},
             {"zeSamplerCreate",      "zeSamplerDestroy"},
             {"zeMemAllocDevice", "zeMemAllocHost", "zeMemAllocShared", "zeMemFree"}};
     }
@@ -189,6 +189,13 @@ namespace validation_layer
     ze_result_t basic_leakChecker::ZEbasic_leakChecker::zeImageCreateEpilogue(ze_context_handle_t, ze_device_handle_t, const ze_image_desc_t*, ze_image_handle_t*, ze_result_t result) {
         if (result == ZE_RESULT_SUCCESS) {
             countFunctionCall("zeImageCreate");
+        }
+        return result;
+    }
+
+    ze_result_t basic_leakChecker::ZEbasic_leakChecker::zeImageViewCreateExtEpilogue(ze_context_handle_t hContext, ze_device_handle_t hDevice, const ze_image_desc_t* desc, ze_image_handle_t hImage, ze_image_handle_t* phImageView , ze_result_t result) {
+        if (result == ZE_RESULT_SUCCESS) {
+            countFunctionCall("zeImageViewCreateExt");
         }
         return result;
     }

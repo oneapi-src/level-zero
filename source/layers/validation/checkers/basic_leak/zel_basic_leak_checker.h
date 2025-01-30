@@ -70,6 +70,7 @@ namespace validation_layer
                 ze_result_t zeFenceCreateEpilogue(ze_command_queue_handle_t, const ze_fence_desc_t *, ze_fence_handle_t*, ze_result_t result) override;
                 ze_result_t zeFenceDestroyEpilogue(ze_fence_handle_t, ze_result_t result) override;
                 ze_result_t zeImageCreateEpilogue(ze_context_handle_t, ze_device_handle_t, const ze_image_desc_t*, ze_image_handle_t*, ze_result_t result) override;
+                ze_result_t zeImageViewCreateExtEpilogue( ze_context_handle_t hContext, ze_device_handle_t hDevice, const ze_image_desc_t* desc, ze_image_handle_t hImage, ze_image_handle_t* phImageView , ze_result_t result) override;
                 ze_result_t zeImageDestroyEpilogue(ze_image_handle_t, ze_result_t result) override;
                 ze_result_t zeSamplerCreateEpilogue(ze_context_handle_t, ze_device_handle_t, const ze_sampler_desc_t*, ze_sampler_handle_t*, ze_result_t result) override;
                 ze_result_t zeSamplerDestroyEpilogue(ze_sampler_handle_t, ze_result_t result) override;
