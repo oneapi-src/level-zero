@@ -78,10 +78,10 @@ jobs:
           -old base.dump \
           -new head.dump \
           -report-path release_report.html
-    - uses: actions/upload-artifact@v3
+    - uses: actions/upload-artifact@v4
       if: always()
       with:
-        name: abi-report
+        name: abi-report-last-release
         path: release_report.html
   check-abi-master:
     runs-on: ubuntu-latest
@@ -146,8 +146,8 @@ jobs:
           -old base.dump \
           -new head.dump \
           -report-path master_report.html
-    - uses: actions/upload-artifact@v3
+    - uses: actions/upload-artifact@v4
       if: always()
       with:
-        name: abi-report
+        name: abi-report-master
         path: master_report.html
