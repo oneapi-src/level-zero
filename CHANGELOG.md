@@ -1,5 +1,8 @@
 # Level zero loader changelog
 
+## v1.20.3
+* Implemented basic leak checker in validation layer
+* Support for Sorting Drivers based on the devices provided
 ## v1.20.2
 * Fix to Validation Layer Param checking of Extensions for new desc types
 ## v1.20.1

@@ -19,11 +19,11 @@ By default, no validation modes will be enabled. The individual validation modes
 - `ZE_ENABLE_PARAMETER_VALIDATION`
 - `ZE_ENABLE_HANDLE_LIFETIME`
 - `ZEL_ENABLE_EVENTS_CHECKER`
+- `ZEL_ENABLE_BASIC_LEAK_CHECKER`
 - `ZE_ENABLE_THREADING_VALIDATION` (Not yet Implemented)
 
 ## Validation Modes
 
-### `ZE_ENABLE_ALL_VALIDATION`
 ### `ZE_ENABLE_PARAMETER_VALIDATION`
 
 Parameter Validation mode maintains no internal state.  It performs the following checks on each API before calling into driver:
@@ -52,6 +52,31 @@ This mode maintains an internal mapping of each handle type to a state structure
 The Events Checker validates usage of events. 
 - It is designed to detect potential deadlocks that might occur due to improper event usage in the Level Zero API. It prints out warning messages for user when it detects a potential deadlock.
 - In some cases it may also detect whether an event is being used more than once without being reset. Consider a case in which a single event is signaled from twice.
+
+### `ZEL_ENABLE_BASIC_LEAK_CHECKER`
+
+Basic leak checker in the validation layer which tracks the Create and Destroy calls for a given handle type and reports if a create/destroy is missing.
+
+
+        #### Sample Output
+
+        ```
+        ----------------------------------------------------------------------
+                       zeContextCreate = 1     \--->        zeContextDestroy = 1
+                  zeCommandQueueCreate = 1     \--->   zeCommandQueueDestroy = 1
+                        zeModuleCreate = 1     \--->         zeModuleDestroy = 1
+                        zeKernelCreate = 1     \--->         zeKernelDestroy = 1
+                     zeEventPoolCreate = 1     \--->      zeEventPoolDestroy = 1
+          zeCommandListCreateImmediate = 1     |
+                   zeCommandListCreate = 1     \--->    zeCommandListDestroy = 1  ---> LEAK = 1
+                         zeEventCreate = 2     \--->          zeEventDestroy = 2
+                         zeFenceCreate = 1     \--->          zeFenceDestroy = 1
+                         zeImageCreate = 0     \--->          zeImageDestroy = 0
+                       zeSamplerCreate = 0     \--->        zeSamplerDestroy = 0
+                      zeMemAllocDevice = 0     |
+                        zeMemAllocHost = 1     |
+                      zeMemAllocShared = 0     \--->               zeMemFree = 1
+        ```
 
 ### `ZE_ENABLE_THREADING_VALIDATION` (Not yet Implemeneted)
 
