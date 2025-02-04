@@ -58,6 +58,31 @@ user's home directory.
 
 This feature is in early development and is preview only.
 
+# Driver/Device Sorting
+
+As of v1.20.3 of the Loader, Drivers and Devices reported to the user are sorted to enable the first device to be the best available device.
+
+- By default, drivers will be sorted such that the ordering will be:
+    - Drivers with Discrete GPUs only
+    - Drivers with Discrete and Integrated GPUs
+    - Drivers with Integrated GPUs
+    - Drivers with Mixed Devices Types (ie GPU + NPU)
+    - Drivers with Non GPU Devices Only
+- If ZE_ENABLE_PCI_ID_DEVICE_ORDER is set, then the following ordering
+  is provided:
+    - Drivers with Integrated GPUs
+    - Drivers with Discrete and Integrated GPUs
+    - Drivers with Discrete GPUs only
+    - Drivers with Mixed Devices Types (ie GPU + NPU)
+    - Drivers with Non GPU Devices Only
+
+The order of the sorting is based on the enumerator:
+`zel_driver_type_t`
+
+The ordering of the drivers reported to the user is based on the order of the enumerations provided.
+When additional driver types are added, they should be added to the end of the list to avoid reporting new device types
+before known device types.
+
 
 # Contributing
 
