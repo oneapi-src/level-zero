@@ -12,11 +12,17 @@
 
 namespace ze_lib
 {
+    #ifdef DYNAMIC_LOAD_LOADER
+    context_t &init_context() {
+        static context_t loader_context;
+        return loader_context;
+    }
+    #endif
     ///////////////////////////////////////////////////////////////////////////////
     #ifndef DYNAMIC_LOAD_LOADER
     context_t *context;
     #else
-    context_t *context = new context_t;
+    context_t *context = &init_context();
     #endif
     bool destruction = false;
 
