@@ -305,7 +305,16 @@ zelLoaderTranslateHandle(
    void **handleOut)
 
 {
+#ifdef DYNAMIC_LOAD_LOADER
+    if(nullptr == ze_lib::context->loader)
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    typedef ze_result_t (ZE_APICALL *zelLoaderTranslateHandleInternal_t)(zel_handle_type_t handleType, void *handleIn, void **handleOut);
+    auto translateHandle = reinterpret_cast<zelLoaderTranslateHandleInternal_t>(
+            GET_FUNCTION_PTR(ze_lib::context->loader, "zelLoaderTranslateHandleInternal") );
+    return translateHandle(handleType, handleIn, handleOut);
+#else
     return zelLoaderTranslateHandleInternal(handleType, handleIn, handleOut);
+#endif
 }
 
 ze_result_t ZE_APICALL
