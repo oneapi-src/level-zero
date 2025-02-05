@@ -304,7 +304,7 @@ template <>
 inline ze_result_t ParameterValidation::validateExtensions(ze_event_pool_desc_t *descriptor) {
 
     std::vector<ze_structure_type_t> baseTypes = {ZE_STRUCTURE_TYPE_EVENT_POOL_DESC};
-    std::vector<ze_structure_type_t> types = {};
+    std::vector<ze_structure_type_t> types = {ZE_STRUCTURE_TYPE_COUNTER_BASED_EVENT_POOL_EXP_DESC};
 
     return validateStructureTypes<ze_structure_type_t, ze_base_properties_t>(descriptor, baseTypes, types);
 }
