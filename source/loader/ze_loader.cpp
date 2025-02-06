@@ -395,7 +395,9 @@ namespace loader
             }
 
             for (auto handle : driverHandles) {
-                ze_driver_properties_t properties;
+                ze_driver_properties_t properties = {};
+                properties.stype = ZE_STRUCTURE_TYPE_DRIVER_PROPERTIES;
+                properties.pNext = nullptr;
                 ze_result_t res = driver.dditable.ze.Driver.pfnGetProperties(handle, &properties);
                 if (res != ZE_RESULT_SUCCESS) {
                     if (debugTraceEnabled) {
@@ -434,7 +436,9 @@ namespace loader
                 bool discreteGPU = false;
                 bool other = false;
                 for( auto device : deviceHandles ) {
-                    ze_device_properties_t deviceProperties;
+                    ze_device_properties_t deviceProperties = {};
+                    deviceProperties.stype = ZE_STRUCTURE_TYPE_DEVICE_PROPERTIES;
+                    deviceProperties.pNext = nullptr;
                     res = driver.dditable.ze.Device.pfnGetProperties(device, &deviceProperties);
                     if( ZE_RESULT_SUCCESS != res ) {
                         if (debugTraceEnabled) {
