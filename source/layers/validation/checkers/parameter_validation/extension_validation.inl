@@ -9,6 +9,9 @@
  */
 #include <type_traits>
 
+// High threshold for experimental driver extension values
+#define ZEX_EXPERIMENTAL_DRIVER_EXTENSION_MAX 0x00100000
+
 template <typename S, typename B>
 inline ze_result_t validateStructureTypes(const void *descriptorPtr,
                                    std::vector<S> &baseTypesVector,
@@ -50,16 +53,20 @@ inline ze_result_t validateStructureTypes(const void *descriptorPtr,
                     break;
                 }
             }
-            if (!validExtensionTypeFound) {
+            // If the value is greater than the
+            // experimental driver max extension value, then return error.
+            if (!validExtensionTypeFound && pBase->stype >= ZEX_EXPERIMENTAL_DRIVER_EXTENSION_MAX) {
                 return ZE_RESULT_ERROR_INVALID_ARGUMENT;
             }
             pBase = reinterpret_cast<const B*>(pBase->pNext);
         }
-     }
+    }
 
-     if (pBase) {
+    // Check for invalid stype values, if the value is greater than the
+    // experimental driver max extension value, then return error.
+    if (pBase && pBase->stype >= ZEX_EXPERIMENTAL_DRIVER_EXTENSION_MAX) {
         return ZE_RESULT_ERROR_INVALID_ARGUMENT;
-     }
+    }
 
      return ZE_RESULT_SUCCESS;
 }
