@@ -318,10 +318,11 @@ namespace loader
                 // Use the previously init ddi table pointer to zeInit to allow for intercept of the zeInit calls
                 ze_result_t res = globalInitStored->pfnInit(flags);
                 // Verify that this driver successfully init in the call above.
-                if (driver.initStatus != ZE_RESULT_SUCCESS) {
-                    res = driver.initStatus;
+                if (res != ZE_RESULT_SUCCESS || driver.initStatus != ZE_RESULT_SUCCESS) {
+                    if (driver.initStatus != ZE_RESULT_SUCCESS)
+                        res = driver.initStatus;
                     if (debugTraceEnabled) {
-                        std::string message = "init driver " + driver.name + " zeInit(" + loader::to_string(flags) + ") returning ";
+                        std::string message = "init driver (global ddi) " + driver.name + " zeInit(" + loader::to_string(flags) + ") returning ";
                         debug_trace_message(message, loader::to_string(res));
                     }
                     return res;
@@ -359,10 +360,11 @@ namespace loader
                 // Use the previously init ddi table pointer to zeInit to allow for intercept of the zeInit calls
                 ze_result_t res = globalInitStored->pfnInitDrivers(&pCount, nullptr, desc);
                 // Verify that this driver successfully init in the call above.
-                if (driver.initDriversStatus != ZE_RESULT_SUCCESS) {
-                    res = driver.initDriversStatus;
+                if (res != ZE_RESULT_SUCCESS || driver.initDriversStatus != ZE_RESULT_SUCCESS) {
+                    if (driver.initDriversStatus != ZE_RESULT_SUCCESS)
+                        res = driver.initDriversStatus;
                     if (debugTraceEnabled) {
-                        std::string message = "init driver " + driver.name + " zeInitDrivers(" + loader::to_string(desc) + ") returning ";
+                        std::string message = "init driver (global ddi) " + driver.name + " zeInitDrivers(" + loader::to_string(desc) + ") returning ";
                         debug_trace_message(message, loader::to_string(res));
                     }
                     return res;
@@ -374,7 +376,7 @@ namespace loader
                 // Verify that this driver successfully init in the call above.
                 if (res != ZE_RESULT_SUCCESS) {
                     if (debugTraceEnabled) {
-                        std::string message = "init driver " + driver.name + " zeInitDrivers(" + loader::to_string(desc) + ") returning ";
+                        std::string message = "init driver (driver ddi) " + driver.name + " zeInitDrivers(" + loader::to_string(desc) + ") returning ";
                         debug_trace_message(message, loader::to_string(res));
                     }
                     return res;
@@ -385,7 +387,7 @@ namespace loader
                 // Verify that this driver successfully init in the call above.
                 if (res != ZE_RESULT_SUCCESS) {
                     if (debugTraceEnabled) {
-                        std::string message = "init driver " + driver.name + " zeInitDrivers(" + loader::to_string(desc) + ") returning ";
+                        std::string message = "init driver (driver ddi) " + driver.name + " zeInitDrivers(" + loader::to_string(desc) + ") returning ";
                         debug_trace_message(message, loader::to_string(res));
                     }
                     return res;
