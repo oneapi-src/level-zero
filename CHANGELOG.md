@@ -1,5 +1,9 @@
 # Level zero loader changelog
 
+## v1.20.4
+* Fix stype init for property query during init
+* Fix Init error checking to check the validation layer checks
+* Extension validation fixed in the parameter validation checker
 ## v1.20.3
 * Implemented basic leak checker in validation layer
 * Support for Sorting Drivers based on the devices provided
