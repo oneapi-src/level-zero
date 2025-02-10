@@ -38,30 +38,35 @@ namespace validation_layer
         }
     }
 
-    // The format of this table is such that each row accounts for a
-    // specific type of objects, and all elements in the raw except the last
-    // one are allocating objects of that type, while the last element is known
-    // to deallocate objects of that type.
-    //
-    static std::vector<std::vector<std::string>> createDestroySet() {
+    struct ctorsAndDtors {
+        std::vector<std::string> ctors;
+        std::vector<std::string> dtors;
+    };
+
+    static std::vector<ctorsAndDtors> createDestroySet() {
         return {
-            {"zeContextCreate",      "zeContextDestroy"},
-            {"zeCommandQueueCreate", "zeCommandQueueDestroy"},
-            {"zeModuleCreate",       "zeModuleDestroy"},
-            {"zeKernelCreate",       "zeKernelDestroy"},
-            {"zeEventPoolCreate",    "zeEventPoolDestroy"},
-            {"zeCommandListCreateImmediate", "zeCommandListCreate", "zeCommandListDestroy"},
-            {"zeEventCreate",        "zeEventDestroy"},
-            {"zeFenceCreate",        "zeFenceDestroy"},
-            {"zeImageCreate", "zeImageViewCreateExt", "zeImageDestroy"},
-            {"zeSamplerCreate",      "zeSamplerDestroy"},
-            {"zeMemAllocDevice", "zeMemAllocHost", "zeMemAllocShared", "zeMemFree"}};
+            {{"zeContextCreate"}, {"zeContextDestroy"}},
+            {{"zeCommandQueueCreate"}, {"zeCommandQueueDestroy"}},
+            {{"zeModuleCreate"}, {"zeModuleDestroy"}},
+            {{"zeKernelCreate"}, {"zeKernelDestroy"}},
+            {{"zeEventPoolCreate"}, {"zeEventPoolDestroy"}},
+            {{"zeCommandListCreateImmediate", "zeCommandListCreate"}, {"zeCommandListDestroy"}},
+            {{"zeEventCreate"}, {"zeEventDestroy"}},
+            {{"zeFenceCreate"}, {"zeFenceDestroy"}},
+            {{"zeImageCreate", "zeImageViewCreateExt"}, {"zeImageDestroy"}},
+            {{"zeSamplerCreate"}, {"zeSamplerDestroy"}},
+            {{"zeMemAllocDevice", "zeMemAllocHost", "zeMemAllocShared"}, {"zeMemFree", "zeMemFreeExt"}}
+        };
     }
 
     basic_leakChecker::ZEbasic_leakChecker::ZEbasic_leakChecker() {
         // initialize counts for all functions that should be tracked
-        for (const auto &row : createDestroySet()) {
-            for (const auto &name : row) {
+        auto set = createDestroySet();
+        for (const auto &s : set) {
+            for (auto &name : s.ctors) {
+                counts[name] = 0;
+            }
+            for (auto &name : s.dtors) {
                 counts[name] = 0;
             }
         }
@@ -249,6 +254,13 @@ namespace validation_layer
         return result;
     }
 
+    ze_result_t basic_leakChecker::ZEbasic_leakChecker::zeMemFreeExtEpilogue(ze_context_handle_t, const ze_memory_free_ext_desc_t*, void *, ze_result_t result) {
+        if (result == ZE_RESULT_SUCCESS) {
+            countFunctionCall("zeMemFreeExt");
+        }
+        return result;
+    }
+
     void basic_leakChecker::ZEbasic_leakChecker::countFunctionCall(const std::string &functionName)
     {
         auto it = counts.find(functionName);
@@ -265,40 +277,47 @@ namespace validation_layer
     basic_leakChecker::ZEbasic_leakChecker::~ZEbasic_leakChecker() {
         std::cerr << "Check balance of create/destroy calls\n";
         std::cerr << "----------------------------------------------------------\n";
-        std::stringstream ss;
-        for (const auto &Row : createDestroySet()) {
+        auto set = createDestroySet();
+        for (const auto &s : set) {
+            auto &ctors = s.ctors;
+            auto &dtors = s.dtors;
             int64_t diff = 0;
-            for (auto I = Row.begin(); I != Row.end();) {
-                const char *ZeName = (*I).c_str();
-                const auto &ZeCount = (counts)[*I];
+            for (size_t i = 0; i < ctors.size(); i++) {
+                auto name = ctors[i];
+                auto zeCount = counts[name].load();
+                diff += zeCount;
 
-                bool First = (I == Row.begin());
-                bool Last = (++I == Row.end());
-
-                if (Last) {
-                    ss << " \\--->";
-                    diff -= ZeCount;
-                } else {
-                    diff += ZeCount;
-                    if (!First) {
-                    ss << " | ";
-                    std::cerr << ss.str() << "\n";
-                    ss.str("");
-                    ss.clear();
-                    }
+                if (i > 0) {
+                    std::cerr << " |\n";
                 }
-                ss << std::setw(30) << std::right << ZeName;
-                ss << " = ";
-                ss << std::setw(5) << std::left << ZeCount;
+
+                std::cerr << std::setw(30) << std::right << name;
+                std::cerr << " = ";
+                std::cerr << std::setw(5) << std::left << zeCount;
+            }
+
+            std::cerr << " \\--->";
+
+            for (size_t i = 0; i < dtors.size(); i++) {
+                auto name = dtors[i];
+                auto zeCount = counts[name].load();
+                diff -= zeCount;
+
+                if (i > 0) {
+                    std::cerr << "\n";
+                    std::cerr << std::setw(44) << std::right << "\\--->";
+                }
+
+                std::cerr << std::setw(30) << std::right << name;
+                std::cerr << " = ";
+                std::cerr << std::setw(5) << std::left << zeCount;
             }
 
             if (diff) {
-                ss << " ---> LEAK = " << diff;
+                std::cerr << " ---> LEAK = " << diff;
             }
 
-            std::cerr << ss.str() << '\n';
-            ss.str("");
-            ss.clear();
+            std::cerr << std::endl;
         }
     }
 }
