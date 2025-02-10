@@ -41,6 +41,7 @@ namespace validation_layer
     //               zeMemAllocDevice = 0     |
     //                 zeMemAllocHost = 1     |
     //               zeMemAllocShared = 0     \--->               zeMemFree = 1
+    //                                        \--->            zeMemFreeExt = 0
     //
     class __zedlllocal basic_leakChecker : public validationChecker{
         public:
@@ -78,6 +79,7 @@ namespace validation_layer
                 ze_result_t zeMemAllocHostEpilogue(ze_context_handle_t, const ze_host_mem_alloc_desc_t *, size_t, size_t, void **, ze_result_t result) override;
                 ze_result_t zeMemAllocSharedEpilogue(ze_context_handle_t, const ze_device_mem_alloc_desc_t *, const ze_host_mem_alloc_desc_t *, size_t, size_t, ze_device_handle_t, void **, ze_result_t result) override;
                 ze_result_t zeMemFreeEpilogue(ze_context_handle_t, void *, ze_result_t result) override;
+                ze_result_t zeMemFreeExtEpilogue(ze_context_handle_t, const ze_memory_free_ext_desc_t*, void *, ze_result_t result) override;
             private:
                 void countFunctionCall(const std::string &functionName);
                 std::unordered_map<std::string, std::atomic<int64_t>> counts;
