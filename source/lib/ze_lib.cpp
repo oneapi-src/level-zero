@@ -191,7 +191,7 @@ zelSetDriverTeardown()
 {
     ze_result_t result = ZE_RESULT_SUCCESS;
     if (!ze_lib::destruction) {
-        ze_lib::context->inTeardown = true;
+        ze_lib::destruction = true;
     }
     return result;
 }
