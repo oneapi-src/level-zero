@@ -177,5 +177,8 @@ namespace ze_lib
 
     extern context_t *context;
     extern bool destruction;
+    #ifdef DYNAMIC_LOAD_LOADER
+    extern context_t loader_context;
+    #endif
 
 } // namespace ze_lib
