@@ -65,7 +65,7 @@ ${th.make_func_name(n, tags, obj)}(
     if( ${X}_RESULT_SUCCESS != result )
         return result;
 
-    if(ze_lib::context->inTeardown) {
+    if(ze_lib::destruction) {
         return ${X}_RESULT_ERROR_UNINITIALIZED;
     }
 
@@ -91,7 +91,7 @@ ${th.make_func_name(n, tags, obj)}(
         return result;
     }
 
-    if(ze_lib::context->inTeardown) {
+    if(ze_lib::destruction) {
         return ${X}_RESULT_ERROR_UNINITIALIZED;
     }
 
@@ -120,7 +120,7 @@ ${th.make_func_name(n, tags, obj)}(
         if( ${X}_RESULT_SUCCESS != result )
             return result;
 
-        if(ze_lib::context->inTeardown) {
+        if(ze_lib::destruction) {
             return ${X}_RESULT_ERROR_UNINITIALIZED;
         }
 
@@ -136,7 +136,7 @@ ${th.make_func_name(n, tags, obj)}(
         return result;
     });
 
-    if(ze_lib::context->inTeardown) {
+    if(ze_lib::destruction) {
         result = ${X}_RESULT_ERROR_UNINITIALIZED;
     }
 
@@ -145,7 +145,7 @@ ${th.make_func_name(n, tags, obj)}(
 }
 %endif
 %else:
-    if(ze_lib::context->inTeardown) {
+    if(ze_lib::destruction) {
         return ${X}_RESULT_ERROR_UNINITIALIZED;
     }
 

@@ -44,7 +44,7 @@ zetModuleGetDebugInfo(
     uint8_t* pDebugInfo                             ///< [in,out][optional] byte pointer to debug info
     )
 {
-    if(ze_lib::context->inTeardown) {
+    if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
@@ -78,7 +78,7 @@ zetDeviceGetDebugProperties(
     zet_device_debug_properties_t* pDebugProperties ///< [in,out] query result for debug properties
     )
 {
-    if(ze_lib::context->inTeardown) {
+    if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
@@ -124,7 +124,7 @@ zetDebugAttach(
     zet_debug_session_handle_t* phDebug             ///< [out] debug session handle
     )
 {
-    if(ze_lib::context->inTeardown) {
+    if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
@@ -155,7 +155,7 @@ zetDebugDetach(
     zet_debug_session_handle_t hDebug               ///< [in][release] debug session handle
     )
 {
-    if(ze_lib::context->inTeardown) {
+    if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
@@ -198,7 +198,7 @@ zetDebugReadEvent(
     zet_debug_event_t* event                        ///< [in,out] a pointer to a ::zet_debug_event_t.
     )
 {
-    if(ze_lib::context->inTeardown) {
+    if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
@@ -232,7 +232,7 @@ zetDebugAcknowledgeEvent(
     const zet_debug_event_t* event                  ///< [in] a pointer to a ::zet_debug_event_t.
     )
 {
-    if(ze_lib::context->inTeardown) {
+    if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
@@ -266,7 +266,7 @@ zetDebugInterrupt(
     ze_device_thread_t thread                       ///< [in] the thread to interrupt
     )
 {
-    if(ze_lib::context->inTeardown) {
+    if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
@@ -300,7 +300,7 @@ zetDebugResume(
     ze_device_thread_t thread                       ///< [in] the thread to resume
     )
 {
-    if(ze_lib::context->inTeardown) {
+    if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
@@ -347,7 +347,7 @@ zetDebugReadMemory(
     void* buffer                                    ///< [in,out] a buffer to hold a copy of the memory
     )
 {
-    if(ze_lib::context->inTeardown) {
+    if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
@@ -394,7 +394,7 @@ zetDebugWriteMemory(
     const void* buffer                              ///< [in] a buffer holding the pattern to write
     )
 {
-    if(ze_lib::context->inTeardown) {
+    if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
@@ -437,7 +437,7 @@ zetDebugGetRegisterSetProperties(
                                                     ///< then driver shall only retrieve that number of register set properties.
     )
 {
-    if(ze_lib::context->inTeardown) {
+    if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
@@ -485,7 +485,7 @@ zetDebugGetThreadRegisterSetProperties(
                                                     ///< then driver shall only retrieve that number of register set properties.
     )
 {
-    if(ze_lib::context->inTeardown) {
+    if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
@@ -527,7 +527,7 @@ zetDebugReadRegisters(
     void* pRegisterValues                           ///< [in,out][optional][range(0, count)] buffer of register values
     )
 {
-    if(ze_lib::context->inTeardown) {
+    if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
@@ -569,7 +569,7 @@ zetDebugWriteRegisters(
     void* pRegisterValues                           ///< [in,out][optional][range(0, count)] buffer of register values
     )
 {
-    if(ze_lib::context->inTeardown) {
+    if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
@@ -614,7 +614,7 @@ zetMetricGroupGet(
                                                     ///< driver shall only retrieve that number of metric groups.
     )
 {
-    if(ze_lib::context->inTeardown) {
+    if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
@@ -651,7 +651,7 @@ zetMetricGroupGetProperties(
     zet_metric_group_properties_t* pProperties      ///< [in,out] metric group properties
     )
 {
-    if(ze_lib::context->inTeardown) {
+    if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
@@ -702,7 +702,7 @@ zetMetricGroupCalculateMetricValues(
                                                     ///< then driver shall only calculate that number of metric values.
     )
 {
-    if(ze_lib::context->inTeardown) {
+    if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
@@ -746,7 +746,7 @@ zetMetricGet(
                                                     ///< shall only retrieve that number of metrics.
     )
 {
-    if(ze_lib::context->inTeardown) {
+    if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
@@ -783,7 +783,7 @@ zetMetricGetProperties(
     zet_metric_properties_t* pProperties            ///< [in,out] metric properties
     )
 {
-    if(ze_lib::context->inTeardown) {
+    if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
@@ -838,7 +838,7 @@ zetContextActivateMetricGroups(
                                                     ///< metric query and metric stream must use activated metric groups.
     )
 {
-    if(ze_lib::context->inTeardown) {
+    if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
@@ -890,7 +890,7 @@ zetMetricStreamerOpen(
     zet_metric_streamer_handle_t* phMetricStreamer  ///< [out] handle of metric streamer
     )
 {
-    if(ze_lib::context->inTeardown) {
+    if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
@@ -934,7 +934,7 @@ zetCommandListAppendMetricStreamerMarker(
     uint32_t value                                  ///< [in] streamer marker value
     )
 {
-    if(ze_lib::context->inTeardown) {
+    if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
@@ -969,7 +969,7 @@ zetMetricStreamerClose(
     zet_metric_streamer_handle_t hMetricStreamer    ///< [in][release] handle of the metric streamer
     )
 {
-    if(ze_lib::context->inTeardown) {
+    if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
@@ -1018,7 +1018,7 @@ zetMetricStreamerReadData(
                                                     ///< reports in raw format
     )
 {
-    if(ze_lib::context->inTeardown) {
+    if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
@@ -1064,7 +1064,7 @@ zetMetricQueryPoolCreate(
     zet_metric_query_pool_handle_t* phMetricQueryPool   ///< [out] handle of metric query pool
     )
 {
-    if(ze_lib::context->inTeardown) {
+    if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
@@ -1105,7 +1105,7 @@ zetMetricQueryPoolDestroy(
     zet_metric_query_pool_handle_t hMetricQueryPool ///< [in][release] handle of the metric query pool
     )
 {
-    if(ze_lib::context->inTeardown) {
+    if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
@@ -1144,7 +1144,7 @@ zetMetricQueryCreate(
     zet_metric_query_handle_t* phMetricQuery        ///< [out] handle of metric query
     )
 {
-    if(ze_lib::context->inTeardown) {
+    if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
@@ -1183,7 +1183,7 @@ zetMetricQueryDestroy(
     zet_metric_query_handle_t hMetricQuery          ///< [in][release] handle of metric query
     )
 {
-    if(ze_lib::context->inTeardown) {
+    if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
@@ -1220,7 +1220,7 @@ zetMetricQueryReset(
     zet_metric_query_handle_t hMetricQuery          ///< [in] handle of metric query
     )
 {
-    if(ze_lib::context->inTeardown) {
+    if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
@@ -1263,7 +1263,7 @@ zetCommandListAppendMetricQueryBegin(
     zet_metric_query_handle_t hMetricQuery          ///< [in] handle of the metric query
     )
 {
-    if(ze_lib::context->inTeardown) {
+    if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
@@ -1320,7 +1320,7 @@ zetCommandListAppendMetricQueryEnd(
     ze_event_handle_t* phWaitEvents                 ///< [in][mbz] must be nullptr
     )
 {
-    if(ze_lib::context->inTeardown) {
+    if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
@@ -1355,7 +1355,7 @@ zetCommandListAppendMetricMemoryBarrier(
     zet_command_list_handle_t hCommandList          ///< [in] handle of the command list
     )
 {
-    if(ze_lib::context->inTeardown) {
+    if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
@@ -1400,7 +1400,7 @@ zetMetricQueryGetData(
                                                     ///< reports in raw format
     )
 {
-    if(ze_lib::context->inTeardown) {
+    if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
@@ -1442,7 +1442,7 @@ zetKernelGetProfileInfo(
     zet_profile_properties_t* pProfileProperties    ///< [out] pointer to profile properties
     )
 {
-    if(ze_lib::context->inTeardown) {
+    if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
@@ -1486,7 +1486,7 @@ zetTracerExpCreate(
     zet_tracer_exp_handle_t* phTracer               ///< [out] pointer to handle of tracer object created
     )
 {
-    if(ze_lib::context->inTeardown) {
+    if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
@@ -1526,7 +1526,7 @@ zetTracerExpDestroy(
     zet_tracer_exp_handle_t hTracer                 ///< [in][release] handle of tracer object to destroy
     )
 {
-    if(ze_lib::context->inTeardown) {
+    if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
@@ -1569,7 +1569,7 @@ zetTracerExpSetPrologues(
     zet_core_callbacks_t* pCoreCbs                  ///< [in] pointer to table of 'core' callback function pointers
     )
 {
-    if(ze_lib::context->inTeardown) {
+    if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
@@ -1612,7 +1612,7 @@ zetTracerExpSetEpilogues(
     zet_core_callbacks_t* pCoreCbs                  ///< [in] pointer to table of 'core' callback function pointers
     )
 {
-    if(ze_lib::context->inTeardown) {
+    if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
@@ -1648,7 +1648,7 @@ zetTracerExpSetEnabled(
     ze_bool_t enable                                ///< [in] enable the tracer if true; disable if false
     )
 {
-    if(ze_lib::context->inTeardown) {
+    if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
@@ -1692,7 +1692,7 @@ zetDeviceGetConcurrentMetricGroupsExp(
                                                     ///< replays necessary.
     )
 {
-    if(ze_lib::context->inTeardown) {
+    if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
@@ -1752,7 +1752,7 @@ zetMetricTracerCreateExp(
     zet_metric_tracer_exp_handle_t* phMetricTracer  ///< [out] handle of the metric tracer
     )
 {
-    if(ze_lib::context->inTeardown) {
+    if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
@@ -1787,7 +1787,7 @@ zetMetricTracerDestroyExp(
     zet_metric_tracer_exp_handle_t hMetricTracer    ///< [in] handle of the metric tracer
     )
 {
-    if(ze_lib::context->inTeardown) {
+    if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
@@ -1830,7 +1830,7 @@ zetMetricTracerEnableExp(
                                                     ///< when the tracer is active.
     )
 {
-    if(ze_lib::context->inTeardown) {
+    if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
@@ -1874,7 +1874,7 @@ zetMetricTracerDisableExp(
                                                     ///< has no more data to be retrieved.
     )
 {
-    if(ze_lib::context->inTeardown) {
+    if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
@@ -1926,7 +1926,7 @@ zetMetricTracerReadDataExp(
                                                     ///< data in raw format
     )
 {
-    if(ze_lib::context->inTeardown) {
+    if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
@@ -1960,7 +1960,7 @@ zetMetricDecoderCreateExp(
     zet_metric_decoder_exp_handle_t* phMetricDecoder///< [out] handle of the metric decoder object
     )
 {
-    if(ze_lib::context->inTeardown) {
+    if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
@@ -1991,7 +1991,7 @@ zetMetricDecoderDestroyExp(
     zet_metric_decoder_exp_handle_t phMetricDecoder ///< [in] handle of the metric decoder object
     )
 {
-    if(ze_lib::context->inTeardown) {
+    if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
@@ -2044,7 +2044,7 @@ zetMetricDecoderGetDecodableMetricsExp(
                                                     ///< the hMetricDecoder handle provided.
     )
 {
-    if(ze_lib::context->inTeardown) {
+    if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
@@ -2119,7 +2119,7 @@ zetMetricTracerDecodeExp(
                                                     ///< decoded metric entries
     )
 {
-    if(ze_lib::context->inTeardown) {
+    if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
@@ -2189,7 +2189,7 @@ zetMetricGroupCalculateMultipleMetricValuesExp(
                                                     ///< then driver shall only calculate that number of metric values.
     )
 {
-    if(ze_lib::context->inTeardown) {
+    if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
@@ -2232,7 +2232,7 @@ zetMetricGroupGetGlobalTimestampsExp(
     uint64_t* metricTimestamp                       ///< [out] Metric timestamp.
     )
 {
-    if(ze_lib::context->inTeardown) {
+    if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
@@ -2283,7 +2283,7 @@ zetMetricGroupGetExportDataExp(
     uint8_t * pExportData                           ///< [in,out][optional][range(0, *pExportDataSize)] buffer of exported data.
     )
 {
-    if(ze_lib::context->inTeardown) {
+    if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
@@ -2354,7 +2354,7 @@ zetMetricGroupCalculateMetricExportDataExp(
                                                     ///< then driver shall only calculate that number of metric values.
     )
 {
-    if(ze_lib::context->inTeardown) {
+    if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
@@ -2401,7 +2401,7 @@ zetMetricProgrammableGetExp(
                                                     ///< then driver shall only retrieve that number of metric programmables.
     )
 {
-    if(ze_lib::context->inTeardown) {
+    if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
@@ -2438,7 +2438,7 @@ zetMetricProgrammableGetPropertiesExp(
     zet_metric_programmable_exp_properties_t* pProperties   ///< [in,out] properties of the metric programmable
     )
 {
-    if(ze_lib::context->inTeardown) {
+    if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
@@ -2484,7 +2484,7 @@ zetMetricProgrammableGetParamInfoExp(
                                                     ///< then driver shall only retrieve that number of parameter info.
     )
 {
-    if(ze_lib::context->inTeardown) {
+    if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
@@ -2532,7 +2532,7 @@ zetMetricProgrammableGetParamValueInfoExp(
                                                     ///< then driver shall only retrieve that number of value info.
     )
 {
-    if(ze_lib::context->inTeardown) {
+    if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
@@ -2596,7 +2596,7 @@ zetMetricCreateFromProgrammableExp2(
                                                     ///< shall only retrieve that number of metric handles.
     )
 {
-    if(ze_lib::context->inTeardown) {
+    if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
@@ -2653,7 +2653,7 @@ zetMetricCreateFromProgrammableExp(
                                                     ///< shall only retrieve that number of metric handles.
     )
 {
-    if(ze_lib::context->inTeardown) {
+    if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
@@ -2715,7 +2715,7 @@ zetDeviceCreateMetricGroupsFromMetricsExp(
                                                     ///< Created Metric group handles.
     )
 {
-    if(ze_lib::context->inTeardown) {
+    if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
@@ -2763,7 +2763,7 @@ zetMetricGroupCreateExp(
     zet_metric_group_handle_t* phMetricGroup        ///< [in,out] Created Metric group handle
     )
 {
-    if(ze_lib::context->inTeardown) {
+    if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
@@ -2819,7 +2819,7 @@ zetMetricGroupAddMetricExp(
                                                     ///< available, then driver shall only retrieve that length of error string.
     )
 {
-    if(ze_lib::context->inTeardown) {
+    if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
@@ -2861,7 +2861,7 @@ zetMetricGroupRemoveMetricExp(
     zet_metric_handle_t hMetric                     ///< [in] Metric handle to be removed from the metric group.
     )
 {
-    if(ze_lib::context->inTeardown) {
+    if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
@@ -2912,7 +2912,7 @@ zetMetricGroupCloseExp(
     zet_metric_group_handle_t hMetricGroup          ///< [in] Handle of the metric group
     )
 {
-    if(ze_lib::context->inTeardown) {
+    if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
@@ -2955,7 +2955,7 @@ zetMetricGroupDestroyExp(
     zet_metric_group_handle_t hMetricGroup          ///< [in] Handle of the metric group to destroy
     )
 {
-    if(ze_lib::context->inTeardown) {
+    if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 
@@ -2994,7 +2994,7 @@ zetMetricDestroyExp(
     zet_metric_handle_t hMetric                     ///< [in] Handle of the metric to destroy
     )
 {
-    if(ze_lib::context->inTeardown) {
+    if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
 

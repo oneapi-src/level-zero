@@ -59,7 +59,6 @@ namespace ze_lib
 
         HMODULE tracing_lib = nullptr;
         bool isInitialized = false;
-        bool inTeardown = false;
         bool zesInuse = false;
         bool zeInuse = false;
     };
