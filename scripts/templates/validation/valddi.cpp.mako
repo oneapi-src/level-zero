@@ -22,6 +22,13 @@ from templates import helper as th
 
 namespace validation_layer
 {
+    static ze_result_t logAndPropagateResult(const char* fname, ze_result_t result) {
+        if (result != ${X}_RESULT_SUCCESS) {
+            context.logger->log_trace("Error (" + loader::to_string(result) + ") in " + std::string(fname));
+        }
+        return result;
+    }
+
     %for obj in th.extract_objs(specs, r"function"):
     ///////////////////////////////////////////////////////////////////////////////
     /// @brief Intercept function for ${th.make_func_name(n, tags, obj)}
@@ -35,10 +42,12 @@ namespace validation_layer
         %endfor
         )
     {
+        context.logger->log_trace("${th.make_func_name(n, tags, obj)}(${", ".join(th.make_param_lines(n, tags, obj, format=["name", "local"]))})");
+
         auto ${th.make_pfn_name(n, tags, obj)} = context.${n}DdiTable.${th.get_table_name(n, tags, obj)}.${th.make_pfn_name(n, tags, obj)};
 
         if( nullptr == ${th.make_pfn_name(n, tags, obj)} )
-            return ${X}_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("${th.make_func_name(n, tags, obj)}", ${X}_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
@@ -47,7 +56,7 @@ namespace validation_layer
 ${line} \
 %endfor
 );
-            if(result!=${X}_RESULT_SUCCESS) return result;
+            if(result!=${X}_RESULT_SUCCESS) return logAndPropagateResult("${th.make_func_name(n, tags, obj)}", result);
         }
 
 
@@ -65,7 +74,7 @@ ${line} \
 ${line} \
 %endfor
 );
-            if(result!=${X}_RESULT_SUCCESS) return result;
+            if(result!=${X}_RESULT_SUCCESS) return logAndPropagateResult("${th.make_func_name(n, tags, obj)}", result);
         }
 
         auto driver_result = ${th.make_pfn_name(n, tags, obj)}( ${", ".join(th.make_param_lines(n, tags, obj, format=["name"]))} );
@@ -76,7 +85,7 @@ ${line} \
 ${line} \
 %endfor
 ,driver_result);
-            if(result!=${X}_RESULT_SUCCESS) return result;
+            if(result!=${X}_RESULT_SUCCESS) return logAndPropagateResult("${th.make_func_name(n, tags, obj)}", result);
         }
 
         %if generate_post_call:
@@ -111,7 +120,7 @@ ${line} \
             %endfor
         }
         %endif
-        return driver_result;
+        return logAndPropagateResult("${th.make_func_name(n, tags, obj)}", driver_result);
     }
     %if 'condition' in obj:
     #endif // ${th.subt(n, tags, obj['condition'])}

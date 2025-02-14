@@ -24,7 +24,10 @@ target_include_directories(${TARGET_NAME}
         ${CMAKE_CURRENT_SOURCE_DIR}/handle_lifetime_tracking
         ${CMAKE_CURRENT_SOURCE_DIR}/checkers/parameter_validation
         ${CMAKE_CURRENT_SOURCE_DIR}/checkers/template
+        ${CMAKE_CURRENT_SOURCE_DIR}/../../utils
 )
+
+target_link_libraries(${TARGET_NAME} PRIVATE level_zero_utils)
 
 if(UNIX)
     set(GCC_COVERAGE_COMPILE_FLAGS "-fvisibility=hidden -fvisibility-inlines-hidden")
