@@ -1,5 +1,9 @@
 # Level zero loader changelog
 
+## v1.20.5
+* Add option to enable logging each API call
+* basic_leak_checker: add support for zeMemFreeExt
+* Fix to teardown check to avoid context use after destroy
 ## v1.20.4
 * Fix stype init for property query during init
 * Fix Init error checking to check the validation layer checks
