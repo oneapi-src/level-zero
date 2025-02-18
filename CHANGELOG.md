@@ -1,5 +1,7 @@
 # Level zero loader changelog
 
+## v1.20.6
+* Add in missing header for ze_handle_t definition for DDI extension
 ## v1.20.5
 * Add option to enable logging each API call
 * basic_leak_checker: add support for zeMemFreeExt
