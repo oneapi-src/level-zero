@@ -18,6 +18,7 @@
 
 namespace loader
 {
+    ze_handle_t* loaderDispatch = nullptr;
     ///////////////////////////////////////////////////////////////////////////////
     context_t *context;
 
