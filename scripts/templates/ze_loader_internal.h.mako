@@ -21,9 +21,7 @@ from templates import helper as th
 #include <map>
 #include <atomic>
 
-#include "ze_ddi.h"
-#include "zet_ddi.h"
-#include "zes_ddi.h"
+#include "ze_ddi_common.h"
 
 #include "ze_util.h"
 #include "ze_object.h"
@@ -62,8 +60,9 @@ namespace loader
         std::string name;
         bool driverInuse = false;
         zel_driver_type_t driverType = ZEL_DRIVER_TYPE_FORCE_UINT32;
-        ze_driver_properties_t properties;
+        ze_driver_ddi_handles_ext_properties_t properties;
         bool pciOrderingRequested = false;
+        bool driverDDIHandleSupportQueried = false;
     };
 
     using driver_vector_t = std::vector< driver_t >;
@@ -124,5 +123,9 @@ namespace loader
         std::shared_ptr<Logger> zel_logger;
     };
 
+    extern ze_handle_t* loaderDispatch;
+    extern ze_dditable_t* loaderZeDdiTable;
+    extern zet_dditable_t* loaderZetDdiTable;
+    extern zes_dditable_t* loaderZesDdiTable;
     extern context_t *context;
 }

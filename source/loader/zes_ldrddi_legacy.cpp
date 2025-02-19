@@ -4,12 +4,14 @@
  *
  * SPDX-License-Identifier: MIT
  *
- * @file zes_ldrddi.cpp
+ * @file zes_ldrddi_legacy.cpp
  *
  */
 #include "ze_loader_internal.h"
 
-namespace loader
+using namespace loader;
+
+namespace loader_legacy
 {
     ///////////////////////////////////////////////////////////////////////////////
     /// @brief Intercept function for zesInit
@@ -36,6 +38,7 @@ namespace loader
 
         return result;
     }
+
     ///////////////////////////////////////////////////////////////////////////////
     /// @brief Intercept function for zesDriverGet
     __zedlllocal ze_result_t ZE_APICALL
@@ -54,13 +57,6 @@ namespace loader
         ze_result_t result = ZE_RESULT_SUCCESS;
 
         uint32_t total_driver_handle_count = 0;
-
-        if (!loader::context->sortingInProgress.exchange(true) && !loader::context->instrumentationEnabled) {
-            std::call_once(loader::context->sysmanDriverSortOnce, []() {
-                loader::context->driverSorting(loader::context->sysmanInstanceDrivers, nullptr);
-            });
-            loader::context->sortingInProgress.store(false);
-        }
 
         for( auto& drv : *loader::context->sysmanInstanceDrivers )
         {
@@ -95,28 +91,8 @@ namespace loader
                 {
                     for( uint32_t i = 0; i < library_driver_handle_count; ++i ) {
                         uint32_t driver_index = total_driver_handle_count + i;
-                        if (drv.driverDDIHandleSupportQueried == false) {
-                            drv.properties = {};
-                            drv.properties.stype = ZE_STRUCTURE_TYPE_DRIVER_DDI_HANDLES_EXT_PROPERTIES;
-                            drv.properties.pNext = nullptr;
-                            ze_driver_properties_t driverProperties = {};
-                            driverProperties.stype = ZE_STRUCTURE_TYPE_DRIVER_PROPERTIES;
-                            driverProperties.pNext = nullptr;
-                            driverProperties.pNext = &drv.properties;
-                            ze_result_t res = drv.dditable.ze.Driver.pfnGetProperties(phDrivers[ driver_index ], &driverProperties);
-                            if (res != ZE_RESULT_SUCCESS) {
-                                if (loader::context->debugTraceEnabled) {
-                                    std::string message = drv.name + " failed zeDriverGetProperties query, returned ";
-                                    loader::context->debug_trace_message(message, loader::to_string(res));
-                                }
-                                return res;
-                            }
-                            drv.driverDDIHandleSupportQueried = true;
-                        }
-                        if (!(drv.properties.flags & ZE_DRIVER_DDI_HANDLE_EXT_FLAG_DDI_HANDLE_EXT_SUPPORTED)) {
-                            phDrivers[ driver_index ] = reinterpret_cast<zes_driver_handle_t>(
-                                context->zes_driver_factory.getInstance( phDrivers[ driver_index ], &drv.dditable ) );
-                        }
+                        phDrivers[ driver_index ] = reinterpret_cast<zes_driver_handle_t>(
+                            context->zes_driver_factory.getInstance( phDrivers[ driver_index ], &drv.dditable ) );
                     }
                 }
                 catch( std::bad_alloc& )
@@ -137,6 +113,7 @@ namespace loader
 
         return result;
     }
+
     ///////////////////////////////////////////////////////////////////////////////
     /// @brief Intercept function for zesDriverGetExtensionProperties
     __zedlllocal ze_result_t ZE_APICALL
@@ -156,19 +133,18 @@ namespace loader
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
 
-        // extract handle's function pointer table
-        auto dditable = reinterpret_cast<ze_handle_t*>( hDriver )->pSysman;
-        if (dditable->isValidFlag == 0)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        // Check that api version in the driver is supported by this version of the API
-        if (dditable->version < ZE_API_VERSION_1_8) {
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-        }
-        auto pfnGetExtensionProperties = dditable->Driver->pfnGetExtensionProperties;
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_driver_object_t*>( hDriver )->dditable;
+        auto pfnGetExtensionProperties = dditable->zes.Driver.pfnGetExtensionProperties;
         if( nullptr == pfnGetExtensionProperties )
             return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hDriver = reinterpret_cast<zes_driver_object_t*>( hDriver )->handle;
+
         // forward to device-driver
         result = pfnGetExtensionProperties( hDriver, pCount, pExtensionProperties );
+
         return result;
     }
 
@@ -183,19 +159,18 @@ namespace loader
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
 
-        // extract handle's function pointer table
-        auto dditable = reinterpret_cast<ze_handle_t*>( hDriver )->pSysman;
-        if (dditable->isValidFlag == 0)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        // Check that api version in the driver is supported by this version of the API
-        if (dditable->version < ZE_API_VERSION_1_8) {
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-        }
-        auto pfnGetExtensionFunctionAddress = dditable->Driver->pfnGetExtensionFunctionAddress;
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_driver_object_t*>( hDriver )->dditable;
+        auto pfnGetExtensionFunctionAddress = dditable->zes.Driver.pfnGetExtensionFunctionAddress;
         if( nullptr == pfnGetExtensionFunctionAddress )
             return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hDriver = reinterpret_cast<zes_driver_object_t*>( hDriver )->handle;
+
         // forward to device-driver
         result = pfnGetExtensionFunctionAddress( hDriver, name, ppFunctionAddress );
+
         return result;
     }
 
@@ -217,19 +192,33 @@ namespace loader
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
 
-        // extract handle's function pointer table
-        auto dditable = reinterpret_cast<ze_handle_t*>( hDriver )->pSysman;
-        if (dditable->isValidFlag == 0)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        // Check that api version in the driver is supported by this version of the API
-        if (dditable->version < ZE_API_VERSION_1_5) {
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-        }
-        auto pfnGet = dditable->Device->pfnGet;
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_driver_object_t*>( hDriver )->dditable;
+        auto pfnGet = dditable->zes.Device.pfnGet;
         if( nullptr == pfnGet )
             return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hDriver = reinterpret_cast<zes_driver_object_t*>( hDriver )->handle;
+
         // forward to device-driver
         result = pfnGet( hDriver, pCount, phDevices );
+
+        if( ZE_RESULT_SUCCESS != result )
+            return result;
+
+        try
+        {
+            // convert driver handles to loader handles
+            for( size_t i = 0; ( nullptr != phDevices ) && ( i < *pCount ); ++i )
+                phDevices[ i ] = reinterpret_cast<zes_device_handle_t>(
+                    context->zes_device_factory.getInstance( phDevices[ i ], dditable ) );
+        }
+        catch( std::bad_alloc& )
+        {
+            result = ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY;
+        }
+
         return result;
     }
 
@@ -243,19 +232,18 @@ namespace loader
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
 
-        // extract handle's function pointer table
-        auto dditable = reinterpret_cast<ze_handle_t*>( hDevice )->pSysman;
-        if (dditable->isValidFlag == 0)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        // Check that api version in the driver is supported by this version of the API
-        if (dditable->version < ZE_API_VERSION_1_0) {
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-        }
-        auto pfnGetProperties = dditable->Device->pfnGetProperties;
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_device_object_t*>( hDevice )->dditable;
+        auto pfnGetProperties = dditable->zes.Device.pfnGetProperties;
         if( nullptr == pfnGetProperties )
             return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hDevice = reinterpret_cast<zes_device_object_t*>( hDevice )->handle;
+
         // forward to device-driver
         result = pfnGetProperties( hDevice, pProperties );
+
         return result;
     }
 
@@ -269,19 +257,18 @@ namespace loader
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
 
-        // extract handle's function pointer table
-        auto dditable = reinterpret_cast<ze_handle_t*>( hDevice )->pSysman;
-        if (dditable->isValidFlag == 0)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        // Check that api version in the driver is supported by this version of the API
-        if (dditable->version < ZE_API_VERSION_1_0) {
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-        }
-        auto pfnGetState = dditable->Device->pfnGetState;
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_device_object_t*>( hDevice )->dditable;
+        auto pfnGetState = dditable->zes.Device.pfnGetState;
         if( nullptr == pfnGetState )
             return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hDevice = reinterpret_cast<zes_device_object_t*>( hDevice )->handle;
+
         // forward to device-driver
         result = pfnGetState( hDevice, pState );
+
         return result;
     }
 
@@ -296,19 +283,18 @@ namespace loader
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
 
-        // extract handle's function pointer table
-        auto dditable = reinterpret_cast<ze_handle_t*>( hDevice )->pSysman;
-        if (dditable->isValidFlag == 0)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        // Check that api version in the driver is supported by this version of the API
-        if (dditable->version < ZE_API_VERSION_1_0) {
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-        }
-        auto pfnReset = dditable->Device->pfnReset;
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_device_object_t*>( hDevice )->dditable;
+        auto pfnReset = dditable->zes.Device.pfnReset;
         if( nullptr == pfnReset )
             return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hDevice = reinterpret_cast<zes_device_object_t*>( hDevice )->handle;
+
         // forward to device-driver
         result = pfnReset( hDevice, force );
+
         return result;
     }
 
@@ -322,19 +308,18 @@ namespace loader
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
 
-        // extract handle's function pointer table
-        auto dditable = reinterpret_cast<ze_handle_t*>( hDevice )->pSysman;
-        if (dditable->isValidFlag == 0)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        // Check that api version in the driver is supported by this version of the API
-        if (dditable->version < ZE_API_VERSION_1_7) {
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-        }
-        auto pfnResetExt = dditable->Device->pfnResetExt;
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_device_object_t*>( hDevice )->dditable;
+        auto pfnResetExt = dditable->zes.Device.pfnResetExt;
         if( nullptr == pfnResetExt )
             return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hDevice = reinterpret_cast<zes_device_object_t*>( hDevice )->handle;
+
         // forward to device-driver
         result = pfnResetExt( hDevice, pProperties );
+
         return result;
     }
 
@@ -357,19 +342,18 @@ namespace loader
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
 
-        // extract handle's function pointer table
-        auto dditable = reinterpret_cast<ze_handle_t*>( hDevice )->pSysman;
-        if (dditable->isValidFlag == 0)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        // Check that api version in the driver is supported by this version of the API
-        if (dditable->version < ZE_API_VERSION_1_0) {
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-        }
-        auto pfnProcessesGetState = dditable->Device->pfnProcessesGetState;
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_device_object_t*>( hDevice )->dditable;
+        auto pfnProcessesGetState = dditable->zes.Device.pfnProcessesGetState;
         if( nullptr == pfnProcessesGetState )
             return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hDevice = reinterpret_cast<zes_device_object_t*>( hDevice )->handle;
+
         // forward to device-driver
         result = pfnProcessesGetState( hDevice, pCount, pProcesses );
+
         return result;
     }
 
@@ -383,19 +367,18 @@ namespace loader
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
 
-        // extract handle's function pointer table
-        auto dditable = reinterpret_cast<ze_handle_t*>( hDevice )->pSysman;
-        if (dditable->isValidFlag == 0)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        // Check that api version in the driver is supported by this version of the API
-        if (dditable->version < ZE_API_VERSION_1_0) {
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-        }
-        auto pfnPciGetProperties = dditable->Device->pfnPciGetProperties;
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_device_object_t*>( hDevice )->dditable;
+        auto pfnPciGetProperties = dditable->zes.Device.pfnPciGetProperties;
         if( nullptr == pfnPciGetProperties )
             return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hDevice = reinterpret_cast<zes_device_object_t*>( hDevice )->handle;
+
         // forward to device-driver
         result = pfnPciGetProperties( hDevice, pProperties );
+
         return result;
     }
 
@@ -409,19 +392,18 @@ namespace loader
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
 
-        // extract handle's function pointer table
-        auto dditable = reinterpret_cast<ze_handle_t*>( hDevice )->pSysman;
-        if (dditable->isValidFlag == 0)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        // Check that api version in the driver is supported by this version of the API
-        if (dditable->version < ZE_API_VERSION_1_0) {
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-        }
-        auto pfnPciGetState = dditable->Device->pfnPciGetState;
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_device_object_t*>( hDevice )->dditable;
+        auto pfnPciGetState = dditable->zes.Device.pfnPciGetState;
         if( nullptr == pfnPciGetState )
             return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hDevice = reinterpret_cast<zes_device_object_t*>( hDevice )->handle;
+
         // forward to device-driver
         result = pfnPciGetState( hDevice, pState );
+
         return result;
     }
 
@@ -443,19 +425,18 @@ namespace loader
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
 
-        // extract handle's function pointer table
-        auto dditable = reinterpret_cast<ze_handle_t*>( hDevice )->pSysman;
-        if (dditable->isValidFlag == 0)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        // Check that api version in the driver is supported by this version of the API
-        if (dditable->version < ZE_API_VERSION_1_0) {
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-        }
-        auto pfnPciGetBars = dditable->Device->pfnPciGetBars;
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_device_object_t*>( hDevice )->dditable;
+        auto pfnPciGetBars = dditable->zes.Device.pfnPciGetBars;
         if( nullptr == pfnPciGetBars )
             return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hDevice = reinterpret_cast<zes_device_object_t*>( hDevice )->handle;
+
         // forward to device-driver
         result = pfnPciGetBars( hDevice, pCount, pProperties );
+
         return result;
     }
 
@@ -469,19 +450,18 @@ namespace loader
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
 
-        // extract handle's function pointer table
-        auto dditable = reinterpret_cast<ze_handle_t*>( hDevice )->pSysman;
-        if (dditable->isValidFlag == 0)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        // Check that api version in the driver is supported by this version of the API
-        if (dditable->version < ZE_API_VERSION_1_0) {
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-        }
-        auto pfnPciGetStats = dditable->Device->pfnPciGetStats;
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_device_object_t*>( hDevice )->dditable;
+        auto pfnPciGetStats = dditable->zes.Device.pfnPciGetStats;
         if( nullptr == pfnPciGetStats )
             return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hDevice = reinterpret_cast<zes_device_object_t*>( hDevice )->handle;
+
         // forward to device-driver
         result = pfnPciGetStats( hDevice, pStats );
+
         return result;
     }
 
@@ -494,19 +474,18 @@ namespace loader
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
 
-        // extract handle's function pointer table
-        auto dditable = reinterpret_cast<ze_handle_t*>( hDevice )->pSysman;
-        if (dditable->isValidFlag == 0)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        // Check that api version in the driver is supported by this version of the API
-        if (dditable->version < ZE_API_VERSION_1_5) {
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-        }
-        auto pfnSetOverclockWaiver = dditable->Device->pfnSetOverclockWaiver;
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_device_object_t*>( hDevice )->dditable;
+        auto pfnSetOverclockWaiver = dditable->zes.Device.pfnSetOverclockWaiver;
         if( nullptr == pfnSetOverclockWaiver )
             return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hDevice = reinterpret_cast<zes_device_object_t*>( hDevice )->handle;
+
         // forward to device-driver
         result = pfnSetOverclockWaiver( hDevice );
+
         return result;
     }
 
@@ -522,19 +501,18 @@ namespace loader
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
 
-        // extract handle's function pointer table
-        auto dditable = reinterpret_cast<ze_handle_t*>( hDevice )->pSysman;
-        if (dditable->isValidFlag == 0)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        // Check that api version in the driver is supported by this version of the API
-        if (dditable->version < ZE_API_VERSION_1_5) {
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-        }
-        auto pfnGetOverclockDomains = dditable->Device->pfnGetOverclockDomains;
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_device_object_t*>( hDevice )->dditable;
+        auto pfnGetOverclockDomains = dditable->zes.Device.pfnGetOverclockDomains;
         if( nullptr == pfnGetOverclockDomains )
             return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hDevice = reinterpret_cast<zes_device_object_t*>( hDevice )->handle;
+
         // forward to device-driver
         result = pfnGetOverclockDomains( hDevice, pOverclockDomains );
+
         return result;
     }
 
@@ -551,19 +529,18 @@ namespace loader
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
 
-        // extract handle's function pointer table
-        auto dditable = reinterpret_cast<ze_handle_t*>( hDevice )->pSysman;
-        if (dditable->isValidFlag == 0)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        // Check that api version in the driver is supported by this version of the API
-        if (dditable->version < ZE_API_VERSION_1_5) {
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-        }
-        auto pfnGetOverclockControls = dditable->Device->pfnGetOverclockControls;
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_device_object_t*>( hDevice )->dditable;
+        auto pfnGetOverclockControls = dditable->zes.Device.pfnGetOverclockControls;
         if( nullptr == pfnGetOverclockControls )
             return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hDevice = reinterpret_cast<zes_device_object_t*>( hDevice )->handle;
+
         // forward to device-driver
         result = pfnGetOverclockControls( hDevice, domainType, pAvailableControls );
+
         return result;
     }
 
@@ -578,19 +555,18 @@ namespace loader
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
 
-        // extract handle's function pointer table
-        auto dditable = reinterpret_cast<ze_handle_t*>( hDevice )->pSysman;
-        if (dditable->isValidFlag == 0)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        // Check that api version in the driver is supported by this version of the API
-        if (dditable->version < ZE_API_VERSION_1_5) {
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-        }
-        auto pfnResetOverclockSettings = dditable->Device->pfnResetOverclockSettings;
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_device_object_t*>( hDevice )->dditable;
+        auto pfnResetOverclockSettings = dditable->zes.Device.pfnResetOverclockSettings;
         if( nullptr == pfnResetOverclockSettings )
             return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hDevice = reinterpret_cast<zes_device_object_t*>( hDevice )->handle;
+
         // forward to device-driver
         result = pfnResetOverclockSettings( hDevice, onShippedState );
+
         return result;
     }
 
@@ -609,19 +585,18 @@ namespace loader
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
 
-        // extract handle's function pointer table
-        auto dditable = reinterpret_cast<ze_handle_t*>( hDevice )->pSysman;
-        if (dditable->isValidFlag == 0)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        // Check that api version in the driver is supported by this version of the API
-        if (dditable->version < ZE_API_VERSION_1_5) {
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-        }
-        auto pfnReadOverclockState = dditable->Device->pfnReadOverclockState;
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_device_object_t*>( hDevice )->dditable;
+        auto pfnReadOverclockState = dditable->zes.Device.pfnReadOverclockState;
         if( nullptr == pfnReadOverclockState )
             return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hDevice = reinterpret_cast<zes_device_object_t*>( hDevice )->handle;
+
         // forward to device-driver
         result = pfnReadOverclockState( hDevice, pOverclockMode, pWaiverSetting, pOverclockState, pPendingAction, pPendingReset );
+
         return result;
     }
 
@@ -645,19 +620,33 @@ namespace loader
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
 
-        // extract handle's function pointer table
-        auto dditable = reinterpret_cast<ze_handle_t*>( hDevice )->pSysman;
-        if (dditable->isValidFlag == 0)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        // Check that api version in the driver is supported by this version of the API
-        if (dditable->version < ZE_API_VERSION_1_5) {
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-        }
-        auto pfnEnumOverclockDomains = dditable->Device->pfnEnumOverclockDomains;
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_device_object_t*>( hDevice )->dditable;
+        auto pfnEnumOverclockDomains = dditable->zes.Device.pfnEnumOverclockDomains;
         if( nullptr == pfnEnumOverclockDomains )
             return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hDevice = reinterpret_cast<zes_device_object_t*>( hDevice )->handle;
+
         // forward to device-driver
         result = pfnEnumOverclockDomains( hDevice, pCount, phDomainHandle );
+
+        if( ZE_RESULT_SUCCESS != result )
+            return result;
+
+        try
+        {
+            // convert driver handles to loader handles
+            for( size_t i = 0; ( nullptr != phDomainHandle ) && ( i < *pCount ); ++i )
+                phDomainHandle[ i ] = reinterpret_cast<zes_overclock_handle_t>(
+                    context->zes_overclock_factory.getInstance( phDomainHandle[ i ], dditable ) );
+        }
+        catch( std::bad_alloc& )
+        {
+            result = ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY;
+        }
+
         return result;
     }
 
@@ -671,19 +660,18 @@ namespace loader
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
 
-        // extract handle's function pointer table
-        auto dditable = reinterpret_cast<ze_handle_t*>( hDomainHandle )->pSysman;
-        if (dditable->isValidFlag == 0)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        // Check that api version in the driver is supported by this version of the API
-        if (dditable->version < ZE_API_VERSION_1_5) {
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-        }
-        auto pfnGetDomainProperties = dditable->Overclock->pfnGetDomainProperties;
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_overclock_object_t*>( hDomainHandle )->dditable;
+        auto pfnGetDomainProperties = dditable->zes.Overclock.pfnGetDomainProperties;
         if( nullptr == pfnGetDomainProperties )
             return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hDomainHandle = reinterpret_cast<zes_overclock_object_t*>( hDomainHandle )->handle;
+
         // forward to device-driver
         result = pfnGetDomainProperties( hDomainHandle, pDomainProperties );
+
         return result;
     }
 
@@ -697,19 +685,18 @@ namespace loader
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
 
-        // extract handle's function pointer table
-        auto dditable = reinterpret_cast<ze_handle_t*>( hDomainHandle )->pSysman;
-        if (dditable->isValidFlag == 0)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        // Check that api version in the driver is supported by this version of the API
-        if (dditable->version < ZE_API_VERSION_1_5) {
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-        }
-        auto pfnGetDomainVFProperties = dditable->Overclock->pfnGetDomainVFProperties;
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_overclock_object_t*>( hDomainHandle )->dditable;
+        auto pfnGetDomainVFProperties = dditable->zes.Overclock.pfnGetDomainVFProperties;
         if( nullptr == pfnGetDomainVFProperties )
             return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hDomainHandle = reinterpret_cast<zes_overclock_object_t*>( hDomainHandle )->handle;
+
         // forward to device-driver
         result = pfnGetDomainVFProperties( hDomainHandle, pVFProperties );
+
         return result;
     }
 
@@ -724,19 +711,18 @@ namespace loader
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
 
-        // extract handle's function pointer table
-        auto dditable = reinterpret_cast<ze_handle_t*>( hDomainHandle )->pSysman;
-        if (dditable->isValidFlag == 0)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        // Check that api version in the driver is supported by this version of the API
-        if (dditable->version < ZE_API_VERSION_1_5) {
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-        }
-        auto pfnGetDomainControlProperties = dditable->Overclock->pfnGetDomainControlProperties;
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_overclock_object_t*>( hDomainHandle )->dditable;
+        auto pfnGetDomainControlProperties = dditable->zes.Overclock.pfnGetDomainControlProperties;
         if( nullptr == pfnGetDomainControlProperties )
             return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hDomainHandle = reinterpret_cast<zes_overclock_object_t*>( hDomainHandle )->handle;
+
         // forward to device-driver
         result = pfnGetDomainControlProperties( hDomainHandle, DomainControl, pControlProperties );
+
         return result;
     }
 
@@ -751,19 +737,18 @@ namespace loader
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
 
-        // extract handle's function pointer table
-        auto dditable = reinterpret_cast<ze_handle_t*>( hDomainHandle )->pSysman;
-        if (dditable->isValidFlag == 0)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        // Check that api version in the driver is supported by this version of the API
-        if (dditable->version < ZE_API_VERSION_1_5) {
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-        }
-        auto pfnGetControlCurrentValue = dditable->Overclock->pfnGetControlCurrentValue;
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_overclock_object_t*>( hDomainHandle )->dditable;
+        auto pfnGetControlCurrentValue = dditable->zes.Overclock.pfnGetControlCurrentValue;
         if( nullptr == pfnGetControlCurrentValue )
             return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hDomainHandle = reinterpret_cast<zes_overclock_object_t*>( hDomainHandle )->handle;
+
         // forward to device-driver
         result = pfnGetControlCurrentValue( hDomainHandle, DomainControl, pValue );
+
         return result;
     }
 
@@ -779,19 +764,18 @@ namespace loader
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
 
-        // extract handle's function pointer table
-        auto dditable = reinterpret_cast<ze_handle_t*>( hDomainHandle )->pSysman;
-        if (dditable->isValidFlag == 0)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        // Check that api version in the driver is supported by this version of the API
-        if (dditable->version < ZE_API_VERSION_1_5) {
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-        }
-        auto pfnGetControlPendingValue = dditable->Overclock->pfnGetControlPendingValue;
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_overclock_object_t*>( hDomainHandle )->dditable;
+        auto pfnGetControlPendingValue = dditable->zes.Overclock.pfnGetControlPendingValue;
         if( nullptr == pfnGetControlPendingValue )
             return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hDomainHandle = reinterpret_cast<zes_overclock_object_t*>( hDomainHandle )->handle;
+
         // forward to device-driver
         result = pfnGetControlPendingValue( hDomainHandle, DomainControl, pValue );
+
         return result;
     }
 
@@ -808,19 +792,18 @@ namespace loader
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
 
-        // extract handle's function pointer table
-        auto dditable = reinterpret_cast<ze_handle_t*>( hDomainHandle )->pSysman;
-        if (dditable->isValidFlag == 0)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        // Check that api version in the driver is supported by this version of the API
-        if (dditable->version < ZE_API_VERSION_1_5) {
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-        }
-        auto pfnSetControlUserValue = dditable->Overclock->pfnSetControlUserValue;
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_overclock_object_t*>( hDomainHandle )->dditable;
+        auto pfnSetControlUserValue = dditable->zes.Overclock.pfnSetControlUserValue;
         if( nullptr == pfnSetControlUserValue )
             return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hDomainHandle = reinterpret_cast<zes_overclock_object_t*>( hDomainHandle )->handle;
+
         // forward to device-driver
         result = pfnSetControlUserValue( hDomainHandle, DomainControl, pValue, pPendingAction );
+
         return result;
     }
 
@@ -836,19 +819,18 @@ namespace loader
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
 
-        // extract handle's function pointer table
-        auto dditable = reinterpret_cast<ze_handle_t*>( hDomainHandle )->pSysman;
-        if (dditable->isValidFlag == 0)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        // Check that api version in the driver is supported by this version of the API
-        if (dditable->version < ZE_API_VERSION_1_5) {
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-        }
-        auto pfnGetControlState = dditable->Overclock->pfnGetControlState;
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_overclock_object_t*>( hDomainHandle )->dditable;
+        auto pfnGetControlState = dditable->zes.Overclock.pfnGetControlState;
         if( nullptr == pfnGetControlState )
             return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hDomainHandle = reinterpret_cast<zes_overclock_object_t*>( hDomainHandle )->handle;
+
         // forward to device-driver
         result = pfnGetControlState( hDomainHandle, DomainControl, pControlState, pPendingAction );
+
         return result;
     }
 
@@ -866,19 +848,18 @@ namespace loader
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
 
-        // extract handle's function pointer table
-        auto dditable = reinterpret_cast<ze_handle_t*>( hDomainHandle )->pSysman;
-        if (dditable->isValidFlag == 0)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        // Check that api version in the driver is supported by this version of the API
-        if (dditable->version < ZE_API_VERSION_1_5) {
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-        }
-        auto pfnGetVFPointValues = dditable->Overclock->pfnGetVFPointValues;
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_overclock_object_t*>( hDomainHandle )->dditable;
+        auto pfnGetVFPointValues = dditable->zes.Overclock.pfnGetVFPointValues;
         if( nullptr == pfnGetVFPointValues )
             return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hDomainHandle = reinterpret_cast<zes_overclock_object_t*>( hDomainHandle )->handle;
+
         // forward to device-driver
         result = pfnGetVFPointValues( hDomainHandle, VFType, VFArrayType, PointIndex, PointValue );
+
         return result;
     }
 
@@ -895,19 +876,18 @@ namespace loader
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
 
-        // extract handle's function pointer table
-        auto dditable = reinterpret_cast<ze_handle_t*>( hDomainHandle )->pSysman;
-        if (dditable->isValidFlag == 0)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        // Check that api version in the driver is supported by this version of the API
-        if (dditable->version < ZE_API_VERSION_1_5) {
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-        }
-        auto pfnSetVFPointValues = dditable->Overclock->pfnSetVFPointValues;
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_overclock_object_t*>( hDomainHandle )->dditable;
+        auto pfnSetVFPointValues = dditable->zes.Overclock.pfnSetVFPointValues;
         if( nullptr == pfnSetVFPointValues )
             return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hDomainHandle = reinterpret_cast<zes_overclock_object_t*>( hDomainHandle )->handle;
+
         // forward to device-driver
         result = pfnSetVFPointValues( hDomainHandle, VFType, PointIndex, PointValue );
+
         return result;
     }
 
@@ -931,19 +911,33 @@ namespace loader
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
 
-        // extract handle's function pointer table
-        auto dditable = reinterpret_cast<ze_handle_t*>( hDevice )->pSysman;
-        if (dditable->isValidFlag == 0)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        // Check that api version in the driver is supported by this version of the API
-        if (dditable->version < ZE_API_VERSION_1_0) {
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-        }
-        auto pfnEnumDiagnosticTestSuites = dditable->Device->pfnEnumDiagnosticTestSuites;
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_device_object_t*>( hDevice )->dditable;
+        auto pfnEnumDiagnosticTestSuites = dditable->zes.Device.pfnEnumDiagnosticTestSuites;
         if( nullptr == pfnEnumDiagnosticTestSuites )
             return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hDevice = reinterpret_cast<zes_device_object_t*>( hDevice )->handle;
+
         // forward to device-driver
         result = pfnEnumDiagnosticTestSuites( hDevice, pCount, phDiagnostics );
+
+        if( ZE_RESULT_SUCCESS != result )
+            return result;
+
+        try
+        {
+            // convert driver handles to loader handles
+            for( size_t i = 0; ( nullptr != phDiagnostics ) && ( i < *pCount ); ++i )
+                phDiagnostics[ i ] = reinterpret_cast<zes_diag_handle_t>(
+                    context->zes_diag_factory.getInstance( phDiagnostics[ i ], dditable ) );
+        }
+        catch( std::bad_alloc& )
+        {
+            result = ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY;
+        }
+
         return result;
     }
 
@@ -958,19 +952,18 @@ namespace loader
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
 
-        // extract handle's function pointer table
-        auto dditable = reinterpret_cast<ze_handle_t*>( hDiagnostics )->pSysman;
-        if (dditable->isValidFlag == 0)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        // Check that api version in the driver is supported by this version of the API
-        if (dditable->version < ZE_API_VERSION_1_0) {
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-        }
-        auto pfnGetProperties = dditable->Diagnostics->pfnGetProperties;
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_diag_object_t*>( hDiagnostics )->dditable;
+        auto pfnGetProperties = dditable->zes.Diagnostics.pfnGetProperties;
         if( nullptr == pfnGetProperties )
             return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hDiagnostics = reinterpret_cast<zes_diag_object_t*>( hDiagnostics )->handle;
+
         // forward to device-driver
         result = pfnGetProperties( hDiagnostics, pProperties );
+
         return result;
     }
 
@@ -992,19 +985,18 @@ namespace loader
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
 
-        // extract handle's function pointer table
-        auto dditable = reinterpret_cast<ze_handle_t*>( hDiagnostics )->pSysman;
-        if (dditable->isValidFlag == 0)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        // Check that api version in the driver is supported by this version of the API
-        if (dditable->version < ZE_API_VERSION_1_0) {
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-        }
-        auto pfnGetTests = dditable->Diagnostics->pfnGetTests;
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_diag_object_t*>( hDiagnostics )->dditable;
+        auto pfnGetTests = dditable->zes.Diagnostics.pfnGetTests;
         if( nullptr == pfnGetTests )
             return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hDiagnostics = reinterpret_cast<zes_diag_object_t*>( hDiagnostics )->handle;
+
         // forward to device-driver
         result = pfnGetTests( hDiagnostics, pCount, pTests );
+
         return result;
     }
 
@@ -1022,19 +1014,18 @@ namespace loader
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
 
-        // extract handle's function pointer table
-        auto dditable = reinterpret_cast<ze_handle_t*>( hDiagnostics )->pSysman;
-        if (dditable->isValidFlag == 0)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        // Check that api version in the driver is supported by this version of the API
-        if (dditable->version < ZE_API_VERSION_1_0) {
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-        }
-        auto pfnRunTests = dditable->Diagnostics->pfnRunTests;
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_diag_object_t*>( hDiagnostics )->dditable;
+        auto pfnRunTests = dditable->zes.Diagnostics.pfnRunTests;
         if( nullptr == pfnRunTests )
             return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hDiagnostics = reinterpret_cast<zes_diag_object_t*>( hDiagnostics )->handle;
+
         // forward to device-driver
         result = pfnRunTests( hDiagnostics, startIndex, endIndex, pResult );
+
         return result;
     }
 
@@ -1048,19 +1039,18 @@ namespace loader
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
 
-        // extract handle's function pointer table
-        auto dditable = reinterpret_cast<ze_handle_t*>( hDevice )->pSysman;
-        if (dditable->isValidFlag == 0)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        // Check that api version in the driver is supported by this version of the API
-        if (dditable->version < ZE_API_VERSION_1_4) {
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-        }
-        auto pfnEccAvailable = dditable->Device->pfnEccAvailable;
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_device_object_t*>( hDevice )->dditable;
+        auto pfnEccAvailable = dditable->zes.Device.pfnEccAvailable;
         if( nullptr == pfnEccAvailable )
             return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hDevice = reinterpret_cast<zes_device_object_t*>( hDevice )->handle;
+
         // forward to device-driver
         result = pfnEccAvailable( hDevice, pAvailable );
+
         return result;
     }
 
@@ -1074,19 +1064,18 @@ namespace loader
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
 
-        // extract handle's function pointer table
-        auto dditable = reinterpret_cast<ze_handle_t*>( hDevice )->pSysman;
-        if (dditable->isValidFlag == 0)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        // Check that api version in the driver is supported by this version of the API
-        if (dditable->version < ZE_API_VERSION_1_4) {
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-        }
-        auto pfnEccConfigurable = dditable->Device->pfnEccConfigurable;
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_device_object_t*>( hDevice )->dditable;
+        auto pfnEccConfigurable = dditable->zes.Device.pfnEccConfigurable;
         if( nullptr == pfnEccConfigurable )
             return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hDevice = reinterpret_cast<zes_device_object_t*>( hDevice )->handle;
+
         // forward to device-driver
         result = pfnEccConfigurable( hDevice, pConfigurable );
+
         return result;
     }
 
@@ -1100,19 +1089,18 @@ namespace loader
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
 
-        // extract handle's function pointer table
-        auto dditable = reinterpret_cast<ze_handle_t*>( hDevice )->pSysman;
-        if (dditable->isValidFlag == 0)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        // Check that api version in the driver is supported by this version of the API
-        if (dditable->version < ZE_API_VERSION_1_4) {
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-        }
-        auto pfnGetEccState = dditable->Device->pfnGetEccState;
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_device_object_t*>( hDevice )->dditable;
+        auto pfnGetEccState = dditable->zes.Device.pfnGetEccState;
         if( nullptr == pfnGetEccState )
             return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hDevice = reinterpret_cast<zes_device_object_t*>( hDevice )->handle;
+
         // forward to device-driver
         result = pfnGetEccState( hDevice, pState );
+
         return result;
     }
 
@@ -1127,19 +1115,18 @@ namespace loader
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
 
-        // extract handle's function pointer table
-        auto dditable = reinterpret_cast<ze_handle_t*>( hDevice )->pSysman;
-        if (dditable->isValidFlag == 0)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        // Check that api version in the driver is supported by this version of the API
-        if (dditable->version < ZE_API_VERSION_1_4) {
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-        }
-        auto pfnSetEccState = dditable->Device->pfnSetEccState;
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_device_object_t*>( hDevice )->dditable;
+        auto pfnSetEccState = dditable->zes.Device.pfnSetEccState;
         if( nullptr == pfnSetEccState )
             return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hDevice = reinterpret_cast<zes_device_object_t*>( hDevice )->handle;
+
         // forward to device-driver
         result = pfnSetEccState( hDevice, newState, pState );
+
         return result;
     }
 
@@ -1163,19 +1150,33 @@ namespace loader
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
 
-        // extract handle's function pointer table
-        auto dditable = reinterpret_cast<ze_handle_t*>( hDevice )->pSysman;
-        if (dditable->isValidFlag == 0)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        // Check that api version in the driver is supported by this version of the API
-        if (dditable->version < ZE_API_VERSION_1_0) {
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-        }
-        auto pfnEnumEngineGroups = dditable->Device->pfnEnumEngineGroups;
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_device_object_t*>( hDevice )->dditable;
+        auto pfnEnumEngineGroups = dditable->zes.Device.pfnEnumEngineGroups;
         if( nullptr == pfnEnumEngineGroups )
             return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hDevice = reinterpret_cast<zes_device_object_t*>( hDevice )->handle;
+
         // forward to device-driver
         result = pfnEnumEngineGroups( hDevice, pCount, phEngine );
+
+        if( ZE_RESULT_SUCCESS != result )
+            return result;
+
+        try
+        {
+            // convert driver handles to loader handles
+            for( size_t i = 0; ( nullptr != phEngine ) && ( i < *pCount ); ++i )
+                phEngine[ i ] = reinterpret_cast<zes_engine_handle_t>(
+                    context->zes_engine_factory.getInstance( phEngine[ i ], dditable ) );
+        }
+        catch( std::bad_alloc& )
+        {
+            result = ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY;
+        }
+
         return result;
     }
 
@@ -1189,19 +1190,18 @@ namespace loader
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
 
-        // extract handle's function pointer table
-        auto dditable = reinterpret_cast<ze_handle_t*>( hEngine )->pSysman;
-        if (dditable->isValidFlag == 0)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        // Check that api version in the driver is supported by this version of the API
-        if (dditable->version < ZE_API_VERSION_1_0) {
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-        }
-        auto pfnGetProperties = dditable->Engine->pfnGetProperties;
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_engine_object_t*>( hEngine )->dditable;
+        auto pfnGetProperties = dditable->zes.Engine.pfnGetProperties;
         if( nullptr == pfnGetProperties )
             return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hEngine = reinterpret_cast<zes_engine_object_t*>( hEngine )->handle;
+
         // forward to device-driver
         result = pfnGetProperties( hEngine, pProperties );
+
         return result;
     }
 
@@ -1216,19 +1216,18 @@ namespace loader
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
 
-        // extract handle's function pointer table
-        auto dditable = reinterpret_cast<ze_handle_t*>( hEngine )->pSysman;
-        if (dditable->isValidFlag == 0)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        // Check that api version in the driver is supported by this version of the API
-        if (dditable->version < ZE_API_VERSION_1_7) {
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-        }
-        auto pfnGetActivity = dditable->Engine->pfnGetActivity;
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_engine_object_t*>( hEngine )->dditable;
+        auto pfnGetActivity = dditable->zes.Engine.pfnGetActivity;
         if( nullptr == pfnGetActivity )
             return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hEngine = reinterpret_cast<zes_engine_object_t*>( hEngine )->handle;
+
         // forward to device-driver
         result = pfnGetActivity( hEngine, pStats );
+
         return result;
     }
 
@@ -1242,19 +1241,18 @@ namespace loader
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
 
-        // extract handle's function pointer table
-        auto dditable = reinterpret_cast<ze_handle_t*>( hDevice )->pSysman;
-        if (dditable->isValidFlag == 0)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        // Check that api version in the driver is supported by this version of the API
-        if (dditable->version < ZE_API_VERSION_1_0) {
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-        }
-        auto pfnEventRegister = dditable->Device->pfnEventRegister;
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_device_object_t*>( hDevice )->dditable;
+        auto pfnEventRegister = dditable->zes.Device.pfnEventRegister;
         if( nullptr == pfnEventRegister )
             return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hDevice = reinterpret_cast<zes_device_object_t*>( hDevice )->handle;
+
         // forward to device-driver
         result = pfnEventRegister( hDevice, events );
+
         return result;
     }
 
@@ -1284,19 +1282,24 @@ namespace loader
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
 
-        // extract handle's function pointer table
-        auto dditable = reinterpret_cast<ze_handle_t*>( hDriver )->pSysman;
-        if (dditable->isValidFlag == 0)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        // Check that api version in the driver is supported by this version of the API
-        if (dditable->version < ZE_API_VERSION_1_0) {
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-        }
-        auto pfnEventListen = dditable->Driver->pfnEventListen;
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<ze_driver_object_t*>( hDriver )->dditable;
+        auto pfnEventListen = dditable->zes.Driver.pfnEventListen;
         if( nullptr == pfnEventListen )
             return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hDriver = reinterpret_cast<ze_driver_object_t*>( hDriver )->handle;
+
+        // convert loader handles to driver handles
+        auto phDevicesLocal = new zes_device_handle_t [count];
+        for( size_t i = 0; ( nullptr != phDevices ) && ( i < count ); ++i )
+            phDevicesLocal[ i ] = reinterpret_cast<zes_device_object_t*>( phDevices[ i ] )->handle;
+
         // forward to device-driver
-        result = pfnEventListen( hDriver, timeout, count, phDevices, pNumDeviceEvents, pEvents );
+        result = pfnEventListen( hDriver, timeout, count, phDevicesLocal, pNumDeviceEvents, pEvents );
+        delete []phDevicesLocal;
+
         return result;
     }
 
@@ -1326,19 +1329,24 @@ namespace loader
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
 
-        // extract handle's function pointer table
-        auto dditable = reinterpret_cast<ze_handle_t*>( hDriver )->pSysman;
-        if (dditable->isValidFlag == 0)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        // Check that api version in the driver is supported by this version of the API
-        if (dditable->version < ZE_API_VERSION_1_1) {
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-        }
-        auto pfnEventListenEx = dditable->Driver->pfnEventListenEx;
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<ze_driver_object_t*>( hDriver )->dditable;
+        auto pfnEventListenEx = dditable->zes.Driver.pfnEventListenEx;
         if( nullptr == pfnEventListenEx )
             return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hDriver = reinterpret_cast<ze_driver_object_t*>( hDriver )->handle;
+
+        // convert loader handles to driver handles
+        auto phDevicesLocal = new zes_device_handle_t [count];
+        for( size_t i = 0; ( nullptr != phDevices ) && ( i < count ); ++i )
+            phDevicesLocal[ i ] = reinterpret_cast<zes_device_object_t*>( phDevices[ i ] )->handle;
+
         // forward to device-driver
-        result = pfnEventListenEx( hDriver, timeout, count, phDevices, pNumDeviceEvents, pEvents );
+        result = pfnEventListenEx( hDriver, timeout, count, phDevicesLocal, pNumDeviceEvents, pEvents );
+        delete []phDevicesLocal;
+
         return result;
     }
 
@@ -1362,19 +1370,33 @@ namespace loader
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
 
-        // extract handle's function pointer table
-        auto dditable = reinterpret_cast<ze_handle_t*>( hDevice )->pSysman;
-        if (dditable->isValidFlag == 0)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        // Check that api version in the driver is supported by this version of the API
-        if (dditable->version < ZE_API_VERSION_1_0) {
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-        }
-        auto pfnEnumFabricPorts = dditable->Device->pfnEnumFabricPorts;
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_device_object_t*>( hDevice )->dditable;
+        auto pfnEnumFabricPorts = dditable->zes.Device.pfnEnumFabricPorts;
         if( nullptr == pfnEnumFabricPorts )
             return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hDevice = reinterpret_cast<zes_device_object_t*>( hDevice )->handle;
+
         // forward to device-driver
         result = pfnEnumFabricPorts( hDevice, pCount, phPort );
+
+        if( ZE_RESULT_SUCCESS != result )
+            return result;
+
+        try
+        {
+            // convert driver handles to loader handles
+            for( size_t i = 0; ( nullptr != phPort ) && ( i < *pCount ); ++i )
+                phPort[ i ] = reinterpret_cast<zes_fabric_port_handle_t>(
+                    context->zes_fabric_port_factory.getInstance( phPort[ i ], dditable ) );
+        }
+        catch( std::bad_alloc& )
+        {
+            result = ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY;
+        }
+
         return result;
     }
 
@@ -1388,19 +1410,18 @@ namespace loader
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
 
-        // extract handle's function pointer table
-        auto dditable = reinterpret_cast<ze_handle_t*>( hPort )->pSysman;
-        if (dditable->isValidFlag == 0)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        // Check that api version in the driver is supported by this version of the API
-        if (dditable->version < ZE_API_VERSION_1_0) {
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-        }
-        auto pfnGetProperties = dditable->FabricPort->pfnGetProperties;
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_fabric_port_object_t*>( hPort )->dditable;
+        auto pfnGetProperties = dditable->zes.FabricPort.pfnGetProperties;
         if( nullptr == pfnGetProperties )
             return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hPort = reinterpret_cast<zes_fabric_port_object_t*>( hPort )->handle;
+
         // forward to device-driver
         result = pfnGetProperties( hPort, pProperties );
+
         return result;
     }
 
@@ -1415,19 +1436,18 @@ namespace loader
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
 
-        // extract handle's function pointer table
-        auto dditable = reinterpret_cast<ze_handle_t*>( hPort )->pSysman;
-        if (dditable->isValidFlag == 0)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        // Check that api version in the driver is supported by this version of the API
-        if (dditable->version < ZE_API_VERSION_1_0) {
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-        }
-        auto pfnGetLinkType = dditable->FabricPort->pfnGetLinkType;
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_fabric_port_object_t*>( hPort )->dditable;
+        auto pfnGetLinkType = dditable->zes.FabricPort.pfnGetLinkType;
         if( nullptr == pfnGetLinkType )
             return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hPort = reinterpret_cast<zes_fabric_port_object_t*>( hPort )->handle;
+
         // forward to device-driver
         result = pfnGetLinkType( hPort, pLinkType );
+
         return result;
     }
 
@@ -1441,19 +1461,18 @@ namespace loader
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
 
-        // extract handle's function pointer table
-        auto dditable = reinterpret_cast<ze_handle_t*>( hPort )->pSysman;
-        if (dditable->isValidFlag == 0)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        // Check that api version in the driver is supported by this version of the API
-        if (dditable->version < ZE_API_VERSION_1_0) {
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-        }
-        auto pfnGetConfig = dditable->FabricPort->pfnGetConfig;
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_fabric_port_object_t*>( hPort )->dditable;
+        auto pfnGetConfig = dditable->zes.FabricPort.pfnGetConfig;
         if( nullptr == pfnGetConfig )
             return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hPort = reinterpret_cast<zes_fabric_port_object_t*>( hPort )->handle;
+
         // forward to device-driver
         result = pfnGetConfig( hPort, pConfig );
+
         return result;
     }
 
@@ -1467,19 +1486,18 @@ namespace loader
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
 
-        // extract handle's function pointer table
-        auto dditable = reinterpret_cast<ze_handle_t*>( hPort )->pSysman;
-        if (dditable->isValidFlag == 0)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        // Check that api version in the driver is supported by this version of the API
-        if (dditable->version < ZE_API_VERSION_1_0) {
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-        }
-        auto pfnSetConfig = dditable->FabricPort->pfnSetConfig;
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_fabric_port_object_t*>( hPort )->dditable;
+        auto pfnSetConfig = dditable->zes.FabricPort.pfnSetConfig;
         if( nullptr == pfnSetConfig )
             return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hPort = reinterpret_cast<zes_fabric_port_object_t*>( hPort )->handle;
+
         // forward to device-driver
         result = pfnSetConfig( hPort, pConfig );
+
         return result;
     }
 
@@ -1493,19 +1511,18 @@ namespace loader
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
 
-        // extract handle's function pointer table
-        auto dditable = reinterpret_cast<ze_handle_t*>( hPort )->pSysman;
-        if (dditable->isValidFlag == 0)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        // Check that api version in the driver is supported by this version of the API
-        if (dditable->version < ZE_API_VERSION_1_0) {
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-        }
-        auto pfnGetState = dditable->FabricPort->pfnGetState;
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_fabric_port_object_t*>( hPort )->dditable;
+        auto pfnGetState = dditable->zes.FabricPort.pfnGetState;
         if( nullptr == pfnGetState )
             return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hPort = reinterpret_cast<zes_fabric_port_object_t*>( hPort )->handle;
+
         // forward to device-driver
         result = pfnGetState( hPort, pState );
+
         return result;
     }
 
@@ -1519,19 +1536,18 @@ namespace loader
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
 
-        // extract handle's function pointer table
-        auto dditable = reinterpret_cast<ze_handle_t*>( hPort )->pSysman;
-        if (dditable->isValidFlag == 0)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        // Check that api version in the driver is supported by this version of the API
-        if (dditable->version < ZE_API_VERSION_1_0) {
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-        }
-        auto pfnGetThroughput = dditable->FabricPort->pfnGetThroughput;
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_fabric_port_object_t*>( hPort )->dditable;
+        auto pfnGetThroughput = dditable->zes.FabricPort.pfnGetThroughput;
         if( nullptr == pfnGetThroughput )
             return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hPort = reinterpret_cast<zes_fabric_port_object_t*>( hPort )->handle;
+
         // forward to device-driver
         result = pfnGetThroughput( hPort, pThroughput );
+
         return result;
     }
 
@@ -1545,19 +1561,18 @@ namespace loader
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
 
-        // extract handle's function pointer table
-        auto dditable = reinterpret_cast<ze_handle_t*>( hPort )->pSysman;
-        if (dditable->isValidFlag == 0)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        // Check that api version in the driver is supported by this version of the API
-        if (dditable->version < ZE_API_VERSION_1_7) {
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-        }
-        auto pfnGetFabricErrorCounters = dditable->FabricPort->pfnGetFabricErrorCounters;
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_fabric_port_object_t*>( hPort )->dditable;
+        auto pfnGetFabricErrorCounters = dditable->zes.FabricPort.pfnGetFabricErrorCounters;
         if( nullptr == pfnGetFabricErrorCounters )
             return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hPort = reinterpret_cast<zes_fabric_port_object_t*>( hPort )->handle;
+
         // forward to device-driver
         result = pfnGetFabricErrorCounters( hPort, pErrors );
+
         return result;
     }
 
@@ -1575,19 +1590,24 @@ namespace loader
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
 
-        // extract handle's function pointer table
-        auto dditable = reinterpret_cast<ze_handle_t*>( hDevice )->pSysman;
-        if (dditable->isValidFlag == 0)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        // Check that api version in the driver is supported by this version of the API
-        if (dditable->version < ZE_API_VERSION_1_7) {
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-        }
-        auto pfnGetMultiPortThroughput = dditable->FabricPort->pfnGetMultiPortThroughput;
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_device_object_t*>( hDevice )->dditable;
+        auto pfnGetMultiPortThroughput = dditable->zes.FabricPort.pfnGetMultiPortThroughput;
         if( nullptr == pfnGetMultiPortThroughput )
             return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hDevice = reinterpret_cast<zes_device_object_t*>( hDevice )->handle;
+
+        // convert loader handles to driver handles
+        auto phPortLocal = new zes_fabric_port_handle_t [numPorts];
+        for( size_t i = 0; ( nullptr != phPort ) && ( i < numPorts ); ++i )
+            phPortLocal[ i ] = reinterpret_cast<zes_fabric_port_object_t*>( phPort[ i ] )->handle;
+
         // forward to device-driver
-        result = pfnGetMultiPortThroughput( hDevice, numPorts, phPort, pThroughput );
+        result = pfnGetMultiPortThroughput( hDevice, numPorts, phPortLocal, pThroughput );
+        delete []phPortLocal;
+
         return result;
     }
 
@@ -1611,19 +1631,33 @@ namespace loader
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
 
-        // extract handle's function pointer table
-        auto dditable = reinterpret_cast<ze_handle_t*>( hDevice )->pSysman;
-        if (dditable->isValidFlag == 0)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        // Check that api version in the driver is supported by this version of the API
-        if (dditable->version < ZE_API_VERSION_1_0) {
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-        }
-        auto pfnEnumFans = dditable->Device->pfnEnumFans;
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_device_object_t*>( hDevice )->dditable;
+        auto pfnEnumFans = dditable->zes.Device.pfnEnumFans;
         if( nullptr == pfnEnumFans )
             return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hDevice = reinterpret_cast<zes_device_object_t*>( hDevice )->handle;
+
         // forward to device-driver
         result = pfnEnumFans( hDevice, pCount, phFan );
+
+        if( ZE_RESULT_SUCCESS != result )
+            return result;
+
+        try
+        {
+            // convert driver handles to loader handles
+            for( size_t i = 0; ( nullptr != phFan ) && ( i < *pCount ); ++i )
+                phFan[ i ] = reinterpret_cast<zes_fan_handle_t>(
+                    context->zes_fan_factory.getInstance( phFan[ i ], dditable ) );
+        }
+        catch( std::bad_alloc& )
+        {
+            result = ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY;
+        }
+
         return result;
     }
 
@@ -1637,19 +1671,18 @@ namespace loader
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
 
-        // extract handle's function pointer table
-        auto dditable = reinterpret_cast<ze_handle_t*>( hFan )->pSysman;
-        if (dditable->isValidFlag == 0)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        // Check that api version in the driver is supported by this version of the API
-        if (dditable->version < ZE_API_VERSION_1_0) {
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-        }
-        auto pfnGetProperties = dditable->Fan->pfnGetProperties;
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_fan_object_t*>( hFan )->dditable;
+        auto pfnGetProperties = dditable->zes.Fan.pfnGetProperties;
         if( nullptr == pfnGetProperties )
             return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hFan = reinterpret_cast<zes_fan_object_t*>( hFan )->handle;
+
         // forward to device-driver
         result = pfnGetProperties( hFan, pProperties );
+
         return result;
     }
 
@@ -1663,19 +1696,18 @@ namespace loader
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
 
-        // extract handle's function pointer table
-        auto dditable = reinterpret_cast<ze_handle_t*>( hFan )->pSysman;
-        if (dditable->isValidFlag == 0)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        // Check that api version in the driver is supported by this version of the API
-        if (dditable->version < ZE_API_VERSION_1_0) {
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-        }
-        auto pfnGetConfig = dditable->Fan->pfnGetConfig;
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_fan_object_t*>( hFan )->dditable;
+        auto pfnGetConfig = dditable->zes.Fan.pfnGetConfig;
         if( nullptr == pfnGetConfig )
             return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hFan = reinterpret_cast<zes_fan_object_t*>( hFan )->handle;
+
         // forward to device-driver
         result = pfnGetConfig( hFan, pConfig );
+
         return result;
     }
 
@@ -1688,19 +1720,18 @@ namespace loader
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
 
-        // extract handle's function pointer table
-        auto dditable = reinterpret_cast<ze_handle_t*>( hFan )->pSysman;
-        if (dditable->isValidFlag == 0)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        // Check that api version in the driver is supported by this version of the API
-        if (dditable->version < ZE_API_VERSION_1_0) {
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-        }
-        auto pfnSetDefaultMode = dditable->Fan->pfnSetDefaultMode;
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_fan_object_t*>( hFan )->dditable;
+        auto pfnSetDefaultMode = dditable->zes.Fan.pfnSetDefaultMode;
         if( nullptr == pfnSetDefaultMode )
             return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hFan = reinterpret_cast<zes_fan_object_t*>( hFan )->handle;
+
         // forward to device-driver
         result = pfnSetDefaultMode( hFan );
+
         return result;
     }
 
@@ -1714,19 +1745,18 @@ namespace loader
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
 
-        // extract handle's function pointer table
-        auto dditable = reinterpret_cast<ze_handle_t*>( hFan )->pSysman;
-        if (dditable->isValidFlag == 0)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        // Check that api version in the driver is supported by this version of the API
-        if (dditable->version < ZE_API_VERSION_1_0) {
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-        }
-        auto pfnSetFixedSpeedMode = dditable->Fan->pfnSetFixedSpeedMode;
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_fan_object_t*>( hFan )->dditable;
+        auto pfnSetFixedSpeedMode = dditable->zes.Fan.pfnSetFixedSpeedMode;
         if( nullptr == pfnSetFixedSpeedMode )
             return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hFan = reinterpret_cast<zes_fan_object_t*>( hFan )->handle;
+
         // forward to device-driver
         result = pfnSetFixedSpeedMode( hFan, speed );
+
         return result;
     }
 
@@ -1740,19 +1770,18 @@ namespace loader
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
 
-        // extract handle's function pointer table
-        auto dditable = reinterpret_cast<ze_handle_t*>( hFan )->pSysman;
-        if (dditable->isValidFlag == 0)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        // Check that api version in the driver is supported by this version of the API
-        if (dditable->version < ZE_API_VERSION_1_0) {
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-        }
-        auto pfnSetSpeedTableMode = dditable->Fan->pfnSetSpeedTableMode;
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_fan_object_t*>( hFan )->dditable;
+        auto pfnSetSpeedTableMode = dditable->zes.Fan.pfnSetSpeedTableMode;
         if( nullptr == pfnSetSpeedTableMode )
             return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hFan = reinterpret_cast<zes_fan_object_t*>( hFan )->handle;
+
         // forward to device-driver
         result = pfnSetSpeedTableMode( hFan, speedTable );
+
         return result;
     }
 
@@ -1769,19 +1798,18 @@ namespace loader
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
 
-        // extract handle's function pointer table
-        auto dditable = reinterpret_cast<ze_handle_t*>( hFan )->pSysman;
-        if (dditable->isValidFlag == 0)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        // Check that api version in the driver is supported by this version of the API
-        if (dditable->version < ZE_API_VERSION_1_0) {
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-        }
-        auto pfnGetState = dditable->Fan->pfnGetState;
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_fan_object_t*>( hFan )->dditable;
+        auto pfnGetState = dditable->zes.Fan.pfnGetState;
         if( nullptr == pfnGetState )
             return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hFan = reinterpret_cast<zes_fan_object_t*>( hFan )->handle;
+
         // forward to device-driver
         result = pfnGetState( hFan, units, pSpeed );
+
         return result;
     }
 
@@ -1805,19 +1833,33 @@ namespace loader
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
 
-        // extract handle's function pointer table
-        auto dditable = reinterpret_cast<ze_handle_t*>( hDevice )->pSysman;
-        if (dditable->isValidFlag == 0)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        // Check that api version in the driver is supported by this version of the API
-        if (dditable->version < ZE_API_VERSION_1_0) {
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-        }
-        auto pfnEnumFirmwares = dditable->Device->pfnEnumFirmwares;
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_device_object_t*>( hDevice )->dditable;
+        auto pfnEnumFirmwares = dditable->zes.Device.pfnEnumFirmwares;
         if( nullptr == pfnEnumFirmwares )
             return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hDevice = reinterpret_cast<zes_device_object_t*>( hDevice )->handle;
+
         // forward to device-driver
         result = pfnEnumFirmwares( hDevice, pCount, phFirmware );
+
+        if( ZE_RESULT_SUCCESS != result )
+            return result;
+
+        try
+        {
+            // convert driver handles to loader handles
+            for( size_t i = 0; ( nullptr != phFirmware ) && ( i < *pCount ); ++i )
+                phFirmware[ i ] = reinterpret_cast<zes_firmware_handle_t>(
+                    context->zes_firmware_factory.getInstance( phFirmware[ i ], dditable ) );
+        }
+        catch( std::bad_alloc& )
+        {
+            result = ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY;
+        }
+
         return result;
     }
 
@@ -1832,19 +1874,18 @@ namespace loader
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
 
-        // extract handle's function pointer table
-        auto dditable = reinterpret_cast<ze_handle_t*>( hFirmware )->pSysman;
-        if (dditable->isValidFlag == 0)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        // Check that api version in the driver is supported by this version of the API
-        if (dditable->version < ZE_API_VERSION_1_0) {
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-        }
-        auto pfnGetProperties = dditable->Firmware->pfnGetProperties;
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_firmware_object_t*>( hFirmware )->dditable;
+        auto pfnGetProperties = dditable->zes.Firmware.pfnGetProperties;
         if( nullptr == pfnGetProperties )
             return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hFirmware = reinterpret_cast<zes_firmware_object_t*>( hFirmware )->handle;
+
         // forward to device-driver
         result = pfnGetProperties( hFirmware, pProperties );
+
         return result;
     }
 
@@ -1859,19 +1900,18 @@ namespace loader
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
 
-        // extract handle's function pointer table
-        auto dditable = reinterpret_cast<ze_handle_t*>( hFirmware )->pSysman;
-        if (dditable->isValidFlag == 0)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        // Check that api version in the driver is supported by this version of the API
-        if (dditable->version < ZE_API_VERSION_1_0) {
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-        }
-        auto pfnFlash = dditable->Firmware->pfnFlash;
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_firmware_object_t*>( hFirmware )->dditable;
+        auto pfnFlash = dditable->zes.Firmware.pfnFlash;
         if( nullptr == pfnFlash )
             return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hFirmware = reinterpret_cast<zes_firmware_object_t*>( hFirmware )->handle;
+
         // forward to device-driver
         result = pfnFlash( hFirmware, pImage, size );
+
         return result;
     }
 
@@ -1885,19 +1925,18 @@ namespace loader
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
 
-        // extract handle's function pointer table
-        auto dditable = reinterpret_cast<ze_handle_t*>( hFirmware )->pSysman;
-        if (dditable->isValidFlag == 0)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        // Check that api version in the driver is supported by this version of the API
-        if (dditable->version < ZE_API_VERSION_1_8) {
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-        }
-        auto pfnGetFlashProgress = dditable->Firmware->pfnGetFlashProgress;
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_firmware_object_t*>( hFirmware )->dditable;
+        auto pfnGetFlashProgress = dditable->zes.Firmware.pfnGetFlashProgress;
         if( nullptr == pfnGetFlashProgress )
             return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hFirmware = reinterpret_cast<zes_firmware_object_t*>( hFirmware )->handle;
+
         // forward to device-driver
         result = pfnGetFlashProgress( hFirmware, pCompletionPercent );
+
         return result;
     }
 
@@ -1912,19 +1951,18 @@ namespace loader
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
 
-        // extract handle's function pointer table
-        auto dditable = reinterpret_cast<ze_handle_t*>( hFirmware )->pSysman;
-        if (dditable->isValidFlag == 0)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        // Check that api version in the driver is supported by this version of the API
-        if (dditable->version < ZE_API_VERSION_1_9) {
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-        }
-        auto pfnGetConsoleLogs = dditable->Firmware->pfnGetConsoleLogs;
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_firmware_object_t*>( hFirmware )->dditable;
+        auto pfnGetConsoleLogs = dditable->zes.Firmware.pfnGetConsoleLogs;
         if( nullptr == pfnGetConsoleLogs )
             return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hFirmware = reinterpret_cast<zes_firmware_object_t*>( hFirmware )->handle;
+
         // forward to device-driver
         result = pfnGetConsoleLogs( hFirmware, pSize, pFirmwareLog );
+
         return result;
     }
 
@@ -1948,19 +1986,33 @@ namespace loader
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
 
-        // extract handle's function pointer table
-        auto dditable = reinterpret_cast<ze_handle_t*>( hDevice )->pSysman;
-        if (dditable->isValidFlag == 0)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        // Check that api version in the driver is supported by this version of the API
-        if (dditable->version < ZE_API_VERSION_1_0) {
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-        }
-        auto pfnEnumFrequencyDomains = dditable->Device->pfnEnumFrequencyDomains;
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_device_object_t*>( hDevice )->dditable;
+        auto pfnEnumFrequencyDomains = dditable->zes.Device.pfnEnumFrequencyDomains;
         if( nullptr == pfnEnumFrequencyDomains )
             return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hDevice = reinterpret_cast<zes_device_object_t*>( hDevice )->handle;
+
         // forward to device-driver
         result = pfnEnumFrequencyDomains( hDevice, pCount, phFrequency );
+
+        if( ZE_RESULT_SUCCESS != result )
+            return result;
+
+        try
+        {
+            // convert driver handles to loader handles
+            for( size_t i = 0; ( nullptr != phFrequency ) && ( i < *pCount ); ++i )
+                phFrequency[ i ] = reinterpret_cast<zes_freq_handle_t>(
+                    context->zes_freq_factory.getInstance( phFrequency[ i ], dditable ) );
+        }
+        catch( std::bad_alloc& )
+        {
+            result = ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY;
+        }
+
         return result;
     }
 
@@ -1974,19 +2026,18 @@ namespace loader
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
 
-        // extract handle's function pointer table
-        auto dditable = reinterpret_cast<ze_handle_t*>( hFrequency )->pSysman;
-        if (dditable->isValidFlag == 0)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        // Check that api version in the driver is supported by this version of the API
-        if (dditable->version < ZE_API_VERSION_1_0) {
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-        }
-        auto pfnGetProperties = dditable->Frequency->pfnGetProperties;
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_freq_object_t*>( hFrequency )->dditable;
+        auto pfnGetProperties = dditable->zes.Frequency.pfnGetProperties;
         if( nullptr == pfnGetProperties )
             return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hFrequency = reinterpret_cast<zes_freq_object_t*>( hFrequency )->handle;
+
         // forward to device-driver
         result = pfnGetProperties( hFrequency, pProperties );
+
         return result;
     }
 
@@ -2008,19 +2059,18 @@ namespace loader
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
 
-        // extract handle's function pointer table
-        auto dditable = reinterpret_cast<ze_handle_t*>( hFrequency )->pSysman;
-        if (dditable->isValidFlag == 0)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        // Check that api version in the driver is supported by this version of the API
-        if (dditable->version < ZE_API_VERSION_1_0) {
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-        }
-        auto pfnGetAvailableClocks = dditable->Frequency->pfnGetAvailableClocks;
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_freq_object_t*>( hFrequency )->dditable;
+        auto pfnGetAvailableClocks = dditable->zes.Frequency.pfnGetAvailableClocks;
         if( nullptr == pfnGetAvailableClocks )
             return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hFrequency = reinterpret_cast<zes_freq_object_t*>( hFrequency )->handle;
+
         // forward to device-driver
         result = pfnGetAvailableClocks( hFrequency, pCount, phFrequency );
+
         return result;
     }
 
@@ -2035,19 +2085,18 @@ namespace loader
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
 
-        // extract handle's function pointer table
-        auto dditable = reinterpret_cast<ze_handle_t*>( hFrequency )->pSysman;
-        if (dditable->isValidFlag == 0)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        // Check that api version in the driver is supported by this version of the API
-        if (dditable->version < ZE_API_VERSION_1_0) {
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-        }
-        auto pfnGetRange = dditable->Frequency->pfnGetRange;
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_freq_object_t*>( hFrequency )->dditable;
+        auto pfnGetRange = dditable->zes.Frequency.pfnGetRange;
         if( nullptr == pfnGetRange )
             return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hFrequency = reinterpret_cast<zes_freq_object_t*>( hFrequency )->handle;
+
         // forward to device-driver
         result = pfnGetRange( hFrequency, pLimits );
+
         return result;
     }
 
@@ -2062,19 +2111,18 @@ namespace loader
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
 
-        // extract handle's function pointer table
-        auto dditable = reinterpret_cast<ze_handle_t*>( hFrequency )->pSysman;
-        if (dditable->isValidFlag == 0)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        // Check that api version in the driver is supported by this version of the API
-        if (dditable->version < ZE_API_VERSION_1_0) {
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-        }
-        auto pfnSetRange = dditable->Frequency->pfnSetRange;
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_freq_object_t*>( hFrequency )->dditable;
+        auto pfnSetRange = dditable->zes.Frequency.pfnSetRange;
         if( nullptr == pfnSetRange )
             return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hFrequency = reinterpret_cast<zes_freq_object_t*>( hFrequency )->handle;
+
         // forward to device-driver
         result = pfnSetRange( hFrequency, pLimits );
+
         return result;
     }
 
@@ -2088,19 +2136,18 @@ namespace loader
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
 
-        // extract handle's function pointer table
-        auto dditable = reinterpret_cast<ze_handle_t*>( hFrequency )->pSysman;
-        if (dditable->isValidFlag == 0)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        // Check that api version in the driver is supported by this version of the API
-        if (dditable->version < ZE_API_VERSION_1_0) {
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-        }
-        auto pfnGetState = dditable->Frequency->pfnGetState;
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_freq_object_t*>( hFrequency )->dditable;
+        auto pfnGetState = dditable->zes.Frequency.pfnGetState;
         if( nullptr == pfnGetState )
             return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hFrequency = reinterpret_cast<zes_freq_object_t*>( hFrequency )->handle;
+
         // forward to device-driver
         result = pfnGetState( hFrequency, pState );
+
         return result;
     }
 
@@ -2115,19 +2162,18 @@ namespace loader
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
 
-        // extract handle's function pointer table
-        auto dditable = reinterpret_cast<ze_handle_t*>( hFrequency )->pSysman;
-        if (dditable->isValidFlag == 0)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        // Check that api version in the driver is supported by this version of the API
-        if (dditable->version < ZE_API_VERSION_1_0) {
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-        }
-        auto pfnGetThrottleTime = dditable->Frequency->pfnGetThrottleTime;
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_freq_object_t*>( hFrequency )->dditable;
+        auto pfnGetThrottleTime = dditable->zes.Frequency.pfnGetThrottleTime;
         if( nullptr == pfnGetThrottleTime )
             return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hFrequency = reinterpret_cast<zes_freq_object_t*>( hFrequency )->handle;
+
         // forward to device-driver
         result = pfnGetThrottleTime( hFrequency, pThrottleTime );
+
         return result;
     }
 
@@ -2141,19 +2187,18 @@ namespace loader
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
 
-        // extract handle's function pointer table
-        auto dditable = reinterpret_cast<ze_handle_t*>( hFrequency )->pSysman;
-        if (dditable->isValidFlag == 0)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        // Check that api version in the driver is supported by this version of the API
-        if (dditable->version < ZE_API_VERSION_1_0) {
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-        }
-        auto pfnOcGetCapabilities = dditable->Frequency->pfnOcGetCapabilities;
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_freq_object_t*>( hFrequency )->dditable;
+        auto pfnOcGetCapabilities = dditable->zes.Frequency.pfnOcGetCapabilities;
         if( nullptr == pfnOcGetCapabilities )
             return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hFrequency = reinterpret_cast<zes_freq_object_t*>( hFrequency )->handle;
+
         // forward to device-driver
         result = pfnOcGetCapabilities( hFrequency, pOcCapabilities );
+
         return result;
     }
 
@@ -2170,19 +2215,18 @@ namespace loader
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
 
-        // extract handle's function pointer table
-        auto dditable = reinterpret_cast<ze_handle_t*>( hFrequency )->pSysman;
-        if (dditable->isValidFlag == 0)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        // Check that api version in the driver is supported by this version of the API
-        if (dditable->version < ZE_API_VERSION_1_0) {
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-        }
-        auto pfnOcGetFrequencyTarget = dditable->Frequency->pfnOcGetFrequencyTarget;
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_freq_object_t*>( hFrequency )->dditable;
+        auto pfnOcGetFrequencyTarget = dditable->zes.Frequency.pfnOcGetFrequencyTarget;
         if( nullptr == pfnOcGetFrequencyTarget )
             return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hFrequency = reinterpret_cast<zes_freq_object_t*>( hFrequency )->handle;
+
         // forward to device-driver
         result = pfnOcGetFrequencyTarget( hFrequency, pCurrentOcFrequency );
+
         return result;
     }
 
@@ -2199,19 +2243,18 @@ namespace loader
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
 
-        // extract handle's function pointer table
-        auto dditable = reinterpret_cast<ze_handle_t*>( hFrequency )->pSysman;
-        if (dditable->isValidFlag == 0)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        // Check that api version in the driver is supported by this version of the API
-        if (dditable->version < ZE_API_VERSION_1_0) {
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-        }
-        auto pfnOcSetFrequencyTarget = dditable->Frequency->pfnOcSetFrequencyTarget;
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_freq_object_t*>( hFrequency )->dditable;
+        auto pfnOcSetFrequencyTarget = dditable->zes.Frequency.pfnOcSetFrequencyTarget;
         if( nullptr == pfnOcSetFrequencyTarget )
             return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hFrequency = reinterpret_cast<zes_freq_object_t*>( hFrequency )->handle;
+
         // forward to device-driver
         result = pfnOcSetFrequencyTarget( hFrequency, CurrentOcFrequency );
+
         return result;
     }
 
@@ -2230,19 +2273,18 @@ namespace loader
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
 
-        // extract handle's function pointer table
-        auto dditable = reinterpret_cast<ze_handle_t*>( hFrequency )->pSysman;
-        if (dditable->isValidFlag == 0)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        // Check that api version in the driver is supported by this version of the API
-        if (dditable->version < ZE_API_VERSION_1_0) {
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-        }
-        auto pfnOcGetVoltageTarget = dditable->Frequency->pfnOcGetVoltageTarget;
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_freq_object_t*>( hFrequency )->dditable;
+        auto pfnOcGetVoltageTarget = dditable->zes.Frequency.pfnOcGetVoltageTarget;
         if( nullptr == pfnOcGetVoltageTarget )
             return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hFrequency = reinterpret_cast<zes_freq_object_t*>( hFrequency )->handle;
+
         // forward to device-driver
         result = pfnOcGetVoltageTarget( hFrequency, pCurrentVoltageTarget, pCurrentVoltageOffset );
+
         return result;
     }
 
@@ -2261,19 +2303,18 @@ namespace loader
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
 
-        // extract handle's function pointer table
-        auto dditable = reinterpret_cast<ze_handle_t*>( hFrequency )->pSysman;
-        if (dditable->isValidFlag == 0)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        // Check that api version in the driver is supported by this version of the API
-        if (dditable->version < ZE_API_VERSION_1_0) {
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-        }
-        auto pfnOcSetVoltageTarget = dditable->Frequency->pfnOcSetVoltageTarget;
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_freq_object_t*>( hFrequency )->dditable;
+        auto pfnOcSetVoltageTarget = dditable->zes.Frequency.pfnOcSetVoltageTarget;
         if( nullptr == pfnOcSetVoltageTarget )
             return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hFrequency = reinterpret_cast<zes_freq_object_t*>( hFrequency )->handle;
+
         // forward to device-driver
         result = pfnOcSetVoltageTarget( hFrequency, CurrentVoltageTarget, CurrentVoltageOffset );
+
         return result;
     }
 
@@ -2287,19 +2328,18 @@ namespace loader
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
 
-        // extract handle's function pointer table
-        auto dditable = reinterpret_cast<ze_handle_t*>( hFrequency )->pSysman;
-        if (dditable->isValidFlag == 0)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        // Check that api version in the driver is supported by this version of the API
-        if (dditable->version < ZE_API_VERSION_1_0) {
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-        }
-        auto pfnOcSetMode = dditable->Frequency->pfnOcSetMode;
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_freq_object_t*>( hFrequency )->dditable;
+        auto pfnOcSetMode = dditable->zes.Frequency.pfnOcSetMode;
         if( nullptr == pfnOcSetMode )
             return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hFrequency = reinterpret_cast<zes_freq_object_t*>( hFrequency )->handle;
+
         // forward to device-driver
         result = pfnOcSetMode( hFrequency, CurrentOcMode );
+
         return result;
     }
 
@@ -2313,19 +2353,18 @@ namespace loader
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
 
-        // extract handle's function pointer table
-        auto dditable = reinterpret_cast<ze_handle_t*>( hFrequency )->pSysman;
-        if (dditable->isValidFlag == 0)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        // Check that api version in the driver is supported by this version of the API
-        if (dditable->version < ZE_API_VERSION_1_0) {
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-        }
-        auto pfnOcGetMode = dditable->Frequency->pfnOcGetMode;
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_freq_object_t*>( hFrequency )->dditable;
+        auto pfnOcGetMode = dditable->zes.Frequency.pfnOcGetMode;
         if( nullptr == pfnOcGetMode )
             return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hFrequency = reinterpret_cast<zes_freq_object_t*>( hFrequency )->handle;
+
         // forward to device-driver
         result = pfnOcGetMode( hFrequency, pCurrentOcMode );
+
         return result;
     }
 
@@ -2340,19 +2379,18 @@ namespace loader
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
 
-        // extract handle's function pointer table
-        auto dditable = reinterpret_cast<ze_handle_t*>( hFrequency )->pSysman;
-        if (dditable->isValidFlag == 0)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        // Check that api version in the driver is supported by this version of the API
-        if (dditable->version < ZE_API_VERSION_1_0) {
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-        }
-        auto pfnOcGetIccMax = dditable->Frequency->pfnOcGetIccMax;
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_freq_object_t*>( hFrequency )->dditable;
+        auto pfnOcGetIccMax = dditable->zes.Frequency.pfnOcGetIccMax;
         if( nullptr == pfnOcGetIccMax )
             return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hFrequency = reinterpret_cast<zes_freq_object_t*>( hFrequency )->handle;
+
         // forward to device-driver
         result = pfnOcGetIccMax( hFrequency, pOcIccMax );
+
         return result;
     }
 
@@ -2366,19 +2404,18 @@ namespace loader
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
 
-        // extract handle's function pointer table
-        auto dditable = reinterpret_cast<ze_handle_t*>( hFrequency )->pSysman;
-        if (dditable->isValidFlag == 0)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        // Check that api version in the driver is supported by this version of the API
-        if (dditable->version < ZE_API_VERSION_1_0) {
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-        }
-        auto pfnOcSetIccMax = dditable->Frequency->pfnOcSetIccMax;
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_freq_object_t*>( hFrequency )->dditable;
+        auto pfnOcSetIccMax = dditable->zes.Frequency.pfnOcSetIccMax;
         if( nullptr == pfnOcSetIccMax )
             return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hFrequency = reinterpret_cast<zes_freq_object_t*>( hFrequency )->handle;
+
         // forward to device-driver
         result = pfnOcSetIccMax( hFrequency, ocIccMax );
+
         return result;
     }
 
@@ -2393,19 +2430,18 @@ namespace loader
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
 
-        // extract handle's function pointer table
-        auto dditable = reinterpret_cast<ze_handle_t*>( hFrequency )->pSysman;
-        if (dditable->isValidFlag == 0)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        // Check that api version in the driver is supported by this version of the API
-        if (dditable->version < ZE_API_VERSION_1_0) {
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-        }
-        auto pfnOcGetTjMax = dditable->Frequency->pfnOcGetTjMax;
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_freq_object_t*>( hFrequency )->dditable;
+        auto pfnOcGetTjMax = dditable->zes.Frequency.pfnOcGetTjMax;
         if( nullptr == pfnOcGetTjMax )
             return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hFrequency = reinterpret_cast<zes_freq_object_t*>( hFrequency )->handle;
+
         // forward to device-driver
         result = pfnOcGetTjMax( hFrequency, pOcTjMax );
+
         return result;
     }
 
@@ -2419,19 +2455,18 @@ namespace loader
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
 
-        // extract handle's function pointer table
-        auto dditable = reinterpret_cast<ze_handle_t*>( hFrequency )->pSysman;
-        if (dditable->isValidFlag == 0)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        // Check that api version in the driver is supported by this version of the API
-        if (dditable->version < ZE_API_VERSION_1_0) {
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-        }
-        auto pfnOcSetTjMax = dditable->Frequency->pfnOcSetTjMax;
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_freq_object_t*>( hFrequency )->dditable;
+        auto pfnOcSetTjMax = dditable->zes.Frequency.pfnOcSetTjMax;
         if( nullptr == pfnOcSetTjMax )
             return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hFrequency = reinterpret_cast<zes_freq_object_t*>( hFrequency )->handle;
+
         // forward to device-driver
         result = pfnOcSetTjMax( hFrequency, ocTjMax );
+
         return result;
     }
 
@@ -2455,19 +2490,33 @@ namespace loader
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
 
-        // extract handle's function pointer table
-        auto dditable = reinterpret_cast<ze_handle_t*>( hDevice )->pSysman;
-        if (dditable->isValidFlag == 0)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        // Check that api version in the driver is supported by this version of the API
-        if (dditable->version < ZE_API_VERSION_1_0) {
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-        }
-        auto pfnEnumLeds = dditable->Device->pfnEnumLeds;
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_device_object_t*>( hDevice )->dditable;
+        auto pfnEnumLeds = dditable->zes.Device.pfnEnumLeds;
         if( nullptr == pfnEnumLeds )
             return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hDevice = reinterpret_cast<zes_device_object_t*>( hDevice )->handle;
+
         // forward to device-driver
         result = pfnEnumLeds( hDevice, pCount, phLed );
+
+        if( ZE_RESULT_SUCCESS != result )
+            return result;
+
+        try
+        {
+            // convert driver handles to loader handles
+            for( size_t i = 0; ( nullptr != phLed ) && ( i < *pCount ); ++i )
+                phLed[ i ] = reinterpret_cast<zes_led_handle_t>(
+                    context->zes_led_factory.getInstance( phLed[ i ], dditable ) );
+        }
+        catch( std::bad_alloc& )
+        {
+            result = ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY;
+        }
+
         return result;
     }
 
@@ -2481,19 +2530,18 @@ namespace loader
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
 
-        // extract handle's function pointer table
-        auto dditable = reinterpret_cast<ze_handle_t*>( hLed )->pSysman;
-        if (dditable->isValidFlag == 0)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        // Check that api version in the driver is supported by this version of the API
-        if (dditable->version < ZE_API_VERSION_1_0) {
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-        }
-        auto pfnGetProperties = dditable->Led->pfnGetProperties;
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_led_object_t*>( hLed )->dditable;
+        auto pfnGetProperties = dditable->zes.Led.pfnGetProperties;
         if( nullptr == pfnGetProperties )
             return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hLed = reinterpret_cast<zes_led_object_t*>( hLed )->handle;
+
         // forward to device-driver
         result = pfnGetProperties( hLed, pProperties );
+
         return result;
     }
 
@@ -2507,19 +2555,18 @@ namespace loader
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
 
-        // extract handle's function pointer table
-        auto dditable = reinterpret_cast<ze_handle_t*>( hLed )->pSysman;
-        if (dditable->isValidFlag == 0)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        // Check that api version in the driver is supported by this version of the API
-        if (dditable->version < ZE_API_VERSION_1_0) {
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-        }
-        auto pfnGetState = dditable->Led->pfnGetState;
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_led_object_t*>( hLed )->dditable;
+        auto pfnGetState = dditable->zes.Led.pfnGetState;
         if( nullptr == pfnGetState )
             return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hLed = reinterpret_cast<zes_led_object_t*>( hLed )->handle;
+
         // forward to device-driver
         result = pfnGetState( hLed, pState );
+
         return result;
     }
 
@@ -2533,19 +2580,18 @@ namespace loader
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
 
-        // extract handle's function pointer table
-        auto dditable = reinterpret_cast<ze_handle_t*>( hLed )->pSysman;
-        if (dditable->isValidFlag == 0)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        // Check that api version in the driver is supported by this version of the API
-        if (dditable->version < ZE_API_VERSION_1_0) {
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-        }
-        auto pfnSetState = dditable->Led->pfnSetState;
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_led_object_t*>( hLed )->dditable;
+        auto pfnSetState = dditable->zes.Led.pfnSetState;
         if( nullptr == pfnSetState )
             return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hLed = reinterpret_cast<zes_led_object_t*>( hLed )->handle;
+
         // forward to device-driver
         result = pfnSetState( hLed, enable );
+
         return result;
     }
 
@@ -2559,19 +2605,18 @@ namespace loader
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
 
-        // extract handle's function pointer table
-        auto dditable = reinterpret_cast<ze_handle_t*>( hLed )->pSysman;
-        if (dditable->isValidFlag == 0)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        // Check that api version in the driver is supported by this version of the API
-        if (dditable->version < ZE_API_VERSION_1_0) {
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-        }
-        auto pfnSetColor = dditable->Led->pfnSetColor;
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_led_object_t*>( hLed )->dditable;
+        auto pfnSetColor = dditable->zes.Led.pfnSetColor;
         if( nullptr == pfnSetColor )
             return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hLed = reinterpret_cast<zes_led_object_t*>( hLed )->handle;
+
         // forward to device-driver
         result = pfnSetColor( hLed, pColor );
+
         return result;
     }
 
@@ -2595,19 +2640,33 @@ namespace loader
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
 
-        // extract handle's function pointer table
-        auto dditable = reinterpret_cast<ze_handle_t*>( hDevice )->pSysman;
-        if (dditable->isValidFlag == 0)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        // Check that api version in the driver is supported by this version of the API
-        if (dditable->version < ZE_API_VERSION_1_0) {
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-        }
-        auto pfnEnumMemoryModules = dditable->Device->pfnEnumMemoryModules;
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_device_object_t*>( hDevice )->dditable;
+        auto pfnEnumMemoryModules = dditable->zes.Device.pfnEnumMemoryModules;
         if( nullptr == pfnEnumMemoryModules )
             return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hDevice = reinterpret_cast<zes_device_object_t*>( hDevice )->handle;
+
         // forward to device-driver
         result = pfnEnumMemoryModules( hDevice, pCount, phMemory );
+
+        if( ZE_RESULT_SUCCESS != result )
+            return result;
+
+        try
+        {
+            // convert driver handles to loader handles
+            for( size_t i = 0; ( nullptr != phMemory ) && ( i < *pCount ); ++i )
+                phMemory[ i ] = reinterpret_cast<zes_mem_handle_t>(
+                    context->zes_mem_factory.getInstance( phMemory[ i ], dditable ) );
+        }
+        catch( std::bad_alloc& )
+        {
+            result = ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY;
+        }
+
         return result;
     }
 
@@ -2621,19 +2680,18 @@ namespace loader
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
 
-        // extract handle's function pointer table
-        auto dditable = reinterpret_cast<ze_handle_t*>( hMemory )->pSysman;
-        if (dditable->isValidFlag == 0)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        // Check that api version in the driver is supported by this version of the API
-        if (dditable->version < ZE_API_VERSION_1_0) {
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-        }
-        auto pfnGetProperties = dditable->Memory->pfnGetProperties;
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_mem_object_t*>( hMemory )->dditable;
+        auto pfnGetProperties = dditable->zes.Memory.pfnGetProperties;
         if( nullptr == pfnGetProperties )
             return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hMemory = reinterpret_cast<zes_mem_object_t*>( hMemory )->handle;
+
         // forward to device-driver
         result = pfnGetProperties( hMemory, pProperties );
+
         return result;
     }
 
@@ -2647,19 +2705,18 @@ namespace loader
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
 
-        // extract handle's function pointer table
-        auto dditable = reinterpret_cast<ze_handle_t*>( hMemory )->pSysman;
-        if (dditable->isValidFlag == 0)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        // Check that api version in the driver is supported by this version of the API
-        if (dditable->version < ZE_API_VERSION_1_0) {
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-        }
-        auto pfnGetState = dditable->Memory->pfnGetState;
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_mem_object_t*>( hMemory )->dditable;
+        auto pfnGetState = dditable->zes.Memory.pfnGetState;
         if( nullptr == pfnGetState )
             return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hMemory = reinterpret_cast<zes_mem_object_t*>( hMemory )->handle;
+
         // forward to device-driver
         result = pfnGetState( hMemory, pState );
+
         return result;
     }
 
@@ -2674,19 +2731,18 @@ namespace loader
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
 
-        // extract handle's function pointer table
-        auto dditable = reinterpret_cast<ze_handle_t*>( hMemory )->pSysman;
-        if (dditable->isValidFlag == 0)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        // Check that api version in the driver is supported by this version of the API
-        if (dditable->version < ZE_API_VERSION_1_0) {
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-        }
-        auto pfnGetBandwidth = dditable->Memory->pfnGetBandwidth;
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_mem_object_t*>( hMemory )->dditable;
+        auto pfnGetBandwidth = dditable->zes.Memory.pfnGetBandwidth;
         if( nullptr == pfnGetBandwidth )
             return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hMemory = reinterpret_cast<zes_mem_object_t*>( hMemory )->handle;
+
         // forward to device-driver
         result = pfnGetBandwidth( hMemory, pBandwidth );
+
         return result;
     }
 
@@ -2710,19 +2766,33 @@ namespace loader
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
 
-        // extract handle's function pointer table
-        auto dditable = reinterpret_cast<ze_handle_t*>( hDevice )->pSysman;
-        if (dditable->isValidFlag == 0)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        // Check that api version in the driver is supported by this version of the API
-        if (dditable->version < ZE_API_VERSION_1_0) {
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-        }
-        auto pfnEnumPerformanceFactorDomains = dditable->Device->pfnEnumPerformanceFactorDomains;
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_device_object_t*>( hDevice )->dditable;
+        auto pfnEnumPerformanceFactorDomains = dditable->zes.Device.pfnEnumPerformanceFactorDomains;
         if( nullptr == pfnEnumPerformanceFactorDomains )
             return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hDevice = reinterpret_cast<zes_device_object_t*>( hDevice )->handle;
+
         // forward to device-driver
         result = pfnEnumPerformanceFactorDomains( hDevice, pCount, phPerf );
+
+        if( ZE_RESULT_SUCCESS != result )
+            return result;
+
+        try
+        {
+            // convert driver handles to loader handles
+            for( size_t i = 0; ( nullptr != phPerf ) && ( i < *pCount ); ++i )
+                phPerf[ i ] = reinterpret_cast<zes_perf_handle_t>(
+                    context->zes_perf_factory.getInstance( phPerf[ i ], dditable ) );
+        }
+        catch( std::bad_alloc& )
+        {
+            result = ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY;
+        }
+
         return result;
     }
 
@@ -2737,19 +2807,18 @@ namespace loader
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
 
-        // extract handle's function pointer table
-        auto dditable = reinterpret_cast<ze_handle_t*>( hPerf )->pSysman;
-        if (dditable->isValidFlag == 0)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        // Check that api version in the driver is supported by this version of the API
-        if (dditable->version < ZE_API_VERSION_1_0) {
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-        }
-        auto pfnGetProperties = dditable->PerformanceFactor->pfnGetProperties;
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_perf_object_t*>( hPerf )->dditable;
+        auto pfnGetProperties = dditable->zes.PerformanceFactor.pfnGetProperties;
         if( nullptr == pfnGetProperties )
             return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hPerf = reinterpret_cast<zes_perf_object_t*>( hPerf )->handle;
+
         // forward to device-driver
         result = pfnGetProperties( hPerf, pProperties );
+
         return result;
     }
 
@@ -2764,19 +2833,18 @@ namespace loader
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
 
-        // extract handle's function pointer table
-        auto dditable = reinterpret_cast<ze_handle_t*>( hPerf )->pSysman;
-        if (dditable->isValidFlag == 0)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        // Check that api version in the driver is supported by this version of the API
-        if (dditable->version < ZE_API_VERSION_1_0) {
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-        }
-        auto pfnGetConfig = dditable->PerformanceFactor->pfnGetConfig;
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_perf_object_t*>( hPerf )->dditable;
+        auto pfnGetConfig = dditable->zes.PerformanceFactor.pfnGetConfig;
         if( nullptr == pfnGetConfig )
             return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hPerf = reinterpret_cast<zes_perf_object_t*>( hPerf )->handle;
+
         // forward to device-driver
         result = pfnGetConfig( hPerf, pFactor );
+
         return result;
     }
 
@@ -2790,19 +2858,18 @@ namespace loader
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
 
-        // extract handle's function pointer table
-        auto dditable = reinterpret_cast<ze_handle_t*>( hPerf )->pSysman;
-        if (dditable->isValidFlag == 0)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        // Check that api version in the driver is supported by this version of the API
-        if (dditable->version < ZE_API_VERSION_1_0) {
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-        }
-        auto pfnSetConfig = dditable->PerformanceFactor->pfnSetConfig;
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_perf_object_t*>( hPerf )->dditable;
+        auto pfnSetConfig = dditable->zes.PerformanceFactor.pfnSetConfig;
         if( nullptr == pfnSetConfig )
             return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hPerf = reinterpret_cast<zes_perf_object_t*>( hPerf )->handle;
+
         // forward to device-driver
         result = pfnSetConfig( hPerf, factor );
+
         return result;
     }
 
@@ -2826,19 +2893,33 @@ namespace loader
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
 
-        // extract handle's function pointer table
-        auto dditable = reinterpret_cast<ze_handle_t*>( hDevice )->pSysman;
-        if (dditable->isValidFlag == 0)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        // Check that api version in the driver is supported by this version of the API
-        if (dditable->version < ZE_API_VERSION_1_0) {
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-        }
-        auto pfnEnumPowerDomains = dditable->Device->pfnEnumPowerDomains;
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_device_object_t*>( hDevice )->dditable;
+        auto pfnEnumPowerDomains = dditable->zes.Device.pfnEnumPowerDomains;
         if( nullptr == pfnEnumPowerDomains )
             return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hDevice = reinterpret_cast<zes_device_object_t*>( hDevice )->handle;
+
         // forward to device-driver
         result = pfnEnumPowerDomains( hDevice, pCount, phPower );
+
+        if( ZE_RESULT_SUCCESS != result )
+            return result;
+
+        try
+        {
+            // convert driver handles to loader handles
+            for( size_t i = 0; ( nullptr != phPower ) && ( i < *pCount ); ++i )
+                phPower[ i ] = reinterpret_cast<zes_pwr_handle_t>(
+                    context->zes_pwr_factory.getInstance( phPower[ i ], dditable ) );
+        }
+        catch( std::bad_alloc& )
+        {
+            result = ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY;
+        }
+
         return result;
     }
 
@@ -2852,19 +2933,32 @@ namespace loader
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
 
-        // extract handle's function pointer table
-        auto dditable = reinterpret_cast<ze_handle_t*>( hDevice )->pSysman;
-        if (dditable->isValidFlag == 0)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        // Check that api version in the driver is supported by this version of the API
-        if (dditable->version < ZE_API_VERSION_1_0) {
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-        }
-        auto pfnGetCardPowerDomain = dditable->Device->pfnGetCardPowerDomain;
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_device_object_t*>( hDevice )->dditable;
+        auto pfnGetCardPowerDomain = dditable->zes.Device.pfnGetCardPowerDomain;
         if( nullptr == pfnGetCardPowerDomain )
             return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hDevice = reinterpret_cast<zes_device_object_t*>( hDevice )->handle;
+
         // forward to device-driver
         result = pfnGetCardPowerDomain( hDevice, phPower );
+
+        if( ZE_RESULT_SUCCESS != result )
+            return result;
+
+        try
+        {
+            // convert driver handle to loader handle
+            *phPower = reinterpret_cast<zes_pwr_handle_t>(
+                context->zes_pwr_factory.getInstance( *phPower, dditable ) );
+        }
+        catch( std::bad_alloc& )
+        {
+            result = ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY;
+        }
+
         return result;
     }
 
@@ -2878,19 +2972,18 @@ namespace loader
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
 
-        // extract handle's function pointer table
-        auto dditable = reinterpret_cast<ze_handle_t*>( hPower )->pSysman;
-        if (dditable->isValidFlag == 0)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        // Check that api version in the driver is supported by this version of the API
-        if (dditable->version < ZE_API_VERSION_1_0) {
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-        }
-        auto pfnGetProperties = dditable->Power->pfnGetProperties;
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_pwr_object_t*>( hPower )->dditable;
+        auto pfnGetProperties = dditable->zes.Power.pfnGetProperties;
         if( nullptr == pfnGetProperties )
             return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hPower = reinterpret_cast<zes_pwr_object_t*>( hPower )->handle;
+
         // forward to device-driver
         result = pfnGetProperties( hPower, pProperties );
+
         return result;
     }
 
@@ -2905,19 +2998,18 @@ namespace loader
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
 
-        // extract handle's function pointer table
-        auto dditable = reinterpret_cast<ze_handle_t*>( hPower )->pSysman;
-        if (dditable->isValidFlag == 0)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        // Check that api version in the driver is supported by this version of the API
-        if (dditable->version < ZE_API_VERSION_1_0) {
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-        }
-        auto pfnGetEnergyCounter = dditable->Power->pfnGetEnergyCounter;
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_pwr_object_t*>( hPower )->dditable;
+        auto pfnGetEnergyCounter = dditable->zes.Power.pfnGetEnergyCounter;
         if( nullptr == pfnGetEnergyCounter )
             return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hPower = reinterpret_cast<zes_pwr_object_t*>( hPower )->handle;
+
         // forward to device-driver
         result = pfnGetEnergyCounter( hPower, pEnergy );
+
         return result;
     }
 
@@ -2936,19 +3028,18 @@ namespace loader
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
 
-        // extract handle's function pointer table
-        auto dditable = reinterpret_cast<ze_handle_t*>( hPower )->pSysman;
-        if (dditable->isValidFlag == 0)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        // Check that api version in the driver is supported by this version of the API
-        if (dditable->version < ZE_API_VERSION_1_0) {
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-        }
-        auto pfnGetLimits = dditable->Power->pfnGetLimits;
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_pwr_object_t*>( hPower )->dditable;
+        auto pfnGetLimits = dditable->zes.Power.pfnGetLimits;
         if( nullptr == pfnGetLimits )
             return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hPower = reinterpret_cast<zes_pwr_object_t*>( hPower )->handle;
+
         // forward to device-driver
         result = pfnGetLimits( hPower, pSustained, pBurst, pPeak );
+
         return result;
     }
 
@@ -2967,19 +3058,18 @@ namespace loader
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
 
-        // extract handle's function pointer table
-        auto dditable = reinterpret_cast<ze_handle_t*>( hPower )->pSysman;
-        if (dditable->isValidFlag == 0)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        // Check that api version in the driver is supported by this version of the API
-        if (dditable->version < ZE_API_VERSION_1_0) {
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-        }
-        auto pfnSetLimits = dditable->Power->pfnSetLimits;
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_pwr_object_t*>( hPower )->dditable;
+        auto pfnSetLimits = dditable->zes.Power.pfnSetLimits;
         if( nullptr == pfnSetLimits )
             return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hPower = reinterpret_cast<zes_pwr_object_t*>( hPower )->handle;
+
         // forward to device-driver
         result = pfnSetLimits( hPower, pSustained, pBurst, pPeak );
+
         return result;
     }
 
@@ -2994,19 +3084,18 @@ namespace loader
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
 
-        // extract handle's function pointer table
-        auto dditable = reinterpret_cast<ze_handle_t*>( hPower )->pSysman;
-        if (dditable->isValidFlag == 0)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        // Check that api version in the driver is supported by this version of the API
-        if (dditable->version < ZE_API_VERSION_1_0) {
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-        }
-        auto pfnGetEnergyThreshold = dditable->Power->pfnGetEnergyThreshold;
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_pwr_object_t*>( hPower )->dditable;
+        auto pfnGetEnergyThreshold = dditable->zes.Power.pfnGetEnergyThreshold;
         if( nullptr == pfnGetEnergyThreshold )
             return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hPower = reinterpret_cast<zes_pwr_object_t*>( hPower )->handle;
+
         // forward to device-driver
         result = pfnGetEnergyThreshold( hPower, pThreshold );
+
         return result;
     }
 
@@ -3020,19 +3109,18 @@ namespace loader
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
 
-        // extract handle's function pointer table
-        auto dditable = reinterpret_cast<ze_handle_t*>( hPower )->pSysman;
-        if (dditable->isValidFlag == 0)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        // Check that api version in the driver is supported by this version of the API
-        if (dditable->version < ZE_API_VERSION_1_0) {
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-        }
-        auto pfnSetEnergyThreshold = dditable->Power->pfnSetEnergyThreshold;
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_pwr_object_t*>( hPower )->dditable;
+        auto pfnSetEnergyThreshold = dditable->zes.Power.pfnSetEnergyThreshold;
         if( nullptr == pfnSetEnergyThreshold )
             return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hPower = reinterpret_cast<zes_pwr_object_t*>( hPower )->handle;
+
         // forward to device-driver
         result = pfnSetEnergyThreshold( hPower, threshold );
+
         return result;
     }
 
@@ -3056,19 +3144,33 @@ namespace loader
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
 
-        // extract handle's function pointer table
-        auto dditable = reinterpret_cast<ze_handle_t*>( hDevice )->pSysman;
-        if (dditable->isValidFlag == 0)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        // Check that api version in the driver is supported by this version of the API
-        if (dditable->version < ZE_API_VERSION_1_0) {
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-        }
-        auto pfnEnumPsus = dditable->Device->pfnEnumPsus;
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_device_object_t*>( hDevice )->dditable;
+        auto pfnEnumPsus = dditable->zes.Device.pfnEnumPsus;
         if( nullptr == pfnEnumPsus )
             return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hDevice = reinterpret_cast<zes_device_object_t*>( hDevice )->handle;
+
         // forward to device-driver
         result = pfnEnumPsus( hDevice, pCount, phPsu );
+
+        if( ZE_RESULT_SUCCESS != result )
+            return result;
+
+        try
+        {
+            // convert driver handles to loader handles
+            for( size_t i = 0; ( nullptr != phPsu ) && ( i < *pCount ); ++i )
+                phPsu[ i ] = reinterpret_cast<zes_psu_handle_t>(
+                    context->zes_psu_factory.getInstance( phPsu[ i ], dditable ) );
+        }
+        catch( std::bad_alloc& )
+        {
+            result = ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY;
+        }
+
         return result;
     }
 
@@ -3082,19 +3184,18 @@ namespace loader
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
 
-        // extract handle's function pointer table
-        auto dditable = reinterpret_cast<ze_handle_t*>( hPsu )->pSysman;
-        if (dditable->isValidFlag == 0)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        // Check that api version in the driver is supported by this version of the API
-        if (dditable->version < ZE_API_VERSION_1_0) {
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-        }
-        auto pfnGetProperties = dditable->Psu->pfnGetProperties;
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_psu_object_t*>( hPsu )->dditable;
+        auto pfnGetProperties = dditable->zes.Psu.pfnGetProperties;
         if( nullptr == pfnGetProperties )
             return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hPsu = reinterpret_cast<zes_psu_object_t*>( hPsu )->handle;
+
         // forward to device-driver
         result = pfnGetProperties( hPsu, pProperties );
+
         return result;
     }
 
@@ -3108,19 +3209,18 @@ namespace loader
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
 
-        // extract handle's function pointer table
-        auto dditable = reinterpret_cast<ze_handle_t*>( hPsu )->pSysman;
-        if (dditable->isValidFlag == 0)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        // Check that api version in the driver is supported by this version of the API
-        if (dditable->version < ZE_API_VERSION_1_0) {
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-        }
-        auto pfnGetState = dditable->Psu->pfnGetState;
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_psu_object_t*>( hPsu )->dditable;
+        auto pfnGetState = dditable->zes.Psu.pfnGetState;
         if( nullptr == pfnGetState )
             return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hPsu = reinterpret_cast<zes_psu_object_t*>( hPsu )->handle;
+
         // forward to device-driver
         result = pfnGetState( hPsu, pState );
+
         return result;
     }
 
@@ -3144,19 +3244,33 @@ namespace loader
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
 
-        // extract handle's function pointer table
-        auto dditable = reinterpret_cast<ze_handle_t*>( hDevice )->pSysman;
-        if (dditable->isValidFlag == 0)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        // Check that api version in the driver is supported by this version of the API
-        if (dditable->version < ZE_API_VERSION_1_0) {
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-        }
-        auto pfnEnumRasErrorSets = dditable->Device->pfnEnumRasErrorSets;
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_device_object_t*>( hDevice )->dditable;
+        auto pfnEnumRasErrorSets = dditable->zes.Device.pfnEnumRasErrorSets;
         if( nullptr == pfnEnumRasErrorSets )
             return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hDevice = reinterpret_cast<zes_device_object_t*>( hDevice )->handle;
+
         // forward to device-driver
         result = pfnEnumRasErrorSets( hDevice, pCount, phRas );
+
+        if( ZE_RESULT_SUCCESS != result )
+            return result;
+
+        try
+        {
+            // convert driver handles to loader handles
+            for( size_t i = 0; ( nullptr != phRas ) && ( i < *pCount ); ++i )
+                phRas[ i ] = reinterpret_cast<zes_ras_handle_t>(
+                    context->zes_ras_factory.getInstance( phRas[ i ], dditable ) );
+        }
+        catch( std::bad_alloc& )
+        {
+            result = ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY;
+        }
+
         return result;
     }
 
@@ -3170,19 +3284,18 @@ namespace loader
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
 
-        // extract handle's function pointer table
-        auto dditable = reinterpret_cast<ze_handle_t*>( hRas )->pSysman;
-        if (dditable->isValidFlag == 0)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        // Check that api version in the driver is supported by this version of the API
-        if (dditable->version < ZE_API_VERSION_1_0) {
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-        }
-        auto pfnGetProperties = dditable->Ras->pfnGetProperties;
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_ras_object_t*>( hRas )->dditable;
+        auto pfnGetProperties = dditable->zes.Ras.pfnGetProperties;
         if( nullptr == pfnGetProperties )
             return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hRas = reinterpret_cast<zes_ras_object_t*>( hRas )->handle;
+
         // forward to device-driver
         result = pfnGetProperties( hRas, pProperties );
+
         return result;
     }
 
@@ -3197,19 +3310,18 @@ namespace loader
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
 
-        // extract handle's function pointer table
-        auto dditable = reinterpret_cast<ze_handle_t*>( hRas )->pSysman;
-        if (dditable->isValidFlag == 0)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        // Check that api version in the driver is supported by this version of the API
-        if (dditable->version < ZE_API_VERSION_1_0) {
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-        }
-        auto pfnGetConfig = dditable->Ras->pfnGetConfig;
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_ras_object_t*>( hRas )->dditable;
+        auto pfnGetConfig = dditable->zes.Ras.pfnGetConfig;
         if( nullptr == pfnGetConfig )
             return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hRas = reinterpret_cast<zes_ras_object_t*>( hRas )->handle;
+
         // forward to device-driver
         result = pfnGetConfig( hRas, pConfig );
+
         return result;
     }
 
@@ -3223,19 +3335,18 @@ namespace loader
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
 
-        // extract handle's function pointer table
-        auto dditable = reinterpret_cast<ze_handle_t*>( hRas )->pSysman;
-        if (dditable->isValidFlag == 0)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        // Check that api version in the driver is supported by this version of the API
-        if (dditable->version < ZE_API_VERSION_1_0) {
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-        }
-        auto pfnSetConfig = dditable->Ras->pfnSetConfig;
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_ras_object_t*>( hRas )->dditable;
+        auto pfnSetConfig = dditable->zes.Ras.pfnSetConfig;
         if( nullptr == pfnSetConfig )
             return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hRas = reinterpret_cast<zes_ras_object_t*>( hRas )->handle;
+
         // forward to device-driver
         result = pfnSetConfig( hRas, pConfig );
+
         return result;
     }
 
@@ -3250,19 +3361,18 @@ namespace loader
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
 
-        // extract handle's function pointer table
-        auto dditable = reinterpret_cast<ze_handle_t*>( hRas )->pSysman;
-        if (dditable->isValidFlag == 0)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        // Check that api version in the driver is supported by this version of the API
-        if (dditable->version < ZE_API_VERSION_1_0) {
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-        }
-        auto pfnGetState = dditable->Ras->pfnGetState;
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_ras_object_t*>( hRas )->dditable;
+        auto pfnGetState = dditable->zes.Ras.pfnGetState;
         if( nullptr == pfnGetState )
             return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hRas = reinterpret_cast<zes_ras_object_t*>( hRas )->handle;
+
         // forward to device-driver
         result = pfnGetState( hRas, clear, pState );
+
         return result;
     }
 
@@ -3286,19 +3396,33 @@ namespace loader
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
 
-        // extract handle's function pointer table
-        auto dditable = reinterpret_cast<ze_handle_t*>( hDevice )->pSysman;
-        if (dditable->isValidFlag == 0)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        // Check that api version in the driver is supported by this version of the API
-        if (dditable->version < ZE_API_VERSION_1_0) {
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-        }
-        auto pfnEnumSchedulers = dditable->Device->pfnEnumSchedulers;
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_device_object_t*>( hDevice )->dditable;
+        auto pfnEnumSchedulers = dditable->zes.Device.pfnEnumSchedulers;
         if( nullptr == pfnEnumSchedulers )
             return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hDevice = reinterpret_cast<zes_device_object_t*>( hDevice )->handle;
+
         // forward to device-driver
         result = pfnEnumSchedulers( hDevice, pCount, phScheduler );
+
+        if( ZE_RESULT_SUCCESS != result )
+            return result;
+
+        try
+        {
+            // convert driver handles to loader handles
+            for( size_t i = 0; ( nullptr != phScheduler ) && ( i < *pCount ); ++i )
+                phScheduler[ i ] = reinterpret_cast<zes_sched_handle_t>(
+                    context->zes_sched_factory.getInstance( phScheduler[ i ], dditable ) );
+        }
+        catch( std::bad_alloc& )
+        {
+            result = ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY;
+        }
+
         return result;
     }
 
@@ -3312,19 +3436,18 @@ namespace loader
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
 
-        // extract handle's function pointer table
-        auto dditable = reinterpret_cast<ze_handle_t*>( hScheduler )->pSysman;
-        if (dditable->isValidFlag == 0)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        // Check that api version in the driver is supported by this version of the API
-        if (dditable->version < ZE_API_VERSION_1_0) {
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-        }
-        auto pfnGetProperties = dditable->Scheduler->pfnGetProperties;
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_sched_object_t*>( hScheduler )->dditable;
+        auto pfnGetProperties = dditable->zes.Scheduler.pfnGetProperties;
         if( nullptr == pfnGetProperties )
             return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hScheduler = reinterpret_cast<zes_sched_object_t*>( hScheduler )->handle;
+
         // forward to device-driver
         result = pfnGetProperties( hScheduler, pProperties );
+
         return result;
     }
 
@@ -3338,19 +3461,18 @@ namespace loader
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
 
-        // extract handle's function pointer table
-        auto dditable = reinterpret_cast<ze_handle_t*>( hScheduler )->pSysman;
-        if (dditable->isValidFlag == 0)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        // Check that api version in the driver is supported by this version of the API
-        if (dditable->version < ZE_API_VERSION_1_0) {
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-        }
-        auto pfnGetCurrentMode = dditable->Scheduler->pfnGetCurrentMode;
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_sched_object_t*>( hScheduler )->dditable;
+        auto pfnGetCurrentMode = dditable->zes.Scheduler.pfnGetCurrentMode;
         if( nullptr == pfnGetCurrentMode )
             return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hScheduler = reinterpret_cast<zes_sched_object_t*>( hScheduler )->handle;
+
         // forward to device-driver
         result = pfnGetCurrentMode( hScheduler, pMode );
+
         return result;
     }
 
@@ -3366,19 +3488,18 @@ namespace loader
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
 
-        // extract handle's function pointer table
-        auto dditable = reinterpret_cast<ze_handle_t*>( hScheduler )->pSysman;
-        if (dditable->isValidFlag == 0)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        // Check that api version in the driver is supported by this version of the API
-        if (dditable->version < ZE_API_VERSION_1_0) {
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-        }
-        auto pfnGetTimeoutModeProperties = dditable->Scheduler->pfnGetTimeoutModeProperties;
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_sched_object_t*>( hScheduler )->dditable;
+        auto pfnGetTimeoutModeProperties = dditable->zes.Scheduler.pfnGetTimeoutModeProperties;
         if( nullptr == pfnGetTimeoutModeProperties )
             return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hScheduler = reinterpret_cast<zes_sched_object_t*>( hScheduler )->handle;
+
         // forward to device-driver
         result = pfnGetTimeoutModeProperties( hScheduler, getDefaults, pConfig );
+
         return result;
     }
 
@@ -3394,19 +3515,18 @@ namespace loader
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
 
-        // extract handle's function pointer table
-        auto dditable = reinterpret_cast<ze_handle_t*>( hScheduler )->pSysman;
-        if (dditable->isValidFlag == 0)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        // Check that api version in the driver is supported by this version of the API
-        if (dditable->version < ZE_API_VERSION_1_0) {
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-        }
-        auto pfnGetTimesliceModeProperties = dditable->Scheduler->pfnGetTimesliceModeProperties;
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_sched_object_t*>( hScheduler )->dditable;
+        auto pfnGetTimesliceModeProperties = dditable->zes.Scheduler.pfnGetTimesliceModeProperties;
         if( nullptr == pfnGetTimesliceModeProperties )
             return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hScheduler = reinterpret_cast<zes_sched_object_t*>( hScheduler )->handle;
+
         // forward to device-driver
         result = pfnGetTimesliceModeProperties( hScheduler, getDefaults, pConfig );
+
         return result;
     }
 
@@ -3422,19 +3542,18 @@ namespace loader
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
 
-        // extract handle's function pointer table
-        auto dditable = reinterpret_cast<ze_handle_t*>( hScheduler )->pSysman;
-        if (dditable->isValidFlag == 0)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        // Check that api version in the driver is supported by this version of the API
-        if (dditable->version < ZE_API_VERSION_1_0) {
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-        }
-        auto pfnSetTimeoutMode = dditable->Scheduler->pfnSetTimeoutMode;
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_sched_object_t*>( hScheduler )->dditable;
+        auto pfnSetTimeoutMode = dditable->zes.Scheduler.pfnSetTimeoutMode;
         if( nullptr == pfnSetTimeoutMode )
             return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hScheduler = reinterpret_cast<zes_sched_object_t*>( hScheduler )->handle;
+
         // forward to device-driver
         result = pfnSetTimeoutMode( hScheduler, pProperties, pNeedReload );
+
         return result;
     }
 
@@ -3450,19 +3569,18 @@ namespace loader
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
 
-        // extract handle's function pointer table
-        auto dditable = reinterpret_cast<ze_handle_t*>( hScheduler )->pSysman;
-        if (dditable->isValidFlag == 0)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        // Check that api version in the driver is supported by this version of the API
-        if (dditable->version < ZE_API_VERSION_1_0) {
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-        }
-        auto pfnSetTimesliceMode = dditable->Scheduler->pfnSetTimesliceMode;
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_sched_object_t*>( hScheduler )->dditable;
+        auto pfnSetTimesliceMode = dditable->zes.Scheduler.pfnSetTimesliceMode;
         if( nullptr == pfnSetTimesliceMode )
             return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hScheduler = reinterpret_cast<zes_sched_object_t*>( hScheduler )->handle;
+
         // forward to device-driver
         result = pfnSetTimesliceMode( hScheduler, pProperties, pNeedReload );
+
         return result;
     }
 
@@ -3477,19 +3595,18 @@ namespace loader
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
 
-        // extract handle's function pointer table
-        auto dditable = reinterpret_cast<ze_handle_t*>( hScheduler )->pSysman;
-        if (dditable->isValidFlag == 0)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        // Check that api version in the driver is supported by this version of the API
-        if (dditable->version < ZE_API_VERSION_1_0) {
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-        }
-        auto pfnSetExclusiveMode = dditable->Scheduler->pfnSetExclusiveMode;
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_sched_object_t*>( hScheduler )->dditable;
+        auto pfnSetExclusiveMode = dditable->zes.Scheduler.pfnSetExclusiveMode;
         if( nullptr == pfnSetExclusiveMode )
             return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hScheduler = reinterpret_cast<zes_sched_object_t*>( hScheduler )->handle;
+
         // forward to device-driver
         result = pfnSetExclusiveMode( hScheduler, pNeedReload );
+
         return result;
     }
 
@@ -3504,19 +3621,18 @@ namespace loader
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
 
-        // extract handle's function pointer table
-        auto dditable = reinterpret_cast<ze_handle_t*>( hScheduler )->pSysman;
-        if (dditable->isValidFlag == 0)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        // Check that api version in the driver is supported by this version of the API
-        if (dditable->version < ZE_API_VERSION_1_0) {
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-        }
-        auto pfnSetComputeUnitDebugMode = dditable->Scheduler->pfnSetComputeUnitDebugMode;
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_sched_object_t*>( hScheduler )->dditable;
+        auto pfnSetComputeUnitDebugMode = dditable->zes.Scheduler.pfnSetComputeUnitDebugMode;
         if( nullptr == pfnSetComputeUnitDebugMode )
             return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hScheduler = reinterpret_cast<zes_sched_object_t*>( hScheduler )->handle;
+
         // forward to device-driver
         result = pfnSetComputeUnitDebugMode( hScheduler, pNeedReload );
+
         return result;
     }
 
@@ -3540,19 +3656,33 @@ namespace loader
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
 
-        // extract handle's function pointer table
-        auto dditable = reinterpret_cast<ze_handle_t*>( hDevice )->pSysman;
-        if (dditable->isValidFlag == 0)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        // Check that api version in the driver is supported by this version of the API
-        if (dditable->version < ZE_API_VERSION_1_0) {
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-        }
-        auto pfnEnumStandbyDomains = dditable->Device->pfnEnumStandbyDomains;
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_device_object_t*>( hDevice )->dditable;
+        auto pfnEnumStandbyDomains = dditable->zes.Device.pfnEnumStandbyDomains;
         if( nullptr == pfnEnumStandbyDomains )
             return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hDevice = reinterpret_cast<zes_device_object_t*>( hDevice )->handle;
+
         // forward to device-driver
         result = pfnEnumStandbyDomains( hDevice, pCount, phStandby );
+
+        if( ZE_RESULT_SUCCESS != result )
+            return result;
+
+        try
+        {
+            // convert driver handles to loader handles
+            for( size_t i = 0; ( nullptr != phStandby ) && ( i < *pCount ); ++i )
+                phStandby[ i ] = reinterpret_cast<zes_standby_handle_t>(
+                    context->zes_standby_factory.getInstance( phStandby[ i ], dditable ) );
+        }
+        catch( std::bad_alloc& )
+        {
+            result = ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY;
+        }
+
         return result;
     }
 
@@ -3566,19 +3696,18 @@ namespace loader
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
 
-        // extract handle's function pointer table
-        auto dditable = reinterpret_cast<ze_handle_t*>( hStandby )->pSysman;
-        if (dditable->isValidFlag == 0)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        // Check that api version in the driver is supported by this version of the API
-        if (dditable->version < ZE_API_VERSION_1_0) {
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-        }
-        auto pfnGetProperties = dditable->Standby->pfnGetProperties;
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_standby_object_t*>( hStandby )->dditable;
+        auto pfnGetProperties = dditable->zes.Standby.pfnGetProperties;
         if( nullptr == pfnGetProperties )
             return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hStandby = reinterpret_cast<zes_standby_object_t*>( hStandby )->handle;
+
         // forward to device-driver
         result = pfnGetProperties( hStandby, pProperties );
+
         return result;
     }
 
@@ -3592,19 +3721,18 @@ namespace loader
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
 
-        // extract handle's function pointer table
-        auto dditable = reinterpret_cast<ze_handle_t*>( hStandby )->pSysman;
-        if (dditable->isValidFlag == 0)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        // Check that api version in the driver is supported by this version of the API
-        if (dditable->version < ZE_API_VERSION_1_0) {
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-        }
-        auto pfnGetMode = dditable->Standby->pfnGetMode;
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_standby_object_t*>( hStandby )->dditable;
+        auto pfnGetMode = dditable->zes.Standby.pfnGetMode;
         if( nullptr == pfnGetMode )
             return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hStandby = reinterpret_cast<zes_standby_object_t*>( hStandby )->handle;
+
         // forward to device-driver
         result = pfnGetMode( hStandby, pMode );
+
         return result;
     }
 
@@ -3618,19 +3746,18 @@ namespace loader
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
 
-        // extract handle's function pointer table
-        auto dditable = reinterpret_cast<ze_handle_t*>( hStandby )->pSysman;
-        if (dditable->isValidFlag == 0)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        // Check that api version in the driver is supported by this version of the API
-        if (dditable->version < ZE_API_VERSION_1_0) {
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-        }
-        auto pfnSetMode = dditable->Standby->pfnSetMode;
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_standby_object_t*>( hStandby )->dditable;
+        auto pfnSetMode = dditable->zes.Standby.pfnSetMode;
         if( nullptr == pfnSetMode )
             return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hStandby = reinterpret_cast<zes_standby_object_t*>( hStandby )->handle;
+
         // forward to device-driver
         result = pfnSetMode( hStandby, mode );
+
         return result;
     }
 
@@ -3654,19 +3781,33 @@ namespace loader
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
 
-        // extract handle's function pointer table
-        auto dditable = reinterpret_cast<ze_handle_t*>( hDevice )->pSysman;
-        if (dditable->isValidFlag == 0)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        // Check that api version in the driver is supported by this version of the API
-        if (dditable->version < ZE_API_VERSION_1_0) {
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-        }
-        auto pfnEnumTemperatureSensors = dditable->Device->pfnEnumTemperatureSensors;
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_device_object_t*>( hDevice )->dditable;
+        auto pfnEnumTemperatureSensors = dditable->zes.Device.pfnEnumTemperatureSensors;
         if( nullptr == pfnEnumTemperatureSensors )
             return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hDevice = reinterpret_cast<zes_device_object_t*>( hDevice )->handle;
+
         // forward to device-driver
         result = pfnEnumTemperatureSensors( hDevice, pCount, phTemperature );
+
+        if( ZE_RESULT_SUCCESS != result )
+            return result;
+
+        try
+        {
+            // convert driver handles to loader handles
+            for( size_t i = 0; ( nullptr != phTemperature ) && ( i < *pCount ); ++i )
+                phTemperature[ i ] = reinterpret_cast<zes_temp_handle_t>(
+                    context->zes_temp_factory.getInstance( phTemperature[ i ], dditable ) );
+        }
+        catch( std::bad_alloc& )
+        {
+            result = ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY;
+        }
+
         return result;
     }
 
@@ -3680,19 +3821,18 @@ namespace loader
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
 
-        // extract handle's function pointer table
-        auto dditable = reinterpret_cast<ze_handle_t*>( hTemperature )->pSysman;
-        if (dditable->isValidFlag == 0)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        // Check that api version in the driver is supported by this version of the API
-        if (dditable->version < ZE_API_VERSION_1_0) {
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-        }
-        auto pfnGetProperties = dditable->Temperature->pfnGetProperties;
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_temp_object_t*>( hTemperature )->dditable;
+        auto pfnGetProperties = dditable->zes.Temperature.pfnGetProperties;
         if( nullptr == pfnGetProperties )
             return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hTemperature = reinterpret_cast<zes_temp_object_t*>( hTemperature )->handle;
+
         // forward to device-driver
         result = pfnGetProperties( hTemperature, pProperties );
+
         return result;
     }
 
@@ -3706,19 +3846,18 @@ namespace loader
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
 
-        // extract handle's function pointer table
-        auto dditable = reinterpret_cast<ze_handle_t*>( hTemperature )->pSysman;
-        if (dditable->isValidFlag == 0)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        // Check that api version in the driver is supported by this version of the API
-        if (dditable->version < ZE_API_VERSION_1_0) {
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-        }
-        auto pfnGetConfig = dditable->Temperature->pfnGetConfig;
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_temp_object_t*>( hTemperature )->dditable;
+        auto pfnGetConfig = dditable->zes.Temperature.pfnGetConfig;
         if( nullptr == pfnGetConfig )
             return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hTemperature = reinterpret_cast<zes_temp_object_t*>( hTemperature )->handle;
+
         // forward to device-driver
         result = pfnGetConfig( hTemperature, pConfig );
+
         return result;
     }
 
@@ -3732,19 +3871,18 @@ namespace loader
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
 
-        // extract handle's function pointer table
-        auto dditable = reinterpret_cast<ze_handle_t*>( hTemperature )->pSysman;
-        if (dditable->isValidFlag == 0)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        // Check that api version in the driver is supported by this version of the API
-        if (dditable->version < ZE_API_VERSION_1_0) {
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-        }
-        auto pfnSetConfig = dditable->Temperature->pfnSetConfig;
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_temp_object_t*>( hTemperature )->dditable;
+        auto pfnSetConfig = dditable->zes.Temperature.pfnSetConfig;
         if( nullptr == pfnSetConfig )
             return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hTemperature = reinterpret_cast<zes_temp_object_t*>( hTemperature )->handle;
+
         // forward to device-driver
         result = pfnSetConfig( hTemperature, pConfig );
+
         return result;
     }
 
@@ -3759,19 +3897,18 @@ namespace loader
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
 
-        // extract handle's function pointer table
-        auto dditable = reinterpret_cast<ze_handle_t*>( hTemperature )->pSysman;
-        if (dditable->isValidFlag == 0)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        // Check that api version in the driver is supported by this version of the API
-        if (dditable->version < ZE_API_VERSION_1_0) {
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-        }
-        auto pfnGetState = dditable->Temperature->pfnGetState;
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_temp_object_t*>( hTemperature )->dditable;
+        auto pfnGetState = dditable->zes.Temperature.pfnGetState;
         if( nullptr == pfnGetState )
             return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hTemperature = reinterpret_cast<zes_temp_object_t*>( hTemperature )->handle;
+
         // forward to device-driver
         result = pfnGetState( hTemperature, pTemperature );
+
         return result;
     }
 
@@ -3793,19 +3930,18 @@ namespace loader
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
 
-        // extract handle's function pointer table
-        auto dditable = reinterpret_cast<ze_handle_t*>( hPower )->pSysman;
-        if (dditable->isValidFlag == 0)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        // Check that api version in the driver is supported by this version of the API
-        if (dditable->version < ZE_API_VERSION_1_0) {
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-        }
-        auto pfnGetLimitsExt = dditable->Power->pfnGetLimitsExt;
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_pwr_object_t*>( hPower )->dditable;
+        auto pfnGetLimitsExt = dditable->zes.Power.pfnGetLimitsExt;
         if( nullptr == pfnGetLimitsExt )
             return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hPower = reinterpret_cast<zes_pwr_object_t*>( hPower )->handle;
+
         // forward to device-driver
         result = pfnGetLimitsExt( hPower, pCount, pSustained );
+
         return result;
     }
 
@@ -3820,19 +3956,18 @@ namespace loader
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
 
-        // extract handle's function pointer table
-        auto dditable = reinterpret_cast<ze_handle_t*>( hPower )->pSysman;
-        if (dditable->isValidFlag == 0)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        // Check that api version in the driver is supported by this version of the API
-        if (dditable->version < ZE_API_VERSION_1_0) {
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-        }
-        auto pfnSetLimitsExt = dditable->Power->pfnSetLimitsExt;
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_pwr_object_t*>( hPower )->dditable;
+        auto pfnSetLimitsExt = dditable->zes.Power.pfnSetLimitsExt;
         if( nullptr == pfnSetLimitsExt )
             return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hPower = reinterpret_cast<zes_pwr_object_t*>( hPower )->handle;
+
         // forward to device-driver
         result = pfnSetLimitsExt( hPower, pCount, pSustained );
+
         return result;
     }
 
@@ -3859,19 +3994,18 @@ namespace loader
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
 
-        // extract handle's function pointer table
-        auto dditable = reinterpret_cast<ze_handle_t*>( hEngine )->pSysman;
-        if (dditable->isValidFlag == 0)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        // Check that api version in the driver is supported by this version of the API
-        if (dditable->version < ZE_API_VERSION_1_7) {
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-        }
-        auto pfnGetActivityExt = dditable->Engine->pfnGetActivityExt;
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_engine_object_t*>( hEngine )->dditable;
+        auto pfnGetActivityExt = dditable->zes.Engine.pfnGetActivityExt;
         if( nullptr == pfnGetActivityExt )
             return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hEngine = reinterpret_cast<zes_engine_object_t*>( hEngine )->handle;
+
         // forward to device-driver
         result = pfnGetActivityExt( hEngine, pCount, pStats );
+
         return result;
     }
 
@@ -3893,19 +4027,18 @@ namespace loader
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
 
-        // extract handle's function pointer table
-        auto dditable = reinterpret_cast<ze_handle_t*>( hRas )->pSysman;
-        if (dditable->isValidFlag == 0)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        // Check that api version in the driver is supported by this version of the API
-        if (dditable->version < ZE_API_VERSION_1_0) {
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-        }
-        auto pfnGetStateExp = dditable->RasExp->pfnGetStateExp;
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_ras_object_t*>( hRas )->dditable;
+        auto pfnGetStateExp = dditable->zes.RasExp.pfnGetStateExp;
         if( nullptr == pfnGetStateExp )
             return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hRas = reinterpret_cast<zes_ras_object_t*>( hRas )->handle;
+
         // forward to device-driver
         result = pfnGetStateExp( hRas, pCount, pState );
+
         return result;
     }
 
@@ -3919,19 +4052,18 @@ namespace loader
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
 
-        // extract handle's function pointer table
-        auto dditable = reinterpret_cast<ze_handle_t*>( hRas )->pSysman;
-        if (dditable->isValidFlag == 0)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        // Check that api version in the driver is supported by this version of the API
-        if (dditable->version < ZE_API_VERSION_1_0) {
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-        }
-        auto pfnClearStateExp = dditable->RasExp->pfnClearStateExp;
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_ras_object_t*>( hRas )->dditable;
+        auto pfnClearStateExp = dditable->zes.RasExp.pfnClearStateExp;
         if( nullptr == pfnClearStateExp )
             return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hRas = reinterpret_cast<zes_ras_object_t*>( hRas )->handle;
+
         // forward to device-driver
         result = pfnClearStateExp( hRas, category );
+
         return result;
     }
 
@@ -3946,19 +4078,18 @@ namespace loader
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
 
-        // extract handle's function pointer table
-        auto dditable = reinterpret_cast<ze_handle_t*>( hFirmware )->pSysman;
-        if (dditable->isValidFlag == 0)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        // Check that api version in the driver is supported by this version of the API
-        if (dditable->version < ZE_API_VERSION_1_9) {
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-        }
-        auto pfnGetSecurityVersionExp = dditable->FirmwareExp->pfnGetSecurityVersionExp;
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_firmware_object_t*>( hFirmware )->dditable;
+        auto pfnGetSecurityVersionExp = dditable->zes.FirmwareExp.pfnGetSecurityVersionExp;
         if( nullptr == pfnGetSecurityVersionExp )
             return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hFirmware = reinterpret_cast<zes_firmware_object_t*>( hFirmware )->handle;
+
         // forward to device-driver
         result = pfnGetSecurityVersionExp( hFirmware, pVersion );
+
         return result;
     }
 
@@ -3971,19 +4102,18 @@ namespace loader
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
 
-        // extract handle's function pointer table
-        auto dditable = reinterpret_cast<ze_handle_t*>( hFirmware )->pSysman;
-        if (dditable->isValidFlag == 0)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        // Check that api version in the driver is supported by this version of the API
-        if (dditable->version < ZE_API_VERSION_1_9) {
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-        }
-        auto pfnSetSecurityVersionExp = dditable->FirmwareExp->pfnSetSecurityVersionExp;
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_firmware_object_t*>( hFirmware )->dditable;
+        auto pfnSetSecurityVersionExp = dditable->zes.FirmwareExp.pfnSetSecurityVersionExp;
         if( nullptr == pfnSetSecurityVersionExp )
             return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hFirmware = reinterpret_cast<zes_firmware_object_t*>( hFirmware )->handle;
+
         // forward to device-driver
         result = pfnSetSecurityVersionExp( hFirmware );
+
         return result;
     }
 
@@ -4005,19 +4135,18 @@ namespace loader
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
 
-        // extract handle's function pointer table
-        auto dditable = reinterpret_cast<ze_handle_t*>( hDevice )->pSysman;
-        if (dditable->isValidFlag == 0)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        // Check that api version in the driver is supported by this version of the API
-        if (dditable->version < ZE_API_VERSION_1_9) {
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-        }
-        auto pfnGetSubDevicePropertiesExp = dditable->DeviceExp->pfnGetSubDevicePropertiesExp;
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_device_object_t*>( hDevice )->dditable;
+        auto pfnGetSubDevicePropertiesExp = dditable->zes.DeviceExp.pfnGetSubDevicePropertiesExp;
         if( nullptr == pfnGetSubDevicePropertiesExp )
             return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hDevice = reinterpret_cast<zes_device_object_t*>( hDevice )->handle;
+
         // forward to device-driver
         result = pfnGetSubDevicePropertiesExp( hDevice, pCount, pSubdeviceProps );
+
         return result;
     }
 
@@ -4035,19 +4164,32 @@ namespace loader
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
 
-        // extract handle's function pointer table
-        auto dditable = reinterpret_cast<ze_handle_t*>( hDriver )->pSysman;
-        if (dditable->isValidFlag == 0)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        // Check that api version in the driver is supported by this version of the API
-        if (dditable->version < ZE_API_VERSION_1_9) {
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-        }
-        auto pfnGetDeviceByUuidExp = dditable->DriverExp->pfnGetDeviceByUuidExp;
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_driver_object_t*>( hDriver )->dditable;
+        auto pfnGetDeviceByUuidExp = dditable->zes.DriverExp.pfnGetDeviceByUuidExp;
         if( nullptr == pfnGetDeviceByUuidExp )
             return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hDriver = reinterpret_cast<zes_driver_object_t*>( hDriver )->handle;
+
         // forward to device-driver
         result = pfnGetDeviceByUuidExp( hDriver, uuid, phDevice, onSubdevice, subdeviceId );
+
+        if( ZE_RESULT_SUCCESS != result )
+            return result;
+
+        try
+        {
+            // convert driver handle to loader handle
+            *phDevice = reinterpret_cast<zes_device_handle_t>(
+                context->zes_device_factory.getInstance( *phDevice, dditable ) );
+        }
+        catch( std::bad_alloc& )
+        {
+            result = ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY;
+        }
+
         return result;
     }
 
@@ -4071,19 +4213,33 @@ namespace loader
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
 
-        // extract handle's function pointer table
-        auto dditable = reinterpret_cast<ze_handle_t*>( hDevice )->pSysman;
-        if (dditable->isValidFlag == 0)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        // Check that api version in the driver is supported by this version of the API
-        if (dditable->version < ZE_API_VERSION_1_9) {
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-        }
-        auto pfnEnumActiveVFExp = dditable->DeviceExp->pfnEnumActiveVFExp;
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_device_object_t*>( hDevice )->dditable;
+        auto pfnEnumActiveVFExp = dditable->zes.DeviceExp.pfnEnumActiveVFExp;
         if( nullptr == pfnEnumActiveVFExp )
             return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hDevice = reinterpret_cast<zes_device_object_t*>( hDevice )->handle;
+
         // forward to device-driver
         result = pfnEnumActiveVFExp( hDevice, pCount, phVFhandle );
+
+        if( ZE_RESULT_SUCCESS != result )
+            return result;
+
+        try
+        {
+            // convert driver handles to loader handles
+            for( size_t i = 0; ( nullptr != phVFhandle ) && ( i < *pCount ); ++i )
+                phVFhandle[ i ] = reinterpret_cast<zes_vf_handle_t>(
+                    context->zes_vf_factory.getInstance( phVFhandle[ i ], dditable ) );
+        }
+        catch( std::bad_alloc& )
+        {
+            result = ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY;
+        }
+
         return result;
     }
 
@@ -4097,19 +4253,18 @@ namespace loader
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
 
-        // extract handle's function pointer table
-        auto dditable = reinterpret_cast<ze_handle_t*>( hVFhandle )->pSysman;
-        if (dditable->isValidFlag == 0)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        // Check that api version in the driver is supported by this version of the API
-        if (dditable->version < ZE_API_VERSION_1_9) {
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-        }
-        auto pfnGetVFPropertiesExp = dditable->VFManagementExp->pfnGetVFPropertiesExp;
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_vf_object_t*>( hVFhandle )->dditable;
+        auto pfnGetVFPropertiesExp = dditable->zes.VFManagementExp.pfnGetVFPropertiesExp;
         if( nullptr == pfnGetVFPropertiesExp )
             return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hVFhandle = reinterpret_cast<zes_vf_object_t*>( hVFhandle )->handle;
+
         // forward to device-driver
         result = pfnGetVFPropertiesExp( hVFhandle, pProperties );
+
         return result;
     }
 
@@ -4135,19 +4290,18 @@ namespace loader
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
 
-        // extract handle's function pointer table
-        auto dditable = reinterpret_cast<ze_handle_t*>( hVFhandle )->pSysman;
-        if (dditable->isValidFlag == 0)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        // Check that api version in the driver is supported by this version of the API
-        if (dditable->version < ZE_API_VERSION_1_9) {
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-        }
-        auto pfnGetVFMemoryUtilizationExp = dditable->VFManagementExp->pfnGetVFMemoryUtilizationExp;
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_vf_object_t*>( hVFhandle )->dditable;
+        auto pfnGetVFMemoryUtilizationExp = dditable->zes.VFManagementExp.pfnGetVFMemoryUtilizationExp;
         if( nullptr == pfnGetVFMemoryUtilizationExp )
             return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hVFhandle = reinterpret_cast<zes_vf_object_t*>( hVFhandle )->handle;
+
         // forward to device-driver
         result = pfnGetVFMemoryUtilizationExp( hVFhandle, pCount, pMemUtil );
+
         return result;
     }
 
@@ -4173,19 +4327,18 @@ namespace loader
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
 
-        // extract handle's function pointer table
-        auto dditable = reinterpret_cast<ze_handle_t*>( hVFhandle )->pSysman;
-        if (dditable->isValidFlag == 0)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        // Check that api version in the driver is supported by this version of the API
-        if (dditable->version < ZE_API_VERSION_1_9) {
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-        }
-        auto pfnGetVFEngineUtilizationExp = dditable->VFManagementExp->pfnGetVFEngineUtilizationExp;
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_vf_object_t*>( hVFhandle )->dditable;
+        auto pfnGetVFEngineUtilizationExp = dditable->zes.VFManagementExp.pfnGetVFEngineUtilizationExp;
         if( nullptr == pfnGetVFEngineUtilizationExp )
             return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hVFhandle = reinterpret_cast<zes_vf_object_t*>( hVFhandle )->handle;
+
         // forward to device-driver
         result = pfnGetVFEngineUtilizationExp( hVFhandle, pCount, pEngineUtil );
+
         return result;
     }
 
@@ -4201,19 +4354,18 @@ namespace loader
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
 
-        // extract handle's function pointer table
-        auto dditable = reinterpret_cast<ze_handle_t*>( hVFhandle )->pSysman;
-        if (dditable->isValidFlag == 0)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        // Check that api version in the driver is supported by this version of the API
-        if (dditable->version < ZE_API_VERSION_1_9) {
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-        }
-        auto pfnSetVFTelemetryModeExp = dditable->VFManagementExp->pfnSetVFTelemetryModeExp;
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_vf_object_t*>( hVFhandle )->dditable;
+        auto pfnSetVFTelemetryModeExp = dditable->zes.VFManagementExp.pfnSetVFTelemetryModeExp;
         if( nullptr == pfnSetVFTelemetryModeExp )
             return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hVFhandle = reinterpret_cast<zes_vf_object_t*>( hVFhandle )->handle;
+
         // forward to device-driver
         result = pfnSetVFTelemetryModeExp( hVFhandle, flags, enable );
+
         return result;
     }
 
@@ -4229,19 +4381,18 @@ namespace loader
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
 
-        // extract handle's function pointer table
-        auto dditable = reinterpret_cast<ze_handle_t*>( hVFhandle )->pSysman;
-        if (dditable->isValidFlag == 0)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        // Check that api version in the driver is supported by this version of the API
-        if (dditable->version < ZE_API_VERSION_1_9) {
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-        }
-        auto pfnSetVFTelemetrySamplingIntervalExp = dditable->VFManagementExp->pfnSetVFTelemetrySamplingIntervalExp;
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_vf_object_t*>( hVFhandle )->dditable;
+        auto pfnSetVFTelemetrySamplingIntervalExp = dditable->zes.VFManagementExp.pfnSetVFTelemetrySamplingIntervalExp;
         if( nullptr == pfnSetVFTelemetrySamplingIntervalExp )
             return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hVFhandle = reinterpret_cast<zes_vf_object_t*>( hVFhandle )->handle;
+
         // forward to device-driver
         result = pfnSetVFTelemetrySamplingIntervalExp( hVFhandle, flag, samplingInterval );
+
         return result;
     }
 
@@ -4265,19 +4416,33 @@ namespace loader
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
 
-        // extract handle's function pointer table
-        auto dditable = reinterpret_cast<ze_handle_t*>( hDevice )->pSysman;
-        if (dditable->isValidFlag == 0)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        // Check that api version in the driver is supported by this version of the API
-        if (dditable->version < ZE_API_VERSION_1_10) {
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-        }
-        auto pfnEnumEnabledVFExp = dditable->DeviceExp->pfnEnumEnabledVFExp;
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_device_object_t*>( hDevice )->dditable;
+        auto pfnEnumEnabledVFExp = dditable->zes.DeviceExp.pfnEnumEnabledVFExp;
         if( nullptr == pfnEnumEnabledVFExp )
             return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hDevice = reinterpret_cast<zes_device_object_t*>( hDevice )->handle;
+
         // forward to device-driver
         result = pfnEnumEnabledVFExp( hDevice, pCount, phVFhandle );
+
+        if( ZE_RESULT_SUCCESS != result )
+            return result;
+
+        try
+        {
+            // convert driver handles to loader handles
+            for( size_t i = 0; ( nullptr != phVFhandle ) && ( i < *pCount ); ++i )
+                phVFhandle[ i ] = reinterpret_cast<zes_vf_handle_t>(
+                    context->zes_vf_factory.getInstance( phVFhandle[ i ], dditable ) );
+        }
+        catch( std::bad_alloc& )
+        {
+            result = ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY;
+        }
+
         return result;
     }
 
@@ -4291,19 +4456,18 @@ namespace loader
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
 
-        // extract handle's function pointer table
-        auto dditable = reinterpret_cast<ze_handle_t*>( hVFhandle )->pSysman;
-        if (dditable->isValidFlag == 0)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        // Check that api version in the driver is supported by this version of the API
-        if (dditable->version < ZE_API_VERSION_1_10) {
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-        }
-        auto pfnGetVFCapabilitiesExp = dditable->VFManagementExp->pfnGetVFCapabilitiesExp;
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_vf_object_t*>( hVFhandle )->dditable;
+        auto pfnGetVFCapabilitiesExp = dditable->zes.VFManagementExp.pfnGetVFCapabilitiesExp;
         if( nullptr == pfnGetVFCapabilitiesExp )
             return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hVFhandle = reinterpret_cast<zes_vf_object_t*>( hVFhandle )->handle;
+
         // forward to device-driver
         result = pfnGetVFCapabilitiesExp( hVFhandle, pCapability );
+
         return result;
     }
 
@@ -4327,19 +4491,18 @@ namespace loader
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
 
-        // extract handle's function pointer table
-        auto dditable = reinterpret_cast<ze_handle_t*>( hVFhandle )->pSysman;
-        if (dditable->isValidFlag == 0)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        // Check that api version in the driver is supported by this version of the API
-        if (dditable->version < ZE_API_VERSION_1_10) {
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-        }
-        auto pfnGetVFMemoryUtilizationExp2 = dditable->VFManagementExp->pfnGetVFMemoryUtilizationExp2;
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_vf_object_t*>( hVFhandle )->dditable;
+        auto pfnGetVFMemoryUtilizationExp2 = dditable->zes.VFManagementExp.pfnGetVFMemoryUtilizationExp2;
         if( nullptr == pfnGetVFMemoryUtilizationExp2 )
             return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hVFhandle = reinterpret_cast<zes_vf_object_t*>( hVFhandle )->handle;
+
         // forward to device-driver
         result = pfnGetVFMemoryUtilizationExp2( hVFhandle, pCount, pMemUtil );
+
         return result;
     }
 
@@ -4363,19 +4526,18 @@ namespace loader
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
 
-        // extract handle's function pointer table
-        auto dditable = reinterpret_cast<ze_handle_t*>( hVFhandle )->pSysman;
-        if (dditable->isValidFlag == 0)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        // Check that api version in the driver is supported by this version of the API
-        if (dditable->version < ZE_API_VERSION_1_10) {
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-        }
-        auto pfnGetVFEngineUtilizationExp2 = dditable->VFManagementExp->pfnGetVFEngineUtilizationExp2;
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_vf_object_t*>( hVFhandle )->dditable;
+        auto pfnGetVFEngineUtilizationExp2 = dditable->zes.VFManagementExp.pfnGetVFEngineUtilizationExp2;
         if( nullptr == pfnGetVFEngineUtilizationExp2 )
             return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hVFhandle = reinterpret_cast<zes_vf_object_t*>( hVFhandle )->handle;
+
         // forward to device-driver
         result = pfnGetVFEngineUtilizationExp2( hVFhandle, pCount, pEngineUtil );
+
         return result;
     }
 
@@ -4389,2020 +4551,366 @@ namespace loader
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
 
-        // extract handle's function pointer table
-        auto dditable = reinterpret_cast<ze_handle_t*>( hVFhandle )->pSysman;
-        if (dditable->isValidFlag == 0)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        // Check that api version in the driver is supported by this version of the API
-        if (dditable->version < ZE_API_VERSION_1_12) {
-            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-        }
-        auto pfnGetVFCapabilitiesExp2 = dditable->VFManagementExp->pfnGetVFCapabilitiesExp2;
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<zes_vf_object_t*>( hVFhandle )->dditable;
+        auto pfnGetVFCapabilitiesExp2 = dditable->zes.VFManagementExp.pfnGetVFCapabilitiesExp2;
         if( nullptr == pfnGetVFCapabilitiesExp2 )
             return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hVFhandle = reinterpret_cast<zes_vf_object_t*>( hVFhandle )->handle;
+
         // forward to device-driver
         result = pfnGetVFCapabilitiesExp2( hVFhandle, pCapability );
+
         return result;
     }
 
-
-    ///////////////////////////////////////////////////////////////////////////////
-    /// @brief function for removing the ddi driver tables for zes
-    __zedlllocal void ZE_APICALL
-    zesDestroyDDiDriverTables(zes_dditable_driver_t* pDdiTable)
-    {
-        // Delete ddi tables
-        delete pDdiTable->Global;
-        delete pDdiTable->Device;
-        delete pDdiTable->DeviceExp;
-        delete pDdiTable->Driver;
-        delete pDdiTable->DriverExp;
-        delete pDdiTable->Diagnostics;
-        delete pDdiTable->Engine;
-        delete pDdiTable->FabricPort;
-        delete pDdiTable->Fan;
-        delete pDdiTable->Firmware;
-        delete pDdiTable->FirmwareExp;
-        delete pDdiTable->Frequency;
-        delete pDdiTable->Led;
-        delete pDdiTable->Memory;
-        delete pDdiTable->Overclock;
-        delete pDdiTable->PerformanceFactor;
-        delete pDdiTable->Power;
-        delete pDdiTable->Psu;
-        delete pDdiTable->Ras;
-        delete pDdiTable->RasExp;
-        delete pDdiTable->Scheduler;
-        delete pDdiTable->Standby;
-        delete pDdiTable->Temperature;
-        delete pDdiTable->VFManagementExp;
-        delete pDdiTable;
-    }
-
-} // namespace loader
+} // namespace loader_legacy
 
 #if defined(__cplusplus)
 extern "C" {
 #endif
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Exported function for filling application's Global table
-///        with current process' addresses
-///
-/// @returns
-///     - ::ZE_RESULT_SUCCESS
-///     - ::ZE_RESULT_ERROR_UNINITIALIZED
-///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
-///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
-ZE_DLLEXPORT ze_result_t ZE_APICALL
-zesGetGlobalProcAddrTable(
-    ze_api_version_t version,                       ///< [in] API version requested
-    zes_global_dditable_t* pDdiTable                ///< [in,out] pointer to table of DDI function pointers
-    )
+/// @brief function for filling the legacy api pointers for Global table
+__zedlllocal void ZE_APICALL
+zesGetGlobalProcAddrTableLegacy()
 {
-    if( loader::context->sysmanInstanceDrivers->size() < 1 ) {
-        return ZE_RESULT_ERROR_UNINITIALIZED;
-    }
-
-    if( nullptr == pDdiTable )
-        return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
-
-    if( loader::context->version < version )
-        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-
-    ze_result_t result = ZE_RESULT_SUCCESS;
-
-    bool atLeastOneDriverValid = false;
-    // Load the device-driver DDI tables
-    for( auto& drv : *loader::context->sysmanInstanceDrivers )
-    {
-        if(drv.initStatus != ZE_RESULT_SUCCESS)
-            continue;
-        auto getTable = reinterpret_cast<zes_pfnGetGlobalProcAddrTable_t>(
-            GET_FUNCTION_PTR( drv.handle, "zesGetGlobalProcAddrTable") );
-        if(!getTable) 
-        {
-            atLeastOneDriverValid = true;
-            //It is valid to not have this proc addr table
-            continue; 
-        }
-        auto getTableResult = getTable( version, &drv.dditable.zes.Global);
-        if(getTableResult == ZE_RESULT_SUCCESS) 
-            atLeastOneDriverValid = true;
-        else
-            drv.initStatus = getTableResult;
-    }
-
-    if(!atLeastOneDriverValid)
-        result = ZE_RESULT_ERROR_UNINITIALIZED;
-    else
-        result = ZE_RESULT_SUCCESS;
-
-    if( ZE_RESULT_SUCCESS == result )
-    {
-        if( ( loader::context->sysmanInstanceDrivers->size() > 1 ) || loader::context->forceIntercept )
-        {
-            // return pointers to loader's DDIs
-            loader::loaderDispatch->pSysman->Global = new zes_global_dditable_t;
-            pDdiTable->pfnInit                                     = loader::zesInit;
-            zesGetGlobalProcAddrTableLegacy();
-        }
-        else
-        {
-            // return pointers directly to driver's DDIs
-            *pDdiTable = loader::context->sysmanInstanceDrivers->front().dditable.zes.Global;
-        }
-    }
-
-    // If the validation layer is enabled, then intercept the loader's DDIs
-    if(( ZE_RESULT_SUCCESS == result ) && ( nullptr != loader::context->validationLayer ))
-    {
-        auto getTable = reinterpret_cast<zes_pfnGetGlobalProcAddrTable_t>(
-            GET_FUNCTION_PTR(loader::context->validationLayer, "zesGetGlobalProcAddrTable") );
-        if(!getTable)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        result = getTable( version, pDdiTable );
-    }
-
-    return result;
+    // return pointers to the Loader's Functions.
+    loader::loaderDispatch->pSysman->Global->pfnInit                                     = loader_legacy::zesInit;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Exported function for filling application's Device table
-///        with current process' addresses
-///
-/// @returns
-///     - ::ZE_RESULT_SUCCESS
-///     - ::ZE_RESULT_ERROR_UNINITIALIZED
-///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
-///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
-ZE_DLLEXPORT ze_result_t ZE_APICALL
-zesGetDeviceProcAddrTable(
-    ze_api_version_t version,                       ///< [in] API version requested
-    zes_device_dditable_t* pDdiTable                ///< [in,out] pointer to table of DDI function pointers
-    )
+/// @brief function for filling the legacy api pointers for Device table
+__zedlllocal void ZE_APICALL
+zesGetDeviceProcAddrTableLegacy()
 {
-    if( loader::context->sysmanInstanceDrivers->size() < 1 ) {
-        return ZE_RESULT_ERROR_UNINITIALIZED;
-    }
-
-    if( nullptr == pDdiTable )
-        return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
-
-    if( loader::context->version < version )
-        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-
-    ze_result_t result = ZE_RESULT_SUCCESS;
-
-    bool atLeastOneDriverValid = false;
-    // Load the device-driver DDI tables
-    for( auto& drv : *loader::context->sysmanInstanceDrivers )
-    {
-        if(drv.initStatus != ZE_RESULT_SUCCESS)
-            continue;
-        auto getTable = reinterpret_cast<zes_pfnGetDeviceProcAddrTable_t>(
-            GET_FUNCTION_PTR( drv.handle, "zesGetDeviceProcAddrTable") );
-        if(!getTable) 
-            continue; 
-        auto getTableResult = getTable( version, &drv.dditable.zes.Device);
-        if(getTableResult == ZE_RESULT_SUCCESS) 
-            atLeastOneDriverValid = true;
-        else
-            drv.initStatus = getTableResult;
-    }
-
-    if(!atLeastOneDriverValid)
-        result = ZE_RESULT_ERROR_UNINITIALIZED;
-    else
-        result = ZE_RESULT_SUCCESS;
-
-    if( ZE_RESULT_SUCCESS == result )
-    {
-        if( ( loader::context->sysmanInstanceDrivers->size() > 1 ) || loader::context->forceIntercept )
-        {
-            // return pointers to loader's DDIs
-            loader::loaderDispatch->pSysman->Device = new zes_device_dditable_t;
-            pDdiTable->pfnGetProperties                            = loader::zesDeviceGetProperties;
-            pDdiTable->pfnGetState                                 = loader::zesDeviceGetState;
-            pDdiTable->pfnReset                                    = loader::zesDeviceReset;
-            pDdiTable->pfnProcessesGetState                        = loader::zesDeviceProcessesGetState;
-            pDdiTable->pfnPciGetProperties                         = loader::zesDevicePciGetProperties;
-            pDdiTable->pfnPciGetState                              = loader::zesDevicePciGetState;
-            pDdiTable->pfnPciGetBars                               = loader::zesDevicePciGetBars;
-            pDdiTable->pfnPciGetStats                              = loader::zesDevicePciGetStats;
-            pDdiTable->pfnEnumDiagnosticTestSuites                 = loader::zesDeviceEnumDiagnosticTestSuites;
-            pDdiTable->pfnEnumEngineGroups                         = loader::zesDeviceEnumEngineGroups;
-            pDdiTable->pfnEventRegister                            = loader::zesDeviceEventRegister;
-            pDdiTable->pfnEnumFabricPorts                          = loader::zesDeviceEnumFabricPorts;
-            pDdiTable->pfnEnumFans                                 = loader::zesDeviceEnumFans;
-            pDdiTable->pfnEnumFirmwares                            = loader::zesDeviceEnumFirmwares;
-            pDdiTable->pfnEnumFrequencyDomains                     = loader::zesDeviceEnumFrequencyDomains;
-            pDdiTable->pfnEnumLeds                                 = loader::zesDeviceEnumLeds;
-            pDdiTable->pfnEnumMemoryModules                        = loader::zesDeviceEnumMemoryModules;
-            pDdiTable->pfnEnumPerformanceFactorDomains             = loader::zesDeviceEnumPerformanceFactorDomains;
-            pDdiTable->pfnEnumPowerDomains                         = loader::zesDeviceEnumPowerDomains;
-            pDdiTable->pfnGetCardPowerDomain                       = loader::zesDeviceGetCardPowerDomain;
-            pDdiTable->pfnEnumPsus                                 = loader::zesDeviceEnumPsus;
-            pDdiTable->pfnEnumRasErrorSets                         = loader::zesDeviceEnumRasErrorSets;
-            pDdiTable->pfnEnumSchedulers                           = loader::zesDeviceEnumSchedulers;
-            pDdiTable->pfnEnumStandbyDomains                       = loader::zesDeviceEnumStandbyDomains;
-            pDdiTable->pfnEnumTemperatureSensors                   = loader::zesDeviceEnumTemperatureSensors;
-            pDdiTable->pfnEccAvailable                             = loader::zesDeviceEccAvailable;
-            pDdiTable->pfnEccConfigurable                          = loader::zesDeviceEccConfigurable;
-            pDdiTable->pfnGetEccState                              = loader::zesDeviceGetEccState;
-            pDdiTable->pfnSetEccState                              = loader::zesDeviceSetEccState;
-            pDdiTable->pfnGet                                      = loader::zesDeviceGet;
-            pDdiTable->pfnSetOverclockWaiver                       = loader::zesDeviceSetOverclockWaiver;
-            pDdiTable->pfnGetOverclockDomains                      = loader::zesDeviceGetOverclockDomains;
-            pDdiTable->pfnGetOverclockControls                     = loader::zesDeviceGetOverclockControls;
-            pDdiTable->pfnResetOverclockSettings                   = loader::zesDeviceResetOverclockSettings;
-            pDdiTable->pfnReadOverclockState                       = loader::zesDeviceReadOverclockState;
-            pDdiTable->pfnEnumOverclockDomains                     = loader::zesDeviceEnumOverclockDomains;
-            pDdiTable->pfnResetExt                                 = loader::zesDeviceResetExt;
-            zesGetDeviceProcAddrTableLegacy();
-        }
-        else
-        {
-            // return pointers directly to driver's DDIs
-            *pDdiTable = loader::context->sysmanInstanceDrivers->front().dditable.zes.Device;
-        }
-    }
-
-    // If the validation layer is enabled, then intercept the loader's DDIs
-    if(( ZE_RESULT_SUCCESS == result ) && ( nullptr != loader::context->validationLayer ))
-    {
-        auto getTable = reinterpret_cast<zes_pfnGetDeviceProcAddrTable_t>(
-            GET_FUNCTION_PTR(loader::context->validationLayer, "zesGetDeviceProcAddrTable") );
-        if(!getTable)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        result = getTable( version, pDdiTable );
-    }
-
-    return result;
+    // return pointers to the Loader's Functions.
+    loader::loaderDispatch->pSysman->Device->pfnGetProperties                            = loader_legacy::zesDeviceGetProperties;
+    loader::loaderDispatch->pSysman->Device->pfnGetState                                 = loader_legacy::zesDeviceGetState;
+    loader::loaderDispatch->pSysman->Device->pfnReset                                    = loader_legacy::zesDeviceReset;
+    loader::loaderDispatch->pSysman->Device->pfnProcessesGetState                        = loader_legacy::zesDeviceProcessesGetState;
+    loader::loaderDispatch->pSysman->Device->pfnPciGetProperties                         = loader_legacy::zesDevicePciGetProperties;
+    loader::loaderDispatch->pSysman->Device->pfnPciGetState                              = loader_legacy::zesDevicePciGetState;
+    loader::loaderDispatch->pSysman->Device->pfnPciGetBars                               = loader_legacy::zesDevicePciGetBars;
+    loader::loaderDispatch->pSysman->Device->pfnPciGetStats                              = loader_legacy::zesDevicePciGetStats;
+    loader::loaderDispatch->pSysman->Device->pfnEnumDiagnosticTestSuites                 = loader_legacy::zesDeviceEnumDiagnosticTestSuites;
+    loader::loaderDispatch->pSysman->Device->pfnEnumEngineGroups                         = loader_legacy::zesDeviceEnumEngineGroups;
+    loader::loaderDispatch->pSysman->Device->pfnEventRegister                            = loader_legacy::zesDeviceEventRegister;
+    loader::loaderDispatch->pSysman->Device->pfnEnumFabricPorts                          = loader_legacy::zesDeviceEnumFabricPorts;
+    loader::loaderDispatch->pSysman->Device->pfnEnumFans                                 = loader_legacy::zesDeviceEnumFans;
+    loader::loaderDispatch->pSysman->Device->pfnEnumFirmwares                            = loader_legacy::zesDeviceEnumFirmwares;
+    loader::loaderDispatch->pSysman->Device->pfnEnumFrequencyDomains                     = loader_legacy::zesDeviceEnumFrequencyDomains;
+    loader::loaderDispatch->pSysman->Device->pfnEnumLeds                                 = loader_legacy::zesDeviceEnumLeds;
+    loader::loaderDispatch->pSysman->Device->pfnEnumMemoryModules                        = loader_legacy::zesDeviceEnumMemoryModules;
+    loader::loaderDispatch->pSysman->Device->pfnEnumPerformanceFactorDomains             = loader_legacy::zesDeviceEnumPerformanceFactorDomains;
+    loader::loaderDispatch->pSysman->Device->pfnEnumPowerDomains                         = loader_legacy::zesDeviceEnumPowerDomains;
+    loader::loaderDispatch->pSysman->Device->pfnGetCardPowerDomain                       = loader_legacy::zesDeviceGetCardPowerDomain;
+    loader::loaderDispatch->pSysman->Device->pfnEnumPsus                                 = loader_legacy::zesDeviceEnumPsus;
+    loader::loaderDispatch->pSysman->Device->pfnEnumRasErrorSets                         = loader_legacy::zesDeviceEnumRasErrorSets;
+    loader::loaderDispatch->pSysman->Device->pfnEnumSchedulers                           = loader_legacy::zesDeviceEnumSchedulers;
+    loader::loaderDispatch->pSysman->Device->pfnEnumStandbyDomains                       = loader_legacy::zesDeviceEnumStandbyDomains;
+    loader::loaderDispatch->pSysman->Device->pfnEnumTemperatureSensors                   = loader_legacy::zesDeviceEnumTemperatureSensors;
+    loader::loaderDispatch->pSysman->Device->pfnEccAvailable                             = loader_legacy::zesDeviceEccAvailable;
+    loader::loaderDispatch->pSysman->Device->pfnEccConfigurable                          = loader_legacy::zesDeviceEccConfigurable;
+    loader::loaderDispatch->pSysman->Device->pfnGetEccState                              = loader_legacy::zesDeviceGetEccState;
+    loader::loaderDispatch->pSysman->Device->pfnSetEccState                              = loader_legacy::zesDeviceSetEccState;
+    loader::loaderDispatch->pSysman->Device->pfnGet                                      = loader_legacy::zesDeviceGet;
+    loader::loaderDispatch->pSysman->Device->pfnSetOverclockWaiver                       = loader_legacy::zesDeviceSetOverclockWaiver;
+    loader::loaderDispatch->pSysman->Device->pfnGetOverclockDomains                      = loader_legacy::zesDeviceGetOverclockDomains;
+    loader::loaderDispatch->pSysman->Device->pfnGetOverclockControls                     = loader_legacy::zesDeviceGetOverclockControls;
+    loader::loaderDispatch->pSysman->Device->pfnResetOverclockSettings                   = loader_legacy::zesDeviceResetOverclockSettings;
+    loader::loaderDispatch->pSysman->Device->pfnReadOverclockState                       = loader_legacy::zesDeviceReadOverclockState;
+    loader::loaderDispatch->pSysman->Device->pfnEnumOverclockDomains                     = loader_legacy::zesDeviceEnumOverclockDomains;
+    loader::loaderDispatch->pSysman->Device->pfnResetExt                                 = loader_legacy::zesDeviceResetExt;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Exported function for filling application's DeviceExp table
-///        with current process' addresses
-///
-/// @returns
-///     - ::ZE_RESULT_SUCCESS
-///     - ::ZE_RESULT_ERROR_UNINITIALIZED
-///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
-///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
-ZE_DLLEXPORT ze_result_t ZE_APICALL
-zesGetDeviceExpProcAddrTable(
-    ze_api_version_t version,                       ///< [in] API version requested
-    zes_device_exp_dditable_t* pDdiTable            ///< [in,out] pointer to table of DDI function pointers
-    )
+/// @brief function for filling the legacy api pointers for DeviceExp table
+__zedlllocal void ZE_APICALL
+zesGetDeviceExpProcAddrTableLegacy()
 {
-    if( loader::context->sysmanInstanceDrivers->size() < 1 ) {
-        return ZE_RESULT_ERROR_UNINITIALIZED;
-    }
-
-    if( nullptr == pDdiTable )
-        return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
-
-    if( loader::context->version < version )
-        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-
-    ze_result_t result = ZE_RESULT_SUCCESS;
-
-    // Load the device-driver DDI tables
-    for( auto& drv : *loader::context->sysmanInstanceDrivers )
-    {
-        if(drv.initStatus != ZE_RESULT_SUCCESS)
-            continue;
-        auto getTable = reinterpret_cast<zes_pfnGetDeviceExpProcAddrTable_t>(
-            GET_FUNCTION_PTR( drv.handle, "zesGetDeviceExpProcAddrTable") );
-        if(!getTable) 
-            continue; 
-        result = getTable( version, &drv.dditable.zes.DeviceExp);
-    }
-
-
-    if( ZE_RESULT_SUCCESS == result )
-    {
-        if( ( loader::context->sysmanInstanceDrivers->size() > 1 ) || loader::context->forceIntercept )
-        {
-            // return pointers to loader's DDIs
-            loader::loaderDispatch->pSysman->DeviceExp = new zes_device_exp_dditable_t;
-            pDdiTable->pfnEnumEnabledVFExp                         = loader::zesDeviceEnumEnabledVFExp;
-            pDdiTable->pfnGetSubDevicePropertiesExp                = loader::zesDeviceGetSubDevicePropertiesExp;
-            pDdiTable->pfnEnumActiveVFExp                          = loader::zesDeviceEnumActiveVFExp;
-            zesGetDeviceExpProcAddrTableLegacy();
-        }
-        else
-        {
-            // return pointers directly to driver's DDIs
-            *pDdiTable = loader::context->sysmanInstanceDrivers->front().dditable.zes.DeviceExp;
-        }
-    }
-
-    // If the validation layer is enabled, then intercept the loader's DDIs
-    if(( ZE_RESULT_SUCCESS == result ) && ( nullptr != loader::context->validationLayer ))
-    {
-        auto getTable = reinterpret_cast<zes_pfnGetDeviceExpProcAddrTable_t>(
-            GET_FUNCTION_PTR(loader::context->validationLayer, "zesGetDeviceExpProcAddrTable") );
-        if(!getTable)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        result = getTable( version, pDdiTable );
-    }
-
-    return result;
+    // return pointers to the Loader's Functions.
+    loader::loaderDispatch->pSysman->DeviceExp->pfnEnumEnabledVFExp                         = loader_legacy::zesDeviceEnumEnabledVFExp;
+    loader::loaderDispatch->pSysman->DeviceExp->pfnGetSubDevicePropertiesExp                = loader_legacy::zesDeviceGetSubDevicePropertiesExp;
+    loader::loaderDispatch->pSysman->DeviceExp->pfnEnumActiveVFExp                          = loader_legacy::zesDeviceEnumActiveVFExp;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Exported function for filling application's Driver table
-///        with current process' addresses
-///
-/// @returns
-///     - ::ZE_RESULT_SUCCESS
-///     - ::ZE_RESULT_ERROR_UNINITIALIZED
-///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
-///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
-ZE_DLLEXPORT ze_result_t ZE_APICALL
-zesGetDriverProcAddrTable(
-    ze_api_version_t version,                       ///< [in] API version requested
-    zes_driver_dditable_t* pDdiTable                ///< [in,out] pointer to table of DDI function pointers
-    )
+/// @brief function for filling the legacy api pointers for Driver table
+__zedlllocal void ZE_APICALL
+zesGetDriverProcAddrTableLegacy()
 {
-    if( loader::context->sysmanInstanceDrivers->size() < 1 ) {
-        return ZE_RESULT_ERROR_UNINITIALIZED;
-    }
-
-    if( nullptr == pDdiTable )
-        return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
-
-    if( loader::context->version < version )
-        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-
-    ze_result_t result = ZE_RESULT_SUCCESS;
-
-    bool atLeastOneDriverValid = false;
-    // Load the device-driver DDI tables
-    for( auto& drv : *loader::context->sysmanInstanceDrivers )
-    {
-        if(drv.initStatus != ZE_RESULT_SUCCESS)
-            continue;
-        auto getTable = reinterpret_cast<zes_pfnGetDriverProcAddrTable_t>(
-            GET_FUNCTION_PTR( drv.handle, "zesGetDriverProcAddrTable") );
-        if(!getTable) 
-            continue; 
-        auto getTableResult = getTable( version, &drv.dditable.zes.Driver);
-        if(getTableResult == ZE_RESULT_SUCCESS) 
-            atLeastOneDriverValid = true;
-        else
-            drv.initStatus = getTableResult;
-    }
-
-    if(!atLeastOneDriverValid)
-        result = ZE_RESULT_ERROR_UNINITIALIZED;
-    else
-        result = ZE_RESULT_SUCCESS;
-
-    if( ZE_RESULT_SUCCESS == result )
-    {
-        if( ( loader::context->sysmanInstanceDrivers->size() > 1 ) || loader::context->forceIntercept )
-        {
-            // return pointers to loader's DDIs
-            loader::loaderDispatch->pSysman->Driver = new zes_driver_dditable_t;
-            pDdiTable->pfnEventListen                              = loader::zesDriverEventListen;
-            pDdiTable->pfnEventListenEx                            = loader::zesDriverEventListenEx;
-            pDdiTable->pfnGet                                      = loader::zesDriverGet;
-            pDdiTable->pfnGetExtensionProperties                   = loader::zesDriverGetExtensionProperties;
-            pDdiTable->pfnGetExtensionFunctionAddress              = loader::zesDriverGetExtensionFunctionAddress;
-            zesGetDriverProcAddrTableLegacy();
-        }
-        else
-        {
-            // return pointers directly to driver's DDIs
-            *pDdiTable = loader::context->sysmanInstanceDrivers->front().dditable.zes.Driver;
-        }
-    }
-
-    // If the validation layer is enabled, then intercept the loader's DDIs
-    if(( ZE_RESULT_SUCCESS == result ) && ( nullptr != loader::context->validationLayer ))
-    {
-        auto getTable = reinterpret_cast<zes_pfnGetDriverProcAddrTable_t>(
-            GET_FUNCTION_PTR(loader::context->validationLayer, "zesGetDriverProcAddrTable") );
-        if(!getTable)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        result = getTable( version, pDdiTable );
-    }
-
-    return result;
+    // return pointers to the Loader's Functions.
+    loader::loaderDispatch->pSysman->Driver->pfnEventListen                              = loader_legacy::zesDriverEventListen;
+    loader::loaderDispatch->pSysman->Driver->pfnEventListenEx                            = loader_legacy::zesDriverEventListenEx;
+    loader::loaderDispatch->pSysman->Driver->pfnGet                                      = loader_legacy::zesDriverGet;
+    loader::loaderDispatch->pSysman->Driver->pfnGetExtensionProperties                   = loader_legacy::zesDriverGetExtensionProperties;
+    loader::loaderDispatch->pSysman->Driver->pfnGetExtensionFunctionAddress              = loader_legacy::zesDriverGetExtensionFunctionAddress;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Exported function for filling application's DriverExp table
-///        with current process' addresses
-///
-/// @returns
-///     - ::ZE_RESULT_SUCCESS
-///     - ::ZE_RESULT_ERROR_UNINITIALIZED
-///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
-///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
-ZE_DLLEXPORT ze_result_t ZE_APICALL
-zesGetDriverExpProcAddrTable(
-    ze_api_version_t version,                       ///< [in] API version requested
-    zes_driver_exp_dditable_t* pDdiTable            ///< [in,out] pointer to table of DDI function pointers
-    )
+/// @brief function for filling the legacy api pointers for DriverExp table
+__zedlllocal void ZE_APICALL
+zesGetDriverExpProcAddrTableLegacy()
 {
-    if( loader::context->sysmanInstanceDrivers->size() < 1 ) {
-        return ZE_RESULT_ERROR_UNINITIALIZED;
-    }
-
-    if( nullptr == pDdiTable )
-        return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
-
-    if( loader::context->version < version )
-        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-
-    ze_result_t result = ZE_RESULT_SUCCESS;
-
-    // Load the device-driver DDI tables
-    for( auto& drv : *loader::context->sysmanInstanceDrivers )
-    {
-        if(drv.initStatus != ZE_RESULT_SUCCESS)
-            continue;
-        auto getTable = reinterpret_cast<zes_pfnGetDriverExpProcAddrTable_t>(
-            GET_FUNCTION_PTR( drv.handle, "zesGetDriverExpProcAddrTable") );
-        if(!getTable) 
-            continue; 
-        result = getTable( version, &drv.dditable.zes.DriverExp);
-    }
-
-
-    if( ZE_RESULT_SUCCESS == result )
-    {
-        if( ( loader::context->sysmanInstanceDrivers->size() > 1 ) || loader::context->forceIntercept )
-        {
-            // return pointers to loader's DDIs
-            loader::loaderDispatch->pSysman->DriverExp = new zes_driver_exp_dditable_t;
-            pDdiTable->pfnGetDeviceByUuidExp                       = loader::zesDriverGetDeviceByUuidExp;
-            zesGetDriverExpProcAddrTableLegacy();
-        }
-        else
-        {
-            // return pointers directly to driver's DDIs
-            *pDdiTable = loader::context->sysmanInstanceDrivers->front().dditable.zes.DriverExp;
-        }
-    }
-
-    // If the validation layer is enabled, then intercept the loader's DDIs
-    if(( ZE_RESULT_SUCCESS == result ) && ( nullptr != loader::context->validationLayer ))
-    {
-        auto getTable = reinterpret_cast<zes_pfnGetDriverExpProcAddrTable_t>(
-            GET_FUNCTION_PTR(loader::context->validationLayer, "zesGetDriverExpProcAddrTable") );
-        if(!getTable)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        result = getTable( version, pDdiTable );
-    }
-
-    return result;
+    // return pointers to the Loader's Functions.
+    loader::loaderDispatch->pSysman->DriverExp->pfnGetDeviceByUuidExp                       = loader_legacy::zesDriverGetDeviceByUuidExp;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Exported function for filling application's Diagnostics table
-///        with current process' addresses
-///
-/// @returns
-///     - ::ZE_RESULT_SUCCESS
-///     - ::ZE_RESULT_ERROR_UNINITIALIZED
-///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
-///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
-ZE_DLLEXPORT ze_result_t ZE_APICALL
-zesGetDiagnosticsProcAddrTable(
-    ze_api_version_t version,                       ///< [in] API version requested
-    zes_diagnostics_dditable_t* pDdiTable           ///< [in,out] pointer to table of DDI function pointers
-    )
+/// @brief function for filling the legacy api pointers for Diagnostics table
+__zedlllocal void ZE_APICALL
+zesGetDiagnosticsProcAddrTableLegacy()
 {
-    if( loader::context->sysmanInstanceDrivers->size() < 1 ) {
-        return ZE_RESULT_ERROR_UNINITIALIZED;
-    }
-
-    if( nullptr == pDdiTable )
-        return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
-
-    if( loader::context->version < version )
-        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-
-    ze_result_t result = ZE_RESULT_SUCCESS;
-
-    bool atLeastOneDriverValid = false;
-    // Load the device-driver DDI tables
-    for( auto& drv : *loader::context->sysmanInstanceDrivers )
-    {
-        if(drv.initStatus != ZE_RESULT_SUCCESS)
-            continue;
-        auto getTable = reinterpret_cast<zes_pfnGetDiagnosticsProcAddrTable_t>(
-            GET_FUNCTION_PTR( drv.handle, "zesGetDiagnosticsProcAddrTable") );
-        if(!getTable) 
-            continue; 
-        auto getTableResult = getTable( version, &drv.dditable.zes.Diagnostics);
-        if(getTableResult == ZE_RESULT_SUCCESS) 
-            atLeastOneDriverValid = true;
-        else
-            drv.initStatus = getTableResult;
-    }
-
-    if(!atLeastOneDriverValid)
-        result = ZE_RESULT_ERROR_UNINITIALIZED;
-    else
-        result = ZE_RESULT_SUCCESS;
-
-    if( ZE_RESULT_SUCCESS == result )
-    {
-        if( ( loader::context->sysmanInstanceDrivers->size() > 1 ) || loader::context->forceIntercept )
-        {
-            // return pointers to loader's DDIs
-            loader::loaderDispatch->pSysman->Diagnostics = new zes_diagnostics_dditable_t;
-            pDdiTable->pfnGetProperties                            = loader::zesDiagnosticsGetProperties;
-            pDdiTable->pfnGetTests                                 = loader::zesDiagnosticsGetTests;
-            pDdiTable->pfnRunTests                                 = loader::zesDiagnosticsRunTests;
-            zesGetDiagnosticsProcAddrTableLegacy();
-        }
-        else
-        {
-            // return pointers directly to driver's DDIs
-            *pDdiTable = loader::context->sysmanInstanceDrivers->front().dditable.zes.Diagnostics;
-        }
-    }
-
-    // If the validation layer is enabled, then intercept the loader's DDIs
-    if(( ZE_RESULT_SUCCESS == result ) && ( nullptr != loader::context->validationLayer ))
-    {
-        auto getTable = reinterpret_cast<zes_pfnGetDiagnosticsProcAddrTable_t>(
-            GET_FUNCTION_PTR(loader::context->validationLayer, "zesGetDiagnosticsProcAddrTable") );
-        if(!getTable)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        result = getTable( version, pDdiTable );
-    }
-
-    return result;
+    // return pointers to the Loader's Functions.
+    loader::loaderDispatch->pSysman->Diagnostics->pfnGetProperties                            = loader_legacy::zesDiagnosticsGetProperties;
+    loader::loaderDispatch->pSysman->Diagnostics->pfnGetTests                                 = loader_legacy::zesDiagnosticsGetTests;
+    loader::loaderDispatch->pSysman->Diagnostics->pfnRunTests                                 = loader_legacy::zesDiagnosticsRunTests;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Exported function for filling application's Engine table
-///        with current process' addresses
-///
-/// @returns
-///     - ::ZE_RESULT_SUCCESS
-///     - ::ZE_RESULT_ERROR_UNINITIALIZED
-///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
-///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
-ZE_DLLEXPORT ze_result_t ZE_APICALL
-zesGetEngineProcAddrTable(
-    ze_api_version_t version,                       ///< [in] API version requested
-    zes_engine_dditable_t* pDdiTable                ///< [in,out] pointer to table of DDI function pointers
-    )
+/// @brief function for filling the legacy api pointers for Engine table
+__zedlllocal void ZE_APICALL
+zesGetEngineProcAddrTableLegacy()
 {
-    if( loader::context->sysmanInstanceDrivers->size() < 1 ) {
-        return ZE_RESULT_ERROR_UNINITIALIZED;
-    }
-
-    if( nullptr == pDdiTable )
-        return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
-
-    if( loader::context->version < version )
-        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-
-    ze_result_t result = ZE_RESULT_SUCCESS;
-
-    bool atLeastOneDriverValid = false;
-    // Load the device-driver DDI tables
-    for( auto& drv : *loader::context->sysmanInstanceDrivers )
-    {
-        if(drv.initStatus != ZE_RESULT_SUCCESS)
-            continue;
-        auto getTable = reinterpret_cast<zes_pfnGetEngineProcAddrTable_t>(
-            GET_FUNCTION_PTR( drv.handle, "zesGetEngineProcAddrTable") );
-        if(!getTable) 
-            continue; 
-        auto getTableResult = getTable( version, &drv.dditable.zes.Engine);
-        if(getTableResult == ZE_RESULT_SUCCESS) 
-            atLeastOneDriverValid = true;
-        else
-            drv.initStatus = getTableResult;
-    }
-
-    if(!atLeastOneDriverValid)
-        result = ZE_RESULT_ERROR_UNINITIALIZED;
-    else
-        result = ZE_RESULT_SUCCESS;
-
-    if( ZE_RESULT_SUCCESS == result )
-    {
-        if( ( loader::context->sysmanInstanceDrivers->size() > 1 ) || loader::context->forceIntercept )
-        {
-            // return pointers to loader's DDIs
-            loader::loaderDispatch->pSysman->Engine = new zes_engine_dditable_t;
-            pDdiTable->pfnGetProperties                            = loader::zesEngineGetProperties;
-            pDdiTable->pfnGetActivity                              = loader::zesEngineGetActivity;
-            pDdiTable->pfnGetActivityExt                           = loader::zesEngineGetActivityExt;
-            zesGetEngineProcAddrTableLegacy();
-        }
-        else
-        {
-            // return pointers directly to driver's DDIs
-            *pDdiTable = loader::context->sysmanInstanceDrivers->front().dditable.zes.Engine;
-        }
-    }
-
-    // If the validation layer is enabled, then intercept the loader's DDIs
-    if(( ZE_RESULT_SUCCESS == result ) && ( nullptr != loader::context->validationLayer ))
-    {
-        auto getTable = reinterpret_cast<zes_pfnGetEngineProcAddrTable_t>(
-            GET_FUNCTION_PTR(loader::context->validationLayer, "zesGetEngineProcAddrTable") );
-        if(!getTable)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        result = getTable( version, pDdiTable );
-    }
-
-    return result;
+    // return pointers to the Loader's Functions.
+    loader::loaderDispatch->pSysman->Engine->pfnGetProperties                            = loader_legacy::zesEngineGetProperties;
+    loader::loaderDispatch->pSysman->Engine->pfnGetActivity                              = loader_legacy::zesEngineGetActivity;
+    loader::loaderDispatch->pSysman->Engine->pfnGetActivityExt                           = loader_legacy::zesEngineGetActivityExt;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Exported function for filling application's FabricPort table
-///        with current process' addresses
-///
-/// @returns
-///     - ::ZE_RESULT_SUCCESS
-///     - ::ZE_RESULT_ERROR_UNINITIALIZED
-///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
-///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
-ZE_DLLEXPORT ze_result_t ZE_APICALL
-zesGetFabricPortProcAddrTable(
-    ze_api_version_t version,                       ///< [in] API version requested
-    zes_fabric_port_dditable_t* pDdiTable           ///< [in,out] pointer to table of DDI function pointers
-    )
+/// @brief function for filling the legacy api pointers for FabricPort table
+__zedlllocal void ZE_APICALL
+zesGetFabricPortProcAddrTableLegacy()
 {
-    if( loader::context->sysmanInstanceDrivers->size() < 1 ) {
-        return ZE_RESULT_ERROR_UNINITIALIZED;
-    }
-
-    if( nullptr == pDdiTable )
-        return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
-
-    if( loader::context->version < version )
-        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-
-    ze_result_t result = ZE_RESULT_SUCCESS;
-
-    bool atLeastOneDriverValid = false;
-    // Load the device-driver DDI tables
-    for( auto& drv : *loader::context->sysmanInstanceDrivers )
-    {
-        if(drv.initStatus != ZE_RESULT_SUCCESS)
-            continue;
-        auto getTable = reinterpret_cast<zes_pfnGetFabricPortProcAddrTable_t>(
-            GET_FUNCTION_PTR( drv.handle, "zesGetFabricPortProcAddrTable") );
-        if(!getTable) 
-            continue; 
-        auto getTableResult = getTable( version, &drv.dditable.zes.FabricPort);
-        if(getTableResult == ZE_RESULT_SUCCESS) 
-            atLeastOneDriverValid = true;
-        else
-            drv.initStatus = getTableResult;
-    }
-
-    if(!atLeastOneDriverValid)
-        result = ZE_RESULT_ERROR_UNINITIALIZED;
-    else
-        result = ZE_RESULT_SUCCESS;
-
-    if( ZE_RESULT_SUCCESS == result )
-    {
-        if( ( loader::context->sysmanInstanceDrivers->size() > 1 ) || loader::context->forceIntercept )
-        {
-            // return pointers to loader's DDIs
-            loader::loaderDispatch->pSysman->FabricPort = new zes_fabric_port_dditable_t;
-            pDdiTable->pfnGetProperties                            = loader::zesFabricPortGetProperties;
-            pDdiTable->pfnGetLinkType                              = loader::zesFabricPortGetLinkType;
-            pDdiTable->pfnGetConfig                                = loader::zesFabricPortGetConfig;
-            pDdiTable->pfnSetConfig                                = loader::zesFabricPortSetConfig;
-            pDdiTable->pfnGetState                                 = loader::zesFabricPortGetState;
-            pDdiTable->pfnGetThroughput                            = loader::zesFabricPortGetThroughput;
-            pDdiTable->pfnGetFabricErrorCounters                   = loader::zesFabricPortGetFabricErrorCounters;
-            pDdiTable->pfnGetMultiPortThroughput                   = loader::zesFabricPortGetMultiPortThroughput;
-            zesGetFabricPortProcAddrTableLegacy();
-        }
-        else
-        {
-            // return pointers directly to driver's DDIs
-            *pDdiTable = loader::context->sysmanInstanceDrivers->front().dditable.zes.FabricPort;
-        }
-    }
-
-    // If the validation layer is enabled, then intercept the loader's DDIs
-    if(( ZE_RESULT_SUCCESS == result ) && ( nullptr != loader::context->validationLayer ))
-    {
-        auto getTable = reinterpret_cast<zes_pfnGetFabricPortProcAddrTable_t>(
-            GET_FUNCTION_PTR(loader::context->validationLayer, "zesGetFabricPortProcAddrTable") );
-        if(!getTable)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        result = getTable( version, pDdiTable );
-    }
-
-    return result;
+    // return pointers to the Loader's Functions.
+    loader::loaderDispatch->pSysman->FabricPort->pfnGetProperties                            = loader_legacy::zesFabricPortGetProperties;
+    loader::loaderDispatch->pSysman->FabricPort->pfnGetLinkType                              = loader_legacy::zesFabricPortGetLinkType;
+    loader::loaderDispatch->pSysman->FabricPort->pfnGetConfig                                = loader_legacy::zesFabricPortGetConfig;
+    loader::loaderDispatch->pSysman->FabricPort->pfnSetConfig                                = loader_legacy::zesFabricPortSetConfig;
+    loader::loaderDispatch->pSysman->FabricPort->pfnGetState                                 = loader_legacy::zesFabricPortGetState;
+    loader::loaderDispatch->pSysman->FabricPort->pfnGetThroughput                            = loader_legacy::zesFabricPortGetThroughput;
+    loader::loaderDispatch->pSysman->FabricPort->pfnGetFabricErrorCounters                   = loader_legacy::zesFabricPortGetFabricErrorCounters;
+    loader::loaderDispatch->pSysman->FabricPort->pfnGetMultiPortThroughput                   = loader_legacy::zesFabricPortGetMultiPortThroughput;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Exported function for filling application's Fan table
-///        with current process' addresses
-///
-/// @returns
-///     - ::ZE_RESULT_SUCCESS
-///     - ::ZE_RESULT_ERROR_UNINITIALIZED
-///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
-///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
-ZE_DLLEXPORT ze_result_t ZE_APICALL
-zesGetFanProcAddrTable(
-    ze_api_version_t version,                       ///< [in] API version requested
-    zes_fan_dditable_t* pDdiTable                   ///< [in,out] pointer to table of DDI function pointers
-    )
+/// @brief function for filling the legacy api pointers for Fan table
+__zedlllocal void ZE_APICALL
+zesGetFanProcAddrTableLegacy()
 {
-    if( loader::context->sysmanInstanceDrivers->size() < 1 ) {
-        return ZE_RESULT_ERROR_UNINITIALIZED;
-    }
-
-    if( nullptr == pDdiTable )
-        return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
-
-    if( loader::context->version < version )
-        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-
-    ze_result_t result = ZE_RESULT_SUCCESS;
-
-    bool atLeastOneDriverValid = false;
-    // Load the device-driver DDI tables
-    for( auto& drv : *loader::context->sysmanInstanceDrivers )
-    {
-        if(drv.initStatus != ZE_RESULT_SUCCESS)
-            continue;
-        auto getTable = reinterpret_cast<zes_pfnGetFanProcAddrTable_t>(
-            GET_FUNCTION_PTR( drv.handle, "zesGetFanProcAddrTable") );
-        if(!getTable) 
-            continue; 
-        auto getTableResult = getTable( version, &drv.dditable.zes.Fan);
-        if(getTableResult == ZE_RESULT_SUCCESS) 
-            atLeastOneDriverValid = true;
-        else
-            drv.initStatus = getTableResult;
-    }
-
-    if(!atLeastOneDriverValid)
-        result = ZE_RESULT_ERROR_UNINITIALIZED;
-    else
-        result = ZE_RESULT_SUCCESS;
-
-    if( ZE_RESULT_SUCCESS == result )
-    {
-        if( ( loader::context->sysmanInstanceDrivers->size() > 1 ) || loader::context->forceIntercept )
-        {
-            // return pointers to loader's DDIs
-            loader::loaderDispatch->pSysman->Fan = new zes_fan_dditable_t;
-            pDdiTable->pfnGetProperties                            = loader::zesFanGetProperties;
-            pDdiTable->pfnGetConfig                                = loader::zesFanGetConfig;
-            pDdiTable->pfnSetDefaultMode                           = loader::zesFanSetDefaultMode;
-            pDdiTable->pfnSetFixedSpeedMode                        = loader::zesFanSetFixedSpeedMode;
-            pDdiTable->pfnSetSpeedTableMode                        = loader::zesFanSetSpeedTableMode;
-            pDdiTable->pfnGetState                                 = loader::zesFanGetState;
-            zesGetFanProcAddrTableLegacy();
-        }
-        else
-        {
-            // return pointers directly to driver's DDIs
-            *pDdiTable = loader::context->sysmanInstanceDrivers->front().dditable.zes.Fan;
-        }
-    }
-
-    // If the validation layer is enabled, then intercept the loader's DDIs
-    if(( ZE_RESULT_SUCCESS == result ) && ( nullptr != loader::context->validationLayer ))
-    {
-        auto getTable = reinterpret_cast<zes_pfnGetFanProcAddrTable_t>(
-            GET_FUNCTION_PTR(loader::context->validationLayer, "zesGetFanProcAddrTable") );
-        if(!getTable)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        result = getTable( version, pDdiTable );
-    }
-
-    return result;
+    // return pointers to the Loader's Functions.
+    loader::loaderDispatch->pSysman->Fan->pfnGetProperties                            = loader_legacy::zesFanGetProperties;
+    loader::loaderDispatch->pSysman->Fan->pfnGetConfig                                = loader_legacy::zesFanGetConfig;
+    loader::loaderDispatch->pSysman->Fan->pfnSetDefaultMode                           = loader_legacy::zesFanSetDefaultMode;
+    loader::loaderDispatch->pSysman->Fan->pfnSetFixedSpeedMode                        = loader_legacy::zesFanSetFixedSpeedMode;
+    loader::loaderDispatch->pSysman->Fan->pfnSetSpeedTableMode                        = loader_legacy::zesFanSetSpeedTableMode;
+    loader::loaderDispatch->pSysman->Fan->pfnGetState                                 = loader_legacy::zesFanGetState;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Exported function for filling application's Firmware table
-///        with current process' addresses
-///
-/// @returns
-///     - ::ZE_RESULT_SUCCESS
-///     - ::ZE_RESULT_ERROR_UNINITIALIZED
-///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
-///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
-ZE_DLLEXPORT ze_result_t ZE_APICALL
-zesGetFirmwareProcAddrTable(
-    ze_api_version_t version,                       ///< [in] API version requested
-    zes_firmware_dditable_t* pDdiTable              ///< [in,out] pointer to table of DDI function pointers
-    )
+/// @brief function for filling the legacy api pointers for Firmware table
+__zedlllocal void ZE_APICALL
+zesGetFirmwareProcAddrTableLegacy()
 {
-    if( loader::context->sysmanInstanceDrivers->size() < 1 ) {
-        return ZE_RESULT_ERROR_UNINITIALIZED;
-    }
-
-    if( nullptr == pDdiTable )
-        return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
-
-    if( loader::context->version < version )
-        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-
-    ze_result_t result = ZE_RESULT_SUCCESS;
-
-    bool atLeastOneDriverValid = false;
-    // Load the device-driver DDI tables
-    for( auto& drv : *loader::context->sysmanInstanceDrivers )
-    {
-        if(drv.initStatus != ZE_RESULT_SUCCESS)
-            continue;
-        auto getTable = reinterpret_cast<zes_pfnGetFirmwareProcAddrTable_t>(
-            GET_FUNCTION_PTR( drv.handle, "zesGetFirmwareProcAddrTable") );
-        if(!getTable) 
-            continue; 
-        auto getTableResult = getTable( version, &drv.dditable.zes.Firmware);
-        if(getTableResult == ZE_RESULT_SUCCESS) 
-            atLeastOneDriverValid = true;
-        else
-            drv.initStatus = getTableResult;
-    }
-
-    if(!atLeastOneDriverValid)
-        result = ZE_RESULT_ERROR_UNINITIALIZED;
-    else
-        result = ZE_RESULT_SUCCESS;
-
-    if( ZE_RESULT_SUCCESS == result )
-    {
-        if( ( loader::context->sysmanInstanceDrivers->size() > 1 ) || loader::context->forceIntercept )
-        {
-            // return pointers to loader's DDIs
-            loader::loaderDispatch->pSysman->Firmware = new zes_firmware_dditable_t;
-            pDdiTable->pfnGetProperties                            = loader::zesFirmwareGetProperties;
-            pDdiTable->pfnFlash                                    = loader::zesFirmwareFlash;
-            pDdiTable->pfnGetFlashProgress                         = loader::zesFirmwareGetFlashProgress;
-            pDdiTable->pfnGetConsoleLogs                           = loader::zesFirmwareGetConsoleLogs;
-            zesGetFirmwareProcAddrTableLegacy();
-        }
-        else
-        {
-            // return pointers directly to driver's DDIs
-            *pDdiTable = loader::context->sysmanInstanceDrivers->front().dditable.zes.Firmware;
-        }
-    }
-
-    // If the validation layer is enabled, then intercept the loader's DDIs
-    if(( ZE_RESULT_SUCCESS == result ) && ( nullptr != loader::context->validationLayer ))
-    {
-        auto getTable = reinterpret_cast<zes_pfnGetFirmwareProcAddrTable_t>(
-            GET_FUNCTION_PTR(loader::context->validationLayer, "zesGetFirmwareProcAddrTable") );
-        if(!getTable)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        result = getTable( version, pDdiTable );
-    }
-
-    return result;
+    // return pointers to the Loader's Functions.
+    loader::loaderDispatch->pSysman->Firmware->pfnGetProperties                            = loader_legacy::zesFirmwareGetProperties;
+    loader::loaderDispatch->pSysman->Firmware->pfnFlash                                    = loader_legacy::zesFirmwareFlash;
+    loader::loaderDispatch->pSysman->Firmware->pfnGetFlashProgress                         = loader_legacy::zesFirmwareGetFlashProgress;
+    loader::loaderDispatch->pSysman->Firmware->pfnGetConsoleLogs                           = loader_legacy::zesFirmwareGetConsoleLogs;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Exported function for filling application's FirmwareExp table
-///        with current process' addresses
-///
-/// @returns
-///     - ::ZE_RESULT_SUCCESS
-///     - ::ZE_RESULT_ERROR_UNINITIALIZED
-///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
-///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
-ZE_DLLEXPORT ze_result_t ZE_APICALL
-zesGetFirmwareExpProcAddrTable(
-    ze_api_version_t version,                       ///< [in] API version requested
-    zes_firmware_exp_dditable_t* pDdiTable          ///< [in,out] pointer to table of DDI function pointers
-    )
+/// @brief function for filling the legacy api pointers for FirmwareExp table
+__zedlllocal void ZE_APICALL
+zesGetFirmwareExpProcAddrTableLegacy()
 {
-    if( loader::context->sysmanInstanceDrivers->size() < 1 ) {
-        return ZE_RESULT_ERROR_UNINITIALIZED;
-    }
-
-    if( nullptr == pDdiTable )
-        return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
-
-    if( loader::context->version < version )
-        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-
-    ze_result_t result = ZE_RESULT_SUCCESS;
-
-    // Load the device-driver DDI tables
-    for( auto& drv : *loader::context->sysmanInstanceDrivers )
-    {
-        if(drv.initStatus != ZE_RESULT_SUCCESS)
-            continue;
-        auto getTable = reinterpret_cast<zes_pfnGetFirmwareExpProcAddrTable_t>(
-            GET_FUNCTION_PTR( drv.handle, "zesGetFirmwareExpProcAddrTable") );
-        if(!getTable) 
-            continue; 
-        result = getTable( version, &drv.dditable.zes.FirmwareExp);
-    }
-
-
-    if( ZE_RESULT_SUCCESS == result )
-    {
-        if( ( loader::context->sysmanInstanceDrivers->size() > 1 ) || loader::context->forceIntercept )
-        {
-            // return pointers to loader's DDIs
-            loader::loaderDispatch->pSysman->FirmwareExp = new zes_firmware_exp_dditable_t;
-            pDdiTable->pfnGetSecurityVersionExp                    = loader::zesFirmwareGetSecurityVersionExp;
-            pDdiTable->pfnSetSecurityVersionExp                    = loader::zesFirmwareSetSecurityVersionExp;
-            zesGetFirmwareExpProcAddrTableLegacy();
-        }
-        else
-        {
-            // return pointers directly to driver's DDIs
-            *pDdiTable = loader::context->sysmanInstanceDrivers->front().dditable.zes.FirmwareExp;
-        }
-    }
-
-    // If the validation layer is enabled, then intercept the loader's DDIs
-    if(( ZE_RESULT_SUCCESS == result ) && ( nullptr != loader::context->validationLayer ))
-    {
-        auto getTable = reinterpret_cast<zes_pfnGetFirmwareExpProcAddrTable_t>(
-            GET_FUNCTION_PTR(loader::context->validationLayer, "zesGetFirmwareExpProcAddrTable") );
-        if(!getTable)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        result = getTable( version, pDdiTable );
-    }
-
-    return result;
+    // return pointers to the Loader's Functions.
+    loader::loaderDispatch->pSysman->FirmwareExp->pfnGetSecurityVersionExp                    = loader_legacy::zesFirmwareGetSecurityVersionExp;
+    loader::loaderDispatch->pSysman->FirmwareExp->pfnSetSecurityVersionExp                    = loader_legacy::zesFirmwareSetSecurityVersionExp;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Exported function for filling application's Frequency table
-///        with current process' addresses
-///
-/// @returns
-///     - ::ZE_RESULT_SUCCESS
-///     - ::ZE_RESULT_ERROR_UNINITIALIZED
-///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
-///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
-ZE_DLLEXPORT ze_result_t ZE_APICALL
-zesGetFrequencyProcAddrTable(
-    ze_api_version_t version,                       ///< [in] API version requested
-    zes_frequency_dditable_t* pDdiTable             ///< [in,out] pointer to table of DDI function pointers
-    )
+/// @brief function for filling the legacy api pointers for Frequency table
+__zedlllocal void ZE_APICALL
+zesGetFrequencyProcAddrTableLegacy()
 {
-    if( loader::context->sysmanInstanceDrivers->size() < 1 ) {
-        return ZE_RESULT_ERROR_UNINITIALIZED;
-    }
-
-    if( nullptr == pDdiTable )
-        return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
-
-    if( loader::context->version < version )
-        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-
-    ze_result_t result = ZE_RESULT_SUCCESS;
-
-    bool atLeastOneDriverValid = false;
-    // Load the device-driver DDI tables
-    for( auto& drv : *loader::context->sysmanInstanceDrivers )
-    {
-        if(drv.initStatus != ZE_RESULT_SUCCESS)
-            continue;
-        auto getTable = reinterpret_cast<zes_pfnGetFrequencyProcAddrTable_t>(
-            GET_FUNCTION_PTR( drv.handle, "zesGetFrequencyProcAddrTable") );
-        if(!getTable) 
-            continue; 
-        auto getTableResult = getTable( version, &drv.dditable.zes.Frequency);
-        if(getTableResult == ZE_RESULT_SUCCESS) 
-            atLeastOneDriverValid = true;
-        else
-            drv.initStatus = getTableResult;
-    }
-
-    if(!atLeastOneDriverValid)
-        result = ZE_RESULT_ERROR_UNINITIALIZED;
-    else
-        result = ZE_RESULT_SUCCESS;
-
-    if( ZE_RESULT_SUCCESS == result )
-    {
-        if( ( loader::context->sysmanInstanceDrivers->size() > 1 ) || loader::context->forceIntercept )
-        {
-            // return pointers to loader's DDIs
-            loader::loaderDispatch->pSysman->Frequency = new zes_frequency_dditable_t;
-            pDdiTable->pfnGetProperties                            = loader::zesFrequencyGetProperties;
-            pDdiTable->pfnGetAvailableClocks                       = loader::zesFrequencyGetAvailableClocks;
-            pDdiTable->pfnGetRange                                 = loader::zesFrequencyGetRange;
-            pDdiTable->pfnSetRange                                 = loader::zesFrequencySetRange;
-            pDdiTable->pfnGetState                                 = loader::zesFrequencyGetState;
-            pDdiTable->pfnGetThrottleTime                          = loader::zesFrequencyGetThrottleTime;
-            pDdiTable->pfnOcGetCapabilities                        = loader::zesFrequencyOcGetCapabilities;
-            pDdiTable->pfnOcGetFrequencyTarget                     = loader::zesFrequencyOcGetFrequencyTarget;
-            pDdiTable->pfnOcSetFrequencyTarget                     = loader::zesFrequencyOcSetFrequencyTarget;
-            pDdiTable->pfnOcGetVoltageTarget                       = loader::zesFrequencyOcGetVoltageTarget;
-            pDdiTable->pfnOcSetVoltageTarget                       = loader::zesFrequencyOcSetVoltageTarget;
-            pDdiTable->pfnOcSetMode                                = loader::zesFrequencyOcSetMode;
-            pDdiTable->pfnOcGetMode                                = loader::zesFrequencyOcGetMode;
-            pDdiTable->pfnOcGetIccMax                              = loader::zesFrequencyOcGetIccMax;
-            pDdiTable->pfnOcSetIccMax                              = loader::zesFrequencyOcSetIccMax;
-            pDdiTable->pfnOcGetTjMax                               = loader::zesFrequencyOcGetTjMax;
-            pDdiTable->pfnOcSetTjMax                               = loader::zesFrequencyOcSetTjMax;
-            zesGetFrequencyProcAddrTableLegacy();
-        }
-        else
-        {
-            // return pointers directly to driver's DDIs
-            *pDdiTable = loader::context->sysmanInstanceDrivers->front().dditable.zes.Frequency;
-        }
-    }
-
-    // If the validation layer is enabled, then intercept the loader's DDIs
-    if(( ZE_RESULT_SUCCESS == result ) && ( nullptr != loader::context->validationLayer ))
-    {
-        auto getTable = reinterpret_cast<zes_pfnGetFrequencyProcAddrTable_t>(
-            GET_FUNCTION_PTR(loader::context->validationLayer, "zesGetFrequencyProcAddrTable") );
-        if(!getTable)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        result = getTable( version, pDdiTable );
-    }
-
-    return result;
+    // return pointers to the Loader's Functions.
+    loader::loaderDispatch->pSysman->Frequency->pfnGetProperties                            = loader_legacy::zesFrequencyGetProperties;
+    loader::loaderDispatch->pSysman->Frequency->pfnGetAvailableClocks                       = loader_legacy::zesFrequencyGetAvailableClocks;
+    loader::loaderDispatch->pSysman->Frequency->pfnGetRange                                 = loader_legacy::zesFrequencyGetRange;
+    loader::loaderDispatch->pSysman->Frequency->pfnSetRange                                 = loader_legacy::zesFrequencySetRange;
+    loader::loaderDispatch->pSysman->Frequency->pfnGetState                                 = loader_legacy::zesFrequencyGetState;
+    loader::loaderDispatch->pSysman->Frequency->pfnGetThrottleTime                          = loader_legacy::zesFrequencyGetThrottleTime;
+    loader::loaderDispatch->pSysman->Frequency->pfnOcGetCapabilities                        = loader_legacy::zesFrequencyOcGetCapabilities;
+    loader::loaderDispatch->pSysman->Frequency->pfnOcGetFrequencyTarget                     = loader_legacy::zesFrequencyOcGetFrequencyTarget;
+    loader::loaderDispatch->pSysman->Frequency->pfnOcSetFrequencyTarget                     = loader_legacy::zesFrequencyOcSetFrequencyTarget;
+    loader::loaderDispatch->pSysman->Frequency->pfnOcGetVoltageTarget                       = loader_legacy::zesFrequencyOcGetVoltageTarget;
+    loader::loaderDispatch->pSysman->Frequency->pfnOcSetVoltageTarget                       = loader_legacy::zesFrequencyOcSetVoltageTarget;
+    loader::loaderDispatch->pSysman->Frequency->pfnOcSetMode                                = loader_legacy::zesFrequencyOcSetMode;
+    loader::loaderDispatch->pSysman->Frequency->pfnOcGetMode                                = loader_legacy::zesFrequencyOcGetMode;
+    loader::loaderDispatch->pSysman->Frequency->pfnOcGetIccMax                              = loader_legacy::zesFrequencyOcGetIccMax;
+    loader::loaderDispatch->pSysman->Frequency->pfnOcSetIccMax                              = loader_legacy::zesFrequencyOcSetIccMax;
+    loader::loaderDispatch->pSysman->Frequency->pfnOcGetTjMax                               = loader_legacy::zesFrequencyOcGetTjMax;
+    loader::loaderDispatch->pSysman->Frequency->pfnOcSetTjMax                               = loader_legacy::zesFrequencyOcSetTjMax;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Exported function for filling application's Led table
-///        with current process' addresses
-///
-/// @returns
-///     - ::ZE_RESULT_SUCCESS
-///     - ::ZE_RESULT_ERROR_UNINITIALIZED
-///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
-///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
-ZE_DLLEXPORT ze_result_t ZE_APICALL
-zesGetLedProcAddrTable(
-    ze_api_version_t version,                       ///< [in] API version requested
-    zes_led_dditable_t* pDdiTable                   ///< [in,out] pointer to table of DDI function pointers
-    )
+/// @brief function for filling the legacy api pointers for Led table
+__zedlllocal void ZE_APICALL
+zesGetLedProcAddrTableLegacy()
 {
-    if( loader::context->sysmanInstanceDrivers->size() < 1 ) {
-        return ZE_RESULT_ERROR_UNINITIALIZED;
-    }
-
-    if( nullptr == pDdiTable )
-        return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
-
-    if( loader::context->version < version )
-        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-
-    ze_result_t result = ZE_RESULT_SUCCESS;
-
-    bool atLeastOneDriverValid = false;
-    // Load the device-driver DDI tables
-    for( auto& drv : *loader::context->sysmanInstanceDrivers )
-    {
-        if(drv.initStatus != ZE_RESULT_SUCCESS)
-            continue;
-        auto getTable = reinterpret_cast<zes_pfnGetLedProcAddrTable_t>(
-            GET_FUNCTION_PTR( drv.handle, "zesGetLedProcAddrTable") );
-        if(!getTable) 
-            continue; 
-        auto getTableResult = getTable( version, &drv.dditable.zes.Led);
-        if(getTableResult == ZE_RESULT_SUCCESS) 
-            atLeastOneDriverValid = true;
-        else
-            drv.initStatus = getTableResult;
-    }
-
-    if(!atLeastOneDriverValid)
-        result = ZE_RESULT_ERROR_UNINITIALIZED;
-    else
-        result = ZE_RESULT_SUCCESS;
-
-    if( ZE_RESULT_SUCCESS == result )
-    {
-        if( ( loader::context->sysmanInstanceDrivers->size() > 1 ) || loader::context->forceIntercept )
-        {
-            // return pointers to loader's DDIs
-            loader::loaderDispatch->pSysman->Led = new zes_led_dditable_t;
-            pDdiTable->pfnGetProperties                            = loader::zesLedGetProperties;
-            pDdiTable->pfnGetState                                 = loader::zesLedGetState;
-            pDdiTable->pfnSetState                                 = loader::zesLedSetState;
-            pDdiTable->pfnSetColor                                 = loader::zesLedSetColor;
-            zesGetLedProcAddrTableLegacy();
-        }
-        else
-        {
-            // return pointers directly to driver's DDIs
-            *pDdiTable = loader::context->sysmanInstanceDrivers->front().dditable.zes.Led;
-        }
-    }
-
-    // If the validation layer is enabled, then intercept the loader's DDIs
-    if(( ZE_RESULT_SUCCESS == result ) && ( nullptr != loader::context->validationLayer ))
-    {
-        auto getTable = reinterpret_cast<zes_pfnGetLedProcAddrTable_t>(
-            GET_FUNCTION_PTR(loader::context->validationLayer, "zesGetLedProcAddrTable") );
-        if(!getTable)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        result = getTable( version, pDdiTable );
-    }
-
-    return result;
+    // return pointers to the Loader's Functions.
+    loader::loaderDispatch->pSysman->Led->pfnGetProperties                            = loader_legacy::zesLedGetProperties;
+    loader::loaderDispatch->pSysman->Led->pfnGetState                                 = loader_legacy::zesLedGetState;
+    loader::loaderDispatch->pSysman->Led->pfnSetState                                 = loader_legacy::zesLedSetState;
+    loader::loaderDispatch->pSysman->Led->pfnSetColor                                 = loader_legacy::zesLedSetColor;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Exported function for filling application's Memory table
-///        with current process' addresses
-///
-/// @returns
-///     - ::ZE_RESULT_SUCCESS
-///     - ::ZE_RESULT_ERROR_UNINITIALIZED
-///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
-///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
-ZE_DLLEXPORT ze_result_t ZE_APICALL
-zesGetMemoryProcAddrTable(
-    ze_api_version_t version,                       ///< [in] API version requested
-    zes_memory_dditable_t* pDdiTable                ///< [in,out] pointer to table of DDI function pointers
-    )
+/// @brief function for filling the legacy api pointers for Memory table
+__zedlllocal void ZE_APICALL
+zesGetMemoryProcAddrTableLegacy()
 {
-    if( loader::context->sysmanInstanceDrivers->size() < 1 ) {
-        return ZE_RESULT_ERROR_UNINITIALIZED;
-    }
-
-    if( nullptr == pDdiTable )
-        return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
-
-    if( loader::context->version < version )
-        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-
-    ze_result_t result = ZE_RESULT_SUCCESS;
-
-    bool atLeastOneDriverValid = false;
-    // Load the device-driver DDI tables
-    for( auto& drv : *loader::context->sysmanInstanceDrivers )
-    {
-        if(drv.initStatus != ZE_RESULT_SUCCESS)
-            continue;
-        auto getTable = reinterpret_cast<zes_pfnGetMemoryProcAddrTable_t>(
-            GET_FUNCTION_PTR( drv.handle, "zesGetMemoryProcAddrTable") );
-        if(!getTable) 
-            continue; 
-        auto getTableResult = getTable( version, &drv.dditable.zes.Memory);
-        if(getTableResult == ZE_RESULT_SUCCESS) 
-            atLeastOneDriverValid = true;
-        else
-            drv.initStatus = getTableResult;
-    }
-
-    if(!atLeastOneDriverValid)
-        result = ZE_RESULT_ERROR_UNINITIALIZED;
-    else
-        result = ZE_RESULT_SUCCESS;
-
-    if( ZE_RESULT_SUCCESS == result )
-    {
-        if( ( loader::context->sysmanInstanceDrivers->size() > 1 ) || loader::context->forceIntercept )
-        {
-            // return pointers to loader's DDIs
-            loader::loaderDispatch->pSysman->Memory = new zes_memory_dditable_t;
-            pDdiTable->pfnGetProperties                            = loader::zesMemoryGetProperties;
-            pDdiTable->pfnGetState                                 = loader::zesMemoryGetState;
-            pDdiTable->pfnGetBandwidth                             = loader::zesMemoryGetBandwidth;
-            zesGetMemoryProcAddrTableLegacy();
-        }
-        else
-        {
-            // return pointers directly to driver's DDIs
-            *pDdiTable = loader::context->sysmanInstanceDrivers->front().dditable.zes.Memory;
-        }
-    }
-
-    // If the validation layer is enabled, then intercept the loader's DDIs
-    if(( ZE_RESULT_SUCCESS == result ) && ( nullptr != loader::context->validationLayer ))
-    {
-        auto getTable = reinterpret_cast<zes_pfnGetMemoryProcAddrTable_t>(
-            GET_FUNCTION_PTR(loader::context->validationLayer, "zesGetMemoryProcAddrTable") );
-        if(!getTable)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        result = getTable( version, pDdiTable );
-    }
-
-    return result;
+    // return pointers to the Loader's Functions.
+    loader::loaderDispatch->pSysman->Memory->pfnGetProperties                            = loader_legacy::zesMemoryGetProperties;
+    loader::loaderDispatch->pSysman->Memory->pfnGetState                                 = loader_legacy::zesMemoryGetState;
+    loader::loaderDispatch->pSysman->Memory->pfnGetBandwidth                             = loader_legacy::zesMemoryGetBandwidth;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Exported function for filling application's Overclock table
-///        with current process' addresses
-///
-/// @returns
-///     - ::ZE_RESULT_SUCCESS
-///     - ::ZE_RESULT_ERROR_UNINITIALIZED
-///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
-///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
-ZE_DLLEXPORT ze_result_t ZE_APICALL
-zesGetOverclockProcAddrTable(
-    ze_api_version_t version,                       ///< [in] API version requested
-    zes_overclock_dditable_t* pDdiTable             ///< [in,out] pointer to table of DDI function pointers
-    )
+/// @brief function for filling the legacy api pointers for Overclock table
+__zedlllocal void ZE_APICALL
+zesGetOverclockProcAddrTableLegacy()
 {
-    if( loader::context->sysmanInstanceDrivers->size() < 1 ) {
-        return ZE_RESULT_ERROR_UNINITIALIZED;
-    }
-
-    if( nullptr == pDdiTable )
-        return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
-
-    if( loader::context->version < version )
-        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-
-    ze_result_t result = ZE_RESULT_SUCCESS;
-
-    bool atLeastOneDriverValid = false;
-    // Load the device-driver DDI tables
-    for( auto& drv : *loader::context->sysmanInstanceDrivers )
-    {
-        if(drv.initStatus != ZE_RESULT_SUCCESS)
-            continue;
-        auto getTable = reinterpret_cast<zes_pfnGetOverclockProcAddrTable_t>(
-            GET_FUNCTION_PTR( drv.handle, "zesGetOverclockProcAddrTable") );
-        if(!getTable) 
-        {
-            atLeastOneDriverValid = true;
-            //It is valid to not have this proc addr table
-            continue; 
-        }
-        auto getTableResult = getTable( version, &drv.dditable.zes.Overclock);
-        if(getTableResult == ZE_RESULT_SUCCESS) 
-            atLeastOneDriverValid = true;
-        else
-            drv.initStatus = getTableResult;
-    }
-
-    if(!atLeastOneDriverValid)
-        result = ZE_RESULT_ERROR_UNINITIALIZED;
-    else
-        result = ZE_RESULT_SUCCESS;
-
-    if( ZE_RESULT_SUCCESS == result )
-    {
-        if( ( loader::context->sysmanInstanceDrivers->size() > 1 ) || loader::context->forceIntercept )
-        {
-            // return pointers to loader's DDIs
-            loader::loaderDispatch->pSysman->Overclock = new zes_overclock_dditable_t;
-            pDdiTable->pfnGetDomainProperties                      = loader::zesOverclockGetDomainProperties;
-            pDdiTable->pfnGetDomainVFProperties                    = loader::zesOverclockGetDomainVFProperties;
-            pDdiTable->pfnGetDomainControlProperties               = loader::zesOverclockGetDomainControlProperties;
-            pDdiTable->pfnGetControlCurrentValue                   = loader::zesOverclockGetControlCurrentValue;
-            pDdiTable->pfnGetControlPendingValue                   = loader::zesOverclockGetControlPendingValue;
-            pDdiTable->pfnSetControlUserValue                      = loader::zesOverclockSetControlUserValue;
-            pDdiTable->pfnGetControlState                          = loader::zesOverclockGetControlState;
-            pDdiTable->pfnGetVFPointValues                         = loader::zesOverclockGetVFPointValues;
-            pDdiTable->pfnSetVFPointValues                         = loader::zesOverclockSetVFPointValues;
-            zesGetOverclockProcAddrTableLegacy();
-        }
-        else
-        {
-            // return pointers directly to driver's DDIs
-            *pDdiTable = loader::context->sysmanInstanceDrivers->front().dditable.zes.Overclock;
-        }
-    }
-
-    // If the validation layer is enabled, then intercept the loader's DDIs
-    if(( ZE_RESULT_SUCCESS == result ) && ( nullptr != loader::context->validationLayer ))
-    {
-        auto getTable = reinterpret_cast<zes_pfnGetOverclockProcAddrTable_t>(
-            GET_FUNCTION_PTR(loader::context->validationLayer, "zesGetOverclockProcAddrTable") );
-        if(!getTable)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        result = getTable( version, pDdiTable );
-    }
-
-    return result;
+    // return pointers to the Loader's Functions.
+    loader::loaderDispatch->pSysman->Overclock->pfnGetDomainProperties                      = loader_legacy::zesOverclockGetDomainProperties;
+    loader::loaderDispatch->pSysman->Overclock->pfnGetDomainVFProperties                    = loader_legacy::zesOverclockGetDomainVFProperties;
+    loader::loaderDispatch->pSysman->Overclock->pfnGetDomainControlProperties               = loader_legacy::zesOverclockGetDomainControlProperties;
+    loader::loaderDispatch->pSysman->Overclock->pfnGetControlCurrentValue                   = loader_legacy::zesOverclockGetControlCurrentValue;
+    loader::loaderDispatch->pSysman->Overclock->pfnGetControlPendingValue                   = loader_legacy::zesOverclockGetControlPendingValue;
+    loader::loaderDispatch->pSysman->Overclock->pfnSetControlUserValue                      = loader_legacy::zesOverclockSetControlUserValue;
+    loader::loaderDispatch->pSysman->Overclock->pfnGetControlState                          = loader_legacy::zesOverclockGetControlState;
+    loader::loaderDispatch->pSysman->Overclock->pfnGetVFPointValues                         = loader_legacy::zesOverclockGetVFPointValues;
+    loader::loaderDispatch->pSysman->Overclock->pfnSetVFPointValues                         = loader_legacy::zesOverclockSetVFPointValues;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Exported function for filling application's PerformanceFactor table
-///        with current process' addresses
-///
-/// @returns
-///     - ::ZE_RESULT_SUCCESS
-///     - ::ZE_RESULT_ERROR_UNINITIALIZED
-///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
-///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
-ZE_DLLEXPORT ze_result_t ZE_APICALL
-zesGetPerformanceFactorProcAddrTable(
-    ze_api_version_t version,                       ///< [in] API version requested
-    zes_performance_factor_dditable_t* pDdiTable    ///< [in,out] pointer to table of DDI function pointers
-    )
+/// @brief function for filling the legacy api pointers for PerformanceFactor table
+__zedlllocal void ZE_APICALL
+zesGetPerformanceFactorProcAddrTableLegacy()
 {
-    if( loader::context->sysmanInstanceDrivers->size() < 1 ) {
-        return ZE_RESULT_ERROR_UNINITIALIZED;
-    }
-
-    if( nullptr == pDdiTable )
-        return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
-
-    if( loader::context->version < version )
-        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-
-    ze_result_t result = ZE_RESULT_SUCCESS;
-
-    bool atLeastOneDriverValid = false;
-    // Load the device-driver DDI tables
-    for( auto& drv : *loader::context->sysmanInstanceDrivers )
-    {
-        if(drv.initStatus != ZE_RESULT_SUCCESS)
-            continue;
-        auto getTable = reinterpret_cast<zes_pfnGetPerformanceFactorProcAddrTable_t>(
-            GET_FUNCTION_PTR( drv.handle, "zesGetPerformanceFactorProcAddrTable") );
-        if(!getTable) 
-            continue; 
-        auto getTableResult = getTable( version, &drv.dditable.zes.PerformanceFactor);
-        if(getTableResult == ZE_RESULT_SUCCESS) 
-            atLeastOneDriverValid = true;
-        else
-            drv.initStatus = getTableResult;
-    }
-
-    if(!atLeastOneDriverValid)
-        result = ZE_RESULT_ERROR_UNINITIALIZED;
-    else
-        result = ZE_RESULT_SUCCESS;
-
-    if( ZE_RESULT_SUCCESS == result )
-    {
-        if( ( loader::context->sysmanInstanceDrivers->size() > 1 ) || loader::context->forceIntercept )
-        {
-            // return pointers to loader's DDIs
-            loader::loaderDispatch->pSysman->PerformanceFactor = new zes_performance_factor_dditable_t;
-            pDdiTable->pfnGetProperties                            = loader::zesPerformanceFactorGetProperties;
-            pDdiTable->pfnGetConfig                                = loader::zesPerformanceFactorGetConfig;
-            pDdiTable->pfnSetConfig                                = loader::zesPerformanceFactorSetConfig;
-            zesGetPerformanceFactorProcAddrTableLegacy();
-        }
-        else
-        {
-            // return pointers directly to driver's DDIs
-            *pDdiTable = loader::context->sysmanInstanceDrivers->front().dditable.zes.PerformanceFactor;
-        }
-    }
-
-    // If the validation layer is enabled, then intercept the loader's DDIs
-    if(( ZE_RESULT_SUCCESS == result ) && ( nullptr != loader::context->validationLayer ))
-    {
-        auto getTable = reinterpret_cast<zes_pfnGetPerformanceFactorProcAddrTable_t>(
-            GET_FUNCTION_PTR(loader::context->validationLayer, "zesGetPerformanceFactorProcAddrTable") );
-        if(!getTable)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        result = getTable( version, pDdiTable );
-    }
-
-    return result;
+    // return pointers to the Loader's Functions.
+    loader::loaderDispatch->pSysman->PerformanceFactor->pfnGetProperties                            = loader_legacy::zesPerformanceFactorGetProperties;
+    loader::loaderDispatch->pSysman->PerformanceFactor->pfnGetConfig                                = loader_legacy::zesPerformanceFactorGetConfig;
+    loader::loaderDispatch->pSysman->PerformanceFactor->pfnSetConfig                                = loader_legacy::zesPerformanceFactorSetConfig;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Exported function for filling application's Power table
-///        with current process' addresses
-///
-/// @returns
-///     - ::ZE_RESULT_SUCCESS
-///     - ::ZE_RESULT_ERROR_UNINITIALIZED
-///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
-///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
-ZE_DLLEXPORT ze_result_t ZE_APICALL
-zesGetPowerProcAddrTable(
-    ze_api_version_t version,                       ///< [in] API version requested
-    zes_power_dditable_t* pDdiTable                 ///< [in,out] pointer to table of DDI function pointers
-    )
+/// @brief function for filling the legacy api pointers for Power table
+__zedlllocal void ZE_APICALL
+zesGetPowerProcAddrTableLegacy()
 {
-    if( loader::context->sysmanInstanceDrivers->size() < 1 ) {
-        return ZE_RESULT_ERROR_UNINITIALIZED;
-    }
-
-    if( nullptr == pDdiTable )
-        return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
-
-    if( loader::context->version < version )
-        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-
-    ze_result_t result = ZE_RESULT_SUCCESS;
-
-    bool atLeastOneDriverValid = false;
-    // Load the device-driver DDI tables
-    for( auto& drv : *loader::context->sysmanInstanceDrivers )
-    {
-        if(drv.initStatus != ZE_RESULT_SUCCESS)
-            continue;
-        auto getTable = reinterpret_cast<zes_pfnGetPowerProcAddrTable_t>(
-            GET_FUNCTION_PTR( drv.handle, "zesGetPowerProcAddrTable") );
-        if(!getTable) 
-            continue; 
-        auto getTableResult = getTable( version, &drv.dditable.zes.Power);
-        if(getTableResult == ZE_RESULT_SUCCESS) 
-            atLeastOneDriverValid = true;
-        else
-            drv.initStatus = getTableResult;
-    }
-
-    if(!atLeastOneDriverValid)
-        result = ZE_RESULT_ERROR_UNINITIALIZED;
-    else
-        result = ZE_RESULT_SUCCESS;
-
-    if( ZE_RESULT_SUCCESS == result )
-    {
-        if( ( loader::context->sysmanInstanceDrivers->size() > 1 ) || loader::context->forceIntercept )
-        {
-            // return pointers to loader's DDIs
-            loader::loaderDispatch->pSysman->Power = new zes_power_dditable_t;
-            pDdiTable->pfnGetProperties                            = loader::zesPowerGetProperties;
-            pDdiTable->pfnGetEnergyCounter                         = loader::zesPowerGetEnergyCounter;
-            pDdiTable->pfnGetLimits                                = loader::zesPowerGetLimits;
-            pDdiTable->pfnSetLimits                                = loader::zesPowerSetLimits;
-            pDdiTable->pfnGetEnergyThreshold                       = loader::zesPowerGetEnergyThreshold;
-            pDdiTable->pfnSetEnergyThreshold                       = loader::zesPowerSetEnergyThreshold;
-            pDdiTable->pfnGetLimitsExt                             = loader::zesPowerGetLimitsExt;
-            pDdiTable->pfnSetLimitsExt                             = loader::zesPowerSetLimitsExt;
-            zesGetPowerProcAddrTableLegacy();
-        }
-        else
-        {
-            // return pointers directly to driver's DDIs
-            *pDdiTable = loader::context->sysmanInstanceDrivers->front().dditable.zes.Power;
-        }
-    }
-
-    // If the validation layer is enabled, then intercept the loader's DDIs
-    if(( ZE_RESULT_SUCCESS == result ) && ( nullptr != loader::context->validationLayer ))
-    {
-        auto getTable = reinterpret_cast<zes_pfnGetPowerProcAddrTable_t>(
-            GET_FUNCTION_PTR(loader::context->validationLayer, "zesGetPowerProcAddrTable") );
-        if(!getTable)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        result = getTable( version, pDdiTable );
-    }
-
-    return result;
+    // return pointers to the Loader's Functions.
+    loader::loaderDispatch->pSysman->Power->pfnGetProperties                            = loader_legacy::zesPowerGetProperties;
+    loader::loaderDispatch->pSysman->Power->pfnGetEnergyCounter                         = loader_legacy::zesPowerGetEnergyCounter;
+    loader::loaderDispatch->pSysman->Power->pfnGetLimits                                = loader_legacy::zesPowerGetLimits;
+    loader::loaderDispatch->pSysman->Power->pfnSetLimits                                = loader_legacy::zesPowerSetLimits;
+    loader::loaderDispatch->pSysman->Power->pfnGetEnergyThreshold                       = loader_legacy::zesPowerGetEnergyThreshold;
+    loader::loaderDispatch->pSysman->Power->pfnSetEnergyThreshold                       = loader_legacy::zesPowerSetEnergyThreshold;
+    loader::loaderDispatch->pSysman->Power->pfnGetLimitsExt                             = loader_legacy::zesPowerGetLimitsExt;
+    loader::loaderDispatch->pSysman->Power->pfnSetLimitsExt                             = loader_legacy::zesPowerSetLimitsExt;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Exported function for filling application's Psu table
-///        with current process' addresses
-///
-/// @returns
-///     - ::ZE_RESULT_SUCCESS
-///     - ::ZE_RESULT_ERROR_UNINITIALIZED
-///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
-///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
-ZE_DLLEXPORT ze_result_t ZE_APICALL
-zesGetPsuProcAddrTable(
-    ze_api_version_t version,                       ///< [in] API version requested
-    zes_psu_dditable_t* pDdiTable                   ///< [in,out] pointer to table of DDI function pointers
-    )
+/// @brief function for filling the legacy api pointers for Psu table
+__zedlllocal void ZE_APICALL
+zesGetPsuProcAddrTableLegacy()
 {
-    if( loader::context->sysmanInstanceDrivers->size() < 1 ) {
-        return ZE_RESULT_ERROR_UNINITIALIZED;
-    }
-
-    if( nullptr == pDdiTable )
-        return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
-
-    if( loader::context->version < version )
-        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-
-    ze_result_t result = ZE_RESULT_SUCCESS;
-
-    bool atLeastOneDriverValid = false;
-    // Load the device-driver DDI tables
-    for( auto& drv : *loader::context->sysmanInstanceDrivers )
-    {
-        if(drv.initStatus != ZE_RESULT_SUCCESS)
-            continue;
-        auto getTable = reinterpret_cast<zes_pfnGetPsuProcAddrTable_t>(
-            GET_FUNCTION_PTR( drv.handle, "zesGetPsuProcAddrTable") );
-        if(!getTable) 
-            continue; 
-        auto getTableResult = getTable( version, &drv.dditable.zes.Psu);
-        if(getTableResult == ZE_RESULT_SUCCESS) 
-            atLeastOneDriverValid = true;
-        else
-            drv.initStatus = getTableResult;
-    }
-
-    if(!atLeastOneDriverValid)
-        result = ZE_RESULT_ERROR_UNINITIALIZED;
-    else
-        result = ZE_RESULT_SUCCESS;
-
-    if( ZE_RESULT_SUCCESS == result )
-    {
-        if( ( loader::context->sysmanInstanceDrivers->size() > 1 ) || loader::context->forceIntercept )
-        {
-            // return pointers to loader's DDIs
-            loader::loaderDispatch->pSysman->Psu = new zes_psu_dditable_t;
-            pDdiTable->pfnGetProperties                            = loader::zesPsuGetProperties;
-            pDdiTable->pfnGetState                                 = loader::zesPsuGetState;
-            zesGetPsuProcAddrTableLegacy();
-        }
-        else
-        {
-            // return pointers directly to driver's DDIs
-            *pDdiTable = loader::context->sysmanInstanceDrivers->front().dditable.zes.Psu;
-        }
-    }
-
-    // If the validation layer is enabled, then intercept the loader's DDIs
-    if(( ZE_RESULT_SUCCESS == result ) && ( nullptr != loader::context->validationLayer ))
-    {
-        auto getTable = reinterpret_cast<zes_pfnGetPsuProcAddrTable_t>(
-            GET_FUNCTION_PTR(loader::context->validationLayer, "zesGetPsuProcAddrTable") );
-        if(!getTable)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        result = getTable( version, pDdiTable );
-    }
-
-    return result;
+    // return pointers to the Loader's Functions.
+    loader::loaderDispatch->pSysman->Psu->pfnGetProperties                            = loader_legacy::zesPsuGetProperties;
+    loader::loaderDispatch->pSysman->Psu->pfnGetState                                 = loader_legacy::zesPsuGetState;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Exported function for filling application's Ras table
-///        with current process' addresses
-///
-/// @returns
-///     - ::ZE_RESULT_SUCCESS
-///     - ::ZE_RESULT_ERROR_UNINITIALIZED
-///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
-///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
-ZE_DLLEXPORT ze_result_t ZE_APICALL
-zesGetRasProcAddrTable(
-    ze_api_version_t version,                       ///< [in] API version requested
-    zes_ras_dditable_t* pDdiTable                   ///< [in,out] pointer to table of DDI function pointers
-    )
+/// @brief function for filling the legacy api pointers for Ras table
+__zedlllocal void ZE_APICALL
+zesGetRasProcAddrTableLegacy()
 {
-    if( loader::context->sysmanInstanceDrivers->size() < 1 ) {
-        return ZE_RESULT_ERROR_UNINITIALIZED;
-    }
-
-    if( nullptr == pDdiTable )
-        return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
-
-    if( loader::context->version < version )
-        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-
-    ze_result_t result = ZE_RESULT_SUCCESS;
-
-    bool atLeastOneDriverValid = false;
-    // Load the device-driver DDI tables
-    for( auto& drv : *loader::context->sysmanInstanceDrivers )
-    {
-        if(drv.initStatus != ZE_RESULT_SUCCESS)
-            continue;
-        auto getTable = reinterpret_cast<zes_pfnGetRasProcAddrTable_t>(
-            GET_FUNCTION_PTR( drv.handle, "zesGetRasProcAddrTable") );
-        if(!getTable) 
-            continue; 
-        auto getTableResult = getTable( version, &drv.dditable.zes.Ras);
-        if(getTableResult == ZE_RESULT_SUCCESS) 
-            atLeastOneDriverValid = true;
-        else
-            drv.initStatus = getTableResult;
-    }
-
-    if(!atLeastOneDriverValid)
-        result = ZE_RESULT_ERROR_UNINITIALIZED;
-    else
-        result = ZE_RESULT_SUCCESS;
-
-    if( ZE_RESULT_SUCCESS == result )
-    {
-        if( ( loader::context->sysmanInstanceDrivers->size() > 1 ) || loader::context->forceIntercept )
-        {
-            // return pointers to loader's DDIs
-            loader::loaderDispatch->pSysman->Ras = new zes_ras_dditable_t;
-            pDdiTable->pfnGetProperties                            = loader::zesRasGetProperties;
-            pDdiTable->pfnGetConfig                                = loader::zesRasGetConfig;
-            pDdiTable->pfnSetConfig                                = loader::zesRasSetConfig;
-            pDdiTable->pfnGetState                                 = loader::zesRasGetState;
-            zesGetRasProcAddrTableLegacy();
-        }
-        else
-        {
-            // return pointers directly to driver's DDIs
-            *pDdiTable = loader::context->sysmanInstanceDrivers->front().dditable.zes.Ras;
-        }
-    }
-
-    // If the validation layer is enabled, then intercept the loader's DDIs
-    if(( ZE_RESULT_SUCCESS == result ) && ( nullptr != loader::context->validationLayer ))
-    {
-        auto getTable = reinterpret_cast<zes_pfnGetRasProcAddrTable_t>(
-            GET_FUNCTION_PTR(loader::context->validationLayer, "zesGetRasProcAddrTable") );
-        if(!getTable)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        result = getTable( version, pDdiTable );
-    }
-
-    return result;
+    // return pointers to the Loader's Functions.
+    loader::loaderDispatch->pSysman->Ras->pfnGetProperties                            = loader_legacy::zesRasGetProperties;
+    loader::loaderDispatch->pSysman->Ras->pfnGetConfig                                = loader_legacy::zesRasGetConfig;
+    loader::loaderDispatch->pSysman->Ras->pfnSetConfig                                = loader_legacy::zesRasSetConfig;
+    loader::loaderDispatch->pSysman->Ras->pfnGetState                                 = loader_legacy::zesRasGetState;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Exported function for filling application's RasExp table
-///        with current process' addresses
-///
-/// @returns
-///     - ::ZE_RESULT_SUCCESS
-///     - ::ZE_RESULT_ERROR_UNINITIALIZED
-///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
-///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
-ZE_DLLEXPORT ze_result_t ZE_APICALL
-zesGetRasExpProcAddrTable(
-    ze_api_version_t version,                       ///< [in] API version requested
-    zes_ras_exp_dditable_t* pDdiTable               ///< [in,out] pointer to table of DDI function pointers
-    )
+/// @brief function for filling the legacy api pointers for RasExp table
+__zedlllocal void ZE_APICALL
+zesGetRasExpProcAddrTableLegacy()
 {
-    if( loader::context->sysmanInstanceDrivers->size() < 1 ) {
-        return ZE_RESULT_ERROR_UNINITIALIZED;
-    }
-
-    if( nullptr == pDdiTable )
-        return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
-
-    if( loader::context->version < version )
-        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-
-    ze_result_t result = ZE_RESULT_SUCCESS;
-
-    // Load the device-driver DDI tables
-    for( auto& drv : *loader::context->sysmanInstanceDrivers )
-    {
-        if(drv.initStatus != ZE_RESULT_SUCCESS)
-            continue;
-        auto getTable = reinterpret_cast<zes_pfnGetRasExpProcAddrTable_t>(
-            GET_FUNCTION_PTR( drv.handle, "zesGetRasExpProcAddrTable") );
-        if(!getTable) 
-            continue; 
-        result = getTable( version, &drv.dditable.zes.RasExp);
-    }
-
-
-    if( ZE_RESULT_SUCCESS == result )
-    {
-        if( ( loader::context->sysmanInstanceDrivers->size() > 1 ) || loader::context->forceIntercept )
-        {
-            // return pointers to loader's DDIs
-            loader::loaderDispatch->pSysman->RasExp = new zes_ras_exp_dditable_t;
-            pDdiTable->pfnGetStateExp                              = loader::zesRasGetStateExp;
-            pDdiTable->pfnClearStateExp                            = loader::zesRasClearStateExp;
-            zesGetRasExpProcAddrTableLegacy();
-        }
-        else
-        {
-            // return pointers directly to driver's DDIs
-            *pDdiTable = loader::context->sysmanInstanceDrivers->front().dditable.zes.RasExp;
-        }
-    }
-
-    // If the validation layer is enabled, then intercept the loader's DDIs
-    if(( ZE_RESULT_SUCCESS == result ) && ( nullptr != loader::context->validationLayer ))
-    {
-        auto getTable = reinterpret_cast<zes_pfnGetRasExpProcAddrTable_t>(
-            GET_FUNCTION_PTR(loader::context->validationLayer, "zesGetRasExpProcAddrTable") );
-        if(!getTable)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        result = getTable( version, pDdiTable );
-    }
-
-    return result;
+    // return pointers to the Loader's Functions.
+    loader::loaderDispatch->pSysman->RasExp->pfnGetStateExp                              = loader_legacy::zesRasGetStateExp;
+    loader::loaderDispatch->pSysman->RasExp->pfnClearStateExp                            = loader_legacy::zesRasClearStateExp;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Exported function for filling application's Scheduler table
-///        with current process' addresses
-///
-/// @returns
-///     - ::ZE_RESULT_SUCCESS
-///     - ::ZE_RESULT_ERROR_UNINITIALIZED
-///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
-///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
-ZE_DLLEXPORT ze_result_t ZE_APICALL
-zesGetSchedulerProcAddrTable(
-    ze_api_version_t version,                       ///< [in] API version requested
-    zes_scheduler_dditable_t* pDdiTable             ///< [in,out] pointer to table of DDI function pointers
-    )
+/// @brief function for filling the legacy api pointers for Scheduler table
+__zedlllocal void ZE_APICALL
+zesGetSchedulerProcAddrTableLegacy()
 {
-    if( loader::context->sysmanInstanceDrivers->size() < 1 ) {
-        return ZE_RESULT_ERROR_UNINITIALIZED;
-    }
-
-    if( nullptr == pDdiTable )
-        return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
-
-    if( loader::context->version < version )
-        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-
-    ze_result_t result = ZE_RESULT_SUCCESS;
-
-    bool atLeastOneDriverValid = false;
-    // Load the device-driver DDI tables
-    for( auto& drv : *loader::context->sysmanInstanceDrivers )
-    {
-        if(drv.initStatus != ZE_RESULT_SUCCESS)
-            continue;
-        auto getTable = reinterpret_cast<zes_pfnGetSchedulerProcAddrTable_t>(
-            GET_FUNCTION_PTR( drv.handle, "zesGetSchedulerProcAddrTable") );
-        if(!getTable) 
-            continue; 
-        auto getTableResult = getTable( version, &drv.dditable.zes.Scheduler);
-        if(getTableResult == ZE_RESULT_SUCCESS) 
-            atLeastOneDriverValid = true;
-        else
-            drv.initStatus = getTableResult;
-    }
-
-    if(!atLeastOneDriverValid)
-        result = ZE_RESULT_ERROR_UNINITIALIZED;
-    else
-        result = ZE_RESULT_SUCCESS;
-
-    if( ZE_RESULT_SUCCESS == result )
-    {
-        if( ( loader::context->sysmanInstanceDrivers->size() > 1 ) || loader::context->forceIntercept )
-        {
-            // return pointers to loader's DDIs
-            loader::loaderDispatch->pSysman->Scheduler = new zes_scheduler_dditable_t;
-            pDdiTable->pfnGetProperties                            = loader::zesSchedulerGetProperties;
-            pDdiTable->pfnGetCurrentMode                           = loader::zesSchedulerGetCurrentMode;
-            pDdiTable->pfnGetTimeoutModeProperties                 = loader::zesSchedulerGetTimeoutModeProperties;
-            pDdiTable->pfnGetTimesliceModeProperties               = loader::zesSchedulerGetTimesliceModeProperties;
-            pDdiTable->pfnSetTimeoutMode                           = loader::zesSchedulerSetTimeoutMode;
-            pDdiTable->pfnSetTimesliceMode                         = loader::zesSchedulerSetTimesliceMode;
-            pDdiTable->pfnSetExclusiveMode                         = loader::zesSchedulerSetExclusiveMode;
-            pDdiTable->pfnSetComputeUnitDebugMode                  = loader::zesSchedulerSetComputeUnitDebugMode;
-            zesGetSchedulerProcAddrTableLegacy();
-        }
-        else
-        {
-            // return pointers directly to driver's DDIs
-            *pDdiTable = loader::context->sysmanInstanceDrivers->front().dditable.zes.Scheduler;
-        }
-    }
-
-    // If the validation layer is enabled, then intercept the loader's DDIs
-    if(( ZE_RESULT_SUCCESS == result ) && ( nullptr != loader::context->validationLayer ))
-    {
-        auto getTable = reinterpret_cast<zes_pfnGetSchedulerProcAddrTable_t>(
-            GET_FUNCTION_PTR(loader::context->validationLayer, "zesGetSchedulerProcAddrTable") );
-        if(!getTable)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        result = getTable( version, pDdiTable );
-    }
-
-    return result;
+    // return pointers to the Loader's Functions.
+    loader::loaderDispatch->pSysman->Scheduler->pfnGetProperties                            = loader_legacy::zesSchedulerGetProperties;
+    loader::loaderDispatch->pSysman->Scheduler->pfnGetCurrentMode                           = loader_legacy::zesSchedulerGetCurrentMode;
+    loader::loaderDispatch->pSysman->Scheduler->pfnGetTimeoutModeProperties                 = loader_legacy::zesSchedulerGetTimeoutModeProperties;
+    loader::loaderDispatch->pSysman->Scheduler->pfnGetTimesliceModeProperties               = loader_legacy::zesSchedulerGetTimesliceModeProperties;
+    loader::loaderDispatch->pSysman->Scheduler->pfnSetTimeoutMode                           = loader_legacy::zesSchedulerSetTimeoutMode;
+    loader::loaderDispatch->pSysman->Scheduler->pfnSetTimesliceMode                         = loader_legacy::zesSchedulerSetTimesliceMode;
+    loader::loaderDispatch->pSysman->Scheduler->pfnSetExclusiveMode                         = loader_legacy::zesSchedulerSetExclusiveMode;
+    loader::loaderDispatch->pSysman->Scheduler->pfnSetComputeUnitDebugMode                  = loader_legacy::zesSchedulerSetComputeUnitDebugMode;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Exported function for filling application's Standby table
-///        with current process' addresses
-///
-/// @returns
-///     - ::ZE_RESULT_SUCCESS
-///     - ::ZE_RESULT_ERROR_UNINITIALIZED
-///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
-///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
-ZE_DLLEXPORT ze_result_t ZE_APICALL
-zesGetStandbyProcAddrTable(
-    ze_api_version_t version,                       ///< [in] API version requested
-    zes_standby_dditable_t* pDdiTable               ///< [in,out] pointer to table of DDI function pointers
-    )
+/// @brief function for filling the legacy api pointers for Standby table
+__zedlllocal void ZE_APICALL
+zesGetStandbyProcAddrTableLegacy()
 {
-    if( loader::context->sysmanInstanceDrivers->size() < 1 ) {
-        return ZE_RESULT_ERROR_UNINITIALIZED;
-    }
-
-    if( nullptr == pDdiTable )
-        return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
-
-    if( loader::context->version < version )
-        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-
-    ze_result_t result = ZE_RESULT_SUCCESS;
-
-    bool atLeastOneDriverValid = false;
-    // Load the device-driver DDI tables
-    for( auto& drv : *loader::context->sysmanInstanceDrivers )
-    {
-        if(drv.initStatus != ZE_RESULT_SUCCESS)
-            continue;
-        auto getTable = reinterpret_cast<zes_pfnGetStandbyProcAddrTable_t>(
-            GET_FUNCTION_PTR( drv.handle, "zesGetStandbyProcAddrTable") );
-        if(!getTable) 
-            continue; 
-        auto getTableResult = getTable( version, &drv.dditable.zes.Standby);
-        if(getTableResult == ZE_RESULT_SUCCESS) 
-            atLeastOneDriverValid = true;
-        else
-            drv.initStatus = getTableResult;
-    }
-
-    if(!atLeastOneDriverValid)
-        result = ZE_RESULT_ERROR_UNINITIALIZED;
-    else
-        result = ZE_RESULT_SUCCESS;
-
-    if( ZE_RESULT_SUCCESS == result )
-    {
-        if( ( loader::context->sysmanInstanceDrivers->size() > 1 ) || loader::context->forceIntercept )
-        {
-            // return pointers to loader's DDIs
-            loader::loaderDispatch->pSysman->Standby = new zes_standby_dditable_t;
-            pDdiTable->pfnGetProperties                            = loader::zesStandbyGetProperties;
-            pDdiTable->pfnGetMode                                  = loader::zesStandbyGetMode;
-            pDdiTable->pfnSetMode                                  = loader::zesStandbySetMode;
-            zesGetStandbyProcAddrTableLegacy();
-        }
-        else
-        {
-            // return pointers directly to driver's DDIs
-            *pDdiTable = loader::context->sysmanInstanceDrivers->front().dditable.zes.Standby;
-        }
-    }
-
-    // If the validation layer is enabled, then intercept the loader's DDIs
-    if(( ZE_RESULT_SUCCESS == result ) && ( nullptr != loader::context->validationLayer ))
-    {
-        auto getTable = reinterpret_cast<zes_pfnGetStandbyProcAddrTable_t>(
-            GET_FUNCTION_PTR(loader::context->validationLayer, "zesGetStandbyProcAddrTable") );
-        if(!getTable)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        result = getTable( version, pDdiTable );
-    }
-
-    return result;
+    // return pointers to the Loader's Functions.
+    loader::loaderDispatch->pSysman->Standby->pfnGetProperties                            = loader_legacy::zesStandbyGetProperties;
+    loader::loaderDispatch->pSysman->Standby->pfnGetMode                                  = loader_legacy::zesStandbyGetMode;
+    loader::loaderDispatch->pSysman->Standby->pfnSetMode                                  = loader_legacy::zesStandbySetMode;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Exported function for filling application's Temperature table
-///        with current process' addresses
-///
-/// @returns
-///     - ::ZE_RESULT_SUCCESS
-///     - ::ZE_RESULT_ERROR_UNINITIALIZED
-///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
-///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
-ZE_DLLEXPORT ze_result_t ZE_APICALL
-zesGetTemperatureProcAddrTable(
-    ze_api_version_t version,                       ///< [in] API version requested
-    zes_temperature_dditable_t* pDdiTable           ///< [in,out] pointer to table of DDI function pointers
-    )
+/// @brief function for filling the legacy api pointers for Temperature table
+__zedlllocal void ZE_APICALL
+zesGetTemperatureProcAddrTableLegacy()
 {
-    if( loader::context->sysmanInstanceDrivers->size() < 1 ) {
-        return ZE_RESULT_ERROR_UNINITIALIZED;
-    }
-
-    if( nullptr == pDdiTable )
-        return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
-
-    if( loader::context->version < version )
-        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-
-    ze_result_t result = ZE_RESULT_SUCCESS;
-
-    bool atLeastOneDriverValid = false;
-    // Load the device-driver DDI tables
-    for( auto& drv : *loader::context->sysmanInstanceDrivers )
-    {
-        if(drv.initStatus != ZE_RESULT_SUCCESS)
-            continue;
-        auto getTable = reinterpret_cast<zes_pfnGetTemperatureProcAddrTable_t>(
-            GET_FUNCTION_PTR( drv.handle, "zesGetTemperatureProcAddrTable") );
-        if(!getTable) 
-            continue; 
-        auto getTableResult = getTable( version, &drv.dditable.zes.Temperature);
-        if(getTableResult == ZE_RESULT_SUCCESS) 
-            atLeastOneDriverValid = true;
-        else
-            drv.initStatus = getTableResult;
-    }
-
-    if(!atLeastOneDriverValid)
-        result = ZE_RESULT_ERROR_UNINITIALIZED;
-    else
-        result = ZE_RESULT_SUCCESS;
-
-    if( ZE_RESULT_SUCCESS == result )
-    {
-        if( ( loader::context->sysmanInstanceDrivers->size() > 1 ) || loader::context->forceIntercept )
-        {
-            // return pointers to loader's DDIs
-            loader::loaderDispatch->pSysman->Temperature = new zes_temperature_dditable_t;
-            pDdiTable->pfnGetProperties                            = loader::zesTemperatureGetProperties;
-            pDdiTable->pfnGetConfig                                = loader::zesTemperatureGetConfig;
-            pDdiTable->pfnSetConfig                                = loader::zesTemperatureSetConfig;
-            pDdiTable->pfnGetState                                 = loader::zesTemperatureGetState;
-            zesGetTemperatureProcAddrTableLegacy();
-        }
-        else
-        {
-            // return pointers directly to driver's DDIs
-            *pDdiTable = loader::context->sysmanInstanceDrivers->front().dditable.zes.Temperature;
-        }
-    }
-
-    // If the validation layer is enabled, then intercept the loader's DDIs
-    if(( ZE_RESULT_SUCCESS == result ) && ( nullptr != loader::context->validationLayer ))
-    {
-        auto getTable = reinterpret_cast<zes_pfnGetTemperatureProcAddrTable_t>(
-            GET_FUNCTION_PTR(loader::context->validationLayer, "zesGetTemperatureProcAddrTable") );
-        if(!getTable)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        result = getTable( version, pDdiTable );
-    }
-
-    return result;
+    // return pointers to the Loader's Functions.
+    loader::loaderDispatch->pSysman->Temperature->pfnGetProperties                            = loader_legacy::zesTemperatureGetProperties;
+    loader::loaderDispatch->pSysman->Temperature->pfnGetConfig                                = loader_legacy::zesTemperatureGetConfig;
+    loader::loaderDispatch->pSysman->Temperature->pfnSetConfig                                = loader_legacy::zesTemperatureSetConfig;
+    loader::loaderDispatch->pSysman->Temperature->pfnGetState                                 = loader_legacy::zesTemperatureGetState;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Exported function for filling application's VFManagementExp table
-///        with current process' addresses
-///
-/// @returns
-///     - ::ZE_RESULT_SUCCESS
-///     - ::ZE_RESULT_ERROR_UNINITIALIZED
-///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
-///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
-ZE_DLLEXPORT ze_result_t ZE_APICALL
-zesGetVFManagementExpProcAddrTable(
-    ze_api_version_t version,                       ///< [in] API version requested
-    zes_vf_management_exp_dditable_t* pDdiTable     ///< [in,out] pointer to table of DDI function pointers
-    )
+/// @brief function for filling the legacy api pointers for VFManagementExp table
+__zedlllocal void ZE_APICALL
+zesGetVFManagementExpProcAddrTableLegacy()
 {
-    if( loader::context->sysmanInstanceDrivers->size() < 1 ) {
-        return ZE_RESULT_ERROR_UNINITIALIZED;
-    }
-
-    if( nullptr == pDdiTable )
-        return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
-
-    if( loader::context->version < version )
-        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-
-    ze_result_t result = ZE_RESULT_SUCCESS;
-
-    // Load the device-driver DDI tables
-    for( auto& drv : *loader::context->sysmanInstanceDrivers )
-    {
-        if(drv.initStatus != ZE_RESULT_SUCCESS)
-            continue;
-        auto getTable = reinterpret_cast<zes_pfnGetVFManagementExpProcAddrTable_t>(
-            GET_FUNCTION_PTR( drv.handle, "zesGetVFManagementExpProcAddrTable") );
-        if(!getTable) 
-            continue; 
-        result = getTable( version, &drv.dditable.zes.VFManagementExp);
-    }
-
-
-    if( ZE_RESULT_SUCCESS == result )
-    {
-        if( ( loader::context->sysmanInstanceDrivers->size() > 1 ) || loader::context->forceIntercept )
-        {
-            // return pointers to loader's DDIs
-            loader::loaderDispatch->pSysman->VFManagementExp = new zes_vf_management_exp_dditable_t;
-            pDdiTable->pfnGetVFCapabilitiesExp                     = loader::zesVFManagementGetVFCapabilitiesExp;
-            pDdiTable->pfnGetVFMemoryUtilizationExp2               = loader::zesVFManagementGetVFMemoryUtilizationExp2;
-            pDdiTable->pfnGetVFEngineUtilizationExp2               = loader::zesVFManagementGetVFEngineUtilizationExp2;
-            pDdiTable->pfnGetVFCapabilitiesExp2                    = loader::zesVFManagementGetVFCapabilitiesExp2;
-            pDdiTable->pfnGetVFPropertiesExp                       = loader::zesVFManagementGetVFPropertiesExp;
-            pDdiTable->pfnGetVFMemoryUtilizationExp                = loader::zesVFManagementGetVFMemoryUtilizationExp;
-            pDdiTable->pfnGetVFEngineUtilizationExp                = loader::zesVFManagementGetVFEngineUtilizationExp;
-            pDdiTable->pfnSetVFTelemetryModeExp                    = loader::zesVFManagementSetVFTelemetryModeExp;
-            pDdiTable->pfnSetVFTelemetrySamplingIntervalExp        = loader::zesVFManagementSetVFTelemetrySamplingIntervalExp;
-            zesGetVFManagementExpProcAddrTableLegacy();
-        }
-        else
-        {
-            // return pointers directly to driver's DDIs
-            *pDdiTable = loader::context->sysmanInstanceDrivers->front().dditable.zes.VFManagementExp;
-        }
-    }
-
-    // If the validation layer is enabled, then intercept the loader's DDIs
-    if(( ZE_RESULT_SUCCESS == result ) && ( nullptr != loader::context->validationLayer ))
-    {
-        auto getTable = reinterpret_cast<zes_pfnGetVFManagementExpProcAddrTable_t>(
-            GET_FUNCTION_PTR(loader::context->validationLayer, "zesGetVFManagementExpProcAddrTable") );
-        if(!getTable)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        result = getTable( version, pDdiTable );
-    }
-
-    return result;
+    // return pointers to the Loader's Functions.
+    loader::loaderDispatch->pSysman->VFManagementExp->pfnGetVFCapabilitiesExp                     = loader_legacy::zesVFManagementGetVFCapabilitiesExp;
+    loader::loaderDispatch->pSysman->VFManagementExp->pfnGetVFMemoryUtilizationExp2               = loader_legacy::zesVFManagementGetVFMemoryUtilizationExp2;
+    loader::loaderDispatch->pSysman->VFManagementExp->pfnGetVFEngineUtilizationExp2               = loader_legacy::zesVFManagementGetVFEngineUtilizationExp2;
+    loader::loaderDispatch->pSysman->VFManagementExp->pfnGetVFCapabilitiesExp2                    = loader_legacy::zesVFManagementGetVFCapabilitiesExp2;
+    loader::loaderDispatch->pSysman->VFManagementExp->pfnGetVFPropertiesExp                       = loader_legacy::zesVFManagementGetVFPropertiesExp;
+    loader::loaderDispatch->pSysman->VFManagementExp->pfnGetVFMemoryUtilizationExp                = loader_legacy::zesVFManagementGetVFMemoryUtilizationExp;
+    loader::loaderDispatch->pSysman->VFManagementExp->pfnGetVFEngineUtilizationExp                = loader_legacy::zesVFManagementGetVFEngineUtilizationExp;
+    loader::loaderDispatch->pSysman->VFManagementExp->pfnSetVFTelemetryModeExp                    = loader_legacy::zesVFManagementSetVFTelemetryModeExp;
+    loader::loaderDispatch->pSysman->VFManagementExp->pfnSetVFTelemetrySamplingIntervalExp        = loader_legacy::zesVFManagementSetVFTelemetrySamplingIntervalExp;
 }
 
 

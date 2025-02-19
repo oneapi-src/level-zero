@@ -150,6 +150,23 @@ def _mako_loader_cpp(path, namespace, tags, version, specs, meta):
         tags=tags,
         specs=specs,
         meta=meta)
+
+    template = "ldrddi_legacy.cpp.mako"
+    fin = os.path.join(templates_dir, template)
+
+    name = "%s_ldrddi_legacy"%(namespace)
+    filename = "%s.cpp"%(name)
+    fout = os.path.join(path, filename)
+
+    print("Generating %s..."%fout)
+    loc += util.makoWrite(
+        fin, fout,
+        name=name,
+        ver=version,
+        namespace=namespace,
+        tags=tags,
+        specs=specs,
+        meta=meta)
     return loc
 
 """
