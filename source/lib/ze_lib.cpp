@@ -77,7 +77,9 @@ namespace ze_lib
             debug_trace_message(message, to_string(ZE_RESULT_ERROR_UNINITIALIZED));
             return ZE_RESULT_ERROR_UNINITIALIZED;
         }
-        if (initDriversLoader != nullptr) {
+        if (!desc) {
+            result = initLoader(flags);
+        } else if (initDriversLoader != nullptr) {
             uint32_t pInitDriversCount = 0;
             result = initDriversLoader(&pInitDriversCount, nullptr, desc);
         } else {
