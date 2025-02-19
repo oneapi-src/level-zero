@@ -10,9 +10,7 @@
 #include <map>
 #include <atomic>
 
-#include "ze_ddi.h"
-#include "zet_ddi.h"
-#include "zes_ddi.h"
+#include "ze_ddi_common.h"
 
 #include "ze_util.h"
 #include "ze_object.h"
@@ -48,6 +46,7 @@ namespace loader
         ze_result_t initStatus = ZE_RESULT_SUCCESS;
         ze_result_t initDriversStatus = ZE_RESULT_SUCCESS;
         dditable_t dditable = {};
+        ze_handle_t driverDDIHandles = {};
         std::string name;
         bool driverInuse = false;
         zel_driver_type_t driverType;
@@ -152,5 +151,6 @@ namespace loader
         std::shared_ptr<Logger> zel_logger;
     };
 
+    extern ze_handle_t* loaderDispatch;
     extern context_t *context;
 }

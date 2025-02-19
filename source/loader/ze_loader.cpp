@@ -397,6 +397,10 @@ namespace loader
         if (driverEnvironmentQueried) {
             return ZE_RESULT_SUCCESS;
         }
+        loader::loaderDispatch = new ze_handle_t();
+        loader::loaderDispatch->pCore = new ze_dditable_driver_t();
+        loader::loaderDispatch->pTools = new zet_dditable_driver_t();
+        loader::loaderDispatch->pSysman = new zes_dditable_driver_t();
         debugTraceEnabled = getenv_tobool( "ZE_ENABLE_LOADER_DEBUG_TRACE" );
         auto discoveredDrivers = discoverEnabledDrivers();
         std::string loadLibraryErrorValue;

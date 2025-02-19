@@ -9,6 +9,7 @@
  */
 #pragma once
 #include "ze_singleton.h"
+#include "ze_ddi_common.h"
 
 //////////////////////////////////////////////////////////////////////////
 struct dditable_t
@@ -18,13 +19,19 @@ struct dditable_t
     zes_dditable_t  zes;
 };
 
+namespace loader {
+
+	extern ze_handle_t* loaderDispatch;
+
+}
+
 //////////////////////////////////////////////////////////////////////////
 template<typename _handle_t>
 class object_t
 {
 public:
     using handle_t = _handle_t;
-
+    ze_handle_t* pDispatch;
     handle_t    handle;
     dditable_t* dditable;
 
@@ -33,6 +40,7 @@ public:
     object_t( handle_t _handle, dditable_t* _dditable )
         : handle( _handle ), dditable( _dditable )
     {
+        pDispatch = loader::loaderDispatch;
     }
 
     ~object_t() = default;
