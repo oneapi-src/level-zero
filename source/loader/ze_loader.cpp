@@ -19,6 +19,9 @@
 namespace loader
 {
     ze_handle_t* loaderDispatch = nullptr;
+    ze_dditable_t* loaderZeDdiTable = nullptr;
+    zet_dditable_t* loaderZetDdiTable = nullptr;
+    zes_dditable_t* loaderZesDdiTable = nullptr;
     ///////////////////////////////////////////////////////////////////////////////
     context_t *context;
 
@@ -400,8 +403,17 @@ namespace loader
         }
         loader::loaderDispatch = new ze_handle_t();
         loader::loaderDispatch->pCore = new ze_dditable_driver_t();
+        loader::loaderDispatch->pCore->version = ZE_API_VERSION_CURRENT;
+        loader::loaderDispatch->pCore->isValidFlag = 1;
         loader::loaderDispatch->pTools = new zet_dditable_driver_t();
+        loader::loaderDispatch->pTools->version = ZE_API_VERSION_CURRENT;
+        loader::loaderDispatch->pTools->isValidFlag = 1;
         loader::loaderDispatch->pSysman = new zes_dditable_driver_t();
+        loader::loaderDispatch->pSysman->version = ZE_API_VERSION_CURRENT;
+        loader::loaderDispatch->pSysman->isValidFlag = 1;
+        loader::loaderZeDdiTable = new ze_dditable_t();
+        loader::loaderZetDdiTable = new zet_dditable_t();
+        loader::loaderZesDdiTable = new zes_dditable_t();
         debugTraceEnabled = getenv_tobool( "ZE_ENABLE_LOADER_DEBUG_TRACE" );
         auto discoveredDrivers = discoverEnabledDrivers();
         std::string loadLibraryErrorValue;
