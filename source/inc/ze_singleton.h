@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (C) 2019-2021 Intel Corporation
+ * Copyright (C) 2019-2025 Intel Corporation
  *
  * SPDX-License-Identifier: MIT
  *
@@ -9,6 +9,7 @@
 #include <memory>
 #include <unordered_map>
 #include <mutex>
+#include <iostream>
 
 //////////////////////////////////////////////////////////////////////////
 /// a abstract factory for creation of singleton objects
@@ -61,6 +62,12 @@ public:
             iter = map.emplace( key, std::move( ptr ) ).first;
         }
         return iter->second.get();
+    }
+
+    bool hasInstance( _key_t _key )
+    {
+        std::lock_guard<std::mutex> lk( mut );
+        return map.find( getKey( _key ) ) != map.end();
     }
 
     //////////////////////////////////////////////////////////////////////////

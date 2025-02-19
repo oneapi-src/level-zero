@@ -1,5 +1,5 @@
 """
- Copyright (C) 2019-2021 Intel Corporation
+ Copyright (C) 2019-2025 Intel Corporation
 
  SPDX-License-Identifier: MIT
 
@@ -138,6 +138,23 @@ def _mako_loader_cpp(path, namespace, tags, version, specs, meta):
     fin = os.path.join(templates_dir, template)
 
     name = "%s_ldrddi"%(namespace)
+    filename = "%s.cpp"%(name)
+    fout = os.path.join(path, filename)
+
+    print("Generating %s..."%fout)
+    loc += util.makoWrite(
+        fin, fout,
+        name=name,
+        ver=version,
+        namespace=namespace,
+        tags=tags,
+        specs=specs,
+        meta=meta)
+
+    template = "ldrddi_driver_ddi.cpp.mako"
+    fin = os.path.join(templates_dir, template)
+
+    name = "%s_ldrddi_driver_ddi"%(namespace)
     filename = "%s.cpp"%(name)
     fout = os.path.join(path, filename)
 
