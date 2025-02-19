@@ -26,7 +26,6 @@ jobs:
             ..
           make -j$(nproc)
       - env:
-          ZE_ENABLE_LOADER_DEBUG_TRACE: '1'
           ZEL_LIBRARY_PATH: '${{ github.workspace }}/build/lib'
         working-directory: build
         run: ctest -V
@@ -43,7 +42,6 @@ jobs:
           cmake -D BUILD_L0_LOADER_TESTS=1 ..
           cmake --build . --config Release
       - env:
-          ZE_ENABLE_LOADER_DEBUG_TRACE: '1'
           ZEL_LIBRARY_PATH: '${{ github.workspace }}/build/bin/Release'
         working-directory: build
         run: ctest -C Release -V

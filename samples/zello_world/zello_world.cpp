@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (C) 2020-2021 Intel Corporation
+ * Copyright (C) 2020-2025 Intel Corporation
  *
  * SPDX-License-Identifier: MIT
  *
@@ -82,6 +82,8 @@ int main( int argc, char *argv[] )
     ze_device_handle_t pDevice = nullptr;
     uint32_t driverCount = 0;
     zel_tracer_handle_t tracer = nullptr;
+    std::vector<ze_driver_handle_t> drivers;
+    std::vector<ze_device_handle_t> devices_per_driver;
     if( init_ze(legacy_init, driverCount, driverTypeDesc) )
     {
 
@@ -106,7 +108,6 @@ int main( int argc, char *argv[] )
             }
         }
 
-        std::vector<ze_driver_handle_t> drivers;
         if (legacy_init) {
             status = zeDriverGet(&driverCount, nullptr);
             if(status != ZE_RESULT_SUCCESS) {
@@ -129,96 +130,106 @@ int main( int argc, char *argv[] )
             }
         }
 
-        for( uint32_t driver = 0; driver < driverCount; ++driver )
+        for( size_t driver = 0; driver < drivers.size(); ++driver )
         {
+            std::cout << "Driver # " << driver << "\n";
             pDriver = drivers[driver];
             pDevice = findDevice( pDriver, type );
-            if( pDevice )
-            {
-                break;
+            if (pDevice) {
+                devices_per_driver.push_back(pDevice);
+            } else {
+                devices_per_driver.push_back(nullptr);
             }
         }
     }
 
-    if( !pDevice )
+    if( devices_per_driver.empty() || drivers.empty() )
     {
         std::cout << "Did NOT find matching " << to_string(type) <<" device!" << "\n";
         return -1;
     }
 
-
-    // Create the context
-    ze_context_handle_t context;
-    ze_context_desc_t context_desc = {};
-    context_desc.stype = ZE_STRUCTURE_TYPE_CONTEXT_DESC;
-    status = zeContextCreate(pDriver, &context_desc, &context);
-    if(status != ZE_RESULT_SUCCESS) {
-        std::cout << "zeContextCreate Failed with return code: " << to_string(status) << std::endl;
-        exit(1);
-    }
-
-    // Create an immediate command list for direct submission
-    ze_command_queue_desc_t altdesc = {};
-    altdesc.stype = ZE_STRUCTURE_TYPE_COMMAND_QUEUE_DESC;
-    ze_command_list_handle_t command_list = {};
-    status = zeCommandListCreateImmediate(context, pDevice, &altdesc, &command_list);
-    if(status != ZE_RESULT_SUCCESS) {
-        std::cout << "zeCommandListCreateImmediate Failed with return code: " << to_string(status) << std::endl;
-        exit(1);
-    }
-
-    // Create an event to be signaled by the device
-    ze_event_pool_desc_t ep_desc = {};
-    ep_desc.stype = ZE_STRUCTURE_TYPE_EVENT_POOL_DESC;
-    ep_desc.count = 1;
-    ep_desc.flags = ZE_EVENT_POOL_FLAG_HOST_VISIBLE;
-    ze_event_desc_t ev_desc = {};
-    ev_desc.stype = ZE_STRUCTURE_TYPE_EVENT_DESC;
-    ev_desc.signal = ZE_EVENT_SCOPE_FLAG_HOST;
-    ev_desc.wait = ZE_EVENT_SCOPE_FLAG_HOST;
-    ze_event_handle_t event;
-    ze_event_pool_handle_t event_pool;
-
-    status = zeEventPoolCreate(context, &ep_desc, 1, &pDevice, &event_pool);
-    if(status != ZE_RESULT_SUCCESS) {
-        std::cout << "zeEventPoolCreate Failed with return code: " << to_string(status) << std::endl;
-        exit(1);
-    }
-
-    status = zeEventCreate(event_pool, &ev_desc, &event);
-    if(status != ZE_RESULT_SUCCESS) {
-        std::cout << "zeEventCreate Failed with return code: " << to_string(status) << std::endl;
-        exit(1);
-    }
-
-    // signal the event from the device and wait for completion
-    zeCommandListAppendSignalEvent(command_list, event);
-    zeEventHostSynchronize(event, UINT64_MAX );
-    std::cout << "Congratulations, the device completed execution!\n";
-
-    if (!zelCheckIsLoaderInTearDown())
-        zeContextDestroy(context);
-    if (!zelCheckIsLoaderInTearDown())
-        zeCommandListDestroy(command_list);
-    if (!zelCheckIsLoaderInTearDown())
-        zeEventDestroy(event);
-    if (!zelCheckIsLoaderInTearDown())
-        zeEventPoolDestroy(event_pool);
-
-    if (tracing_enabled) {
-        status = zelTracerDestroy(tracer);
-        if(status != ZE_RESULT_SUCCESS) {
-            std::cout << "zelTracerDestroy Failed with return code: " << to_string(status) << std::endl;
-            exit(1);
+    for (size_t driver_idx = 0; driver_idx < drivers.size(); ++driver_idx) {
+        if (driver_idx >= devices_per_driver.size() || devices_per_driver[driver_idx] == nullptr) {
+            std::cout << "No valid device found for Driver #" << driver_idx << std::endl;
+            continue;
         }
-    }
-
-    if (tracing_runtime_enabled) {
-        std::cout << "Disable Tracing Layer after init" << std::endl;
-        status = zelDisableTracingLayer();
+        pDriver = drivers[driver_idx];
+        pDevice = devices_per_driver[driver_idx];
+        std::cout << "Executing on Driver #" << driver_idx << ", Device #" << 0 << std::endl;
+        // Create the context
+        ze_context_handle_t context;
+        ze_context_desc_t context_desc = {};
+        context_desc.stype = ZE_STRUCTURE_TYPE_CONTEXT_DESC;
+        status = zeContextCreate(pDriver, &context_desc, &context);
         if(status != ZE_RESULT_SUCCESS) {
-            std::cout << "zelDisableTracingLayer Failed with return code: " << to_string(status) << std::endl;
-            exit(1);
+            std::cout << "zeContextCreate Failed with return code: " << to_string(status) << std::endl;
+            continue;
+        }
+
+        // Create an immediate command list for direct submission
+        ze_command_queue_desc_t altdesc = {};
+        altdesc.stype = ZE_STRUCTURE_TYPE_COMMAND_QUEUE_DESC;
+        ze_command_list_handle_t command_list = {};
+        status = zeCommandListCreateImmediate(context, pDevice, &altdesc, &command_list);
+        if(status != ZE_RESULT_SUCCESS) {
+            std::cout << "zeCommandListCreateImmediate Failed with return code: " << to_string(status) << std::endl;
+            continue;
+        }
+
+        // Create an event to be signaled by the device
+        ze_event_pool_desc_t ep_desc = {};
+        ep_desc.stype = ZE_STRUCTURE_TYPE_EVENT_POOL_DESC;
+        ep_desc.count = 1;
+        ep_desc.flags = ZE_EVENT_POOL_FLAG_HOST_VISIBLE;
+        ze_event_desc_t ev_desc = {};
+        ev_desc.stype = ZE_STRUCTURE_TYPE_EVENT_DESC;
+        ev_desc.signal = ZE_EVENT_SCOPE_FLAG_HOST;
+        ev_desc.wait = ZE_EVENT_SCOPE_FLAG_HOST;
+        ze_event_handle_t event;
+        ze_event_pool_handle_t event_pool;
+
+        status = zeEventPoolCreate(context, &ep_desc, 1, &pDevice, &event_pool);
+        if(status != ZE_RESULT_SUCCESS) {
+            std::cout << "zeEventPoolCreate Failed with return code: " << to_string(status) << std::endl;
+            continue;
+        }
+
+        status = zeEventCreate(event_pool, &ev_desc, &event);
+        if(status != ZE_RESULT_SUCCESS) {
+            std::cout << "zeEventCreate Failed with return code: " << to_string(status) << std::endl;
+            continue;
+        }
+
+        // signal the event from the device and wait for completion
+        zeCommandListAppendSignalEvent(command_list, event);
+        zeEventHostSynchronize(event, UINT64_MAX );
+        std::cout << "Congratulations, Executing on Driver #" << driver_idx << ", Device #" << 0 << " completed execution!" << std::endl;
+
+        if (!zelCheckIsLoaderInTearDown())
+            zeContextDestroy(context);
+        if (!zelCheckIsLoaderInTearDown())
+            zeCommandListDestroy(command_list);
+        if (!zelCheckIsLoaderInTearDown())
+            zeEventDestroy(event);
+        if (!zelCheckIsLoaderInTearDown())
+            zeEventPoolDestroy(event_pool);
+
+        if (tracing_enabled) {
+            status = zelTracerDestroy(tracer);
+            if(status != ZE_RESULT_SUCCESS) {
+                std::cout << "zelTracerDestroy Failed with return code: " << to_string(status) << std::endl;
+                exit(1);
+            }
+        }
+
+        if (tracing_runtime_enabled) {
+            std::cout << "Disable Tracing Layer after init" << std::endl;
+            status = zelDisableTracingLayer();
+            if(status != ZE_RESULT_SUCCESS) {
+                std::cout << "zelDisableTracingLayer Failed with return code: " << to_string(status) << std::endl;
+                exit(1);
+            }
         }
     }
 

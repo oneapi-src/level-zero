@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (C) 2019-2021 Intel Corporation
+ * Copyright (C) 2019-2025 Intel Corporation
  *
  * SPDX-License-Identifier: MIT
  *
@@ -14,6 +14,9 @@ namespace driver
 {
     //////////////////////////////////////////////////////////////////////////
     context_t context;
+    ze_dditable_driver_t pCore;
+    zet_dditable_driver_t pTools;
+    zes_dditable_driver_t pSysman;
 
     //////////////////////////////////////////////////////////////////////////
     context_t::context_t()
@@ -63,16 +66,24 @@ namespace driver
             ze_driver_handle_t,
             ze_driver_properties_t* pDriverProperties )
         {
-            ze_driver_properties_t driverProperties = {};
-            driverProperties.stype = ZE_STRUCTURE_TYPE_DRIVER_PROPERTIES;
-            //driverProperties.uuid
-            driverProperties.driverVersion = 0;
+            auto pNext = reinterpret_cast<ze_base_properties_t *>(pDriverProperties->pNext);
+            while (pNext) {
+                auto ddi_test_disable = getenv_string( "ZEL_TEST_NULL_DRIVER_DISABLE_DDI_EXT" );
+                #ifndef ZEL_NULL_DRIVER_ID
+                #define ZEL_NULL_DRIVER_ID 1
+                #endif
+                std::string null_driver_id_str = std::to_string(ZEL_NULL_DRIVER_ID);
+                if (pNext->stype == ZE_STRUCTURE_TYPE_DRIVER_DDI_HANDLES_EXT_PROPERTIES && (ddi_test_disable != null_driver_id_str && ddi_test_disable != "3")) {
+                    ze_driver_ddi_handles_ext_properties_t *pDdiHandlesExtProperties = reinterpret_cast<ze_driver_ddi_handles_ext_properties_t *>(pNext);
+                    pDdiHandlesExtProperties->flags = ze_driver_ddi_handle_ext_flag_t::ZE_DRIVER_DDI_HANDLE_EXT_FLAG_DDI_HANDLE_EXT_SUPPORTED;
+                    context.ddiExtensionRequested = true;
+                }
+                pNext = reinterpret_cast<ze_base_properties_t *>(pNext->pNext);
+            }
+            pDriverProperties->driverVersion = 0;
 
-            *pDriverProperties = driverProperties;
             return ZE_RESULT_SUCCESS;
         };
-
-        //pfnGetIPCProperties
         
         //////////////////////////////////////////////////////////////////////////
         zeDdiTable.Mem.pfnAllocShared = [](
@@ -122,14 +133,227 @@ namespace driver
             return ZE_RESULT_SUCCESS;
         };
 
-        //pfnGetMemProperties
-        //pfnGetMemAddressRange
-        //pfnGetMemIpcHandle
-        //pfnOpenMemIpcHandle
-        //pfnCloseMemIpcHandle
+        //////////////////////////////////////////////////////////////////////////
+        zeDdiTable.EventPool.pfnCreate = [](
+            ze_context_handle_t,
+            const ze_event_pool_desc_t* desc,
+            uint32_t,
+            ze_device_handle_t*,
+            ze_event_pool_handle_t* phEventPool )
+        {
+            *phEventPool = reinterpret_cast<ze_event_pool_handle_t>(context.get());
+            return ZE_RESULT_SUCCESS;
+        };
 
         //////////////////////////////////////////////////////////////////////////
-        //pfnGetSubDevices
+        zeDdiTable.Event.pfnCreate = [](
+            ze_event_pool_handle_t,
+            const ze_event_desc_t* desc,
+            ze_event_handle_t* phEvent )
+        {
+            *phEvent = reinterpret_cast<ze_event_handle_t>(context.get());
+            return ZE_RESULT_SUCCESS;
+        };
+
+        //////////////////////////////////////////////////////////////////////////
+        zeDdiTable.CommandList.pfnCreate = [](
+            ze_context_handle_t,
+            ze_device_handle_t,
+            const ze_command_list_desc_t* desc,
+            ze_command_list_handle_t* phCommandList )
+        {
+            *phCommandList = reinterpret_cast<ze_command_list_handle_t>(context.get());
+            return ZE_RESULT_SUCCESS;
+        };
+
+        //////////////////////////////////////////////////////////////////////////
+        zeDdiTable.CommandQueue.pfnCreate = [](
+            ze_context_handle_t,
+            ze_device_handle_t,
+            const ze_command_queue_desc_t* desc,
+            ze_command_queue_handle_t* phCommandQueue )
+        {
+            *phCommandQueue = reinterpret_cast<ze_command_queue_handle_t>(context.get());
+            return ZE_RESULT_SUCCESS;
+        };
+
+        //////////////////////////////////////////////////////////////////////////
+        zeDdiTable.Context.pfnCreate = [](
+            ze_driver_handle_t,
+            const ze_context_desc_t*,
+            ze_context_handle_t* phContext )
+        {
+            *phContext = reinterpret_cast<ze_context_handle_t>(context.get());
+            return ZE_RESULT_SUCCESS;
+        };
+
+        //////////////////////////////////////////////////////////////////////////
+        zeDdiTable.Context.pfnDestroy = [](
+            ze_context_handle_t )
+        {
+            return ZE_RESULT_SUCCESS;
+        };
+
+        //////////////////////////////////////////////////////////////////////////
+        zeDdiTable.CommandList.pfnDestroy = [](
+            ze_command_list_handle_t )
+        {
+            return ZE_RESULT_SUCCESS;
+        };
+
+        //////////////////////////////////////////////////////////////////////////
+        zeDdiTable.CommandQueue.pfnDestroy = [](
+            ze_command_queue_handle_t )
+        {
+            return ZE_RESULT_SUCCESS;
+        };
+
+        //////////////////////////////////////////////////////////////////////////
+        zeDdiTable.EventPool.pfnDestroy = [](
+            ze_event_pool_handle_t )
+        {
+            return ZE_RESULT_SUCCESS;
+        };
+
+        //////////////////////////////////////////////////////////////////////////
+        zeDdiTable.Event.pfnDestroy = [](
+            ze_event_handle_t )
+        {
+            return ZE_RESULT_SUCCESS;
+        };
+        //////////////////////////////////////////////////////////////////////////
+        zeDdiTable.Module.pfnCreate = [](
+            ze_context_handle_t,
+            ze_device_handle_t,
+            const ze_module_desc_t*,
+            ze_module_handle_t* phModule,
+            ze_module_build_log_handle_t* phModuleBuildLog )
+        {
+            *phModule = reinterpret_cast<ze_module_handle_t>(context.get());
+            if (phModuleBuildLog) {
+                *phModuleBuildLog = reinterpret_cast<ze_module_build_log_handle_t>(context.get());
+            }
+            return ZE_RESULT_SUCCESS;
+        };
+
+        //////////////////////////////////////////////////////////////////////////
+        zeDdiTable.Module.pfnDestroy = [](
+            ze_module_handle_t )
+        {
+            return ZE_RESULT_SUCCESS;
+        };
+
+        //////////////////////////////////////////////////////////////////////////
+        zeDdiTable.ModuleBuildLog.pfnDestroy = [](
+            ze_module_build_log_handle_t )
+        {
+            return ZE_RESULT_SUCCESS;
+        };
+
+        //////////////////////////////////////////////////////////////////////////
+        zeDdiTable.ModuleBuildLog.pfnGetString = [](
+            ze_module_build_log_handle_t,
+            size_t* pSize,
+            char* pBuildLog )
+        {
+            const char* log = "Build log not available.";
+            *pSize = strlen(log) + 1;
+            if (pBuildLog) {
+            #if defined(_WIN32)
+                strncpy_s( pBuildLog, *pSize, log, *pSize );
+            #else
+                strncpy( pBuildLog, log, *pSize );
+            #endif
+            }
+            return ZE_RESULT_SUCCESS;
+        };
+
+        //////////////////////////////////////////////////////////////////////////
+        zeDdiTable.PhysicalMem.pfnCreate = [](
+            ze_context_handle_t,
+            ze_device_handle_t,
+            ze_physical_mem_desc_t*,
+            ze_physical_mem_handle_t* phPhysicalMemory )
+        {
+            *phPhysicalMemory = reinterpret_cast<ze_physical_mem_handle_t>(context.get());
+            return ZE_RESULT_SUCCESS;
+        };
+
+        //////////////////////////////////////////////////////////////////////////
+        zeDdiTable.PhysicalMem.pfnDestroy = []( ze_context_handle_t,
+            ze_physical_mem_handle_t )
+        {
+            return ZE_RESULT_SUCCESS;
+        };
+        //////////////////////////////////////////////////////////////////////////
+        zeDdiTable.Fence.pfnCreate = [](
+            ze_command_queue_handle_t,
+            const ze_fence_desc_t*,
+            ze_fence_handle_t* phFence )
+        {
+            *phFence = reinterpret_cast<ze_fence_handle_t>(context.get());
+            return ZE_RESULT_SUCCESS;
+        };
+
+        //////////////////////////////////////////////////////////////////////////
+        zeDdiTable.Fence.pfnDestroy = [](
+            ze_fence_handle_t )
+        {
+            return ZE_RESULT_SUCCESS;
+        };
+
+        //////////////////////////////////////////////////////////////////////////
+        zeDdiTable.Image.pfnCreate = [](
+            ze_context_handle_t,
+            ze_device_handle_t,
+            const ze_image_desc_t*,
+            ze_image_handle_t* phImage )
+        {
+            *phImage = reinterpret_cast<ze_image_handle_t>(context.get());
+            return ZE_RESULT_SUCCESS;
+        };
+
+        //////////////////////////////////////////////////////////////////////////
+        zeDdiTable.Image.pfnDestroy = [](
+            ze_image_handle_t )
+        {
+            return ZE_RESULT_SUCCESS;
+        };
+
+        //////////////////////////////////////////////////////////////////////////
+        zeDdiTable.Sampler.pfnCreate = [](
+            ze_context_handle_t,
+            ze_device_handle_t,
+            const ze_sampler_desc_t*,
+            ze_sampler_handle_t* phSampler )
+        {
+            *phSampler = reinterpret_cast<ze_sampler_handle_t>(context.get());
+            return ZE_RESULT_SUCCESS;
+        };
+
+        //////////////////////////////////////////////////////////////////////////
+        zeDdiTable.Sampler.pfnDestroy = [](
+            ze_sampler_handle_t )
+        {
+            return ZE_RESULT_SUCCESS;
+        };
+
+        //////////////////////////////////////////////////////////////////////////
+        zeDdiTable.Kernel.pfnCreate = [](
+            ze_module_handle_t,
+            const ze_kernel_desc_t*,
+            ze_kernel_handle_t* phKernel )
+        {
+            *phKernel = reinterpret_cast<ze_kernel_handle_t>(context.get());
+            return ZE_RESULT_SUCCESS;
+        };
+
+        //////////////////////////////////////////////////////////////////////////
+        zeDdiTable.Kernel.pfnDestroy = [](
+            ze_kernel_handle_t )
+        {
+            return ZE_RESULT_SUCCESS;
+        };
 
         //////////////////////////////////////////////////////////////////////////
         zeDdiTable.Device.pfnGetProperties = [](
@@ -367,6 +591,32 @@ namespace driver
             if( pRawData ) *pRawData = 0;
             return ZE_RESULT_SUCCESS;
         };
+        pCore.Driver = &zeDdiTable.Driver;
+        pCore.Device = &zeDdiTable.Device;
+        pCore.Mem = &zeDdiTable.Mem;
+        pCore.CommandList = &zeDdiTable.CommandList;
+        pCore.CommandQueue = &zeDdiTable.CommandQueue;
+        pCore.Context = &zeDdiTable.Context;
+        pCore.Event = &zeDdiTable.Event;
+        pCore.EventPool = &zeDdiTable.EventPool;
+        pCore.Module = &zeDdiTable.Module;
+        pCore.ModuleBuildLog = &zeDdiTable.ModuleBuildLog;
+        pCore.PhysicalMem = &zeDdiTable.PhysicalMem;
+        pCore.Kernel = &zeDdiTable.Kernel;
+        pCore.Fence = &zeDdiTable.Fence;
+        pCore.Image = &zeDdiTable.Image;
+        pCore.Sampler = &zeDdiTable.Sampler;
+        pCore.isValidFlag = 1;
+        pCore.version = ZE_API_VERSION_CURRENT;
+        pTools.MetricGroup = &zetDdiTable.MetricGroup;
+        pTools.Metric = &zetDdiTable.Metric;
+        pTools.MetricQuery = &zetDdiTable.MetricQuery;
+        pTools.MetricStreamer = &zetDdiTable.MetricStreamer;
+        pTools.isValidFlag = 1;
+        pTools.version = ZE_API_VERSION_CURRENT;
+        pSysman.Driver = &zesDdiTable.Driver;
+        pSysman.isValidFlag = 1;
+        pSysman.version = ZE_API_VERSION_CURRENT;
     }
 } // namespace driver
 
