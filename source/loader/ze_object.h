@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (C) 2019-2021 Intel Corporation
+ * Copyright (C) 2019-2025 Intel Corporation
  *
  * SPDX-License-Identifier: MIT
  *
@@ -9,6 +9,7 @@
  */
 #pragma once
 #include "ze_singleton.h"
+#include "ze_ddi_common.h"
 
 //////////////////////////////////////////////////////////////////////////
 struct dditable_t
@@ -18,13 +19,21 @@ struct dditable_t
     zes_dditable_t  zes;
 };
 
+namespace loader {
+
+	extern ze_handle_t* loaderDispatch;
+
+}
+
 //////////////////////////////////////////////////////////////////////////
 template<typename _handle_t>
 class object_t
 {
 public:
     using handle_t = _handle_t;
-
+    ze_dditable_driver_t *pCore;
+    zet_dditable_driver_t *pTools;
+    zes_dditable_driver_t *pSysman;
     handle_t    handle;
     dditable_t* dditable;
 
@@ -33,6 +42,9 @@ public:
     object_t( handle_t _handle, dditable_t* _dditable )
         : handle( _handle ), dditable( _dditable )
     {
+        pCore = loader::loaderDispatch->pCore;
+        pTools = loader::loaderDispatch->pTools;
+        pSysman = loader::loaderDispatch->pSysman;
     }
 
     ~object_t() = default;
