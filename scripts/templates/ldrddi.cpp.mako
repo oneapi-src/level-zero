@@ -179,6 +179,8 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( ${item['name']} )->pSysman;
         %endif
         %endif
+        if (dditable->isValidFlag == 0)
+            return ${X}_RESULT_ERROR_UNINITIALIZED;
         auto ${th.make_pfn_name(n, tags, obj)} = dditable->${th.get_table_name(n, tags, obj)}->${th.make_pfn_name(n, tags, obj)};
         if( nullptr == ${th.make_pfn_name(n, tags, obj)} )
             return ${X}_RESULT_ERROR_UNINITIALIZED;

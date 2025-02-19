@@ -212,6 +212,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hDriver )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnGetApiVersion = dditable->Driver->pfnGetApiVersion;
         if( nullptr == pfnGetApiVersion )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -232,6 +234,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hDriver )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnGetProperties = dditable->Driver->pfnGetProperties;
         if( nullptr == pfnGetProperties )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -252,6 +256,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hDriver )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnGetIpcProperties = dditable->Driver->pfnGetIpcProperties;
         if( nullptr == pfnGetIpcProperties )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -281,6 +287,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hDriver )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnGetExtensionProperties = dditable->Driver->pfnGetExtensionProperties;
         if( nullptr == pfnGetExtensionProperties )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -302,6 +310,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hDriver )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnGetExtensionFunctionAddress = dditable->Driver->pfnGetExtensionFunctionAddress;
         if( nullptr == pfnGetExtensionFunctionAddress )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -323,6 +333,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hDriver )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnGetLastErrorDescription = dditable->Driver->pfnGetLastErrorDescription;
         if( nullptr == pfnGetLastErrorDescription )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -350,6 +362,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hDriver )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnGet = dditable->Device->pfnGet;
         if( nullptr == pfnGet )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -370,6 +384,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hDevice )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnGetRootDevice = dditable->Device->pfnGetRootDevice;
         if( nullptr == pfnGetRootDevice )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -397,6 +413,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hDevice )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnGetSubDevices = dditable->Device->pfnGetSubDevices;
         if( nullptr == pfnGetSubDevices )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -417,6 +435,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hDevice )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnGetProperties = dditable->Device->pfnGetProperties;
         if( nullptr == pfnGetProperties )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -437,6 +457,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hDevice )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnGetComputeProperties = dditable->Device->pfnGetComputeProperties;
         if( nullptr == pfnGetComputeProperties )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -457,6 +479,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hDevice )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnGetModuleProperties = dditable->Device->pfnGetModuleProperties;
         if( nullptr == pfnGetModuleProperties )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -487,6 +511,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hDevice )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnGetCommandQueueGroupProperties = dditable->Device->pfnGetCommandQueueGroupProperties;
         if( nullptr == pfnGetCommandQueueGroupProperties )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -516,6 +542,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hDevice )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnGetMemoryProperties = dditable->Device->pfnGetMemoryProperties;
         if( nullptr == pfnGetMemoryProperties )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -536,6 +564,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hDevice )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnGetMemoryAccessProperties = dditable->Device->pfnGetMemoryAccessProperties;
         if( nullptr == pfnGetMemoryAccessProperties )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -564,6 +594,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hDevice )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnGetCacheProperties = dditable->Device->pfnGetCacheProperties;
         if( nullptr == pfnGetCacheProperties )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -584,6 +616,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hDevice )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnGetImageProperties = dditable->Device->pfnGetImageProperties;
         if( nullptr == pfnGetImageProperties )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -604,6 +638,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hDevice )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnGetExternalMemoryProperties = dditable->Device->pfnGetExternalMemoryProperties;
         if( nullptr == pfnGetExternalMemoryProperties )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -625,6 +661,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hDevice )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnGetP2PProperties = dditable->Device->pfnGetP2PProperties;
         if( nullptr == pfnGetP2PProperties )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -646,6 +684,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hDevice )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnCanAccessPeer = dditable->Device->pfnCanAccessPeer;
         if( nullptr == pfnCanAccessPeer )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -665,6 +705,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hDevice )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnGetStatus = dditable->Device->pfnGetStatus;
         if( nullptr == pfnGetStatus )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -688,6 +730,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hDevice )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnGetGlobalTimestamps = dditable->Device->pfnGetGlobalTimestamps;
         if( nullptr == pfnGetGlobalTimestamps )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -709,6 +753,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hDriver )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnCreate = dditable->Context->pfnCreate;
         if( nullptr == pfnCreate )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -740,6 +786,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hDriver )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnCreateEx = dditable->Context->pfnCreateEx;
         if( nullptr == pfnCreateEx )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -759,6 +807,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hContext )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnDestroy = dditable->Context->pfnDestroy;
         if( nullptr == pfnDestroy )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -778,6 +828,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hContext )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnGetStatus = dditable->Context->pfnGetStatus;
         if( nullptr == pfnGetStatus )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -800,6 +852,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hContext )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnCreate = dditable->CommandQueue->pfnCreate;
         if( nullptr == pfnCreate )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -819,6 +873,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hCommandQueue )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnDestroy = dditable->CommandQueue->pfnDestroy;
         if( nullptr == pfnDestroy )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -842,6 +898,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hCommandQueue )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnExecuteCommandLists = dditable->CommandQueue->pfnExecuteCommandLists;
         if( nullptr == pfnExecuteCommandLists )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -868,6 +926,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hCommandQueue )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnSynchronize = dditable->CommandQueue->pfnSynchronize;
         if( nullptr == pfnSynchronize )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -888,6 +948,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hCommandQueue )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnGetOrdinal = dditable->CommandQueue->pfnGetOrdinal;
         if( nullptr == pfnGetOrdinal )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -908,6 +970,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hCommandQueue )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnGetIndex = dditable->CommandQueue->pfnGetIndex;
         if( nullptr == pfnGetIndex )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -930,6 +994,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hContext )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnCreate = dditable->CommandList->pfnCreate;
         if( nullptr == pfnCreate )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -952,6 +1018,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hContext )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnCreateImmediate = dditable->CommandList->pfnCreateImmediate;
         if( nullptr == pfnCreateImmediate )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -971,6 +1039,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hCommandList )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnDestroy = dditable->CommandList->pfnDestroy;
         if( nullptr == pfnDestroy )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -990,6 +1060,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hCommandList )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnClose = dditable->CommandList->pfnClose;
         if( nullptr == pfnClose )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1009,6 +1081,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hCommandList )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnReset = dditable->CommandList->pfnReset;
         if( nullptr == pfnReset )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1035,6 +1109,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hCommandList )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnAppendWriteGlobalTimestamp = dditable->CommandList->pfnAppendWriteGlobalTimestamp;
         if( nullptr == pfnAppendWriteGlobalTimestamp )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1061,6 +1137,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hCommandList )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnHostSynchronize = dditable->CommandList->pfnHostSynchronize;
         if( nullptr == pfnHostSynchronize )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1081,6 +1159,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hCommandList )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnGetDeviceHandle = dditable->CommandList->pfnGetDeviceHandle;
         if( nullptr == pfnGetDeviceHandle )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1101,6 +1181,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hCommandList )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnGetContextHandle = dditable->CommandList->pfnGetContextHandle;
         if( nullptr == pfnGetContextHandle )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1121,6 +1203,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hCommandList )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnGetOrdinal = dditable->CommandList->pfnGetOrdinal;
         if( nullptr == pfnGetOrdinal )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1142,6 +1226,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hCommandListImmediate )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnImmediateGetIndex = dditable->CommandList->pfnImmediateGetIndex;
         if( nullptr == pfnImmediateGetIndex )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1163,6 +1249,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hCommandList )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnIsImmediate = dditable->CommandList->pfnIsImmediate;
         if( nullptr == pfnIsImmediate )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1187,6 +1275,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hCommandList )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnAppendBarrier = dditable->CommandList->pfnAppendBarrier;
         if( nullptr == pfnAppendBarrier )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1214,6 +1304,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hCommandList )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnAppendMemoryRangesBarrier = dditable->CommandList->pfnAppendMemoryRangesBarrier;
         if( nullptr == pfnAppendMemoryRangesBarrier )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1234,6 +1326,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hContext )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnSystemBarrier = dditable->Context->pfnSystemBarrier;
         if( nullptr == pfnSystemBarrier )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1261,6 +1355,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hCommandList )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnAppendMemoryCopy = dditable->CommandList->pfnAppendMemoryCopy;
         if( nullptr == pfnAppendMemoryCopy )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1289,6 +1385,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hCommandList )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnAppendMemoryFill = dditable->CommandList->pfnAppendMemoryFill;
         if( nullptr == pfnAppendMemoryFill )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1325,6 +1423,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hCommandList )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnAppendMemoryCopyRegion = dditable->CommandList->pfnAppendMemoryCopyRegion;
         if( nullptr == pfnAppendMemoryCopyRegion )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1353,6 +1453,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hCommandList )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnAppendMemoryCopyFromContext = dditable->CommandList->pfnAppendMemoryCopyFromContext;
         if( nullptr == pfnAppendMemoryCopyFromContext )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1379,6 +1481,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hCommandList )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnAppendImageCopy = dditable->CommandList->pfnAppendImageCopy;
         if( nullptr == pfnAppendImageCopy )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1407,6 +1511,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hCommandList )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnAppendImageCopyRegion = dditable->CommandList->pfnAppendImageCopyRegion;
         if( nullptr == pfnAppendImageCopyRegion )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1434,6 +1540,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hCommandList )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnAppendImageCopyToMemory = dditable->CommandList->pfnAppendImageCopyToMemory;
         if( nullptr == pfnAppendImageCopyToMemory )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1461,6 +1569,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hCommandList )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnAppendImageCopyFromMemory = dditable->CommandList->pfnAppendImageCopyFromMemory;
         if( nullptr == pfnAppendImageCopyFromMemory )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1482,6 +1592,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hCommandList )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnAppendMemoryPrefetch = dditable->CommandList->pfnAppendMemoryPrefetch;
         if( nullptr == pfnAppendMemoryPrefetch )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1505,6 +1617,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hCommandList )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnAppendMemAdvise = dditable->CommandList->pfnAppendMemAdvise;
         if( nullptr == pfnAppendMemAdvise )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1532,6 +1646,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hContext )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnCreate = dditable->EventPool->pfnCreate;
         if( nullptr == pfnCreate )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1551,6 +1667,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hEventPool )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnDestroy = dditable->EventPool->pfnDestroy;
         if( nullptr == pfnDestroy )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1572,6 +1690,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hEventPool )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnCreate = dditable->Event->pfnCreate;
         if( nullptr == pfnCreate )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1591,6 +1711,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hEvent )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnDestroy = dditable->Event->pfnDestroy;
         if( nullptr == pfnDestroy )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1611,6 +1733,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hEventPool )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnGetIpcHandle = dditable->EventPool->pfnGetIpcHandle;
         if( nullptr == pfnGetIpcHandle )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1632,6 +1756,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hContext )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnPutIpcHandle = dditable->EventPool->pfnPutIpcHandle;
         if( nullptr == pfnPutIpcHandle )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1654,6 +1780,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hContext )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnOpenIpcHandle = dditable->EventPool->pfnOpenIpcHandle;
         if( nullptr == pfnOpenIpcHandle )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1673,6 +1801,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hEventPool )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnCloseIpcHandle = dditable->EventPool->pfnCloseIpcHandle;
         if( nullptr == pfnCloseIpcHandle )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1693,6 +1823,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hCommandList )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnAppendSignalEvent = dditable->CommandList->pfnAppendSignalEvent;
         if( nullptr == pfnAppendSignalEvent )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1715,6 +1847,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hCommandList )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnAppendWaitOnEvents = dditable->CommandList->pfnAppendWaitOnEvents;
         if( nullptr == pfnAppendWaitOnEvents )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1734,6 +1868,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hEvent )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnHostSignal = dditable->Event->pfnHostSignal;
         if( nullptr == pfnHostSignal )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1760,6 +1896,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hEvent )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnHostSynchronize = dditable->Event->pfnHostSynchronize;
         if( nullptr == pfnHostSynchronize )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1779,6 +1917,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hEvent )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnQueryStatus = dditable->Event->pfnQueryStatus;
         if( nullptr == pfnQueryStatus )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1799,6 +1939,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hCommandList )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnAppendEventReset = dditable->CommandList->pfnAppendEventReset;
         if( nullptr == pfnAppendEventReset )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1818,6 +1960,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hEvent )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnHostReset = dditable->Event->pfnHostReset;
         if( nullptr == pfnHostReset )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1838,6 +1982,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hEvent )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnQueryKernelTimestamp = dditable->Event->pfnQueryKernelTimestamp;
         if( nullptr == pfnQueryKernelTimestamp )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1869,6 +2015,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hCommandList )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnAppendQueryKernelTimestamps = dditable->CommandList->pfnAppendQueryKernelTimestamps;
         if( nullptr == pfnAppendQueryKernelTimestamps )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1889,6 +2037,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hEvent )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnGetEventPool = dditable->Event->pfnGetEventPool;
         if( nullptr == pfnGetEventPool )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1911,6 +2061,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hEvent )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnGetSignalScope = dditable->Event->pfnGetSignalScope;
         if( nullptr == pfnGetSignalScope )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1933,6 +2085,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hEvent )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnGetWaitScope = dditable->Event->pfnGetWaitScope;
         if( nullptr == pfnGetWaitScope )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1953,6 +2107,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hEventPool )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnGetContextHandle = dditable->EventPool->pfnGetContextHandle;
         if( nullptr == pfnGetContextHandle )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1974,6 +2130,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hEventPool )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnGetFlags = dditable->EventPool->pfnGetFlags;
         if( nullptr == pfnGetFlags )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1995,6 +2153,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hCommandQueue )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnCreate = dditable->Fence->pfnCreate;
         if( nullptr == pfnCreate )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -2014,6 +2174,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hFence )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnDestroy = dditable->Fence->pfnDestroy;
         if( nullptr == pfnDestroy )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -2040,6 +2202,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hFence )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnHostSynchronize = dditable->Fence->pfnHostSynchronize;
         if( nullptr == pfnHostSynchronize )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -2059,6 +2223,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hFence )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnQueryStatus = dditable->Fence->pfnQueryStatus;
         if( nullptr == pfnQueryStatus )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -2078,6 +2244,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hFence )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnReset = dditable->Fence->pfnReset;
         if( nullptr == pfnReset )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -2099,6 +2267,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hDevice )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnGetProperties = dditable->Image->pfnGetProperties;
         if( nullptr == pfnGetProperties )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -2121,6 +2291,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hContext )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnCreate = dditable->Image->pfnCreate;
         if( nullptr == pfnCreate )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -2140,6 +2312,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hImage )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnDestroy = dditable->Image->pfnDestroy;
         if( nullptr == pfnDestroy )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -2167,6 +2341,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hContext )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnAllocShared = dditable->Mem->pfnAllocShared;
         if( nullptr == pfnAllocShared )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -2193,6 +2369,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hContext )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnAllocDevice = dditable->Mem->pfnAllocDevice;
         if( nullptr == pfnAllocDevice )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -2218,6 +2396,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hContext )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnAllocHost = dditable->Mem->pfnAllocHost;
         if( nullptr == pfnAllocHost )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -2238,6 +2418,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hContext )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnFree = dditable->Mem->pfnFree;
         if( nullptr == pfnFree )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -2260,6 +2442,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hContext )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnGetAllocProperties = dditable->Mem->pfnGetAllocProperties;
         if( nullptr == pfnGetAllocProperties )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -2282,6 +2466,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hContext )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnGetAddressRange = dditable->Mem->pfnGetAddressRange;
         if( nullptr == pfnGetAddressRange )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -2303,6 +2489,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hContext )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnGetIpcHandle = dditable->Mem->pfnGetIpcHandle;
         if( nullptr == pfnGetIpcHandle )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -2324,6 +2512,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hContext )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnGetIpcHandleFromFileDescriptorExp = dditable->MemExp->pfnGetIpcHandleFromFileDescriptorExp;
         if( nullptr == pfnGetIpcHandleFromFileDescriptorExp )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -2345,6 +2535,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hContext )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnGetFileDescriptorFromIpcHandleExp = dditable->MemExp->pfnGetFileDescriptorFromIpcHandleExp;
         if( nullptr == pfnGetFileDescriptorFromIpcHandleExp )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -2365,6 +2557,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hContext )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnPutIpcHandle = dditable->Mem->pfnPutIpcHandle;
         if( nullptr == pfnPutIpcHandle )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -2389,6 +2583,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hContext )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnOpenIpcHandle = dditable->Mem->pfnOpenIpcHandle;
         if( nullptr == pfnOpenIpcHandle )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -2409,6 +2605,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hContext )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnCloseIpcHandle = dditable->Mem->pfnCloseIpcHandle;
         if( nullptr == pfnCloseIpcHandle )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -2433,6 +2631,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hContext )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnSetAtomicAccessAttributeExp = dditable->MemExp->pfnSetAtomicAccessAttributeExp;
         if( nullptr == pfnSetAtomicAccessAttributeExp )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -2456,6 +2656,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hContext )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnGetAtomicAccessAttributeExp = dditable->MemExp->pfnGetAtomicAccessAttributeExp;
         if( nullptr == pfnGetAtomicAccessAttributeExp )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -2479,6 +2681,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hContext )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnCreate = dditable->Module->pfnCreate;
         if( nullptr == pfnCreate )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -2498,6 +2702,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hModule )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnDestroy = dditable->Module->pfnDestroy;
         if( nullptr == pfnDestroy )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -2520,6 +2726,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( phModules[ 0 ] )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnDynamicLink = dditable->Module->pfnDynamicLink;
         if( nullptr == pfnDynamicLink )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -2539,6 +2747,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hModuleBuildLog )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnDestroy = dditable->ModuleBuildLog->pfnDestroy;
         if( nullptr == pfnDestroy )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -2560,6 +2770,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hModuleBuildLog )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnGetString = dditable->ModuleBuildLog->pfnGetString;
         if( nullptr == pfnGetString )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -2581,6 +2793,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hModule )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnGetNativeBinary = dditable->Module->pfnGetNativeBinary;
         if( nullptr == pfnGetNativeBinary )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -2603,6 +2817,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hModule )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnGetGlobalPointer = dditable->Module->pfnGetGlobalPointer;
         if( nullptr == pfnGetGlobalPointer )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -2630,6 +2846,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hModule )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnGetKernelNames = dditable->Module->pfnGetKernelNames;
         if( nullptr == pfnGetKernelNames )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -2650,6 +2868,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hModule )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnGetProperties = dditable->Module->pfnGetProperties;
         if( nullptr == pfnGetProperties )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -2671,6 +2891,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hModule )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnCreate = dditable->Kernel->pfnCreate;
         if( nullptr == pfnCreate )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -2690,6 +2912,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hKernel )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnDestroy = dditable->Kernel->pfnDestroy;
         if( nullptr == pfnDestroy )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -2711,6 +2935,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hModule )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnGetFunctionPointer = dditable->Module->pfnGetFunctionPointer;
         if( nullptr == pfnGetFunctionPointer )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -2733,6 +2959,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hKernel )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnSetGroupSize = dditable->Kernel->pfnSetGroupSize;
         if( nullptr == pfnSetGroupSize )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -2758,6 +2986,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hKernel )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnSuggestGroupSize = dditable->Kernel->pfnSuggestGroupSize;
         if( nullptr == pfnSuggestGroupSize )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -2778,6 +3008,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hKernel )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnSuggestMaxCooperativeGroupCount = dditable->Kernel->pfnSuggestMaxCooperativeGroupCount;
         if( nullptr == pfnSuggestMaxCooperativeGroupCount )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -2801,6 +3033,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hKernel )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnSetArgumentValue = dditable->Kernel->pfnSetArgumentValue;
         if( nullptr == pfnSetArgumentValue )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -2821,6 +3055,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hKernel )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnSetIndirectAccess = dditable->Kernel->pfnSetIndirectAccess;
         if( nullptr == pfnSetIndirectAccess )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -2841,6 +3077,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hKernel )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnGetIndirectAccess = dditable->Kernel->pfnGetIndirectAccess;
         if( nullptr == pfnGetIndirectAccess )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -2869,6 +3107,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hKernel )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnGetSourceAttributes = dditable->Kernel->pfnGetSourceAttributes;
         if( nullptr == pfnGetSourceAttributes )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -2890,6 +3130,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hKernel )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnSetCacheConfig = dditable->Kernel->pfnSetCacheConfig;
         if( nullptr == pfnSetCacheConfig )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -2910,6 +3152,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hKernel )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnGetProperties = dditable->Kernel->pfnGetProperties;
         if( nullptr == pfnGetProperties )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -2932,6 +3176,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hKernel )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnGetName = dditable->Kernel->pfnGetName;
         if( nullptr == pfnGetName )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -2958,6 +3204,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hCommandList )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnAppendLaunchKernel = dditable->CommandList->pfnAppendLaunchKernel;
         if( nullptr == pfnAppendLaunchKernel )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -2984,6 +3232,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hCommandList )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnAppendLaunchCooperativeKernel = dditable->CommandList->pfnAppendLaunchCooperativeKernel;
         if( nullptr == pfnAppendLaunchCooperativeKernel )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -3011,6 +3261,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hCommandList )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnAppendLaunchKernelIndirect = dditable->CommandList->pfnAppendLaunchKernelIndirect;
         if( nullptr == pfnAppendLaunchKernelIndirect )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -3042,6 +3294,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hCommandList )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnAppendLaunchMultipleKernelsIndirect = dditable->CommandList->pfnAppendLaunchMultipleKernelsIndirect;
         if( nullptr == pfnAppendLaunchMultipleKernelsIndirect )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -3064,6 +3318,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hContext )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnMakeMemoryResident = dditable->Context->pfnMakeMemoryResident;
         if( nullptr == pfnMakeMemoryResident )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -3086,6 +3342,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hContext )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnEvictMemory = dditable->Context->pfnEvictMemory;
         if( nullptr == pfnEvictMemory )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -3107,6 +3365,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hContext )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnMakeImageResident = dditable->Context->pfnMakeImageResident;
         if( nullptr == pfnMakeImageResident )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -3128,6 +3388,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hContext )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnEvictImage = dditable->Context->pfnEvictImage;
         if( nullptr == pfnEvictImage )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -3150,6 +3412,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hContext )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnCreate = dditable->Sampler->pfnCreate;
         if( nullptr == pfnCreate )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -3169,6 +3433,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hSampler )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnDestroy = dditable->Sampler->pfnDestroy;
         if( nullptr == pfnDestroy )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -3192,6 +3458,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hContext )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnReserve = dditable->VirtualMem->pfnReserve;
         if( nullptr == pfnReserve )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -3213,6 +3481,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hContext )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnFree = dditable->VirtualMem->pfnFree;
         if( nullptr == pfnFree )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -3236,6 +3506,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hContext )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnQueryPageSize = dditable->VirtualMem->pfnQueryPageSize;
         if( nullptr == pfnQueryPageSize )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -3259,6 +3531,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hContext )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnCreate = dditable->PhysicalMem->pfnCreate;
         if( nullptr == pfnCreate )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -3279,6 +3553,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hContext )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnDestroy = dditable->PhysicalMem->pfnDestroy;
         if( nullptr == pfnDestroy )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -3306,6 +3582,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hContext )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnMap = dditable->VirtualMem->pfnMap;
         if( nullptr == pfnMap )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -3327,6 +3605,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hContext )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnUnmap = dditable->VirtualMem->pfnUnmap;
         if( nullptr == pfnUnmap )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -3350,6 +3630,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hContext )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnSetAccessAttribute = dditable->VirtualMem->pfnSetAccessAttribute;
         if( nullptr == pfnSetAccessAttribute )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -3374,6 +3656,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hContext )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnGetAccessAttribute = dditable->VirtualMem->pfnGetAccessAttribute;
         if( nullptr == pfnGetAccessAttribute )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -3396,6 +3680,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hKernel )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnSetGlobalOffsetExp = dditable->KernelExp->pfnSetGlobalOffsetExp;
         if( nullptr == pfnSetGlobalOffsetExp )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -3417,6 +3703,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hKernel )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnGetBinaryExp = dditable->KernelExp->pfnGetBinaryExp;
         if( nullptr == pfnGetBinaryExp )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -3438,6 +3726,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hDevice )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnImportExternalSemaphoreExt = dditable->Device->pfnImportExternalSemaphoreExt;
         if( nullptr == pfnImportExternalSemaphoreExt )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -3457,6 +3747,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hSemaphore )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnReleaseExternalSemaphoreExt = dditable->Device->pfnReleaseExternalSemaphoreExt;
         if( nullptr == pfnReleaseExternalSemaphoreExt )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -3485,6 +3777,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hCommandList )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnAppendSignalExternalSemaphoreExt = dditable->CommandList->pfnAppendSignalExternalSemaphoreExt;
         if( nullptr == pfnAppendSignalExternalSemaphoreExt )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -3513,6 +3807,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hCommandList )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnAppendWaitExternalSemaphoreExt = dditable->CommandList->pfnAppendWaitExternalSemaphoreExt;
         if( nullptr == pfnAppendWaitExternalSemaphoreExt )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -3537,6 +3833,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hDevice )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnReserveCacheExt = dditable->Device->pfnReserveCacheExt;
         if( nullptr == pfnReserveCacheExt )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -3559,6 +3857,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hDevice )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnSetCacheAdviceExt = dditable->Device->pfnSetCacheAdviceExt;
         if( nullptr == pfnSetCacheAdviceExt )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -3587,6 +3887,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hEvent )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnQueryTimestampsExp = dditable->EventExp->pfnQueryTimestampsExp;
         if( nullptr == pfnQueryTimestampsExp )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -3607,6 +3909,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hImage )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnGetMemoryPropertiesExp = dditable->ImageExp->pfnGetMemoryPropertiesExp;
         if( nullptr == pfnGetMemoryPropertiesExp )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -3630,6 +3934,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hContext )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnViewCreateExt = dditable->Image->pfnViewCreateExt;
         if( nullptr == pfnViewCreateExt )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -3653,6 +3959,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hContext )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnViewCreateExp = dditable->ImageExp->pfnViewCreateExp;
         if( nullptr == pfnViewCreateExp )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -3673,6 +3981,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hKernel )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnSchedulingHintExp = dditable->KernelExp->pfnSchedulingHintExp;
         if( nullptr == pfnSchedulingHintExp )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -3693,6 +4003,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hDevice )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnPciGetPropertiesExt = dditable->Device->pfnPciGetPropertiesExt;
         if( nullptr == pfnPciGetPropertiesExt )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -3724,6 +4036,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hCommandList )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnAppendImageCopyToMemoryExt = dditable->CommandList->pfnAppendImageCopyToMemoryExt;
         if( nullptr == pfnAppendImageCopyToMemoryExt )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -3755,6 +4069,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hCommandList )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnAppendImageCopyFromMemoryExt = dditable->CommandList->pfnAppendImageCopyFromMemoryExt;
         if( nullptr == pfnAppendImageCopyFromMemoryExt )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -3776,6 +4092,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hContext )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnGetAllocPropertiesExt = dditable->Image->pfnGetAllocPropertiesExt;
         if( nullptr == pfnGetAllocPropertiesExt )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -3800,6 +4118,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( phModules[ 0 ] )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnInspectLinkageExt = dditable->Module->pfnInspectLinkageExt;
         if( nullptr == pfnInspectLinkageExt )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -3821,6 +4141,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hContext )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnFreeExt = dditable->Mem->pfnFreeExt;
         if( nullptr == pfnFreeExt )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -3849,6 +4171,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hDriver )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnGetExp = dditable->FabricVertexExp->pfnGetExp;
         if( nullptr == pfnGetExp )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -3877,6 +4201,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hVertex )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnGetSubVerticesExp = dditable->FabricVertexExp->pfnGetSubVerticesExp;
         if( nullptr == pfnGetSubVerticesExp )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -3897,6 +4223,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hVertex )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnGetPropertiesExp = dditable->FabricVertexExp->pfnGetPropertiesExp;
         if( nullptr == pfnGetPropertiesExp )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -3917,6 +4245,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hVertex )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnGetDeviceExp = dditable->FabricVertexExp->pfnGetDeviceExp;
         if( nullptr == pfnGetDeviceExp )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -3937,6 +4267,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hDevice )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnGetFabricVertexExp = dditable->DeviceExp->pfnGetFabricVertexExp;
         if( nullptr == pfnGetFabricVertexExp )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -3966,6 +4298,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hVertexA )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnGetExp = dditable->FabricEdgeExp->pfnGetExp;
         if( nullptr == pfnGetExp )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -3987,6 +4321,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hEdge )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnGetVerticesExp = dditable->FabricEdgeExp->pfnGetVerticesExp;
         if( nullptr == pfnGetVerticesExp )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -4007,6 +4343,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hEdge )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnGetPropertiesExp = dditable->FabricEdgeExp->pfnGetPropertiesExp;
         if( nullptr == pfnGetPropertiesExp )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -4042,6 +4380,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hEvent )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnQueryKernelTimestampsExt = dditable->Event->pfnQueryKernelTimestampsExt;
         if( nullptr == pfnQueryKernelTimestampsExt )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -4063,6 +4403,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hDriver )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnCreateExp = dditable->RTASBuilderExp->pfnCreateExp;
         if( nullptr == pfnCreateExp )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -4084,6 +4426,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hBuilder )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnGetBuildPropertiesExp = dditable->RTASBuilderExp->pfnGetBuildPropertiesExp;
         if( nullptr == pfnGetBuildPropertiesExp )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -4105,6 +4449,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hDriver )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnRTASFormatCompatibilityCheckExp = dditable->DriverExp->pfnRTASFormatCompatibilityCheckExp;
         if( nullptr == pfnRTASFormatCompatibilityCheckExp )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -4136,6 +4482,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hBuilder )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnBuildExp = dditable->RTASBuilderExp->pfnBuildExp;
         if( nullptr == pfnBuildExp )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -4155,6 +4503,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hBuilder )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnDestroyExp = dditable->RTASBuilderExp->pfnDestroyExp;
         if( nullptr == pfnDestroyExp )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -4175,6 +4525,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hDriver )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnCreateExp = dditable->RTASParallelOperationExp->pfnCreateExp;
         if( nullptr == pfnCreateExp )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -4195,6 +4547,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hParallelOperation )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnGetPropertiesExp = dditable->RTASParallelOperationExp->pfnGetPropertiesExp;
         if( nullptr == pfnGetPropertiesExp )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -4214,6 +4568,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hParallelOperation )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnJoinExp = dditable->RTASParallelOperationExp->pfnJoinExp;
         if( nullptr == pfnJoinExp )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -4233,6 +4589,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hParallelOperation )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnDestroyExp = dditable->RTASParallelOperationExp->pfnDestroyExp;
         if( nullptr == pfnDestroyExp )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -4257,6 +4615,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hContext )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnGetPitchFor2dImage = dditable->Mem->pfnGetPitchFor2dImage;
         if( nullptr == pfnGetPitchFor2dImage )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -4277,6 +4637,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hImage )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnGetDeviceOffsetExp = dditable->ImageExp->pfnGetDeviceOffsetExp;
         if( nullptr == pfnGetDeviceOffsetExp )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -4297,6 +4659,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hCommandList )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnCreateCloneExp = dditable->CommandListExp->pfnCreateCloneExp;
         if( nullptr == pfnCreateCloneExp )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -4327,6 +4691,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hCommandListImmediate )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnImmediateAppendCommandListsExp = dditable->CommandListExp->pfnImmediateAppendCommandListsExp;
         if( nullptr == pfnImmediateAppendCommandListsExp )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -4348,6 +4714,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hCommandList )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnGetNextCommandIdExp = dditable->CommandListExp->pfnGetNextCommandIdExp;
         if( nullptr == pfnGetNextCommandIdExp )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -4373,6 +4741,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hCommandList )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnGetNextCommandIdWithKernelsExp = dditable->CommandListExp->pfnGetNextCommandIdWithKernelsExp;
         if( nullptr == pfnGetNextCommandIdWithKernelsExp )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -4394,6 +4764,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hCommandList )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnUpdateMutableCommandsExp = dditable->CommandListExp->pfnUpdateMutableCommandsExp;
         if( nullptr == pfnUpdateMutableCommandsExp )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -4415,6 +4787,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hCommandList )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnUpdateMutableCommandSignalEventExp = dditable->CommandListExp->pfnUpdateMutableCommandSignalEventExp;
         if( nullptr == pfnUpdateMutableCommandSignalEventExp )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -4438,6 +4812,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hCommandList )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnUpdateMutableCommandWaitEventsExp = dditable->CommandListExp->pfnUpdateMutableCommandWaitEventsExp;
         if( nullptr == pfnUpdateMutableCommandWaitEventsExp )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -4461,6 +4837,8 @@ namespace loader
 
         // extract handle's function pointer table
         auto dditable = reinterpret_cast<ze_handle_t*>( hCommandList )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         auto pfnUpdateMutableCommandKernelsExp = dditable->CommandListExp->pfnUpdateMutableCommandKernelsExp;
         if( nullptr == pfnUpdateMutableCommandKernelsExp )
             return ZE_RESULT_ERROR_UNINITIALIZED;
