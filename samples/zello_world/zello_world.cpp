@@ -131,12 +131,9 @@ int main( int argc, char *argv[] )
 
         for( uint32_t driver = 0; driver < driverCount; ++driver )
         {
+            std::cout << "Driver # " << driver << "\n";
             pDriver = drivers[driver];
             pDevice = findDevice( pDriver, type );
-            if( pDevice )
-            {
-                break;
-            }
         }
     }
 
