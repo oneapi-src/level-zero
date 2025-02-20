@@ -22,7 +22,7 @@
 #include "zes_ldrddi.h"
 
 #include "loader/ze_loader.h"
-#include "logging.h"
+#include "../utils/logging.h"
 #include "spdlog/spdlog.h"
 namespace loader
 {

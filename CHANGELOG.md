@@ -1,5 +1,7 @@
 # Level zero loader changelog
 
+## v1.21.0
+* Add Support for building the L0 Loader statically
 ## v1.20.6
 * Add in missing header for ze_handle_t definition for DDI extension
 ## v1.20.5

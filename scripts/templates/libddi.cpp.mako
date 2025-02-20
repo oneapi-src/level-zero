@@ -26,7 +26,7 @@ namespace ${x}_lib
     ///////////////////////////////////////////////////////////////////////////////
 
 #ifdef DYNAMIC_LOAD_LOADER
-    __zedlllocal ${x}_result_t context_t::${n}DdiTableInit()
+    __zedlllocal ${x}_result_t context_t::${n}DdiTableInit(ze_api_version_t version)
     {
         ${x}_result_t result = ${X}_RESULT_SUCCESS;
 
@@ -37,11 +37,11 @@ namespace ${x}_lib
             // Optional
             auto getTable = reinterpret_cast<${tbl['pfn']}>(
                 GET_FUNCTION_PTR(loader, "${tbl['export']['name']}") );
-            getTable( ${X}_API_VERSION_CURRENT, &initial${n}DdiTable.${tbl['name']} );
+            getTableWithCheck(getTable, version, &initial${n}DdiTable.${tbl['name']} );
     %else:
             auto getTable = reinterpret_cast<${tbl['pfn']}>(
                 GET_FUNCTION_PTR(loader, "${tbl['export']['name']}") );
-            result = getTable( ${X}_API_VERSION_CURRENT, &initial${n}DdiTable.${tbl['name']} );
+            result = getTableWithCheck(getTable, version, &initial${n}DdiTable.${tbl['name']} );
     %endif
         }
 
@@ -49,7 +49,7 @@ namespace ${x}_lib
         return result;
     }
 #else
-    __zedlllocal ${x}_result_t context_t::${n}DdiTableInit()
+    __zedlllocal ${x}_result_t context_t::${n}DdiTableInit(ze_api_version_t version)
     {
         ${x}_result_t result = ${X}_RESULT_SUCCESS;
 
@@ -58,9 +58,9 @@ namespace ${x}_lib
         {
             %if tbl['optional'] == True:
             // Optional
-            ${tbl['export']['name']}( ${X}_API_VERSION_CURRENT, &initial${n}DdiTable.${tbl['name']} );
+            ${tbl['export']['name']}( version, &initial${n}DdiTable.${tbl['name']} );
             %else:
-            result = ${tbl['export']['name']}( ${X}_API_VERSION_CURRENT, &initial${n}DdiTable.${tbl['name']} );
+            result = ${tbl['export']['name']}( version, &initial${n}DdiTable.${tbl['name']} );
             %endif
         }
 

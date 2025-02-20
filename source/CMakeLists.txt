@@ -12,15 +12,28 @@ configure_file(
     @ONLY)
 
 include(GNUInstallDirs)
-add_library(${TARGET_LOADER_NAME}
-    SHARED
-    ""
-    ${CMAKE_CURRENT_BINARY_DIR}/ZeLoaderVersion.rc
-)
+if (BUILD_STATIC)
+    message(STATUS "Building loader as static library")
+    add_library(${TARGET_LOADER_NAME}
+        STATIC
+        ""
+        ${CMAKE_CURRENT_BINARY_DIR}/ZeLoaderVersion.rc
+    )
+    add_definitions(-DDYNAMIC_LOAD_LOADER="1")
+else()
+    message(STATUS "Building loader as dynamic library")
+    add_library(${TARGET_LOADER_NAME}
+        SHARED
+        ""
+        ${CMAKE_CURRENT_BINARY_DIR}/ZeLoaderVersion.rc
+    )
+endif()
 
 add_subdirectory(lib)
-add_subdirectory(loader)
-add_subdirectory(layers)
+if (NOT BUILD_STATIC)
+    add_subdirectory(loader)
+    add_subdirectory(layers)
+endif()
 add_subdirectory(drivers)
 add_subdirectory(utils)
 

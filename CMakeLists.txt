@@ -13,7 +13,7 @@ if(MSVC AND (MSVC_VERSION LESS 1900))
 endif()
 
 # This project follows semantic versioning (https://semver.org/)
-project(level-zero VERSION 1.20.6)
+project(level-zero VERSION 1.21.0)
 
 include(GNUInstallDirs)
 
@@ -52,14 +52,19 @@ endif()
 
 include(FetchContent)
 
-if(BUILD_L0_LOADER_TESTS)
-	FetchContent_Declare(
-		googletest
-		URL https://github.com/google/googletest/archive/refs/tags/v1.14.0.zip
-	)
+if(BUILD_L0_LOADER_TESTS AND (NOT MSVC OR (MSVC AND NOT BUILD_STATIC)))
+    FetchContent_Declare(
+        googletest
+        GIT_REPOSITORY https://github.com/google/googletest.git
+        GIT_TAG        v1.14.0
+    )
+    add_library(GTest::GTest INTERFACE IMPORTED)
+    target_link_libraries(GTest::GTest INTERFACE gtest_main)
 
 	# For Windows: Prevent overriding the parent project's compiler/linker settings
-	set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+    if(MSVC)
+        set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+    endif()
 
 	FetchContent_MakeAvailable(googletest)
 
@@ -182,7 +187,7 @@ set(TARGET_LOADER_NAME ze_loader)
 add_subdirectory(source)
 add_subdirectory(samples)
 
-if(BUILD_L0_LOADER_TESTS)
+if(BUILD_L0_LOADER_TESTS AND (NOT MSVC OR (MSVC AND NOT BUILD_STATIC)))
     include(CTest)
     add_subdirectory(test)
 endif()

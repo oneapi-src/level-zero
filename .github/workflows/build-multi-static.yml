@@ -1,0 +1,160 @@
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+  workflow_dispatch:
+
+permissions: read-all
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  config:
+    if: github.repository_owner == 'oneapi-src'
+    runs-on: ubuntu-latest
+    outputs:
+      short-sha: ${{ steps.const.outputs.short-sha }}
+      ref-slug: ${{ steps.const.outputs.ref-slug }}
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        clean: true
+        ref: ${{ github.event.pull_request.head.sha }}
+    - name: Set constants
+      id: const
+      run: |
+        cat >> ${GITHUB_OUTPUT} <<EOF
+        short-sha=$(git rev-parse --short=7 ${GITHUB_SHA})
+        ref-slug=$(echo ${{ github.ref_name }} | tr '/_' '-')
+        EOF
+
+  build:
+    # Notes on formatting:
+    #
+    # GitHub Actions expressions ${{ ... }} are used wherever possible so the
+    # evaluation results are plainly visible in the web console.
+    #
+    # Note the mixed spaces and tabs in the heredocs, see the bash man page
+    # entry for <<- in the Here Documents section. This allows generated code to
+    # be indented for readability in the workflow output.
+    if: github.repository_owner == 'oneapi-src'
+    needs: [config]
+    runs-on: ${{ matrix.os.name == 'windows' && 'windows-latest' || 'ubuntu-latest' }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [
+          {name: ubuntu, vmaj: 20, vmin: '04'},
+          {name: ubuntu, vmaj: 22, vmin: '04'},
+          {name: ubuntu, vmaj: 24, vmin: '04'},
+          {name: ubuntu, vmaj: 24, vmin: '10'},
+          {name: sles, vmaj: 15, vmin: 2},
+          {name: sles, vmaj: 15, vmin: 3},
+          {name: sles, vmaj: 15, vmin: 4},
+          {name: rhel, vmaj: 8, vmin: 6},
+          {name: windows}
+        ]
+        target: [install, package]
+        arch: ['']
+        include: [
+          {os: {name: ubuntu, vmaj: 20, vmin: '04'}, target: install, arch: arm64},
+          {os: {name: ubuntu, vmaj: 20, vmin: '04'}, target: package, arch: arm64}
+        ]
+    env:
+      MSYS_NO_PATHCONV: 1
+      MOUNT_TARGET:  ${{ matrix.os.name == 'windows' && 'C:/project' || '/project' }}
+      # -j breaks the Visual Studio configuration selection
+      PARALLEL: ${{ ! (matrix.os.name == 'windows') && '-j' || '' }}
+      ARCH_SUFFIX: ${{ matrix.arch != '' && format('_{0}', matrix.arch) || '' }}
+    steps:
+    - name: Set constants
+      id: const
+      env:
+        OS_STRING: >-
+          ${{ matrix.os.name == 'windows' && 'windows' ||
+              format('{0}-{1}.{2}',
+                matrix.os.name,
+                matrix.os.vmaj,
+                matrix.os.vmin
+              )
+          }}
+        CCACHE_DIR: ${{ github.workspace }}/ccache
+      run: |
+        cat >> ${GITHUB_OUTPUT} <<EOF
+        os-string=${OS_STRING}
+        image-name=ghcr.io/${{ github.repository }}/${OS_STRING}
+        ccache-dir=${CCACHE_DIR}
+        EOF
+    - uses: actions/checkout@v4
+      with:
+        clean: true
+        fetch-depth: 0
+        ref: ${{ github.event.pull_request.head.sha }}
+    - name: Create Ccache directory
+      run: mkdir -p '${{ steps.const.outputs.ccache-dir }}'
+    - name: Ccache
+      uses: actions/cache@v4
+      with:
+        path: ${{ steps.const.outputs.ccache-dir }}
+        key: ccache-${{ github.job }}-${{ steps.const.outputs.os-string }}${{ env.ARCH_SUFFIX }}-${{ matrix.target }}-${{ github.sha }}
+        restore-keys: ccache-${{ github.job }}-${{ steps.const.outputs.os-string }}${{ env.ARCH_SUFFIX }}-${{ matrix.target }}-
+    - name: Compute image name
+      run: echo "DOCKER_IMAGE=localhost/${{ github.repository }}/${{ steps.const.outputs.os-string }}" >> ${GITHUB_ENV}
+    - name: "Registry login: ghcr.io"
+      run: |
+        echo ${{ secrets.GITHUB_TOKEN }} |
+        docker login -u sys-lzdev --password-stdin ghcr.io
+    - name: Build image
+      run: |
+        docker info
+        docker build \
+        ${{ runner.os == 'Windows' && '  \
+          --memory 16G ' || '  '
+        }}\
+        ${{ matrix.os.vmaj != '' && format('  \
+          --build-arg VMAJ={0} \
+          --build-arg VMIN={1} ', matrix.os.vmaj, matrix.os.vmin) || '  '
+        }}\
+          --pull \
+          --tag ${DOCKER_IMAGE}:${{ needs.config.outputs.ref-slug }} \
+          - < .github/docker/${{ matrix.os.name }}.Dockerfile
+    - name: Build
+      id: build
+      run: |
+        mkdir build
+        docker run \
+          --rm \
+          --interactive \
+          -v '${{ github.workspace }}':${MOUNT_TARGET} \
+          -w ${MOUNT_TARGET}/build \
+          -e CCACHE_BASEDIR=${MOUNT_TARGET} \
+          -e CCACHE_DIR=${MOUNT_TARGET}/ccache \
+          -v '${{ steps.const.outputs.ccache-dir }}':${MOUNT_TARGET}/ccache \
+          ${DOCKER_IMAGE}:${{ needs.config.outputs.ref-slug }} \
+          bash -e -x <<-EOF
+
+        	cmake \
+        ${{ matrix.os.name != 'windows' && '	  \
+        	  -G Ninja ' || '	  '
+        }}\
+        ${{ matrix.arch == 'arm64' && '	  \
+        	  -D CMAKE_C_COMPILER=aarch64-linux-gnu-gcc \
+        	  -D CMAKE_CXX_COMPILER=aarch64-linux-gnu-g++ \
+        	  -D CMAKE_SYSTEM_PROCESSOR=aarch64 ' || '	  '
+        }}\
+        	  -D CMAKE_C_COMPILER_LAUNCHER=ccache \
+        	  -D CMAKE_CXX_COMPILER_LAUNCHER=ccache \
+        	  -D CMAKE_BUILD_TYPE=Release \
+        	  -D BUILD_STATIC=1 \
+        	  -D CMAKE_INSTALL_PREFIX=${{ matrix.target == 'install' && '../level-zero-install' || matrix.target == 'package' && '/usr' || '' }} \
+        	  -D CPACK_OUTPUT_FILE_PREFIX=${MOUNT_TARGET}/level-zero-package \
+        	  ..
+        	
+        	cmake --build . ${PARALLEL} --target ${{ matrix.target }} ${{ matrix.os.name == 'windows' && '--config Release' || '' }}
+        	
+        	ccache --show-stats
+        	
+        	EOF
