@@ -14,7 +14,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - uses: hendrikmuhs/ccache-action@v1
-      - name: Build Loader on Latest Ubuntu
+      - name: Build Static Loader on Latest Ubuntu
         run: |
           mkdir build
           cd build
@@ -23,13 +23,26 @@ jobs:
             -D CMAKE_CXX_COMPILER_LAUNCHER=ccache \
             -D CMAKE_BUILD_TYPE=Release \
             -D BUILD_L0_LOADER_TESTS=1 \
+            -D BUILD_STATIC=1 \
             ..
           make -j$(nproc)
+      - name: Build Dynamic Loader on Latest Ubuntu
+        run: |
+            cd ${{ github.workspace }}
+            mkdir dynamic_build
+            cd dynamic_build
+            cmake \
+              -D CMAKE_C_COMPILER_LAUNCHER=ccache \
+              -D CMAKE_CXX_COMPILER_LAUNCHER=ccache \
+              -D CMAKE_BUILD_TYPE=Release \
+              -D BUILD_L0_LOADER_TESTS=1 \
+              -D BUILD_STATIC=1 \
+              ..
+            make -j$(nproc)
       - env:
-          ZE_ENABLE_LOADER_DEBUG_TRACE: '1'
-          ZEL_LIBRARY_PATH: '${{ github.workspace }}/build/lib'
+          ZEL_LIBRARY_PATH: '${{ github.workspace }}/dynamic_build/lib'
         working-directory: build
-        run: ctest -V
+        run: ZE_ENABLE_LOADER_DEBUG_TRACE=1 ctest -V
 
   build-windows:
     if: github.repository_owner == 'oneapi-src'
