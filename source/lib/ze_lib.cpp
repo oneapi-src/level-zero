@@ -50,11 +50,11 @@ namespace ze_lib
         if (!loaderLibraryPathEnv.empty()) {
             loaderLibraryPath = loaderLibraryPathEnv;
         }
-        #ifdef _WIN32
+#ifdef _WIN32
         else {
             loaderLibraryPath = readLevelZeroLoaderLibraryPath();
         }
-        #endif
+#endif
         std::string loaderFullLibraryPath = create_library_path(MAKE_LIBRARY_NAME( "ze_loader", L0_LOADER_VERSION), loaderLibraryPath.c_str());
         loader = LOAD_DRIVER_LIBRARY(loaderFullLibraryPath.c_str());
 

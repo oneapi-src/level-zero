@@ -39,8 +39,9 @@ jobs:
               -D BUILD_STATIC=1 \
               ..
             make -j$(nproc)
+            cp lib/*.so* ../build/lib
       - env:
-          ZEL_LIBRARY_PATH: '${{ github.workspace }}/dynamic_build/lib'
+          ZEL_LIBRARY_PATH: '${{ github.workspace }}/build/lib'
         working-directory: build
         run: ZE_ENABLE_LOADER_DEBUG_TRACE=1 ctest -V
 
