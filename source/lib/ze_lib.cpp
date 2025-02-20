@@ -76,34 +76,6 @@ namespace ze_lib
             return result;
         }
 
-        // Init Dynamic Loader's Lib Context:
-        auto initDriversLoader = reinterpret_cast<ze_pfnInitDrivers_t>(
-            GET_FUNCTION_PTR(loader, "zeInitDrivers") );
-        auto initLoader = reinterpret_cast<ze_pfnInit_t>(
-            GET_FUNCTION_PTR(loader, "zeInit") );
-        if (initDriversLoader == nullptr && initLoader == nullptr) {
-            std::string message = "ze_lib Context Init() zeInitDrivers and zeInit missing, returning ";
-            debug_trace_message(message, to_string(ZE_RESULT_ERROR_UNINITIALIZED));
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        }
-        if (!desc) {
-            result = initLoader(flags);
-        } else if (initDriversLoader != nullptr) {
-            uint32_t pInitDriversCount = 0;
-            result = initDriversLoader(&pInitDriversCount, nullptr, desc);
-        } else {
-            ze_init_flags_t init_flags = flags;
-            if (desc) {
-                if(desc->flags & ZE_INIT_DRIVER_TYPE_FLAG_GPU) {
-                    init_flags = ZE_INIT_FLAG_GPU_ONLY;
-                } else if(desc->flags & ZE_INIT_DRIVER_TYPE_FLAG_NPU) {
-                    init_flags = ZE_INIT_FLAG_VPU_ONLY;
-                } else {
-                    init_flags = 0;
-                }
-            }
-            result = initLoader(init_flags);
-        }
         if (result != ZE_RESULT_SUCCESS) {
             std::string message = "ze_lib Context Init() zeInitDrivers or zeInit failed with ";
             debug_trace_message(message, to_string(result));
@@ -316,6 +288,36 @@ namespace ze_lib
 
         if( ZE_RESULT_SUCCESS == result )
         {
+#ifdef DYNAMIC_LOAD_LOADER
+            // Init Dynamic Loader's Lib Context:
+            auto initDriversLoader = reinterpret_cast<ze_pfnInitDrivers_t>(
+                GET_FUNCTION_PTR(loader, "zeInitDrivers") );
+            auto initLoader = reinterpret_cast<ze_pfnInit_t>(
+                GET_FUNCTION_PTR(loader, "zeInit") );
+            if (initDriversLoader == nullptr && initLoader == nullptr) {
+                std::string message = "ze_lib Context Init() zeInitDrivers and zeInit missing, returning ";
+                debug_trace_message(message, to_string(ZE_RESULT_ERROR_UNINITIALIZED));
+                return ZE_RESULT_ERROR_UNINITIALIZED;
+            }
+            if (!desc) {
+                result = initLoader(flags);
+            } else if (initDriversLoader != nullptr) {
+                uint32_t pInitDriversCount = 0;
+                result = initDriversLoader(&pInitDriversCount, nullptr, desc);
+            } else {
+                ze_init_flags_t init_flags = flags;
+                if (desc) {
+                    if(desc->flags & ZE_INIT_DRIVER_TYPE_FLAG_GPU) {
+                        init_flags = ZE_INIT_FLAG_GPU_ONLY;
+                    } else if(desc->flags & ZE_INIT_DRIVER_TYPE_FLAG_NPU) {
+                        init_flags = ZE_INIT_FLAG_VPU_ONLY;
+                    } else {
+                        init_flags = 0;
+                    }
+                }
+                result = initLoader(init_flags);
+            }
+#endif
             isInitialized = true;
         }
 
