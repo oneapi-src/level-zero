@@ -36,14 +36,13 @@ jobs:
               -D CMAKE_CXX_COMPILER_LAUNCHER=ccache \
               -D CMAKE_BUILD_TYPE=Release \
               -D BUILD_L0_LOADER_TESTS=1 \
-              -D BUILD_STATIC=1 \
+              -D BUILD_STATIC=0 \
               ..
             make -j$(nproc)
-            cp lib/*.so* ../build/lib
       - env:
-          ZEL_LIBRARY_PATH: '${{ github.workspace }}/build/lib'
+          ZEL_LIBRARY_PATH: '${{ github.workspace }}/dynamic_build/lib'
         working-directory: build
-        run: ZE_ENABLE_LOADER_DEBUG_TRACE=1 ctest -V
+        run: ls $ZEL_LIBRARY_PATH;ZE_ENABLE_LOADER_DEBUG_TRACE=1 ctest -V
 
   build-windows:
     if: github.repository_owner == 'oneapi-src'
