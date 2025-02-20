@@ -46,9 +46,15 @@ namespace ze_lib
         ze_api_version_t version = ZE_API_VERSION_CURRENT;
 #ifdef DYNAMIC_LOAD_LOADER
         std::string loaderLibraryPath;
-#ifdef _WIN32
-        loaderLibraryPath = readLevelZeroLoaderLibraryPath();
-#endif
+        auto loaderLibraryPathEnv = getenv_string("ZEL_LIBRARY_PATH");
+        if (!loaderLibraryPathEnv.empty()) {
+            loaderLibraryPath = loaderLibraryPathEnv;
+        }
+        #ifdef _WIN32
+        else {
+            loaderLibraryPath = readLevelZeroLoaderLibraryPath();
+        }
+        #endif
         std::string loaderFullLibraryPath = create_library_path(MAKE_LIBRARY_NAME( "ze_loader", L0_LOADER_VERSION), loaderLibraryPath.c_str());
         loader = LOAD_DRIVER_LIBRARY(loaderFullLibraryPath.c_str());
 
