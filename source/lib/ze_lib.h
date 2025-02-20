@@ -27,7 +27,7 @@
 namespace ze_lib
 {
     ///////////////////////////////////////////////////////////////////////////////
-    class context_t
+    class __zedlllocal context_t
     {
     public:
 #ifdef DYNAMIC_LOAD_LOADER
@@ -38,7 +38,7 @@ namespace ze_lib
         ~context_t();
 
     //////////////////////////////////////////////////////////////////////////
-    std::string to_string(const ze_result_t result) {
+    __zedlllocal std::string to_string(const ze_result_t result) {
         if (result == ZE_RESULT_SUCCESS) {
             return "ZE_RESULT_SUCCESS";
         } else if (result == ZE_RESULT_NOT_READY) {
@@ -121,7 +121,7 @@ namespace ze_lib
     }
 
     //////////////////////////////////////////////////////////////////////////
-    void debug_trace_message(std::string message, std::string result) {
+    __zedlllocal void debug_trace_message(std::string message, std::string result) {
         if (debugTraceEnabled){
             std::string debugTracePrefix = "ZE_LOADER_DEBUG_TRACE:";
             std::cerr << debugTracePrefix << message << result << std::endl;
@@ -130,7 +130,7 @@ namespace ze_lib
 
     ///////////////////////////////////////////////////////////////////////////////
     template <typename T, typename TableType>
-    ze_result_t getTableWithCheck(T getTable, ze_api_version_t version, TableType* table) {
+    __zedlllocal ze_result_t getTableWithCheck(T getTable, ze_api_version_t version, TableType* table) {
         ze_result_t result = ZE_RESULT_ERROR_UNINITIALIZED;
         if (getTable == nullptr) {
             std::string message = "getTableWithCheck Failed for " + std::string(typeid(TableType).name()) + " with ";
@@ -175,10 +175,10 @@ namespace ze_lib
         bool debugTraceEnabled = false;
     };
 
-    extern context_t *context;
     extern bool destruction;
+    extern context_t *context;
     #ifdef DYNAMIC_LOAD_LOADER
-    extern context_t loader_context;
+    extern context_t loader_context_static;
     #endif
 
 } // namespace ze_lib

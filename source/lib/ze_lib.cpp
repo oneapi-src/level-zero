@@ -9,26 +9,27 @@
  */
 #include "ze_lib.h"
 #include "../loader/ze_loader_api.h"
+#include "../loader/ze_loader_internal.h"
 
 namespace ze_lib
 {
     ///////////////////////////////////////////////////////////////////////////////
     #ifndef DYNAMIC_LOAD_LOADER
-    context_t *context;
+    context_t *context = nullptr;
     #else
-    context_t loader_context;
-    context_t *context = &loader_context;
+    context_t loader_context_static;
+    context_t *context = &loader_context_static;
     #endif
     bool destruction = false;
 
     ///////////////////////////////////////////////////////////////////////////////
-    context_t::context_t()
+    __zedlllocal context_t::context_t()
     {
         debugTraceEnabled = getenv_tobool( "ZE_ENABLE_LOADER_DEBUG_TRACE" );
     };
 
     ///////////////////////////////////////////////////////////////////////////////
-    context_t::~context_t()
+    __zedlllocal context_t::~context_t()
     {
 #ifdef DYNAMIC_LOAD_LOADER
         if (loader) {
@@ -178,14 +179,17 @@ namespace ze_lib
         // Given zesInit, then zesDrivers needs to be used as the sysmanInstanceDrivers;
         bool loaderContextAccessAllowed = true;
 #ifdef DYNAMIC_LOAD_LOADER
+        loader::context_t *loaderContext = nullptr;
         if (loaderGetContext == nullptr) {
             loaderContextAccessAllowed = false;
         } else {
-            loader::context = loaderGetContext();
+            loaderContext = loaderGetContext();
         }
+#else
+        loader::context_t *loaderContext = loader::context;
 #endif
         if (sysmanOnly && loaderContextAccessAllowed) {
-            loader::context->sysmanInstanceDrivers = &loader::context->zesDrivers;
+            loaderContext->sysmanInstanceDrivers = &loaderContext->zesDrivers;
         }
 
         // Always call the inits for all the ddi tables before checking which drivers are usable to enable Instrumentation correctly.
@@ -289,7 +293,7 @@ namespace ze_lib
                     // If ze/zet ddi tables have been reinit and no longer use the intercept layer, then handles passed to zelLoaderTranslateHandleInternal do not require translation.
                     // Setting intercept_enabled==false changes the behavior of zelLoaderTranslateHandleInternal to avoid translation.
                     // Translation is only required if the intercept layer is enabled for the ZE handle types.
-                    loader::context->intercept_enabled = false;
+                    loaderContext->intercept_enabled = false;
                 }
                 // If a user has already called the zes/ze apis, then ddi table reinit is not possible due to handles already being read by the user.
                 if (!(ze_lib::context->zesInuse || ze_lib::context->zeInuse)) {

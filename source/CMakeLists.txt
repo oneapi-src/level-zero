@@ -30,8 +30,10 @@ else()
 endif()
 
 add_subdirectory(lib)
-add_subdirectory(loader)
-add_subdirectory(layers)
+if (NOT BUILD_STATIC)
+    add_subdirectory(loader)
+    add_subdirectory(layers)
+endif()
 add_subdirectory(drivers)
 add_subdirectory(utils)
 
