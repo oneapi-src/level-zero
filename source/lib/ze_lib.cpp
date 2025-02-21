@@ -76,36 +76,6 @@ namespace ze_lib
             return result;
         }
 
-        if (result != ZE_RESULT_SUCCESS) {
-            std::string message = "ze_lib Context Init() zeInitDrivers or zeInit failed with ";
-            debug_trace_message(message, to_string(result));
-            return result;
-        }
-        typedef HMODULE (ZE_APICALL *getTracing_t)();
-        auto getTracing = reinterpret_cast<getTracing_t>(
-            GET_FUNCTION_PTR(loader, "zeLoaderGetTracingHandle") );
-        if (getTracing == nullptr) {
-            std::string message = "ze_lib Context Init() zeLoaderGetTracingHandle missing, returning ";
-            debug_trace_message(message, to_string(ZE_RESULT_ERROR_UNINITIALIZED));
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        }
-        tracing_lib = getTracing();
-        typedef ze_result_t (ZE_APICALL *zelLoaderTracingLayerInit_t)(std::atomic<ze_dditable_t *> &zeDdiTable);
-        auto loaderTracingLayerInit = reinterpret_cast<zelLoaderTracingLayerInit_t>(
-                GET_FUNCTION_PTR(loader, "zelLoaderTracingLayerInit") );
-        if (loaderTracingLayerInit == nullptr) {
-            std::string message = "ze_lib Context Init() zelLoaderTracingLayerInit missing, returning ";
-            debug_trace_message(message, to_string(ZE_RESULT_ERROR_UNINITIALIZED));
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        }
-        typedef loader::context_t * (ZE_APICALL *zelLoaderGetContext_t)();
-        auto loaderGetContext = reinterpret_cast<zelLoaderGetContext_t>(
-                GET_FUNCTION_PTR(loader, "zelLoaderGetContext") );
-        if (loaderGetContext == nullptr) {
-            std::string message = "ze_lib Context Init() zelLoaderGetContext missing";
-            debug_trace_message(message, "");
-        }
-
         size_t size = 0;
         result = zelLoaderGetVersions(&size, nullptr);
         if (ZE_RESULT_SUCCESS != result) {
@@ -121,11 +91,14 @@ namespace ze_lib
             debug_trace_message(message, to_string(result));
             return result;
         }
+
         bool zeInitDriversSupport = true;
         const std::string loader_name = "loader";
         for (auto &component : versions) {
             if (loader_name == component.component_name) {
                 version = component.spec_version;
+                std::string message = "ze_lib Context Init() Static Loader Found Loader Version v" + std::to_string(component.component_lib_version.major) + "." + std::to_string(component.component_lib_version.minor) + "." + std::to_string(component.component_lib_version.patch);
+                debug_trace_message(message, "");
                 if(component.component_lib_version.major == 1) {
                     if (component.component_lib_version.minor < 18) {
                         std::string message = "ze_lib Context Init() Version Does not support zeInitDrivers";
@@ -139,6 +112,32 @@ namespace ze_lib
                 }
             }
         }
+
+        typedef HMODULE (ZE_APICALL *getTracing_t)();
+        auto getTracing = reinterpret_cast<getTracing_t>(
+            GET_FUNCTION_PTR(loader, "zeLoaderGetTracingHandle") );
+        if (getTracing == nullptr) {
+            std::string message = "ze_lib Context Init() zeLoaderGetTracingHandle missing, returning ";
+            debug_trace_message(message, to_string(ZE_RESULT_ERROR_UNINITIALIZED));
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
+        tracing_lib = getTracing();
+        typedef ze_result_t (ZE_APICALL *zelLoaderTracingLayerInit_t)(std::atomic<ze_dditable_t *> &zeDdiTable);
+        auto loaderTracingLayerInit = reinterpret_cast<zelLoaderTracingLayerInit_t>(
+                GET_FUNCTION_PTR(loader, "zelLoaderTracingLayerInit") );
+        if (loaderTracingLayerInit == nullptr) {
+            std::string message = "ze_lib Context Init() zelLoaderTracingLayerInit missing, disabling dynamic tracer support ";
+            debug_trace_message(message, "");
+            this->dynamicTracingSupported = false;
+        }
+        typedef loader::context_t * (ZE_APICALL *zelLoaderGetContext_t)();
+        auto loaderGetContext = reinterpret_cast<zelLoaderGetContext_t>(
+                GET_FUNCTION_PTR(loader, "zelLoaderGetContext") );
+        if (loaderGetContext == nullptr) {
+            std::string message = "ze_lib Context Init() zelLoaderGetContext missing";
+            debug_trace_message(message, "");
+        }
+
         std::string version_message = "Loader API Version to be requested is v" + std::to_string(ZE_MAJOR_VERSION(version)) + "." + std::to_string(ZE_MINOR_VERSION(version));
         debug_trace_message(version_message, "");
 #else
@@ -214,7 +213,9 @@ namespace ze_lib
         if( ZE_RESULT_SUCCESS == result )
         {
             #ifdef DYNAMIC_LOAD_LOADER
-            result = loaderTracingLayerInit(this->pTracingZeDdiTable);
+            if (loaderTracingLayerInit) {
+                result = loaderTracingLayerInit(this->pTracingZeDdiTable);
+            }
             #else
             result = zelLoaderTracingLayerInit(this->pTracingZeDdiTable);
             #endif
@@ -317,6 +318,11 @@ namespace ze_lib
                 }
                 result = initLoader(init_flags);
             }
+            if (result != ZE_RESULT_SUCCESS) {
+                std::string message = "ze_lib Context Init() zeInitDrivers or zeInit failed with ";
+                debug_trace_message(message, to_string(result));
+                return result;
+            }
 #endif
             isInitialized = true;
         }
@@ -379,6 +385,9 @@ zelSetDriverTeardown()
 ze_result_t ZE_APICALL
 zelEnableTracingLayer()
 {
+    if (ze_lib::context->dynamicTracingSupported == false) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
     if (ze_lib::context->tracingLayerEnableCounter.fetch_add(1) == 0) {
         ze_lib::context->zeDdiTable.exchange(ze_lib::context->pTracingZeDdiTable);
     }
@@ -388,6 +397,9 @@ zelEnableTracingLayer()
 ze_result_t ZE_APICALL
 zelDisableTracingLayer()
 {
+    if (ze_lib::context->dynamicTracingSupported == false) {
+        return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
     if (ze_lib::context->tracingLayerEnableCounter.fetch_sub(1) <= 1) {
         ze_lib::context->zeDdiTable.exchange(&ze_lib::context->initialzeDdiTable);
     }

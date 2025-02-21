@@ -173,6 +173,7 @@ namespace ze_lib
         bool zesInuse = false;
         bool zeInuse = false;
         bool debugTraceEnabled = false;
+        bool dynamicTracingSupported = true;
     };
 
     extern bool destruction;
