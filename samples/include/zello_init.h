@@ -12,6 +12,7 @@
 #include "ze_api.h"
 #include "zet_api.h"
 #include "loader/ze_loader.h"
+#include "include/layers/zel_tracing_api.h"
 #include "zello_log.h"
 
 //////////////////////////////////////////////////////////////////////////

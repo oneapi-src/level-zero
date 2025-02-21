@@ -41,6 +41,7 @@ int main( int argc, char *argv[] )
 {
     bool tracing_runtime_enabled = false;
     bool legacy_init = false;
+    bool tracing_enabled = false;
     if( argparse( argc, argv, "-null", "--enable_null_driver" ) )
     {
         putenv_safe( const_cast<char *>( "ZE_ENABLE_NULL_DRIVER=1" ) );
@@ -57,10 +58,12 @@ int main( int argc, char *argv[] )
     if( argparse( argc, argv, "-trace", "--enable_tracing_layer" ) )
     {
         putenv_safe( const_cast<char *>( "ZE_ENABLE_TRACING_LAYER=1" ) );
+        tracing_enabled = true;
     }
     if( argparse( argc, argv, "-tracerun", "--enable_tracing_layer_runtime" ) )
     {
         tracing_runtime_enabled = true;
+        tracing_enabled = true;
     }
     if( argparse( argc, argv, "-legacy_init", "--enable_legacy_init" ) )
     {
@@ -77,6 +80,7 @@ int main( int argc, char *argv[] )
     ze_driver_handle_t pDriver = nullptr;
     ze_device_handle_t pDevice = nullptr;
     uint32_t driverCount = 0;
+    zel_tracer_handle_t tracer = nullptr;
     if( init_ze(legacy_init, driverCount, driverTypeDesc) )
     {
 
@@ -87,6 +91,16 @@ int main( int argc, char *argv[] )
             status = zelEnableTracingLayer();
             if(status != ZE_RESULT_SUCCESS) {
                 std::cout << "zelEnableTracingLayer Failed with return code: " << to_string(status) << std::endl;
+                exit(1);
+            }
+        }
+
+        if (tracing_enabled) {
+            zel_tracer_desc_t tracer_desc = {ZEL_STRUCTURE_TYPE_TRACER_EXP_DESC, nullptr,
+                nullptr};
+            status = zelTracerCreate(&tracer_desc, &tracer);
+            if(status != ZE_RESULT_SUCCESS) {
+                std::cout << "zelTracerCreate Failed with return code: " << to_string(status) << std::endl;
                 exit(1);
             }
         }
@@ -185,6 +199,14 @@ int main( int argc, char *argv[] )
     zeCommandListDestroy(command_list);
     zeEventDestroy(event);
     zeEventPoolDestroy(event_pool);
+
+    if (tracing_enabled) {
+        status = zelTracerDestroy(tracer);
+        if(status != ZE_RESULT_SUCCESS) {
+            std::cout << "zelTracerDestroy Failed with return code: " << to_string(status) << std::endl;
+            exit(1);
+        }
+    }
 
     if (tracing_runtime_enabled) {
         std::cout << "Disable Tracing Layer after init" << std::endl;
