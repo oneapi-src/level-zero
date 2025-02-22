@@ -2295,3 +2295,348 @@ namespace loader_legacy
     }
 
 } // namespace loader_legacy
+
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief function for filling the legacy api pointers for MetricDecoderExp table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+__zedlllocal void ZE_APICALL
+zetGetMetricDecoderExpProcAddrTableLegacy()
+{
+    // return pointers to the Loader's Functions.
+    loader::loaderDispatch->pTools->MetricDecoderExp->pfnCreateExp                                = loader_legacy::zetMetricDecoderCreateExp;
+    loader::loaderDispatch->pTools->MetricDecoderExp->pfnDestroyExp                               = loader_legacy::zetMetricDecoderDestroyExp;
+    loader::loaderDispatch->pTools->MetricDecoderExp->pfnGetDecodableMetricsExp                   = loader_legacy::zetMetricDecoderGetDecodableMetricsExp;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief function for filling the legacy api pointers for MetricProgrammableExp table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+__zedlllocal void ZE_APICALL
+zetGetMetricProgrammableExpProcAddrTableLegacy()
+{
+    // return pointers to the Loader's Functions.
+    loader::loaderDispatch->pTools->MetricProgrammableExp->pfnGetExp                                   = loader_legacy::zetMetricProgrammableGetExp;
+    loader::loaderDispatch->pTools->MetricProgrammableExp->pfnGetPropertiesExp                         = loader_legacy::zetMetricProgrammableGetPropertiesExp;
+    loader::loaderDispatch->pTools->MetricProgrammableExp->pfnGetParamInfoExp                          = loader_legacy::zetMetricProgrammableGetParamInfoExp;
+    loader::loaderDispatch->pTools->MetricProgrammableExp->pfnGetParamValueInfoExp                     = loader_legacy::zetMetricProgrammableGetParamValueInfoExp;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief function for filling the legacy api pointers for MetricTracerExp table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+__zedlllocal void ZE_APICALL
+zetGetMetricTracerExpProcAddrTableLegacy()
+{
+    // return pointers to the Loader's Functions.
+    loader::loaderDispatch->pTools->MetricTracerExp->pfnCreateExp                                = loader_legacy::zetMetricTracerCreateExp;
+    loader::loaderDispatch->pTools->MetricTracerExp->pfnDestroyExp                               = loader_legacy::zetMetricTracerDestroyExp;
+    loader::loaderDispatch->pTools->MetricTracerExp->pfnEnableExp                                = loader_legacy::zetMetricTracerEnableExp;
+    loader::loaderDispatch->pTools->MetricTracerExp->pfnDisableExp                               = loader_legacy::zetMetricTracerDisableExp;
+    loader::loaderDispatch->pTools->MetricTracerExp->pfnReadDataExp                              = loader_legacy::zetMetricTracerReadDataExp;
+    loader::loaderDispatch->pTools->MetricTracerExp->pfnDecodeExp                                = loader_legacy::zetMetricTracerDecodeExp;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief function for filling the legacy api pointers for Device table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+__zedlllocal void ZE_APICALL
+zetGetDeviceProcAddrTableLegacy()
+{
+    // return pointers to the Loader's Functions.
+    loader::loaderDispatch->pTools->Device->pfnGetDebugProperties                       = loader_legacy::zetDeviceGetDebugProperties;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief function for filling the legacy api pointers for DeviceExp table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+__zedlllocal void ZE_APICALL
+zetGetDeviceExpProcAddrTableLegacy()
+{
+    // return pointers to the Loader's Functions.
+    loader::loaderDispatch->pTools->DeviceExp->pfnGetConcurrentMetricGroupsExp             = loader_legacy::zetDeviceGetConcurrentMetricGroupsExp;
+    loader::loaderDispatch->pTools->DeviceExp->pfnCreateMetricGroupsFromMetricsExp         = loader_legacy::zetDeviceCreateMetricGroupsFromMetricsExp;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief function for filling the legacy api pointers for Context table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+__zedlllocal void ZE_APICALL
+zetGetContextProcAddrTableLegacy()
+{
+    // return pointers to the Loader's Functions.
+    loader::loaderDispatch->pTools->Context->pfnActivateMetricGroups                     = loader_legacy::zetContextActivateMetricGroups;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief function for filling the legacy api pointers for CommandList table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+__zedlllocal void ZE_APICALL
+zetGetCommandListProcAddrTableLegacy()
+{
+    // return pointers to the Loader's Functions.
+    loader::loaderDispatch->pTools->CommandList->pfnAppendMetricStreamerMarker               = loader_legacy::zetCommandListAppendMetricStreamerMarker;
+    loader::loaderDispatch->pTools->CommandList->pfnAppendMetricQueryBegin                   = loader_legacy::zetCommandListAppendMetricQueryBegin;
+    loader::loaderDispatch->pTools->CommandList->pfnAppendMetricQueryEnd                     = loader_legacy::zetCommandListAppendMetricQueryEnd;
+    loader::loaderDispatch->pTools->CommandList->pfnAppendMetricMemoryBarrier                = loader_legacy::zetCommandListAppendMetricMemoryBarrier;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief function for filling the legacy api pointers for Kernel table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+__zedlllocal void ZE_APICALL
+zetGetKernelProcAddrTableLegacy()
+{
+    // return pointers to the Loader's Functions.
+    loader::loaderDispatch->pTools->Kernel->pfnGetProfileInfo                           = loader_legacy::zetKernelGetProfileInfo;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief function for filling the legacy api pointers for Module table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+__zedlllocal void ZE_APICALL
+zetGetModuleProcAddrTableLegacy()
+{
+    // return pointers to the Loader's Functions.
+    loader::loaderDispatch->pTools->Module->pfnGetDebugInfo                             = loader_legacy::zetModuleGetDebugInfo;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief function for filling the legacy api pointers for Debug table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+__zedlllocal void ZE_APICALL
+zetGetDebugProcAddrTableLegacy()
+{
+    // return pointers to the Loader's Functions.
+    loader::loaderDispatch->pTools->Debug->pfnAttach                                   = loader_legacy::zetDebugAttach;
+    loader::loaderDispatch->pTools->Debug->pfnDetach                                   = loader_legacy::zetDebugDetach;
+    loader::loaderDispatch->pTools->Debug->pfnReadEvent                                = loader_legacy::zetDebugReadEvent;
+    loader::loaderDispatch->pTools->Debug->pfnAcknowledgeEvent                         = loader_legacy::zetDebugAcknowledgeEvent;
+    loader::loaderDispatch->pTools->Debug->pfnInterrupt                                = loader_legacy::zetDebugInterrupt;
+    loader::loaderDispatch->pTools->Debug->pfnResume                                   = loader_legacy::zetDebugResume;
+    loader::loaderDispatch->pTools->Debug->pfnReadMemory                               = loader_legacy::zetDebugReadMemory;
+    loader::loaderDispatch->pTools->Debug->pfnWriteMemory                              = loader_legacy::zetDebugWriteMemory;
+    loader::loaderDispatch->pTools->Debug->pfnGetRegisterSetProperties                 = loader_legacy::zetDebugGetRegisterSetProperties;
+    loader::loaderDispatch->pTools->Debug->pfnReadRegisters                            = loader_legacy::zetDebugReadRegisters;
+    loader::loaderDispatch->pTools->Debug->pfnWriteRegisters                           = loader_legacy::zetDebugWriteRegisters;
+    loader::loaderDispatch->pTools->Debug->pfnGetThreadRegisterSetProperties           = loader_legacy::zetDebugGetThreadRegisterSetProperties;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief function for filling the legacy api pointers for Metric table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+__zedlllocal void ZE_APICALL
+zetGetMetricProcAddrTableLegacy()
+{
+    // return pointers to the Loader's Functions.
+    loader::loaderDispatch->pTools->Metric->pfnGet                                      = loader_legacy::zetMetricGet;
+    loader::loaderDispatch->pTools->Metric->pfnGetProperties                            = loader_legacy::zetMetricGetProperties;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief function for filling the legacy api pointers for MetricExp table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+__zedlllocal void ZE_APICALL
+zetGetMetricExpProcAddrTableLegacy()
+{
+    // return pointers to the Loader's Functions.
+    loader::loaderDispatch->pTools->MetricExp->pfnCreateFromProgrammableExp2               = loader_legacy::zetMetricCreateFromProgrammableExp2;
+    loader::loaderDispatch->pTools->MetricExp->pfnCreateFromProgrammableExp                = loader_legacy::zetMetricCreateFromProgrammableExp;
+    loader::loaderDispatch->pTools->MetricExp->pfnDestroyExp                               = loader_legacy::zetMetricDestroyExp;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief function for filling the legacy api pointers for MetricGroup table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+__zedlllocal void ZE_APICALL
+zetGetMetricGroupProcAddrTableLegacy()
+{
+    // return pointers to the Loader's Functions.
+    loader::loaderDispatch->pTools->MetricGroup->pfnGet                                      = loader_legacy::zetMetricGroupGet;
+    loader::loaderDispatch->pTools->MetricGroup->pfnGetProperties                            = loader_legacy::zetMetricGroupGetProperties;
+    loader::loaderDispatch->pTools->MetricGroup->pfnCalculateMetricValues                    = loader_legacy::zetMetricGroupCalculateMetricValues;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief function for filling the legacy api pointers for MetricGroupExp table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+__zedlllocal void ZE_APICALL
+zetGetMetricGroupExpProcAddrTableLegacy()
+{
+    // return pointers to the Loader's Functions.
+    loader::loaderDispatch->pTools->MetricGroupExp->pfnCalculateMultipleMetricValuesExp         = loader_legacy::zetMetricGroupCalculateMultipleMetricValuesExp;
+    loader::loaderDispatch->pTools->MetricGroupExp->pfnGetGlobalTimestampsExp                   = loader_legacy::zetMetricGroupGetGlobalTimestampsExp;
+    loader::loaderDispatch->pTools->MetricGroupExp->pfnGetExportDataExp                         = loader_legacy::zetMetricGroupGetExportDataExp;
+    loader::loaderDispatch->pTools->MetricGroupExp->pfnCalculateMetricExportDataExp             = loader_legacy::zetMetricGroupCalculateMetricExportDataExp;
+    loader::loaderDispatch->pTools->MetricGroupExp->pfnCreateExp                                = loader_legacy::zetMetricGroupCreateExp;
+    loader::loaderDispatch->pTools->MetricGroupExp->pfnAddMetricExp                             = loader_legacy::zetMetricGroupAddMetricExp;
+    loader::loaderDispatch->pTools->MetricGroupExp->pfnRemoveMetricExp                          = loader_legacy::zetMetricGroupRemoveMetricExp;
+    loader::loaderDispatch->pTools->MetricGroupExp->pfnCloseExp                                 = loader_legacy::zetMetricGroupCloseExp;
+    loader::loaderDispatch->pTools->MetricGroupExp->pfnDestroyExp                               = loader_legacy::zetMetricGroupDestroyExp;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief function for filling the legacy api pointers for MetricQuery table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+__zedlllocal void ZE_APICALL
+zetGetMetricQueryProcAddrTableLegacy()
+{
+    // return pointers to the Loader's Functions.
+    loader::loaderDispatch->pTools->MetricQuery->pfnCreate                                   = loader_legacy::zetMetricQueryCreate;
+    loader::loaderDispatch->pTools->MetricQuery->pfnDestroy                                  = loader_legacy::zetMetricQueryDestroy;
+    loader::loaderDispatch->pTools->MetricQuery->pfnReset                                    = loader_legacy::zetMetricQueryReset;
+    loader::loaderDispatch->pTools->MetricQuery->pfnGetData                                  = loader_legacy::zetMetricQueryGetData;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief function for filling the legacy api pointers for MetricQueryPool table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+__zedlllocal void ZE_APICALL
+zetGetMetricQueryPoolProcAddrTableLegacy()
+{
+    // return pointers to the Loader's Functions.
+    loader::loaderDispatch->pTools->MetricQueryPool->pfnCreate                                   = loader_legacy::zetMetricQueryPoolCreate;
+    loader::loaderDispatch->pTools->MetricQueryPool->pfnDestroy                                  = loader_legacy::zetMetricQueryPoolDestroy;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief function for filling the legacy api pointers for MetricStreamer table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+__zedlllocal void ZE_APICALL
+zetGetMetricStreamerProcAddrTableLegacy()
+{
+    // return pointers to the Loader's Functions.
+    loader::loaderDispatch->pTools->MetricStreamer->pfnOpen                                     = loader_legacy::zetMetricStreamerOpen;
+    loader::loaderDispatch->pTools->MetricStreamer->pfnClose                                    = loader_legacy::zetMetricStreamerClose;
+    loader::loaderDispatch->pTools->MetricStreamer->pfnReadData                                 = loader_legacy::zetMetricStreamerReadData;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief function for filling the legacy api pointers for TracerExp table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+__zedlllocal void ZE_APICALL
+zetGetTracerExpProcAddrTableLegacy()
+{
+    // return pointers to the Loader's Functions.
+    loader::loaderDispatch->pTools->TracerExp->pfnCreate                                   = loader_legacy::zetTracerExpCreate;
+    loader::loaderDispatch->pTools->TracerExp->pfnDestroy                                  = loader_legacy::zetTracerExpDestroy;
+    loader::loaderDispatch->pTools->TracerExp->pfnSetPrologues                             = loader_legacy::zetTracerExpSetPrologues;
+    loader::loaderDispatch->pTools->TracerExp->pfnSetEpilogues                             = loader_legacy::zetTracerExpSetEpilogues;
+    loader::loaderDispatch->pTools->TracerExp->pfnSetEnabled                               = loader_legacy::zetTracerExpSetEnabled;
+}
+
+
+#if defined(__cplusplus)
+};
+#endif

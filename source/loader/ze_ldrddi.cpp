@@ -4910,8 +4910,10 @@ zeGetGlobalProcAddrTable(
         if( ( loader::context->zeDrivers.size() > 1 ) || loader::context->forceIntercept )
         {
             // return pointers to loader's DDIs
+            loader::loaderDispatch->pCore->Global = new ze_global_dditable_t;
             pDdiTable->pfnInit                                     = loader::zeInit;
             pDdiTable->pfnInitDrivers                              = loader::zeInitDrivers;
+            zeGetGlobalProcAddrTableLegacy();
         }
         else
         {
@@ -4994,10 +4996,12 @@ zeGetRTASBuilderExpProcAddrTable(
         if( ( loader::context->zeDrivers.size() > 1 ) || loader::context->forceIntercept )
         {
             // return pointers to loader's DDIs
+            loader::loaderDispatch->pCore->RTASBuilderExp = new ze_rtas_builder_exp_dditable_t;
             pDdiTable->pfnCreateExp                                = loader::zeRTASBuilderCreateExp;
             pDdiTable->pfnGetBuildPropertiesExp                    = loader::zeRTASBuilderGetBuildPropertiesExp;
             pDdiTable->pfnBuildExp                                 = loader::zeRTASBuilderBuildExp;
             pDdiTable->pfnDestroyExp                               = loader::zeRTASBuilderDestroyExp;
+            zeGetRTASBuilderExpProcAddrTableLegacy();
         }
         else
         {
@@ -5080,10 +5084,12 @@ zeGetRTASParallelOperationExpProcAddrTable(
         if( ( loader::context->zeDrivers.size() > 1 ) || loader::context->forceIntercept )
         {
             // return pointers to loader's DDIs
+            loader::loaderDispatch->pCore->RTASParallelOperationExp = new ze_rtas_parallel_operation_exp_dditable_t;
             pDdiTable->pfnCreateExp                                = loader::zeRTASParallelOperationCreateExp;
             pDdiTable->pfnGetPropertiesExp                         = loader::zeRTASParallelOperationGetPropertiesExp;
             pDdiTable->pfnJoinExp                                  = loader::zeRTASParallelOperationJoinExp;
             pDdiTable->pfnDestroyExp                               = loader::zeRTASParallelOperationDestroyExp;
+            zeGetRTASParallelOperationExpProcAddrTableLegacy();
         }
         else
         {
@@ -5175,6 +5181,7 @@ zeGetDriverProcAddrTable(
         if( ( loader::context->zeDrivers.size() > 1 ) || loader::context->forceIntercept )
         {
             // return pointers to loader's DDIs
+            loader::loaderDispatch->pCore->Driver = new ze_driver_dditable_t;
             pDdiTable->pfnGet                                      = loader::zeDriverGet;
             pDdiTable->pfnGetApiVersion                            = loader::zeDriverGetApiVersion;
             pDdiTable->pfnGetProperties                            = loader::zeDriverGetProperties;
@@ -5182,6 +5189,7 @@ zeGetDriverProcAddrTable(
             pDdiTable->pfnGetExtensionProperties                   = loader::zeDriverGetExtensionProperties;
             pDdiTable->pfnGetExtensionFunctionAddress              = loader::zeDriverGetExtensionFunctionAddress;
             pDdiTable->pfnGetLastErrorDescription                  = loader::zeDriverGetLastErrorDescription;
+            zeGetDriverProcAddrTableLegacy();
         }
         else
         {
@@ -5264,7 +5272,9 @@ zeGetDriverExpProcAddrTable(
         if( ( loader::context->zeDrivers.size() > 1 ) || loader::context->forceIntercept )
         {
             // return pointers to loader's DDIs
+            loader::loaderDispatch->pCore->DriverExp = new ze_driver_exp_dditable_t;
             pDdiTable->pfnRTASFormatCompatibilityCheckExp          = loader::zeDriverRTASFormatCompatibilityCheckExp;
+            zeGetDriverExpProcAddrTableLegacy();
         }
         else
         {
@@ -5356,6 +5366,7 @@ zeGetDeviceProcAddrTable(
         if( ( loader::context->zeDrivers.size() > 1 ) || loader::context->forceIntercept )
         {
             // return pointers to loader's DDIs
+            loader::loaderDispatch->pCore->Device = new ze_device_dditable_t;
             pDdiTable->pfnGet                                      = loader::zeDeviceGet;
             pDdiTable->pfnGetSubDevices                            = loader::zeDeviceGetSubDevices;
             pDdiTable->pfnGetProperties                            = loader::zeDeviceGetProperties;
@@ -5377,6 +5388,7 @@ zeGetDeviceProcAddrTable(
             pDdiTable->pfnSetCacheAdviceExt                        = loader::zeDeviceSetCacheAdviceExt;
             pDdiTable->pfnPciGetPropertiesExt                      = loader::zeDevicePciGetPropertiesExt;
             pDdiTable->pfnGetRootDevice                            = loader::zeDeviceGetRootDevice;
+            zeGetDeviceProcAddrTableLegacy();
         }
         else
         {
@@ -5459,7 +5471,9 @@ zeGetDeviceExpProcAddrTable(
         if( ( loader::context->zeDrivers.size() > 1 ) || loader::context->forceIntercept )
         {
             // return pointers to loader's DDIs
+            loader::loaderDispatch->pCore->DeviceExp = new ze_device_exp_dditable_t;
             pDdiTable->pfnGetFabricVertexExp                       = loader::zeDeviceGetFabricVertexExp;
+            zeGetDeviceExpProcAddrTableLegacy();
         }
         else
         {
@@ -5551,6 +5565,7 @@ zeGetContextProcAddrTable(
         if( ( loader::context->zeDrivers.size() > 1 ) || loader::context->forceIntercept )
         {
             // return pointers to loader's DDIs
+            loader::loaderDispatch->pCore->Context = new ze_context_dditable_t;
             pDdiTable->pfnCreate                                   = loader::zeContextCreate;
             pDdiTable->pfnDestroy                                  = loader::zeContextDestroy;
             pDdiTable->pfnGetStatus                                = loader::zeContextGetStatus;
@@ -5560,6 +5575,7 @@ zeGetContextProcAddrTable(
             pDdiTable->pfnMakeImageResident                        = loader::zeContextMakeImageResident;
             pDdiTable->pfnEvictImage                               = loader::zeContextEvictImage;
             pDdiTable->pfnCreateEx                                 = loader::zeContextCreateEx;
+            zeGetContextProcAddrTableLegacy();
         }
         else
         {
@@ -5651,12 +5667,14 @@ zeGetCommandQueueProcAddrTable(
         if( ( loader::context->zeDrivers.size() > 1 ) || loader::context->forceIntercept )
         {
             // return pointers to loader's DDIs
+            loader::loaderDispatch->pCore->CommandQueue = new ze_command_queue_dditable_t;
             pDdiTable->pfnCreate                                   = loader::zeCommandQueueCreate;
             pDdiTable->pfnDestroy                                  = loader::zeCommandQueueDestroy;
             pDdiTable->pfnExecuteCommandLists                      = loader::zeCommandQueueExecuteCommandLists;
             pDdiTable->pfnSynchronize                              = loader::zeCommandQueueSynchronize;
             pDdiTable->pfnGetOrdinal                               = loader::zeCommandQueueGetOrdinal;
             pDdiTable->pfnGetIndex                                 = loader::zeCommandQueueGetIndex;
+            zeGetCommandQueueProcAddrTableLegacy();
         }
         else
         {
@@ -5748,6 +5766,7 @@ zeGetCommandListProcAddrTable(
         if( ( loader::context->zeDrivers.size() > 1 ) || loader::context->forceIntercept )
         {
             // return pointers to loader's DDIs
+            loader::loaderDispatch->pCore->CommandList = new ze_command_list_dditable_t;
             pDdiTable->pfnCreate                                   = loader::zeCommandListCreate;
             pDdiTable->pfnCreateImmediate                          = loader::zeCommandListCreateImmediate;
             pDdiTable->pfnDestroy                                  = loader::zeCommandListDestroy;
@@ -5784,6 +5803,7 @@ zeGetCommandListProcAddrTable(
             pDdiTable->pfnGetOrdinal                               = loader::zeCommandListGetOrdinal;
             pDdiTable->pfnImmediateGetIndex                        = loader::zeCommandListImmediateGetIndex;
             pDdiTable->pfnIsImmediate                              = loader::zeCommandListIsImmediate;
+            zeGetCommandListProcAddrTableLegacy();
         }
         else
         {
@@ -5866,6 +5886,7 @@ zeGetCommandListExpProcAddrTable(
         if( ( loader::context->zeDrivers.size() > 1 ) || loader::context->forceIntercept )
         {
             // return pointers to loader's DDIs
+            loader::loaderDispatch->pCore->CommandListExp = new ze_command_list_exp_dditable_t;
             pDdiTable->pfnGetNextCommandIdWithKernelsExp           = loader::zeCommandListGetNextCommandIdWithKernelsExp;
             pDdiTable->pfnUpdateMutableCommandKernelsExp           = loader::zeCommandListUpdateMutableCommandKernelsExp;
             pDdiTable->pfnCreateCloneExp                           = loader::zeCommandListCreateCloneExp;
@@ -5874,6 +5895,7 @@ zeGetCommandListExpProcAddrTable(
             pDdiTable->pfnUpdateMutableCommandsExp                 = loader::zeCommandListUpdateMutableCommandsExp;
             pDdiTable->pfnUpdateMutableCommandSignalEventExp       = loader::zeCommandListUpdateMutableCommandSignalEventExp;
             pDdiTable->pfnUpdateMutableCommandWaitEventsExp        = loader::zeCommandListUpdateMutableCommandWaitEventsExp;
+            zeGetCommandListExpProcAddrTableLegacy();
         }
         else
         {
@@ -5965,6 +5987,7 @@ zeGetEventProcAddrTable(
         if( ( loader::context->zeDrivers.size() > 1 ) || loader::context->forceIntercept )
         {
             // return pointers to loader's DDIs
+            loader::loaderDispatch->pCore->Event = new ze_event_dditable_t;
             pDdiTable->pfnCreate                                   = loader::zeEventCreate;
             pDdiTable->pfnDestroy                                  = loader::zeEventDestroy;
             pDdiTable->pfnHostSignal                               = loader::zeEventHostSignal;
@@ -5976,6 +5999,7 @@ zeGetEventProcAddrTable(
             pDdiTable->pfnGetEventPool                             = loader::zeEventGetEventPool;
             pDdiTable->pfnGetSignalScope                           = loader::zeEventGetSignalScope;
             pDdiTable->pfnGetWaitScope                             = loader::zeEventGetWaitScope;
+            zeGetEventProcAddrTableLegacy();
         }
         else
         {
@@ -6058,7 +6082,9 @@ zeGetEventExpProcAddrTable(
         if( ( loader::context->zeDrivers.size() > 1 ) || loader::context->forceIntercept )
         {
             // return pointers to loader's DDIs
+            loader::loaderDispatch->pCore->EventExp = new ze_event_exp_dditable_t;
             pDdiTable->pfnQueryTimestampsExp                       = loader::zeEventQueryTimestampsExp;
+            zeGetEventExpProcAddrTableLegacy();
         }
         else
         {
@@ -6150,6 +6176,7 @@ zeGetEventPoolProcAddrTable(
         if( ( loader::context->zeDrivers.size() > 1 ) || loader::context->forceIntercept )
         {
             // return pointers to loader's DDIs
+            loader::loaderDispatch->pCore->EventPool = new ze_event_pool_dditable_t;
             pDdiTable->pfnCreate                                   = loader::zeEventPoolCreate;
             pDdiTable->pfnDestroy                                  = loader::zeEventPoolDestroy;
             pDdiTable->pfnGetIpcHandle                             = loader::zeEventPoolGetIpcHandle;
@@ -6158,6 +6185,7 @@ zeGetEventPoolProcAddrTable(
             pDdiTable->pfnPutIpcHandle                             = loader::zeEventPoolPutIpcHandle;
             pDdiTable->pfnGetContextHandle                         = loader::zeEventPoolGetContextHandle;
             pDdiTable->pfnGetFlags                                 = loader::zeEventPoolGetFlags;
+            zeGetEventPoolProcAddrTableLegacy();
         }
         else
         {
@@ -6249,11 +6277,13 @@ zeGetFenceProcAddrTable(
         if( ( loader::context->zeDrivers.size() > 1 ) || loader::context->forceIntercept )
         {
             // return pointers to loader's DDIs
+            loader::loaderDispatch->pCore->Fence = new ze_fence_dditable_t;
             pDdiTable->pfnCreate                                   = loader::zeFenceCreate;
             pDdiTable->pfnDestroy                                  = loader::zeFenceDestroy;
             pDdiTable->pfnHostSynchronize                          = loader::zeFenceHostSynchronize;
             pDdiTable->pfnQueryStatus                              = loader::zeFenceQueryStatus;
             pDdiTable->pfnReset                                    = loader::zeFenceReset;
+            zeGetFenceProcAddrTableLegacy();
         }
         else
         {
@@ -6345,11 +6375,13 @@ zeGetImageProcAddrTable(
         if( ( loader::context->zeDrivers.size() > 1 ) || loader::context->forceIntercept )
         {
             // return pointers to loader's DDIs
+            loader::loaderDispatch->pCore->Image = new ze_image_dditable_t;
             pDdiTable->pfnGetProperties                            = loader::zeImageGetProperties;
             pDdiTable->pfnCreate                                   = loader::zeImageCreate;
             pDdiTable->pfnDestroy                                  = loader::zeImageDestroy;
             pDdiTable->pfnGetAllocPropertiesExt                    = loader::zeImageGetAllocPropertiesExt;
             pDdiTable->pfnViewCreateExt                            = loader::zeImageViewCreateExt;
+            zeGetImageProcAddrTableLegacy();
         }
         else
         {
@@ -6432,9 +6464,11 @@ zeGetImageExpProcAddrTable(
         if( ( loader::context->zeDrivers.size() > 1 ) || loader::context->forceIntercept )
         {
             // return pointers to loader's DDIs
+            loader::loaderDispatch->pCore->ImageExp = new ze_image_exp_dditable_t;
             pDdiTable->pfnGetMemoryPropertiesExp                   = loader::zeImageGetMemoryPropertiesExp;
             pDdiTable->pfnViewCreateExp                            = loader::zeImageViewCreateExp;
             pDdiTable->pfnGetDeviceOffsetExp                       = loader::zeImageGetDeviceOffsetExp;
+            zeGetImageExpProcAddrTableLegacy();
         }
         else
         {
@@ -6526,6 +6560,7 @@ zeGetKernelProcAddrTable(
         if( ( loader::context->zeDrivers.size() > 1 ) || loader::context->forceIntercept )
         {
             // return pointers to loader's DDIs
+            loader::loaderDispatch->pCore->Kernel = new ze_kernel_dditable_t;
             pDdiTable->pfnCreate                                   = loader::zeKernelCreate;
             pDdiTable->pfnDestroy                                  = loader::zeKernelDestroy;
             pDdiTable->pfnSetCacheConfig                           = loader::zeKernelSetCacheConfig;
@@ -6538,6 +6573,7 @@ zeGetKernelProcAddrTable(
             pDdiTable->pfnGetSourceAttributes                      = loader::zeKernelGetSourceAttributes;
             pDdiTable->pfnGetProperties                            = loader::zeKernelGetProperties;
             pDdiTable->pfnGetName                                  = loader::zeKernelGetName;
+            zeGetKernelProcAddrTableLegacy();
         }
         else
         {
@@ -6620,9 +6656,11 @@ zeGetKernelExpProcAddrTable(
         if( ( loader::context->zeDrivers.size() > 1 ) || loader::context->forceIntercept )
         {
             // return pointers to loader's DDIs
+            loader::loaderDispatch->pCore->KernelExp = new ze_kernel_exp_dditable_t;
             pDdiTable->pfnSetGlobalOffsetExp                       = loader::zeKernelSetGlobalOffsetExp;
             pDdiTable->pfnGetBinaryExp                             = loader::zeKernelGetBinaryExp;
             pDdiTable->pfnSchedulingHintExp                        = loader::zeKernelSchedulingHintExp;
+            zeGetKernelExpProcAddrTableLegacy();
         }
         else
         {
@@ -6714,6 +6752,7 @@ zeGetMemProcAddrTable(
         if( ( loader::context->zeDrivers.size() > 1 ) || loader::context->forceIntercept )
         {
             // return pointers to loader's DDIs
+            loader::loaderDispatch->pCore->Mem = new ze_mem_dditable_t;
             pDdiTable->pfnAllocShared                              = loader::zeMemAllocShared;
             pDdiTable->pfnAllocDevice                              = loader::zeMemAllocDevice;
             pDdiTable->pfnAllocHost                                = loader::zeMemAllocHost;
@@ -6726,6 +6765,7 @@ zeGetMemProcAddrTable(
             pDdiTable->pfnFreeExt                                  = loader::zeMemFreeExt;
             pDdiTable->pfnPutIpcHandle                             = loader::zeMemPutIpcHandle;
             pDdiTable->pfnGetPitchFor2dImage                       = loader::zeMemGetPitchFor2dImage;
+            zeGetMemProcAddrTableLegacy();
         }
         else
         {
@@ -6808,10 +6848,12 @@ zeGetMemExpProcAddrTable(
         if( ( loader::context->zeDrivers.size() > 1 ) || loader::context->forceIntercept )
         {
             // return pointers to loader's DDIs
+            loader::loaderDispatch->pCore->MemExp = new ze_mem_exp_dditable_t;
             pDdiTable->pfnGetIpcHandleFromFileDescriptorExp        = loader::zeMemGetIpcHandleFromFileDescriptorExp;
             pDdiTable->pfnGetFileDescriptorFromIpcHandleExp        = loader::zeMemGetFileDescriptorFromIpcHandleExp;
             pDdiTable->pfnSetAtomicAccessAttributeExp              = loader::zeMemSetAtomicAccessAttributeExp;
             pDdiTable->pfnGetAtomicAccessAttributeExp              = loader::zeMemGetAtomicAccessAttributeExp;
+            zeGetMemExpProcAddrTableLegacy();
         }
         else
         {
@@ -6903,6 +6945,7 @@ zeGetModuleProcAddrTable(
         if( ( loader::context->zeDrivers.size() > 1 ) || loader::context->forceIntercept )
         {
             // return pointers to loader's DDIs
+            loader::loaderDispatch->pCore->Module = new ze_module_dditable_t;
             pDdiTable->pfnCreate                                   = loader::zeModuleCreate;
             pDdiTable->pfnDestroy                                  = loader::zeModuleDestroy;
             pDdiTable->pfnDynamicLink                              = loader::zeModuleDynamicLink;
@@ -6912,6 +6955,7 @@ zeGetModuleProcAddrTable(
             pDdiTable->pfnGetProperties                            = loader::zeModuleGetProperties;
             pDdiTable->pfnGetFunctionPointer                       = loader::zeModuleGetFunctionPointer;
             pDdiTable->pfnInspectLinkageExt                        = loader::zeModuleInspectLinkageExt;
+            zeGetModuleProcAddrTableLegacy();
         }
         else
         {
@@ -7003,8 +7047,10 @@ zeGetModuleBuildLogProcAddrTable(
         if( ( loader::context->zeDrivers.size() > 1 ) || loader::context->forceIntercept )
         {
             // return pointers to loader's DDIs
+            loader::loaderDispatch->pCore->ModuleBuildLog = new ze_module_build_log_dditable_t;
             pDdiTable->pfnDestroy                                  = loader::zeModuleBuildLogDestroy;
             pDdiTable->pfnGetString                                = loader::zeModuleBuildLogGetString;
+            zeGetModuleBuildLogProcAddrTableLegacy();
         }
         else
         {
@@ -7096,8 +7142,10 @@ zeGetPhysicalMemProcAddrTable(
         if( ( loader::context->zeDrivers.size() > 1 ) || loader::context->forceIntercept )
         {
             // return pointers to loader's DDIs
+            loader::loaderDispatch->pCore->PhysicalMem = new ze_physical_mem_dditable_t;
             pDdiTable->pfnCreate                                   = loader::zePhysicalMemCreate;
             pDdiTable->pfnDestroy                                  = loader::zePhysicalMemDestroy;
+            zeGetPhysicalMemProcAddrTableLegacy();
         }
         else
         {
@@ -7189,8 +7237,10 @@ zeGetSamplerProcAddrTable(
         if( ( loader::context->zeDrivers.size() > 1 ) || loader::context->forceIntercept )
         {
             // return pointers to loader's DDIs
+            loader::loaderDispatch->pCore->Sampler = new ze_sampler_dditable_t;
             pDdiTable->pfnCreate                                   = loader::zeSamplerCreate;
             pDdiTable->pfnDestroy                                  = loader::zeSamplerDestroy;
+            zeGetSamplerProcAddrTableLegacy();
         }
         else
         {
@@ -7282,6 +7332,7 @@ zeGetVirtualMemProcAddrTable(
         if( ( loader::context->zeDrivers.size() > 1 ) || loader::context->forceIntercept )
         {
             // return pointers to loader's DDIs
+            loader::loaderDispatch->pCore->VirtualMem = new ze_virtual_mem_dditable_t;
             pDdiTable->pfnReserve                                  = loader::zeVirtualMemReserve;
             pDdiTable->pfnFree                                     = loader::zeVirtualMemFree;
             pDdiTable->pfnQueryPageSize                            = loader::zeVirtualMemQueryPageSize;
@@ -7289,6 +7340,7 @@ zeGetVirtualMemProcAddrTable(
             pDdiTable->pfnUnmap                                    = loader::zeVirtualMemUnmap;
             pDdiTable->pfnSetAccessAttribute                       = loader::zeVirtualMemSetAccessAttribute;
             pDdiTable->pfnGetAccessAttribute                       = loader::zeVirtualMemGetAccessAttribute;
+            zeGetVirtualMemProcAddrTableLegacy();
         }
         else
         {
@@ -7371,9 +7423,11 @@ zeGetFabricEdgeExpProcAddrTable(
         if( ( loader::context->zeDrivers.size() > 1 ) || loader::context->forceIntercept )
         {
             // return pointers to loader's DDIs
+            loader::loaderDispatch->pCore->FabricEdgeExp = new ze_fabric_edge_exp_dditable_t;
             pDdiTable->pfnGetExp                                   = loader::zeFabricEdgeGetExp;
             pDdiTable->pfnGetVerticesExp                           = loader::zeFabricEdgeGetVerticesExp;
             pDdiTable->pfnGetPropertiesExp                         = loader::zeFabricEdgeGetPropertiesExp;
+            zeGetFabricEdgeExpProcAddrTableLegacy();
         }
         else
         {
@@ -7456,10 +7510,12 @@ zeGetFabricVertexExpProcAddrTable(
         if( ( loader::context->zeDrivers.size() > 1 ) || loader::context->forceIntercept )
         {
             // return pointers to loader's DDIs
+            loader::loaderDispatch->pCore->FabricVertexExp = new ze_fabric_vertex_exp_dditable_t;
             pDdiTable->pfnGetExp                                   = loader::zeFabricVertexGetExp;
             pDdiTable->pfnGetSubVerticesExp                        = loader::zeFabricVertexGetSubVerticesExp;
             pDdiTable->pfnGetPropertiesExp                         = loader::zeFabricVertexGetPropertiesExp;
             pDdiTable->pfnGetDeviceExp                             = loader::zeFabricVertexGetDeviceExp;
+            zeGetFabricVertexExpProcAddrTableLegacy();
         }
         else
         {

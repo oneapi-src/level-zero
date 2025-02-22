@@ -33,3 +33,16 @@ namespace loader
     %endif
     %endfor
 }
+
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
+%for tbl in th.get_pfntables(specs, meta, n, tags):
+__${x}dlllocal void ${X}_APICALL
+${tbl['export']['name']}Legacy();
+%endfor
+
+#if defined(__cplusplus)
+};
+#endif

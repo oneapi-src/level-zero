@@ -306,3 +306,52 @@ namespace loader_legacy
 
     %endfor
 } // namespace loader_legacy
+
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
+%for tbl in th.get_pfntables(specs, meta, n, tags):
+///////////////////////////////////////////////////////////////////////////////
+/// @brief function for filling the legacy api pointers for ${tbl['name']} table
+///        with current process' addresses
+///
+/// @returns
+///     - ::${X}_RESULT_SUCCESS
+///     - ::${X}_RESULT_ERROR_UNINITIALIZED
+///     - ::${X}_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::${X}_RESULT_ERROR_UNSUPPORTED_VERSION
+__${x}dlllocal void ${X}_APICALL
+${tbl['export']['name']}Legacy()
+{
+    // return pointers to the Loader's Functions.
+    %for obj in tbl['functions']:
+    %if 'condition' in obj:
+#if ${th.subt(n, tags, obj['condition'])}
+    %endif
+    %if namespace == "ze":
+    loader::loaderDispatch->pCore->${tbl['name']}->${th.append_ws(th.make_pfn_name(n, tags, obj), 43)} = loader_legacy::${th.make_func_name(n, tags, obj)};
+    %elif namespace == "zet":
+    loader::loaderDispatch->pTools->${tbl['name']}->${th.append_ws(th.make_pfn_name(n, tags, obj), 43)} = loader_legacy::${th.make_func_name(n, tags, obj)};
+    %elif namespace == "zes":
+    loader::loaderDispatch->pSysman->${tbl['name']}->${th.append_ws(th.make_pfn_name(n, tags, obj), 43)} = loader_legacy::${th.make_func_name(n, tags, obj)};
+    %endif
+    %if 'condition' in obj:
+#else
+    %if namespace == "ze":
+    loader::loaderDispatch->pCore->${tbl['name']}->${th.append_ws(th.make_pfn_name(n, tags, obj), 43)} = nullptr;
+    %elif namespace == "zet":
+    loader::loaderDispatch->pTools->${tbl['name']}->${th.append_ws(th.make_pfn_name(n, tags, obj), 43)} = nullptr;
+    %elif namespace == "zes":
+    loader::loaderDispatch->pSysman->${tbl['name']}->${th.append_ws(th.make_pfn_name(n, tags, obj), 43)} = nullptr;
+    %endif
+#endif
+    %endif
+    %endfor
+}
+
+%endfor
+
+#if defined(__cplusplus)
+};
+#endif
