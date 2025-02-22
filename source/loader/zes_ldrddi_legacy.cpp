@@ -4567,3 +4567,521 @@ namespace loader_legacy
     }
 
 } // namespace loader_legacy
+
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief function for filling the legacy api pointers for Global table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+__zedlllocal void ZE_APICALL
+zesGetGlobalProcAddrTableLegacy()
+{
+    // return pointers to the Loader's Functions.
+    loader::loaderDispatch->pSysman->Global->pfnInit                                     = loader_legacy::zesInit;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief function for filling the legacy api pointers for Device table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+__zedlllocal void ZE_APICALL
+zesGetDeviceProcAddrTableLegacy()
+{
+    // return pointers to the Loader's Functions.
+    loader::loaderDispatch->pSysman->Device->pfnGetProperties                            = loader_legacy::zesDeviceGetProperties;
+    loader::loaderDispatch->pSysman->Device->pfnGetState                                 = loader_legacy::zesDeviceGetState;
+    loader::loaderDispatch->pSysman->Device->pfnReset                                    = loader_legacy::zesDeviceReset;
+    loader::loaderDispatch->pSysman->Device->pfnProcessesGetState                        = loader_legacy::zesDeviceProcessesGetState;
+    loader::loaderDispatch->pSysman->Device->pfnPciGetProperties                         = loader_legacy::zesDevicePciGetProperties;
+    loader::loaderDispatch->pSysman->Device->pfnPciGetState                              = loader_legacy::zesDevicePciGetState;
+    loader::loaderDispatch->pSysman->Device->pfnPciGetBars                               = loader_legacy::zesDevicePciGetBars;
+    loader::loaderDispatch->pSysman->Device->pfnPciGetStats                              = loader_legacy::zesDevicePciGetStats;
+    loader::loaderDispatch->pSysman->Device->pfnEnumDiagnosticTestSuites                 = loader_legacy::zesDeviceEnumDiagnosticTestSuites;
+    loader::loaderDispatch->pSysman->Device->pfnEnumEngineGroups                         = loader_legacy::zesDeviceEnumEngineGroups;
+    loader::loaderDispatch->pSysman->Device->pfnEventRegister                            = loader_legacy::zesDeviceEventRegister;
+    loader::loaderDispatch->pSysman->Device->pfnEnumFabricPorts                          = loader_legacy::zesDeviceEnumFabricPorts;
+    loader::loaderDispatch->pSysman->Device->pfnEnumFans                                 = loader_legacy::zesDeviceEnumFans;
+    loader::loaderDispatch->pSysman->Device->pfnEnumFirmwares                            = loader_legacy::zesDeviceEnumFirmwares;
+    loader::loaderDispatch->pSysman->Device->pfnEnumFrequencyDomains                     = loader_legacy::zesDeviceEnumFrequencyDomains;
+    loader::loaderDispatch->pSysman->Device->pfnEnumLeds                                 = loader_legacy::zesDeviceEnumLeds;
+    loader::loaderDispatch->pSysman->Device->pfnEnumMemoryModules                        = loader_legacy::zesDeviceEnumMemoryModules;
+    loader::loaderDispatch->pSysman->Device->pfnEnumPerformanceFactorDomains             = loader_legacy::zesDeviceEnumPerformanceFactorDomains;
+    loader::loaderDispatch->pSysman->Device->pfnEnumPowerDomains                         = loader_legacy::zesDeviceEnumPowerDomains;
+    loader::loaderDispatch->pSysman->Device->pfnGetCardPowerDomain                       = loader_legacy::zesDeviceGetCardPowerDomain;
+    loader::loaderDispatch->pSysman->Device->pfnEnumPsus                                 = loader_legacy::zesDeviceEnumPsus;
+    loader::loaderDispatch->pSysman->Device->pfnEnumRasErrorSets                         = loader_legacy::zesDeviceEnumRasErrorSets;
+    loader::loaderDispatch->pSysman->Device->pfnEnumSchedulers                           = loader_legacy::zesDeviceEnumSchedulers;
+    loader::loaderDispatch->pSysman->Device->pfnEnumStandbyDomains                       = loader_legacy::zesDeviceEnumStandbyDomains;
+    loader::loaderDispatch->pSysman->Device->pfnEnumTemperatureSensors                   = loader_legacy::zesDeviceEnumTemperatureSensors;
+    loader::loaderDispatch->pSysman->Device->pfnEccAvailable                             = loader_legacy::zesDeviceEccAvailable;
+    loader::loaderDispatch->pSysman->Device->pfnEccConfigurable                          = loader_legacy::zesDeviceEccConfigurable;
+    loader::loaderDispatch->pSysman->Device->pfnGetEccState                              = loader_legacy::zesDeviceGetEccState;
+    loader::loaderDispatch->pSysman->Device->pfnSetEccState                              = loader_legacy::zesDeviceSetEccState;
+    loader::loaderDispatch->pSysman->Device->pfnGet                                      = loader_legacy::zesDeviceGet;
+    loader::loaderDispatch->pSysman->Device->pfnSetOverclockWaiver                       = loader_legacy::zesDeviceSetOverclockWaiver;
+    loader::loaderDispatch->pSysman->Device->pfnGetOverclockDomains                      = loader_legacy::zesDeviceGetOverclockDomains;
+    loader::loaderDispatch->pSysman->Device->pfnGetOverclockControls                     = loader_legacy::zesDeviceGetOverclockControls;
+    loader::loaderDispatch->pSysman->Device->pfnResetOverclockSettings                   = loader_legacy::zesDeviceResetOverclockSettings;
+    loader::loaderDispatch->pSysman->Device->pfnReadOverclockState                       = loader_legacy::zesDeviceReadOverclockState;
+    loader::loaderDispatch->pSysman->Device->pfnEnumOverclockDomains                     = loader_legacy::zesDeviceEnumOverclockDomains;
+    loader::loaderDispatch->pSysman->Device->pfnResetExt                                 = loader_legacy::zesDeviceResetExt;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief function for filling the legacy api pointers for DeviceExp table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+__zedlllocal void ZE_APICALL
+zesGetDeviceExpProcAddrTableLegacy()
+{
+    // return pointers to the Loader's Functions.
+    loader::loaderDispatch->pSysman->DeviceExp->pfnEnumEnabledVFExp                         = loader_legacy::zesDeviceEnumEnabledVFExp;
+    loader::loaderDispatch->pSysman->DeviceExp->pfnGetSubDevicePropertiesExp                = loader_legacy::zesDeviceGetSubDevicePropertiesExp;
+    loader::loaderDispatch->pSysman->DeviceExp->pfnEnumActiveVFExp                          = loader_legacy::zesDeviceEnumActiveVFExp;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief function for filling the legacy api pointers for Driver table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+__zedlllocal void ZE_APICALL
+zesGetDriverProcAddrTableLegacy()
+{
+    // return pointers to the Loader's Functions.
+    loader::loaderDispatch->pSysman->Driver->pfnEventListen                              = loader_legacy::zesDriverEventListen;
+    loader::loaderDispatch->pSysman->Driver->pfnEventListenEx                            = loader_legacy::zesDriverEventListenEx;
+    loader::loaderDispatch->pSysman->Driver->pfnGet                                      = loader_legacy::zesDriverGet;
+    loader::loaderDispatch->pSysman->Driver->pfnGetExtensionProperties                   = loader_legacy::zesDriverGetExtensionProperties;
+    loader::loaderDispatch->pSysman->Driver->pfnGetExtensionFunctionAddress              = loader_legacy::zesDriverGetExtensionFunctionAddress;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief function for filling the legacy api pointers for DriverExp table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+__zedlllocal void ZE_APICALL
+zesGetDriverExpProcAddrTableLegacy()
+{
+    // return pointers to the Loader's Functions.
+    loader::loaderDispatch->pSysman->DriverExp->pfnGetDeviceByUuidExp                       = loader_legacy::zesDriverGetDeviceByUuidExp;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief function for filling the legacy api pointers for Diagnostics table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+__zedlllocal void ZE_APICALL
+zesGetDiagnosticsProcAddrTableLegacy()
+{
+    // return pointers to the Loader's Functions.
+    loader::loaderDispatch->pSysman->Diagnostics->pfnGetProperties                            = loader_legacy::zesDiagnosticsGetProperties;
+    loader::loaderDispatch->pSysman->Diagnostics->pfnGetTests                                 = loader_legacy::zesDiagnosticsGetTests;
+    loader::loaderDispatch->pSysman->Diagnostics->pfnRunTests                                 = loader_legacy::zesDiagnosticsRunTests;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief function for filling the legacy api pointers for Engine table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+__zedlllocal void ZE_APICALL
+zesGetEngineProcAddrTableLegacy()
+{
+    // return pointers to the Loader's Functions.
+    loader::loaderDispatch->pSysman->Engine->pfnGetProperties                            = loader_legacy::zesEngineGetProperties;
+    loader::loaderDispatch->pSysman->Engine->pfnGetActivity                              = loader_legacy::zesEngineGetActivity;
+    loader::loaderDispatch->pSysman->Engine->pfnGetActivityExt                           = loader_legacy::zesEngineGetActivityExt;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief function for filling the legacy api pointers for FabricPort table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+__zedlllocal void ZE_APICALL
+zesGetFabricPortProcAddrTableLegacy()
+{
+    // return pointers to the Loader's Functions.
+    loader::loaderDispatch->pSysman->FabricPort->pfnGetProperties                            = loader_legacy::zesFabricPortGetProperties;
+    loader::loaderDispatch->pSysman->FabricPort->pfnGetLinkType                              = loader_legacy::zesFabricPortGetLinkType;
+    loader::loaderDispatch->pSysman->FabricPort->pfnGetConfig                                = loader_legacy::zesFabricPortGetConfig;
+    loader::loaderDispatch->pSysman->FabricPort->pfnSetConfig                                = loader_legacy::zesFabricPortSetConfig;
+    loader::loaderDispatch->pSysman->FabricPort->pfnGetState                                 = loader_legacy::zesFabricPortGetState;
+    loader::loaderDispatch->pSysman->FabricPort->pfnGetThroughput                            = loader_legacy::zesFabricPortGetThroughput;
+    loader::loaderDispatch->pSysman->FabricPort->pfnGetFabricErrorCounters                   = loader_legacy::zesFabricPortGetFabricErrorCounters;
+    loader::loaderDispatch->pSysman->FabricPort->pfnGetMultiPortThroughput                   = loader_legacy::zesFabricPortGetMultiPortThroughput;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief function for filling the legacy api pointers for Fan table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+__zedlllocal void ZE_APICALL
+zesGetFanProcAddrTableLegacy()
+{
+    // return pointers to the Loader's Functions.
+    loader::loaderDispatch->pSysman->Fan->pfnGetProperties                            = loader_legacy::zesFanGetProperties;
+    loader::loaderDispatch->pSysman->Fan->pfnGetConfig                                = loader_legacy::zesFanGetConfig;
+    loader::loaderDispatch->pSysman->Fan->pfnSetDefaultMode                           = loader_legacy::zesFanSetDefaultMode;
+    loader::loaderDispatch->pSysman->Fan->pfnSetFixedSpeedMode                        = loader_legacy::zesFanSetFixedSpeedMode;
+    loader::loaderDispatch->pSysman->Fan->pfnSetSpeedTableMode                        = loader_legacy::zesFanSetSpeedTableMode;
+    loader::loaderDispatch->pSysman->Fan->pfnGetState                                 = loader_legacy::zesFanGetState;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief function for filling the legacy api pointers for Firmware table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+__zedlllocal void ZE_APICALL
+zesGetFirmwareProcAddrTableLegacy()
+{
+    // return pointers to the Loader's Functions.
+    loader::loaderDispatch->pSysman->Firmware->pfnGetProperties                            = loader_legacy::zesFirmwareGetProperties;
+    loader::loaderDispatch->pSysman->Firmware->pfnFlash                                    = loader_legacy::zesFirmwareFlash;
+    loader::loaderDispatch->pSysman->Firmware->pfnGetFlashProgress                         = loader_legacy::zesFirmwareGetFlashProgress;
+    loader::loaderDispatch->pSysman->Firmware->pfnGetConsoleLogs                           = loader_legacy::zesFirmwareGetConsoleLogs;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief function for filling the legacy api pointers for FirmwareExp table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+__zedlllocal void ZE_APICALL
+zesGetFirmwareExpProcAddrTableLegacy()
+{
+    // return pointers to the Loader's Functions.
+    loader::loaderDispatch->pSysman->FirmwareExp->pfnGetSecurityVersionExp                    = loader_legacy::zesFirmwareGetSecurityVersionExp;
+    loader::loaderDispatch->pSysman->FirmwareExp->pfnSetSecurityVersionExp                    = loader_legacy::zesFirmwareSetSecurityVersionExp;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief function for filling the legacy api pointers for Frequency table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+__zedlllocal void ZE_APICALL
+zesGetFrequencyProcAddrTableLegacy()
+{
+    // return pointers to the Loader's Functions.
+    loader::loaderDispatch->pSysman->Frequency->pfnGetProperties                            = loader_legacy::zesFrequencyGetProperties;
+    loader::loaderDispatch->pSysman->Frequency->pfnGetAvailableClocks                       = loader_legacy::zesFrequencyGetAvailableClocks;
+    loader::loaderDispatch->pSysman->Frequency->pfnGetRange                                 = loader_legacy::zesFrequencyGetRange;
+    loader::loaderDispatch->pSysman->Frequency->pfnSetRange                                 = loader_legacy::zesFrequencySetRange;
+    loader::loaderDispatch->pSysman->Frequency->pfnGetState                                 = loader_legacy::zesFrequencyGetState;
+    loader::loaderDispatch->pSysman->Frequency->pfnGetThrottleTime                          = loader_legacy::zesFrequencyGetThrottleTime;
+    loader::loaderDispatch->pSysman->Frequency->pfnOcGetCapabilities                        = loader_legacy::zesFrequencyOcGetCapabilities;
+    loader::loaderDispatch->pSysman->Frequency->pfnOcGetFrequencyTarget                     = loader_legacy::zesFrequencyOcGetFrequencyTarget;
+    loader::loaderDispatch->pSysman->Frequency->pfnOcSetFrequencyTarget                     = loader_legacy::zesFrequencyOcSetFrequencyTarget;
+    loader::loaderDispatch->pSysman->Frequency->pfnOcGetVoltageTarget                       = loader_legacy::zesFrequencyOcGetVoltageTarget;
+    loader::loaderDispatch->pSysman->Frequency->pfnOcSetVoltageTarget                       = loader_legacy::zesFrequencyOcSetVoltageTarget;
+    loader::loaderDispatch->pSysman->Frequency->pfnOcSetMode                                = loader_legacy::zesFrequencyOcSetMode;
+    loader::loaderDispatch->pSysman->Frequency->pfnOcGetMode                                = loader_legacy::zesFrequencyOcGetMode;
+    loader::loaderDispatch->pSysman->Frequency->pfnOcGetIccMax                              = loader_legacy::zesFrequencyOcGetIccMax;
+    loader::loaderDispatch->pSysman->Frequency->pfnOcSetIccMax                              = loader_legacy::zesFrequencyOcSetIccMax;
+    loader::loaderDispatch->pSysman->Frequency->pfnOcGetTjMax                               = loader_legacy::zesFrequencyOcGetTjMax;
+    loader::loaderDispatch->pSysman->Frequency->pfnOcSetTjMax                               = loader_legacy::zesFrequencyOcSetTjMax;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief function for filling the legacy api pointers for Led table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+__zedlllocal void ZE_APICALL
+zesGetLedProcAddrTableLegacy()
+{
+    // return pointers to the Loader's Functions.
+    loader::loaderDispatch->pSysman->Led->pfnGetProperties                            = loader_legacy::zesLedGetProperties;
+    loader::loaderDispatch->pSysman->Led->pfnGetState                                 = loader_legacy::zesLedGetState;
+    loader::loaderDispatch->pSysman->Led->pfnSetState                                 = loader_legacy::zesLedSetState;
+    loader::loaderDispatch->pSysman->Led->pfnSetColor                                 = loader_legacy::zesLedSetColor;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief function for filling the legacy api pointers for Memory table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+__zedlllocal void ZE_APICALL
+zesGetMemoryProcAddrTableLegacy()
+{
+    // return pointers to the Loader's Functions.
+    loader::loaderDispatch->pSysman->Memory->pfnGetProperties                            = loader_legacy::zesMemoryGetProperties;
+    loader::loaderDispatch->pSysman->Memory->pfnGetState                                 = loader_legacy::zesMemoryGetState;
+    loader::loaderDispatch->pSysman->Memory->pfnGetBandwidth                             = loader_legacy::zesMemoryGetBandwidth;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief function for filling the legacy api pointers for Overclock table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+__zedlllocal void ZE_APICALL
+zesGetOverclockProcAddrTableLegacy()
+{
+    // return pointers to the Loader's Functions.
+    loader::loaderDispatch->pSysman->Overclock->pfnGetDomainProperties                      = loader_legacy::zesOverclockGetDomainProperties;
+    loader::loaderDispatch->pSysman->Overclock->pfnGetDomainVFProperties                    = loader_legacy::zesOverclockGetDomainVFProperties;
+    loader::loaderDispatch->pSysman->Overclock->pfnGetDomainControlProperties               = loader_legacy::zesOverclockGetDomainControlProperties;
+    loader::loaderDispatch->pSysman->Overclock->pfnGetControlCurrentValue                   = loader_legacy::zesOverclockGetControlCurrentValue;
+    loader::loaderDispatch->pSysman->Overclock->pfnGetControlPendingValue                   = loader_legacy::zesOverclockGetControlPendingValue;
+    loader::loaderDispatch->pSysman->Overclock->pfnSetControlUserValue                      = loader_legacy::zesOverclockSetControlUserValue;
+    loader::loaderDispatch->pSysman->Overclock->pfnGetControlState                          = loader_legacy::zesOverclockGetControlState;
+    loader::loaderDispatch->pSysman->Overclock->pfnGetVFPointValues                         = loader_legacy::zesOverclockGetVFPointValues;
+    loader::loaderDispatch->pSysman->Overclock->pfnSetVFPointValues                         = loader_legacy::zesOverclockSetVFPointValues;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief function for filling the legacy api pointers for PerformanceFactor table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+__zedlllocal void ZE_APICALL
+zesGetPerformanceFactorProcAddrTableLegacy()
+{
+    // return pointers to the Loader's Functions.
+    loader::loaderDispatch->pSysman->PerformanceFactor->pfnGetProperties                            = loader_legacy::zesPerformanceFactorGetProperties;
+    loader::loaderDispatch->pSysman->PerformanceFactor->pfnGetConfig                                = loader_legacy::zesPerformanceFactorGetConfig;
+    loader::loaderDispatch->pSysman->PerformanceFactor->pfnSetConfig                                = loader_legacy::zesPerformanceFactorSetConfig;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief function for filling the legacy api pointers for Power table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+__zedlllocal void ZE_APICALL
+zesGetPowerProcAddrTableLegacy()
+{
+    // return pointers to the Loader's Functions.
+    loader::loaderDispatch->pSysman->Power->pfnGetProperties                            = loader_legacy::zesPowerGetProperties;
+    loader::loaderDispatch->pSysman->Power->pfnGetEnergyCounter                         = loader_legacy::zesPowerGetEnergyCounter;
+    loader::loaderDispatch->pSysman->Power->pfnGetLimits                                = loader_legacy::zesPowerGetLimits;
+    loader::loaderDispatch->pSysman->Power->pfnSetLimits                                = loader_legacy::zesPowerSetLimits;
+    loader::loaderDispatch->pSysman->Power->pfnGetEnergyThreshold                       = loader_legacy::zesPowerGetEnergyThreshold;
+    loader::loaderDispatch->pSysman->Power->pfnSetEnergyThreshold                       = loader_legacy::zesPowerSetEnergyThreshold;
+    loader::loaderDispatch->pSysman->Power->pfnGetLimitsExt                             = loader_legacy::zesPowerGetLimitsExt;
+    loader::loaderDispatch->pSysman->Power->pfnSetLimitsExt                             = loader_legacy::zesPowerSetLimitsExt;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief function for filling the legacy api pointers for Psu table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+__zedlllocal void ZE_APICALL
+zesGetPsuProcAddrTableLegacy()
+{
+    // return pointers to the Loader's Functions.
+    loader::loaderDispatch->pSysman->Psu->pfnGetProperties                            = loader_legacy::zesPsuGetProperties;
+    loader::loaderDispatch->pSysman->Psu->pfnGetState                                 = loader_legacy::zesPsuGetState;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief function for filling the legacy api pointers for Ras table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+__zedlllocal void ZE_APICALL
+zesGetRasProcAddrTableLegacy()
+{
+    // return pointers to the Loader's Functions.
+    loader::loaderDispatch->pSysman->Ras->pfnGetProperties                            = loader_legacy::zesRasGetProperties;
+    loader::loaderDispatch->pSysman->Ras->pfnGetConfig                                = loader_legacy::zesRasGetConfig;
+    loader::loaderDispatch->pSysman->Ras->pfnSetConfig                                = loader_legacy::zesRasSetConfig;
+    loader::loaderDispatch->pSysman->Ras->pfnGetState                                 = loader_legacy::zesRasGetState;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief function for filling the legacy api pointers for RasExp table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+__zedlllocal void ZE_APICALL
+zesGetRasExpProcAddrTableLegacy()
+{
+    // return pointers to the Loader's Functions.
+    loader::loaderDispatch->pSysman->RasExp->pfnGetStateExp                              = loader_legacy::zesRasGetStateExp;
+    loader::loaderDispatch->pSysman->RasExp->pfnClearStateExp                            = loader_legacy::zesRasClearStateExp;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief function for filling the legacy api pointers for Scheduler table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+__zedlllocal void ZE_APICALL
+zesGetSchedulerProcAddrTableLegacy()
+{
+    // return pointers to the Loader's Functions.
+    loader::loaderDispatch->pSysman->Scheduler->pfnGetProperties                            = loader_legacy::zesSchedulerGetProperties;
+    loader::loaderDispatch->pSysman->Scheduler->pfnGetCurrentMode                           = loader_legacy::zesSchedulerGetCurrentMode;
+    loader::loaderDispatch->pSysman->Scheduler->pfnGetTimeoutModeProperties                 = loader_legacy::zesSchedulerGetTimeoutModeProperties;
+    loader::loaderDispatch->pSysman->Scheduler->pfnGetTimesliceModeProperties               = loader_legacy::zesSchedulerGetTimesliceModeProperties;
+    loader::loaderDispatch->pSysman->Scheduler->pfnSetTimeoutMode                           = loader_legacy::zesSchedulerSetTimeoutMode;
+    loader::loaderDispatch->pSysman->Scheduler->pfnSetTimesliceMode                         = loader_legacy::zesSchedulerSetTimesliceMode;
+    loader::loaderDispatch->pSysman->Scheduler->pfnSetExclusiveMode                         = loader_legacy::zesSchedulerSetExclusiveMode;
+    loader::loaderDispatch->pSysman->Scheduler->pfnSetComputeUnitDebugMode                  = loader_legacy::zesSchedulerSetComputeUnitDebugMode;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief function for filling the legacy api pointers for Standby table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+__zedlllocal void ZE_APICALL
+zesGetStandbyProcAddrTableLegacy()
+{
+    // return pointers to the Loader's Functions.
+    loader::loaderDispatch->pSysman->Standby->pfnGetProperties                            = loader_legacy::zesStandbyGetProperties;
+    loader::loaderDispatch->pSysman->Standby->pfnGetMode                                  = loader_legacy::zesStandbyGetMode;
+    loader::loaderDispatch->pSysman->Standby->pfnSetMode                                  = loader_legacy::zesStandbySetMode;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief function for filling the legacy api pointers for Temperature table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+__zedlllocal void ZE_APICALL
+zesGetTemperatureProcAddrTableLegacy()
+{
+    // return pointers to the Loader's Functions.
+    loader::loaderDispatch->pSysman->Temperature->pfnGetProperties                            = loader_legacy::zesTemperatureGetProperties;
+    loader::loaderDispatch->pSysman->Temperature->pfnGetConfig                                = loader_legacy::zesTemperatureGetConfig;
+    loader::loaderDispatch->pSysman->Temperature->pfnSetConfig                                = loader_legacy::zesTemperatureSetConfig;
+    loader::loaderDispatch->pSysman->Temperature->pfnGetState                                 = loader_legacy::zesTemperatureGetState;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief function for filling the legacy api pointers for VFManagementExp table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+__zedlllocal void ZE_APICALL
+zesGetVFManagementExpProcAddrTableLegacy()
+{
+    // return pointers to the Loader's Functions.
+    loader::loaderDispatch->pSysman->VFManagementExp->pfnGetVFCapabilitiesExp                     = loader_legacy::zesVFManagementGetVFCapabilitiesExp;
+    loader::loaderDispatch->pSysman->VFManagementExp->pfnGetVFMemoryUtilizationExp2               = loader_legacy::zesVFManagementGetVFMemoryUtilizationExp2;
+    loader::loaderDispatch->pSysman->VFManagementExp->pfnGetVFEngineUtilizationExp2               = loader_legacy::zesVFManagementGetVFEngineUtilizationExp2;
+    loader::loaderDispatch->pSysman->VFManagementExp->pfnGetVFCapabilitiesExp2                    = loader_legacy::zesVFManagementGetVFCapabilitiesExp2;
+    loader::loaderDispatch->pSysman->VFManagementExp->pfnGetVFPropertiesExp                       = loader_legacy::zesVFManagementGetVFPropertiesExp;
+    loader::loaderDispatch->pSysman->VFManagementExp->pfnGetVFMemoryUtilizationExp                = loader_legacy::zesVFManagementGetVFMemoryUtilizationExp;
+    loader::loaderDispatch->pSysman->VFManagementExp->pfnGetVFEngineUtilizationExp                = loader_legacy::zesVFManagementGetVFEngineUtilizationExp;
+    loader::loaderDispatch->pSysman->VFManagementExp->pfnSetVFTelemetryModeExp                    = loader_legacy::zesVFManagementSetVFTelemetryModeExp;
+    loader::loaderDispatch->pSysman->VFManagementExp->pfnSetVFTelemetrySamplingIntervalExp        = loader_legacy::zesVFManagementSetVFTelemetrySamplingIntervalExp;
+}
+
+
+#if defined(__cplusplus)
+};
+#endif

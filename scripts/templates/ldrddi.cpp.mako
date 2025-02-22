@@ -278,6 +278,13 @@ ${tbl['export']['name']}(
         %endif
         {
             // return pointers to loader's DDIs
+            %if namespace == "ze":
+            loader::loaderDispatch->pCore->${tbl['name']} = new ${tbl['type']};
+            %elif namespace == "zet":
+            loader::loaderDispatch->pTools->${tbl['name']} = new ${tbl['type']};
+            %elif namespace == "zes":
+            loader::loaderDispatch->pSysman->${tbl['name']} = new ${tbl['type']};
+            %endif
             %for obj in tbl['functions']:
             %if 'condition' in obj:
         #if ${th.subt(n, tags, obj['condition'])}
@@ -289,6 +296,7 @@ ${tbl['export']['name']}(
         #endif
             %endif
             %endfor
+            ${tbl['export']['name']}Legacy();
         }
         else
         {

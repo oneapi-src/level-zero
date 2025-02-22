@@ -6494,3 +6494,624 @@ namespace loader_legacy
     }
 
 } // namespace loader_legacy
+
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief function for filling the legacy api pointers for Global table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+__zedlllocal void ZE_APICALL
+zeGetGlobalProcAddrTableLegacy()
+{
+    // return pointers to the Loader's Functions.
+    loader::loaderDispatch->pCore->Global->pfnInit                                     = loader_legacy::zeInit;
+    loader::loaderDispatch->pCore->Global->pfnInitDrivers                              = loader_legacy::zeInitDrivers;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief function for filling the legacy api pointers for RTASBuilderExp table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+__zedlllocal void ZE_APICALL
+zeGetRTASBuilderExpProcAddrTableLegacy()
+{
+    // return pointers to the Loader's Functions.
+    loader::loaderDispatch->pCore->RTASBuilderExp->pfnCreateExp                                = loader_legacy::zeRTASBuilderCreateExp;
+    loader::loaderDispatch->pCore->RTASBuilderExp->pfnGetBuildPropertiesExp                    = loader_legacy::zeRTASBuilderGetBuildPropertiesExp;
+    loader::loaderDispatch->pCore->RTASBuilderExp->pfnBuildExp                                 = loader_legacy::zeRTASBuilderBuildExp;
+    loader::loaderDispatch->pCore->RTASBuilderExp->pfnDestroyExp                               = loader_legacy::zeRTASBuilderDestroyExp;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief function for filling the legacy api pointers for RTASParallelOperationExp table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+__zedlllocal void ZE_APICALL
+zeGetRTASParallelOperationExpProcAddrTableLegacy()
+{
+    // return pointers to the Loader's Functions.
+    loader::loaderDispatch->pCore->RTASParallelOperationExp->pfnCreateExp                                = loader_legacy::zeRTASParallelOperationCreateExp;
+    loader::loaderDispatch->pCore->RTASParallelOperationExp->pfnGetPropertiesExp                         = loader_legacy::zeRTASParallelOperationGetPropertiesExp;
+    loader::loaderDispatch->pCore->RTASParallelOperationExp->pfnJoinExp                                  = loader_legacy::zeRTASParallelOperationJoinExp;
+    loader::loaderDispatch->pCore->RTASParallelOperationExp->pfnDestroyExp                               = loader_legacy::zeRTASParallelOperationDestroyExp;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief function for filling the legacy api pointers for Driver table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+__zedlllocal void ZE_APICALL
+zeGetDriverProcAddrTableLegacy()
+{
+    // return pointers to the Loader's Functions.
+    loader::loaderDispatch->pCore->Driver->pfnGet                                      = loader_legacy::zeDriverGet;
+    loader::loaderDispatch->pCore->Driver->pfnGetApiVersion                            = loader_legacy::zeDriverGetApiVersion;
+    loader::loaderDispatch->pCore->Driver->pfnGetProperties                            = loader_legacy::zeDriverGetProperties;
+    loader::loaderDispatch->pCore->Driver->pfnGetIpcProperties                         = loader_legacy::zeDriverGetIpcProperties;
+    loader::loaderDispatch->pCore->Driver->pfnGetExtensionProperties                   = loader_legacy::zeDriverGetExtensionProperties;
+    loader::loaderDispatch->pCore->Driver->pfnGetExtensionFunctionAddress              = loader_legacy::zeDriverGetExtensionFunctionAddress;
+    loader::loaderDispatch->pCore->Driver->pfnGetLastErrorDescription                  = loader_legacy::zeDriverGetLastErrorDescription;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief function for filling the legacy api pointers for DriverExp table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+__zedlllocal void ZE_APICALL
+zeGetDriverExpProcAddrTableLegacy()
+{
+    // return pointers to the Loader's Functions.
+    loader::loaderDispatch->pCore->DriverExp->pfnRTASFormatCompatibilityCheckExp          = loader_legacy::zeDriverRTASFormatCompatibilityCheckExp;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief function for filling the legacy api pointers for Device table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+__zedlllocal void ZE_APICALL
+zeGetDeviceProcAddrTableLegacy()
+{
+    // return pointers to the Loader's Functions.
+    loader::loaderDispatch->pCore->Device->pfnGet                                      = loader_legacy::zeDeviceGet;
+    loader::loaderDispatch->pCore->Device->pfnGetSubDevices                            = loader_legacy::zeDeviceGetSubDevices;
+    loader::loaderDispatch->pCore->Device->pfnGetProperties                            = loader_legacy::zeDeviceGetProperties;
+    loader::loaderDispatch->pCore->Device->pfnGetComputeProperties                     = loader_legacy::zeDeviceGetComputeProperties;
+    loader::loaderDispatch->pCore->Device->pfnGetModuleProperties                      = loader_legacy::zeDeviceGetModuleProperties;
+    loader::loaderDispatch->pCore->Device->pfnGetCommandQueueGroupProperties           = loader_legacy::zeDeviceGetCommandQueueGroupProperties;
+    loader::loaderDispatch->pCore->Device->pfnGetMemoryProperties                      = loader_legacy::zeDeviceGetMemoryProperties;
+    loader::loaderDispatch->pCore->Device->pfnGetMemoryAccessProperties                = loader_legacy::zeDeviceGetMemoryAccessProperties;
+    loader::loaderDispatch->pCore->Device->pfnGetCacheProperties                       = loader_legacy::zeDeviceGetCacheProperties;
+    loader::loaderDispatch->pCore->Device->pfnGetImageProperties                       = loader_legacy::zeDeviceGetImageProperties;
+    loader::loaderDispatch->pCore->Device->pfnGetExternalMemoryProperties              = loader_legacy::zeDeviceGetExternalMemoryProperties;
+    loader::loaderDispatch->pCore->Device->pfnGetP2PProperties                         = loader_legacy::zeDeviceGetP2PProperties;
+    loader::loaderDispatch->pCore->Device->pfnCanAccessPeer                            = loader_legacy::zeDeviceCanAccessPeer;
+    loader::loaderDispatch->pCore->Device->pfnGetStatus                                = loader_legacy::zeDeviceGetStatus;
+    loader::loaderDispatch->pCore->Device->pfnGetGlobalTimestamps                      = loader_legacy::zeDeviceGetGlobalTimestamps;
+    loader::loaderDispatch->pCore->Device->pfnImportExternalSemaphoreExt               = loader_legacy::zeDeviceImportExternalSemaphoreExt;
+    loader::loaderDispatch->pCore->Device->pfnReleaseExternalSemaphoreExt              = loader_legacy::zeDeviceReleaseExternalSemaphoreExt;
+    loader::loaderDispatch->pCore->Device->pfnReserveCacheExt                          = loader_legacy::zeDeviceReserveCacheExt;
+    loader::loaderDispatch->pCore->Device->pfnSetCacheAdviceExt                        = loader_legacy::zeDeviceSetCacheAdviceExt;
+    loader::loaderDispatch->pCore->Device->pfnPciGetPropertiesExt                      = loader_legacy::zeDevicePciGetPropertiesExt;
+    loader::loaderDispatch->pCore->Device->pfnGetRootDevice                            = loader_legacy::zeDeviceGetRootDevice;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief function for filling the legacy api pointers for DeviceExp table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+__zedlllocal void ZE_APICALL
+zeGetDeviceExpProcAddrTableLegacy()
+{
+    // return pointers to the Loader's Functions.
+    loader::loaderDispatch->pCore->DeviceExp->pfnGetFabricVertexExp                       = loader_legacy::zeDeviceGetFabricVertexExp;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief function for filling the legacy api pointers for Context table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+__zedlllocal void ZE_APICALL
+zeGetContextProcAddrTableLegacy()
+{
+    // return pointers to the Loader's Functions.
+    loader::loaderDispatch->pCore->Context->pfnCreate                                   = loader_legacy::zeContextCreate;
+    loader::loaderDispatch->pCore->Context->pfnDestroy                                  = loader_legacy::zeContextDestroy;
+    loader::loaderDispatch->pCore->Context->pfnGetStatus                                = loader_legacy::zeContextGetStatus;
+    loader::loaderDispatch->pCore->Context->pfnSystemBarrier                            = loader_legacy::zeContextSystemBarrier;
+    loader::loaderDispatch->pCore->Context->pfnMakeMemoryResident                       = loader_legacy::zeContextMakeMemoryResident;
+    loader::loaderDispatch->pCore->Context->pfnEvictMemory                              = loader_legacy::zeContextEvictMemory;
+    loader::loaderDispatch->pCore->Context->pfnMakeImageResident                        = loader_legacy::zeContextMakeImageResident;
+    loader::loaderDispatch->pCore->Context->pfnEvictImage                               = loader_legacy::zeContextEvictImage;
+    loader::loaderDispatch->pCore->Context->pfnCreateEx                                 = loader_legacy::zeContextCreateEx;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief function for filling the legacy api pointers for CommandQueue table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+__zedlllocal void ZE_APICALL
+zeGetCommandQueueProcAddrTableLegacy()
+{
+    // return pointers to the Loader's Functions.
+    loader::loaderDispatch->pCore->CommandQueue->pfnCreate                                   = loader_legacy::zeCommandQueueCreate;
+    loader::loaderDispatch->pCore->CommandQueue->pfnDestroy                                  = loader_legacy::zeCommandQueueDestroy;
+    loader::loaderDispatch->pCore->CommandQueue->pfnExecuteCommandLists                      = loader_legacy::zeCommandQueueExecuteCommandLists;
+    loader::loaderDispatch->pCore->CommandQueue->pfnSynchronize                              = loader_legacy::zeCommandQueueSynchronize;
+    loader::loaderDispatch->pCore->CommandQueue->pfnGetOrdinal                               = loader_legacy::zeCommandQueueGetOrdinal;
+    loader::loaderDispatch->pCore->CommandQueue->pfnGetIndex                                 = loader_legacy::zeCommandQueueGetIndex;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief function for filling the legacy api pointers for CommandList table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+__zedlllocal void ZE_APICALL
+zeGetCommandListProcAddrTableLegacy()
+{
+    // return pointers to the Loader's Functions.
+    loader::loaderDispatch->pCore->CommandList->pfnCreate                                   = loader_legacy::zeCommandListCreate;
+    loader::loaderDispatch->pCore->CommandList->pfnCreateImmediate                          = loader_legacy::zeCommandListCreateImmediate;
+    loader::loaderDispatch->pCore->CommandList->pfnDestroy                                  = loader_legacy::zeCommandListDestroy;
+    loader::loaderDispatch->pCore->CommandList->pfnClose                                    = loader_legacy::zeCommandListClose;
+    loader::loaderDispatch->pCore->CommandList->pfnReset                                    = loader_legacy::zeCommandListReset;
+    loader::loaderDispatch->pCore->CommandList->pfnAppendWriteGlobalTimestamp               = loader_legacy::zeCommandListAppendWriteGlobalTimestamp;
+    loader::loaderDispatch->pCore->CommandList->pfnAppendBarrier                            = loader_legacy::zeCommandListAppendBarrier;
+    loader::loaderDispatch->pCore->CommandList->pfnAppendMemoryRangesBarrier                = loader_legacy::zeCommandListAppendMemoryRangesBarrier;
+    loader::loaderDispatch->pCore->CommandList->pfnAppendMemoryCopy                         = loader_legacy::zeCommandListAppendMemoryCopy;
+    loader::loaderDispatch->pCore->CommandList->pfnAppendMemoryFill                         = loader_legacy::zeCommandListAppendMemoryFill;
+    loader::loaderDispatch->pCore->CommandList->pfnAppendMemoryCopyRegion                   = loader_legacy::zeCommandListAppendMemoryCopyRegion;
+    loader::loaderDispatch->pCore->CommandList->pfnAppendMemoryCopyFromContext              = loader_legacy::zeCommandListAppendMemoryCopyFromContext;
+    loader::loaderDispatch->pCore->CommandList->pfnAppendImageCopy                          = loader_legacy::zeCommandListAppendImageCopy;
+    loader::loaderDispatch->pCore->CommandList->pfnAppendImageCopyRegion                    = loader_legacy::zeCommandListAppendImageCopyRegion;
+    loader::loaderDispatch->pCore->CommandList->pfnAppendImageCopyToMemory                  = loader_legacy::zeCommandListAppendImageCopyToMemory;
+    loader::loaderDispatch->pCore->CommandList->pfnAppendImageCopyFromMemory                = loader_legacy::zeCommandListAppendImageCopyFromMemory;
+    loader::loaderDispatch->pCore->CommandList->pfnAppendMemoryPrefetch                     = loader_legacy::zeCommandListAppendMemoryPrefetch;
+    loader::loaderDispatch->pCore->CommandList->pfnAppendMemAdvise                          = loader_legacy::zeCommandListAppendMemAdvise;
+    loader::loaderDispatch->pCore->CommandList->pfnAppendSignalEvent                        = loader_legacy::zeCommandListAppendSignalEvent;
+    loader::loaderDispatch->pCore->CommandList->pfnAppendWaitOnEvents                       = loader_legacy::zeCommandListAppendWaitOnEvents;
+    loader::loaderDispatch->pCore->CommandList->pfnAppendEventReset                         = loader_legacy::zeCommandListAppendEventReset;
+    loader::loaderDispatch->pCore->CommandList->pfnAppendQueryKernelTimestamps              = loader_legacy::zeCommandListAppendQueryKernelTimestamps;
+    loader::loaderDispatch->pCore->CommandList->pfnAppendLaunchKernel                       = loader_legacy::zeCommandListAppendLaunchKernel;
+    loader::loaderDispatch->pCore->CommandList->pfnAppendLaunchCooperativeKernel            = loader_legacy::zeCommandListAppendLaunchCooperativeKernel;
+    loader::loaderDispatch->pCore->CommandList->pfnAppendLaunchKernelIndirect               = loader_legacy::zeCommandListAppendLaunchKernelIndirect;
+    loader::loaderDispatch->pCore->CommandList->pfnAppendLaunchMultipleKernelsIndirect      = loader_legacy::zeCommandListAppendLaunchMultipleKernelsIndirect;
+    loader::loaderDispatch->pCore->CommandList->pfnAppendSignalExternalSemaphoreExt         = loader_legacy::zeCommandListAppendSignalExternalSemaphoreExt;
+    loader::loaderDispatch->pCore->CommandList->pfnAppendWaitExternalSemaphoreExt           = loader_legacy::zeCommandListAppendWaitExternalSemaphoreExt;
+    loader::loaderDispatch->pCore->CommandList->pfnAppendImageCopyToMemoryExt               = loader_legacy::zeCommandListAppendImageCopyToMemoryExt;
+    loader::loaderDispatch->pCore->CommandList->pfnAppendImageCopyFromMemoryExt             = loader_legacy::zeCommandListAppendImageCopyFromMemoryExt;
+    loader::loaderDispatch->pCore->CommandList->pfnHostSynchronize                          = loader_legacy::zeCommandListHostSynchronize;
+    loader::loaderDispatch->pCore->CommandList->pfnGetDeviceHandle                          = loader_legacy::zeCommandListGetDeviceHandle;
+    loader::loaderDispatch->pCore->CommandList->pfnGetContextHandle                         = loader_legacy::zeCommandListGetContextHandle;
+    loader::loaderDispatch->pCore->CommandList->pfnGetOrdinal                               = loader_legacy::zeCommandListGetOrdinal;
+    loader::loaderDispatch->pCore->CommandList->pfnImmediateGetIndex                        = loader_legacy::zeCommandListImmediateGetIndex;
+    loader::loaderDispatch->pCore->CommandList->pfnIsImmediate                              = loader_legacy::zeCommandListIsImmediate;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief function for filling the legacy api pointers for CommandListExp table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+__zedlllocal void ZE_APICALL
+zeGetCommandListExpProcAddrTableLegacy()
+{
+    // return pointers to the Loader's Functions.
+    loader::loaderDispatch->pCore->CommandListExp->pfnGetNextCommandIdWithKernelsExp           = loader_legacy::zeCommandListGetNextCommandIdWithKernelsExp;
+    loader::loaderDispatch->pCore->CommandListExp->pfnUpdateMutableCommandKernelsExp           = loader_legacy::zeCommandListUpdateMutableCommandKernelsExp;
+    loader::loaderDispatch->pCore->CommandListExp->pfnCreateCloneExp                           = loader_legacy::zeCommandListCreateCloneExp;
+    loader::loaderDispatch->pCore->CommandListExp->pfnImmediateAppendCommandListsExp           = loader_legacy::zeCommandListImmediateAppendCommandListsExp;
+    loader::loaderDispatch->pCore->CommandListExp->pfnGetNextCommandIdExp                      = loader_legacy::zeCommandListGetNextCommandIdExp;
+    loader::loaderDispatch->pCore->CommandListExp->pfnUpdateMutableCommandsExp                 = loader_legacy::zeCommandListUpdateMutableCommandsExp;
+    loader::loaderDispatch->pCore->CommandListExp->pfnUpdateMutableCommandSignalEventExp       = loader_legacy::zeCommandListUpdateMutableCommandSignalEventExp;
+    loader::loaderDispatch->pCore->CommandListExp->pfnUpdateMutableCommandWaitEventsExp        = loader_legacy::zeCommandListUpdateMutableCommandWaitEventsExp;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief function for filling the legacy api pointers for Event table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+__zedlllocal void ZE_APICALL
+zeGetEventProcAddrTableLegacy()
+{
+    // return pointers to the Loader's Functions.
+    loader::loaderDispatch->pCore->Event->pfnCreate                                   = loader_legacy::zeEventCreate;
+    loader::loaderDispatch->pCore->Event->pfnDestroy                                  = loader_legacy::zeEventDestroy;
+    loader::loaderDispatch->pCore->Event->pfnHostSignal                               = loader_legacy::zeEventHostSignal;
+    loader::loaderDispatch->pCore->Event->pfnHostSynchronize                          = loader_legacy::zeEventHostSynchronize;
+    loader::loaderDispatch->pCore->Event->pfnQueryStatus                              = loader_legacy::zeEventQueryStatus;
+    loader::loaderDispatch->pCore->Event->pfnHostReset                                = loader_legacy::zeEventHostReset;
+    loader::loaderDispatch->pCore->Event->pfnQueryKernelTimestamp                     = loader_legacy::zeEventQueryKernelTimestamp;
+    loader::loaderDispatch->pCore->Event->pfnQueryKernelTimestampsExt                 = loader_legacy::zeEventQueryKernelTimestampsExt;
+    loader::loaderDispatch->pCore->Event->pfnGetEventPool                             = loader_legacy::zeEventGetEventPool;
+    loader::loaderDispatch->pCore->Event->pfnGetSignalScope                           = loader_legacy::zeEventGetSignalScope;
+    loader::loaderDispatch->pCore->Event->pfnGetWaitScope                             = loader_legacy::zeEventGetWaitScope;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief function for filling the legacy api pointers for EventExp table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+__zedlllocal void ZE_APICALL
+zeGetEventExpProcAddrTableLegacy()
+{
+    // return pointers to the Loader's Functions.
+    loader::loaderDispatch->pCore->EventExp->pfnQueryTimestampsExp                       = loader_legacy::zeEventQueryTimestampsExp;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief function for filling the legacy api pointers for EventPool table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+__zedlllocal void ZE_APICALL
+zeGetEventPoolProcAddrTableLegacy()
+{
+    // return pointers to the Loader's Functions.
+    loader::loaderDispatch->pCore->EventPool->pfnCreate                                   = loader_legacy::zeEventPoolCreate;
+    loader::loaderDispatch->pCore->EventPool->pfnDestroy                                  = loader_legacy::zeEventPoolDestroy;
+    loader::loaderDispatch->pCore->EventPool->pfnGetIpcHandle                             = loader_legacy::zeEventPoolGetIpcHandle;
+    loader::loaderDispatch->pCore->EventPool->pfnOpenIpcHandle                            = loader_legacy::zeEventPoolOpenIpcHandle;
+    loader::loaderDispatch->pCore->EventPool->pfnCloseIpcHandle                           = loader_legacy::zeEventPoolCloseIpcHandle;
+    loader::loaderDispatch->pCore->EventPool->pfnPutIpcHandle                             = loader_legacy::zeEventPoolPutIpcHandle;
+    loader::loaderDispatch->pCore->EventPool->pfnGetContextHandle                         = loader_legacy::zeEventPoolGetContextHandle;
+    loader::loaderDispatch->pCore->EventPool->pfnGetFlags                                 = loader_legacy::zeEventPoolGetFlags;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief function for filling the legacy api pointers for Fence table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+__zedlllocal void ZE_APICALL
+zeGetFenceProcAddrTableLegacy()
+{
+    // return pointers to the Loader's Functions.
+    loader::loaderDispatch->pCore->Fence->pfnCreate                                   = loader_legacy::zeFenceCreate;
+    loader::loaderDispatch->pCore->Fence->pfnDestroy                                  = loader_legacy::zeFenceDestroy;
+    loader::loaderDispatch->pCore->Fence->pfnHostSynchronize                          = loader_legacy::zeFenceHostSynchronize;
+    loader::loaderDispatch->pCore->Fence->pfnQueryStatus                              = loader_legacy::zeFenceQueryStatus;
+    loader::loaderDispatch->pCore->Fence->pfnReset                                    = loader_legacy::zeFenceReset;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief function for filling the legacy api pointers for Image table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+__zedlllocal void ZE_APICALL
+zeGetImageProcAddrTableLegacy()
+{
+    // return pointers to the Loader's Functions.
+    loader::loaderDispatch->pCore->Image->pfnGetProperties                            = loader_legacy::zeImageGetProperties;
+    loader::loaderDispatch->pCore->Image->pfnCreate                                   = loader_legacy::zeImageCreate;
+    loader::loaderDispatch->pCore->Image->pfnDestroy                                  = loader_legacy::zeImageDestroy;
+    loader::loaderDispatch->pCore->Image->pfnGetAllocPropertiesExt                    = loader_legacy::zeImageGetAllocPropertiesExt;
+    loader::loaderDispatch->pCore->Image->pfnViewCreateExt                            = loader_legacy::zeImageViewCreateExt;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief function for filling the legacy api pointers for ImageExp table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+__zedlllocal void ZE_APICALL
+zeGetImageExpProcAddrTableLegacy()
+{
+    // return pointers to the Loader's Functions.
+    loader::loaderDispatch->pCore->ImageExp->pfnGetMemoryPropertiesExp                   = loader_legacy::zeImageGetMemoryPropertiesExp;
+    loader::loaderDispatch->pCore->ImageExp->pfnViewCreateExp                            = loader_legacy::zeImageViewCreateExp;
+    loader::loaderDispatch->pCore->ImageExp->pfnGetDeviceOffsetExp                       = loader_legacy::zeImageGetDeviceOffsetExp;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief function for filling the legacy api pointers for Kernel table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+__zedlllocal void ZE_APICALL
+zeGetKernelProcAddrTableLegacy()
+{
+    // return pointers to the Loader's Functions.
+    loader::loaderDispatch->pCore->Kernel->pfnCreate                                   = loader_legacy::zeKernelCreate;
+    loader::loaderDispatch->pCore->Kernel->pfnDestroy                                  = loader_legacy::zeKernelDestroy;
+    loader::loaderDispatch->pCore->Kernel->pfnSetCacheConfig                           = loader_legacy::zeKernelSetCacheConfig;
+    loader::loaderDispatch->pCore->Kernel->pfnSetGroupSize                             = loader_legacy::zeKernelSetGroupSize;
+    loader::loaderDispatch->pCore->Kernel->pfnSuggestGroupSize                         = loader_legacy::zeKernelSuggestGroupSize;
+    loader::loaderDispatch->pCore->Kernel->pfnSuggestMaxCooperativeGroupCount          = loader_legacy::zeKernelSuggestMaxCooperativeGroupCount;
+    loader::loaderDispatch->pCore->Kernel->pfnSetArgumentValue                         = loader_legacy::zeKernelSetArgumentValue;
+    loader::loaderDispatch->pCore->Kernel->pfnSetIndirectAccess                        = loader_legacy::zeKernelSetIndirectAccess;
+    loader::loaderDispatch->pCore->Kernel->pfnGetIndirectAccess                        = loader_legacy::zeKernelGetIndirectAccess;
+    loader::loaderDispatch->pCore->Kernel->pfnGetSourceAttributes                      = loader_legacy::zeKernelGetSourceAttributes;
+    loader::loaderDispatch->pCore->Kernel->pfnGetProperties                            = loader_legacy::zeKernelGetProperties;
+    loader::loaderDispatch->pCore->Kernel->pfnGetName                                  = loader_legacy::zeKernelGetName;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief function for filling the legacy api pointers for KernelExp table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+__zedlllocal void ZE_APICALL
+zeGetKernelExpProcAddrTableLegacy()
+{
+    // return pointers to the Loader's Functions.
+    loader::loaderDispatch->pCore->KernelExp->pfnSetGlobalOffsetExp                       = loader_legacy::zeKernelSetGlobalOffsetExp;
+    loader::loaderDispatch->pCore->KernelExp->pfnGetBinaryExp                             = loader_legacy::zeKernelGetBinaryExp;
+    loader::loaderDispatch->pCore->KernelExp->pfnSchedulingHintExp                        = loader_legacy::zeKernelSchedulingHintExp;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief function for filling the legacy api pointers for Mem table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+__zedlllocal void ZE_APICALL
+zeGetMemProcAddrTableLegacy()
+{
+    // return pointers to the Loader's Functions.
+    loader::loaderDispatch->pCore->Mem->pfnAllocShared                              = loader_legacy::zeMemAllocShared;
+    loader::loaderDispatch->pCore->Mem->pfnAllocDevice                              = loader_legacy::zeMemAllocDevice;
+    loader::loaderDispatch->pCore->Mem->pfnAllocHost                                = loader_legacy::zeMemAllocHost;
+    loader::loaderDispatch->pCore->Mem->pfnFree                                     = loader_legacy::zeMemFree;
+    loader::loaderDispatch->pCore->Mem->pfnGetAllocProperties                       = loader_legacy::zeMemGetAllocProperties;
+    loader::loaderDispatch->pCore->Mem->pfnGetAddressRange                          = loader_legacy::zeMemGetAddressRange;
+    loader::loaderDispatch->pCore->Mem->pfnGetIpcHandle                             = loader_legacy::zeMemGetIpcHandle;
+    loader::loaderDispatch->pCore->Mem->pfnOpenIpcHandle                            = loader_legacy::zeMemOpenIpcHandle;
+    loader::loaderDispatch->pCore->Mem->pfnCloseIpcHandle                           = loader_legacy::zeMemCloseIpcHandle;
+    loader::loaderDispatch->pCore->Mem->pfnFreeExt                                  = loader_legacy::zeMemFreeExt;
+    loader::loaderDispatch->pCore->Mem->pfnPutIpcHandle                             = loader_legacy::zeMemPutIpcHandle;
+    loader::loaderDispatch->pCore->Mem->pfnGetPitchFor2dImage                       = loader_legacy::zeMemGetPitchFor2dImage;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief function for filling the legacy api pointers for MemExp table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+__zedlllocal void ZE_APICALL
+zeGetMemExpProcAddrTableLegacy()
+{
+    // return pointers to the Loader's Functions.
+    loader::loaderDispatch->pCore->MemExp->pfnGetIpcHandleFromFileDescriptorExp        = loader_legacy::zeMemGetIpcHandleFromFileDescriptorExp;
+    loader::loaderDispatch->pCore->MemExp->pfnGetFileDescriptorFromIpcHandleExp        = loader_legacy::zeMemGetFileDescriptorFromIpcHandleExp;
+    loader::loaderDispatch->pCore->MemExp->pfnSetAtomicAccessAttributeExp              = loader_legacy::zeMemSetAtomicAccessAttributeExp;
+    loader::loaderDispatch->pCore->MemExp->pfnGetAtomicAccessAttributeExp              = loader_legacy::zeMemGetAtomicAccessAttributeExp;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief function for filling the legacy api pointers for Module table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+__zedlllocal void ZE_APICALL
+zeGetModuleProcAddrTableLegacy()
+{
+    // return pointers to the Loader's Functions.
+    loader::loaderDispatch->pCore->Module->pfnCreate                                   = loader_legacy::zeModuleCreate;
+    loader::loaderDispatch->pCore->Module->pfnDestroy                                  = loader_legacy::zeModuleDestroy;
+    loader::loaderDispatch->pCore->Module->pfnDynamicLink                              = loader_legacy::zeModuleDynamicLink;
+    loader::loaderDispatch->pCore->Module->pfnGetNativeBinary                          = loader_legacy::zeModuleGetNativeBinary;
+    loader::loaderDispatch->pCore->Module->pfnGetGlobalPointer                         = loader_legacy::zeModuleGetGlobalPointer;
+    loader::loaderDispatch->pCore->Module->pfnGetKernelNames                           = loader_legacy::zeModuleGetKernelNames;
+    loader::loaderDispatch->pCore->Module->pfnGetProperties                            = loader_legacy::zeModuleGetProperties;
+    loader::loaderDispatch->pCore->Module->pfnGetFunctionPointer                       = loader_legacy::zeModuleGetFunctionPointer;
+    loader::loaderDispatch->pCore->Module->pfnInspectLinkageExt                        = loader_legacy::zeModuleInspectLinkageExt;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief function for filling the legacy api pointers for ModuleBuildLog table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+__zedlllocal void ZE_APICALL
+zeGetModuleBuildLogProcAddrTableLegacy()
+{
+    // return pointers to the Loader's Functions.
+    loader::loaderDispatch->pCore->ModuleBuildLog->pfnDestroy                                  = loader_legacy::zeModuleBuildLogDestroy;
+    loader::loaderDispatch->pCore->ModuleBuildLog->pfnGetString                                = loader_legacy::zeModuleBuildLogGetString;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief function for filling the legacy api pointers for PhysicalMem table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+__zedlllocal void ZE_APICALL
+zeGetPhysicalMemProcAddrTableLegacy()
+{
+    // return pointers to the Loader's Functions.
+    loader::loaderDispatch->pCore->PhysicalMem->pfnCreate                                   = loader_legacy::zePhysicalMemCreate;
+    loader::loaderDispatch->pCore->PhysicalMem->pfnDestroy                                  = loader_legacy::zePhysicalMemDestroy;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief function for filling the legacy api pointers for Sampler table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+__zedlllocal void ZE_APICALL
+zeGetSamplerProcAddrTableLegacy()
+{
+    // return pointers to the Loader's Functions.
+    loader::loaderDispatch->pCore->Sampler->pfnCreate                                   = loader_legacy::zeSamplerCreate;
+    loader::loaderDispatch->pCore->Sampler->pfnDestroy                                  = loader_legacy::zeSamplerDestroy;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief function for filling the legacy api pointers for VirtualMem table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+__zedlllocal void ZE_APICALL
+zeGetVirtualMemProcAddrTableLegacy()
+{
+    // return pointers to the Loader's Functions.
+    loader::loaderDispatch->pCore->VirtualMem->pfnReserve                                  = loader_legacy::zeVirtualMemReserve;
+    loader::loaderDispatch->pCore->VirtualMem->pfnFree                                     = loader_legacy::zeVirtualMemFree;
+    loader::loaderDispatch->pCore->VirtualMem->pfnQueryPageSize                            = loader_legacy::zeVirtualMemQueryPageSize;
+    loader::loaderDispatch->pCore->VirtualMem->pfnMap                                      = loader_legacy::zeVirtualMemMap;
+    loader::loaderDispatch->pCore->VirtualMem->pfnUnmap                                    = loader_legacy::zeVirtualMemUnmap;
+    loader::loaderDispatch->pCore->VirtualMem->pfnSetAccessAttribute                       = loader_legacy::zeVirtualMemSetAccessAttribute;
+    loader::loaderDispatch->pCore->VirtualMem->pfnGetAccessAttribute                       = loader_legacy::zeVirtualMemGetAccessAttribute;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief function for filling the legacy api pointers for FabricEdgeExp table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+__zedlllocal void ZE_APICALL
+zeGetFabricEdgeExpProcAddrTableLegacy()
+{
+    // return pointers to the Loader's Functions.
+    loader::loaderDispatch->pCore->FabricEdgeExp->pfnGetExp                                   = loader_legacy::zeFabricEdgeGetExp;
+    loader::loaderDispatch->pCore->FabricEdgeExp->pfnGetVerticesExp                           = loader_legacy::zeFabricEdgeGetVerticesExp;
+    loader::loaderDispatch->pCore->FabricEdgeExp->pfnGetPropertiesExp                         = loader_legacy::zeFabricEdgeGetPropertiesExp;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief function for filling the legacy api pointers for FabricVertexExp table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+__zedlllocal void ZE_APICALL
+zeGetFabricVertexExpProcAddrTableLegacy()
+{
+    // return pointers to the Loader's Functions.
+    loader::loaderDispatch->pCore->FabricVertexExp->pfnGetExp                                   = loader_legacy::zeFabricVertexGetExp;
+    loader::loaderDispatch->pCore->FabricVertexExp->pfnGetSubVerticesExp                        = loader_legacy::zeFabricVertexGetSubVerticesExp;
+    loader::loaderDispatch->pCore->FabricVertexExp->pfnGetPropertiesExp                         = loader_legacy::zeFabricVertexGetPropertiesExp;
+    loader::loaderDispatch->pCore->FabricVertexExp->pfnGetDeviceExp                             = loader_legacy::zeFabricVertexGetDeviceExp;
+}
+
+
+#if defined(__cplusplus)
+};
+#endif

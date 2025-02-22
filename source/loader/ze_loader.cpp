@@ -229,8 +229,6 @@ namespace loader
 
             if (!desc) {
                 auto pfnInit = driver.dditable.ze.Global.pfnInit;
-                printf("pfnInit: %p\n", pfnInit);
-                printf("globalInitStored->pfnInit: %p\n", globalInitStored->pfnInit);
                 if(nullptr == pfnInit || globalInitStored->pfnInit == nullptr) {
                     if (debugTraceEnabled) {
                         std::string errorMessage = "init driver " + driver.name + " failed, zeInit function pointer null. Returning ";
@@ -403,7 +401,6 @@ namespace loader
         if (driverEnvironmentQueried) {
             return ZE_RESULT_SUCCESS;
         }
-        printf("init\n");
         loader::loaderDispatch = new ze_handle_t();
         loader::loaderDispatch->pCore = new ze_dditable_driver_t();
         loader::loaderDispatch->pCore->version = ZE_API_VERSION_CURRENT;
