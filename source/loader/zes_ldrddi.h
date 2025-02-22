@@ -70,3 +70,60 @@ namespace loader
     using zes_vf_factory_t                    = singleton_factory_t < zes_vf_object_t, zes_vf_handle_t >;
 
 }
+
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
+__zedlllocal void ZE_APICALL
+zesGetGlobalProcAddrTableLegacy();
+__zedlllocal void ZE_APICALL
+zesGetDeviceProcAddrTableLegacy();
+__zedlllocal void ZE_APICALL
+zesGetDeviceExpProcAddrTableLegacy();
+__zedlllocal void ZE_APICALL
+zesGetDriverProcAddrTableLegacy();
+__zedlllocal void ZE_APICALL
+zesGetDriverExpProcAddrTableLegacy();
+__zedlllocal void ZE_APICALL
+zesGetDiagnosticsProcAddrTableLegacy();
+__zedlllocal void ZE_APICALL
+zesGetEngineProcAddrTableLegacy();
+__zedlllocal void ZE_APICALL
+zesGetFabricPortProcAddrTableLegacy();
+__zedlllocal void ZE_APICALL
+zesGetFanProcAddrTableLegacy();
+__zedlllocal void ZE_APICALL
+zesGetFirmwareProcAddrTableLegacy();
+__zedlllocal void ZE_APICALL
+zesGetFirmwareExpProcAddrTableLegacy();
+__zedlllocal void ZE_APICALL
+zesGetFrequencyProcAddrTableLegacy();
+__zedlllocal void ZE_APICALL
+zesGetLedProcAddrTableLegacy();
+__zedlllocal void ZE_APICALL
+zesGetMemoryProcAddrTableLegacy();
+__zedlllocal void ZE_APICALL
+zesGetOverclockProcAddrTableLegacy();
+__zedlllocal void ZE_APICALL
+zesGetPerformanceFactorProcAddrTableLegacy();
+__zedlllocal void ZE_APICALL
+zesGetPowerProcAddrTableLegacy();
+__zedlllocal void ZE_APICALL
+zesGetPsuProcAddrTableLegacy();
+__zedlllocal void ZE_APICALL
+zesGetRasProcAddrTableLegacy();
+__zedlllocal void ZE_APICALL
+zesGetRasExpProcAddrTableLegacy();
+__zedlllocal void ZE_APICALL
+zesGetSchedulerProcAddrTableLegacy();
+__zedlllocal void ZE_APICALL
+zesGetStandbyProcAddrTableLegacy();
+__zedlllocal void ZE_APICALL
+zesGetTemperatureProcAddrTableLegacy();
+__zedlllocal void ZE_APICALL
+zesGetVFManagementExpProcAddrTableLegacy();
+
+#if defined(__cplusplus)
+};
+#endif

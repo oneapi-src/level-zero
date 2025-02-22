@@ -31,16 +31,21 @@ class object_t
 {
 public:
     using handle_t = _handle_t;
-    ze_handle_t* pDispatch;
+    ze_dditable_driver_t *pCore;
+    zet_dditable_driver_t *pTools;
+    zes_dditable_driver_t *pSysman;
     handle_t    handle;
     dditable_t* dditable;
+    std::string name = "unknown";
 
     object_t() = delete;
 
     object_t( handle_t _handle, dditable_t* _dditable )
         : handle( _handle ), dditable( _dditable )
     {
-        pDispatch = loader::loaderDispatch;
+        pCore = loader::loaderDispatch->pCore;
+        pTools = loader::loaderDispatch->pTools;
+        pSysman = loader::loaderDispatch->pSysman;
     }
 
     ~object_t() = default;

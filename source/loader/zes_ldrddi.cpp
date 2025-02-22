@@ -3854,7 +3854,9 @@ zesGetGlobalProcAddrTable(
         if( ( loader::context->sysmanInstanceDrivers->size() > 1 ) || loader::context->forceIntercept )
         {
             // return pointers to loader's DDIs
+            loader::loaderDispatch->pSysman->Global = new zes_global_dditable_t;
             pDdiTable->pfnInit                                     = loader::zesInit;
+            zesGetGlobalProcAddrTableLegacy();
         }
         else
         {
@@ -3930,6 +3932,7 @@ zesGetDeviceProcAddrTable(
         if( ( loader::context->sysmanInstanceDrivers->size() > 1 ) || loader::context->forceIntercept )
         {
             // return pointers to loader's DDIs
+            loader::loaderDispatch->pSysman->Device = new zes_device_dditable_t;
             pDdiTable->pfnGetProperties                            = loader::zesDeviceGetProperties;
             pDdiTable->pfnGetState                                 = loader::zesDeviceGetState;
             pDdiTable->pfnReset                                    = loader::zesDeviceReset;
@@ -3967,6 +3970,7 @@ zesGetDeviceProcAddrTable(
             pDdiTable->pfnReadOverclockState                       = loader::zesDeviceReadOverclockState;
             pDdiTable->pfnEnumOverclockDomains                     = loader::zesDeviceEnumOverclockDomains;
             pDdiTable->pfnResetExt                                 = loader::zesDeviceResetExt;
+            zesGetDeviceProcAddrTableLegacy();
         }
         else
         {
@@ -4033,9 +4037,11 @@ zesGetDeviceExpProcAddrTable(
         if( ( loader::context->sysmanInstanceDrivers->size() > 1 ) || loader::context->forceIntercept )
         {
             // return pointers to loader's DDIs
+            loader::loaderDispatch->pSysman->DeviceExp = new zes_device_exp_dditable_t;
             pDdiTable->pfnEnumEnabledVFExp                         = loader::zesDeviceEnumEnabledVFExp;
             pDdiTable->pfnGetSubDevicePropertiesExp                = loader::zesDeviceGetSubDevicePropertiesExp;
             pDdiTable->pfnEnumActiveVFExp                          = loader::zesDeviceEnumActiveVFExp;
+            zesGetDeviceExpProcAddrTableLegacy();
         }
         else
         {
@@ -4111,11 +4117,13 @@ zesGetDriverProcAddrTable(
         if( ( loader::context->sysmanInstanceDrivers->size() > 1 ) || loader::context->forceIntercept )
         {
             // return pointers to loader's DDIs
+            loader::loaderDispatch->pSysman->Driver = new zes_driver_dditable_t;
             pDdiTable->pfnEventListen                              = loader::zesDriverEventListen;
             pDdiTable->pfnEventListenEx                            = loader::zesDriverEventListenEx;
             pDdiTable->pfnGet                                      = loader::zesDriverGet;
             pDdiTable->pfnGetExtensionProperties                   = loader::zesDriverGetExtensionProperties;
             pDdiTable->pfnGetExtensionFunctionAddress              = loader::zesDriverGetExtensionFunctionAddress;
+            zesGetDriverProcAddrTableLegacy();
         }
         else
         {
@@ -4182,7 +4190,9 @@ zesGetDriverExpProcAddrTable(
         if( ( loader::context->sysmanInstanceDrivers->size() > 1 ) || loader::context->forceIntercept )
         {
             // return pointers to loader's DDIs
+            loader::loaderDispatch->pSysman->DriverExp = new zes_driver_exp_dditable_t;
             pDdiTable->pfnGetDeviceByUuidExp                       = loader::zesDriverGetDeviceByUuidExp;
+            zesGetDriverExpProcAddrTableLegacy();
         }
         else
         {
@@ -4258,9 +4268,11 @@ zesGetDiagnosticsProcAddrTable(
         if( ( loader::context->sysmanInstanceDrivers->size() > 1 ) || loader::context->forceIntercept )
         {
             // return pointers to loader's DDIs
+            loader::loaderDispatch->pSysman->Diagnostics = new zes_diagnostics_dditable_t;
             pDdiTable->pfnGetProperties                            = loader::zesDiagnosticsGetProperties;
             pDdiTable->pfnGetTests                                 = loader::zesDiagnosticsGetTests;
             pDdiTable->pfnRunTests                                 = loader::zesDiagnosticsRunTests;
+            zesGetDiagnosticsProcAddrTableLegacy();
         }
         else
         {
@@ -4336,9 +4348,11 @@ zesGetEngineProcAddrTable(
         if( ( loader::context->sysmanInstanceDrivers->size() > 1 ) || loader::context->forceIntercept )
         {
             // return pointers to loader's DDIs
+            loader::loaderDispatch->pSysman->Engine = new zes_engine_dditable_t;
             pDdiTable->pfnGetProperties                            = loader::zesEngineGetProperties;
             pDdiTable->pfnGetActivity                              = loader::zesEngineGetActivity;
             pDdiTable->pfnGetActivityExt                           = loader::zesEngineGetActivityExt;
+            zesGetEngineProcAddrTableLegacy();
         }
         else
         {
@@ -4414,6 +4428,7 @@ zesGetFabricPortProcAddrTable(
         if( ( loader::context->sysmanInstanceDrivers->size() > 1 ) || loader::context->forceIntercept )
         {
             // return pointers to loader's DDIs
+            loader::loaderDispatch->pSysman->FabricPort = new zes_fabric_port_dditable_t;
             pDdiTable->pfnGetProperties                            = loader::zesFabricPortGetProperties;
             pDdiTable->pfnGetLinkType                              = loader::zesFabricPortGetLinkType;
             pDdiTable->pfnGetConfig                                = loader::zesFabricPortGetConfig;
@@ -4422,6 +4437,7 @@ zesGetFabricPortProcAddrTable(
             pDdiTable->pfnGetThroughput                            = loader::zesFabricPortGetThroughput;
             pDdiTable->pfnGetFabricErrorCounters                   = loader::zesFabricPortGetFabricErrorCounters;
             pDdiTable->pfnGetMultiPortThroughput                   = loader::zesFabricPortGetMultiPortThroughput;
+            zesGetFabricPortProcAddrTableLegacy();
         }
         else
         {
@@ -4497,12 +4513,14 @@ zesGetFanProcAddrTable(
         if( ( loader::context->sysmanInstanceDrivers->size() > 1 ) || loader::context->forceIntercept )
         {
             // return pointers to loader's DDIs
+            loader::loaderDispatch->pSysman->Fan = new zes_fan_dditable_t;
             pDdiTable->pfnGetProperties                            = loader::zesFanGetProperties;
             pDdiTable->pfnGetConfig                                = loader::zesFanGetConfig;
             pDdiTable->pfnSetDefaultMode                           = loader::zesFanSetDefaultMode;
             pDdiTable->pfnSetFixedSpeedMode                        = loader::zesFanSetFixedSpeedMode;
             pDdiTable->pfnSetSpeedTableMode                        = loader::zesFanSetSpeedTableMode;
             pDdiTable->pfnGetState                                 = loader::zesFanGetState;
+            zesGetFanProcAddrTableLegacy();
         }
         else
         {
@@ -4578,10 +4596,12 @@ zesGetFirmwareProcAddrTable(
         if( ( loader::context->sysmanInstanceDrivers->size() > 1 ) || loader::context->forceIntercept )
         {
             // return pointers to loader's DDIs
+            loader::loaderDispatch->pSysman->Firmware = new zes_firmware_dditable_t;
             pDdiTable->pfnGetProperties                            = loader::zesFirmwareGetProperties;
             pDdiTable->pfnFlash                                    = loader::zesFirmwareFlash;
             pDdiTable->pfnGetFlashProgress                         = loader::zesFirmwareGetFlashProgress;
             pDdiTable->pfnGetConsoleLogs                           = loader::zesFirmwareGetConsoleLogs;
+            zesGetFirmwareProcAddrTableLegacy();
         }
         else
         {
@@ -4648,8 +4668,10 @@ zesGetFirmwareExpProcAddrTable(
         if( ( loader::context->sysmanInstanceDrivers->size() > 1 ) || loader::context->forceIntercept )
         {
             // return pointers to loader's DDIs
+            loader::loaderDispatch->pSysman->FirmwareExp = new zes_firmware_exp_dditable_t;
             pDdiTable->pfnGetSecurityVersionExp                    = loader::zesFirmwareGetSecurityVersionExp;
             pDdiTable->pfnSetSecurityVersionExp                    = loader::zesFirmwareSetSecurityVersionExp;
+            zesGetFirmwareExpProcAddrTableLegacy();
         }
         else
         {
@@ -4725,6 +4747,7 @@ zesGetFrequencyProcAddrTable(
         if( ( loader::context->sysmanInstanceDrivers->size() > 1 ) || loader::context->forceIntercept )
         {
             // return pointers to loader's DDIs
+            loader::loaderDispatch->pSysman->Frequency = new zes_frequency_dditable_t;
             pDdiTable->pfnGetProperties                            = loader::zesFrequencyGetProperties;
             pDdiTable->pfnGetAvailableClocks                       = loader::zesFrequencyGetAvailableClocks;
             pDdiTable->pfnGetRange                                 = loader::zesFrequencyGetRange;
@@ -4742,6 +4765,7 @@ zesGetFrequencyProcAddrTable(
             pDdiTable->pfnOcSetIccMax                              = loader::zesFrequencyOcSetIccMax;
             pDdiTable->pfnOcGetTjMax                               = loader::zesFrequencyOcGetTjMax;
             pDdiTable->pfnOcSetTjMax                               = loader::zesFrequencyOcSetTjMax;
+            zesGetFrequencyProcAddrTableLegacy();
         }
         else
         {
@@ -4817,10 +4841,12 @@ zesGetLedProcAddrTable(
         if( ( loader::context->sysmanInstanceDrivers->size() > 1 ) || loader::context->forceIntercept )
         {
             // return pointers to loader's DDIs
+            loader::loaderDispatch->pSysman->Led = new zes_led_dditable_t;
             pDdiTable->pfnGetProperties                            = loader::zesLedGetProperties;
             pDdiTable->pfnGetState                                 = loader::zesLedGetState;
             pDdiTable->pfnSetState                                 = loader::zesLedSetState;
             pDdiTable->pfnSetColor                                 = loader::zesLedSetColor;
+            zesGetLedProcAddrTableLegacy();
         }
         else
         {
@@ -4896,9 +4922,11 @@ zesGetMemoryProcAddrTable(
         if( ( loader::context->sysmanInstanceDrivers->size() > 1 ) || loader::context->forceIntercept )
         {
             // return pointers to loader's DDIs
+            loader::loaderDispatch->pSysman->Memory = new zes_memory_dditable_t;
             pDdiTable->pfnGetProperties                            = loader::zesMemoryGetProperties;
             pDdiTable->pfnGetState                                 = loader::zesMemoryGetState;
             pDdiTable->pfnGetBandwidth                             = loader::zesMemoryGetBandwidth;
+            zesGetMemoryProcAddrTableLegacy();
         }
         else
         {
@@ -4978,6 +5006,7 @@ zesGetOverclockProcAddrTable(
         if( ( loader::context->sysmanInstanceDrivers->size() > 1 ) || loader::context->forceIntercept )
         {
             // return pointers to loader's DDIs
+            loader::loaderDispatch->pSysman->Overclock = new zes_overclock_dditable_t;
             pDdiTable->pfnGetDomainProperties                      = loader::zesOverclockGetDomainProperties;
             pDdiTable->pfnGetDomainVFProperties                    = loader::zesOverclockGetDomainVFProperties;
             pDdiTable->pfnGetDomainControlProperties               = loader::zesOverclockGetDomainControlProperties;
@@ -4987,6 +5016,7 @@ zesGetOverclockProcAddrTable(
             pDdiTable->pfnGetControlState                          = loader::zesOverclockGetControlState;
             pDdiTable->pfnGetVFPointValues                         = loader::zesOverclockGetVFPointValues;
             pDdiTable->pfnSetVFPointValues                         = loader::zesOverclockSetVFPointValues;
+            zesGetOverclockProcAddrTableLegacy();
         }
         else
         {
@@ -5062,9 +5092,11 @@ zesGetPerformanceFactorProcAddrTable(
         if( ( loader::context->sysmanInstanceDrivers->size() > 1 ) || loader::context->forceIntercept )
         {
             // return pointers to loader's DDIs
+            loader::loaderDispatch->pSysman->PerformanceFactor = new zes_performance_factor_dditable_t;
             pDdiTable->pfnGetProperties                            = loader::zesPerformanceFactorGetProperties;
             pDdiTable->pfnGetConfig                                = loader::zesPerformanceFactorGetConfig;
             pDdiTable->pfnSetConfig                                = loader::zesPerformanceFactorSetConfig;
+            zesGetPerformanceFactorProcAddrTableLegacy();
         }
         else
         {
@@ -5140,6 +5172,7 @@ zesGetPowerProcAddrTable(
         if( ( loader::context->sysmanInstanceDrivers->size() > 1 ) || loader::context->forceIntercept )
         {
             // return pointers to loader's DDIs
+            loader::loaderDispatch->pSysman->Power = new zes_power_dditable_t;
             pDdiTable->pfnGetProperties                            = loader::zesPowerGetProperties;
             pDdiTable->pfnGetEnergyCounter                         = loader::zesPowerGetEnergyCounter;
             pDdiTable->pfnGetLimits                                = loader::zesPowerGetLimits;
@@ -5148,6 +5181,7 @@ zesGetPowerProcAddrTable(
             pDdiTable->pfnSetEnergyThreshold                       = loader::zesPowerSetEnergyThreshold;
             pDdiTable->pfnGetLimitsExt                             = loader::zesPowerGetLimitsExt;
             pDdiTable->pfnSetLimitsExt                             = loader::zesPowerSetLimitsExt;
+            zesGetPowerProcAddrTableLegacy();
         }
         else
         {
@@ -5223,8 +5257,10 @@ zesGetPsuProcAddrTable(
         if( ( loader::context->sysmanInstanceDrivers->size() > 1 ) || loader::context->forceIntercept )
         {
             // return pointers to loader's DDIs
+            loader::loaderDispatch->pSysman->Psu = new zes_psu_dditable_t;
             pDdiTable->pfnGetProperties                            = loader::zesPsuGetProperties;
             pDdiTable->pfnGetState                                 = loader::zesPsuGetState;
+            zesGetPsuProcAddrTableLegacy();
         }
         else
         {
@@ -5300,10 +5336,12 @@ zesGetRasProcAddrTable(
         if( ( loader::context->sysmanInstanceDrivers->size() > 1 ) || loader::context->forceIntercept )
         {
             // return pointers to loader's DDIs
+            loader::loaderDispatch->pSysman->Ras = new zes_ras_dditable_t;
             pDdiTable->pfnGetProperties                            = loader::zesRasGetProperties;
             pDdiTable->pfnGetConfig                                = loader::zesRasGetConfig;
             pDdiTable->pfnSetConfig                                = loader::zesRasSetConfig;
             pDdiTable->pfnGetState                                 = loader::zesRasGetState;
+            zesGetRasProcAddrTableLegacy();
         }
         else
         {
@@ -5370,8 +5408,10 @@ zesGetRasExpProcAddrTable(
         if( ( loader::context->sysmanInstanceDrivers->size() > 1 ) || loader::context->forceIntercept )
         {
             // return pointers to loader's DDIs
+            loader::loaderDispatch->pSysman->RasExp = new zes_ras_exp_dditable_t;
             pDdiTable->pfnGetStateExp                              = loader::zesRasGetStateExp;
             pDdiTable->pfnClearStateExp                            = loader::zesRasClearStateExp;
+            zesGetRasExpProcAddrTableLegacy();
         }
         else
         {
@@ -5447,6 +5487,7 @@ zesGetSchedulerProcAddrTable(
         if( ( loader::context->sysmanInstanceDrivers->size() > 1 ) || loader::context->forceIntercept )
         {
             // return pointers to loader's DDIs
+            loader::loaderDispatch->pSysman->Scheduler = new zes_scheduler_dditable_t;
             pDdiTable->pfnGetProperties                            = loader::zesSchedulerGetProperties;
             pDdiTable->pfnGetCurrentMode                           = loader::zesSchedulerGetCurrentMode;
             pDdiTable->pfnGetTimeoutModeProperties                 = loader::zesSchedulerGetTimeoutModeProperties;
@@ -5455,6 +5496,7 @@ zesGetSchedulerProcAddrTable(
             pDdiTable->pfnSetTimesliceMode                         = loader::zesSchedulerSetTimesliceMode;
             pDdiTable->pfnSetExclusiveMode                         = loader::zesSchedulerSetExclusiveMode;
             pDdiTable->pfnSetComputeUnitDebugMode                  = loader::zesSchedulerSetComputeUnitDebugMode;
+            zesGetSchedulerProcAddrTableLegacy();
         }
         else
         {
@@ -5530,9 +5572,11 @@ zesGetStandbyProcAddrTable(
         if( ( loader::context->sysmanInstanceDrivers->size() > 1 ) || loader::context->forceIntercept )
         {
             // return pointers to loader's DDIs
+            loader::loaderDispatch->pSysman->Standby = new zes_standby_dditable_t;
             pDdiTable->pfnGetProperties                            = loader::zesStandbyGetProperties;
             pDdiTable->pfnGetMode                                  = loader::zesStandbyGetMode;
             pDdiTable->pfnSetMode                                  = loader::zesStandbySetMode;
+            zesGetStandbyProcAddrTableLegacy();
         }
         else
         {
@@ -5608,10 +5652,12 @@ zesGetTemperatureProcAddrTable(
         if( ( loader::context->sysmanInstanceDrivers->size() > 1 ) || loader::context->forceIntercept )
         {
             // return pointers to loader's DDIs
+            loader::loaderDispatch->pSysman->Temperature = new zes_temperature_dditable_t;
             pDdiTable->pfnGetProperties                            = loader::zesTemperatureGetProperties;
             pDdiTable->pfnGetConfig                                = loader::zesTemperatureGetConfig;
             pDdiTable->pfnSetConfig                                = loader::zesTemperatureSetConfig;
             pDdiTable->pfnGetState                                 = loader::zesTemperatureGetState;
+            zesGetTemperatureProcAddrTableLegacy();
         }
         else
         {
@@ -5678,6 +5724,7 @@ zesGetVFManagementExpProcAddrTable(
         if( ( loader::context->sysmanInstanceDrivers->size() > 1 ) || loader::context->forceIntercept )
         {
             // return pointers to loader's DDIs
+            loader::loaderDispatch->pSysman->VFManagementExp = new zes_vf_management_exp_dditable_t;
             pDdiTable->pfnGetVFCapabilitiesExp                     = loader::zesVFManagementGetVFCapabilitiesExp;
             pDdiTable->pfnGetVFMemoryUtilizationExp2               = loader::zesVFManagementGetVFMemoryUtilizationExp2;
             pDdiTable->pfnGetVFEngineUtilizationExp2               = loader::zesVFManagementGetVFEngineUtilizationExp2;
@@ -5687,6 +5734,7 @@ zesGetVFManagementExpProcAddrTable(
             pDdiTable->pfnGetVFEngineUtilizationExp                = loader::zesVFManagementGetVFEngineUtilizationExp;
             pDdiTable->pfnSetVFTelemetryModeExp                    = loader::zesVFManagementSetVFTelemetryModeExp;
             pDdiTable->pfnSetVFTelemetrySamplingIntervalExp        = loader::zesVFManagementSetVFTelemetrySamplingIntervalExp;
+            zesGetVFManagementExpProcAddrTableLegacy();
         }
         else
         {
