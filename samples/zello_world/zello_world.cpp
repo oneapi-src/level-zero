@@ -73,7 +73,8 @@ int main( int argc, char *argv[] )
     ze_result_t status;
     const ze_device_type_t type = ZE_DEVICE_TYPE_GPU;
 
-    ze_init_driver_type_desc_t driverTypeDesc = {ZE_STRUCTURE_TYPE_INIT_DRIVER_TYPE_DESC};
+    ze_init_driver_type_desc_t driverTypeDesc = {};
+    driverTypeDesc.stype = ZE_STRUCTURE_TYPE_INIT_DRIVER_TYPE_DESC;
     driverTypeDesc.flags = ZE_INIT_DRIVER_TYPE_FLAG_GPU;
     driverTypeDesc.pNext = nullptr;
 
