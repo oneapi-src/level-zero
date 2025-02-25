@@ -314,13 +314,6 @@ extern "C" {
 %for tbl in th.get_pfntables(specs, meta, n, tags):
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief function for filling the legacy api pointers for ${tbl['name']} table
-///        with current process' addresses
-///
-/// @returns
-///     - ::${X}_RESULT_SUCCESS
-///     - ::${X}_RESULT_ERROR_UNINITIALIZED
-///     - ::${X}_RESULT_ERROR_INVALID_NULL_POINTER
-///     - ::${X}_RESULT_ERROR_UNSUPPORTED_VERSION
 __${x}dlllocal void ${X}_APICALL
 ${tbl['export']['name']}Legacy()
 {

@@ -3799,6 +3799,40 @@ namespace loader
         return result;
     }
 
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief function for removing the ddi driver tables for zes
+    __zedlllocal void ZE_APICALL
+    zesDestroyDDiDriverTables(zes_dditable_driver_t* pDdiTable)
+    {
+        // Delete ddi tables
+        delete pDdiTable->Global;
+        delete pDdiTable->Device;
+        delete pDdiTable->DeviceExp;
+        delete pDdiTable->Driver;
+        delete pDdiTable->DriverExp;
+        delete pDdiTable->Diagnostics;
+        delete pDdiTable->Engine;
+        delete pDdiTable->FabricPort;
+        delete pDdiTable->Fan;
+        delete pDdiTable->Firmware;
+        delete pDdiTable->FirmwareExp;
+        delete pDdiTable->Frequency;
+        delete pDdiTable->Led;
+        delete pDdiTable->Memory;
+        delete pDdiTable->Overclock;
+        delete pDdiTable->PerformanceFactor;
+        delete pDdiTable->Power;
+        delete pDdiTable->Psu;
+        delete pDdiTable->Ras;
+        delete pDdiTable->RasExp;
+        delete pDdiTable->Scheduler;
+        delete pDdiTable->Standby;
+        delete pDdiTable->Temperature;
+        delete pDdiTable->VFManagementExp;
+        delete pDdiTable;
+    }
+
 } // namespace loader
 
 #if defined(__cplusplus)

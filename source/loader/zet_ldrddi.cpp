@@ -1781,6 +1781,34 @@ namespace loader
         return result;
     }
 
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief function for removing the ddi driver tables for zet
+    __zedlllocal void ZE_APICALL
+    zetDestroyDDiDriverTables(zet_dditable_driver_t* pDdiTable)
+    {
+        // Delete ddi tables
+        delete pDdiTable->MetricDecoderExp;
+        delete pDdiTable->MetricProgrammableExp;
+        delete pDdiTable->MetricTracerExp;
+        delete pDdiTable->Device;
+        delete pDdiTable->DeviceExp;
+        delete pDdiTable->Context;
+        delete pDdiTable->CommandList;
+        delete pDdiTable->Kernel;
+        delete pDdiTable->Module;
+        delete pDdiTable->Debug;
+        delete pDdiTable->Metric;
+        delete pDdiTable->MetricExp;
+        delete pDdiTable->MetricGroup;
+        delete pDdiTable->MetricGroupExp;
+        delete pDdiTable->MetricQuery;
+        delete pDdiTable->MetricQueryPool;
+        delete pDdiTable->MetricStreamer;
+        delete pDdiTable->TracerExp;
+        delete pDdiTable;
+    }
+
 } // namespace loader
 
 #if defined(__cplusplus)

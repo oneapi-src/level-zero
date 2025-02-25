@@ -60,6 +60,8 @@ namespace loader
     using zet_metric_programmable_exp_object_t    = object_t < zet_metric_programmable_exp_handle_t >;
     using zet_metric_programmable_exp_factory_t   = singleton_factory_t < zet_metric_programmable_exp_object_t, zet_metric_programmable_exp_handle_t >;
 
+    __zedlllocal void ZE_APICALL
+    zetDestroyDDiDriverTables(zet_dditable_driver_t* pDdiTable);
 }
 
 #if defined(__cplusplus)

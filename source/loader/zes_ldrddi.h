@@ -69,6 +69,8 @@ namespace loader
     using zes_vf_object_t                     = object_t < zes_vf_handle_t >;
     using zes_vf_factory_t                    = singleton_factory_t < zes_vf_object_t, zes_vf_handle_t >;
 
+    __zedlllocal void ZE_APICALL
+    zesDestroyDDiDriverTables(zes_dditable_driver_t* pDdiTable);
 }
 
 #if defined(__cplusplus)

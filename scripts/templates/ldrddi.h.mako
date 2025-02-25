@@ -32,6 +32,8 @@ namespace loader
 
     %endif
     %endfor
+    __${x}dlllocal void ${X}_APICALL
+    ${n}DestroyDDiDriverTables(${n}_dditable_driver_t* pDdiTable);
 }
 
 #if defined(__cplusplus)

@@ -4851,6 +4851,44 @@ namespace loader
         return result;
     }
 
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief function for removing the ddi driver tables for ze
+    __zedlllocal void ZE_APICALL
+    zeDestroyDDiDriverTables(ze_dditable_driver_t* pDdiTable)
+    {
+        // Delete ddi tables
+        delete pDdiTable->Global;
+        delete pDdiTable->RTASBuilderExp;
+        delete pDdiTable->RTASParallelOperationExp;
+        delete pDdiTable->Driver;
+        delete pDdiTable->DriverExp;
+        delete pDdiTable->Device;
+        delete pDdiTable->DeviceExp;
+        delete pDdiTable->Context;
+        delete pDdiTable->CommandQueue;
+        delete pDdiTable->CommandList;
+        delete pDdiTable->CommandListExp;
+        delete pDdiTable->Event;
+        delete pDdiTable->EventExp;
+        delete pDdiTable->EventPool;
+        delete pDdiTable->Fence;
+        delete pDdiTable->Image;
+        delete pDdiTable->ImageExp;
+        delete pDdiTable->Kernel;
+        delete pDdiTable->KernelExp;
+        delete pDdiTable->Mem;
+        delete pDdiTable->MemExp;
+        delete pDdiTable->Module;
+        delete pDdiTable->ModuleBuildLog;
+        delete pDdiTable->PhysicalMem;
+        delete pDdiTable->Sampler;
+        delete pDdiTable->VirtualMem;
+        delete pDdiTable->FabricEdgeExp;
+        delete pDdiTable->FabricVertexExp;
+        delete pDdiTable;
+    }
+
 } // namespace loader
 
 #if defined(__cplusplus)
