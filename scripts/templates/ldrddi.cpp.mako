@@ -183,6 +183,19 @@ namespace loader
     }
     %endif
     %endfor
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief function for removing the ddi driver tables for ${n}
+    __${x}dlllocal void ${X}_APICALL
+    ${n}DestroyDDiDriverTables(${n}_dditable_driver_t* pDdiTable)
+    {
+        // Delete ddi tables
+%for tbl in th.get_pfntables(specs, meta, n, tags):
+        delete pDdiTable->${tbl['name']};
+%endfor
+        delete pDdiTable;
+    }
+
 } // namespace loader
 
 #if defined(__cplusplus)

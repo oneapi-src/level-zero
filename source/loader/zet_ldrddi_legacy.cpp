@@ -2302,13 +2302,6 @@ extern "C" {
 
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief function for filling the legacy api pointers for MetricDecoderExp table
-///        with current process' addresses
-///
-/// @returns
-///     - ::ZE_RESULT_SUCCESS
-///     - ::ZE_RESULT_ERROR_UNINITIALIZED
-///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
-///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
 __zedlllocal void ZE_APICALL
 zetGetMetricDecoderExpProcAddrTableLegacy()
 {
@@ -2320,13 +2313,6 @@ zetGetMetricDecoderExpProcAddrTableLegacy()
 
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief function for filling the legacy api pointers for MetricProgrammableExp table
-///        with current process' addresses
-///
-/// @returns
-///     - ::ZE_RESULT_SUCCESS
-///     - ::ZE_RESULT_ERROR_UNINITIALIZED
-///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
-///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
 __zedlllocal void ZE_APICALL
 zetGetMetricProgrammableExpProcAddrTableLegacy()
 {
@@ -2339,13 +2325,6 @@ zetGetMetricProgrammableExpProcAddrTableLegacy()
 
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief function for filling the legacy api pointers for MetricTracerExp table
-///        with current process' addresses
-///
-/// @returns
-///     - ::ZE_RESULT_SUCCESS
-///     - ::ZE_RESULT_ERROR_UNINITIALIZED
-///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
-///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
 __zedlllocal void ZE_APICALL
 zetGetMetricTracerExpProcAddrTableLegacy()
 {
@@ -2360,13 +2339,6 @@ zetGetMetricTracerExpProcAddrTableLegacy()
 
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief function for filling the legacy api pointers for Device table
-///        with current process' addresses
-///
-/// @returns
-///     - ::ZE_RESULT_SUCCESS
-///     - ::ZE_RESULT_ERROR_UNINITIALIZED
-///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
-///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
 __zedlllocal void ZE_APICALL
 zetGetDeviceProcAddrTableLegacy()
 {
@@ -2376,13 +2348,6 @@ zetGetDeviceProcAddrTableLegacy()
 
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief function for filling the legacy api pointers for DeviceExp table
-///        with current process' addresses
-///
-/// @returns
-///     - ::ZE_RESULT_SUCCESS
-///     - ::ZE_RESULT_ERROR_UNINITIALIZED
-///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
-///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
 __zedlllocal void ZE_APICALL
 zetGetDeviceExpProcAddrTableLegacy()
 {
@@ -2393,13 +2358,6 @@ zetGetDeviceExpProcAddrTableLegacy()
 
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief function for filling the legacy api pointers for Context table
-///        with current process' addresses
-///
-/// @returns
-///     - ::ZE_RESULT_SUCCESS
-///     - ::ZE_RESULT_ERROR_UNINITIALIZED
-///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
-///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
 __zedlllocal void ZE_APICALL
 zetGetContextProcAddrTableLegacy()
 {
@@ -2409,13 +2367,6 @@ zetGetContextProcAddrTableLegacy()
 
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief function for filling the legacy api pointers for CommandList table
-///        with current process' addresses
-///
-/// @returns
-///     - ::ZE_RESULT_SUCCESS
-///     - ::ZE_RESULT_ERROR_UNINITIALIZED
-///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
-///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
 __zedlllocal void ZE_APICALL
 zetGetCommandListProcAddrTableLegacy()
 {
@@ -2428,13 +2379,6 @@ zetGetCommandListProcAddrTableLegacy()
 
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief function for filling the legacy api pointers for Kernel table
-///        with current process' addresses
-///
-/// @returns
-///     - ::ZE_RESULT_SUCCESS
-///     - ::ZE_RESULT_ERROR_UNINITIALIZED
-///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
-///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
 __zedlllocal void ZE_APICALL
 zetGetKernelProcAddrTableLegacy()
 {
@@ -2444,13 +2388,6 @@ zetGetKernelProcAddrTableLegacy()
 
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief function for filling the legacy api pointers for Module table
-///        with current process' addresses
-///
-/// @returns
-///     - ::ZE_RESULT_SUCCESS
-///     - ::ZE_RESULT_ERROR_UNINITIALIZED
-///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
-///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
 __zedlllocal void ZE_APICALL
 zetGetModuleProcAddrTableLegacy()
 {
@@ -2460,13 +2397,6 @@ zetGetModuleProcAddrTableLegacy()
 
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief function for filling the legacy api pointers for Debug table
-///        with current process' addresses
-///
-/// @returns
-///     - ::ZE_RESULT_SUCCESS
-///     - ::ZE_RESULT_ERROR_UNINITIALIZED
-///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
-///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
 __zedlllocal void ZE_APICALL
 zetGetDebugProcAddrTableLegacy()
 {
@@ -2487,13 +2417,6 @@ zetGetDebugProcAddrTableLegacy()
 
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief function for filling the legacy api pointers for Metric table
-///        with current process' addresses
-///
-/// @returns
-///     - ::ZE_RESULT_SUCCESS
-///     - ::ZE_RESULT_ERROR_UNINITIALIZED
-///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
-///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
 __zedlllocal void ZE_APICALL
 zetGetMetricProcAddrTableLegacy()
 {
@@ -2504,13 +2427,6 @@ zetGetMetricProcAddrTableLegacy()
 
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief function for filling the legacy api pointers for MetricExp table
-///        with current process' addresses
-///
-/// @returns
-///     - ::ZE_RESULT_SUCCESS
-///     - ::ZE_RESULT_ERROR_UNINITIALIZED
-///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
-///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
 __zedlllocal void ZE_APICALL
 zetGetMetricExpProcAddrTableLegacy()
 {
@@ -2522,13 +2438,6 @@ zetGetMetricExpProcAddrTableLegacy()
 
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief function for filling the legacy api pointers for MetricGroup table
-///        with current process' addresses
-///
-/// @returns
-///     - ::ZE_RESULT_SUCCESS
-///     - ::ZE_RESULT_ERROR_UNINITIALIZED
-///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
-///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
 __zedlllocal void ZE_APICALL
 zetGetMetricGroupProcAddrTableLegacy()
 {
@@ -2540,13 +2449,6 @@ zetGetMetricGroupProcAddrTableLegacy()
 
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief function for filling the legacy api pointers for MetricGroupExp table
-///        with current process' addresses
-///
-/// @returns
-///     - ::ZE_RESULT_SUCCESS
-///     - ::ZE_RESULT_ERROR_UNINITIALIZED
-///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
-///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
 __zedlllocal void ZE_APICALL
 zetGetMetricGroupExpProcAddrTableLegacy()
 {
@@ -2564,13 +2466,6 @@ zetGetMetricGroupExpProcAddrTableLegacy()
 
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief function for filling the legacy api pointers for MetricQuery table
-///        with current process' addresses
-///
-/// @returns
-///     - ::ZE_RESULT_SUCCESS
-///     - ::ZE_RESULT_ERROR_UNINITIALIZED
-///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
-///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
 __zedlllocal void ZE_APICALL
 zetGetMetricQueryProcAddrTableLegacy()
 {
@@ -2583,13 +2478,6 @@ zetGetMetricQueryProcAddrTableLegacy()
 
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief function for filling the legacy api pointers for MetricQueryPool table
-///        with current process' addresses
-///
-/// @returns
-///     - ::ZE_RESULT_SUCCESS
-///     - ::ZE_RESULT_ERROR_UNINITIALIZED
-///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
-///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
 __zedlllocal void ZE_APICALL
 zetGetMetricQueryPoolProcAddrTableLegacy()
 {
@@ -2600,13 +2488,6 @@ zetGetMetricQueryPoolProcAddrTableLegacy()
 
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief function for filling the legacy api pointers for MetricStreamer table
-///        with current process' addresses
-///
-/// @returns
-///     - ::ZE_RESULT_SUCCESS
-///     - ::ZE_RESULT_ERROR_UNINITIALIZED
-///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
-///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
 __zedlllocal void ZE_APICALL
 zetGetMetricStreamerProcAddrTableLegacy()
 {
@@ -2618,13 +2499,6 @@ zetGetMetricStreamerProcAddrTableLegacy()
 
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief function for filling the legacy api pointers for TracerExp table
-///        with current process' addresses
-///
-/// @returns
-///     - ::ZE_RESULT_SUCCESS
-///     - ::ZE_RESULT_ERROR_UNINITIALIZED
-///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
-///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
 __zedlllocal void ZE_APICALL
 zetGetTracerExpProcAddrTableLegacy()
 {
