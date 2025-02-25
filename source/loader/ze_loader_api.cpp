@@ -97,6 +97,7 @@ zelLoaderTranslateHandleInternal(
     }
 
     bool validHandle = false;
+    *handleOut = handleIn;
     switch(handleType){
         case ZEL_HANDLE_DRIVER: 
             validHandle = loader::context->ze_driver_factory.hasInstance(reinterpret_cast<loader::ze_driver_object_t*>(handleIn)->handle);
