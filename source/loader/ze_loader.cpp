@@ -400,6 +400,112 @@ namespace loader
                     }
                     return res;
                 }
+<<<<<<< HEAD
+=======
+
+                // Reset pCount to 0 when calling the driver init function from the driver's ddi table.
+                pCount = 0;
+                res = driver.dditable.ze.Global.pfnInitDrivers(&pCount, nullptr, desc);
+                // Verify that this driver successfully init in the call above.
+                if (res != ZE_RESULT_SUCCESS) {
+                    if (debugTraceEnabled) {
+                        std::string message = "init driver (driver ddi) " + driver.name + " zeInitDrivers(" + loader::to_string(desc) + ") returning ";
+                        debug_trace_message(message, loader::to_string(res));
+                    }
+                    return res;
+                }
+                driverHandles.resize(pCount);
+                // Use the driver's init function to query the driver handles and read the properties.
+                res = driver.dditable.ze.Global.pfnInitDrivers(&pCount, driverHandles.data(), desc);
+                // Verify that this driver successfully init in the call above.
+                if (res != ZE_RESULT_SUCCESS) {
+                    if (debugTraceEnabled) {
+                        std::string message = "init driver (driver ddi) " + driver.name + " zeInitDrivers(" + loader::to_string(desc) + ") returning ";
+                        debug_trace_message(message, loader::to_string(res));
+                    }
+                    return res;
+                }
+            }
+
+            for (auto handle : driverHandles) {
+                ze_driver_ddi_handles_ext_properties_t driverDdiHandlesExtProperties = {};
+                driverDdiHandlesExtProperties.stype = ZE_STRUCTURE_TYPE_DRIVER_DDI_HANDLES_EXT_PROPERTIES;
+                driverDdiHandlesExtProperties.pNext = nullptr;
+                ze_driver_properties_t properties = {};
+                properties.stype = ZE_STRUCTURE_TYPE_DRIVER_PROPERTIES;
+                properties.pNext = &driverDdiHandlesExtProperties;
+                ze_result_t res = driver.dditable.ze.Driver.pfnGetProperties(handle, &properties);
+                if (res != ZE_RESULT_SUCCESS) {
+                    if (debugTraceEnabled) {
+                        std::string message = "init driver " + driver.name + " failed, zeDriverGetProperties returned ";
+                        debug_trace_message(message, loader::to_string(res));
+                    }
+                    return res;
+                }
+                driver.properties = properties;
+                driver.driverSupportsDDIHandles = driverDdiHandlesExtProperties.flags & ZE_DRIVER_DDI_HANDLE_EXT_FLAG_DDI_HANDLE_EXT_SUPPORTED;
+                uint32_t deviceCount = 0;
+                res = driver.dditable.ze.Device.pfnGet( handle, &deviceCount, nullptr );
+                if( ZE_RESULT_SUCCESS != res ) {
+                    if (debugTraceEnabled) {
+                        std::string message = "init driver " + driver.name + " failed, zeDeviceGet returned ";
+                        debug_trace_message(message, loader::to_string(res));
+                    }
+                    return res;
+                }
+                if (deviceCount == 0) {
+                    if (debugTraceEnabled) {
+                        std::string message = "init driver " + driver.name + " failed, zeDeviceGet returned 0 devices";
+                        debug_trace_message(message, "");
+                    }
+                    return ZE_RESULT_ERROR_UNINITIALIZED;
+                }
+                std::vector<ze_device_handle_t> deviceHandles(deviceCount);
+                res = driver.dditable.ze.Device.pfnGet( handle, &deviceCount, deviceHandles.data() );
+                if( ZE_RESULT_SUCCESS != res ) {
+                    if (debugTraceEnabled) {
+                        std::string message = "init driver " + driver.name + " failed, zeDeviceGet returned ";
+                        debug_trace_message(message, loader::to_string(res));
+                    }
+                    return res;
+                }
+                bool integratedGPU = false;
+                bool discreteGPU = false;
+                bool other = false;
+                for( auto device : deviceHandles ) {
+                    ze_device_properties_t deviceProperties = {};
+                    deviceProperties.stype = ZE_STRUCTURE_TYPE_DEVICE_PROPERTIES;
+                    deviceProperties.pNext = nullptr;
+                    res = driver.dditable.ze.Device.pfnGetProperties(device, &deviceProperties);
+                    if( ZE_RESULT_SUCCESS != res ) {
+                        if (debugTraceEnabled) {
+                            std::string message = "init driver " + driver.name + " failed, zeDeviceGetProperties returned ";
+                            debug_trace_message(message, loader::to_string(res));
+                        }
+                        return res;
+                    }
+                    if (deviceProperties.type == ZE_DEVICE_TYPE_GPU) {
+                        if (deviceProperties.flags & ZE_DEVICE_PROPERTY_FLAG_INTEGRATED) {
+                            integratedGPU = true;
+                        } else {
+                            discreteGPU = true;
+                        }
+                    } else {
+                        other = true;
+                    }
+                }
+                if (integratedGPU && discreteGPU && other) {
+                    driver.driverType = ZEL_DRIVER_TYPE_MIXED;
+                } else if (integratedGPU && discreteGPU) {
+                    driver.driverType = ZEL_DRIVER_TYPE_GPU;
+                } else if (integratedGPU) {
+                    driver.driverType = ZEL_DRIVER_TYPE_INTEGRATED_GPU;
+                } else if (discreteGPU) {
+                    driver.driverType = ZEL_DRIVER_TYPE_DISCRETE_GPU;
+                } else if (other) {
+                    driver.driverType = ZEL_DRIVER_TYPE_OTHER;
+                }
+>>>>>>> 256c0912 (Update Loader to support DDI handle extension path with sample)
             }
             return ZE_RESULT_SUCCESS;
         }
