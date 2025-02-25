@@ -6,6 +6,9 @@
  *
  */
 #include "ze_loader_internal.h"
+#include "ze_ldrddi.h"
+#include "zet_ldrddi.h"
+#include "zes_ldrddi.h"
 
 #include "driver_discovery.h"
 #include <iostream>
@@ -622,10 +625,10 @@ namespace loader
                 }
             }
         }
-        delete loader::loaderDispatch->pCore;
-        delete loader::loaderDispatch->pTools;
-        delete loader::loaderDispatch->pSysman;
-		delete loader::loaderDispatch;
+        loader::zeDestroyDDiDriverTables(loader::loaderDispatch->pCore);
+        loader::zetDestroyDDiDriverTables(loader::loaderDispatch->pTools);
+        loader::zesDestroyDDiDriverTables(loader::loaderDispatch->pSysman);
+        delete loader::loaderDispatch;
     };
 
     void context_t::add_loader_version(){

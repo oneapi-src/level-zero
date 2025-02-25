@@ -69,6 +69,8 @@ namespace loader
     using ze_rtas_parallel_operation_exp_object_t = object_t < ze_rtas_parallel_operation_exp_handle_t >;
     using ze_rtas_parallel_operation_exp_factory_t    = singleton_factory_t < ze_rtas_parallel_operation_exp_object_t, ze_rtas_parallel_operation_exp_handle_t >;
 
+    __zedlllocal void ZE_APICALL
+    zeDestroyDDiDriverTables(ze_dditable_driver_t* pDdiTable);
 }
 
 #if defined(__cplusplus)
