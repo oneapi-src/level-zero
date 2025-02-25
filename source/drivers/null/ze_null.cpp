@@ -13,6 +13,9 @@ namespace driver
 {
     //////////////////////////////////////////////////////////////////////////
     context_t context;
+    ze_dditable_driver_t pCore;
+    zet_dditable_driver_t pTools;
+    zes_dditable_driver_t pSysman;
 
     //////////////////////////////////////////////////////////////////////////
     context_t::context_t()
@@ -62,12 +65,17 @@ namespace driver
             ze_driver_handle_t,
             ze_driver_properties_t* pDriverProperties )
         {
-            ze_driver_properties_t driverProperties = {};
-            driverProperties.stype = ZE_STRUCTURE_TYPE_DRIVER_PROPERTIES;
-            //driverProperties.uuid
-            driverProperties.driverVersion = 0;
+            auto pNext = reinterpret_cast<ze_base_properties_t *>(pDriverProperties->pNext);
+            while (pNext) {
+                if (pNext->stype == ZE_STRUCTURE_TYPE_DRIVER_DDI_HANDLES_EXT_PROPERTIES) {
+                    ze_driver_ddi_handles_ext_properties_t *pDdiHandlesExtProperties = reinterpret_cast<ze_driver_ddi_handles_ext_properties_t *>(pNext);
+                    pDdiHandlesExtProperties->flags = ze_driver_ddi_handle_ext_flag_t::ZE_DRIVER_DDI_HANDLE_EXT_FLAG_DDI_HANDLE_EXT_SUPPORTED;
+                    context.ddiExtensionRequested = true;
+                }
+                pNext = reinterpret_cast<ze_base_properties_t *>(pNext->pNext);
+            }
+            pDriverProperties->driverVersion = 0;
 
-            *pDriverProperties = driverProperties;
             return ZE_RESULT_SUCCESS;
         };
 
@@ -362,6 +370,20 @@ namespace driver
             if( pRawData ) *pRawData = 0;
             return ZE_RESULT_SUCCESS;
         };
+        pCore.Driver = &zeDdiTable.Driver;
+        pCore.Device = &zeDdiTable.Device;
+        pCore.Mem = &zeDdiTable.Mem;
+        pCore.isValidFlag = 1;
+        pCore.version = ZE_API_VERSION_CURRENT;
+        pTools.MetricGroup = &zetDdiTable.MetricGroup;
+        pTools.Metric = &zetDdiTable.Metric;
+        pTools.MetricQuery = &zetDdiTable.MetricQuery;
+        pTools.MetricStreamer = &zetDdiTable.MetricStreamer;
+        pTools.isValidFlag = 1;
+        pTools.version = ZE_API_VERSION_CURRENT;
+        pSysman.Driver = &zesDdiTable.Driver;
+        pSysman.isValidFlag = 1;
+        pSysman.version = ZE_API_VERSION_CURRENT;
     }
 } // namespace driver
 

@@ -36,7 +36,6 @@ public:
     zes_dditable_driver_t *pSysman;
     handle_t    handle;
     dditable_t* dditable;
-    std::string name = "unknown";
 
     object_t() = delete;
 

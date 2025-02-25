@@ -46,12 +46,12 @@ namespace loader
         ze_result_t initStatus = ZE_RESULT_SUCCESS;
         ze_result_t initDriversStatus = ZE_RESULT_SUCCESS;
         dditable_t dditable = {};
-        ze_handle_t driverDDIHandles = {};
         std::string name;
         bool driverInuse = false;
         zel_driver_type_t driverType;
         ze_driver_properties_t properties;
         bool pciOrderingRequested = false;
+        bool driverSupportsDDIHandles = false;
     };
 
     using driver_vector_t = std::vector< driver_t >;
