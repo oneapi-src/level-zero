@@ -60,6 +60,20 @@ namespace loader
         uint32_t total_driver_handle_count = 0;
 
         %if namespace != "zes":
+        if (!loader::context->coredriverSortingCompleted) {
+            %if not re.match(r"\w+InitDrivers$", th.make_func_name(n, tags, obj)):
+            loader::context->coredriverSortingCompleted = loader::context->driverSorting(&loader::context->zeDrivers, nullptr);
+            %else:
+            loader::context->coredriverSortingCompleted = loader::context->driverSorting(&loader::context->zeDrivers, desc);
+            %endif
+        }
+        %else:
+        if (!loader::context->sysmandriverSortingCompleted) {
+            loader::context->sysmandriverSortingCompleted = loader::context->driverSorting(loader::context->sysmanInstanceDrivers, nullptr);
+        }
+        %endif
+
+        %if namespace != "zes":
         for( auto& drv : loader::context->zeDrivers )
         %else:
         for( auto& drv : *loader::context->sysmanInstanceDrivers )
