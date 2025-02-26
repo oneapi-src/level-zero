@@ -458,7 +458,7 @@ namespace loader
             {
                 if (debugTraceEnabled) {
                     std::string message = "Loading Driver " + name + " succeeded";
-#ifndef _WIN32
+#if !defined(_WIN32) && !defined(ANDROID)
                     // TODO: implement same message for windows, move dlinfo to ze_util.h as a macro
                     struct link_map *dlinfo_map;
                     if (dlinfo(handle, RTLD_DI_LINKMAP, &dlinfo_map) == 0) {
