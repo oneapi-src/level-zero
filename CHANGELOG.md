@@ -1,5 +1,7 @@
 # Level zero loader changelog
 
+## v1.21.2
+*  Fix driver sorting given driver failures and instrumentation
 ## v1.21.1
 * Fix stype assignment in zello_world
 ## v1.21.0
