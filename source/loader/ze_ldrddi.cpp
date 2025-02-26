@@ -218,6 +218,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hDriver )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_0) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnGetApiVersion = dditable->Driver->pfnGetApiVersion;
         if( nullptr == pfnGetApiVersion )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -240,6 +244,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hDriver )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_0) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnGetProperties = dditable->Driver->pfnGetProperties;
         if( nullptr == pfnGetProperties )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -262,6 +270,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hDriver )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_0) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnGetIpcProperties = dditable->Driver->pfnGetIpcProperties;
         if( nullptr == pfnGetIpcProperties )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -293,6 +305,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hDriver )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_0) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnGetExtensionProperties = dditable->Driver->pfnGetExtensionProperties;
         if( nullptr == pfnGetExtensionProperties )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -316,6 +332,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hDriver )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_1) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnGetExtensionFunctionAddress = dditable->Driver->pfnGetExtensionFunctionAddress;
         if( nullptr == pfnGetExtensionFunctionAddress )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -339,6 +359,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hDriver )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_6) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnGetLastErrorDescription = dditable->Driver->pfnGetLastErrorDescription;
         if( nullptr == pfnGetLastErrorDescription )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -368,6 +392,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hDriver )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_0) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnGet = dditable->Device->pfnGet;
         if( nullptr == pfnGet )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -390,6 +418,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hDevice )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_7) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnGetRootDevice = dditable->Device->pfnGetRootDevice;
         if( nullptr == pfnGetRootDevice )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -419,6 +451,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hDevice )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_0) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnGetSubDevices = dditable->Device->pfnGetSubDevices;
         if( nullptr == pfnGetSubDevices )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -441,6 +477,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hDevice )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_0) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnGetProperties = dditable->Device->pfnGetProperties;
         if( nullptr == pfnGetProperties )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -463,6 +503,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hDevice )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_0) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnGetComputeProperties = dditable->Device->pfnGetComputeProperties;
         if( nullptr == pfnGetComputeProperties )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -485,6 +529,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hDevice )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_0) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnGetModuleProperties = dditable->Device->pfnGetModuleProperties;
         if( nullptr == pfnGetModuleProperties )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -517,6 +565,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hDevice )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_0) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnGetCommandQueueGroupProperties = dditable->Device->pfnGetCommandQueueGroupProperties;
         if( nullptr == pfnGetCommandQueueGroupProperties )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -548,6 +600,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hDevice )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_0) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnGetMemoryProperties = dditable->Device->pfnGetMemoryProperties;
         if( nullptr == pfnGetMemoryProperties )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -570,6 +626,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hDevice )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_0) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnGetMemoryAccessProperties = dditable->Device->pfnGetMemoryAccessProperties;
         if( nullptr == pfnGetMemoryAccessProperties )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -600,6 +660,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hDevice )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_0) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnGetCacheProperties = dditable->Device->pfnGetCacheProperties;
         if( nullptr == pfnGetCacheProperties )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -622,6 +686,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hDevice )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_0) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnGetImageProperties = dditable->Device->pfnGetImageProperties;
         if( nullptr == pfnGetImageProperties )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -644,6 +712,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hDevice )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_0) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnGetExternalMemoryProperties = dditable->Device->pfnGetExternalMemoryProperties;
         if( nullptr == pfnGetExternalMemoryProperties )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -667,6 +739,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hDevice )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_0) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnGetP2PProperties = dditable->Device->pfnGetP2PProperties;
         if( nullptr == pfnGetP2PProperties )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -690,6 +766,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hDevice )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_0) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnCanAccessPeer = dditable->Device->pfnCanAccessPeer;
         if( nullptr == pfnCanAccessPeer )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -711,6 +791,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hDevice )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_0) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnGetStatus = dditable->Device->pfnGetStatus;
         if( nullptr == pfnGetStatus )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -736,6 +820,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hDevice )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_1) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnGetGlobalTimestamps = dditable->Device->pfnGetGlobalTimestamps;
         if( nullptr == pfnGetGlobalTimestamps )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -759,6 +847,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hDriver )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_0) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnCreate = dditable->Context->pfnCreate;
         if( nullptr == pfnCreate )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -792,6 +884,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hDriver )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_1) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnCreateEx = dditable->Context->pfnCreateEx;
         if( nullptr == pfnCreateEx )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -813,6 +909,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hContext )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_0) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnDestroy = dditable->Context->pfnDestroy;
         if( nullptr == pfnDestroy )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -834,6 +934,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hContext )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_0) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnGetStatus = dditable->Context->pfnGetStatus;
         if( nullptr == pfnGetStatus )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -858,6 +962,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hContext )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_0) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnCreate = dditable->CommandQueue->pfnCreate;
         if( nullptr == pfnCreate )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -879,6 +987,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hCommandQueue )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_0) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnDestroy = dditable->CommandQueue->pfnDestroy;
         if( nullptr == pfnDestroy )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -904,6 +1016,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hCommandQueue )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_0) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnExecuteCommandLists = dditable->CommandQueue->pfnExecuteCommandLists;
         if( nullptr == pfnExecuteCommandLists )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -932,6 +1048,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hCommandQueue )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_0) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnSynchronize = dditable->CommandQueue->pfnSynchronize;
         if( nullptr == pfnSynchronize )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -954,6 +1074,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hCommandQueue )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_9) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnGetOrdinal = dditable->CommandQueue->pfnGetOrdinal;
         if( nullptr == pfnGetOrdinal )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -976,6 +1100,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hCommandQueue )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_9) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnGetIndex = dditable->CommandQueue->pfnGetIndex;
         if( nullptr == pfnGetIndex )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1000,6 +1128,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hContext )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_0) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnCreate = dditable->CommandList->pfnCreate;
         if( nullptr == pfnCreate )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1024,6 +1156,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hContext )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_0) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnCreateImmediate = dditable->CommandList->pfnCreateImmediate;
         if( nullptr == pfnCreateImmediate )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1045,6 +1181,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hCommandList )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_0) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnDestroy = dditable->CommandList->pfnDestroy;
         if( nullptr == pfnDestroy )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1066,6 +1206,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hCommandList )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_0) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnClose = dditable->CommandList->pfnClose;
         if( nullptr == pfnClose )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1087,6 +1231,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hCommandList )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_0) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnReset = dditable->CommandList->pfnReset;
         if( nullptr == pfnReset )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1115,6 +1263,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hCommandList )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_0) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnAppendWriteGlobalTimestamp = dditable->CommandList->pfnAppendWriteGlobalTimestamp;
         if( nullptr == pfnAppendWriteGlobalTimestamp )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1143,6 +1295,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hCommandList )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_6) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnHostSynchronize = dditable->CommandList->pfnHostSynchronize;
         if( nullptr == pfnHostSynchronize )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1165,6 +1321,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hCommandList )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_9) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnGetDeviceHandle = dditable->CommandList->pfnGetDeviceHandle;
         if( nullptr == pfnGetDeviceHandle )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1187,6 +1347,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hCommandList )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_9) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnGetContextHandle = dditable->CommandList->pfnGetContextHandle;
         if( nullptr == pfnGetContextHandle )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1209,6 +1373,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hCommandList )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_9) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnGetOrdinal = dditable->CommandList->pfnGetOrdinal;
         if( nullptr == pfnGetOrdinal )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1232,6 +1400,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hCommandListImmediate )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_9) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnImmediateGetIndex = dditable->CommandList->pfnImmediateGetIndex;
         if( nullptr == pfnImmediateGetIndex )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1255,6 +1427,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hCommandList )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_9) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnIsImmediate = dditable->CommandList->pfnIsImmediate;
         if( nullptr == pfnIsImmediate )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1281,6 +1457,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hCommandList )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_0) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnAppendBarrier = dditable->CommandList->pfnAppendBarrier;
         if( nullptr == pfnAppendBarrier )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1310,6 +1490,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hCommandList )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_0) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnAppendMemoryRangesBarrier = dditable->CommandList->pfnAppendMemoryRangesBarrier;
         if( nullptr == pfnAppendMemoryRangesBarrier )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1332,6 +1516,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hContext )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_0) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnSystemBarrier = dditable->Context->pfnSystemBarrier;
         if( nullptr == pfnSystemBarrier )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1361,6 +1549,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hCommandList )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_0) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnAppendMemoryCopy = dditable->CommandList->pfnAppendMemoryCopy;
         if( nullptr == pfnAppendMemoryCopy )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1391,6 +1583,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hCommandList )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_0) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnAppendMemoryFill = dditable->CommandList->pfnAppendMemoryFill;
         if( nullptr == pfnAppendMemoryFill )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1429,6 +1625,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hCommandList )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_0) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnAppendMemoryCopyRegion = dditable->CommandList->pfnAppendMemoryCopyRegion;
         if( nullptr == pfnAppendMemoryCopyRegion )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1459,6 +1659,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hCommandList )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_0) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnAppendMemoryCopyFromContext = dditable->CommandList->pfnAppendMemoryCopyFromContext;
         if( nullptr == pfnAppendMemoryCopyFromContext )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1487,6 +1691,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hCommandList )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_0) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnAppendImageCopy = dditable->CommandList->pfnAppendImageCopy;
         if( nullptr == pfnAppendImageCopy )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1517,6 +1725,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hCommandList )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_0) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnAppendImageCopyRegion = dditable->CommandList->pfnAppendImageCopyRegion;
         if( nullptr == pfnAppendImageCopyRegion )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1546,6 +1758,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hCommandList )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_0) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnAppendImageCopyToMemory = dditable->CommandList->pfnAppendImageCopyToMemory;
         if( nullptr == pfnAppendImageCopyToMemory )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1575,6 +1791,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hCommandList )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_0) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnAppendImageCopyFromMemory = dditable->CommandList->pfnAppendImageCopyFromMemory;
         if( nullptr == pfnAppendImageCopyFromMemory )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1598,6 +1818,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hCommandList )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_0) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnAppendMemoryPrefetch = dditable->CommandList->pfnAppendMemoryPrefetch;
         if( nullptr == pfnAppendMemoryPrefetch )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1623,6 +1847,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hCommandList )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_0) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnAppendMemAdvise = dditable->CommandList->pfnAppendMemAdvise;
         if( nullptr == pfnAppendMemAdvise )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1652,6 +1880,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hContext )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_0) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnCreate = dditable->EventPool->pfnCreate;
         if( nullptr == pfnCreate )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1673,6 +1905,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hEventPool )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_0) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnDestroy = dditable->EventPool->pfnDestroy;
         if( nullptr == pfnDestroy )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1696,6 +1932,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hEventPool )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_0) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnCreate = dditable->Event->pfnCreate;
         if( nullptr == pfnCreate )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1717,6 +1957,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hEvent )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_0) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnDestroy = dditable->Event->pfnDestroy;
         if( nullptr == pfnDestroy )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1739,6 +1983,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hEventPool )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_0) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnGetIpcHandle = dditable->EventPool->pfnGetIpcHandle;
         if( nullptr == pfnGetIpcHandle )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1762,6 +2010,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hContext )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_6) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnPutIpcHandle = dditable->EventPool->pfnPutIpcHandle;
         if( nullptr == pfnPutIpcHandle )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1786,6 +2038,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hContext )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_0) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnOpenIpcHandle = dditable->EventPool->pfnOpenIpcHandle;
         if( nullptr == pfnOpenIpcHandle )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1807,6 +2063,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hEventPool )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_0) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnCloseIpcHandle = dditable->EventPool->pfnCloseIpcHandle;
         if( nullptr == pfnCloseIpcHandle )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1829,6 +2089,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hCommandList )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_0) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnAppendSignalEvent = dditable->CommandList->pfnAppendSignalEvent;
         if( nullptr == pfnAppendSignalEvent )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1853,6 +2117,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hCommandList )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_0) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnAppendWaitOnEvents = dditable->CommandList->pfnAppendWaitOnEvents;
         if( nullptr == pfnAppendWaitOnEvents )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1874,6 +2142,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hEvent )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_0) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnHostSignal = dditable->Event->pfnHostSignal;
         if( nullptr == pfnHostSignal )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1902,6 +2174,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hEvent )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_0) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnHostSynchronize = dditable->Event->pfnHostSynchronize;
         if( nullptr == pfnHostSynchronize )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1923,6 +2199,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hEvent )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_0) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnQueryStatus = dditable->Event->pfnQueryStatus;
         if( nullptr == pfnQueryStatus )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1945,6 +2225,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hCommandList )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_0) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnAppendEventReset = dditable->CommandList->pfnAppendEventReset;
         if( nullptr == pfnAppendEventReset )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1966,6 +2250,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hEvent )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_0) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnHostReset = dditable->Event->pfnHostReset;
         if( nullptr == pfnHostReset )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1988,6 +2276,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hEvent )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_0) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnQueryKernelTimestamp = dditable->Event->pfnQueryKernelTimestamp;
         if( nullptr == pfnQueryKernelTimestamp )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -2021,6 +2313,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hCommandList )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_0) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnAppendQueryKernelTimestamps = dditable->CommandList->pfnAppendQueryKernelTimestamps;
         if( nullptr == pfnAppendQueryKernelTimestamps )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -2043,6 +2339,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hEvent )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_9) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnGetEventPool = dditable->Event->pfnGetEventPool;
         if( nullptr == pfnGetEventPool )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -2067,6 +2367,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hEvent )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_9) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnGetSignalScope = dditable->Event->pfnGetSignalScope;
         if( nullptr == pfnGetSignalScope )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -2091,6 +2395,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hEvent )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_9) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnGetWaitScope = dditable->Event->pfnGetWaitScope;
         if( nullptr == pfnGetWaitScope )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -2113,6 +2421,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hEventPool )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_9) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnGetContextHandle = dditable->EventPool->pfnGetContextHandle;
         if( nullptr == pfnGetContextHandle )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -2136,6 +2448,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hEventPool )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_9) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnGetFlags = dditable->EventPool->pfnGetFlags;
         if( nullptr == pfnGetFlags )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -2159,6 +2475,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hCommandQueue )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_0) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnCreate = dditable->Fence->pfnCreate;
         if( nullptr == pfnCreate )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -2180,6 +2500,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hFence )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_0) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnDestroy = dditable->Fence->pfnDestroy;
         if( nullptr == pfnDestroy )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -2208,6 +2532,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hFence )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_0) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnHostSynchronize = dditable->Fence->pfnHostSynchronize;
         if( nullptr == pfnHostSynchronize )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -2229,6 +2557,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hFence )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_0) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnQueryStatus = dditable->Fence->pfnQueryStatus;
         if( nullptr == pfnQueryStatus )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -2250,6 +2582,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hFence )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_0) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnReset = dditable->Fence->pfnReset;
         if( nullptr == pfnReset )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -2273,6 +2609,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hDevice )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_0) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnGetProperties = dditable->Image->pfnGetProperties;
         if( nullptr == pfnGetProperties )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -2297,6 +2637,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hContext )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_0) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnCreate = dditable->Image->pfnCreate;
         if( nullptr == pfnCreate )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -2318,6 +2662,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hImage )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_0) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnDestroy = dditable->Image->pfnDestroy;
         if( nullptr == pfnDestroy )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -2347,6 +2695,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hContext )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_0) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnAllocShared = dditable->Mem->pfnAllocShared;
         if( nullptr == pfnAllocShared )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -2375,6 +2727,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hContext )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_0) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnAllocDevice = dditable->Mem->pfnAllocDevice;
         if( nullptr == pfnAllocDevice )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -2402,6 +2758,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hContext )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_0) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnAllocHost = dditable->Mem->pfnAllocHost;
         if( nullptr == pfnAllocHost )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -2424,6 +2784,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hContext )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_0) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnFree = dditable->Mem->pfnFree;
         if( nullptr == pfnFree )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -2448,6 +2812,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hContext )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_0) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnGetAllocProperties = dditable->Mem->pfnGetAllocProperties;
         if( nullptr == pfnGetAllocProperties )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -2472,6 +2840,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hContext )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_0) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnGetAddressRange = dditable->Mem->pfnGetAddressRange;
         if( nullptr == pfnGetAddressRange )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -2495,6 +2867,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hContext )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_0) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnGetIpcHandle = dditable->Mem->pfnGetIpcHandle;
         if( nullptr == pfnGetIpcHandle )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -2518,6 +2894,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hContext )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_6) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnGetIpcHandleFromFileDescriptorExp = dditable->MemExp->pfnGetIpcHandleFromFileDescriptorExp;
         if( nullptr == pfnGetIpcHandleFromFileDescriptorExp )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -2541,6 +2921,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hContext )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_6) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnGetFileDescriptorFromIpcHandleExp = dditable->MemExp->pfnGetFileDescriptorFromIpcHandleExp;
         if( nullptr == pfnGetFileDescriptorFromIpcHandleExp )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -2563,6 +2947,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hContext )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_6) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnPutIpcHandle = dditable->Mem->pfnPutIpcHandle;
         if( nullptr == pfnPutIpcHandle )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -2589,6 +2977,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hContext )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_0) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnOpenIpcHandle = dditable->Mem->pfnOpenIpcHandle;
         if( nullptr == pfnOpenIpcHandle )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -2611,6 +3003,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hContext )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_0) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnCloseIpcHandle = dditable->Mem->pfnCloseIpcHandle;
         if( nullptr == pfnCloseIpcHandle )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -2637,6 +3033,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hContext )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_7) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnSetAtomicAccessAttributeExp = dditable->MemExp->pfnSetAtomicAccessAttributeExp;
         if( nullptr == pfnSetAtomicAccessAttributeExp )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -2662,6 +3062,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hContext )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_7) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnGetAtomicAccessAttributeExp = dditable->MemExp->pfnGetAtomicAccessAttributeExp;
         if( nullptr == pfnGetAtomicAccessAttributeExp )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -2687,6 +3091,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hContext )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_0) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnCreate = dditable->Module->pfnCreate;
         if( nullptr == pfnCreate )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -2708,6 +3116,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hModule )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_0) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnDestroy = dditable->Module->pfnDestroy;
         if( nullptr == pfnDestroy )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -2732,6 +3144,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( phModules[ 0 ] )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_0) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnDynamicLink = dditable->Module->pfnDynamicLink;
         if( nullptr == pfnDynamicLink )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -2753,6 +3169,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hModuleBuildLog )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_0) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnDestroy = dditable->ModuleBuildLog->pfnDestroy;
         if( nullptr == pfnDestroy )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -2776,6 +3196,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hModuleBuildLog )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_0) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnGetString = dditable->ModuleBuildLog->pfnGetString;
         if( nullptr == pfnGetString )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -2799,6 +3223,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hModule )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_0) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnGetNativeBinary = dditable->Module->pfnGetNativeBinary;
         if( nullptr == pfnGetNativeBinary )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -2823,6 +3251,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hModule )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_0) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnGetGlobalPointer = dditable->Module->pfnGetGlobalPointer;
         if( nullptr == pfnGetGlobalPointer )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -2852,6 +3284,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hModule )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_0) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnGetKernelNames = dditable->Module->pfnGetKernelNames;
         if( nullptr == pfnGetKernelNames )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -2874,6 +3310,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hModule )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_0) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnGetProperties = dditable->Module->pfnGetProperties;
         if( nullptr == pfnGetProperties )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -2897,6 +3337,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hModule )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_0) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnCreate = dditable->Kernel->pfnCreate;
         if( nullptr == pfnCreate )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -2918,6 +3362,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hKernel )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_0) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnDestroy = dditable->Kernel->pfnDestroy;
         if( nullptr == pfnDestroy )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -2941,6 +3389,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hModule )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_0) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnGetFunctionPointer = dditable->Module->pfnGetFunctionPointer;
         if( nullptr == pfnGetFunctionPointer )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -2965,6 +3417,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hKernel )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_0) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnSetGroupSize = dditable->Kernel->pfnSetGroupSize;
         if( nullptr == pfnSetGroupSize )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -2992,6 +3448,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hKernel )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_0) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnSuggestGroupSize = dditable->Kernel->pfnSuggestGroupSize;
         if( nullptr == pfnSuggestGroupSize )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -3014,6 +3474,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hKernel )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_0) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnSuggestMaxCooperativeGroupCount = dditable->Kernel->pfnSuggestMaxCooperativeGroupCount;
         if( nullptr == pfnSuggestMaxCooperativeGroupCount )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -3039,6 +3503,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hKernel )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_0) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnSetArgumentValue = dditable->Kernel->pfnSetArgumentValue;
         if( nullptr == pfnSetArgumentValue )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -3061,6 +3529,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hKernel )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_0) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnSetIndirectAccess = dditable->Kernel->pfnSetIndirectAccess;
         if( nullptr == pfnSetIndirectAccess )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -3083,6 +3555,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hKernel )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_0) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnGetIndirectAccess = dditable->Kernel->pfnGetIndirectAccess;
         if( nullptr == pfnGetIndirectAccess )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -3113,6 +3589,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hKernel )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_0) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnGetSourceAttributes = dditable->Kernel->pfnGetSourceAttributes;
         if( nullptr == pfnGetSourceAttributes )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -3136,6 +3616,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hKernel )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_0) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnSetCacheConfig = dditable->Kernel->pfnSetCacheConfig;
         if( nullptr == pfnSetCacheConfig )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -3158,6 +3642,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hKernel )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_0) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnGetProperties = dditable->Kernel->pfnGetProperties;
         if( nullptr == pfnGetProperties )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -3182,6 +3670,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hKernel )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_0) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnGetName = dditable->Kernel->pfnGetName;
         if( nullptr == pfnGetName )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -3210,6 +3702,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hCommandList )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_0) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnAppendLaunchKernel = dditable->CommandList->pfnAppendLaunchKernel;
         if( nullptr == pfnAppendLaunchKernel )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -3238,6 +3734,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hCommandList )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_0) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnAppendLaunchCooperativeKernel = dditable->CommandList->pfnAppendLaunchCooperativeKernel;
         if( nullptr == pfnAppendLaunchCooperativeKernel )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -3267,6 +3767,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hCommandList )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_0) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnAppendLaunchKernelIndirect = dditable->CommandList->pfnAppendLaunchKernelIndirect;
         if( nullptr == pfnAppendLaunchKernelIndirect )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -3300,6 +3804,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hCommandList )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_0) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnAppendLaunchMultipleKernelsIndirect = dditable->CommandList->pfnAppendLaunchMultipleKernelsIndirect;
         if( nullptr == pfnAppendLaunchMultipleKernelsIndirect )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -3324,6 +3832,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hContext )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_0) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnMakeMemoryResident = dditable->Context->pfnMakeMemoryResident;
         if( nullptr == pfnMakeMemoryResident )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -3348,6 +3860,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hContext )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_0) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnEvictMemory = dditable->Context->pfnEvictMemory;
         if( nullptr == pfnEvictMemory )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -3371,6 +3887,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hContext )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_0) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnMakeImageResident = dditable->Context->pfnMakeImageResident;
         if( nullptr == pfnMakeImageResident )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -3394,6 +3914,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hContext )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_0) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnEvictImage = dditable->Context->pfnEvictImage;
         if( nullptr == pfnEvictImage )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -3418,6 +3942,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hContext )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_0) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnCreate = dditable->Sampler->pfnCreate;
         if( nullptr == pfnCreate )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -3439,6 +3967,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hSampler )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_0) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnDestroy = dditable->Sampler->pfnDestroy;
         if( nullptr == pfnDestroy )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -3464,6 +3996,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hContext )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_0) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnReserve = dditable->VirtualMem->pfnReserve;
         if( nullptr == pfnReserve )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -3487,6 +4023,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hContext )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_0) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnFree = dditable->VirtualMem->pfnFree;
         if( nullptr == pfnFree )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -3512,6 +4052,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hContext )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_0) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnQueryPageSize = dditable->VirtualMem->pfnQueryPageSize;
         if( nullptr == pfnQueryPageSize )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -3537,6 +4081,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hContext )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_0) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnCreate = dditable->PhysicalMem->pfnCreate;
         if( nullptr == pfnCreate )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -3559,6 +4107,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hContext )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_0) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnDestroy = dditable->PhysicalMem->pfnDestroy;
         if( nullptr == pfnDestroy )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -3588,6 +4140,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hContext )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_0) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnMap = dditable->VirtualMem->pfnMap;
         if( nullptr == pfnMap )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -3611,6 +4167,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hContext )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_0) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnUnmap = dditable->VirtualMem->pfnUnmap;
         if( nullptr == pfnUnmap )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -3636,6 +4196,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hContext )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_0) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnSetAccessAttribute = dditable->VirtualMem->pfnSetAccessAttribute;
         if( nullptr == pfnSetAccessAttribute )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -3662,6 +4226,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hContext )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_0) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnGetAccessAttribute = dditable->VirtualMem->pfnGetAccessAttribute;
         if( nullptr == pfnGetAccessAttribute )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -3686,6 +4254,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hKernel )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_1) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnSetGlobalOffsetExp = dditable->KernelExp->pfnSetGlobalOffsetExp;
         if( nullptr == pfnSetGlobalOffsetExp )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -3709,6 +4281,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hKernel )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_11) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnGetBinaryExp = dditable->KernelExp->pfnGetBinaryExp;
         if( nullptr == pfnGetBinaryExp )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -3732,6 +4308,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hDevice )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_12) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnImportExternalSemaphoreExt = dditable->Device->pfnImportExternalSemaphoreExt;
         if( nullptr == pfnImportExternalSemaphoreExt )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -3753,6 +4333,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hSemaphore )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_12) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnReleaseExternalSemaphoreExt = dditable->Device->pfnReleaseExternalSemaphoreExt;
         if( nullptr == pfnReleaseExternalSemaphoreExt )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -3783,6 +4367,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hCommandList )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_12) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnAppendSignalExternalSemaphoreExt = dditable->CommandList->pfnAppendSignalExternalSemaphoreExt;
         if( nullptr == pfnAppendSignalExternalSemaphoreExt )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -3813,6 +4401,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hCommandList )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_12) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnAppendWaitExternalSemaphoreExt = dditable->CommandList->pfnAppendWaitExternalSemaphoreExt;
         if( nullptr == pfnAppendWaitExternalSemaphoreExt )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -3839,6 +4431,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hDevice )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_2) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnReserveCacheExt = dditable->Device->pfnReserveCacheExt;
         if( nullptr == pfnReserveCacheExt )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -3863,6 +4459,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hDevice )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_2) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnSetCacheAdviceExt = dditable->Device->pfnSetCacheAdviceExt;
         if( nullptr == pfnSetCacheAdviceExt )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -3893,6 +4493,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hEvent )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_2) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnQueryTimestampsExp = dditable->EventExp->pfnQueryTimestampsExp;
         if( nullptr == pfnQueryTimestampsExp )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -3915,6 +4519,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hImage )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_2) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnGetMemoryPropertiesExp = dditable->ImageExp->pfnGetMemoryPropertiesExp;
         if( nullptr == pfnGetMemoryPropertiesExp )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -3940,6 +4548,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hContext )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_5) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnViewCreateExt = dditable->Image->pfnViewCreateExt;
         if( nullptr == pfnViewCreateExt )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -3965,6 +4577,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hContext )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_2) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnViewCreateExp = dditable->ImageExp->pfnViewCreateExp;
         if( nullptr == pfnViewCreateExp )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -3987,6 +4603,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hKernel )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_2) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnSchedulingHintExp = dditable->KernelExp->pfnSchedulingHintExp;
         if( nullptr == pfnSchedulingHintExp )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -4009,6 +4629,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hDevice )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_3) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnPciGetPropertiesExt = dditable->Device->pfnPciGetPropertiesExt;
         if( nullptr == pfnPciGetPropertiesExt )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -4042,6 +4666,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hCommandList )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_3) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnAppendImageCopyToMemoryExt = dditable->CommandList->pfnAppendImageCopyToMemoryExt;
         if( nullptr == pfnAppendImageCopyToMemoryExt )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -4075,6 +4703,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hCommandList )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_3) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnAppendImageCopyFromMemoryExt = dditable->CommandList->pfnAppendImageCopyFromMemoryExt;
         if( nullptr == pfnAppendImageCopyFromMemoryExt )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -4098,6 +4730,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hContext )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_3) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnGetAllocPropertiesExt = dditable->Image->pfnGetAllocPropertiesExt;
         if( nullptr == pfnGetAllocPropertiesExt )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -4124,6 +4760,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( phModules[ 0 ] )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_3) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnInspectLinkageExt = dditable->Module->pfnInspectLinkageExt;
         if( nullptr == pfnInspectLinkageExt )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -4147,6 +4787,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hContext )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_3) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnFreeExt = dditable->Mem->pfnFreeExt;
         if( nullptr == pfnFreeExt )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -4177,6 +4821,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hDriver )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_4) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnGetExp = dditable->FabricVertexExp->pfnGetExp;
         if( nullptr == pfnGetExp )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -4207,6 +4855,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hVertex )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_4) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnGetSubVerticesExp = dditable->FabricVertexExp->pfnGetSubVerticesExp;
         if( nullptr == pfnGetSubVerticesExp )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -4229,6 +4881,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hVertex )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_4) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnGetPropertiesExp = dditable->FabricVertexExp->pfnGetPropertiesExp;
         if( nullptr == pfnGetPropertiesExp )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -4251,6 +4907,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hVertex )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_4) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnGetDeviceExp = dditable->FabricVertexExp->pfnGetDeviceExp;
         if( nullptr == pfnGetDeviceExp )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -4273,6 +4933,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hDevice )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_4) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnGetFabricVertexExp = dditable->DeviceExp->pfnGetFabricVertexExp;
         if( nullptr == pfnGetFabricVertexExp )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -4304,6 +4968,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hVertexA )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_4) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnGetExp = dditable->FabricEdgeExp->pfnGetExp;
         if( nullptr == pfnGetExp )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -4327,6 +4995,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hEdge )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_4) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnGetVerticesExp = dditable->FabricEdgeExp->pfnGetVerticesExp;
         if( nullptr == pfnGetVerticesExp )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -4349,6 +5021,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hEdge )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_4) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnGetPropertiesExp = dditable->FabricEdgeExp->pfnGetPropertiesExp;
         if( nullptr == pfnGetPropertiesExp )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -4386,6 +5062,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hEvent )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_6) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnQueryKernelTimestampsExt = dditable->Event->pfnQueryKernelTimestampsExt;
         if( nullptr == pfnQueryKernelTimestampsExt )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -4409,6 +5089,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hDriver )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_7) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnCreateExp = dditable->RTASBuilderExp->pfnCreateExp;
         if( nullptr == pfnCreateExp )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -4432,6 +5116,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hBuilder )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_7) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnGetBuildPropertiesExp = dditable->RTASBuilderExp->pfnGetBuildPropertiesExp;
         if( nullptr == pfnGetBuildPropertiesExp )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -4455,6 +5143,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hDriver )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_7) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnRTASFormatCompatibilityCheckExp = dditable->DriverExp->pfnRTASFormatCompatibilityCheckExp;
         if( nullptr == pfnRTASFormatCompatibilityCheckExp )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -4488,6 +5180,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hBuilder )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_7) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnBuildExp = dditable->RTASBuilderExp->pfnBuildExp;
         if( nullptr == pfnBuildExp )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -4509,6 +5205,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hBuilder )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_7) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnDestroyExp = dditable->RTASBuilderExp->pfnDestroyExp;
         if( nullptr == pfnDestroyExp )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -4531,6 +5231,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hDriver )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_7) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnCreateExp = dditable->RTASParallelOperationExp->pfnCreateExp;
         if( nullptr == pfnCreateExp )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -4553,6 +5257,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hParallelOperation )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_7) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnGetPropertiesExp = dditable->RTASParallelOperationExp->pfnGetPropertiesExp;
         if( nullptr == pfnGetPropertiesExp )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -4574,6 +5282,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hParallelOperation )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_7) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnJoinExp = dditable->RTASParallelOperationExp->pfnJoinExp;
         if( nullptr == pfnJoinExp )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -4595,6 +5307,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hParallelOperation )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_7) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnDestroyExp = dditable->RTASParallelOperationExp->pfnDestroyExp;
         if( nullptr == pfnDestroyExp )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -4621,6 +5337,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hContext )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_9) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnGetPitchFor2dImage = dditable->Mem->pfnGetPitchFor2dImage;
         if( nullptr == pfnGetPitchFor2dImage )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -4643,6 +5363,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hImage )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_9) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnGetDeviceOffsetExp = dditable->ImageExp->pfnGetDeviceOffsetExp;
         if( nullptr == pfnGetDeviceOffsetExp )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -4665,6 +5389,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hCommandList )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_9) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnCreateCloneExp = dditable->CommandListExp->pfnCreateCloneExp;
         if( nullptr == pfnCreateCloneExp )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -4697,6 +5425,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hCommandListImmediate )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_9) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnImmediateAppendCommandListsExp = dditable->CommandListExp->pfnImmediateAppendCommandListsExp;
         if( nullptr == pfnImmediateAppendCommandListsExp )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -4720,6 +5452,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hCommandList )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_9) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnGetNextCommandIdExp = dditable->CommandListExp->pfnGetNextCommandIdExp;
         if( nullptr == pfnGetNextCommandIdExp )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -4747,6 +5483,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hCommandList )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_10) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnGetNextCommandIdWithKernelsExp = dditable->CommandListExp->pfnGetNextCommandIdWithKernelsExp;
         if( nullptr == pfnGetNextCommandIdWithKernelsExp )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -4770,6 +5510,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hCommandList )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_9) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnUpdateMutableCommandsExp = dditable->CommandListExp->pfnUpdateMutableCommandsExp;
         if( nullptr == pfnUpdateMutableCommandsExp )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -4793,6 +5537,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hCommandList )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_9) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnUpdateMutableCommandSignalEventExp = dditable->CommandListExp->pfnUpdateMutableCommandSignalEventExp;
         if( nullptr == pfnUpdateMutableCommandSignalEventExp )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -4818,6 +5566,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hCommandList )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_9) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnUpdateMutableCommandWaitEventsExp = dditable->CommandListExp->pfnUpdateMutableCommandWaitEventsExp;
         if( nullptr == pfnUpdateMutableCommandWaitEventsExp )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -4843,6 +5595,10 @@ namespace loader
         auto dditable = reinterpret_cast<ze_handle_t*>( hCommandList )->pCore;
         if (dditable->isValidFlag == 0)
             return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_10) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto pfnUpdateMutableCommandKernelsExp = dditable->CommandListExp->pfnUpdateMutableCommandKernelsExp;
         if( nullptr == pfnUpdateMutableCommandKernelsExp )
             return ZE_RESULT_ERROR_UNINITIALIZED;
