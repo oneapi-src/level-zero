@@ -1704,6 +1704,41 @@ def get_class_function_objs(specs, cname, minVersion = 0, maxVersion = 9999):
 
 """
 Public:
+    returns the version of a function object
+"""
+def get_version(obj):
+    if obj_traits.is_function(obj):
+        version = obj.get('version')
+        if version == "1.0":
+            return "ZE_API_VERSION_1_0"
+        if version == "1.1":
+            return "ZE_API_VERSION_1_1"
+        if version == "1.2":
+            return "ZE_API_VERSION_1_2"
+        if version == "1.3":
+            return "ZE_API_VERSION_1_3"
+        if version == "1.4":
+            return "ZE_API_VERSION_1_4"
+        if version == "1.5":
+            return "ZE_API_VERSION_1_5"
+        if version == "1.6":
+            return "ZE_API_VERSION_1_6"
+        if version == "1.7":
+            return "ZE_API_VERSION_1_7"
+        if version == "1.8":
+            return "ZE_API_VERSION_1_8"
+        if version == "1.9":
+            return "ZE_API_VERSION_1_9"
+        if version == "1.10":
+            return "ZE_API_VERSION_1_10"
+        if version == "1.11":
+            return "ZE_API_VERSION_1_11"
+        if version == "1.12":
+            return "ZE_API_VERSION_1_12"
+        return "ZE_API_VERSION_1_0"
+
+"""
+Public:
     returns a list of all non-experimental function objs and a list of experimental function objs for the specified class
 """
 def get_class_function_objs_exp(specs, cname):

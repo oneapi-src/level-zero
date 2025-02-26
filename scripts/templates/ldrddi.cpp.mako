@@ -164,6 +164,10 @@ namespace loader
         %endif
         if (dditable->isValidFlag == 0)
             return ${X}_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ${th.get_version(obj)}) {
+            return ${X}_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
         auto ${th.make_pfn_name(n, tags, obj)} = dditable->${th.get_table_name(n, tags, obj)}->${th.make_pfn_name(n, tags, obj)};
         if( nullptr == ${th.make_pfn_name(n, tags, obj)} )
             return ${X}_RESULT_ERROR_UNINITIALIZED;
