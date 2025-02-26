@@ -1708,34 +1708,36 @@ Public:
 """
 def get_version(obj):
     if obj_traits.is_function(obj):
+        ret_version = "ZE_API_VERSION_FORCE_UINT32"
         version = obj.get('version')
         if version == "1.0":
-            return "ZE_API_VERSION_1_0"
+            ret_version = "ZE_API_VERSION_1_0"
         if version == "1.1":
-            return "ZE_API_VERSION_1_1"
+            ret_version = "ZE_API_VERSION_1_1"
         if version == "1.2":
-            return "ZE_API_VERSION_1_2"
+            ret_version = "ZE_API_VERSION_1_2"
         if version == "1.3":
-            return "ZE_API_VERSION_1_3"
+            ret_version = "ZE_API_VERSION_1_3"
         if version == "1.4":
-            return "ZE_API_VERSION_1_4"
+            ret_version = "ZE_API_VERSION_1_4"
         if version == "1.5":
-            return "ZE_API_VERSION_1_5"
+            ret_version = "ZE_API_VERSION_1_5"
         if version == "1.6":
-            return "ZE_API_VERSION_1_6"
+            ret_version = "ZE_API_VERSION_1_6"
         if version == "1.7":
-            return "ZE_API_VERSION_1_7"
+            ret_version = "ZE_API_VERSION_1_7"
         if version == "1.8":
-            return "ZE_API_VERSION_1_8"
+            ret_version = "ZE_API_VERSION_1_8"
         if version == "1.9":
-            return "ZE_API_VERSION_1_9"
+            ret_version = "ZE_API_VERSION_1_9"
         if version == "1.10":
-            return "ZE_API_VERSION_1_10"
+            ret_version = "ZE_API_VERSION_1_10"
         if version == "1.11":
-            return "ZE_API_VERSION_1_11"
+            ret_version = "ZE_API_VERSION_1_11"
         if version == "1.12":
-            return "ZE_API_VERSION_1_12"
-        return "ZE_API_VERSION_1_0"
+            ret_version = "ZE_API_VERSION_1_12"
+        assert(ret_version != "ZE_API_VERSION_FORCE_UINT32")
+        return ret_version
 
 """
 Public:
