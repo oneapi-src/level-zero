@@ -101,7 +101,7 @@ namespace loader
                 // Verify that this driver successfully init in the call above.
                 if (res != ZE_RESULT_SUCCESS) {
                     if (debugTraceEnabled) {
-                        std::string message = "driverSorting " + driver.name + " zeDriverGet(" + loader::to_string(desc) + ") returning ";
+                        std::string message = "driverSorting " + driver.name + " zeDriverGet returning ";
                         debug_trace_message(message, loader::to_string(res));
                     }
                     continue;
@@ -111,7 +111,7 @@ namespace loader
                 // Verify that this driver successfully init in the call above.
                 if (res != ZE_RESULT_SUCCESS) {
                     if (debugTraceEnabled) {
-                        std::string message = "driverSorting " + driver.name + " zeDriverGet(" + loader::to_string(desc) + ") returning ";
+                        std::string message = "driverSorting " + driver.name + " zeDriverGet returning ";
                         debug_trace_message(message, loader::to_string(res));
                     }
                     continue;

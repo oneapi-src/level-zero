@@ -55,8 +55,11 @@ namespace loader
 
         uint32_t total_driver_handle_count = 0;
 
-        if (!loader::context->coredriverSortingCompleted) {
-            loader::context->coredriverSortingCompleted = loader::context->driverSorting(&loader::context->zeDrivers, nullptr);
+        if (!loader::context->sortingInProgress.exchange(true)) {
+            std::call_once(loader::context->coreDriverSortOnce, []() {
+                loader::context->driverSorting(&loader::context->zeDrivers, nullptr);
+            });
+            loader::context->sortingInProgress.store(false);
         }
 
         for( auto& drv : loader::context->zeDrivers )
@@ -135,8 +138,11 @@ namespace loader
 
         uint32_t total_driver_handle_count = 0;
 
-        if (!loader::context->coredriverSortingCompleted) {
-            loader::context->coredriverSortingCompleted = loader::context->driverSorting(&loader::context->zeDrivers, desc);
+        if (!loader::context->sortingInProgress.exchange(true)) {
+            std::call_once(loader::context->coreDriverSortOnce, [desc]() {
+                loader::context->driverSorting(&loader::context->zeDrivers, desc);
+            });
+            loader::context->sortingInProgress.store(false);
         }
 
         for( auto& drv : loader::context->zeDrivers )

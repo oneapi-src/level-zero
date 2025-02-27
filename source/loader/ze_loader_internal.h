@@ -150,8 +150,9 @@ namespace loader
         bool intercept_enabled = false;
         bool debugTraceEnabled = false;
         bool tracingLayerEnabled = false;
-        bool coredriverSortingCompleted = false;
-        bool sysmandriverSortingCompleted = false;
+        std::once_flag coreDriverSortOnce;
+        std::once_flag sysmanDriverSortOnce;
+        std::atomic<bool> sortingInProgress = {false};
         dditable_t tracing_dditable = {};
         std::shared_ptr<Logger> zel_logger;
     };
