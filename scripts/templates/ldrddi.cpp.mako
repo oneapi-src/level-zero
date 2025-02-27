@@ -59,19 +59,24 @@ namespace loader
         %elif re.match(r"\w+DriverGet$", th.make_func_name(n, tags, obj)) or re.match(r"\w+InitDrivers$", th.make_func_name(n, tags, obj)):
         uint32_t total_driver_handle_count = 0;
 
-        %if namespace != "zes":
-        if (!loader::context->coredriverSortingCompleted) {
+        if (!loader::context->sortingInProgress.exchange(true)) {
+            %if namespace != "zes":
             %if not re.match(r"\w+InitDrivers$", th.make_func_name(n, tags, obj)):
-            loader::context->coredriverSortingCompleted = loader::context->driverSorting(&loader::context->zeDrivers, nullptr);
+            std::call_once(loader::context->coreDriverSortOnce, []() {
+                loader::context->driverSorting(&loader::context->zeDrivers, nullptr);
+            });
             %else:
-            loader::context->coredriverSortingCompleted = loader::context->driverSorting(&loader::context->zeDrivers, desc);
+            std::call_once(loader::context->coreDriverSortOnce, [desc]() {
+                loader::context->driverSorting(&loader::context->zeDrivers, desc);
+            });
             %endif
+            %else:
+            std::call_once(loader::context->sysmanDriverSortOnce, []() {
+                loader::context->driverSorting(loader::context->sysmanInstanceDrivers, nullptr);
+            });
+            %endif
+            loader::context->sortingInProgress.store(false);
         }
-        %else:
-        if (!loader::context->sysmandriverSortingCompleted) {
-            loader::context->sysmandriverSortingCompleted = loader::context->driverSorting(loader::context->sysmanInstanceDrivers, nullptr);
-        }
-        %endif
 
         %if namespace != "zes":
         for( auto& drv : loader::context->zeDrivers )
