@@ -55,7 +55,7 @@ namespace loader
 
         uint32_t total_driver_handle_count = 0;
 
-        if (!loader::context->sortingInProgress.exchange(true)) {
+        if (!loader::context->sortingInProgress.exchange(true) && !loader::context->instrumentationEnabled) {
             std::call_once(loader::context->coreDriverSortOnce, []() {
                 loader::context->driverSorting(&loader::context->zeDrivers, nullptr);
             });
@@ -138,7 +138,7 @@ namespace loader
 
         uint32_t total_driver_handle_count = 0;
 
-        if (!loader::context->sortingInProgress.exchange(true)) {
+        if (!loader::context->sortingInProgress.exchange(true) && !loader::context->instrumentationEnabled) {
             std::call_once(loader::context->coreDriverSortOnce, [desc]() {
                 loader::context->driverSorting(&loader::context->zeDrivers, desc);
             });
