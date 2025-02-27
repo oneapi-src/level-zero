@@ -267,6 +267,7 @@ namespace loader
             return_first_driver_result=true;
         }
         bool pciOrderingRequested = getenv_tobool( "ZE_ENABLE_PCI_ID_DEVICE_ORDER" );
+        loader::context->instrumentationEnabled = getenv_tobool( "ZET_ENABLE_PROGRAM_INSTRUMENTATION" );
 
         for(auto it = drivers->begin(); it != drivers->end(); )
         {

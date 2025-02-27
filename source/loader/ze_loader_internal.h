@@ -153,6 +153,7 @@ namespace loader
         std::once_flag coreDriverSortOnce;
         std::once_flag sysmanDriverSortOnce;
         std::atomic<bool> sortingInProgress = {false};
+        bool instrumentationEnabled = false;
         dditable_t tracing_dditable = {};
         std::shared_ptr<Logger> zel_logger;
     };
