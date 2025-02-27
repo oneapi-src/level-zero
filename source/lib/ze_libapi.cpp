@@ -46,6 +46,11 @@ zeInit(
     )
 {
     static ze_result_t result = ZE_RESULT_SUCCESS;
+    #ifdef DYNAMIC_LOAD_LOADER
+    if (!ze_lib::context) {
+        ze_lib::context = new ze_lib::context_t;
+    }
+    #endif
     std::call_once(ze_lib::context->initOnce, [flags]() {
         result = ze_lib::context->Init(flags, false, nullptr);
 
@@ -197,6 +202,11 @@ zeInitDrivers(
     )
 {
     ze_result_t result = ZE_RESULT_SUCCESS;
+    #ifdef DYNAMIC_LOAD_LOADER
+    if (!ze_lib::context) {
+        ze_lib::context = new ze_lib::context_t;
+    }
+    #endif
     std::call_once(ze_lib::context->initOnceDrivers, [desc,&result]() {
         result = ze_lib::context->Init(0, false, desc);
         return result;

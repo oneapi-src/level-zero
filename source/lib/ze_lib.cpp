@@ -14,9 +14,8 @@
 namespace ze_lib
 {
     ///////////////////////////////////////////////////////////////////////////////
-    #ifndef DYNAMIC_LOAD_LOADER
     context_t *context = nullptr;
-    #else
+    #ifdef DYNAMIC_LOAD_LOADER
     void context_at_exit_destructor()
     {
         if (ze_lib::context) {
@@ -24,7 +23,6 @@ namespace ze_lib
             ze_lib::context = nullptr;
         }
     }
-    context_t *context = new context_t();
     bool delayContextDestruction = false;
     #endif
     bool destruction = false;
