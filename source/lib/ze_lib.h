@@ -179,7 +179,7 @@ namespace ze_lib
     extern bool destruction;
     extern context_t *context;
     #ifdef DYNAMIC_LOAD_LOADER
-    extern context_t loader_context_static;
+    extern bool delayContextDestruction;
     #endif
 
 } // namespace ze_lib

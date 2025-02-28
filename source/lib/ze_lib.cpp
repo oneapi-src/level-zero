@@ -14,11 +14,16 @@
 namespace ze_lib
 {
     ///////////////////////////////////////////////////////////////////////////////
-    #ifndef DYNAMIC_LOAD_LOADER
     context_t *context = nullptr;
-    #else
-    context_t loader_context_static;
-    context_t *context = &loader_context_static;
+    #ifdef DYNAMIC_LOAD_LOADER
+    void context_at_exit_destructor()
+    {
+        if (ze_lib::context) {
+            delete ze_lib::context;
+            ze_lib::context = nullptr;
+        }
+    }
+    bool delayContextDestruction = false;
     #endif
     bool destruction = false;
 
@@ -326,7 +331,11 @@ namespace ze_lib
 #endif
             isInitialized = true;
         }
-
+        #ifdef DYNAMIC_LOAD_LOADER
+        if (!delayContextDestruction) {
+            std::atexit(context_at_exit_destructor);
+        }
+        #endif
         return result;
     }
 
@@ -380,6 +389,27 @@ zelSetDriverTeardown()
         ze_lib::destruction = true;
     }
     return result;
+}
+
+void ZE_APICALL
+zelSetDelayLoaderContextTeardown()
+{
+    #ifdef DYNAMIC_LOAD_LOADER
+    if (!ze_lib::delayContextDestruction) {
+        ze_lib::delayContextDestruction = true;
+    }
+    #endif
+}
+
+void ZE_APICALL
+zelLoaderContextTeardown()
+{
+    #ifdef DYNAMIC_LOAD_LOADER
+    if (ze_lib::delayContextDestruction && ze_lib::context) {
+        delete ze_lib::context;
+        ze_lib::context = nullptr;
+    }
+    #endif
 }
 
 ze_result_t ZE_APICALL

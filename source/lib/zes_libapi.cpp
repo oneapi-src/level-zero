@@ -48,6 +48,11 @@ zesInit(
                                                     ///< currently unused, must be 0 (default).
     )
 {
+    #ifdef DYNAMIC_LOAD_LOADER
+    if (!ze_lib::context) {
+        ze_lib::context = new ze_lib::context_t;
+    }
+    #endif
     static ze_result_t result = ZE_RESULT_SUCCESS;
     std::call_once(ze_lib::context->initOnceSysMan, [flags]() {
         result = ze_lib::context->Init(flags, true, nullptr);
