@@ -2,6 +2,7 @@
 
 ## v1.21.1
 * Fix stype assignment in zello_world
+* Given static Loader, allocate lib context_t always as dynamic and enable delayed destroy of context
 ## v1.21.0
 * Add Support for building the L0 Loader statically
 ## v1.20.6
