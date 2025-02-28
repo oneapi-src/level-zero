@@ -69,29 +69,32 @@ namespace loader
     }
 
     bool context_t::driverSorting(driver_vector_t *drivers, ze_init_driver_type_desc_t* desc) {
-
+        ze_init_driver_type_desc_t permissiveDesc = {};
+        permissiveDesc.stype = ZE_STRUCTURE_TYPE_INIT_DRIVER_TYPE_DESC;
+        permissiveDesc.pNext = nullptr;
+        permissiveDesc.flags = UINT32_MAX;
         for (auto &driver : *drivers) {
             uint32_t pCount = 0;
             std::vector<ze_driver_handle_t> driverHandles;
             ze_result_t res = ZE_RESULT_SUCCESS;
             if (desc) {
                 pCount = 0;
-                res = driver.dditable.ze.Global.pfnInitDrivers(&pCount, nullptr, desc);
+                res = driver.dditable.ze.Global.pfnInitDrivers(&pCount, nullptr, &permissiveDesc);
                 // Verify that this driver successfully init in the call above.
                 if (res != ZE_RESULT_SUCCESS) {
                     if (debugTraceEnabled) {
-                        std::string message = "driverSorting " + driver.name + " zeInitDrivers(" + loader::to_string(desc) + ") returning ";
+                        std::string message = "driverSorting " + driver.name + " zeInitDrivers(" + loader::to_string(&permissiveDesc) + ") returning ";
                         debug_trace_message(message, loader::to_string(res));
                     }
                     continue;
                 }
                 driverHandles.resize(pCount);
                 // Use the driver's init function to query the driver handles and read the properties.
-                res = driver.dditable.ze.Global.pfnInitDrivers(&pCount, driverHandles.data(), desc);
+                res = driver.dditable.ze.Global.pfnInitDrivers(&pCount, driverHandles.data(), &permissiveDesc);
                 // Verify that this driver successfully init in the call above.
                 if (res != ZE_RESULT_SUCCESS) {
                     if (debugTraceEnabled) {
-                        std::string message = "driverSorting " + driver.name + " zeInitDrivers(" + loader::to_string(desc) + ") returning ";
+                        std::string message = "driverSorting " + driver.name + " zeInitDrivers(" + loader::to_string(&permissiveDesc) + ") returning ";
                         debug_trace_message(message, loader::to_string(res));
                     }
                     continue;
