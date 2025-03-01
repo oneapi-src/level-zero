@@ -224,23 +224,29 @@ string(SUBSTRING "${os_name}" 0 1 os_name)
 
 file(GLOB LEVEL_ZERO_API_HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/include/*.h")
 
+set(SDK_COMPONENT_STRING "level-zero-devel")
+
+if(BUILD_INSTALLER)
+    set(SDK_COMPONENT_STRING "level_zero_sdk")
+endif()
+
 install(FILES ${LEVEL_ZERO_API_HEADERS}
     DESTINATION ./include/level_zero
-    COMPONENT level-zero-devel
+    COMPONENT ${SDK_COMPONENT_STRING}
 )
 
 file(GLOB LEVEL_ZERO_LAYERS_API_HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/include/layers/*.h")
 
 install(FILES ${LEVEL_ZERO_LAYERS_API_HEADERS}
     DESTINATION ./include/level_zero/layers
-    COMPONENT level-zero-devel
+    COMPONENT ${SDK_COMPONENT_STRING}
 )
 
 file(GLOB LEVEL_ZERO_LOADER_API_HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/include/loader/*.h")
 
 install(FILES ${LEVEL_ZERO_LOADER_API_HEADERS}
     DESTINATION ./include/level_zero/loader
-    COMPONENT level-zero-devel
+    COMPONENT ${SDK_COMPONENT_STRING}
 )
 
 # If generators list was not define build native package for current distro
@@ -251,6 +257,15 @@ if(NOT DEFINED CPACK_GENERATOR)
 		set(CPACK_GENERATOR "RPM")
 	elseif(EXISTS "/etc/SUSE-brand" OR EXISTS "/etc/SUSE-release" OR sles_distro)
 		set(CPACK_GENERATOR "RPM")
+    elseif(BUILD_INSTALLER)
+        set(CPACK_GENERATOR "WIX")
+        set(CPACK_PACKAGE_NAME "oneAPI Level Zero Loader SDK")
+        # version to be updated upon every new version of the product, will need to be auto generated.
+        set(CPACK_WIX_PRODUCT_GUID "bc4daf28-2d63-4545-90d7-297cddbe1932")
+        # version to be "fixed" for the lifetime of the product to allow for upgrading of the SDK.
+        set(CPACK_WIX_UPGRADE_GUID "d7315761-77ff-4923-a26a-05e5c3be73da")
+        set(CMAKE_INSTALL_PREFIX "LevelZeroSDK/${PROJECT_VERSION}/")
+        set(CPACK_WIX_SKIP_PROGRAM_FOLDER ON)
 	else()
 		set(CPACK_GENERATOR "ZIP")
 	endif()
