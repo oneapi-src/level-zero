@@ -8,6 +8,7 @@
  *
  */
 #include "ze_null.h"
+#include <cstring>
 
 namespace driver
 {
@@ -138,6 +139,10 @@ namespace driver
             ze_device_properties_t deviceProperties = {};
             deviceProperties.stype = ZE_STRUCTURE_TYPE_DEVICE_PROPERTIES;
             deviceProperties.type = ZE_DEVICE_TYPE_GPU;
+            auto driver_type = getenv_string( "ZEL_TEST_NULL_DRIVER_TYPE" );
+            if (std::strcmp(driver_type.c_str(), "NPU") == 0) {
+                deviceProperties.type = ZE_DEVICE_TYPE_VPU;
+            }
 #if defined(_WIN32)
             strcpy_s( deviceProperties.name, "Null Device" );
 #else
