@@ -258,12 +258,40 @@ if(NOT DEFINED CPACK_GENERATOR)
 	elseif(EXISTS "/etc/SUSE-brand" OR EXISTS "/etc/SUSE-release" OR sles_distro)
 		set(CPACK_GENERATOR "RPM")
     elseif(BUILD_INSTALLER)
+        set(PRODUCT_GUID_FILE "${CMAKE_SOURCE_DIR}/PRODUCT_GUID.txt")
+        if(EXISTS "${PRODUCT_GUID_FILE}")
+            file(STRINGS "${PRODUCT_GUID_FILE}" SAVED_PRODUCT_GUID)
+            list(GET SAVED_PRODUCT_GUID 0 SAVED_PRODUCT_GUID_VERSION)
+            message(STATUS "Saved Product GUID: ${SAVED_PRODUCT_GUID_VERSION}")
+            message(STATUS "project version: ${PROJECT_VERSION}")
+            if(NOT SAVED_PRODUCT_GUID_VERSION STREQUAL "${PROJECT_VERSION}")
+
+            execute_process(
+                COMMAND python ${CMAKE_SOURCE_DIR}/scripts/generate_wix_guid.py
+                OUTPUT_VARIABLE GENERATED_PRODUCT_GUID
+                OUTPUT_STRIP_TRAILING_WHITESPACE
+            )
+            file(WRITE "${PRODUCT_GUID_FILE}" "${PROJECT_VERSION}\n${GENERATED_PRODUCT_GUID}")
+            message(STATUS "Generated Product GUID: ${GENERATED_PRODUCT_GUID} for version ${PROJECT_VERSION}")
+            else()
+            string(REPLACE "\n" ";" GUID_CONTENTS "${SAVED_PRODUCT_GUID}")
+            list(GET GUID_CONTENTS 1 GENERATED_PRODUCT_GUID)
+            endif()
+        else()
+            execute_process(
+            COMMAND python ${CMAKE_SOURCE_DIR}/scripts/generate_wix_guid.py
+            OUTPUT_VARIABLE GENERATED_PRODUCT_GUID
+            OUTPUT_STRIP_TRAILING_WHITESPACE
+            )
+            file(WRITE "${PRODUCT_GUID_FILE}" "${PROJECT_VERSION}\n${GENERATED_PRODUCT_GUID}")
+        endif()
+        message(STATUS "Using Product GUID: ${GENERATED_PRODUCT_GUID} for version ${PROJECT_VERSION}")
+        # version to be "fixed" for the lifetime of the product to allow for upgrading of the SDK.
+        set (LEVEL_ZERO_SDK_UPDATE_GUID "d7315761-77ff-4923-a26a-05e5c3be73da")
         set(CPACK_GENERATOR "WIX")
         set(CPACK_PACKAGE_NAME "oneAPI Level Zero Loader SDK")
-        # version to be updated upon every new version of the product, will need to be auto generated.
-        set(CPACK_WIX_PRODUCT_GUID "bc4daf28-2d63-4545-90d7-297cddbe1932")
-        # version to be "fixed" for the lifetime of the product to allow for upgrading of the SDK.
-        set(CPACK_WIX_UPGRADE_GUID "d7315761-77ff-4923-a26a-05e5c3be73da")
+        set(CPACK_WIX_PRODUCT_GUID ${GENERATED_PRODUCT_GUID})
+        set(CPACK_WIX_UPGRADE_GUID ${LEVEL_ZERO_SDK_UPDATE_GUID})
         set(CMAKE_INSTALL_PREFIX "LevelZeroSDK/${PROJECT_VERSION}/")
         set(CPACK_WIX_SKIP_PROGRAM_FOLDER ON)
         get_cmake_property(CPACK_COMPONENTS_ALL COMPONENTS)
