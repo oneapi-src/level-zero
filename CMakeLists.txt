@@ -290,9 +290,55 @@ if(NOT DEFINED CPACK_GENERATOR)
         set (LEVEL_ZERO_SDK_UPDATE_GUID "d7315761-77ff-4923-a26a-05e5c3be73da")
         set(CPACK_GENERATOR "WIX")
         set(CPACK_PACKAGE_NAME "oneAPI Level Zero Loader SDK")
+
+        set(CMAKE_INSTALL_PREFIX "LevelZeroSDK/${PROJECT_VERSION}/")
+        # Add the script to the install directory
+        install(FILES "${CMAKE_SOURCE_DIR}/scripts/level_zero_sdk_setup.ps1"
+            DESTINATION ./scripts
+            COMPONENT ${SDK_COMPONENT_STRING}
+        )
+
+        # # Set the CPACK_WIX_CUSTOM_ACTIONS variable to include the custom action
+        # set(CPACK_WIX_CUSTOM_ACTIONS
+        #     "<CustomAction Id='SetPostInstallScript' Property='PostInstallScript' Value='[INSTALLDIR]scripts\\\\level_zero_sdk_setup.ps1 [INSTALLDIR] [PRODUCT_VERSION]'/>"
+        #     "<CustomAction Id='RunPostInstallScript' BinaryKey='WixCA' DllEntry='WixQuietExec' Execute='deferred' Return='check' Impersonate='no'/>"
+        # )
+
+        # # Add the custom action to the InstallExecuteSequence
+        # set(CPACK_WIX_CUSTOM_ACTIONS_SEQUENCE
+        #     "<InstallExecuteSequence>"
+        #     "  <Custom Action='SetPostInstallScript' After='InstallFiles'>NOT Installed</Custom>"
+        #     "  <Custom Action='RunPostInstallScript' After='SetPostInstallScript'>NOT Installed</Custom>"
+        #     "</InstallExecuteSequence>"
+        # )
+
+        # # Include the custom actions in the WiX source
+        # set(CPACK_WIX_SOURCE
+        #     "<Wix xmlns='http://schemas.microsoft.com/wix/2006/wi'>\n"
+        #     "  <Product Id='*' Name='oneAPI Level Zero Loader SDK' Language='1033' Version='${PROJECT_VERSION}' Manufacturer='Intel' UpgradeCode='${LEVEL_ZERO_SDK_UPDATE_GUID}'>\n"
+        #     "    <Package InstallerVersion='500' Compressed='yes' InstallScope='perMachine'/>\n"
+        #     "    <MajorUpgrade DowngradeErrorMessage='A newer version of [ProductName] is already installed.'/>\n"
+        #     "    <Media Id='1' Cabinet='cab1.cab' EmbedCab='yes'/>\n"
+        #     "    <Feature Id='ProductFeature' Title='oneAPI Level Zero Loader SDK' Level='1'>\n"
+        #     "      <ComponentGroupRef Id='ProductComponents'/>\n"
+        #     "    </Feature>\n"
+        #     "${CPACK_WIX_CUSTOM_ACTIONS}\n"
+        #     "${CPACK_WIX_CUSTOM_ACTIONS_SEQUENCE}\n"
+        #     "  </Product>\n"
+        #     "</Wix>\n"
+        # )
+
+        # # Set the CPACK_WIX_SOURCE_FILE variable to the WiX source
+        # set(CPACK_WIX_SOURCE_FILE "${CMAKE_BINARY_DIR}/wix_source.wxs")
+
+        # # Write the WiX source to the CPACK_WIX_SOURCE_FILE
+        # file(WRITE "${CPACK_WIX_SOURCE_FILE}" "${CPACK_WIX_SOURCE}")
+
+        # # Set the CPACK_WIX_TEMPLATE variable to the CPACK_WIX_SOURCE_FILE
+        # set(CPACK_WIX_TEMPLATE "${CPACK_WIX_SOURCE_FILE}")
+
         set(CPACK_WIX_PRODUCT_GUID ${GENERATED_PRODUCT_GUID})
         set(CPACK_WIX_UPGRADE_GUID ${LEVEL_ZERO_SDK_UPDATE_GUID})
-        set(CMAKE_INSTALL_PREFIX "LevelZeroSDK/${PROJECT_VERSION}/")
         set(CPACK_WIX_SKIP_PROGRAM_FOLDER ON)
         get_cmake_property(CPACK_COMPONENTS_ALL COMPONENTS)
         list(REMOVE_ITEM CPACK_COMPONENTS_ALL "level_zero")
