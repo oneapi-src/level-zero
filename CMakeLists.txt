@@ -286,8 +286,6 @@ if(NOT DEFINED CPACK_GENERATOR)
             file(WRITE "${PRODUCT_GUID_FILE}" "${PROJECT_VERSION}\n${GENERATED_PRODUCT_GUID}")
         endif()
         message(STATUS "Using Product GUID: ${GENERATED_PRODUCT_GUID} for version ${PROJECT_VERSION}")
-        # version to be "fixed" for the lifetime of the product to allow for upgrading of the SDK.
-        set (LEVEL_ZERO_SDK_UPDATE_GUID "d7315761-77ff-4923-a26a-05e5c3be73da")
         set(CPACK_GENERATOR "WIX")
         set(CPACK_PACKAGE_NAME "oneAPI Level Zero Loader SDK")
 
@@ -298,47 +296,13 @@ if(NOT DEFINED CPACK_GENERATOR)
             COMPONENT ${SDK_COMPONENT_STRING}
         )
 
-        # # Set the CPACK_WIX_CUSTOM_ACTIONS variable to include the custom action
-        # set(CPACK_WIX_CUSTOM_ACTIONS
-        #     "<CustomAction Id='SetPostInstallScript' Property='PostInstallScript' Value='[INSTALLDIR]scripts\\\\level_zero_sdk_setup.ps1 [INSTALLDIR] [PRODUCT_VERSION]'/>"
-        #     "<CustomAction Id='RunPostInstallScript' BinaryKey='WixCA' DllEntry='WixQuietExec' Execute='deferred' Return='check' Impersonate='no'/>"
-        # )
+        set(CPACK_WIX_PATCH_FILE "${CMAKE_SOURCE_DIR}/scripts/wix_env_installation.wxs")
 
-        # # Add the custom action to the InstallExecuteSequence
-        # set(CPACK_WIX_CUSTOM_ACTIONS_SEQUENCE
-        #     "<InstallExecuteSequence>"
-        #     "  <Custom Action='SetPostInstallScript' After='InstallFiles'>NOT Installed</Custom>"
-        #     "  <Custom Action='RunPostInstallScript' After='SetPostInstallScript'>NOT Installed</Custom>"
-        #     "</InstallExecuteSequence>"
-        # )
-
-        # # Include the custom actions in the WiX source
-        # set(CPACK_WIX_SOURCE
-        #     "<Wix xmlns='http://schemas.microsoft.com/wix/2006/wi'>\n"
-        #     "  <Product Id='*' Name='oneAPI Level Zero Loader SDK' Language='1033' Version='${PROJECT_VERSION}' Manufacturer='Intel' UpgradeCode='${LEVEL_ZERO_SDK_UPDATE_GUID}'>\n"
-        #     "    <Package InstallerVersion='500' Compressed='yes' InstallScope='perMachine'/>\n"
-        #     "    <MajorUpgrade DowngradeErrorMessage='A newer version of [ProductName] is already installed.'/>\n"
-        #     "    <Media Id='1' Cabinet='cab1.cab' EmbedCab='yes'/>\n"
-        #     "    <Feature Id='ProductFeature' Title='oneAPI Level Zero Loader SDK' Level='1'>\n"
-        #     "      <ComponentGroupRef Id='ProductComponents'/>\n"
-        #     "    </Feature>\n"
-        #     "${CPACK_WIX_CUSTOM_ACTIONS}\n"
-        #     "${CPACK_WIX_CUSTOM_ACTIONS_SEQUENCE}\n"
-        #     "  </Product>\n"
-        #     "</Wix>\n"
-        # )
-
-        # # Set the CPACK_WIX_SOURCE_FILE variable to the WiX source
-        # set(CPACK_WIX_SOURCE_FILE "${CMAKE_BINARY_DIR}/wix_source.wxs")
-
-        # # Write the WiX source to the CPACK_WIX_SOURCE_FILE
-        # file(WRITE "${CPACK_WIX_SOURCE_FILE}" "${CPACK_WIX_SOURCE}")
-
-        # # Set the CPACK_WIX_TEMPLATE variable to the CPACK_WIX_SOURCE_FILE
-        # set(CPACK_WIX_TEMPLATE "${CPACK_WIX_SOURCE_FILE}")
-
+        # sharing GUIDs between product and upgrade codes such that side by side installation is allowed.
         set(CPACK_WIX_PRODUCT_GUID ${GENERATED_PRODUCT_GUID})
-        set(CPACK_WIX_UPGRADE_GUID ${LEVEL_ZERO_SDK_UPDATE_GUID})
+        set(CPACK_WIX_UPGRADE_GUID ${GENERATED_PRODUCT_GUID})
+        set(CPACK_WIX_UI_DIALOG "${CMAKE_SOURCE_DIR}/icons/oneapi-icon-left-aligned.png")
+        set(CPACK_WIX_UI_BANNER "${CMAKE_SOURCE_DIR}/icons/oneapi-icon-right-aligned.png")
         set(CPACK_WIX_SKIP_PROGRAM_FOLDER ON)
         get_cmake_property(CPACK_COMPONENTS_ALL COMPONENTS)
         list(REMOVE_ITEM CPACK_COMPONENTS_ALL "level_zero")

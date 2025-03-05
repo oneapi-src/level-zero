@@ -1,0 +1,9 @@
+<CPackWiXPatch>
+	<CPackWiXFragment Id="#PRODUCT">
+		<Feature Id="EnvSetupFeature" Display="expand" Title="Set LEVEL_ZERO_V1_SDK_PATH" Level="1">
+			<Component Id="SetEnvVars" Guid="ec0c4b66-da81-4d6a-b45a-5cddf0eec9ce" Directory="TARGETDIR">
+				<Environment Id="SetLevelZeroSDKPath" Name="LEVEL_ZERO_V1_SDK_PATH" Value="[INSTALL_ROOT]" Permanent="yes" Part="all" Action="set" System="yes"/>
+			</Component>
+		</Feature>
+	</CPackWiXFragment>
+</CPackWiXPatch>
