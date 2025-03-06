@@ -52,8 +52,8 @@ set(SDK_COMPONENT_STRING "level-zero-devel")
 set(LIB_COMPONENT_STRING "level-zero")
 
 if(BUILD_INSTALLER)
-    set(SDK_COMPONENT_STRING "level_zero_sdk")
-    set(LIB_COMPONENT_STRING "level_zero")
+    set(SDK_COMPONENT_STRING "SDK")
+    set(LIB_COMPONENT_STRING "Loader")
 endif()
 
 install(TARGETS ze_tracing_layer
