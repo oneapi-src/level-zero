@@ -1,4 +1,13 @@
-/*
+<%!
+import re
+from templates import helper as th
+%><%
+    n=namespace
+    N=n.upper()
+
+    x=tags['$x']
+    X=x.upper()
+%>/*
  *
  * Copyright (C) 2019-2025 Intel Corporation
  *
@@ -63,60 +72,17 @@ namespace loader
     public:
         /// factories
         ///////////////////////////////////////////////////////////////////////////////
-        ze_command_list_factory_t           ze_command_list_factory;
-        ze_command_queue_factory_t          ze_command_queue_factory;
-        ze_context_factory_t                ze_context_factory;
-        ze_device_factory_t                 ze_device_factory;
-        ze_driver_factory_t                 ze_driver_factory;
-        ze_event_factory_t                  ze_event_factory;
-        ze_event_pool_factory_t             ze_event_pool_factory;
-        ze_external_semaphore_ext_factory_t ze_external_semaphore_ext_factory;
-        ze_fabric_edge_factory_t            ze_fabric_edge_factory;
-        ze_fabric_vertex_factory_t          ze_fabric_vertex_factory;
-        ze_fence_factory_t                  ze_fence_factory;
-        ze_image_factory_t                  ze_image_factory;
-        ze_kernel_factory_t                 ze_kernel_factory;
-        ze_module_build_log_factory_t       ze_module_build_log_factory;
-        ze_module_factory_t                 ze_module_factory;
-        ze_physical_mem_factory_t           ze_physical_mem_factory;
-        ze_rtas_builder_exp_factory_t       ze_rtas_builder_exp_factory;
-        ze_rtas_parallel_operation_exp_factory_t    ze_rtas_parallel_operation_exp_factory;
-        ze_sampler_factory_t                ze_sampler_factory;
-        zes_device_factory_t                zes_device_factory;
-        zes_diag_factory_t                  zes_diag_factory;
-        zes_driver_factory_t                zes_driver_factory;
-        zes_engine_factory_t                zes_engine_factory;
-        zes_fabric_port_factory_t           zes_fabric_port_factory;
-        zes_fan_factory_t                   zes_fan_factory;
-        zes_firmware_factory_t              zes_firmware_factory;
-        zes_freq_factory_t                  zes_freq_factory;
-        zes_led_factory_t                   zes_led_factory;
-        zes_mem_factory_t                   zes_mem_factory;
-        zes_overclock_factory_t             zes_overclock_factory;
-        zes_perf_factory_t                  zes_perf_factory;
-        zes_psu_factory_t                   zes_psu_factory;
-        zes_pwr_factory_t                   zes_pwr_factory;
-        zes_ras_factory_t                   zes_ras_factory;
-        zes_sched_factory_t                 zes_sched_factory;
-        zes_standby_factory_t               zes_standby_factory;
-        zes_temp_factory_t                  zes_temp_factory;
-        zes_vf_factory_t                    zes_vf_factory;
-        zet_command_list_factory_t          zet_command_list_factory;
-        zet_context_factory_t               zet_context_factory;
-        zet_debug_session_factory_t         zet_debug_session_factory;
-        zet_device_factory_t                zet_device_factory;
-        zet_driver_factory_t                zet_driver_factory;
-        zet_kernel_factory_t                zet_kernel_factory;
-        zet_metric_decoder_exp_factory_t    zet_metric_decoder_exp_factory;
-        zet_metric_factory_t                zet_metric_factory;
-        zet_metric_group_factory_t          zet_metric_group_factory;
-        zet_metric_programmable_exp_factory_t   zet_metric_programmable_exp_factory;
-        zet_metric_query_factory_t          zet_metric_query_factory;
-        zet_metric_query_pool_factory_t     zet_metric_query_pool_factory;
-        zet_metric_streamer_factory_t       zet_metric_streamer_factory;
-        zet_metric_tracer_exp_factory_t     zet_metric_tracer_exp_factory;
-        zet_module_factory_t                zet_module_factory;
-        zet_tracer_exp_factory_t            zet_tracer_exp_factory;
+        %for obj in th.extract_objs(specs, r"handle"):
+        %if 'class' in obj:
+        <%
+        
+            _handle_t = th.subt(n, tags, obj['name'])
+            _factory_t = re.sub(r"(\w+)_handle_t", r"\1_factory_t", _handle_t)
+            _factory = re.sub(r"(\w+)_handle_t", r"\1_factory", _handle_t)
+        %>${th.append_ws(_factory_t, 35)} ${_factory};
+        %endif
+        %endfor
+        ///////////////////////////////////////////////////////////////////////////////
         /// end factories
         std::mutex image_handle_map_lock;
         std::mutex sampler_handle_map_lock;

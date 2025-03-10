@@ -52,6 +52,106 @@ if __name__ == '__main__':
             if args.drivers:
                 generate_code.generate_drivers(srcpath, config['name'], config['namespace'], config['tags'], args.ver, specs, input['meta'])
 
+    def merge_header_files(input_files, output_file):
+        """
+        Merges the unique content of multiple header files into a single output file.
+
+        Args:
+            input_files: A list of paths to the input header files.
+            output_file: The path to the output file.
+        """
+        try:
+            unique_lines = set()
+            for infile_path in input_files:
+                try:
+                    with open(infile_path, 'r') as infile:
+                        inside_factory = False
+                        for line in infile:
+                            if '/// factories' in line:
+                                inside_factory = True
+                                continue
+                            if '/// end factories' in line:
+                                inside_factory = False
+                                continue
+                            if inside_factory:
+                                unique_lines.add(line)
+                except FileNotFoundError:
+                    print(f"Error: Input file not found: {infile_path}")
+                    return
+
+            with open(output_file, 'w') as outfile:
+                for line in sorted(unique_lines):
+                    outfile.write(line)
+            print(f"Successfully merged unique header file content into: {output_file}")
+        except Exception as e:
+            print(f"An error occurred: {e}")
+
+    header_files = [
+        'source/loader/ze_loader_internal_tmp.h',
+        'source/loader/zet_loader_internal_tmp.h',
+        'source/loader/zes_loader_internal_tmp.h'
+    ]
+    output_file = 'source/loader/ze_loader_internal_factories.h'
+    merge_header_files(header_files, output_file)
+    def replace_factory_section(input_file, factory_file, output_file):
+        """
+        Replaces the content between '/// factory' and '/// end factory' in the input file
+        with the content from the factory file and writes the result to the output file.
+
+        Args:
+            input_file: The path to the input file.
+            factory_file: The path to the factory file.
+            output_file: The path to the output file.
+        """
+        try:
+            with open(input_file, 'r') as infile:
+                lines = infile.readlines()
+
+            with open(factory_file, 'r') as factory:
+                factory_lines = factory.readlines()
+
+            output_lines = []
+            inside_factory = False
+
+            for line in lines:
+                if '/// factories' in line:
+                    inside_factory = True
+                    output_lines.append(line)
+                    output_lines.extend(factory_lines)
+                elif '/// end factories' in line:
+                    inside_factory = False
+                if not inside_factory:
+                    output_lines.append(line)
+
+            with open(output_file, 'w') as outfile:
+                outfile.writelines(output_lines)
+
+            print(f"Successfully replaced factory section in: {output_file}")
+        except Exception as e:
+            print(f"An error occurred: {e}")
+
+    input_file = 'source/loader/ze_loader_internal_tmp.h'
+    factory_file = 'source/loader/ze_loader_internal_factories.h'
+    output_file = 'source/loader/ze_loader_internal.h'
+    replace_factory_section(input_file, factory_file, output_file)
+
+    # Delete temporary and factory files
+    files_to_delete = [
+        'source/loader/ze_loader_internal_tmp.h',
+        'source/loader/zet_loader_internal_tmp.h',
+        'source/loader/zes_loader_internal_tmp.h',
+        'source/loader/ze_loader_internal_factories.h'
+    ]
+
+    for file_path in files_to_delete:
+        try:
+            os.remove(file_path)
+            print(f"Deleted file: {file_path}")
+        except FileNotFoundError:
+            print(f"File not found, could not delete: {file_path}")
+        except Exception as e:
+            print(f"An error occurred while deleting {file_path}: {e}")
+
     if args.debug:
         util.makoFileListWrite("generated.json")
 
