@@ -117,6 +117,23 @@ def _mako_loader_cpp(path, namespace, tags, version, specs, meta):
         specs=specs,
         meta=meta)
 
+    template = "ze_loader_internal.h.mako"
+    fin = os.path.join(templates_dir, template)
+
+    name = "%s_loader_internal_tmp"%(namespace)
+    filename = "%s.h"%(name)
+    fout = os.path.join(path, filename)
+
+    print("Generating %s..."%fout)
+    loc += util.makoWrite(
+        fin, fout,
+        name=name,
+        ver=version,
+        namespace=namespace,
+        tags=tags,
+        specs=specs,
+        meta=meta)
+
     template = "ldrddi.cpp.mako"
     fin = os.path.join(templates_dir, template)
 
