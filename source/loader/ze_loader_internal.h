@@ -10,9 +10,7 @@
 #include <map>
 #include <atomic>
 
-#include "ze_ddi.h"
-#include "zet_ddi.h"
-#include "zes_ddi.h"
+#include "ze_ddi_common.h"
 
 #include "ze_util.h"
 #include "ze_object.h"
@@ -53,6 +51,7 @@ namespace loader
         zel_driver_type_t driverType;
         ze_driver_properties_t properties;
         bool pciOrderingRequested = false;
+        bool driverSupportsDDIHandles = false;
     };
 
     using driver_vector_t = std::vector< driver_t >;
@@ -152,5 +151,9 @@ namespace loader
         std::shared_ptr<Logger> zel_logger;
     };
 
+    extern ze_handle_t* loaderDispatch;
+    extern ze_dditable_t* loaderZeDdiTable;
+    extern zet_dditable_t* loaderZetDdiTable;
+    extern zes_dditable_t* loaderZesDdiTable;
     extern context_t *context;
 }

@@ -6,6 +6,9 @@
  *
  */
 #include "ze_loader_internal.h"
+#include "ze_ldrddi.h"
+#include "zet_ldrddi.h"
+#include "zes_ldrddi.h"
 
 #include "driver_discovery.h"
 #include <iostream>
@@ -18,6 +21,10 @@
 
 namespace loader
 {
+    ze_handle_t* loaderDispatch = nullptr;
+    ze_dditable_t* loaderZeDdiTable = nullptr;
+    zet_dditable_t* loaderZetDdiTable = nullptr;
+    zes_dditable_t* loaderZesDdiTable = nullptr;
     ///////////////////////////////////////////////////////////////////////////////
     context_t *context;
 
@@ -313,9 +320,12 @@ namespace loader
             }
 
             for (auto handle : driverHandles) {
+                ze_driver_ddi_handles_ext_properties_t driverDdiHandlesExtProperties = {};
+                driverDdiHandlesExtProperties.stype = ZE_STRUCTURE_TYPE_DRIVER_DDI_HANDLES_EXT_PROPERTIES;
+                driverDdiHandlesExtProperties.pNext = nullptr;
                 ze_driver_properties_t properties = {};
                 properties.stype = ZE_STRUCTURE_TYPE_DRIVER_PROPERTIES;
-                properties.pNext = nullptr;
+                properties.pNext = &driverDdiHandlesExtProperties;
                 ze_result_t res = driver.dditable.ze.Driver.pfnGetProperties(handle, &properties);
                 if (res != ZE_RESULT_SUCCESS) {
                     if (debugTraceEnabled) {
@@ -325,6 +335,7 @@ namespace loader
                     return res;
                 }
                 driver.properties = properties;
+                driver.driverSupportsDDIHandles = driverDdiHandlesExtProperties.flags & ZE_DRIVER_DDI_HANDLE_EXT_FLAG_DDI_HANDLE_EXT_SUPPORTED;
                 uint32_t deviceCount = 0;
                 res = driver.dditable.ze.Device.pfnGet( handle, &deviceCount, nullptr );
                 if( ZE_RESULT_SUCCESS != res ) {
@@ -397,6 +408,19 @@ namespace loader
         if (driverEnvironmentQueried) {
             return ZE_RESULT_SUCCESS;
         }
+        loader::loaderDispatch = new ze_handle_t();
+        loader::loaderDispatch->pCore = new ze_dditable_driver_t();
+        loader::loaderDispatch->pCore->version = ZE_API_VERSION_CURRENT;
+        loader::loaderDispatch->pCore->isValidFlag = 1;
+        loader::loaderDispatch->pTools = new zet_dditable_driver_t();
+        loader::loaderDispatch->pTools->version = ZE_API_VERSION_CURRENT;
+        loader::loaderDispatch->pTools->isValidFlag = 1;
+        loader::loaderDispatch->pSysman = new zes_dditable_driver_t();
+        loader::loaderDispatch->pSysman->version = ZE_API_VERSION_CURRENT;
+        loader::loaderDispatch->pSysman->isValidFlag = 1;
+        loader::loaderZeDdiTable = new ze_dditable_t();
+        loader::loaderZetDdiTable = new zet_dditable_t();
+        loader::loaderZesDdiTable = new zes_dditable_t();
         debugTraceEnabled = getenv_tobool( "ZE_ENABLE_LOADER_DEBUG_TRACE" );
         auto discoveredDrivers = discoverEnabledDrivers();
         std::string loadLibraryErrorValue;
@@ -601,7 +625,10 @@ namespace loader
                 }
             }
         }
-
+        loader::zeDestroyDDiDriverTables(loader::loaderDispatch->pCore);
+        loader::zetDestroyDDiDriverTables(loader::loaderDispatch->pTools);
+        loader::zesDestroyDDiDriverTables(loader::loaderDispatch->pSysman);
+        delete loader::loaderDispatch;
     };
 
     void context_t::add_loader_version(){
