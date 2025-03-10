@@ -121,7 +121,7 @@ if(NOT MSVC)
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fpermissive")
     endif()
     if(NOT CMAKE_CXX_COMPILER_ID STREQUAL IntelLLVM)
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Werror -Wnon-virtual-dtor")
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wnon-virtual-dtor")
     endif()
 endif()
 
@@ -184,6 +184,18 @@ if(USE_ASAN)
     else()
         message(WARNING "Address Sanitizer is not supported on Windows")
     endif()
+endif()
+
+# Enable -Werror only if not building as a subproject. For subprojects, leave
+# this up to the parent project.
+if(CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
+  if(CMAKE_VERSION VERSION_LESS 3.24)
+    if(NOT MSVC)
+      set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror")
+    endif()
+  else()
+    set(CMAKE_COMPILE_WARNING_AS_ERROR ON)
+  endif()
 endif()
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
