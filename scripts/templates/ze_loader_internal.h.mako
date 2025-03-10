@@ -13,6 +13,8 @@ from templates import helper as th
  *
  * SPDX-License-Identifier: MIT
  *
+ * @file ze_loader_internal.h generated from ze_loader_internal.h.mako
+ *
  */
 #pragma once
 #include <vector>

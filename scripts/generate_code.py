@@ -117,7 +117,7 @@ def _mako_loader_cpp(path, namespace, tags, version, specs, meta):
         specs=specs,
         meta=meta)
 
-    template = "ze_loader_internal_template.h.mako"
+    template = "ze_loader_internal.h.mako"
     fin = os.path.join(templates_dir, template)
 
     name = "%s_loader_internal_tmp"%(namespace)
