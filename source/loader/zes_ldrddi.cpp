@@ -56,6 +56,13 @@ namespace loader
 
         uint32_t total_driver_handle_count = 0;
 
+        if (!loader::context->sortingInProgress.exchange(true) && !loader::context->instrumentationEnabled) {
+            std::call_once(loader::context->sysmanDriverSortOnce, []() {
+                loader::context->driverSorting(loader::context->sysmanInstanceDrivers, nullptr);
+            });
+            loader::context->sortingInProgress.store(false);
+        }
+
         for( auto& drv : *loader::context->sysmanInstanceDrivers )
         {
             if(drv.initStatus != ZE_RESULT_SUCCESS)
