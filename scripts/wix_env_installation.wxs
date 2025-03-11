@@ -1,3 +1,8 @@
+<!--
+ Copyright (C) 2025 Intel Corporation
+
+ SPDX-License-Identifier: MIT
+-->
 <CPackWiXPatch>
 	<CPackWiXFragment Id="#PRODUCT">
 		<Feature Id="EnvSetupFeature" Display="expand" Title="Set LEVEL_ZERO_V1_SDK_PATH" Level="1">
