@@ -1,0 +1,21 @@
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+  workflow_dispatch:
+
+permissions: read-all
+
+jobs:
+  build-windows:
+    if: github.repository_owner == 'oneapi-src'
+    runs-on: [windows-latest]
+    steps:
+      - uses: actions/checkout@v3
+      - name: Build Loader on Latest Windows
+        run: |
+          mkdir build
+          cd build
+          cmake -D BUILD_INSTALLER=1 ..
+          cmake --build . --config Release --target package

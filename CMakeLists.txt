@@ -224,23 +224,29 @@ string(SUBSTRING "${os_name}" 0 1 os_name)
 
 file(GLOB LEVEL_ZERO_API_HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/include/*.h")
 
+set(SDK_COMPONENT_STRING "level-zero-devel")
+
+if(BUILD_INSTALLER)
+    set(SDK_COMPONENT_STRING "SDK")
+endif()
+
 install(FILES ${LEVEL_ZERO_API_HEADERS}
     DESTINATION ./include/level_zero
-    COMPONENT level-zero-devel
+    COMPONENT ${SDK_COMPONENT_STRING}
 )
 
 file(GLOB LEVEL_ZERO_LAYERS_API_HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/include/layers/*.h")
 
 install(FILES ${LEVEL_ZERO_LAYERS_API_HEADERS}
     DESTINATION ./include/level_zero/layers
-    COMPONENT level-zero-devel
+    COMPONENT ${SDK_COMPONENT_STRING}
 )
 
 file(GLOB LEVEL_ZERO_LOADER_API_HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/include/loader/*.h")
 
 install(FILES ${LEVEL_ZERO_LOADER_API_HEADERS}
     DESTINATION ./include/level_zero/loader
-    COMPONENT level-zero-devel
+    COMPONENT ${SDK_COMPONENT_STRING}
 )
 
 # If generators list was not define build native package for current distro
@@ -251,6 +257,59 @@ if(NOT DEFINED CPACK_GENERATOR)
 		set(CPACK_GENERATOR "RPM")
 	elseif(EXISTS "/etc/SUSE-brand" OR EXISTS "/etc/SUSE-release" OR sles_distro)
 		set(CPACK_GENERATOR "RPM")
+    elseif(BUILD_INSTALLER)
+        set(PRODUCT_GUID_FILE "${CMAKE_SOURCE_DIR}/PRODUCT_GUID.txt")
+        if(EXISTS "${PRODUCT_GUID_FILE}")
+            file(STRINGS "${PRODUCT_GUID_FILE}" SAVED_PRODUCT_GUID)
+            list(GET SAVED_PRODUCT_GUID 0 SAVED_PRODUCT_GUID_VERSION)
+            message(STATUS "Saved Product GUID: ${SAVED_PRODUCT_GUID_VERSION}")
+            message(STATUS "project version: ${PROJECT_VERSION}")
+            if(NOT SAVED_PRODUCT_GUID_VERSION STREQUAL "${PROJECT_VERSION}")
+
+            execute_process(
+                COMMAND python ${CMAKE_SOURCE_DIR}/scripts/generate_wix_guid.py
+                OUTPUT_VARIABLE GENERATED_PRODUCT_GUID
+                OUTPUT_STRIP_TRAILING_WHITESPACE
+            )
+            file(WRITE "${PRODUCT_GUID_FILE}" "${PROJECT_VERSION}\n${GENERATED_PRODUCT_GUID}")
+            message(STATUS "Generated Product GUID: ${GENERATED_PRODUCT_GUID} for version ${PROJECT_VERSION}")
+            else()
+            string(REPLACE "\n" ";" GUID_CONTENTS "${SAVED_PRODUCT_GUID}")
+            list(GET GUID_CONTENTS 1 GENERATED_PRODUCT_GUID)
+            endif()
+        else()
+            execute_process(
+            COMMAND python ${CMAKE_SOURCE_DIR}/scripts/generate_wix_guid.py
+            OUTPUT_VARIABLE GENERATED_PRODUCT_GUID
+            OUTPUT_STRIP_TRAILING_WHITESPACE
+            )
+            file(WRITE "${PRODUCT_GUID_FILE}" "${PROJECT_VERSION}\n${GENERATED_PRODUCT_GUID}")
+        endif()
+        message(STATUS "Using Product GUID: ${GENERATED_PRODUCT_GUID} for version ${PROJECT_VERSION}")
+        set(CPACK_GENERATOR "WIX")
+        set(CPACK_PACKAGE_NAME "oneAPI Level Zero")
+        set(CPACK_PACKAGE_FILE_NAME "oneAPI_Level_Zero-${PROJECT_VERSION}-win64")
+        set(CPACK_WIX_ROOT_FEATURE_TITLE "oneAPI Level Zero")
+        set(CPACK_WIX_PROGRAM_MENU_FOLDER "oneAPI Level Zero")
+
+        set(CMAKE_INSTALL_PREFIX "LevelZeroSDK/${PROJECT_VERSION}/")
+        # Add the script to the install directory
+        install(FILES "${CMAKE_SOURCE_DIR}/scripts/level_zero_sdk_setup.ps1"
+            DESTINATION ./scripts
+            COMPONENT ${SDK_COMPONENT_STRING}
+        )
+
+        set(CPACK_WIX_PATCH_FILE "${CMAKE_SOURCE_DIR}/scripts/wix_env_installation.wxs")
+
+        # sharing GUIDs between product and upgrade codes such that side by side installation is allowed.
+        set(CPACK_WIX_PRODUCT_GUID ${GENERATED_PRODUCT_GUID})
+        set(CPACK_WIX_UPGRADE_GUID ${GENERATED_PRODUCT_GUID})
+        set(CPACK_WIX_UI_DIALOG "${CMAKE_SOURCE_DIR}/icons/oneapi-icon-left-aligned.png")
+        set(CPACK_WIX_UI_BANNER "${CMAKE_SOURCE_DIR}/icons/oneapi-icon-right-aligned.png")
+        set(CPACK_WIX_SKIP_PROGRAM_FOLDER ON)
+        get_cmake_property(CPACK_COMPONENTS_ALL COMPONENTS)
+        list(REMOVE_ITEM CPACK_COMPONENTS_ALL "Loader")
+        set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_SOURCE_DIR}/LICENSES/MIT.txt")
 	else()
 		set(CPACK_GENERATOR "ZIP")
 	endif()

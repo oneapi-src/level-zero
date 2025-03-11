@@ -1,0 +1,21 @@
+<!--
+ Copyright (C) 2025 Intel Corporation
+
+ SPDX-License-Identifier: MIT
+-->
+<CPackWiXPatch>
+	<CPackWiXFragment Id="#PRODUCT">
+		<Feature Id="EnvSetupFeature" Display="expand" Title="Set LEVEL_ZERO_V1_SDK_PATH" Level="1">
+			<Component Id="SetEnvVar" Guid="ec0c4b66-da81-4d6a-b45a-5cddf0eec9ce" Directory="TARGETDIR">
+				<!-- Set the environment variable during installation -->
+				<Condition><![CDATA[NOT REMOVE]]></Condition>
+				<Environment Id="SetLevelZeroSDKPath" Name="LEVEL_ZERO_V1_SDK_PATH" Value="[INSTALL_ROOT]" Permanent="no" Part="all" Action="set" System="yes"/>
+			</Component>
+			<Component Id="RemoveEnvVar" Guid="8fffc6ee-422c-4d2e-a80d-080ce60853c0" Directory="TARGETDIR">
+				<!-- Remove the environment variable during uninstallation -->
+				<Condition><![CDATA[REMOVE="ALL"]]></Condition>
+				<Environment Id="RemoveLevelZeroSDKPath" Name="LEVEL_ZERO_V1_SDK_PATH" Action="remove" System="yes" Value="[INSTALL_ROOT]"/>
+			</Component>
+		</Feature>
+	</CPackWiXFragment>
+</CPackWiXPatch>
