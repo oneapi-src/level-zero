@@ -51,9 +51,9 @@ namespace loader
         std::string name;
         bool driverInuse = false;
         zel_driver_type_t driverType = ZEL_DRIVER_TYPE_FORCE_UINT32;
-        ze_driver_properties_t properties;
+        ze_driver_ddi_handles_ext_properties_t properties;
         bool pciOrderingRequested = false;
-        bool driverSupportsDDIHandles = false;
+        bool driverDDIHandleSupportQueried = false;
     };
 
     using driver_vector_t = std::vector< driver_t >;

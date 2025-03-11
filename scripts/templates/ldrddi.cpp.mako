@@ -138,7 +138,25 @@ namespace loader
                 {
                     for( uint32_t i = 0; i < library_driver_handle_count; ++i ) {
                         uint32_t driver_index = total_driver_handle_count + i;
-                        if (!drv.driverSupportsDDIHandles) {
+                        if (drv.driverDDIHandleSupportQueried == false) {
+                            drv.properties = {};
+                            drv.properties.stype = ZE_STRUCTURE_TYPE_DRIVER_DDI_HANDLES_EXT_PROPERTIES;
+                            drv.properties.pNext = nullptr;
+                            ze_driver_properties_t driverProperties = {};
+                            driverProperties.stype = ZE_STRUCTURE_TYPE_DRIVER_PROPERTIES;
+                            driverProperties.pNext = nullptr;
+                            driverProperties.pNext = &drv.properties;
+                            ze_result_t res = drv.dditable.ze.Driver.pfnGetProperties(${obj['params'][1]['name']}[ driver_index ], &driverProperties);
+                            if (res != ZE_RESULT_SUCCESS) {
+                                if (loader::context->debugTraceEnabled) {
+                                    std::string message = drv.name + " failed zeDriverGetProperties query, returned ";
+                                    loader::context->debug_trace_message(message, loader::to_string(res));
+                                }
+                                return res;
+                            }
+                            drv.driverDDIHandleSupportQueried = true;
+                        }
+                        if (!(drv.properties.flags & ZE_DRIVER_DDI_HANDLE_EXT_FLAG_DDI_HANDLE_EXT_SUPPORTED)) {
                             ${obj['params'][1]['name']}[ driver_index ] = reinterpret_cast<${n}_driver_handle_t>(
                                 context->${n}_driver_factory.getInstance( ${obj['params'][1]['name']}[ driver_index ], &drv.dditable ) );
                         }

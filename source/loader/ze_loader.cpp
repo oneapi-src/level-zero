@@ -126,10 +126,13 @@ namespace loader
             }
 
             for (auto handle : driverHandles) {
-                ze_driver_properties_t properties = {};
-                properties.stype = ZE_STRUCTURE_TYPE_DRIVER_PROPERTIES;
-                properties.pNext = nullptr;
-                ze_result_t res = driver.dditable.ze.Driver.pfnGetProperties(handle, &properties);
+                driver.properties = {};
+                driver.properties.stype = ZE_STRUCTURE_TYPE_DRIVER_DDI_HANDLES_EXT_PROPERTIES;
+                driver.properties.pNext = nullptr;
+                ze_driver_properties_t driverProperties = {};
+                driverProperties.stype = ZE_STRUCTURE_TYPE_DRIVER_PROPERTIES;
+                driverProperties.pNext = &driver.properties;
+                ze_result_t res = driver.dditable.ze.Driver.pfnGetProperties(handle, &driverProperties);
                 if (res != ZE_RESULT_SUCCESS) {
                     if (debugTraceEnabled) {
                         std::string message = "driverSorting " + driver.name + " failed, zeDriverGetProperties returned ";
@@ -137,7 +140,7 @@ namespace loader
                     }
                     continue;
                 }
-                driver.properties = properties;
+                driver.driverDDIHandleSupportQueried = true;
                 uint32_t deviceCount = 0;
                 res = driver.dditable.ze.Device.pfnGet( handle, &deviceCount, nullptr );
                 if( ZE_RESULT_SUCCESS != res ) {
