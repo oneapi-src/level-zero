@@ -631,9 +631,9 @@ namespace loader
                 }
             }
         }
-        delete loader::loaderDispatch->pCore;
-        delete loader::loaderDispatch->pTools;
-        delete loader::loaderDispatch->pSysman;
+        loader::zeDestroyDDiDriverTables(loader::loaderDispatch->pCore);
+        loader::zetDestroyDDiDriverTables(loader::loaderDispatch->pTools);
+        loader::zesDestroyDDiDriverTables(loader::loaderDispatch->pSysman);
         delete loader::loaderDispatch;
     };
 
