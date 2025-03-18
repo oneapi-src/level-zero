@@ -47,32 +47,30 @@ set_property(TEST tests_multi_call_failure PROPERTY ENVIRONMENT "ZE_ENABLE_LOADE
 # Run with multiple drivers
 add_test(NAME tests_multi_driver_missing_initDrivers COMMAND tests --gtest_filter=*GivenLevelZeroLoaderPresentWithMultipleDriversMissingInitDriversWhenCallingZeInitDriversThenExpectSuccessForZeInit)
 if (MSVC)
-  set_property(TEST tests_multi_driver_missing_initDrivers PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=ze_null_test1.dll,ze_null_test2.dll")
+  set_property(TEST tests_multi_driver_missing_initDrivers PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=${CMAKE_BINARY_DIR}/bin/ze_null_test1.dll,${CMAKE_BINARY_DIR}/bin/ze_null_test2.dll")
 else()
-  set_property(TEST tests_multi_driver_missing_initDrivers PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=libze_null_test1.so,libze_null_test2.so")
+  set_property(TEST tests_multi_driver_missing_initDrivers PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=${CMAKE_BINARY_DIR}/lib/libze_null_test1.so,${CMAKE_BINARY_DIR}/lib/libze_null_test2.so")
 endif()
-
 
 add_test(NAME tests_multi_driver_missing_initDrivers_sort_after_error COMMAND tests --gtest_filter=*GivenLevelZeroLoaderPresentWithMultipleDriversMissingInitDriversWhenCallingZeInitDriversThenExpectSuccessForZeInitWithDriverGetAfterInitDrivers)
 if (MSVC)
-  set_property(TEST tests_multi_driver_missing_initDrivers_sort_after_error APPEND PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=ze_null_test1.dll,ze_null_test2.dll")
+  set_property(TEST tests_multi_driver_missing_initDrivers_sort_after_error APPEND PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=${CMAKE_BINARY_DIR}/bin/ze_null_test1.dll,${CMAKE_BINARY_DIR}/bin/ze_null_test2.dll")
 else()
-  set_property(TEST tests_multi_driver_missing_initDrivers_sort_after_error APPEND PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=libze_null_test1.so,libze_null_test2.so")
+  set_property(TEST tests_multi_driver_missing_initDrivers_sort_after_error APPEND PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=${CMAKE_BINARY_DIR}/lib/libze_null_test1.so,${CMAKE_BINARY_DIR}/lib/libze_null_test2.so")
 endif()
 
 add_test(NAME tests_multi_driver_sort COMMAND tests --gtest_filter=*GivenLevelZeroLoaderPresentWithMultipleDriversWhenCallingZeInitDriversThenExpectSuccessForZeInit)
 if (MSVC)
-  set_property(TEST tests_multi_driver_sort PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=ze_null_test1.dll,ze_null_test2.dll")
+  set_property(TEST tests_multi_driver_sort PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=${CMAKE_BINARY_DIR}/bin/ze_null_test1.dll,${CMAKE_BINARY_DIR}/bin/ze_null_test2.dll")
 else()
-  set_property(TEST tests_multi_driver_sort PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=libze_null_test1.so,libze_null_test2.so")
+  set_property(TEST tests_multi_driver_sort PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=${CMAKE_BINARY_DIR}/lib/libze_null_test1.so,${CMAKE_BINARY_DIR}/lib/libze_null_test2.so")
 endif()
-
 
 add_test(NAME tests_multi_driver_driverget_sort COMMAND tests --gtest_filter=*GivenLevelZeroLoaderPresentWithMultipleDriversWhenCallingZeInitThenZeInitDriversThenExpectSuccessForZeInitWithDriverGetAfterInitDrivers)
 if (MSVC)
-  set_property(TEST tests_multi_driver_driverget_sort APPEND PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=ze_null_test1.dll,ze_null_test2.dll")
+  set_property(TEST tests_multi_driver_driverget_sort APPEND PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=${CMAKE_BINARY_DIR}/bin/ze_null_test1.dll,${CMAKE_BINARY_DIR}/bin/ze_null_test2.dll")
 else()
-  set_property(TEST tests_multi_driver_driverget_sort APPEND PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=libze_null_test1.so,libze_null_test2.so")
+  set_property(TEST tests_multi_driver_driverget_sort APPEND PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_ALT_DRIVERS=${CMAKE_BINARY_DIR}/lib/libze_null_test1.so,${CMAKE_BINARY_DIR}/lib/libze_null_test2.so")
 endif()
 
 # These tests are currently not supported on Windows. The reason is that the std::cerr is not being redirected to a pipe in Windows to be then checked against the expected output.
