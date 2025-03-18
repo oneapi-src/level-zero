@@ -77,7 +77,11 @@ namespace loader
             uint32_t pCount = 0;
             std::vector<ze_driver_handle_t> driverHandles;
             ze_result_t res = ZE_RESULT_SUCCESS;
-            if (desc) {
+            if (desc && driver.dditable.ze.Global.pfnInitDrivers) {
+                if (debugTraceEnabled) {
+                    std::string message = "driverSorting " + driver.name + " using zeInitDrivers(" + loader::to_string(&permissiveDesc) + ")";
+                    debug_trace_message(message, "");
+                }
                 pCount = 0;
                 res = driver.dditable.ze.Global.pfnInitDrivers(&pCount, nullptr, &permissiveDesc);
                 // Verify that this driver successfully init in the call above.
@@ -99,7 +103,11 @@ namespace loader
                     }
                     continue;
                 }
-            } else {
+            } else if (driver.dditable.ze.Driver.pfnGet) {
+                if (debugTraceEnabled) {
+                    std::string message = "driverSorting " + driver.name + " using zeDriverGet";
+                    debug_trace_message(message, "");
+                }
                 res = driver.dditable.ze.Driver.pfnGet(&pCount, nullptr);
                 // Verify that this driver successfully init in the call above.
                 if (res != ZE_RESULT_SUCCESS) {
@@ -119,6 +127,12 @@ namespace loader
                     }
                     continue;
                 }
+            } else {
+                if (debugTraceEnabled) {
+                    std::string message = "driverSorting " + driver.name + " zeDriverGet and zeInitDrivers not supported, skipping driver";
+                    debug_trace_message(message, loader::to_string(res));
+                }
+                continue;
             }
 
             for (auto handle : driverHandles) {

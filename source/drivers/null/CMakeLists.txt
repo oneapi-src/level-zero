@@ -28,6 +28,58 @@ if(INSTALL_NULL_DRIVER)
     )
 endif()
 
+if (BUILD_L0_LOADER_TESTS)
+add_library(ze_null_test1 SHARED
+    ${CMAKE_CURRENT_SOURCE_DIR}/ze_null.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/ze_null.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/ze_nullddi.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/zet_nullddi.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/zes_nullddi.cpp
+)
+
+add_library(ze_null_test2 SHARED
+    ${CMAKE_CURRENT_SOURCE_DIR}/ze_null.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/ze_null.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/ze_nullddi.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/zet_nullddi.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/zes_nullddi.cpp
+)
+
+set_target_properties(ze_null_test1 PROPERTIES
+    VERSION "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH}"
+    SOVERSION "${PROJECT_VERSION_MAJOR}"
+)
+
+set_target_properties(ze_null_test2 PROPERTIES
+    VERSION "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH}"
+    SOVERSION "${PROJECT_VERSION_MAJOR}"
+)
+
+target_include_directories(ze_null_test1
+    PUBLIC
+        ${CMAKE_CURRENT_SOURCE_DIR}
+)
+
+target_include_directories(ze_null_test2
+    PUBLIC
+        ${CMAKE_CURRENT_SOURCE_DIR}
+)
+
+if(INSTALL_NULL_DRIVER)
+    install(TARGETS ze_null_test1
+        ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR} COMPONENT level-zero-devel
+        RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR} COMPONENT level-zero
+        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR} COMPONENT level-zero
+        NAMELINK_COMPONENT level-zero-devel
+    )
+    install(TARGETS ze_null_test2
+        ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR} COMPONENT level-zero-devel
+        RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR} COMPONENT level-zero
+        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR} COMPONENT level-zero
+        NAMELINK_COMPONENT level-zero-devel
+    )
+endif()
+endif()
 
 if(UNIX)
     set(GCC_COVERAGE_COMPILE_FLAGS "-fvisibility=hidden -fvisibility-inlines-hidden -fno-strict-aliasing")
