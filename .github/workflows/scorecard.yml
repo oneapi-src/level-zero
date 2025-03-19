@@ -7,9 +7,9 @@ on:
   schedule:
     - cron: '20 19 * * 3'
   push:
-    branches: [ "master" ]
+    branches: [ "labels" ]
   pull_request:
-    branches: [ "master" ]
+    branches: [ "labels" ]
 
 permissions: read-all
 
