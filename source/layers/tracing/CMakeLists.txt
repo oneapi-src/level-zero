@@ -56,7 +56,7 @@ if(BUILD_INSTALLER)
     set(LIB_COMPONENT_STRING "Loader")
 endif()
 
-if(MSVC)
+if(MSVC AND L0_DLL_INTEGRITY_CHECKS)
     set_target_properties(ze_tracing_layer PROPERTIES LINK_FLAGS "${CMAKE_CXX_LINKER_WRAPPER_FLAG}/INTEGRITYCHECK")
 endif()
 

@@ -29,7 +29,7 @@ else()
     )
 endif()
 
-if(MSVC)
+if(MSVC AND L0_DLL_INTEGRITY_CHECKS)
     set_target_properties(ze_loader PROPERTIES LINK_FLAGS "${CMAKE_CXX_LINKER_WRAPPER_FLAG}/INTEGRITYCHECK")
 endif()
 
