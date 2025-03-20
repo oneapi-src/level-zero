@@ -48,6 +48,12 @@ namespace loader
         {
             if(drv.initStatus != ZE_RESULT_SUCCESS)
                 continue;
+        %if re.match(r"Init", obj['name']) and namespace == "zes":
+            if (!drv.dditable.${n}.${th.get_table_name(n, tags, obj)}.${th.make_pfn_name(n, tags, obj)}) {
+                drv.initDriversStatus = ZE_RESULT_ERROR_UNINITIALIZED;
+                continue;
+            }
+        %endif
             drv.initStatus = drv.dditable.${n}.${th.get_table_name(n, tags, obj)}.${th.make_pfn_name(n, tags, obj)}( ${", ".join(th.make_param_lines(n, tags, obj, format=["name"]))} );
             if(drv.initStatus == ZE_RESULT_SUCCESS)
                 atLeastOneDriverValid = true;
