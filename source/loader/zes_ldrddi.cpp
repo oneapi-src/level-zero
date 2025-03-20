@@ -26,6 +26,10 @@ namespace loader
         {
             if(drv.initStatus != ZE_RESULT_SUCCESS)
                 continue;
+            if (!drv.dditable.zes.Global.pfnInit) {
+                drv.initDriversStatus = ZE_RESULT_ERROR_UNINITIALIZED;
+                continue;
+            }
             drv.initStatus = drv.dditable.zes.Global.pfnInit( flags );
             if(drv.initStatus == ZE_RESULT_SUCCESS)
                 atLeastOneDriverValid = true;
