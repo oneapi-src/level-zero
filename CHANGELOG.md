@@ -1,5 +1,8 @@
 # Level zero loader changelog
 
+## v1.21.4
+* Check zesInit pfnInit before attempting call
+* Added build flag L0_DLL_INTEGRITY_CHECKS to enable integrity check of DLLs
 ## v1.21.3
 * Fix sorting drivers missing function pointers and add multi driver ults
 * Add support for SDK installer on windows
