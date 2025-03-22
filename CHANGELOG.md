@@ -1,6 +1,6 @@
 # Level zero loader changelog
 
-## v1.21.4
+## v1.21.5
 * Check zesInit pfnInit before attempting call
 * Added build flag L0_DLL_INTEGRITY_CHECKS to enable integrity check of DLLs
 ## v1.21.3
