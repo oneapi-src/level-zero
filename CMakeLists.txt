@@ -13,7 +13,7 @@ if(MSVC AND (MSVC_VERSION LESS 1900))
 endif()
 
 # This project follows semantic versioning (https://semver.org/)
-project(level-zero VERSION 1.21.6)
+project(level-zero VERSION 1.21.7)
 
 include(GNUInstallDirs)
 
@@ -306,7 +306,6 @@ if(NOT DEFINED CPACK_GENERATOR)
         set(CPACK_WIX_UPGRADE_GUID ${GENERATED_PRODUCT_GUID})
         set(CPACK_WIX_UI_DIALOG "${CMAKE_SOURCE_DIR}/icons/oneapi-icon-left-aligned.png")
         set(CPACK_WIX_UI_BANNER "${CMAKE_SOURCE_DIR}/icons/oneapi-icon-right-aligned.png")
-        set(CPACK_WIX_SKIP_PROGRAM_FOLDER ON)
         get_cmake_property(CPACK_COMPONENTS_ALL COMPONENTS)
         list(REMOVE_ITEM CPACK_COMPONENTS_ALL "Loader")
         set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_SOURCE_DIR}/LICENSES/MIT.txt")
