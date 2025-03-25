@@ -345,6 +345,35 @@ TEST(
 }
 
 TEST(
+  LoaderInit,
+  GivenLevelZeroLoaderPresentWithMultipleDriversWhenCallingDriverGetPropertiesThenExpectSuccess) {
+
+    uint32_t pInitDriversCount = 0;
+    uint32_t pDriverGetCount = 0;
+    ze_init_driver_type_desc_t desc = {ZE_STRUCTURE_TYPE_INIT_DRIVER_TYPE_DESC};
+    desc.flags = UINT32_MAX;
+    desc.pNext = nullptr;
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeInit(0));
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeInitDrivers(&pInitDriversCount, nullptr, &desc));
+    EXPECT_GT(pInitDriversCount, 0);
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeDriverGet(&pDriverGetCount, nullptr));
+    EXPECT_GT(pDriverGetCount, 0);
+    std::vector<ze_driver_handle_t> drivers(pInitDriversCount);
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeInitDrivers(&pInitDriversCount, drivers.data(), &desc));
+    for (uint32_t i = 0; i < pDriverGetCount; ++i) {
+      ze_driver_properties_t driverProperties = {ZE_STRUCTURE_TYPE_DRIVER_PROPERTIES};
+      EXPECT_EQ(ZE_RESULT_SUCCESS, zeDriverGetProperties(drivers[i], &driverProperties));
+      std::cout << "Driver " << i << " properties:" << std::endl;
+      std::cout << "  Driver version: " << driverProperties.driverVersion << std::endl;
+      std::cout << "  UUID: ";
+      for (auto byte : driverProperties.uuid.id) {
+        std::cout << std::hex << static_cast<int>(byte);
+      }
+      std::cout << std::dec << std::endl;
+    }
+}
+
+TEST(
   LoaderTranslateHandles,
   GivenLevelZeroLoaderPresentWhenCallingZelLoaderTranslateHandleInternalWithInterceptEnabledAndDDiSupportDisabledThenExpectHandleTranslationForModule) {
 
