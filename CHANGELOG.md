@@ -1,5 +1,7 @@
 # Level zero loader changelog
 
+## v1.21.6
+* Fix to pkgconfig during non build installer cmake install
 ## v1.21.5
 * Check zesInit pfnInit before attempting call
 * Added build flag L0_DLL_INTEGRITY_CHECKS to enable integrity check of DLLs
