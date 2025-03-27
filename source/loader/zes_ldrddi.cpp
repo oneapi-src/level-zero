@@ -62,7 +62,7 @@ namespace loader
 
         if (!loader::context->sortingInProgress.exchange(true) && !loader::context->instrumentationEnabled) {
             std::call_once(loader::context->sysmanDriverSortOnce, []() {
-                loader::context->driverSorting(loader::context->sysmanInstanceDrivers, nullptr);
+                loader::context->driverSorting(loader::context->sysmanInstanceDrivers, nullptr, true);
             });
             loader::context->sortingInProgress.store(false);
         }
