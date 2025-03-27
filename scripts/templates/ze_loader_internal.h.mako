@@ -57,6 +57,7 @@ namespace loader
     {
         HMODULE handle = NULL;
         ze_result_t initStatus = ZE_RESULT_SUCCESS;
+        ze_result_t initSysManStatus = ZE_RESULT_SUCCESS;
         ze_result_t initDriversStatus = ZE_RESULT_SUCCESS;
         dditable_t dditable = {};
         std::string name;
@@ -111,7 +112,7 @@ namespace loader
         ze_result_t init();
         ze_result_t init_driver(driver_t &driver, ze_init_flags_t flags, ze_init_driver_type_desc_t* desc, ze_global_dditable_t *globalInitStored, zes_global_dditable_t *sysmanGlobalInitStored, bool sysmanOnly);
         void add_loader_version();
-        bool driverSorting(driver_vector_t *drivers, ze_init_driver_type_desc_t* desc);
+        bool driverSorting(driver_vector_t *drivers, ze_init_driver_type_desc_t* desc, bool sysmanOnly);
         ~context_t();
         bool intercept_enabled = false;
         bool debugTraceEnabled = false;

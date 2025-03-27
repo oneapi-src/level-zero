@@ -57,7 +57,7 @@ namespace loader
 
         if (!loader::context->sortingInProgress.exchange(true) && !loader::context->instrumentationEnabled) {
             std::call_once(loader::context->coreDriverSortOnce, []() {
-                loader::context->driverSorting(&loader::context->zeDrivers, nullptr);
+                loader::context->driverSorting(&loader::context->zeDrivers, nullptr, false);
             });
             loader::context->sortingInProgress.store(false);
         }
@@ -140,7 +140,7 @@ namespace loader
 
         if (!loader::context->sortingInProgress.exchange(true) && !loader::context->instrumentationEnabled) {
             std::call_once(loader::context->coreDriverSortOnce, [desc]() {
-                loader::context->driverSorting(&loader::context->zeDrivers, desc);
+                loader::context->driverSorting(&loader::context->zeDrivers, desc, false);
             });
             loader::context->sortingInProgress.store(false);
         }

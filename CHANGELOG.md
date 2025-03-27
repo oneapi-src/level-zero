@@ -1,6 +1,8 @@
 # Level zero loader changelog
 
 ## v1.21.7
+* Fix handling of sysman init failure given nullptr
+* Fix driver sorting given zesInit only
 * Update default SDK install path to include Program Files
 ## v1.21.6
 * Fix to pkgconfig during non build installer cmake install

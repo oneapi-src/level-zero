@@ -24,14 +24,14 @@ namespace loader
         bool atLeastOneDriverValid = false;
         for( auto& drv : *loader::context->sysmanInstanceDrivers )
         {
-            if(drv.initStatus != ZE_RESULT_SUCCESS)
+            if(drv.initStatus != ZE_RESULT_SUCCESS || drv.initSysManStatus != ZE_RESULT_SUCCESS)
                 continue;
             if (!drv.dditable.zes.Global.pfnInit) {
-                drv.initDriversStatus = ZE_RESULT_ERROR_UNINITIALIZED;
+                drv.initSysManStatus = ZE_RESULT_ERROR_UNINITIALIZED;
                 continue;
             }
-            drv.initStatus = drv.dditable.zes.Global.pfnInit( flags );
-            if(drv.initStatus == ZE_RESULT_SUCCESS)
+            drv.initSysManStatus = drv.dditable.zes.Global.pfnInit( flags );
+            if(drv.initSysManStatus == ZE_RESULT_SUCCESS)
                 atLeastOneDriverValid = true;
         }
 
@@ -62,14 +62,14 @@ namespace loader
 
         if (!loader::context->sortingInProgress.exchange(true) && !loader::context->instrumentationEnabled) {
             std::call_once(loader::context->sysmanDriverSortOnce, []() {
-                loader::context->driverSorting(loader::context->sysmanInstanceDrivers, nullptr);
+                loader::context->driverSorting(loader::context->sysmanInstanceDrivers, nullptr, true);
             });
             loader::context->sortingInProgress.store(false);
         }
 
         for( auto& drv : *loader::context->sysmanInstanceDrivers )
         {
-            if(drv.initStatus != ZE_RESULT_SUCCESS)
+            if(drv.initStatus != ZE_RESULT_SUCCESS || drv.initSysManStatus != ZE_RESULT_SUCCESS)
                 continue;
 
             if( ( 0 < *pCount ) && ( *pCount == total_driver_handle_count))
