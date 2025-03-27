@@ -328,4 +328,20 @@ TEST(
   EXPECT_GT(pDriverGetCount, 0);
 }
 
+TEST(
+  LoaderInit,
+  GivenLevelZeroLoaderPresentWithMultipleDriversWhenCallingZesInitThenZeInitDriversExpectSuccessForZesDriverGetAndZeInitDrivers) {
+
+  uint32_t pInitDriversCount = 0;
+  uint32_t pDriverGetCount = 0;
+  ze_init_driver_type_desc_t desc = {ZE_STRUCTURE_TYPE_INIT_DRIVER_TYPE_DESC};
+  desc.flags = UINT32_MAX;
+  desc.pNext = nullptr;
+  EXPECT_EQ(ZE_RESULT_SUCCESS, zesInit(0));
+  EXPECT_EQ(ZE_RESULT_SUCCESS, zeInitDrivers(&pInitDriversCount, nullptr, &desc));
+  EXPECT_GT(pInitDriversCount, 0);
+  EXPECT_EQ(ZE_RESULT_SUCCESS, zesDriverGet(&pDriverGetCount, nullptr));
+  EXPECT_GT(pDriverGetCount, 0);
+}
+
 } // namespace
