@@ -57,6 +57,7 @@ namespace loader
     {
         HMODULE handle = NULL;
         ze_result_t initStatus = ZE_RESULT_SUCCESS;
+        ze_result_t initSysManStatus = ZE_RESULT_SUCCESS;
         ze_result_t initDriversStatus = ZE_RESULT_SUCCESS;
         dditable_t dditable = {};
         std::string name;

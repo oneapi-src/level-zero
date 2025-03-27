@@ -46,17 +46,28 @@ namespace loader
         for( auto& drv : *loader::context->sysmanInstanceDrivers )
         %endif
         {
+            %if re.match(r"Init", obj['name']) and namespace == "zes":
+            if(drv.initStatus != ZE_RESULT_SUCCESS || drv.initSysManStatus != ZE_RESULT_SUCCESS)
+                continue;
+            %else:
             if(drv.initStatus != ZE_RESULT_SUCCESS)
                 continue;
+            %endif
         %if re.match(r"Init", obj['name']) and namespace == "zes":
             if (!drv.dditable.${n}.${th.get_table_name(n, tags, obj)}.${th.make_pfn_name(n, tags, obj)}) {
-                drv.initDriversStatus = ZE_RESULT_ERROR_UNINITIALIZED;
+                drv.initSysManStatus = ZE_RESULT_ERROR_UNINITIALIZED;
                 continue;
             }
         %endif
+            %if re.match(r"Init", obj['name']) and namespace == "zes":
+            drv.initSysManStatus = drv.dditable.${n}.${th.get_table_name(n, tags, obj)}.${th.make_pfn_name(n, tags, obj)}( ${", ".join(th.make_param_lines(n, tags, obj, format=["name"]))} );
+            if(drv.initSysManStatus == ZE_RESULT_SUCCESS)
+                atLeastOneDriverValid = true;
+            %else:
             drv.initStatus = drv.dditable.${n}.${th.get_table_name(n, tags, obj)}.${th.make_pfn_name(n, tags, obj)}( ${", ".join(th.make_param_lines(n, tags, obj, format=["name"]))} );
             if(drv.initStatus == ZE_RESULT_SUCCESS)
                 atLeastOneDriverValid = true;
+            %endif
         }
 
         if(!atLeastOneDriverValid)
@@ -90,8 +101,11 @@ namespace loader
         for( auto& drv : *loader::context->sysmanInstanceDrivers )
         %endif
         {
-            %if not re.match(r"\w+InitDrivers$", th.make_func_name(n, tags, obj)):
+            %if not (re.match(r"\w+InitDrivers$", th.make_func_name(n, tags, obj))) and namespace != "zes":
             if(drv.initStatus != ZE_RESULT_SUCCESS)
+                continue;
+            %elif namespace == "zes":
+            if(drv.initStatus != ZE_RESULT_SUCCESS || drv.initSysManStatus != ZE_RESULT_SUCCESS)
                 continue;
             %else:
             if (!drv.dditable.${n}.${th.get_table_name(n, tags, obj)}.${th.make_pfn_name(n, tags, obj)}) {
