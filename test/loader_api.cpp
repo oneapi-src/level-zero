@@ -10,6 +10,7 @@
 
 #include "loader/ze_loader.h"
 #include "ze_api.h"
+#include "zes_api.h"
 
 #if defined(_WIN32)
     #define putenv_safe _putenv
@@ -314,6 +315,16 @@ TEST(
   EXPECT_EQ(ZE_RESULT_SUCCESS, zeInitDrivers(&pInitDriversCount, nullptr, &desc));
   EXPECT_GT(pInitDriversCount, 0);
   EXPECT_EQ(ZE_RESULT_SUCCESS, zeDriverGet(&pDriverGetCount, nullptr));
+  EXPECT_GT(pDriverGetCount, 0);
+}
+
+TEST(
+  LoaderInit,
+  GivenLevelZeroLoaderPresentWithMultipleDriversWhenCallingZesInitThenExpectSuccessForZesDriverGet) {
+
+  uint32_t pDriverGetCount = 0;
+  EXPECT_EQ(ZE_RESULT_SUCCESS, zesInit(0));
+  EXPECT_EQ(ZE_RESULT_SUCCESS, zesDriverGet(&pDriverGetCount, nullptr));
   EXPECT_GT(pDriverGetCount, 0);
 }
 
