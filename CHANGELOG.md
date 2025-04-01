@@ -1,5 +1,7 @@
 # Level zero loader changelog
 
+## v1.21.8
+* Add flags for windows optimization during linkage.
 ## v1.21.7
 * Fix handling of sysman init failure given nullptr
 * Fix driver sorting given zesInit only
