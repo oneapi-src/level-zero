@@ -10,6 +10,9 @@
 #include "ze_lib.h"
 #include "../loader/ze_loader_api.h"
 #include "../loader/ze_loader_internal.h"
+#include <thread>
+#include <future>
+#include <stdexcept>
 
 namespace ze_lib
 {
@@ -399,6 +402,81 @@ zelSetDelayLoaderContextTeardown()
         ze_lib::delayContextDestruction = true;
     }
     #endif
+}
+
+#ifdef DYNAMIC_LOAD_LOADER
+void stabilityCheck(std::promise<int> stabilityPromise) {
+    try {
+        if (!ze_lib::context->loader) {
+            if (ze_lib::context->debugTraceEnabled) {
+                std::string message = "Loader module is null. Exiting stability checker thread.";
+                ze_lib::context->debug_trace_message(message, "");
+            }
+            stabilityPromise.set_value(1);
+        }
+
+        ze_pfnDriverGet_t loaderDriverGet = reinterpret_cast<ze_pfnDriverGet_t>(GET_FUNCTION_PTR(ze_lib::context->loader, "zeDriverGet"));
+
+        if (!loaderDriverGet) {
+            if (ze_lib::context->debugTraceEnabled) {
+                std::string message = "LoaderDriverGet is a bad pointer. Exiting stability checker thread.";
+                ze_lib::context->debug_trace_message(message, "");
+            }
+            stabilityPromise.set_value(2);
+        }
+
+        uint32_t driverCount = 0;
+        ze_result_t result = ZE_RESULT_ERROR_UNINITIALIZED;
+        result = loaderDriverGet(&driverCount, nullptr);
+        if (result != ZE_RESULT_SUCCESS || driverCount == 0) {
+            if (ze_lib::context->debugTraceEnabled) {
+                std::string message = "Loader stability check failed. Exiting stability checker thread.";
+                ze_lib::context->debug_trace_message(message, "");
+            }
+            stabilityPromise.set_value(3);
+        }
+        // Set the result as success
+        stabilityPromise.set_value(0);
+    } catch (...) {
+    }
+}
+#endif
+
+bool ZE_APICALL
+zelCheckIsLoaderInTearDown() {
+    if (ze_lib::destruction || ze_lib::context == nullptr) {
+        return true;
+    }
+    #ifdef DYNAMIC_LOAD_LOADER
+    std::promise<int> stabilityPromise;
+    std::future<int> resultFuture = stabilityPromise.get_future();
+
+    // Launch the stability checker thread
+    std::thread stabilityThread(stabilityCheck, std::move(stabilityPromise));
+
+    int result = -1;
+    try {
+        result = resultFuture.get(); // Blocks until the result is available
+        if (ze_lib::context->debugTraceEnabled) {
+            std::string message = "Stability checker thread completed with result: " + std::to_string(result);
+            ze_lib::context->debug_trace_message(message, "");
+        }
+    } catch (const std::exception& e) {
+        if (ze_lib::context->debugTraceEnabled) {
+            std::string message = "Exception in stability checker thread: " + std::string(e.what());
+            ze_lib::context->debug_trace_message(message, "");
+        }
+    }
+    if (result != 0) {
+        if (ze_lib::context->debugTraceEnabled) {
+            std::string message = "Loader stability check failed with result: " + std::to_string(result);
+            ze_lib::context->debug_trace_message(message, "");
+        }
+        return true;
+    }
+    stabilityThread.join();
+    #endif
+    return false;
 }
 
 void ZE_APICALL
