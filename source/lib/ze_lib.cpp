@@ -405,6 +405,38 @@ zelSetDelayLoaderContextTeardown()
 }
 
 #ifdef DYNAMIC_LOAD_LOADER
+#define ZEL_STABILITY_CHECK_RESULT_SUCCESS 0
+#define ZEL_STABILITY_CHECK_RESULT_LOADER_NULL 1
+#define ZEL_STABILITY_CHECK_RESULT_DRIVER_GET_NULL 2
+#define ZEL_STABILITY_CHECK_RESULT_DRIVER_GET_FAILED 3
+
+/**
+ * @brief Performs a stability check for the Level Zero loader.
+ *
+ * This function checks the stability of the Level Zero loader by verifying
+ * the presence of the loader module, the validity of the `zeDriverGet` function
+ * pointer, and the ability to retrieve driver information. The result of the
+ * stability check is communicated through the provided promise.
+ *
+ * @param stabilityPromise A promise object used to communicate the result of
+ *                         the stability check. The promise is set with one of
+ *                         the following values:
+ *                         - ZEL_STABILITY_CHECK_RESULT_LOADER_NULL: The loader
+ *                           module is null.
+ *                         - ZEL_STABILITY_CHECK_RESULT_DRIVER_GET_NULL: The
+ *                           `zeDriverGet` function pointer is invalid.
+ *                         - ZEL_STABILITY_CHECK_RESULT_DRIVER_GET_FAILED: The
+ *                           loader failed to retrieve driver information.
+ *                         - ZEL_STABILITY_CHECK_RESULT_SUCCESS: The stability
+ *                           check was successful.
+ *
+ * @note If debug tracing is enabled, debug messages are logged for each failure
+ *       scenario.
+ * @note If the Loader is completely torn down, this thread is expected to be killed
+ *      due to invalid memory access and the stability check will determine a failure.
+ *
+ * @exception This function catches all exceptions internally and does not throw.
+ */
 void stabilityCheck(std::promise<int> stabilityPromise) {
     try {
         if (!ze_lib::context->loader) {
@@ -412,7 +444,7 @@ void stabilityCheck(std::promise<int> stabilityPromise) {
                 std::string message = "Loader module is null. Exiting stability checker thread.";
                 ze_lib::context->debug_trace_message(message, "");
             }
-            stabilityPromise.set_value(1);
+            stabilityPromise.set_value(ZEL_STABILITY_CHECK_RESULT_LOADER_NULL);
         }
 
         ze_pfnDriverGet_t loaderDriverGet = reinterpret_cast<ze_pfnDriverGet_t>(GET_FUNCTION_PTR(ze_lib::context->loader, "zeDriverGet"));
@@ -422,7 +454,7 @@ void stabilityCheck(std::promise<int> stabilityPromise) {
                 std::string message = "LoaderDriverGet is a bad pointer. Exiting stability checker thread.";
                 ze_lib::context->debug_trace_message(message, "");
             }
-            stabilityPromise.set_value(2);
+            stabilityPromise.set_value(ZEL_STABILITY_CHECK_RESULT_DRIVER_GET_NULL);
         }
 
         uint32_t driverCount = 0;
@@ -433,15 +465,30 @@ void stabilityCheck(std::promise<int> stabilityPromise) {
                 std::string message = "Loader stability check failed. Exiting stability checker thread.";
                 ze_lib::context->debug_trace_message(message, "");
             }
-            stabilityPromise.set_value(3);
+            stabilityPromise.set_value(ZEL_STABILITY_CHECK_RESULT_DRIVER_GET_FAILED);
         }
         // Set the result as success
-        stabilityPromise.set_value(0);
+        stabilityPromise.set_value(ZEL_STABILITY_CHECK_RESULT_SUCCESS);
     } catch (...) {
     }
 }
 #endif
 
+/**
+ * @brief Checks if the loader is in the process of tearing down.
+ *
+ * This function determines whether the loader is in a teardown state by
+ * checking the destruction flag or the context pointer. If the loader is
+ * dynamically loaded thru the static loader code path, then it performs
+ * an additional stability check using a separate thread that could be killed.
+ *
+ * @return true if the loader is in teardown based on the stack variablrs
+ *         or the stability check fails; false otherwise.
+ *
+ * @note If the macro DYNAMIC_LOAD_LOADER is defined, a stability checker
+ *       thread is launched to perform additional checks. Any exceptions
+ *       or errors during this process are logged if debug tracing is enabled.
+ */
 bool ZE_APICALL
 zelCheckIsLoaderInTearDown() {
     if (ze_lib::destruction || ze_lib::context == nullptr) {
@@ -467,7 +514,7 @@ zelCheckIsLoaderInTearDown() {
             ze_lib::context->debug_trace_message(message, "");
         }
     }
-    if (result != 0) {
+    if (result != ZEL_STABILITY_CHECK_RESULT_SUCCESS) {
         if (ze_lib::context->debugTraceEnabled) {
             std::string message = "Loader stability check failed with result: " + std::to_string(result);
             ze_lib::context->debug_trace_message(message, "");
