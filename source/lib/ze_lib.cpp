@@ -409,6 +409,7 @@ zelSetDelayLoaderContextTeardown()
 #define ZEL_STABILITY_CHECK_RESULT_LOADER_NULL 1
 #define ZEL_STABILITY_CHECK_RESULT_DRIVER_GET_NULL 2
 #define ZEL_STABILITY_CHECK_RESULT_DRIVER_GET_FAILED 3
+#define ZEL_STABILITY_CHECK_RESULT_EXCEPTION 4
 
 /**
  * @brief Performs a stability check for the Level Zero loader.
@@ -470,6 +471,7 @@ void stabilityCheck(std::promise<int> stabilityPromise) {
         // Set the result as success
         stabilityPromise.set_value(ZEL_STABILITY_CHECK_RESULT_SUCCESS);
     } catch (...) {
+        stabilityPromise.set_value(ZEL_STABILITY_CHECK_RESULT_EXCEPTION);
     }
 }
 #endif
@@ -498,19 +500,24 @@ zelCheckIsLoaderInTearDown() {
     std::promise<int> stabilityPromise;
     std::future<int> resultFuture = stabilityPromise.get_future();
 
-    // Launch the stability checker thread
-    std::thread stabilityThread(stabilityCheck, std::move(stabilityPromise));
-
     int result = -1;
     try {
+        // Launch the stability checker thread
+        std::thread stabilityThread(stabilityCheck, std::move(stabilityPromise));
         result = resultFuture.get(); // Blocks until the result is available
         if (ze_lib::context->debugTraceEnabled) {
             std::string message = "Stability checker thread completed with result: " + std::to_string(result);
             ze_lib::context->debug_trace_message(message, "");
         }
+        stabilityThread.join();
     } catch (const std::exception& e) {
         if (ze_lib::context->debugTraceEnabled) {
-            std::string message = "Exception in stability checker thread: " + std::string(e.what());
+            std::string message = "Exception caught in parent thread: " + std::string(e.what());
+            ze_lib::context->debug_trace_message(message, "");
+        }
+    } catch (...) {
+        if (ze_lib::context->debugTraceEnabled) {
+            std::string message = "Unknown exception caught in parent thread.";
             ze_lib::context->debug_trace_message(message, "");
         }
     }
@@ -521,7 +528,6 @@ zelCheckIsLoaderInTearDown() {
         }
         return true;
     }
-    stabilityThread.join();
     #endif
     return false;
 }
