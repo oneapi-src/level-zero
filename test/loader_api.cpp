@@ -344,4 +344,12 @@ TEST(
   EXPECT_GT(pDriverGetCount, 0);
 }
 
+TEST(
+  LoaderTearDown,
+  GivenLoaderNotInDestructionStateWhenCallingzelCheckIsLoaderInTearDownThenFalseIsReturned) {
+
+  EXPECT_EQ(ZE_RESULT_SUCCESS, zeInit(0));
+  EXPECT_FALSE(zelCheckIsLoaderInTearDown());
+}
+
 } // namespace
