@@ -89,6 +89,12 @@ ZE_DLLEXPORT ze_result_t ZE_APICALL
 zelEnableTracingLayer();
 
 ///////////////////////////////////////////////////////////////////////////////
+/// @brief Exported function for Checking if the Loader is torndown.
+///
+ZE_DLLEXPORT bool ZE_APICALL
+zelCheckIsLoaderInTearDown();
+
+///////////////////////////////////////////////////////////////////////////////
 /// @brief Exported function for Disabling the Tracing Layer During Runtime.
 ///
 ZE_DLLEXPORT ze_result_t ZE_APICALL
