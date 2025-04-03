@@ -148,6 +148,7 @@ namespace ze_lib
 
         std::string version_message = "Loader API Version to be requested is v" + std::to_string(ZE_MAJOR_VERSION(version)) + "." + std::to_string(ZE_MINOR_VERSION(version));
         debug_trace_message(version_message, "");
+        loaderDriverGet = reinterpret_cast<ze_pfnDriverGet_t>(GET_FUNCTION_PTR(loader, "zeDriverGet"));
 #else
         result = zeLoaderInit();
         if( ZE_RESULT_SUCCESS == result ) {
@@ -406,10 +407,9 @@ zelSetDelayLoaderContextTeardown()
 
 #ifdef DYNAMIC_LOAD_LOADER
 #define ZEL_STABILITY_CHECK_RESULT_SUCCESS 0
-#define ZEL_STABILITY_CHECK_RESULT_LOADER_NULL 1
-#define ZEL_STABILITY_CHECK_RESULT_DRIVER_GET_NULL 2
-#define ZEL_STABILITY_CHECK_RESULT_DRIVER_GET_FAILED 3
-#define ZEL_STABILITY_CHECK_RESULT_EXCEPTION 4
+#define ZEL_STABILITY_CHECK_RESULT_DRIVER_GET_NULL 1
+#define ZEL_STABILITY_CHECK_RESULT_DRIVER_GET_FAILED 2
+#define ZEL_STABILITY_CHECK_RESULT_EXCEPTION 3
 
 /**
  * @brief Performs a stability check for the Level Zero loader.
@@ -422,12 +422,12 @@ zelSetDelayLoaderContextTeardown()
  * @param stabilityPromise A promise object used to communicate the result of
  *                         the stability check. The promise is set with one of
  *                         the following values:
- *                         - ZEL_STABILITY_CHECK_RESULT_LOADER_NULL: The loader
- *                           module is null.
  *                         - ZEL_STABILITY_CHECK_RESULT_DRIVER_GET_NULL: The
  *                           `zeDriverGet` function pointer is invalid.
  *                         - ZEL_STABILITY_CHECK_RESULT_DRIVER_GET_FAILED: The
  *                           loader failed to retrieve driver information.
+ *                         - ZEL_STABILITY_CHECK_RESULT_EXCEPTION: An
+ *                           exception occurred during the stability check.
  *                         - ZEL_STABILITY_CHECK_RESULT_SUCCESS: The stability
  *                           check was successful.
  *
@@ -440,38 +440,31 @@ zelSetDelayLoaderContextTeardown()
  */
 void stabilityCheck(std::promise<int> stabilityPromise) {
     try {
-        if (!ze_lib::context->loader) {
-            if (ze_lib::context->debugTraceEnabled) {
-                std::string message = "Loader module is null. Exiting stability checker thread.";
-                ze_lib::context->debug_trace_message(message, "");
-            }
-            stabilityPromise.set_value(ZEL_STABILITY_CHECK_RESULT_LOADER_NULL);
-        }
-
-        ze_pfnDriverGet_t loaderDriverGet = reinterpret_cast<ze_pfnDriverGet_t>(GET_FUNCTION_PTR(ze_lib::context->loader, "zeDriverGet"));
-
-        if (!loaderDriverGet) {
+        if (!ze_lib::context->loaderDriverGet) {
             if (ze_lib::context->debugTraceEnabled) {
                 std::string message = "LoaderDriverGet is a bad pointer. Exiting stability checker thread.";
                 ze_lib::context->debug_trace_message(message, "");
             }
             stabilityPromise.set_value(ZEL_STABILITY_CHECK_RESULT_DRIVER_GET_NULL);
+            return;
         }
 
         uint32_t driverCount = 0;
         ze_result_t result = ZE_RESULT_ERROR_UNINITIALIZED;
-        result = loaderDriverGet(&driverCount, nullptr);
+        result = ze_lib::context->loaderDriverGet(&driverCount, nullptr);
         if (result != ZE_RESULT_SUCCESS || driverCount == 0) {
             if (ze_lib::context->debugTraceEnabled) {
                 std::string message = "Loader stability check failed. Exiting stability checker thread.";
                 ze_lib::context->debug_trace_message(message, "");
             }
             stabilityPromise.set_value(ZEL_STABILITY_CHECK_RESULT_DRIVER_GET_FAILED);
+            return;
         }
-        // Set the result as success
         stabilityPromise.set_value(ZEL_STABILITY_CHECK_RESULT_SUCCESS);
+        return;
     } catch (...) {
         stabilityPromise.set_value(ZEL_STABILITY_CHECK_RESULT_EXCEPTION);
+        return;
     }
 }
 #endif
@@ -499,7 +492,6 @@ zelCheckIsLoaderInTearDown() {
     #ifdef DYNAMIC_LOAD_LOADER
     std::promise<int> stabilityPromise;
     std::future<int> resultFuture = stabilityPromise.get_future();
-
     int result = -1;
     try {
         // Launch the stability checker thread
