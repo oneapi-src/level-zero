@@ -174,6 +174,7 @@ namespace ze_lib
         bool zeInuse = false;
         bool debugTraceEnabled = false;
         bool dynamicTracingSupported = true;
+        ze_pfnDriverGet_t loaderDriverGet = nullptr;
     };
 
     extern bool destruction;

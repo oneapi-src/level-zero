@@ -1477,7 +1477,15 @@ EXPECT_EQ(ZE_RESULT_SUCCESS, zeDeviceGet(drivers[0], &deviceCount, devices.data(
 ze_device_handle_t translatedHandle = devices[0];
 EXPECT_EQ(ZE_RESULT_SUCCESS, zelLoaderTranslateHandle(ZEL_HANDLE_DEVICE, devices[0], reinterpret_cast<void**>(&translatedHandle)));
 EXPECT_EQ(translatedHandle, devices[0]);
+  
+}
 
+TEST(
+  LoaderTearDown,
+  GivenLoaderNotInDestructionStateWhenCallingzelCheckIsLoaderInTearDownThenFalseIsReturned) {
+
+  EXPECT_EQ(ZE_RESULT_SUCCESS, zeInit(0));
+  EXPECT_FALSE(zelCheckIsLoaderInTearDown());
 }
 
 } // namespace

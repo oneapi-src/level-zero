@@ -289,6 +289,10 @@ foreach(test_name IN ITEMS
   add_test(NAME ${test_name}_alt_drivers COMMAND tests --gtest_filter=*${test_name})
   set_property(TEST ${test_name}_alt_drivers APPEND PROPERTY ENVIRONMENT "ZE_ENABLE_NULL_DRIVER=1;${ALT_DRIVERS_ENV}")
 endforeach()
+
+add_test(NAME tests_loader_teardown_check COMMAND tests --gtest_filter=*GivenLoaderNotInDestructionStateWhenCallingzelCheckIsLoaderInTearDownThenFalseIsReturned)
+set_property(TEST tests_loader_teardown_check PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_NULL_DRIVER=1")
+
 # These tests are currently not supported on Windows. The reason is that the std::cerr is not being redirected to a pipe in Windows to be then checked against the expected output.
 if(NOT MSVC)
     add_test(NAME tests_event_deadlock COMMAND tests --gtest_filter=*GivenLevelZeroLoaderPresentWhenCallingzeCommandListAppendMemoryCopyWithCircularDependencyOnEventsThenValidationLayerPrintsWarningOfDeadlock*)
