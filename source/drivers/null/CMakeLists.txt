@@ -65,6 +65,10 @@ target_include_directories(ze_null_test2
         ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
+target_compile_definitions(ze_null_test1 PUBLIC ZEL_NULL_DRIVER_ID=1)
+target_compile_definitions(ze_null_test2 PUBLIC ZEL_NULL_DRIVER_ID=2)
+target_compile_definitions(ze_null PUBLIC ZEL_NULL_DRIVER_ID=1)
+
 if(INSTALL_NULL_DRIVER)
     install(TARGETS ze_null_test1
         ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR} COMPONENT level-zero-devel
