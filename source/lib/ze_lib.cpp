@@ -538,24 +538,42 @@ zelLoaderContextTeardown()
 ze_result_t ZE_APICALL
 zelEnableTracingLayer()
 {
+    #ifdef DYNAMIC_LOAD_LOADER
+    if(nullptr == ze_lib::context->loader)
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    typedef ze_result_t (ZE_APICALL *zelEnableTracingLayerInternal_t)();
+    auto enableDynamicTracing = reinterpret_cast<zelEnableTracingLayerInternal_t>(
+            GET_FUNCTION_PTR(ze_lib::context->loader, "zelEnableTracingLayer") );
+    return enableDynamicTracing();
+    #else
     if (ze_lib::context->dynamicTracingSupported == false) {
         return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     if (ze_lib::context->tracingLayerEnableCounter.fetch_add(1) == 0) {
         ze_lib::context->zeDdiTable.exchange(ze_lib::context->pTracingZeDdiTable);
     }
+    #endif
     return ZE_RESULT_SUCCESS;
 }
 
 ze_result_t ZE_APICALL
 zelDisableTracingLayer()
 {
+    #ifdef DYNAMIC_LOAD_LOADER
+    if(nullptr == ze_lib::context->loader)
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    typedef ze_result_t (ZE_APICALL *zelDisableTracingLayerInternal_t)();
+    auto disableDynamicTracing = reinterpret_cast<zelDisableTracingLayerInternal_t>(
+            GET_FUNCTION_PTR(ze_lib::context->loader, "zelDisableTracingLayer") );
+    return disableDynamicTracing();
+    #else
     if (ze_lib::context->dynamicTracingSupported == false) {
         return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
     }
     if (ze_lib::context->tracingLayerEnableCounter.fetch_sub(1) <= 1) {
         ze_lib::context->zeDdiTable.exchange(&ze_lib::context->initialzeDdiTable);
     }
+    #endif
     return ZE_RESULT_SUCCESS;
 }
 

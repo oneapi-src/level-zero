@@ -149,11 +149,11 @@ zeDriverGet(
 ///       other function. (zeInit is [Deprecated] and is replaced by
 ///       zeInitDrivers)
 ///     - Calls to zeInit[Deprecated] or InitDrivers will not alter the drivers
-///       retrieved thru either api.
-///     - Drivers init thru zeInit[Deprecated] or InitDrivers will not be
+///       retrieved through either api.
+///     - Drivers init through zeInit[Deprecated] or InitDrivers will not be
 ///       reInitialized once init in an application. The Loader will determine
-///       if the already init driver needs to be delivered to the user thru the
-///       init type flags.
+///       if the already init driver needs to be delivered to the user through
+///       the init type flags.
 ///     - Already init Drivers will not be uninitialized if the call to
 ///       InitDrivers does not include that driver's type. Those init drivers
 ///       which don't match the init flags will not have their driver handles

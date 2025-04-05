@@ -2937,6 +2937,8 @@ zetMetricGroupCloseExp(
 ///     - It is necessary to call ::zetMetricDestroyExp for each of the metric
 ///       handles (created from ::zetMetricCreateFromProgrammableExp2) to
 ///       destroy them.
+///     - It is not necessary to remove the metrics in the metricGroup before
+///       destroying it.
 /// 
 /// @returns
 ///     - ::ZE_RESULT_SUCCESS
