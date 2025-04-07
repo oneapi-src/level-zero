@@ -160,6 +160,28 @@ ${th.make_func_name(n, tags, obj)}(
 }
 %endif
 %else:
+    #ifdef DYNAMIC_LOAD_LOADER
+    ze_result_t result = ${X}_RESULT_SUCCESS;
+    if(ze_lib::destruction) {
+        return ${X}_RESULT_ERROR_UNINITIALIZED;
+    }
+%if re.match(r"\w+DriverGet$", th.make_func_name(n, tags, obj)):
+    if (${x}_lib::context->${n}DdiTable == nullptr) {
+        return ${X}_RESULT_ERROR_UNINITIALIZED;
+    }
+%endif
+    static const ${th.make_pfn_type(n, tags, obj)} ${th.make_pfn_name(n, tags, obj)} = [&result] {
+        auto ${th.make_pfn_name(n, tags, obj)} = ${x}_lib::context->${n}DdiTable.load()->${th.get_table_name(n, tags, obj)}.${th.make_pfn_name(n, tags, obj)};
+        if( nullptr == ${th.make_pfn_name(n, tags, obj)} ) {
+            result = ${X}_RESULT_ERROR_UNSUPPORTED_FEATURE;
+        }
+        return ${th.make_pfn_name(n, tags, obj)};
+    }();
+    if (result != ${X}_RESULT_SUCCESS) {
+        return result;
+    }
+    return ${th.make_pfn_name(n, tags, obj)}( ${", ".join(th.make_param_lines(n, tags, obj, format=["name"]))} );
+    #else
     if(ze_lib::destruction) {
         return ${X}_RESULT_ERROR_UNINITIALIZED;
     }
@@ -182,6 +204,7 @@ ${th.make_func_name(n, tags, obj)}(
 %endif
 
     return ${th.make_pfn_name(n, tags, obj)}( ${", ".join(th.make_param_lines(n, tags, obj, format=["name"]))} );
+    #endif
 }
 %endif
 %if 'condition' in obj:
