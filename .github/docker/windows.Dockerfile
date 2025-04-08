@@ -4,7 +4,7 @@ ARG BASE_IMAGE=mcr.microsoft.com/dotnet/framework/runtime:4.8
 FROM ${BASE_IMAGE}
 
 SHELL ["powershell"]
-ENV VS_VERSION=2019
+ENV VS_VERSION=2022
 RUN [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; `
     Switch ($env:VS_VERSION) { `
         "2019" {$url_version = "16"} `

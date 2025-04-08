@@ -44,6 +44,23 @@ zetModuleGetDebugInfo(
     uint8_t* pDebugInfo                             ///< [in,out][optional] byte pointer to debug info
     )
 {
+    #ifdef DYNAMIC_LOAD_LOADER
+    ze_result_t result = ZE_RESULT_SUCCESS;
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+    static const zet_pfnModuleGetDebugInfo_t pfnGetDebugInfo = [&result] {
+        auto pfnGetDebugInfo = ze_lib::context->zetDdiTable.load()->Module.pfnGetDebugInfo;
+        if( nullptr == pfnGetDebugInfo ) {
+            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+        }
+        return pfnGetDebugInfo;
+    }();
+    if (result != ZE_RESULT_SUCCESS) {
+        return result;
+    }
+    return pfnGetDebugInfo( hModule, format, pSize, pDebugInfo );
+    #else
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
@@ -57,6 +74,7 @@ zetModuleGetDebugInfo(
     }
 
     return pfnGetDebugInfo( hModule, format, pSize, pDebugInfo );
+    #endif
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -78,6 +96,23 @@ zetDeviceGetDebugProperties(
     zet_device_debug_properties_t* pDebugProperties ///< [in,out] query result for debug properties
     )
 {
+    #ifdef DYNAMIC_LOAD_LOADER
+    ze_result_t result = ZE_RESULT_SUCCESS;
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+    static const zet_pfnDeviceGetDebugProperties_t pfnGetDebugProperties = [&result] {
+        auto pfnGetDebugProperties = ze_lib::context->zetDdiTable.load()->Device.pfnGetDebugProperties;
+        if( nullptr == pfnGetDebugProperties ) {
+            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+        }
+        return pfnGetDebugProperties;
+    }();
+    if (result != ZE_RESULT_SUCCESS) {
+        return result;
+    }
+    return pfnGetDebugProperties( hDevice, pDebugProperties );
+    #else
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
@@ -91,6 +126,7 @@ zetDeviceGetDebugProperties(
     }
 
     return pfnGetDebugProperties( hDevice, pDebugProperties );
+    #endif
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -124,6 +160,23 @@ zetDebugAttach(
     zet_debug_session_handle_t* phDebug             ///< [out] debug session handle
     )
 {
+    #ifdef DYNAMIC_LOAD_LOADER
+    ze_result_t result = ZE_RESULT_SUCCESS;
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+    static const zet_pfnDebugAttach_t pfnAttach = [&result] {
+        auto pfnAttach = ze_lib::context->zetDdiTable.load()->Debug.pfnAttach;
+        if( nullptr == pfnAttach ) {
+            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+        }
+        return pfnAttach;
+    }();
+    if (result != ZE_RESULT_SUCCESS) {
+        return result;
+    }
+    return pfnAttach( hDevice, config, phDebug );
+    #else
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
@@ -137,6 +190,7 @@ zetDebugAttach(
     }
 
     return pfnAttach( hDevice, config, phDebug );
+    #endif
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -155,6 +209,23 @@ zetDebugDetach(
     zet_debug_session_handle_t hDebug               ///< [in][release] debug session handle
     )
 {
+    #ifdef DYNAMIC_LOAD_LOADER
+    ze_result_t result = ZE_RESULT_SUCCESS;
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+    static const zet_pfnDebugDetach_t pfnDetach = [&result] {
+        auto pfnDetach = ze_lib::context->zetDdiTable.load()->Debug.pfnDetach;
+        if( nullptr == pfnDetach ) {
+            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+        }
+        return pfnDetach;
+    }();
+    if (result != ZE_RESULT_SUCCESS) {
+        return result;
+    }
+    return pfnDetach( hDebug );
+    #else
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
@@ -168,6 +239,7 @@ zetDebugDetach(
     }
 
     return pfnDetach( hDebug );
+    #endif
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -198,6 +270,23 @@ zetDebugReadEvent(
     zet_debug_event_t* event                        ///< [in,out] a pointer to a ::zet_debug_event_t.
     )
 {
+    #ifdef DYNAMIC_LOAD_LOADER
+    ze_result_t result = ZE_RESULT_SUCCESS;
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+    static const zet_pfnDebugReadEvent_t pfnReadEvent = [&result] {
+        auto pfnReadEvent = ze_lib::context->zetDdiTable.load()->Debug.pfnReadEvent;
+        if( nullptr == pfnReadEvent ) {
+            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+        }
+        return pfnReadEvent;
+    }();
+    if (result != ZE_RESULT_SUCCESS) {
+        return result;
+    }
+    return pfnReadEvent( hDebug, timeout, event );
+    #else
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
@@ -211,6 +300,7 @@ zetDebugReadEvent(
     }
 
     return pfnReadEvent( hDebug, timeout, event );
+    #endif
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -232,6 +322,23 @@ zetDebugAcknowledgeEvent(
     const zet_debug_event_t* event                  ///< [in] a pointer to a ::zet_debug_event_t.
     )
 {
+    #ifdef DYNAMIC_LOAD_LOADER
+    ze_result_t result = ZE_RESULT_SUCCESS;
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+    static const zet_pfnDebugAcknowledgeEvent_t pfnAcknowledgeEvent = [&result] {
+        auto pfnAcknowledgeEvent = ze_lib::context->zetDdiTable.load()->Debug.pfnAcknowledgeEvent;
+        if( nullptr == pfnAcknowledgeEvent ) {
+            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+        }
+        return pfnAcknowledgeEvent;
+    }();
+    if (result != ZE_RESULT_SUCCESS) {
+        return result;
+    }
+    return pfnAcknowledgeEvent( hDebug, event );
+    #else
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
@@ -245,6 +352,7 @@ zetDebugAcknowledgeEvent(
     }
 
     return pfnAcknowledgeEvent( hDebug, event );
+    #endif
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -266,6 +374,23 @@ zetDebugInterrupt(
     ze_device_thread_t thread                       ///< [in] the thread to interrupt
     )
 {
+    #ifdef DYNAMIC_LOAD_LOADER
+    ze_result_t result = ZE_RESULT_SUCCESS;
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+    static const zet_pfnDebugInterrupt_t pfnInterrupt = [&result] {
+        auto pfnInterrupt = ze_lib::context->zetDdiTable.load()->Debug.pfnInterrupt;
+        if( nullptr == pfnInterrupt ) {
+            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+        }
+        return pfnInterrupt;
+    }();
+    if (result != ZE_RESULT_SUCCESS) {
+        return result;
+    }
+    return pfnInterrupt( hDebug, thread );
+    #else
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
@@ -279,6 +404,7 @@ zetDebugInterrupt(
     }
 
     return pfnInterrupt( hDebug, thread );
+    #endif
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -300,6 +426,23 @@ zetDebugResume(
     ze_device_thread_t thread                       ///< [in] the thread to resume
     )
 {
+    #ifdef DYNAMIC_LOAD_LOADER
+    ze_result_t result = ZE_RESULT_SUCCESS;
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+    static const zet_pfnDebugResume_t pfnResume = [&result] {
+        auto pfnResume = ze_lib::context->zetDdiTable.load()->Debug.pfnResume;
+        if( nullptr == pfnResume ) {
+            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+        }
+        return pfnResume;
+    }();
+    if (result != ZE_RESULT_SUCCESS) {
+        return result;
+    }
+    return pfnResume( hDebug, thread );
+    #else
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
@@ -313,6 +456,7 @@ zetDebugResume(
     }
 
     return pfnResume( hDebug, thread );
+    #endif
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -347,6 +491,23 @@ zetDebugReadMemory(
     void* buffer                                    ///< [in,out] a buffer to hold a copy of the memory
     )
 {
+    #ifdef DYNAMIC_LOAD_LOADER
+    ze_result_t result = ZE_RESULT_SUCCESS;
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+    static const zet_pfnDebugReadMemory_t pfnReadMemory = [&result] {
+        auto pfnReadMemory = ze_lib::context->zetDdiTable.load()->Debug.pfnReadMemory;
+        if( nullptr == pfnReadMemory ) {
+            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+        }
+        return pfnReadMemory;
+    }();
+    if (result != ZE_RESULT_SUCCESS) {
+        return result;
+    }
+    return pfnReadMemory( hDebug, thread, desc, size, buffer );
+    #else
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
@@ -360,6 +521,7 @@ zetDebugReadMemory(
     }
 
     return pfnReadMemory( hDebug, thread, desc, size, buffer );
+    #endif
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -394,6 +556,23 @@ zetDebugWriteMemory(
     const void* buffer                              ///< [in] a buffer holding the pattern to write
     )
 {
+    #ifdef DYNAMIC_LOAD_LOADER
+    ze_result_t result = ZE_RESULT_SUCCESS;
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+    static const zet_pfnDebugWriteMemory_t pfnWriteMemory = [&result] {
+        auto pfnWriteMemory = ze_lib::context->zetDdiTable.load()->Debug.pfnWriteMemory;
+        if( nullptr == pfnWriteMemory ) {
+            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+        }
+        return pfnWriteMemory;
+    }();
+    if (result != ZE_RESULT_SUCCESS) {
+        return result;
+    }
+    return pfnWriteMemory( hDebug, thread, desc, size, buffer );
+    #else
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
@@ -407,6 +586,7 @@ zetDebugWriteMemory(
     }
 
     return pfnWriteMemory( hDebug, thread, desc, size, buffer );
+    #endif
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -437,6 +617,23 @@ zetDebugGetRegisterSetProperties(
                                                     ///< then driver shall only retrieve that number of register set properties.
     )
 {
+    #ifdef DYNAMIC_LOAD_LOADER
+    ze_result_t result = ZE_RESULT_SUCCESS;
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+    static const zet_pfnDebugGetRegisterSetProperties_t pfnGetRegisterSetProperties = [&result] {
+        auto pfnGetRegisterSetProperties = ze_lib::context->zetDdiTable.load()->Debug.pfnGetRegisterSetProperties;
+        if( nullptr == pfnGetRegisterSetProperties ) {
+            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+        }
+        return pfnGetRegisterSetProperties;
+    }();
+    if (result != ZE_RESULT_SUCCESS) {
+        return result;
+    }
+    return pfnGetRegisterSetProperties( hDevice, pCount, pRegisterSetProperties );
+    #else
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
@@ -450,6 +647,7 @@ zetDebugGetRegisterSetProperties(
     }
 
     return pfnGetRegisterSetProperties( hDevice, pCount, pRegisterSetProperties );
+    #endif
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -485,6 +683,23 @@ zetDebugGetThreadRegisterSetProperties(
                                                     ///< then driver shall only retrieve that number of register set properties.
     )
 {
+    #ifdef DYNAMIC_LOAD_LOADER
+    ze_result_t result = ZE_RESULT_SUCCESS;
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+    static const zet_pfnDebugGetThreadRegisterSetProperties_t pfnGetThreadRegisterSetProperties = [&result] {
+        auto pfnGetThreadRegisterSetProperties = ze_lib::context->zetDdiTable.load()->Debug.pfnGetThreadRegisterSetProperties;
+        if( nullptr == pfnGetThreadRegisterSetProperties ) {
+            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+        }
+        return pfnGetThreadRegisterSetProperties;
+    }();
+    if (result != ZE_RESULT_SUCCESS) {
+        return result;
+    }
+    return pfnGetThreadRegisterSetProperties( hDebug, thread, pCount, pRegisterSetProperties );
+    #else
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
@@ -498,6 +713,7 @@ zetDebugGetThreadRegisterSetProperties(
     }
 
     return pfnGetThreadRegisterSetProperties( hDebug, thread, pCount, pRegisterSetProperties );
+    #endif
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -527,6 +743,23 @@ zetDebugReadRegisters(
     void* pRegisterValues                           ///< [in,out][optional][range(0, count)] buffer of register values
     )
 {
+    #ifdef DYNAMIC_LOAD_LOADER
+    ze_result_t result = ZE_RESULT_SUCCESS;
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+    static const zet_pfnDebugReadRegisters_t pfnReadRegisters = [&result] {
+        auto pfnReadRegisters = ze_lib::context->zetDdiTable.load()->Debug.pfnReadRegisters;
+        if( nullptr == pfnReadRegisters ) {
+            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+        }
+        return pfnReadRegisters;
+    }();
+    if (result != ZE_RESULT_SUCCESS) {
+        return result;
+    }
+    return pfnReadRegisters( hDebug, thread, type, start, count, pRegisterValues );
+    #else
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
@@ -540,6 +773,7 @@ zetDebugReadRegisters(
     }
 
     return pfnReadRegisters( hDebug, thread, type, start, count, pRegisterValues );
+    #endif
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -569,6 +803,23 @@ zetDebugWriteRegisters(
     void* pRegisterValues                           ///< [in,out][optional][range(0, count)] buffer of register values
     )
 {
+    #ifdef DYNAMIC_LOAD_LOADER
+    ze_result_t result = ZE_RESULT_SUCCESS;
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+    static const zet_pfnDebugWriteRegisters_t pfnWriteRegisters = [&result] {
+        auto pfnWriteRegisters = ze_lib::context->zetDdiTable.load()->Debug.pfnWriteRegisters;
+        if( nullptr == pfnWriteRegisters ) {
+            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+        }
+        return pfnWriteRegisters;
+    }();
+    if (result != ZE_RESULT_SUCCESS) {
+        return result;
+    }
+    return pfnWriteRegisters( hDebug, thread, type, start, count, pRegisterValues );
+    #else
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
@@ -582,6 +833,7 @@ zetDebugWriteRegisters(
     }
 
     return pfnWriteRegisters( hDebug, thread, type, start, count, pRegisterValues );
+    #endif
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -614,6 +866,23 @@ zetMetricGroupGet(
                                                     ///< driver shall only retrieve that number of metric groups.
     )
 {
+    #ifdef DYNAMIC_LOAD_LOADER
+    ze_result_t result = ZE_RESULT_SUCCESS;
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+    static const zet_pfnMetricGroupGet_t pfnGet = [&result] {
+        auto pfnGet = ze_lib::context->zetDdiTable.load()->MetricGroup.pfnGet;
+        if( nullptr == pfnGet ) {
+            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+        }
+        return pfnGet;
+    }();
+    if (result != ZE_RESULT_SUCCESS) {
+        return result;
+    }
+    return pfnGet( hDevice, pCount, phMetricGroups );
+    #else
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
@@ -627,6 +896,7 @@ zetMetricGroupGet(
     }
 
     return pfnGet( hDevice, pCount, phMetricGroups );
+    #endif
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -651,6 +921,23 @@ zetMetricGroupGetProperties(
     zet_metric_group_properties_t* pProperties      ///< [in,out] metric group properties
     )
 {
+    #ifdef DYNAMIC_LOAD_LOADER
+    ze_result_t result = ZE_RESULT_SUCCESS;
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+    static const zet_pfnMetricGroupGetProperties_t pfnGetProperties = [&result] {
+        auto pfnGetProperties = ze_lib::context->zetDdiTable.load()->MetricGroup.pfnGetProperties;
+        if( nullptr == pfnGetProperties ) {
+            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+        }
+        return pfnGetProperties;
+    }();
+    if (result != ZE_RESULT_SUCCESS) {
+        return result;
+    }
+    return pfnGetProperties( hMetricGroup, pProperties );
+    #else
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
@@ -664,6 +951,7 @@ zetMetricGroupGetProperties(
     }
 
     return pfnGetProperties( hMetricGroup, pProperties );
+    #endif
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -702,6 +990,23 @@ zetMetricGroupCalculateMetricValues(
                                                     ///< then driver shall only calculate that number of metric values.
     )
 {
+    #ifdef DYNAMIC_LOAD_LOADER
+    ze_result_t result = ZE_RESULT_SUCCESS;
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+    static const zet_pfnMetricGroupCalculateMetricValues_t pfnCalculateMetricValues = [&result] {
+        auto pfnCalculateMetricValues = ze_lib::context->zetDdiTable.load()->MetricGroup.pfnCalculateMetricValues;
+        if( nullptr == pfnCalculateMetricValues ) {
+            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+        }
+        return pfnCalculateMetricValues;
+    }();
+    if (result != ZE_RESULT_SUCCESS) {
+        return result;
+    }
+    return pfnCalculateMetricValues( hMetricGroup, type, rawDataSize, pRawData, pMetricValueCount, pMetricValues );
+    #else
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
@@ -715,6 +1020,7 @@ zetMetricGroupCalculateMetricValues(
     }
 
     return pfnCalculateMetricValues( hMetricGroup, type, rawDataSize, pRawData, pMetricValueCount, pMetricValues );
+    #endif
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -746,6 +1052,23 @@ zetMetricGet(
                                                     ///< shall only retrieve that number of metrics.
     )
 {
+    #ifdef DYNAMIC_LOAD_LOADER
+    ze_result_t result = ZE_RESULT_SUCCESS;
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+    static const zet_pfnMetricGet_t pfnGet = [&result] {
+        auto pfnGet = ze_lib::context->zetDdiTable.load()->Metric.pfnGet;
+        if( nullptr == pfnGet ) {
+            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+        }
+        return pfnGet;
+    }();
+    if (result != ZE_RESULT_SUCCESS) {
+        return result;
+    }
+    return pfnGet( hMetricGroup, pCount, phMetrics );
+    #else
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
@@ -759,6 +1082,7 @@ zetMetricGet(
     }
 
     return pfnGet( hMetricGroup, pCount, phMetrics );
+    #endif
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -783,6 +1107,23 @@ zetMetricGetProperties(
     zet_metric_properties_t* pProperties            ///< [in,out] metric properties
     )
 {
+    #ifdef DYNAMIC_LOAD_LOADER
+    ze_result_t result = ZE_RESULT_SUCCESS;
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+    static const zet_pfnMetricGetProperties_t pfnGetProperties = [&result] {
+        auto pfnGetProperties = ze_lib::context->zetDdiTable.load()->Metric.pfnGetProperties;
+        if( nullptr == pfnGetProperties ) {
+            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+        }
+        return pfnGetProperties;
+    }();
+    if (result != ZE_RESULT_SUCCESS) {
+        return result;
+    }
+    return pfnGetProperties( hMetric, pProperties );
+    #else
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
@@ -796,6 +1137,7 @@ zetMetricGetProperties(
     }
 
     return pfnGetProperties( hMetric, pProperties );
+    #endif
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -838,6 +1180,23 @@ zetContextActivateMetricGroups(
                                                     ///< metric query and metric stream must use activated metric groups.
     )
 {
+    #ifdef DYNAMIC_LOAD_LOADER
+    ze_result_t result = ZE_RESULT_SUCCESS;
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+    static const zet_pfnContextActivateMetricGroups_t pfnActivateMetricGroups = [&result] {
+        auto pfnActivateMetricGroups = ze_lib::context->zetDdiTable.load()->Context.pfnActivateMetricGroups;
+        if( nullptr == pfnActivateMetricGroups ) {
+            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+        }
+        return pfnActivateMetricGroups;
+    }();
+    if (result != ZE_RESULT_SUCCESS) {
+        return result;
+    }
+    return pfnActivateMetricGroups( hContext, hDevice, count, phMetricGroups );
+    #else
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
@@ -851,6 +1210,7 @@ zetContextActivateMetricGroups(
     }
 
     return pfnActivateMetricGroups( hContext, hDevice, count, phMetricGroups );
+    #endif
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -890,6 +1250,23 @@ zetMetricStreamerOpen(
     zet_metric_streamer_handle_t* phMetricStreamer  ///< [out] handle of metric streamer
     )
 {
+    #ifdef DYNAMIC_LOAD_LOADER
+    ze_result_t result = ZE_RESULT_SUCCESS;
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+    static const zet_pfnMetricStreamerOpen_t pfnOpen = [&result] {
+        auto pfnOpen = ze_lib::context->zetDdiTable.load()->MetricStreamer.pfnOpen;
+        if( nullptr == pfnOpen ) {
+            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+        }
+        return pfnOpen;
+    }();
+    if (result != ZE_RESULT_SUCCESS) {
+        return result;
+    }
+    return pfnOpen( hContext, hDevice, hMetricGroup, desc, hNotificationEvent, phMetricStreamer );
+    #else
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
@@ -903,6 +1280,7 @@ zetMetricStreamerOpen(
     }
 
     return pfnOpen( hContext, hDevice, hMetricGroup, desc, hNotificationEvent, phMetricStreamer );
+    #endif
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -934,6 +1312,23 @@ zetCommandListAppendMetricStreamerMarker(
     uint32_t value                                  ///< [in] streamer marker value
     )
 {
+    #ifdef DYNAMIC_LOAD_LOADER
+    ze_result_t result = ZE_RESULT_SUCCESS;
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+    static const zet_pfnCommandListAppendMetricStreamerMarker_t pfnAppendMetricStreamerMarker = [&result] {
+        auto pfnAppendMetricStreamerMarker = ze_lib::context->zetDdiTable.load()->CommandList.pfnAppendMetricStreamerMarker;
+        if( nullptr == pfnAppendMetricStreamerMarker ) {
+            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+        }
+        return pfnAppendMetricStreamerMarker;
+    }();
+    if (result != ZE_RESULT_SUCCESS) {
+        return result;
+    }
+    return pfnAppendMetricStreamerMarker( hCommandList, hMetricStreamer, value );
+    #else
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
@@ -947,6 +1342,7 @@ zetCommandListAppendMetricStreamerMarker(
     }
 
     return pfnAppendMetricStreamerMarker( hCommandList, hMetricStreamer, value );
+    #endif
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -969,6 +1365,23 @@ zetMetricStreamerClose(
     zet_metric_streamer_handle_t hMetricStreamer    ///< [in][release] handle of the metric streamer
     )
 {
+    #ifdef DYNAMIC_LOAD_LOADER
+    ze_result_t result = ZE_RESULT_SUCCESS;
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+    static const zet_pfnMetricStreamerClose_t pfnClose = [&result] {
+        auto pfnClose = ze_lib::context->zetDdiTable.load()->MetricStreamer.pfnClose;
+        if( nullptr == pfnClose ) {
+            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+        }
+        return pfnClose;
+    }();
+    if (result != ZE_RESULT_SUCCESS) {
+        return result;
+    }
+    return pfnClose( hMetricStreamer );
+    #else
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
@@ -982,6 +1395,7 @@ zetMetricStreamerClose(
     }
 
     return pfnClose( hMetricStreamer );
+    #endif
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1018,6 +1432,23 @@ zetMetricStreamerReadData(
                                                     ///< reports in raw format
     )
 {
+    #ifdef DYNAMIC_LOAD_LOADER
+    ze_result_t result = ZE_RESULT_SUCCESS;
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+    static const zet_pfnMetricStreamerReadData_t pfnReadData = [&result] {
+        auto pfnReadData = ze_lib::context->zetDdiTable.load()->MetricStreamer.pfnReadData;
+        if( nullptr == pfnReadData ) {
+            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+        }
+        return pfnReadData;
+    }();
+    if (result != ZE_RESULT_SUCCESS) {
+        return result;
+    }
+    return pfnReadData( hMetricStreamer, maxReportCount, pRawDataSize, pRawData );
+    #else
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
@@ -1031,6 +1462,7 @@ zetMetricStreamerReadData(
     }
 
     return pfnReadData( hMetricStreamer, maxReportCount, pRawDataSize, pRawData );
+    #endif
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1064,6 +1496,23 @@ zetMetricQueryPoolCreate(
     zet_metric_query_pool_handle_t* phMetricQueryPool   ///< [out] handle of metric query pool
     )
 {
+    #ifdef DYNAMIC_LOAD_LOADER
+    ze_result_t result = ZE_RESULT_SUCCESS;
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+    static const zet_pfnMetricQueryPoolCreate_t pfnCreate = [&result] {
+        auto pfnCreate = ze_lib::context->zetDdiTable.load()->MetricQueryPool.pfnCreate;
+        if( nullptr == pfnCreate ) {
+            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+        }
+        return pfnCreate;
+    }();
+    if (result != ZE_RESULT_SUCCESS) {
+        return result;
+    }
+    return pfnCreate( hContext, hDevice, hMetricGroup, desc, phMetricQueryPool );
+    #else
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
@@ -1077,6 +1526,7 @@ zetMetricQueryPoolCreate(
     }
 
     return pfnCreate( hContext, hDevice, hMetricGroup, desc, phMetricQueryPool );
+    #endif
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1105,6 +1555,23 @@ zetMetricQueryPoolDestroy(
     zet_metric_query_pool_handle_t hMetricQueryPool ///< [in][release] handle of the metric query pool
     )
 {
+    #ifdef DYNAMIC_LOAD_LOADER
+    ze_result_t result = ZE_RESULT_SUCCESS;
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+    static const zet_pfnMetricQueryPoolDestroy_t pfnDestroy = [&result] {
+        auto pfnDestroy = ze_lib::context->zetDdiTable.load()->MetricQueryPool.pfnDestroy;
+        if( nullptr == pfnDestroy ) {
+            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+        }
+        return pfnDestroy;
+    }();
+    if (result != ZE_RESULT_SUCCESS) {
+        return result;
+    }
+    return pfnDestroy( hMetricQueryPool );
+    #else
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
@@ -1118,6 +1585,7 @@ zetMetricQueryPoolDestroy(
     }
 
     return pfnDestroy( hMetricQueryPool );
+    #endif
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1144,6 +1612,23 @@ zetMetricQueryCreate(
     zet_metric_query_handle_t* phMetricQuery        ///< [out] handle of metric query
     )
 {
+    #ifdef DYNAMIC_LOAD_LOADER
+    ze_result_t result = ZE_RESULT_SUCCESS;
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+    static const zet_pfnMetricQueryCreate_t pfnCreate = [&result] {
+        auto pfnCreate = ze_lib::context->zetDdiTable.load()->MetricQuery.pfnCreate;
+        if( nullptr == pfnCreate ) {
+            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+        }
+        return pfnCreate;
+    }();
+    if (result != ZE_RESULT_SUCCESS) {
+        return result;
+    }
+    return pfnCreate( hMetricQueryPool, index, phMetricQuery );
+    #else
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
@@ -1157,6 +1642,7 @@ zetMetricQueryCreate(
     }
 
     return pfnCreate( hMetricQueryPool, index, phMetricQuery );
+    #endif
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1183,6 +1669,23 @@ zetMetricQueryDestroy(
     zet_metric_query_handle_t hMetricQuery          ///< [in][release] handle of metric query
     )
 {
+    #ifdef DYNAMIC_LOAD_LOADER
+    ze_result_t result = ZE_RESULT_SUCCESS;
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+    static const zet_pfnMetricQueryDestroy_t pfnDestroy = [&result] {
+        auto pfnDestroy = ze_lib::context->zetDdiTable.load()->MetricQuery.pfnDestroy;
+        if( nullptr == pfnDestroy ) {
+            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+        }
+        return pfnDestroy;
+    }();
+    if (result != ZE_RESULT_SUCCESS) {
+        return result;
+    }
+    return pfnDestroy( hMetricQuery );
+    #else
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
@@ -1196,6 +1699,7 @@ zetMetricQueryDestroy(
     }
 
     return pfnDestroy( hMetricQuery );
+    #endif
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1220,6 +1724,23 @@ zetMetricQueryReset(
     zet_metric_query_handle_t hMetricQuery          ///< [in] handle of metric query
     )
 {
+    #ifdef DYNAMIC_LOAD_LOADER
+    ze_result_t result = ZE_RESULT_SUCCESS;
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+    static const zet_pfnMetricQueryReset_t pfnReset = [&result] {
+        auto pfnReset = ze_lib::context->zetDdiTable.load()->MetricQuery.pfnReset;
+        if( nullptr == pfnReset ) {
+            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+        }
+        return pfnReset;
+    }();
+    if (result != ZE_RESULT_SUCCESS) {
+        return result;
+    }
+    return pfnReset( hMetricQuery );
+    #else
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
@@ -1233,6 +1754,7 @@ zetMetricQueryReset(
     }
 
     return pfnReset( hMetricQuery );
+    #endif
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1263,6 +1785,23 @@ zetCommandListAppendMetricQueryBegin(
     zet_metric_query_handle_t hMetricQuery          ///< [in] handle of the metric query
     )
 {
+    #ifdef DYNAMIC_LOAD_LOADER
+    ze_result_t result = ZE_RESULT_SUCCESS;
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+    static const zet_pfnCommandListAppendMetricQueryBegin_t pfnAppendMetricQueryBegin = [&result] {
+        auto pfnAppendMetricQueryBegin = ze_lib::context->zetDdiTable.load()->CommandList.pfnAppendMetricQueryBegin;
+        if( nullptr == pfnAppendMetricQueryBegin ) {
+            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+        }
+        return pfnAppendMetricQueryBegin;
+    }();
+    if (result != ZE_RESULT_SUCCESS) {
+        return result;
+    }
+    return pfnAppendMetricQueryBegin( hCommandList, hMetricQuery );
+    #else
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
@@ -1276,6 +1815,7 @@ zetCommandListAppendMetricQueryBegin(
     }
 
     return pfnAppendMetricQueryBegin( hCommandList, hMetricQuery );
+    #endif
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1320,6 +1860,23 @@ zetCommandListAppendMetricQueryEnd(
     ze_event_handle_t* phWaitEvents                 ///< [in][mbz] must be nullptr
     )
 {
+    #ifdef DYNAMIC_LOAD_LOADER
+    ze_result_t result = ZE_RESULT_SUCCESS;
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+    static const zet_pfnCommandListAppendMetricQueryEnd_t pfnAppendMetricQueryEnd = [&result] {
+        auto pfnAppendMetricQueryEnd = ze_lib::context->zetDdiTable.load()->CommandList.pfnAppendMetricQueryEnd;
+        if( nullptr == pfnAppendMetricQueryEnd ) {
+            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+        }
+        return pfnAppendMetricQueryEnd;
+    }();
+    if (result != ZE_RESULT_SUCCESS) {
+        return result;
+    }
+    return pfnAppendMetricQueryEnd( hCommandList, hMetricQuery, hSignalEvent, numWaitEvents, phWaitEvents );
+    #else
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
@@ -1333,6 +1890,7 @@ zetCommandListAppendMetricQueryEnd(
     }
 
     return pfnAppendMetricQueryEnd( hCommandList, hMetricQuery, hSignalEvent, numWaitEvents, phWaitEvents );
+    #endif
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1355,6 +1913,23 @@ zetCommandListAppendMetricMemoryBarrier(
     zet_command_list_handle_t hCommandList          ///< [in] handle of the command list
     )
 {
+    #ifdef DYNAMIC_LOAD_LOADER
+    ze_result_t result = ZE_RESULT_SUCCESS;
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+    static const zet_pfnCommandListAppendMetricMemoryBarrier_t pfnAppendMetricMemoryBarrier = [&result] {
+        auto pfnAppendMetricMemoryBarrier = ze_lib::context->zetDdiTable.load()->CommandList.pfnAppendMetricMemoryBarrier;
+        if( nullptr == pfnAppendMetricMemoryBarrier ) {
+            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+        }
+        return pfnAppendMetricMemoryBarrier;
+    }();
+    if (result != ZE_RESULT_SUCCESS) {
+        return result;
+    }
+    return pfnAppendMetricMemoryBarrier( hCommandList );
+    #else
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
@@ -1368,6 +1943,7 @@ zetCommandListAppendMetricMemoryBarrier(
     }
 
     return pfnAppendMetricMemoryBarrier( hCommandList );
+    #endif
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1400,6 +1976,23 @@ zetMetricQueryGetData(
                                                     ///< reports in raw format
     )
 {
+    #ifdef DYNAMIC_LOAD_LOADER
+    ze_result_t result = ZE_RESULT_SUCCESS;
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+    static const zet_pfnMetricQueryGetData_t pfnGetData = [&result] {
+        auto pfnGetData = ze_lib::context->zetDdiTable.load()->MetricQuery.pfnGetData;
+        if( nullptr == pfnGetData ) {
+            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+        }
+        return pfnGetData;
+    }();
+    if (result != ZE_RESULT_SUCCESS) {
+        return result;
+    }
+    return pfnGetData( hMetricQuery, pRawDataSize, pRawData );
+    #else
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
@@ -1413,6 +2006,7 @@ zetMetricQueryGetData(
     }
 
     return pfnGetData( hMetricQuery, pRawDataSize, pRawData );
+    #endif
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1442,6 +2036,23 @@ zetKernelGetProfileInfo(
     zet_profile_properties_t* pProfileProperties    ///< [out] pointer to profile properties
     )
 {
+    #ifdef DYNAMIC_LOAD_LOADER
+    ze_result_t result = ZE_RESULT_SUCCESS;
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+    static const zet_pfnKernelGetProfileInfo_t pfnGetProfileInfo = [&result] {
+        auto pfnGetProfileInfo = ze_lib::context->zetDdiTable.load()->Kernel.pfnGetProfileInfo;
+        if( nullptr == pfnGetProfileInfo ) {
+            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+        }
+        return pfnGetProfileInfo;
+    }();
+    if (result != ZE_RESULT_SUCCESS) {
+        return result;
+    }
+    return pfnGetProfileInfo( hKernel, pProfileProperties );
+    #else
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
@@ -1455,6 +2066,7 @@ zetKernelGetProfileInfo(
     }
 
     return pfnGetProfileInfo( hKernel, pProfileProperties );
+    #endif
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1486,6 +2098,23 @@ zetTracerExpCreate(
     zet_tracer_exp_handle_t* phTracer               ///< [out] pointer to handle of tracer object created
     )
 {
+    #ifdef DYNAMIC_LOAD_LOADER
+    ze_result_t result = ZE_RESULT_SUCCESS;
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+    static const zet_pfnTracerExpCreate_t pfnCreate = [&result] {
+        auto pfnCreate = ze_lib::context->zetDdiTable.load()->TracerExp.pfnCreate;
+        if( nullptr == pfnCreate ) {
+            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+        }
+        return pfnCreate;
+    }();
+    if (result != ZE_RESULT_SUCCESS) {
+        return result;
+    }
+    return pfnCreate( hContext, desc, phTracer );
+    #else
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
@@ -1499,6 +2128,7 @@ zetTracerExpCreate(
     }
 
     return pfnCreate( hContext, desc, phTracer );
+    #endif
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1526,6 +2156,23 @@ zetTracerExpDestroy(
     zet_tracer_exp_handle_t hTracer                 ///< [in][release] handle of tracer object to destroy
     )
 {
+    #ifdef DYNAMIC_LOAD_LOADER
+    ze_result_t result = ZE_RESULT_SUCCESS;
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+    static const zet_pfnTracerExpDestroy_t pfnDestroy = [&result] {
+        auto pfnDestroy = ze_lib::context->zetDdiTable.load()->TracerExp.pfnDestroy;
+        if( nullptr == pfnDestroy ) {
+            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+        }
+        return pfnDestroy;
+    }();
+    if (result != ZE_RESULT_SUCCESS) {
+        return result;
+    }
+    return pfnDestroy( hTracer );
+    #else
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
@@ -1539,6 +2186,7 @@ zetTracerExpDestroy(
     }
 
     return pfnDestroy( hTracer );
+    #endif
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1569,6 +2217,23 @@ zetTracerExpSetPrologues(
     zet_core_callbacks_t* pCoreCbs                  ///< [in] pointer to table of 'core' callback function pointers
     )
 {
+    #ifdef DYNAMIC_LOAD_LOADER
+    ze_result_t result = ZE_RESULT_SUCCESS;
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+    static const zet_pfnTracerExpSetPrologues_t pfnSetPrologues = [&result] {
+        auto pfnSetPrologues = ze_lib::context->zetDdiTable.load()->TracerExp.pfnSetPrologues;
+        if( nullptr == pfnSetPrologues ) {
+            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+        }
+        return pfnSetPrologues;
+    }();
+    if (result != ZE_RESULT_SUCCESS) {
+        return result;
+    }
+    return pfnSetPrologues( hTracer, pCoreCbs );
+    #else
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
@@ -1582,6 +2247,7 @@ zetTracerExpSetPrologues(
     }
 
     return pfnSetPrologues( hTracer, pCoreCbs );
+    #endif
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1612,6 +2278,23 @@ zetTracerExpSetEpilogues(
     zet_core_callbacks_t* pCoreCbs                  ///< [in] pointer to table of 'core' callback function pointers
     )
 {
+    #ifdef DYNAMIC_LOAD_LOADER
+    ze_result_t result = ZE_RESULT_SUCCESS;
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+    static const zet_pfnTracerExpSetEpilogues_t pfnSetEpilogues = [&result] {
+        auto pfnSetEpilogues = ze_lib::context->zetDdiTable.load()->TracerExp.pfnSetEpilogues;
+        if( nullptr == pfnSetEpilogues ) {
+            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+        }
+        return pfnSetEpilogues;
+    }();
+    if (result != ZE_RESULT_SUCCESS) {
+        return result;
+    }
+    return pfnSetEpilogues( hTracer, pCoreCbs );
+    #else
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
@@ -1625,6 +2308,7 @@ zetTracerExpSetEpilogues(
     }
 
     return pfnSetEpilogues( hTracer, pCoreCbs );
+    #endif
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1648,6 +2332,23 @@ zetTracerExpSetEnabled(
     ze_bool_t enable                                ///< [in] enable the tracer if true; disable if false
     )
 {
+    #ifdef DYNAMIC_LOAD_LOADER
+    ze_result_t result = ZE_RESULT_SUCCESS;
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+    static const zet_pfnTracerExpSetEnabled_t pfnSetEnabled = [&result] {
+        auto pfnSetEnabled = ze_lib::context->zetDdiTable.load()->TracerExp.pfnSetEnabled;
+        if( nullptr == pfnSetEnabled ) {
+            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+        }
+        return pfnSetEnabled;
+    }();
+    if (result != ZE_RESULT_SUCCESS) {
+        return result;
+    }
+    return pfnSetEnabled( hTracer, enable );
+    #else
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
@@ -1661,6 +2362,7 @@ zetTracerExpSetEnabled(
     }
 
     return pfnSetEnabled( hTracer, enable );
+    #endif
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1692,6 +2394,23 @@ zetDeviceGetConcurrentMetricGroupsExp(
                                                     ///< replays necessary.
     )
 {
+    #ifdef DYNAMIC_LOAD_LOADER
+    ze_result_t result = ZE_RESULT_SUCCESS;
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+    static const zet_pfnDeviceGetConcurrentMetricGroupsExp_t pfnGetConcurrentMetricGroupsExp = [&result] {
+        auto pfnGetConcurrentMetricGroupsExp = ze_lib::context->zetDdiTable.load()->DeviceExp.pfnGetConcurrentMetricGroupsExp;
+        if( nullptr == pfnGetConcurrentMetricGroupsExp ) {
+            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+        }
+        return pfnGetConcurrentMetricGroupsExp;
+    }();
+    if (result != ZE_RESULT_SUCCESS) {
+        return result;
+    }
+    return pfnGetConcurrentMetricGroupsExp( hDevice, metricGroupCount, phMetricGroups, pMetricGroupsCountPerConcurrentGroup, pConcurrentGroupCount );
+    #else
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
@@ -1705,6 +2424,7 @@ zetDeviceGetConcurrentMetricGroupsExp(
     }
 
     return pfnGetConcurrentMetricGroupsExp( hDevice, metricGroupCount, phMetricGroups, pMetricGroupsCountPerConcurrentGroup, pConcurrentGroupCount );
+    #endif
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1752,6 +2472,23 @@ zetMetricTracerCreateExp(
     zet_metric_tracer_exp_handle_t* phMetricTracer  ///< [out] handle of the metric tracer
     )
 {
+    #ifdef DYNAMIC_LOAD_LOADER
+    ze_result_t result = ZE_RESULT_SUCCESS;
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+    static const zet_pfnMetricTracerCreateExp_t pfnCreateExp = [&result] {
+        auto pfnCreateExp = ze_lib::context->zetDdiTable.load()->MetricTracerExp.pfnCreateExp;
+        if( nullptr == pfnCreateExp ) {
+            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+        }
+        return pfnCreateExp;
+    }();
+    if (result != ZE_RESULT_SUCCESS) {
+        return result;
+    }
+    return pfnCreateExp( hContext, hDevice, metricGroupCount, phMetricGroups, desc, hNotificationEvent, phMetricTracer );
+    #else
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
@@ -1765,6 +2502,7 @@ zetMetricTracerCreateExp(
     }
 
     return pfnCreateExp( hContext, hDevice, metricGroupCount, phMetricGroups, desc, hNotificationEvent, phMetricTracer );
+    #endif
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1787,6 +2525,23 @@ zetMetricTracerDestroyExp(
     zet_metric_tracer_exp_handle_t hMetricTracer    ///< [in] handle of the metric tracer
     )
 {
+    #ifdef DYNAMIC_LOAD_LOADER
+    ze_result_t result = ZE_RESULT_SUCCESS;
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+    static const zet_pfnMetricTracerDestroyExp_t pfnDestroyExp = [&result] {
+        auto pfnDestroyExp = ze_lib::context->zetDdiTable.load()->MetricTracerExp.pfnDestroyExp;
+        if( nullptr == pfnDestroyExp ) {
+            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+        }
+        return pfnDestroyExp;
+    }();
+    if (result != ZE_RESULT_SUCCESS) {
+        return result;
+    }
+    return pfnDestroyExp( hMetricTracer );
+    #else
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
@@ -1800,6 +2555,7 @@ zetMetricTracerDestroyExp(
     }
 
     return pfnDestroyExp( hMetricTracer );
+    #endif
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1830,6 +2586,23 @@ zetMetricTracerEnableExp(
                                                     ///< when the tracer is active.
     )
 {
+    #ifdef DYNAMIC_LOAD_LOADER
+    ze_result_t result = ZE_RESULT_SUCCESS;
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+    static const zet_pfnMetricTracerEnableExp_t pfnEnableExp = [&result] {
+        auto pfnEnableExp = ze_lib::context->zetDdiTable.load()->MetricTracerExp.pfnEnableExp;
+        if( nullptr == pfnEnableExp ) {
+            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+        }
+        return pfnEnableExp;
+    }();
+    if (result != ZE_RESULT_SUCCESS) {
+        return result;
+    }
+    return pfnEnableExp( hMetricTracer, synchronous );
+    #else
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
@@ -1843,6 +2616,7 @@ zetMetricTracerEnableExp(
     }
 
     return pfnEnableExp( hMetricTracer, synchronous );
+    #endif
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1874,6 +2648,23 @@ zetMetricTracerDisableExp(
                                                     ///< has no more data to be retrieved.
     )
 {
+    #ifdef DYNAMIC_LOAD_LOADER
+    ze_result_t result = ZE_RESULT_SUCCESS;
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+    static const zet_pfnMetricTracerDisableExp_t pfnDisableExp = [&result] {
+        auto pfnDisableExp = ze_lib::context->zetDdiTable.load()->MetricTracerExp.pfnDisableExp;
+        if( nullptr == pfnDisableExp ) {
+            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+        }
+        return pfnDisableExp;
+    }();
+    if (result != ZE_RESULT_SUCCESS) {
+        return result;
+    }
+    return pfnDisableExp( hMetricTracer, synchronous );
+    #else
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
@@ -1887,6 +2678,7 @@ zetMetricTracerDisableExp(
     }
 
     return pfnDisableExp( hMetricTracer, synchronous );
+    #endif
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1926,6 +2718,23 @@ zetMetricTracerReadDataExp(
                                                     ///< data in raw format
     )
 {
+    #ifdef DYNAMIC_LOAD_LOADER
+    ze_result_t result = ZE_RESULT_SUCCESS;
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+    static const zet_pfnMetricTracerReadDataExp_t pfnReadDataExp = [&result] {
+        auto pfnReadDataExp = ze_lib::context->zetDdiTable.load()->MetricTracerExp.pfnReadDataExp;
+        if( nullptr == pfnReadDataExp ) {
+            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+        }
+        return pfnReadDataExp;
+    }();
+    if (result != ZE_RESULT_SUCCESS) {
+        return result;
+    }
+    return pfnReadDataExp( hMetricTracer, pRawDataSize, pRawData );
+    #else
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
@@ -1939,6 +2748,7 @@ zetMetricTracerReadDataExp(
     }
 
     return pfnReadDataExp( hMetricTracer, pRawDataSize, pRawData );
+    #endif
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1960,6 +2770,23 @@ zetMetricDecoderCreateExp(
     zet_metric_decoder_exp_handle_t* phMetricDecoder///< [out] handle of the metric decoder object
     )
 {
+    #ifdef DYNAMIC_LOAD_LOADER
+    ze_result_t result = ZE_RESULT_SUCCESS;
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+    static const zet_pfnMetricDecoderCreateExp_t pfnCreateExp = [&result] {
+        auto pfnCreateExp = ze_lib::context->zetDdiTable.load()->MetricDecoderExp.pfnCreateExp;
+        if( nullptr == pfnCreateExp ) {
+            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+        }
+        return pfnCreateExp;
+    }();
+    if (result != ZE_RESULT_SUCCESS) {
+        return result;
+    }
+    return pfnCreateExp( hMetricTracer, phMetricDecoder );
+    #else
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
@@ -1973,6 +2800,7 @@ zetMetricDecoderCreateExp(
     }
 
     return pfnCreateExp( hMetricTracer, phMetricDecoder );
+    #endif
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1991,6 +2819,23 @@ zetMetricDecoderDestroyExp(
     zet_metric_decoder_exp_handle_t phMetricDecoder ///< [in] handle of the metric decoder object
     )
 {
+    #ifdef DYNAMIC_LOAD_LOADER
+    ze_result_t result = ZE_RESULT_SUCCESS;
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+    static const zet_pfnMetricDecoderDestroyExp_t pfnDestroyExp = [&result] {
+        auto pfnDestroyExp = ze_lib::context->zetDdiTable.load()->MetricDecoderExp.pfnDestroyExp;
+        if( nullptr == pfnDestroyExp ) {
+            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+        }
+        return pfnDestroyExp;
+    }();
+    if (result != ZE_RESULT_SUCCESS) {
+        return result;
+    }
+    return pfnDestroyExp( phMetricDecoder );
+    #else
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
@@ -2004,6 +2849,7 @@ zetMetricDecoderDestroyExp(
     }
 
     return pfnDestroyExp( phMetricDecoder );
+    #endif
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -2044,6 +2890,23 @@ zetMetricDecoderGetDecodableMetricsExp(
                                                     ///< the hMetricDecoder handle provided.
     )
 {
+    #ifdef DYNAMIC_LOAD_LOADER
+    ze_result_t result = ZE_RESULT_SUCCESS;
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+    static const zet_pfnMetricDecoderGetDecodableMetricsExp_t pfnGetDecodableMetricsExp = [&result] {
+        auto pfnGetDecodableMetricsExp = ze_lib::context->zetDdiTable.load()->MetricDecoderExp.pfnGetDecodableMetricsExp;
+        if( nullptr == pfnGetDecodableMetricsExp ) {
+            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+        }
+        return pfnGetDecodableMetricsExp;
+    }();
+    if (result != ZE_RESULT_SUCCESS) {
+        return result;
+    }
+    return pfnGetDecodableMetricsExp( hMetricDecoder, pCount, phMetrics );
+    #else
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
@@ -2057,6 +2920,7 @@ zetMetricDecoderGetDecodableMetricsExp(
     }
 
     return pfnGetDecodableMetricsExp( hMetricDecoder, pCount, phMetrics );
+    #endif
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -2119,6 +2983,23 @@ zetMetricTracerDecodeExp(
                                                     ///< decoded metric entries
     )
 {
+    #ifdef DYNAMIC_LOAD_LOADER
+    ze_result_t result = ZE_RESULT_SUCCESS;
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+    static const zet_pfnMetricTracerDecodeExp_t pfnDecodeExp = [&result] {
+        auto pfnDecodeExp = ze_lib::context->zetDdiTable.load()->MetricTracerExp.pfnDecodeExp;
+        if( nullptr == pfnDecodeExp ) {
+            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+        }
+        return pfnDecodeExp;
+    }();
+    if (result != ZE_RESULT_SUCCESS) {
+        return result;
+    }
+    return pfnDecodeExp( phMetricDecoder, pRawDataSize, pRawData, metricsCount, phMetrics, pSetCount, pMetricEntriesCountPerSet, pMetricEntriesCount, pMetricEntries );
+    #else
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
@@ -2132,6 +3013,7 @@ zetMetricTracerDecodeExp(
     }
 
     return pfnDecodeExp( phMetricDecoder, pRawDataSize, pRawData, metricsCount, phMetrics, pSetCount, pMetricEntriesCountPerSet, pMetricEntriesCount, pMetricEntries );
+    #endif
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -2189,6 +3071,23 @@ zetMetricGroupCalculateMultipleMetricValuesExp(
                                                     ///< then driver shall only calculate that number of metric values.
     )
 {
+    #ifdef DYNAMIC_LOAD_LOADER
+    ze_result_t result = ZE_RESULT_SUCCESS;
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+    static const zet_pfnMetricGroupCalculateMultipleMetricValuesExp_t pfnCalculateMultipleMetricValuesExp = [&result] {
+        auto pfnCalculateMultipleMetricValuesExp = ze_lib::context->zetDdiTable.load()->MetricGroupExp.pfnCalculateMultipleMetricValuesExp;
+        if( nullptr == pfnCalculateMultipleMetricValuesExp ) {
+            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+        }
+        return pfnCalculateMultipleMetricValuesExp;
+    }();
+    if (result != ZE_RESULT_SUCCESS) {
+        return result;
+    }
+    return pfnCalculateMultipleMetricValuesExp( hMetricGroup, type, rawDataSize, pRawData, pSetCount, pTotalMetricValueCount, pMetricCounts, pMetricValues );
+    #else
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
@@ -2202,6 +3101,7 @@ zetMetricGroupCalculateMultipleMetricValuesExp(
     }
 
     return pfnCalculateMultipleMetricValuesExp( hMetricGroup, type, rawDataSize, pRawData, pSetCount, pTotalMetricValueCount, pMetricCounts, pMetricValues );
+    #endif
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -2232,6 +3132,23 @@ zetMetricGroupGetGlobalTimestampsExp(
     uint64_t* metricTimestamp                       ///< [out] Metric timestamp.
     )
 {
+    #ifdef DYNAMIC_LOAD_LOADER
+    ze_result_t result = ZE_RESULT_SUCCESS;
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+    static const zet_pfnMetricGroupGetGlobalTimestampsExp_t pfnGetGlobalTimestampsExp = [&result] {
+        auto pfnGetGlobalTimestampsExp = ze_lib::context->zetDdiTable.load()->MetricGroupExp.pfnGetGlobalTimestampsExp;
+        if( nullptr == pfnGetGlobalTimestampsExp ) {
+            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+        }
+        return pfnGetGlobalTimestampsExp;
+    }();
+    if (result != ZE_RESULT_SUCCESS) {
+        return result;
+    }
+    return pfnGetGlobalTimestampsExp( hMetricGroup, synchronizedWithHost, globalTimestamp, metricTimestamp );
+    #else
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
@@ -2245,6 +3162,7 @@ zetMetricGroupGetGlobalTimestampsExp(
     }
 
     return pfnGetGlobalTimestampsExp( hMetricGroup, synchronizedWithHost, globalTimestamp, metricTimestamp );
+    #endif
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -2283,6 +3201,23 @@ zetMetricGroupGetExportDataExp(
     uint8_t * pExportData                           ///< [in,out][optional][range(0, *pExportDataSize)] buffer of exported data.
     )
 {
+    #ifdef DYNAMIC_LOAD_LOADER
+    ze_result_t result = ZE_RESULT_SUCCESS;
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+    static const zet_pfnMetricGroupGetExportDataExp_t pfnGetExportDataExp = [&result] {
+        auto pfnGetExportDataExp = ze_lib::context->zetDdiTable.load()->MetricGroupExp.pfnGetExportDataExp;
+        if( nullptr == pfnGetExportDataExp ) {
+            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+        }
+        return pfnGetExportDataExp;
+    }();
+    if (result != ZE_RESULT_SUCCESS) {
+        return result;
+    }
+    return pfnGetExportDataExp( hMetricGroup, pRawData, rawDataSize, pExportDataSize, pExportData );
+    #else
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
@@ -2296,6 +3231,7 @@ zetMetricGroupGetExportDataExp(
     }
 
     return pfnGetExportDataExp( hMetricGroup, pRawData, rawDataSize, pExportDataSize, pExportData );
+    #endif
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -2354,6 +3290,23 @@ zetMetricGroupCalculateMetricExportDataExp(
                                                     ///< then driver shall only calculate that number of metric values.
     )
 {
+    #ifdef DYNAMIC_LOAD_LOADER
+    ze_result_t result = ZE_RESULT_SUCCESS;
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+    static const zet_pfnMetricGroupCalculateMetricExportDataExp_t pfnCalculateMetricExportDataExp = [&result] {
+        auto pfnCalculateMetricExportDataExp = ze_lib::context->zetDdiTable.load()->MetricGroupExp.pfnCalculateMetricExportDataExp;
+        if( nullptr == pfnCalculateMetricExportDataExp ) {
+            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+        }
+        return pfnCalculateMetricExportDataExp;
+    }();
+    if (result != ZE_RESULT_SUCCESS) {
+        return result;
+    }
+    return pfnCalculateMetricExportDataExp( hDriver, type, exportDataSize, pExportData, pCalculateDescriptor, pSetCount, pTotalMetricValueCount, pMetricCounts, pMetricValues );
+    #else
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
@@ -2367,6 +3320,7 @@ zetMetricGroupCalculateMetricExportDataExp(
     }
 
     return pfnCalculateMetricExportDataExp( hDriver, type, exportDataSize, pExportData, pCalculateDescriptor, pSetCount, pTotalMetricValueCount, pMetricCounts, pMetricValues );
+    #endif
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -2401,6 +3355,23 @@ zetMetricProgrammableGetExp(
                                                     ///< then driver shall only retrieve that number of metric programmables.
     )
 {
+    #ifdef DYNAMIC_LOAD_LOADER
+    ze_result_t result = ZE_RESULT_SUCCESS;
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+    static const zet_pfnMetricProgrammableGetExp_t pfnGetExp = [&result] {
+        auto pfnGetExp = ze_lib::context->zetDdiTable.load()->MetricProgrammableExp.pfnGetExp;
+        if( nullptr == pfnGetExp ) {
+            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+        }
+        return pfnGetExp;
+    }();
+    if (result != ZE_RESULT_SUCCESS) {
+        return result;
+    }
+    return pfnGetExp( hDevice, pCount, phMetricProgrammables );
+    #else
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
@@ -2414,6 +3385,7 @@ zetMetricProgrammableGetExp(
     }
 
     return pfnGetExp( hDevice, pCount, phMetricProgrammables );
+    #endif
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -2438,6 +3410,23 @@ zetMetricProgrammableGetPropertiesExp(
     zet_metric_programmable_exp_properties_t* pProperties   ///< [in,out] properties of the metric programmable
     )
 {
+    #ifdef DYNAMIC_LOAD_LOADER
+    ze_result_t result = ZE_RESULT_SUCCESS;
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+    static const zet_pfnMetricProgrammableGetPropertiesExp_t pfnGetPropertiesExp = [&result] {
+        auto pfnGetPropertiesExp = ze_lib::context->zetDdiTable.load()->MetricProgrammableExp.pfnGetPropertiesExp;
+        if( nullptr == pfnGetPropertiesExp ) {
+            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+        }
+        return pfnGetPropertiesExp;
+    }();
+    if (result != ZE_RESULT_SUCCESS) {
+        return result;
+    }
+    return pfnGetPropertiesExp( hMetricProgrammable, pProperties );
+    #else
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
@@ -2451,6 +3440,7 @@ zetMetricProgrammableGetPropertiesExp(
     }
 
     return pfnGetPropertiesExp( hMetricProgrammable, pProperties );
+    #endif
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -2484,6 +3474,23 @@ zetMetricProgrammableGetParamInfoExp(
                                                     ///< then driver shall only retrieve that number of parameter info.
     )
 {
+    #ifdef DYNAMIC_LOAD_LOADER
+    ze_result_t result = ZE_RESULT_SUCCESS;
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+    static const zet_pfnMetricProgrammableGetParamInfoExp_t pfnGetParamInfoExp = [&result] {
+        auto pfnGetParamInfoExp = ze_lib::context->zetDdiTable.load()->MetricProgrammableExp.pfnGetParamInfoExp;
+        if( nullptr == pfnGetParamInfoExp ) {
+            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+        }
+        return pfnGetParamInfoExp;
+    }();
+    if (result != ZE_RESULT_SUCCESS) {
+        return result;
+    }
+    return pfnGetParamInfoExp( hMetricProgrammable, pParameterCount, pParameterInfo );
+    #else
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
@@ -2497,6 +3504,7 @@ zetMetricProgrammableGetParamInfoExp(
     }
 
     return pfnGetParamInfoExp( hMetricProgrammable, pParameterCount, pParameterInfo );
+    #endif
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -2532,6 +3540,23 @@ zetMetricProgrammableGetParamValueInfoExp(
                                                     ///< then driver shall only retrieve that number of value info.
     )
 {
+    #ifdef DYNAMIC_LOAD_LOADER
+    ze_result_t result = ZE_RESULT_SUCCESS;
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+    static const zet_pfnMetricProgrammableGetParamValueInfoExp_t pfnGetParamValueInfoExp = [&result] {
+        auto pfnGetParamValueInfoExp = ze_lib::context->zetDdiTable.load()->MetricProgrammableExp.pfnGetParamValueInfoExp;
+        if( nullptr == pfnGetParamValueInfoExp ) {
+            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+        }
+        return pfnGetParamValueInfoExp;
+    }();
+    if (result != ZE_RESULT_SUCCESS) {
+        return result;
+    }
+    return pfnGetParamValueInfoExp( hMetricProgrammable, parameterOrdinal, pValueInfoCount, pValueInfo );
+    #else
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
@@ -2545,6 +3570,7 @@ zetMetricProgrammableGetParamValueInfoExp(
     }
 
     return pfnGetParamValueInfoExp( hMetricProgrammable, parameterOrdinal, pValueInfoCount, pValueInfo );
+    #endif
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -2596,6 +3622,23 @@ zetMetricCreateFromProgrammableExp2(
                                                     ///< shall only retrieve that number of metric handles.
     )
 {
+    #ifdef DYNAMIC_LOAD_LOADER
+    ze_result_t result = ZE_RESULT_SUCCESS;
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+    static const zet_pfnMetricCreateFromProgrammableExp2_t pfnCreateFromProgrammableExp2 = [&result] {
+        auto pfnCreateFromProgrammableExp2 = ze_lib::context->zetDdiTable.load()->MetricExp.pfnCreateFromProgrammableExp2;
+        if( nullptr == pfnCreateFromProgrammableExp2 ) {
+            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+        }
+        return pfnCreateFromProgrammableExp2;
+    }();
+    if (result != ZE_RESULT_SUCCESS) {
+        return result;
+    }
+    return pfnCreateFromProgrammableExp2( hMetricProgrammable, parameterCount, pParameterValues, pName, pDescription, pMetricHandleCount, phMetricHandles );
+    #else
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
@@ -2609,6 +3652,7 @@ zetMetricCreateFromProgrammableExp2(
     }
 
     return pfnCreateFromProgrammableExp2( hMetricProgrammable, parameterCount, pParameterValues, pName, pDescription, pMetricHandleCount, phMetricHandles );
+    #endif
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -2653,6 +3697,23 @@ zetMetricCreateFromProgrammableExp(
                                                     ///< shall only retrieve that number of metric handles.
     )
 {
+    #ifdef DYNAMIC_LOAD_LOADER
+    ze_result_t result = ZE_RESULT_SUCCESS;
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+    static const zet_pfnMetricCreateFromProgrammableExp_t pfnCreateFromProgrammableExp = [&result] {
+        auto pfnCreateFromProgrammableExp = ze_lib::context->zetDdiTable.load()->MetricExp.pfnCreateFromProgrammableExp;
+        if( nullptr == pfnCreateFromProgrammableExp ) {
+            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+        }
+        return pfnCreateFromProgrammableExp;
+    }();
+    if (result != ZE_RESULT_SUCCESS) {
+        return result;
+    }
+    return pfnCreateFromProgrammableExp( hMetricProgrammable, pParameterValues, parameterCount, pName, pDescription, pMetricHandleCount, phMetricHandles );
+    #else
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
@@ -2666,6 +3727,7 @@ zetMetricCreateFromProgrammableExp(
     }
 
     return pfnCreateFromProgrammableExp( hMetricProgrammable, pParameterValues, parameterCount, pName, pDescription, pMetricHandleCount, phMetricHandles );
+    #endif
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -2715,6 +3777,23 @@ zetDeviceCreateMetricGroupsFromMetricsExp(
                                                     ///< Created Metric group handles.
     )
 {
+    #ifdef DYNAMIC_LOAD_LOADER
+    ze_result_t result = ZE_RESULT_SUCCESS;
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+    static const zet_pfnDeviceCreateMetricGroupsFromMetricsExp_t pfnCreateMetricGroupsFromMetricsExp = [&result] {
+        auto pfnCreateMetricGroupsFromMetricsExp = ze_lib::context->zetDdiTable.load()->DeviceExp.pfnCreateMetricGroupsFromMetricsExp;
+        if( nullptr == pfnCreateMetricGroupsFromMetricsExp ) {
+            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+        }
+        return pfnCreateMetricGroupsFromMetricsExp;
+    }();
+    if (result != ZE_RESULT_SUCCESS) {
+        return result;
+    }
+    return pfnCreateMetricGroupsFromMetricsExp( hDevice, metricCount, phMetrics, pMetricGroupNamePrefix, pDescription, pMetricGroupCount, phMetricGroup );
+    #else
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
@@ -2728,6 +3807,7 @@ zetDeviceCreateMetricGroupsFromMetricsExp(
     }
 
     return pfnCreateMetricGroupsFromMetricsExp( hDevice, metricCount, phMetrics, pMetricGroupNamePrefix, pDescription, pMetricGroupCount, phMetricGroup );
+    #endif
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -2763,6 +3843,23 @@ zetMetricGroupCreateExp(
     zet_metric_group_handle_t* phMetricGroup        ///< [in,out] Created Metric group handle
     )
 {
+    #ifdef DYNAMIC_LOAD_LOADER
+    ze_result_t result = ZE_RESULT_SUCCESS;
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+    static const zet_pfnMetricGroupCreateExp_t pfnCreateExp = [&result] {
+        auto pfnCreateExp = ze_lib::context->zetDdiTable.load()->MetricGroupExp.pfnCreateExp;
+        if( nullptr == pfnCreateExp ) {
+            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+        }
+        return pfnCreateExp;
+    }();
+    if (result != ZE_RESULT_SUCCESS) {
+        return result;
+    }
+    return pfnCreateExp( hDevice, pName, pDescription, samplingType, phMetricGroup );
+    #else
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
@@ -2776,6 +3873,7 @@ zetMetricGroupCreateExp(
     }
 
     return pfnCreateExp( hDevice, pName, pDescription, samplingType, phMetricGroup );
+    #endif
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -2819,6 +3917,23 @@ zetMetricGroupAddMetricExp(
                                                     ///< available, then driver shall only retrieve that length of error string.
     )
 {
+    #ifdef DYNAMIC_LOAD_LOADER
+    ze_result_t result = ZE_RESULT_SUCCESS;
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+    static const zet_pfnMetricGroupAddMetricExp_t pfnAddMetricExp = [&result] {
+        auto pfnAddMetricExp = ze_lib::context->zetDdiTable.load()->MetricGroupExp.pfnAddMetricExp;
+        if( nullptr == pfnAddMetricExp ) {
+            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+        }
+        return pfnAddMetricExp;
+    }();
+    if (result != ZE_RESULT_SUCCESS) {
+        return result;
+    }
+    return pfnAddMetricExp( hMetricGroup, hMetric, pErrorStringSize, pErrorString );
+    #else
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
@@ -2832,6 +3947,7 @@ zetMetricGroupAddMetricExp(
     }
 
     return pfnAddMetricExp( hMetricGroup, hMetric, pErrorStringSize, pErrorString );
+    #endif
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -2861,6 +3977,23 @@ zetMetricGroupRemoveMetricExp(
     zet_metric_handle_t hMetric                     ///< [in] Metric handle to be removed from the metric group.
     )
 {
+    #ifdef DYNAMIC_LOAD_LOADER
+    ze_result_t result = ZE_RESULT_SUCCESS;
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+    static const zet_pfnMetricGroupRemoveMetricExp_t pfnRemoveMetricExp = [&result] {
+        auto pfnRemoveMetricExp = ze_lib::context->zetDdiTable.load()->MetricGroupExp.pfnRemoveMetricExp;
+        if( nullptr == pfnRemoveMetricExp ) {
+            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+        }
+        return pfnRemoveMetricExp;
+    }();
+    if (result != ZE_RESULT_SUCCESS) {
+        return result;
+    }
+    return pfnRemoveMetricExp( hMetricGroup, hMetric );
+    #else
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
@@ -2874,6 +4007,7 @@ zetMetricGroupRemoveMetricExp(
     }
 
     return pfnRemoveMetricExp( hMetricGroup, hMetric );
+    #endif
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -2912,6 +4046,23 @@ zetMetricGroupCloseExp(
     zet_metric_group_handle_t hMetricGroup          ///< [in] Handle of the metric group
     )
 {
+    #ifdef DYNAMIC_LOAD_LOADER
+    ze_result_t result = ZE_RESULT_SUCCESS;
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+    static const zet_pfnMetricGroupCloseExp_t pfnCloseExp = [&result] {
+        auto pfnCloseExp = ze_lib::context->zetDdiTable.load()->MetricGroupExp.pfnCloseExp;
+        if( nullptr == pfnCloseExp ) {
+            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+        }
+        return pfnCloseExp;
+    }();
+    if (result != ZE_RESULT_SUCCESS) {
+        return result;
+    }
+    return pfnCloseExp( hMetricGroup );
+    #else
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
@@ -2925,6 +4076,7 @@ zetMetricGroupCloseExp(
     }
 
     return pfnCloseExp( hMetricGroup );
+    #endif
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -2937,6 +4089,8 @@ zetMetricGroupCloseExp(
 ///     - It is necessary to call ::zetMetricDestroyExp for each of the metric
 ///       handles (created from ::zetMetricCreateFromProgrammableExp2) to
 ///       destroy them.
+///     - It is not necessary to remove the metrics in the metricGroup before
+///       destroying it.
 /// 
 /// @returns
 ///     - ::ZE_RESULT_SUCCESS
@@ -2955,6 +4109,23 @@ zetMetricGroupDestroyExp(
     zet_metric_group_handle_t hMetricGroup          ///< [in] Handle of the metric group to destroy
     )
 {
+    #ifdef DYNAMIC_LOAD_LOADER
+    ze_result_t result = ZE_RESULT_SUCCESS;
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+    static const zet_pfnMetricGroupDestroyExp_t pfnDestroyExp = [&result] {
+        auto pfnDestroyExp = ze_lib::context->zetDdiTable.load()->MetricGroupExp.pfnDestroyExp;
+        if( nullptr == pfnDestroyExp ) {
+            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+        }
+        return pfnDestroyExp;
+    }();
+    if (result != ZE_RESULT_SUCCESS) {
+        return result;
+    }
+    return pfnDestroyExp( hMetricGroup );
+    #else
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
@@ -2968,6 +4139,7 @@ zetMetricGroupDestroyExp(
     }
 
     return pfnDestroyExp( hMetricGroup );
+    #endif
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -2994,6 +4166,23 @@ zetMetricDestroyExp(
     zet_metric_handle_t hMetric                     ///< [in] Handle of the metric to destroy
     )
 {
+    #ifdef DYNAMIC_LOAD_LOADER
+    ze_result_t result = ZE_RESULT_SUCCESS;
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+    static const zet_pfnMetricDestroyExp_t pfnDestroyExp = [&result] {
+        auto pfnDestroyExp = ze_lib::context->zetDdiTable.load()->MetricExp.pfnDestroyExp;
+        if( nullptr == pfnDestroyExp ) {
+            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+        }
+        return pfnDestroyExp;
+    }();
+    if (result != ZE_RESULT_SUCCESS) {
+        return result;
+    }
+    return pfnDestroyExp( hMetric );
+    #else
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
@@ -3007,6 +4196,7 @@ zetMetricDestroyExp(
     }
 
     return pfnDestroyExp( hMetric );
+    #endif
 }
 
 } // extern "C"

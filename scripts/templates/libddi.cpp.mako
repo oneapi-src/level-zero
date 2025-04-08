@@ -43,6 +43,10 @@ namespace ${x}_lib
                 GET_FUNCTION_PTR(loader, "${tbl['export']['name']}") );
             result = getTableWithCheck(getTable, version, &initial${n}DdiTable.${tbl['name']} );
     %endif
+            %for obj in tbl['functions']:
+            initial${n}DdiTable.${tbl['name']}.${th.make_pfn_name(n, tags, obj)} = reinterpret_cast<${th.make_pfn_type(n, tags, obj)}>(
+                GET_FUNCTION_PTR(loader, "${th.make_func_name(n, tags, obj)}") );
+            %endfor
         }
 
     %endfor
