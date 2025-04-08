@@ -251,7 +251,7 @@ install(FILES ${LEVEL_ZERO_LOADER_API_HEADERS}
     COMPONENT ${SDK_COMPONENT_STRING}
 )
 
-set(PRODUCT_GUID_FILE "${CMAKE_SOURCE_DIR}/PRODUCT_GUID.txt")
+set(PRODUCT_GUID_FILE "${CMAKE_CURRENT_SOURCE_DIR}/PRODUCT_GUID.txt")
 if(EXISTS "${PRODUCT_GUID_FILE}")
     file(STRINGS "${PRODUCT_GUID_FILE}" SAVED_PRODUCT_GUID)
     list(GET SAVED_PRODUCT_GUID 0 SAVED_PRODUCT_GUID_VERSION)
@@ -260,7 +260,7 @@ if(EXISTS "${PRODUCT_GUID_FILE}")
     if(NOT SAVED_PRODUCT_GUID_VERSION STREQUAL "${PROJECT_VERSION}")
 
     execute_process(
-        COMMAND python ${CMAKE_SOURCE_DIR}/scripts/generate_wix_guid.py
+        COMMAND python ${CMAKE_CURRENT_SOURCE_DIR}/scripts/generate_wix_guid.py
         OUTPUT_VARIABLE GENERATED_PRODUCT_GUID
         OUTPUT_STRIP_TRAILING_WHITESPACE
     )
@@ -272,7 +272,7 @@ if(EXISTS "${PRODUCT_GUID_FILE}")
     endif()
 else()
     execute_process(
-    COMMAND python ${CMAKE_SOURCE_DIR}/scripts/generate_wix_guid.py
+    COMMAND python ${CMAKE_CURRENT_SOURCE_DIR}/scripts/generate_wix_guid.py
     OUTPUT_VARIABLE GENERATED_PRODUCT_GUID
     OUTPUT_STRIP_TRAILING_WHITESPACE
     )
@@ -297,21 +297,21 @@ if(NOT DEFINED CPACK_GENERATOR)
 
         set(CMAKE_INSTALL_PREFIX "LevelZeroSDK/${PROJECT_VERSION}/")
         # Add the script to the install directory
-        install(FILES "${CMAKE_SOURCE_DIR}/scripts/level_zero_sdk_setup.ps1"
+        install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/scripts/level_zero_sdk_setup.ps1"
             DESTINATION ./scripts
             COMPONENT ${SDK_COMPONENT_STRING}
         )
 
-        set(CPACK_WIX_PATCH_FILE "${CMAKE_SOURCE_DIR}/scripts/wix_env_installation.wxs")
+        set(CPACK_WIX_PATCH_FILE "${CMAKE_CURRENT_SOURCE_DIR}/scripts/wix_env_installation.wxs")
 
         # sharing GUIDs between product and upgrade codes such that side by side installation is allowed.
         set(CPACK_WIX_PRODUCT_GUID ${GENERATED_PRODUCT_GUID})
         set(CPACK_WIX_UPGRADE_GUID ${GENERATED_PRODUCT_GUID})
-        set(CPACK_WIX_UI_DIALOG "${CMAKE_SOURCE_DIR}/icons/oneapi-icon-left-aligned.png")
-        set(CPACK_WIX_UI_BANNER "${CMAKE_SOURCE_DIR}/icons/oneapi-icon-right-aligned.png")
+        set(CPACK_WIX_UI_DIALOG "${CMAKE_CURRENT_SOURCE_DIR}/icons/oneapi-icon-left-aligned.png")
+        set(CPACK_WIX_UI_BANNER "${CMAKE_CURRENT_SOURCE_DIR}/icons/oneapi-icon-right-aligned.png")
         get_cmake_property(CPACK_COMPONENTS_ALL COMPONENTS)
         list(REMOVE_ITEM CPACK_COMPONENTS_ALL "Loader")
-        set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_SOURCE_DIR}/LICENSES/MIT.txt")
+        set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSES/MIT.txt")
 	else()
 		set(CPACK_GENERATOR "ZIP")
 	endif()
