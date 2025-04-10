@@ -67,6 +67,9 @@ namespace loader
             drv.initStatus = drv.dditable.${n}.${th.get_table_name(n, tags, obj)}.${th.make_pfn_name(n, tags, obj)}( ${", ".join(th.make_param_lines(n, tags, obj, format=["name"]))} );
             if(drv.initStatus == ZE_RESULT_SUCCESS)
                 atLeastOneDriverValid = true;
+            %if re.match(r"Init", obj['name']) and namespace == "ze":
+            drv.legacyInitAttempted = true;
+            %endif
             %endif
         }
 

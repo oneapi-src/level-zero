@@ -29,6 +29,7 @@ namespace loader
             drv.initStatus = drv.dditable.ze.Global.pfnInit( flags );
             if(drv.initStatus == ZE_RESULT_SUCCESS)
                 atLeastOneDriverValid = true;
+            drv.legacyInitAttempted = true;
         }
 
         if(!atLeastOneDriverValid)
