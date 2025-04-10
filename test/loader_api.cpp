@@ -271,6 +271,19 @@ TEST(
 
 TEST(
   LoaderInit,
+  GivenLevelZeroLoaderPresentWithMultipleDriversMissingInitDriversInOneDriverWhenCallingZeInitDriversThenExpectSuccessForZeInitDrivers) {
+
+  uint32_t pInitDriversCount = 0;
+  ze_init_driver_type_desc_t desc = {ZE_STRUCTURE_TYPE_INIT_DRIVER_TYPE_DESC};
+  desc.flags = UINT32_MAX;
+  desc.pNext = nullptr;
+  putenv_safe( const_cast<char *>( "ZEL_TEST_MISSING_API_DRIVER_ID=zeInitDrivers:1" ) );
+  EXPECT_EQ(ZE_RESULT_SUCCESS, zeInitDrivers(&pInitDriversCount, nullptr, &desc));
+  EXPECT_GT(pInitDriversCount, 0);
+}
+
+TEST(
+  LoaderInit,
   GivenLevelZeroLoaderPresentWithMultipleDriversMissingInitDriversWhenCallingZeInitDriversThenExpectSuccessForZeInitWithDriverGetAfterInitDrivers) {
 
   uint32_t pInitDriversCount = 0;

@@ -15,6 +15,10 @@
 #include "zes_ddi.h"
 #include "ze_util.h"
 
+#ifndef ZEL_NULL_DRIVER_ID
+#define ZEL_NULL_DRIVER_ID 1
+#endif
+
 namespace driver
 {
     ///////////////////////////////////////////////////////////////////////////////

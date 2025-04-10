@@ -134,7 +134,11 @@ ${tbl['export']['name']}(
     pDdiTable->pfnInit                                   = driver::zeInit;
 
     auto missing_api = getenv_string( "ZEL_TEST_MISSING_API" );
-    if (std::strcmp(missing_api.c_str(), "zeInitDrivers") == 0) {
+    auto missing_api_driver_id = getenv_string( "ZEL_TEST_MISSING_API_DRIVER_ID" );
+    std::string zeInitDriversWithNullDriverId = "zeInitDrivers:" + std::to_string(ZEL_NULL_DRIVER_ID);
+    if (std::strcmp(missing_api_driver_id.c_str(), zeInitDriversWithNullDriverId.c_str()) == 0) {
+        pDdiTable->pfnInitDrivers                            = nullptr;
+    } else if (std::strcmp(missing_api.c_str(), "zeInitDrivers") == 0) {
         pDdiTable->pfnInitDrivers                            = nullptr;
     } else {
         pDdiTable->pfnInitDrivers                            = driver::zeInitDrivers;
