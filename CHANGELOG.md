@@ -1,5 +1,12 @@
 # Level zero loader changelog
 
+## v1.21.9
+* Fix init checks when sorting legacy drivers
+* Fix MSVC Link optimization flags
+* Fix GUID handling when sub project
+* Fix dynamic tracing support with static loader
+* Always check and update the GUID when version changes
+* Added zelCheckIsLoaderInTearDown function to check if the loader is in teardown
 ## v1.21.8
 * Add flags for windows optimization during linkage.
 ## v1.21.7
