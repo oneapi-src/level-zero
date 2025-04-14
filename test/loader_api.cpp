@@ -12,13 +12,78 @@
 #include "ze_api.h"
 #include "zes_api.h"
 
+#include <fstream>
+
+#if defined(__linux__)
+#include <cstdlib>
+#include <sys/types.h>
+#include <unistd.h>
+#elif defined(_WIN32)
+#include <cstdio>
+#include <io.h>
+#include <fcntl.h>
+#endif
+
 #if defined(_WIN32)
-    #define putenv_safe _putenv
+#define putenv_safe _putenv
 #else
-    #define putenv_safe putenv
+#define putenv_safe putenv
 #endif
 
 namespace {
+
+    class CaptureOutput {
+    private:
+        int original_fd;
+        int fd;
+        int stream;
+        std::string filename;
+
+    public:
+        enum { Stdout = 1, Stderr = 2 };
+
+        CaptureOutput(int stream_) : stream(stream_) {
+            original_fd = _dup(stream);
+#if defined(__linux__)
+            filename = "/tmp/capture_output_XXXXXX";
+            fd = mkstemp(filename.data());
+#elif defined(_WIN32)
+            char buffer[50];
+            tmpnam_s(buffer, 50);
+            filename = std::string(buffer);
+            std::cout << filename << "\n";
+            std::cout << _sopen_s(&fd, filename.c_str(), _O_CREAT | _O_RDWR, _SH_DENYNO, _S_IREAD | _S_IWRITE);
+#endif
+            fflush(nullptr);
+            _dup2(fd, stream);
+            _close(fd);
+        }
+
+        ~CaptureOutput() {
+            if (original_fd != -1) {
+                fflush(nullptr);
+                _dup2(original_fd, stream);
+                _close(original_fd);
+                original_fd = -1;
+            }
+            if (remove(filename.c_str()) != 0) {
+                std::cerr << "Deleting file " << filename.c_str() << " failed.";
+            }
+        }
+
+        std::string GetOutput() {
+            if (original_fd != -1) {
+                fflush(nullptr);
+                _dup2(original_fd, stream);
+                _close(original_fd);
+                original_fd = -1;
+            }
+            std::ifstream stream(filename);
+            std::string output = std::string((std::istreambuf_iterator<char>(stream)),
+                std::istreambuf_iterator<char>());
+            return output;
+        }
+    };
 
 TEST(
     LoaderAPI,
@@ -355,6 +420,21 @@ TEST(
   EXPECT_GT(pInitDriversCount, 0);
   EXPECT_EQ(ZE_RESULT_SUCCESS, zesDriverGet(&pDriverGetCount, nullptr));
   EXPECT_GT(pDriverGetCount, 0);
+}
+
+TEST(
+  LoaderInit,
+  GivenZeInitDriverWhenCalledThenNoOutputIsPrintedToStdout) {
+    uint32_t pInitDriversCount = 0;
+    ze_init_driver_type_desc_t desc = { ZE_STRUCTURE_TYPE_INIT_DRIVER_TYPE_DESC };
+    desc.flags = UINT32_MAX;
+    desc.pNext = nullptr;
+
+    CaptureOutput capture(CaptureOutput::Stdout);
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeInitDrivers(&pInitDriversCount, nullptr, &desc));
+    
+    std::string output = capture.GetOutput();
+    EXPECT_TRUE(output.empty());
 }
 
 TEST(
