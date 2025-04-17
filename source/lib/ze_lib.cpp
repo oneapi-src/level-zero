@@ -1,3 +1,4 @@
+
 /*
  *
  * Copyright (C) 2019-2021 Intel Corporation
@@ -27,6 +28,11 @@ namespace ze_lib
         }
     }
     bool delayContextDestruction = false;
+    std::mutex stabilityMutex;
+    std::promise<int> stabilityPromiseResult;
+    std::future<int> resultFutureResult;
+    std::atomic<int> stabilityCheckThreadStarted{0};
+    std::thread stabilityThread;
     #endif
     bool destruction = false;
 
@@ -42,6 +48,14 @@ namespace ze_lib
 #ifdef DYNAMIC_LOAD_LOADER
         if (loader) {
             FREE_DRIVER_LIBRARY( loader );
+        }
+        ze_lib::stabilityCheckThreadStarted = -1;
+        try {
+            if (stabilityThread.joinable()) {
+                stabilityThread.join();
+            }
+        } catch (...) {
+            // Ignore any exceptions from thread join
         }
 #endif
         ze_lib::destruction = true;
@@ -490,18 +504,45 @@ zelCheckIsLoaderInTearDown() {
         return true;
     }
     #ifdef DYNAMIC_LOAD_LOADER
-    std::promise<int> stabilityPromise;
-    std::future<int> resultFuture = stabilityPromise.get_future();
-    int result = -1;
+    static bool unstable = false;
+    int threadResult = -1;
+    if (unstable) {
+        return true;
+    }
     try {
-        // Launch the stability checker thread
-        std::thread stabilityThread(stabilityCheck, std::move(stabilityPromise));
-        result = resultFuture.get(); // Blocks until the result is available
-        if (ze_lib::context->debugTraceEnabled) {
-            std::string message = "Stability checker thread completed with result: " + std::to_string(result);
-            ze_lib::context->debug_trace_message(message, "");
-        }
-        stabilityThread.join();
+        // Launch the stability checker thread on the first call
+        static std::once_flag stabilityThreadFlag;
+        std::lock_guard<std::mutex> lock(ze_lib::stabilityMutex);
+        ze_lib::stabilityPromiseResult = std::promise<int>();
+        ze_lib::resultFutureResult = ze_lib::stabilityPromiseResult.get_future();
+        ze_lib::stabilityCheckThreadStarted = 1;
+        std::call_once(stabilityThreadFlag, []() {
+            ze_lib::stabilityThread = std::thread([]() {
+            while (true) {
+                std::promise<int> stabilityPromise;
+                std::future<int> resultFuture = stabilityPromise.get_future();
+                while(ze_lib::stabilityCheckThreadStarted == 0) {
+                    std::this_thread::sleep_for(std::chrono::milliseconds(1));
+                }
+                if (ze_lib::stabilityCheckThreadStarted == -1) {
+                    break;
+                }
+                ze_lib::stabilityCheckThreadStarted = 0;
+                stabilityCheck(std::move(stabilityPromise));
+                int result = resultFuture.get();
+                if (result != ZEL_STABILITY_CHECK_RESULT_SUCCESS) {
+                    if (ze_lib::context->debugTraceEnabled) {
+                        std::string message = "Loader stability check thread failed with result: " + std::to_string(result);
+                        ze_lib::context->debug_trace_message(message, "");
+                    }
+                    ze_lib::stabilityPromiseResult.set_value(result);
+                    break; // Exit the thread if stability check fails
+                }
+                ze_lib::stabilityPromiseResult.set_value(result);
+            }
+            });
+        });
+        threadResult = ze_lib::resultFutureResult.get();
     } catch (const std::exception& e) {
         if (ze_lib::context->debugTraceEnabled) {
             std::string message = "Exception caught in parent thread: " + std::string(e.what());
@@ -513,11 +554,12 @@ zelCheckIsLoaderInTearDown() {
             ze_lib::context->debug_trace_message(message, "");
         }
     }
-    if (result != ZEL_STABILITY_CHECK_RESULT_SUCCESS) {
+    if (threadResult != ZEL_STABILITY_CHECK_RESULT_SUCCESS) {
         if (ze_lib::context->debugTraceEnabled) {
-            std::string message = "Loader stability check failed with result: " + std::to_string(result);
+            std::string message = "Loader stability check failed with result: " + std::to_string(threadResult);
             ze_lib::context->debug_trace_message(message, "");
         }
+        unstable = true;
         return true;
     }
     #endif
