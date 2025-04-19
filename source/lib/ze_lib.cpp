@@ -127,7 +127,7 @@ namespace ze_lib
             }
             try {
                 ze_lib::sharedFuture->wait();
-                if (ze_lib::sharedFuture == nullptr || ze_lib::shared Result == nullptr)
+                if (ze_lib::sharedFuture == nullptr || ze_lib::sharedResult == nullptr)
                     return;
                 auto signalValue = ze_lib::sharedFuture->get();
                 *ze_lib::sharedSignal = std::promise<int>();
