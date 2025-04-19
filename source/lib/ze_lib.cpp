@@ -127,7 +127,11 @@ namespace ze_lib
             }
             try {
                 ze_lib::sharedFuture->wait();
+                if (ze_lib::sharedFuture == nullptr || ze_lib::shared Result == nullptr)
+                    return;
                 auto signalValue = ze_lib::sharedFuture->get();
+                *ze_lib::sharedSignal = std::promise<int>();
+                *ze_lib::sharedFuture = ze_lib::sharedSignal->get_future().share();
                 if (signalValue == ZEL_STABILITY_THREAD_EXIT) {
                     ze_lib::sharedResult->set_value(ZEL_STABILITY_CHECK_RESULT_SUCCESS);
                     return;
@@ -154,8 +158,6 @@ namespace ze_lib
                     return;
                 }
                 ze_lib::sharedResult->set_value(ZEL_STABILITY_CHECK_RESULT_SUCCESS);
-                *ze_lib::sharedSignal = std::promise<int>();
-                *ze_lib::sharedFuture = ze_lib::sharedSignal->get_future().share();
             } catch (...) {
                 ze_lib::sharedResult->set_value(ZEL_STABILITY_CHECK_RESULT_EXCEPTION);
                 return;
