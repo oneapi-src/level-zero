@@ -424,6 +424,8 @@ zelSetDelayLoaderContextTeardown()
 #define ZEL_STABILITY_CHECK_RESULT_DRIVER_GET_NULL 1
 #define ZEL_STABILITY_CHECK_RESULT_DRIVER_GET_FAILED 2
 #define ZEL_STABILITY_CHECK_RESULT_EXCEPTION 3
+// The stability check thread timeout in milliseconds
+#define ZEL_STABILITY_CHECK_THREAD_TIMEOUT 100
 
 /**
  * @brief Performs a stability check for the Level Zero loader.
@@ -453,33 +455,28 @@ zelSetDelayLoaderContextTeardown()
  * @exception This function catches all exceptions internally and does not throw.
  */
 void stabilityCheck(std::promise<int> stabilityPromise) {
-    try {
-        if (!ze_lib::context->loaderDriverGet) {
-            if (ze_lib::context->debugTraceEnabled) {
-                std::string message = "LoaderDriverGet is a bad pointer. Exiting stability checker thread.";
-                ze_lib::context->debug_trace_message(message, "");
-            }
-            stabilityPromise.set_value(ZEL_STABILITY_CHECK_RESULT_DRIVER_GET_NULL);
-            return;
+    if (!ze_lib::context->loaderDriverGet) {
+        if (ze_lib::context->debugTraceEnabled) {
+            std::string message = "LoaderDriverGet is a bad pointer. Exiting stability checker thread.";
+            ze_lib::context->debug_trace_message(message, "");
         }
-
-        uint32_t driverCount = 0;
-        ze_result_t result = ZE_RESULT_ERROR_UNINITIALIZED;
-        result = ze_lib::context->loaderDriverGet(&driverCount, nullptr);
-        if (result != ZE_RESULT_SUCCESS || driverCount == 0) {
-            if (ze_lib::context->debugTraceEnabled) {
-                std::string message = "Loader stability check failed. Exiting stability checker thread.";
-                ze_lib::context->debug_trace_message(message, "");
-            }
-            stabilityPromise.set_value(ZEL_STABILITY_CHECK_RESULT_DRIVER_GET_FAILED);
-            return;
-        }
-        stabilityPromise.set_value(ZEL_STABILITY_CHECK_RESULT_SUCCESS);
-        return;
-    } catch (...) {
-        stabilityPromise.set_value(ZEL_STABILITY_CHECK_RESULT_EXCEPTION);
+        stabilityPromise.set_value(ZEL_STABILITY_CHECK_RESULT_DRIVER_GET_NULL);
         return;
     }
+
+    uint32_t driverCount = 0;
+    ze_result_t result = ZE_RESULT_ERROR_UNINITIALIZED;
+    result = ze_lib::context->loaderDriverGet(&driverCount, nullptr);
+    if (result != ZE_RESULT_SUCCESS || driverCount == 0) {
+        if (ze_lib::context->debugTraceEnabled) {
+            std::string message = "Loader stability check failed. Exiting stability checker thread.";
+            ze_lib::context->debug_trace_message(message, "");
+        }
+        stabilityPromise.set_value(ZEL_STABILITY_CHECK_RESULT_DRIVER_GET_FAILED);
+        return;
+    }
+    stabilityPromise.set_value(ZEL_STABILITY_CHECK_RESULT_SUCCESS);
+    return;
 }
 #endif
 
@@ -541,8 +538,17 @@ zelCheckIsLoaderInTearDown() {
                 ze_lib::stabilityPromiseResult.set_value(result);
             }
             });
+            ze_lib::stabilityThread.detach();
         });
-        threadResult = ze_lib::resultFutureResult.get();
+        if (ze_lib::resultFutureResult.wait_for(std::chrono::milliseconds(ZEL_STABILITY_CHECK_THREAD_TIMEOUT)) == std::future_status::timeout) {
+            if (ze_lib::context->debugTraceEnabled) {
+                std::string message = "Stability Thread timeout, assuming thread has crashed";
+                ze_lib::context->debug_trace_message(message, "");
+            }
+            threadResult = ZEL_STABILITY_CHECK_RESULT_EXCEPTION;
+        } else {
+            threadResult = ze_lib::resultFutureResult.get();
+        }
     } catch (const std::exception& e) {
         if (ze_lib::context->debugTraceEnabled) {
             std::string message = "Exception caught in parent thread: " + std::string(e.what());
