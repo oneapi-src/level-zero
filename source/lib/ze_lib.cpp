@@ -49,24 +49,35 @@ namespace ze_lib
         if (loader) {
             FREE_DRIVER_LIBRARY( loader );
         }
-        ze_lib::stabilityCheckThreadStarted->store(-1);
+        if (ze_lib::stabilityCheckThreadStarted)
+            ze_lib::stabilityCheckThreadStarted->store(-1);
         try {
-            if (stabilityThread->joinable()) {
+            if (stabilityThread && stabilityThread->joinable()) {
                 stabilityThread->join();
             }
         } catch (...) {
             // Ignore any exceptions from thread join
         }
-        delete stabilityThread;
-        stabilityThread = nullptr;
-        delete stabilityMutex;
-        stabilityMutex = nullptr;
-        delete stabilityPromiseResult;
-        stabilityPromiseResult = nullptr;
-        delete resultFutureResult;
-        resultFutureResult = nullptr;
-        delete stabilityCheckThreadStarted;
-        stabilityCheckThreadStarted = nullptr;
+        if (stabilityThread) {
+            delete stabilityThread;
+            stabilityThread = nullptr;
+        }
+        if (stabilityMutex) {
+            delete stabilityMutex;
+            stabilityMutex = nullptr;
+        }
+        if (stabilityPromiseResult) {
+            delete stabilityPromiseResult;
+            stabilityPromiseResult = nullptr;
+        }
+        if (resultFutureResult) {
+            delete resultFutureResult;
+            resultFutureResult = nullptr;
+        }
+        if (stabilityCheckThreadStarted) {
+            delete stabilityCheckThreadStarted;
+            stabilityCheckThreadStarted = nullptr;
+        }
 #endif
         ze_lib::destruction = true;
     };
