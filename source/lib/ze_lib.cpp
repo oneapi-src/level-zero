@@ -455,39 +455,32 @@ zelSetDelayLoaderContextTeardown()
 /**
  * @brief Performs a stability check for the Level Zero loader.
  *
- * This function checks the stability of the Level Zero loader by verifying
- * the presence of the loader module, the validity of the `zeDriverGet` function
- * pointer, and the ability to retrieve driver information. The result of the
- * stability check is communicated through the provided promise.
+ * This function verifies the stability of the Level Zero loader by checking:
+ * - The presence of the loader module.
+ * - The validity of the `zeDriverGet` function pointer.
+ * - The ability to retrieve driver information.
  *
- * @param stabilityPromise A promise object used to communicate the result of
- *                         the stability check. The promise is set with one of
- *                         the following values:
- *                         - ZEL_STABILITY_CHECK_RESULT_DRIVER_GET_NULL: The
- *                           `zeDriverGet` function pointer is invalid.
- *                         - ZEL_STABILITY_CHECK_RESULT_DRIVER_GET_FAILED: The
- *                           loader failed to retrieve driver information.
- *                         - ZEL_STABILITY_CHECK_RESULT_EXCEPTION: An
- *                           exception occurred during the stability check.
- *                         - ZEL_STABILITY_CHECK_RESULT_SUCCESS: The stability
- *                           check was successful.
+ * The result of the stability check is returned as an integer, with the following possible values:
+ * - `ZEL_STABILITY_CHECK_RESULT_SUCCESS`: The stability check was successful.
+ * - `ZEL_STABILITY_CHECK_RESULT_DRIVER_GET_NULL`: The `zeDriverGet` function pointer is invalid.
+ * - `ZEL_STABILITY_CHECK_RESULT_DRIVER_GET_FAILED`: The loader failed to retrieve driver information.
+ * - `ZEL_STABILITY_CHECK_RESULT_EXCEPTION`: An exception occurred during the stability check.
  *
- * @note If debug tracing is enabled, debug messages are logged for each failure
- *       scenario.
- * @note If the Loader is completely torn down, this thread is expected to be killed
- *      due to invalid memory access and the stability check will determine a failure.
+ * If debug tracing is enabled, debug messages are logged for each failure scenario.
  *
- * @exception This function catches all exceptions internally and does not throw.
+ * @return An integer indicating the result of the stability check.
+ *
+ * @note If the loader is completely torn down, this function may fail due to invalid memory access.
+ * @note This function catches all exceptions internally and does not throw.
  */
-void stabilityCheck(std::promise<int> stabilityPromise) {
+int stabilityCheck() {
     try {
         if (!ze_lib::context->loaderDriverGet) {
             if (ze_lib::context->debugTraceEnabled) {
                 std::string message = "LoaderDriverGet is a bad pointer. Exiting stability checker.";
                 ze_lib::context->debug_trace_message(message, "");
             }
-            stabilityPromise.set_value(ZEL_STABILITY_CHECK_RESULT_DRIVER_GET_NULL);
-            return;
+            return ZEL_STABILITY_CHECK_RESULT_DRIVER_GET_NULL;
         }
 
         uint32_t driverCount = 0;
@@ -498,14 +491,11 @@ void stabilityCheck(std::promise<int> stabilityPromise) {
                 std::string message = "Loader stability check failed. Exiting stability checker.";
                 ze_lib::context->debug_trace_message(message, "");
             }
-            stabilityPromise.set_value(ZEL_STABILITY_CHECK_RESULT_DRIVER_GET_FAILED);
-            return;
+            return ZEL_STABILITY_CHECK_RESULT_DRIVER_GET_FAILED;
         }
-        stabilityPromise.set_value(ZEL_STABILITY_CHECK_RESULT_SUCCESS);
-        return;
+        return ZEL_STABILITY_CHECK_RESULT_SUCCESS;
     } catch (...) {
-        stabilityPromise.set_value(ZEL_STABILITY_CHECK_RESULT_EXCEPTION);
-        return;
+        return ZEL_STABILITY_CHECK_RESULT_EXCEPTION;
     }
 }
 #endif
@@ -546,54 +536,35 @@ zelCheckIsLoaderInTearDown() {
         std::call_once(stabilityThreadFlag, []() {
             ze_lib::stabilityThread =  new std::thread([]() {
             while (true) {
-                try {
-                    std::promise<int> stabilityPromise;
-                    std::future<int> resultFuture = stabilityPromise.get_future();
-                    while(ze_lib::stabilityCheckThreadStarted && *ze_lib::stabilityCheckThreadStarted == 0) {
-                        std::this_thread::sleep_for(std::chrono::milliseconds(1));
-                    }
-                    if (!ze_lib::stabilityCheckThreadStarted) {
-                        break;
-                    }
-                    if (*ze_lib::stabilityCheckThreadStarted == -1) {
-                        break;
-                    }
-                    ze_lib::stabilityCheckThreadStarted->store(0);
-                    stabilityCheck(std::move(stabilityPromise));
-                    int result = resultFuture.get();
-                    if (result != ZEL_STABILITY_CHECK_RESULT_SUCCESS) {
-                        if (ze_lib::context->debugTraceEnabled) {
-                            std::string message = "Loader stability check thread failed with result: " + std::to_string(result);
-                            ze_lib::context->debug_trace_message(message, "");
-                        }
-                        if (ze_lib::stabilityPromiseResult) {
-                            ze_lib::stabilityPromiseResult->set_value(result);
-                        }
-                        break; // Exit the thread if stability check fails
+                while(ze_lib::stabilityCheckThreadStarted && ze_lib::stabilityCheckThreadStarted->load() == 0) {
+                    std::this_thread::sleep_for(std::chrono::milliseconds(1));
+                }
+                if (ze_lib::destruction || ze_lib::context == nullptr) {
+                    break;
+                }
+                if (!ze_lib::stabilityCheckThreadStarted) {
+                    break;
+                }
+                if (ze_lib::stabilityCheckThreadStarted->load() == -1) {
+                    break;
+                }
+                ze_lib::stabilityCheckThreadStarted->store(0);
+                int result = stabilityCheck();
+                if (result != ZEL_STABILITY_CHECK_RESULT_SUCCESS) {
+                    if (ze_lib::context->debugTraceEnabled) {
+                        std::string message = "Loader stability check thread failed with result: " + std::to_string(result);
+                        ze_lib::context->debug_trace_message(message, "");
                     }
                     if (ze_lib::stabilityPromiseResult) {
                         ze_lib::stabilityPromiseResult->set_value(result);
                     }
-                } catch (const std::exception& e) {
-                    if (ze_lib::context->debugTraceEnabled) {
-                        std::string message = "Exception caught in stability check thread: " + std::string(e.what());
-                        ze_lib::context->debug_trace_message(message, "");
-                        if (ze_lib::stabilityPromiseResult) {
-                            ze_lib::stabilityPromiseResult->set_value(ZEL_STABILITY_CHECK_RESULT_EXCEPTION);
-                        }
-                    }
-                } catch (...) {
-                    if (ze_lib::context->debugTraceEnabled) {
-                        std::string message = "Unknown exception caught in stability check thread.";
-                        ze_lib::context->debug_trace_message(message, "");
-                        if (ze_lib::stabilityPromiseResult) {
-                            ze_lib::stabilityPromiseResult->set_value(ZEL_STABILITY_CHECK_RESULT_EXCEPTION);
-                        }
-                    }
+                    break; // Exit the thread if stability check fails
+                }
+                if (ze_lib::stabilityPromiseResult) {
+                    ze_lib::stabilityPromiseResult->set_value(result);
                 }
             }
             });
-            ze_lib::stabilityThread->detach();
         });
         if (ze_lib::resultFutureResult->wait_for(std::chrono::milliseconds(ZEL_STABILITY_CHECK_THREAD_TIMEOUT)) == std::future_status::timeout) {
             if (ze_lib::context->debugTraceEnabled) {
