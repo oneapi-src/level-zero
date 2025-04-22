@@ -374,6 +374,9 @@ TEST(
 
   EXPECT_EQ(ZE_RESULT_SUCCESS, zeInit(0));
   EXPECT_FALSE(zelCheckIsLoaderInTearDown());
+  EXPECT_FALSE(zelCheckIsLoaderInTearDown());
+  EXPECT_FALSE(zelCheckIsLoaderInTearDown());
+  EXPECT_FALSE(zelCheckIsLoaderInTearDown());
 }
 
 class CaptureOutput {

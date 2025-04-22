@@ -489,7 +489,7 @@ zelCheckIsLoaderInTearDown() {
     if (ze_lib::destruction || ze_lib::context == nullptr) {
         return true;
     }
-    #ifdef DYNAMIC_LOAD_LOADER
+    #if defined(DYNAMIC_LOAD_LOADER) && defined(_WIN32)
     std::promise<int> stabilityPromise;
     std::future<int> resultFuture = stabilityPromise.get_future();
     int result = -1;
@@ -497,10 +497,6 @@ zelCheckIsLoaderInTearDown() {
         // Launch the stability checker thread
         std::thread stabilityThread(stabilityCheck, std::move(stabilityPromise));
         result = resultFuture.get(); // Blocks until the result is available
-        if (ze_lib::context->debugTraceEnabled) {
-            std::string message = "Stability checker thread completed with result: " + std::to_string(result);
-            ze_lib::context->debug_trace_message(message, "");
-        }
         stabilityThread.join();
     } catch (const std::exception& e) {
         if (ze_lib::context->debugTraceEnabled) {
