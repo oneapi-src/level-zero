@@ -1,7 +1,7 @@
 # Level zero loader changelog
 
 ## v1.22.0
-* Update to spec v1.13.0
+* Update to spec v1.13.1
 ## v1.21.9
 * Fix init checks when sorting legacy drivers
 * Fix MSVC Link optimization flags
