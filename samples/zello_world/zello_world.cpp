@@ -196,10 +196,14 @@ int main( int argc, char *argv[] )
     zeEventHostSynchronize(event, UINT64_MAX );
     std::cout << "Congratulations, the device completed execution!\n";
 
-    zeContextDestroy(context);
-    zeCommandListDestroy(command_list);
-    zeEventDestroy(event);
-    zeEventPoolDestroy(event_pool);
+    if (!zelCheckIsLoaderInTearDown())
+        zeContextDestroy(context);
+    if (!zelCheckIsLoaderInTearDown())
+        zeCommandListDestroy(command_list);
+    if (!zelCheckIsLoaderInTearDown())
+        zeEventDestroy(event);
+    if (!zelCheckIsLoaderInTearDown())
+        zeEventPoolDestroy(event_pool);
 
     if (tracing_enabled) {
         status = zelTracerDestroy(tracer);
