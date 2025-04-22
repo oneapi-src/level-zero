@@ -348,8 +348,8 @@ namespace driver
                                                         ///< than the `count` member of ::zet_debug_regset_properties_t for the
                                                         ///< type
         uint32_t count,                                 ///< [in] the number of registers to read; start+count must be less than or
-                                                        ///< equal to the `count` member of ::zet_debug_register_group_properties_t
-                                                        ///< for the type
+                                                        ///< equal to the `count` member of ::zet_debug_regset_properties_t for the
+                                                        ///< type
         void* pRegisterValues                           ///< [in,out][optional][range(0, count)] buffer of register values
         )
     {
@@ -380,8 +380,8 @@ namespace driver
                                                         ///< than the `count` member of ::zet_debug_regset_properties_t for the
                                                         ///< type
         uint32_t count,                                 ///< [in] the number of registers to write; start+count must be less than
-                                                        ///< or equal to the `count` member of
-                                                        ///< ::zet_debug_register_group_properties_t for the type
+                                                        ///< or equal to the `count` member of ::zet_debug_regset_properties_t for
+                                                        ///< the type
         void* pRegisterValues                           ///< [in,out][optional][range(0, count)] buffer of register values
         )
     {
@@ -1402,6 +1402,79 @@ namespace driver
     }
 
     ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zetCommandListAppendMarkerExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zetCommandListAppendMarkerExp(
+        zet_command_list_handle_t hCommandList,         ///< [in] handle to the command list
+        zet_metric_group_handle_t hMetricGroup,         ///< [in] handle to the marker metric group.
+                                                        ///< ::zet_metric_group_type_exp_flags_t could be used to check whether
+                                                        ///< marker is supoported by the metric group.
+        uint32_t value                                  ///< [in] marker value
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnAppendMarkerExp = context.zetDdiTable.CommandListExp.pfnAppendMarkerExp;
+        if( nullptr != pfnAppendMarkerExp )
+        {
+            result = pfnAppendMarkerExp( hCommandList, hMetricGroup, value );
+        }
+        else
+        {
+            // generic implementation
+        }
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zetDeviceEnableMetricsExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zetDeviceEnableMetricsExp(
+        zet_device_handle_t hDevice                     ///< [in] handle of the device where metrics collection has to be enabled.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnEnableMetricsExp = context.zetDdiTable.DeviceExp.pfnEnableMetricsExp;
+        if( nullptr != pfnEnableMetricsExp )
+        {
+            result = pfnEnableMetricsExp( hDevice );
+        }
+        else
+        {
+            // generic implementation
+        }
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zetDeviceDisableMetricsExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zetDeviceDisableMetricsExp(
+        zet_device_handle_t hDevice                     ///< [in] handle of the device where metrics collection has to be disabled
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnDisableMetricsExp = context.zetDdiTable.DeviceExp.pfnDisableMetricsExp;
+        if( nullptr != pfnDisableMetricsExp )
+        {
+            result = pfnDisableMetricsExp( hDevice );
+        }
+        else
+        {
+            // generic implementation
+        }
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
     /// @brief Intercept function for zetMetricGroupCalculateMultipleMetricValuesExp
     __zedlllocal ze_result_t ZE_APICALL
     zetMetricGroupCalculateMultipleMetricValuesExp(
@@ -2116,6 +2189,10 @@ zetGetDeviceExpProcAddrTable(
 
     pDdiTable->pfnCreateMetricGroupsFromMetricsExp       = driver::zetDeviceCreateMetricGroupsFromMetricsExp;
 
+    pDdiTable->pfnEnableMetricsExp                       = driver::zetDeviceEnableMetricsExp;
+
+    pDdiTable->pfnDisableMetricsExp                      = driver::zetDeviceDisableMetricsExp;
+
     return result;
 }
 
@@ -2175,6 +2252,33 @@ zetGetCommandListProcAddrTable(
     pDdiTable->pfnAppendMetricQueryEnd                   = driver::zetCommandListAppendMetricQueryEnd;
 
     pDdiTable->pfnAppendMetricMemoryBarrier              = driver::zetCommandListAppendMetricMemoryBarrier;
+
+    return result;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Exported function for filling application's CommandListExp table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+ZE_DLLEXPORT ze_result_t ZE_APICALL
+zetGetCommandListExpProcAddrTable(
+    ze_api_version_t version,                       ///< [in] API version requested
+    zet_command_list_exp_dditable_t* pDdiTable      ///< [in,out] pointer to table of DDI function pointers
+    )
+{
+    if( nullptr == pDdiTable )
+        return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+    if( driver::context.version < version )
+        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+
+    ze_result_t result = ZE_RESULT_SUCCESS;
+
+    pDdiTable->pfnAppendMarkerExp                        = driver::zetCommandListAppendMarkerExp;
 
     return result;
 }

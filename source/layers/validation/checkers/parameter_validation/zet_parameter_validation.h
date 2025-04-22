@@ -69,6 +69,9 @@ namespace validation_layer
         ze_result_t zetMetricDecoderDestroyExpPrologue( zet_metric_decoder_exp_handle_t phMetricDecoder ) override;
         ze_result_t zetMetricDecoderGetDecodableMetricsExpPrologue( zet_metric_decoder_exp_handle_t hMetricDecoder, uint32_t* pCount, zet_metric_handle_t* phMetrics ) override;
         ze_result_t zetMetricTracerDecodeExpPrologue( zet_metric_decoder_exp_handle_t phMetricDecoder, size_t* pRawDataSize, uint8_t* pRawData, uint32_t metricsCount, zet_metric_handle_t* phMetrics, uint32_t* pSetCount, uint32_t* pMetricEntriesCountPerSet, uint32_t* pMetricEntriesCount, zet_metric_entry_exp_t* pMetricEntries ) override;
+        ze_result_t zetCommandListAppendMarkerExpPrologue( zet_command_list_handle_t hCommandList, zet_metric_group_handle_t hMetricGroup, uint32_t value ) override;
+        ze_result_t zetDeviceEnableMetricsExpPrologue( zet_device_handle_t hDevice ) override;
+        ze_result_t zetDeviceDisableMetricsExpPrologue( zet_device_handle_t hDevice ) override;
         ze_result_t zetMetricGroupCalculateMultipleMetricValuesExpPrologue( zet_metric_group_handle_t hMetricGroup, zet_metric_group_calculation_type_t type, size_t rawDataSize, const uint8_t* pRawData, uint32_t* pSetCount, uint32_t* pTotalMetricValueCount, uint32_t* pMetricCounts, zet_typed_value_t* pMetricValues ) override;
         ze_result_t zetMetricGroupGetGlobalTimestampsExpPrologue( zet_metric_group_handle_t hMetricGroup, ze_bool_t synchronizedWithHost, uint64_t* globalTimestamp, uint64_t* metricTimestamp ) override;
         ze_result_t zetMetricGroupGetExportDataExpPrologue( zet_metric_group_handle_t hMetricGroup, const uint8_t* pRawData, size_t rawDataSize, size_t* pExportDataSize, uint8_t * pExportData ) override;

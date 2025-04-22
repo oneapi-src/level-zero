@@ -90,6 +90,10 @@ namespace ze_lib
                 GET_FUNCTION_PTR(loader, "zetDeviceGetConcurrentMetricGroupsExp") );
             initialzetDdiTable.DeviceExp.pfnCreateMetricGroupsFromMetricsExp = reinterpret_cast<zet_pfnDeviceCreateMetricGroupsFromMetricsExp_t>(
                 GET_FUNCTION_PTR(loader, "zetDeviceCreateMetricGroupsFromMetricsExp") );
+            initialzetDdiTable.DeviceExp.pfnEnableMetricsExp = reinterpret_cast<zet_pfnDeviceEnableMetricsExp_t>(
+                GET_FUNCTION_PTR(loader, "zetDeviceEnableMetricsExp") );
+            initialzetDdiTable.DeviceExp.pfnDisableMetricsExp = reinterpret_cast<zet_pfnDeviceDisableMetricsExp_t>(
+                GET_FUNCTION_PTR(loader, "zetDeviceDisableMetricsExp") );
         }
 
         if( ZE_RESULT_SUCCESS == result )
@@ -114,6 +118,16 @@ namespace ze_lib
                 GET_FUNCTION_PTR(loader, "zetCommandListAppendMetricQueryEnd") );
             initialzetDdiTable.CommandList.pfnAppendMetricMemoryBarrier = reinterpret_cast<zet_pfnCommandListAppendMetricMemoryBarrier_t>(
                 GET_FUNCTION_PTR(loader, "zetCommandListAppendMetricMemoryBarrier") );
+        }
+
+        if( ZE_RESULT_SUCCESS == result )
+        {
+            // Optional
+            auto getTable = reinterpret_cast<zet_pfnGetCommandListExpProcAddrTable_t>(
+                GET_FUNCTION_PTR(loader, "zetGetCommandListExpProcAddrTable") );
+            getTableWithCheck(getTable, version, &initialzetDdiTable.CommandListExp );
+            initialzetDdiTable.CommandListExp.pfnAppendMarkerExp = reinterpret_cast<zet_pfnCommandListAppendMarkerExp_t>(
+                GET_FUNCTION_PTR(loader, "zetCommandListAppendMarkerExp") );
         }
 
         if( ZE_RESULT_SUCCESS == result )
@@ -329,6 +343,12 @@ namespace ze_lib
         if( ZE_RESULT_SUCCESS == result )
         {
             result = zetGetCommandListProcAddrTable( version, &initialzetDdiTable.CommandList );
+        }
+
+        if( ZE_RESULT_SUCCESS == result )
+        {
+            // Optional
+            zetGetCommandListExpProcAddrTable( version, &initialzetDdiTable.CommandListExp );
         }
 
         if( ZE_RESULT_SUCCESS == result )
