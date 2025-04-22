@@ -97,6 +97,27 @@ endif()
 add_test(NAME tests_loader_teardown_check COMMAND tests --gtest_filter=*GivenLoaderNotInDestructionStateWhenCallingzelCheckIsLoaderInTearDownThenFalseIsReturned)
 set_property(TEST tests_loader_teardown_check PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_NULL_DRIVER=1")
 
+add_test(NAME test_zello_world_legacy COMMAND zello_world --enable_legacy_init --enable_null_driver --force_loader_intercepts --enable_validation_layer --enable_tracing_layer --enable_tracing_layer_runtime)
+set_property(TEST test_zello_world_legacy PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1")
+
+add_test(NAME test_zello_world_legacy_intercept COMMAND zello_world --enable_legacy_init --enable_null_driver --force_loader_intercepts)
+set_property(TEST test_zello_world_legacy_intercept PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1")
+
+add_test(NAME test_zello_world_legacy_validation_layer COMMAND zello_world --enable_legacy_init --enable_null_driver --enable_validation_layer)
+set_property(TEST test_zello_world_legacy_validation_layer PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1")
+
+add_test(NAME test_zello_world_legacy_tracing COMMAND zello_world --enable_legacy_init --enable_null_driver --enable_tracing_layer)
+set_property(TEST test_zello_world_legacy_tracing PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1")
+
+add_test(NAME test_zello_world_legacy_dynamic_tracing COMMAND zello_world --enable_legacy_init --enable_null_driver --enable_tracing_layer_runtime)
+set_property(TEST test_zello_world_legacy_dynamic_tracing PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1")
+
+add_test(NAME test_zello_world_legacy_all_tracing COMMAND zello_world --enable_legacy_init --enable_null_driver --force_loader_intercepts --enable_validation_layer --enable_tracing_layer)
+set_property(TEST test_zello_world_legacy_all_tracing PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1")
+
+add_test(NAME test_zello_world_legacy_all_tracing_dynamic COMMAND zello_world --enable_legacy_init --enable_null_driver --force_loader_intercepts --enable_validation_layer --enable_tracing_layer_runtime)
+set_property(TEST test_zello_world_legacy_all_tracing_dynamic PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1")
+
 # These tests are currently not supported on Windows. The reason is that the std::cerr is not being redirected to a pipe in Windows to be then checked against the expected output.
 if(NOT MSVC)
     add_test(NAME tests_event_deadlock COMMAND tests --gtest_filter=*GivenLevelZeroLoaderPresentWhenCallingzeCommandListAppendMemoryCopyWithCircularDependencyOnEventsThenValidationLayerPrintsWarningOfDeadlock*)

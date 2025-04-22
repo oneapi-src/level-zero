@@ -1,4 +1,3 @@
-
 /*
  *
  * Copyright (C) 2019-2021 Intel Corporation
@@ -27,11 +26,14 @@ namespace ze_lib
             ze_lib::context = nullptr;
         }
     }
+    #define ZEL_STABILITY_THREAD_STATE_RUNNING 1
+    #define ZEL_STABILITY_THREAD_STATE_POLLING 0
+    #define ZEL_STABILITY_THREAD_STATE_SHUTDOWN -1
     bool delayContextDestruction = false;
     std::mutex *stabilityMutex = nullptr;
     std::promise<int> *stabilityPromiseResult = nullptr;
     std::future<int> *resultFutureResult = nullptr;
-    std::atomic<int> *stabilityCheckThreadStarted = nullptr;
+    std::atomic<int> *stabilityCheckThreadStatus = nullptr;
     std::thread *stabilityThread = nullptr;
     #endif
     bool destruction = false;
@@ -49,8 +51,8 @@ namespace ze_lib
         if (loader) {
             FREE_DRIVER_LIBRARY( loader );
         }
-        if (ze_lib::stabilityCheckThreadStarted)
-            ze_lib::stabilityCheckThreadStarted->store(-1);
+        if (ze_lib::stabilityCheckThreadStatus)
+            ze_lib::stabilityCheckThreadStatus->store(ZEL_STABILITY_THREAD_STATE_SHUTDOWN);
         try {
             if (stabilityThread && stabilityThread->joinable()) {
                 stabilityThread->join();
@@ -74,9 +76,9 @@ namespace ze_lib
             delete resultFutureResult;
             resultFutureResult = nullptr;
         }
-        if (stabilityCheckThreadStarted) {
-            delete stabilityCheckThreadStarted;
-            stabilityCheckThreadStarted = nullptr;
+        if (stabilityCheckThreadStatus) {
+            delete stabilityCheckThreadStatus;
+            stabilityCheckThreadStatus = nullptr;
         }
 #endif
         ze_lib::destruction = true;
@@ -187,7 +189,7 @@ namespace ze_lib
         stabilityMutex = new std::mutex();
         stabilityPromiseResult = new std::promise<int>();
         resultFutureResult = new std::future<int>(stabilityPromiseResult->get_future());
-        stabilityCheckThreadStarted = new std::atomic<int>(0);
+        stabilityCheckThreadStatus = new std::atomic<int>(ZEL_STABILITY_THREAD_STATE_POLLING);
 #else
         result = zeLoaderInit();
         if( ZE_RESULT_SUCCESS == result ) {
@@ -451,6 +453,8 @@ zelSetDelayLoaderContextTeardown()
 #define ZEL_STABILITY_CHECK_RESULT_EXCEPTION 3
 // The stability check thread timeout in milliseconds
 #define ZEL_STABILITY_CHECK_THREAD_TIMEOUT 100
+// The stability check thread polling interval in nanoseconds
+#define ZEL_STABILITY_CHECK_THREAD_POLLING_INTERVAL 100
 
 /**
  * @brief Performs a stability check for the Level Zero loader.
@@ -532,23 +536,23 @@ zelCheckIsLoaderInTearDown() {
         std::lock_guard<std::mutex> lock(*ze_lib::stabilityMutex);
         *ze_lib::stabilityPromiseResult = std::promise<int>();
         *ze_lib::resultFutureResult = ze_lib::stabilityPromiseResult->get_future();
-        ze_lib::stabilityCheckThreadStarted->store(1);
+        ze_lib::stabilityCheckThreadStatus->store(ZEL_STABILITY_THREAD_STATE_RUNNING);
         std::call_once(stabilityThreadFlag, []() {
             ze_lib::stabilityThread =  new std::thread([]() {
             while (true) {
-                while(ze_lib::stabilityCheckThreadStarted && ze_lib::stabilityCheckThreadStarted->load() == 0) {
-                    std::this_thread::sleep_for(std::chrono::milliseconds(1));
+                while(ze_lib::stabilityCheckThreadStatus && ze_lib::stabilityCheckThreadStatus->load() == ZEL_STABILITY_THREAD_STATE_POLLING) {
+                    std::this_thread::sleep_for(std::chrono::nanoseconds(ZEL_STABILITY_CHECK_THREAD_POLLING_INTERVAL));
                 }
                 if (ze_lib::destruction || ze_lib::context == nullptr) {
                     break;
                 }
-                if (!ze_lib::stabilityCheckThreadStarted) {
+                if (!ze_lib::stabilityCheckThreadStatus) {
                     break;
                 }
-                if (ze_lib::stabilityCheckThreadStarted->load() == -1) {
+                if (ze_lib::stabilityCheckThreadStatus->load() == ZEL_STABILITY_THREAD_STATE_SHUTDOWN) {
                     break;
                 }
-                ze_lib::stabilityCheckThreadStarted->store(0);
+                ze_lib::stabilityCheckThreadStatus->store(ZEL_STABILITY_THREAD_STATE_POLLING);
                 int result = stabilityCheck();
                 if (result != ZEL_STABILITY_CHECK_RESULT_SUCCESS) {
                     if (ze_lib::context->debugTraceEnabled) {
