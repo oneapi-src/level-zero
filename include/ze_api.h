@@ -5,7 +5,7 @@
  * SPDX-License-Identifier: MIT
  *
  * @file ze_api.h
- * @version v1.13-r1.13.0
+ * @version v1.13-r1.13.1
  *
  */
 #ifndef _ZE_API_H
@@ -1281,7 +1281,8 @@ typedef enum _ze_api_version_t
     ZE_API_VERSION_1_10 = ZE_MAKE_VERSION( 1, 10 ),                         ///< version 1.10
     ZE_API_VERSION_1_11 = ZE_MAKE_VERSION( 1, 11 ),                         ///< version 1.11
     ZE_API_VERSION_1_12 = ZE_MAKE_VERSION( 1, 12 ),                         ///< version 1.12
-    ZE_API_VERSION_CURRENT = ZE_MAKE_VERSION( 1, 12 ),                      ///< latest known version
+    ZE_API_VERSION_1_13 = ZE_MAKE_VERSION( 1, 13 ),                         ///< version 1.13
+    ZE_API_VERSION_CURRENT = ZE_MAKE_VERSION( 1, 13 ),                      ///< latest known version
     ZE_API_VERSION_FORCE_UINT32 = 0x7fffffff, ///< Value marking end of ZE_API_VERSION_* ENUMs
 
 } ze_api_version_t;
@@ -1289,7 +1290,7 @@ typedef enum _ze_api_version_t
 ///////////////////////////////////////////////////////////////////////////////
 #ifndef ZE_API_VERSION_CURRENT_M
 /// @brief Current API version as a macro
-#define ZE_API_VERSION_CURRENT_M  ZE_MAKE_VERSION( 1, 12 )
+#define ZE_API_VERSION_CURRENT_M  ZE_MAKE_VERSION( 1, 13 )
 #endif // ZE_API_VERSION_CURRENT_M
 
 ///////////////////////////////////////////////////////////////////////////////

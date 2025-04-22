@@ -4,7 +4,7 @@
  SPDX-License-Identifier: MIT
 
  @file ze.py
- @version v1.13-r1.13.0
+ @version v1.13-r1.13.1
 
  """
 import platform
@@ -507,7 +507,8 @@ class ze_api_version_v(IntEnum):
     _1_10 = ZE_MAKE_VERSION( 1, 10 )                                        ## version 1.10
     _1_11 = ZE_MAKE_VERSION( 1, 11 )                                        ## version 1.11
     _1_12 = ZE_MAKE_VERSION( 1, 12 )                                        ## version 1.12
-    CURRENT = ZE_MAKE_VERSION( 1, 12 )                                      ## latest known version
+    _1_13 = ZE_MAKE_VERSION( 1, 13 )                                        ## version 1.13
+    CURRENT = ZE_MAKE_VERSION( 1, 13 )                                      ## latest known version
 
 class ze_api_version_t(c_int):
     def __str__(self):
@@ -516,7 +517,7 @@ class ze_api_version_t(c_int):
 
 ###############################################################################
 ## @brief Current API version as a macro
-ZE_API_VERSION_CURRENT_M = ZE_MAKE_VERSION( 1, 12 )
+ZE_API_VERSION_CURRENT_M = ZE_MAKE_VERSION( 1, 13 )
 
 ###############################################################################
 ## @brief Maximum driver universal unique id (UUID) size in bytes
