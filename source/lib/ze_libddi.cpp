@@ -35,6 +35,24 @@ namespace ze_lib
         if( ZE_RESULT_SUCCESS == result )
         {
             // Optional
+            auto getTable = reinterpret_cast<ze_pfnGetRTASBuilderProcAddrTable_t>(
+                GET_FUNCTION_PTR(loader, "zeGetRTASBuilderProcAddrTable") );
+            getTableWithCheck(getTable, version, &initialzeDdiTable.RTASBuilder );
+            initialzeDdiTable.RTASBuilder.pfnCreateExt = reinterpret_cast<ze_pfnRTASBuilderCreateExt_t>(
+                GET_FUNCTION_PTR(loader, "zeRTASBuilderCreateExt") );
+            initialzeDdiTable.RTASBuilder.pfnGetBuildPropertiesExt = reinterpret_cast<ze_pfnRTASBuilderGetBuildPropertiesExt_t>(
+                GET_FUNCTION_PTR(loader, "zeRTASBuilderGetBuildPropertiesExt") );
+            initialzeDdiTable.RTASBuilder.pfnBuildExt = reinterpret_cast<ze_pfnRTASBuilderBuildExt_t>(
+                GET_FUNCTION_PTR(loader, "zeRTASBuilderBuildExt") );
+            initialzeDdiTable.RTASBuilder.pfnCommandListAppendCopyExt = reinterpret_cast<ze_pfnRTASBuilderCommandListAppendCopyExt_t>(
+                GET_FUNCTION_PTR(loader, "zeRTASBuilderCommandListAppendCopyExt") );
+            initialzeDdiTable.RTASBuilder.pfnDestroyExt = reinterpret_cast<ze_pfnRTASBuilderDestroyExt_t>(
+                GET_FUNCTION_PTR(loader, "zeRTASBuilderDestroyExt") );
+        }
+
+        if( ZE_RESULT_SUCCESS == result )
+        {
+            // Optional
             auto getTable = reinterpret_cast<ze_pfnGetRTASBuilderExpProcAddrTable_t>(
                 GET_FUNCTION_PTR(loader, "zeGetRTASBuilderExpProcAddrTable") );
             getTableWithCheck(getTable, version, &initialzeDdiTable.RTASBuilderExp );
@@ -46,6 +64,22 @@ namespace ze_lib
                 GET_FUNCTION_PTR(loader, "zeRTASBuilderBuildExp") );
             initialzeDdiTable.RTASBuilderExp.pfnDestroyExp = reinterpret_cast<ze_pfnRTASBuilderDestroyExp_t>(
                 GET_FUNCTION_PTR(loader, "zeRTASBuilderDestroyExp") );
+        }
+
+        if( ZE_RESULT_SUCCESS == result )
+        {
+            // Optional
+            auto getTable = reinterpret_cast<ze_pfnGetRTASParallelOperationProcAddrTable_t>(
+                GET_FUNCTION_PTR(loader, "zeGetRTASParallelOperationProcAddrTable") );
+            getTableWithCheck(getTable, version, &initialzeDdiTable.RTASParallelOperation );
+            initialzeDdiTable.RTASParallelOperation.pfnCreateExt = reinterpret_cast<ze_pfnRTASParallelOperationCreateExt_t>(
+                GET_FUNCTION_PTR(loader, "zeRTASParallelOperationCreateExt") );
+            initialzeDdiTable.RTASParallelOperation.pfnGetPropertiesExt = reinterpret_cast<ze_pfnRTASParallelOperationGetPropertiesExt_t>(
+                GET_FUNCTION_PTR(loader, "zeRTASParallelOperationGetPropertiesExt") );
+            initialzeDdiTable.RTASParallelOperation.pfnJoinExt = reinterpret_cast<ze_pfnRTASParallelOperationJoinExt_t>(
+                GET_FUNCTION_PTR(loader, "zeRTASParallelOperationJoinExt") );
+            initialzeDdiTable.RTASParallelOperation.pfnDestroyExt = reinterpret_cast<ze_pfnRTASParallelOperationDestroyExt_t>(
+                GET_FUNCTION_PTR(loader, "zeRTASParallelOperationDestroyExt") );
         }
 
         if( ZE_RESULT_SUCCESS == result )
@@ -81,6 +115,8 @@ namespace ze_lib
                 GET_FUNCTION_PTR(loader, "zeDriverGetExtensionProperties") );
             initialzeDdiTable.Driver.pfnGetExtensionFunctionAddress = reinterpret_cast<ze_pfnDriverGetExtensionFunctionAddress_t>(
                 GET_FUNCTION_PTR(loader, "zeDriverGetExtensionFunctionAddress") );
+            initialzeDdiTable.Driver.pfnRTASFormatCompatibilityCheckExt = reinterpret_cast<ze_pfnDriverRTASFormatCompatibilityCheckExt_t>(
+                GET_FUNCTION_PTR(loader, "zeDriverRTASFormatCompatibilityCheckExt") );
             initialzeDdiTable.Driver.pfnGetLastErrorDescription = reinterpret_cast<ze_pfnDriverGetLastErrorDescription_t>(
                 GET_FUNCTION_PTR(loader, "zeDriverGetLastErrorDescription") );
         }
@@ -134,6 +170,8 @@ namespace ze_lib
                 GET_FUNCTION_PTR(loader, "zeDeviceImportExternalSemaphoreExt") );
             initialzeDdiTable.Device.pfnReleaseExternalSemaphoreExt = reinterpret_cast<ze_pfnDeviceReleaseExternalSemaphoreExt_t>(
                 GET_FUNCTION_PTR(loader, "zeDeviceReleaseExternalSemaphoreExt") );
+            initialzeDdiTable.Device.pfnGetVectorWidthPropertiesExt = reinterpret_cast<ze_pfnDeviceGetVectorWidthPropertiesExt_t>(
+                GET_FUNCTION_PTR(loader, "zeDeviceGetVectorWidthPropertiesExt") );
             initialzeDdiTable.Device.pfnReserveCacheExt = reinterpret_cast<ze_pfnDeviceReserveCacheExt_t>(
                 GET_FUNCTION_PTR(loader, "zeDeviceReserveCacheExt") );
             initialzeDdiTable.Device.pfnSetCacheAdviceExt = reinterpret_cast<ze_pfnDeviceSetCacheAdviceExt_t>(
@@ -627,7 +665,19 @@ namespace ze_lib
         if( ZE_RESULT_SUCCESS == result )
         {
             // Optional
+            zeGetRTASBuilderProcAddrTable( version, &initialzeDdiTable.RTASBuilder );
+        }
+
+        if( ZE_RESULT_SUCCESS == result )
+        {
+            // Optional
             zeGetRTASBuilderExpProcAddrTable( version, &initialzeDdiTable.RTASBuilderExp );
+        }
+
+        if( ZE_RESULT_SUCCESS == result )
+        {
+            // Optional
+            zeGetRTASParallelOperationProcAddrTable( version, &initialzeDdiTable.RTASParallelOperation );
         }
 
         if( ZE_RESULT_SUCCESS == result )

@@ -4,7 +4,7 @@
  SPDX-License-Identifier: MIT
 
  @file zes.py
- @version v1.12-r1.12.15
+ @version v1.13-r1.13.1
 
  """
 import platform
@@ -169,6 +169,7 @@ class zes_structure_type_v(IntEnum):
     VF_UTIL_MEM_EXP2 = 0x00020009                                           ## ::zes_vf_util_mem_exp2_t
     VF_UTIL_ENGINE_EXP2 = 0x00020010                                        ## ::zes_vf_util_engine_exp2_t
     VF_EXP2_CAPABILITIES = 0x00020011                                       ## ::zes_vf_exp2_capabilities_t
+    DEVICE_ECC_DEFAULT_PROPERTIES_EXT = 0x00020012                          ## ::zes_device_ecc_default_properties_ext_t
 
 class zes_structure_type_t(c_int):
     def __str__(self):
@@ -2145,6 +2146,32 @@ class zes_temp_config_t(Structure):
         ("threshold2", zes_temp_threshold_t)                            ## [in,out] Configuration controlling if and when event
                                                                         ## ::ZES_EVENT_TYPE_FLAG_TEMP_THRESHOLD2 should be triggered by the
                                                                         ## driver.
+    ]
+
+###############################################################################
+## @brief Device ECC default properties Extension Name
+ZES_DEVICE_ECC_DEFAULT_PROPERTIES_EXT_NAME = "ZES_extension_device_ecc_default_properties"
+
+###############################################################################
+## @brief Device ECC default properties Extension Version(s)
+class zes_device_ecc_default_properties_ext_version_v(IntEnum):
+    _1_0 = ZE_MAKE_VERSION( 1, 0 )                                          ## version 1.0
+    CURRENT = ZE_MAKE_VERSION( 1, 0 )                                       ## latest known version
+
+class zes_device_ecc_default_properties_ext_version_t(c_int):
+    def __str__(self):
+        return str(zes_device_ecc_default_properties_ext_version_v(self.value))
+
+
+###############################################################################
+## @brief This structure may be passed to ::zesDeviceGetEccState as pNext member
+##        of ::zes_device_ecc_properties_t.
+class zes_device_ecc_default_properties_ext_t(Structure):
+    _fields_ = [
+        ("stype", zes_structure_type_t),                                ## [in] type of this structure
+        ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains stype and pNext).
+        ("defaultState", zes_device_ecc_state_t)                        ## [out] Default ECC state
     ]
 
 ###############################################################################

@@ -3322,10 +3322,14 @@ namespace driver
         char** pString                                  ///< [in,out][optional] pointer to application-managed character array
                                                         ///< (string data).
                                                         ///< If NULL, the string length of the kernel source attributes, including
-                                                        ///< a null-terminating character, is returned in pSize.
-                                                        ///< Otherwise, pString must point to valid application memory that is
-                                                        ///< greater than or equal to *pSize bytes in length, and on return the
-                                                        ///< pointed-to string will contain a space-separated list of kernel source attributes.
+                                                        ///< a null-terminating character, is returned in pSize. Otherwise, pString
+                                                        ///< must point to valid application memory that is greater than or equal
+                                                        ///< to *pSize bytes in length, and on return the pointed-to string will
+                                                        ///< contain a space-separated list of kernel source attributes. Note: This
+                                                        ///< API was originally intended to ship with a char *pString, however this
+                                                        ///< typo was introduced. Thus the API has to stay this way for backwards
+                                                        ///< compatible reasons. It can be corrected in v2.0. Suggestion is to
+                                                        ///< create your own char *pString and then pass to this API with &pString.
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
@@ -4099,6 +4103,304 @@ namespace driver
         if( nullptr != pfnAppendWaitExternalSemaphoreExt )
         {
             result = pfnAppendWaitExternalSemaphoreExt( hCommandList, numSemaphores, phSemaphores, waitParams, hSignalEvent, numWaitEvents, phWaitEvents );
+        }
+        else
+        {
+            // generic implementation
+        }
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeRTASBuilderCreateExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeRTASBuilderCreateExt(
+        ze_driver_handle_t hDriver,                     ///< [in] handle of driver object
+        const ze_rtas_builder_ext_desc_t* pDescriptor,  ///< [in] pointer to builder descriptor
+        ze_rtas_builder_ext_handle_t* phBuilder         ///< [out] handle of builder object
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnCreateExt = context.zeDdiTable.RTASBuilder.pfnCreateExt;
+        if( nullptr != pfnCreateExt )
+        {
+            result = pfnCreateExt( hDriver, pDescriptor, phBuilder );
+        }
+        else
+        {
+            // generic implementation
+            *phBuilder = reinterpret_cast<ze_rtas_builder_ext_handle_t>( context.get() );
+
+        }
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeRTASBuilderGetBuildPropertiesExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeRTASBuilderGetBuildPropertiesExt(
+        ze_rtas_builder_ext_handle_t hBuilder,          ///< [in] handle of builder object
+        const ze_rtas_builder_build_op_ext_desc_t* pBuildOpDescriptor,  ///< [in] pointer to build operation descriptor
+        ze_rtas_builder_ext_properties_t* pProperties   ///< [in,out] query result for builder properties
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnGetBuildPropertiesExt = context.zeDdiTable.RTASBuilder.pfnGetBuildPropertiesExt;
+        if( nullptr != pfnGetBuildPropertiesExt )
+        {
+            result = pfnGetBuildPropertiesExt( hBuilder, pBuildOpDescriptor, pProperties );
+        }
+        else
+        {
+            // generic implementation
+        }
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeDriverRTASFormatCompatibilityCheckExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeDriverRTASFormatCompatibilityCheckExt(
+        ze_driver_handle_t hDriver,                     ///< [in] handle of driver object
+        ze_rtas_format_ext_t rtasFormatA,               ///< [in] operand A
+        ze_rtas_format_ext_t rtasFormatB                ///< [in] operand B
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnRTASFormatCompatibilityCheckExt = context.zeDdiTable.Driver.pfnRTASFormatCompatibilityCheckExt;
+        if( nullptr != pfnRTASFormatCompatibilityCheckExt )
+        {
+            result = pfnRTASFormatCompatibilityCheckExt( hDriver, rtasFormatA, rtasFormatB );
+        }
+        else
+        {
+            // generic implementation
+        }
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeRTASBuilderBuildExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeRTASBuilderBuildExt(
+        ze_rtas_builder_ext_handle_t hBuilder,          ///< [in] handle of builder object
+        const ze_rtas_builder_build_op_ext_desc_t* pBuildOpDescriptor,  ///< [in] pointer to build operation descriptor
+        void* pScratchBuffer,                           ///< [in][range(0, `scratchBufferSizeBytes`)] scratch buffer to be used
+                                                        ///< during acceleration structure construction
+        size_t scratchBufferSizeBytes,                  ///< [in] size of scratch buffer, in bytes
+        void* pRtasBuffer,                              ///< [in] pointer to destination buffer
+        size_t rtasBufferSizeBytes,                     ///< [in] destination buffer size, in bytes
+        ze_rtas_parallel_operation_ext_handle_t hParallelOperation, ///< [in][optional] handle to parallel operation object
+        void* pBuildUserPtr,                            ///< [in][optional] pointer passed to callbacks
+        ze_rtas_aabb_ext_t* pBounds,                    ///< [in,out][optional] pointer to destination address for acceleration
+                                                        ///< structure bounds
+        size_t* pRtasBufferSizeBytes                    ///< [out][optional] updated acceleration structure size requirement, in
+                                                        ///< bytes
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnBuildExt = context.zeDdiTable.RTASBuilder.pfnBuildExt;
+        if( nullptr != pfnBuildExt )
+        {
+            result = pfnBuildExt( hBuilder, pBuildOpDescriptor, pScratchBuffer, scratchBufferSizeBytes, pRtasBuffer, rtasBufferSizeBytes, hParallelOperation, pBuildUserPtr, pBounds, pRtasBufferSizeBytes );
+        }
+        else
+        {
+            // generic implementation
+        }
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeRTASBuilderCommandListAppendCopyExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeRTASBuilderCommandListAppendCopyExt(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of command list
+        void* dstptr,                                   ///< [in] pointer to destination in device memory to copy the ray tracing
+                                                        ///< acceleration structure to
+        const void* srcptr,                             ///< [in] pointer to a valid source ray tracing acceleration structure in
+                                                        ///< host memory to copy from
+        size_t size,                                    ///< [in] size in bytes to copy
+        ze_event_handle_t hSignalEvent,                 ///< [in][optional] handle of the event to signal on completion
+        uint32_t numWaitEvents,                         ///< [in][optional] number of events to wait on before launching; must be 0
+                                                        ///< if `nullptr == phWaitEvents`
+        ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
+                                                        ///< on before launching
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnCommandListAppendCopyExt = context.zeDdiTable.RTASBuilder.pfnCommandListAppendCopyExt;
+        if( nullptr != pfnCommandListAppendCopyExt )
+        {
+            result = pfnCommandListAppendCopyExt( hCommandList, dstptr, srcptr, size, hSignalEvent, numWaitEvents, phWaitEvents );
+        }
+        else
+        {
+            // generic implementation
+        }
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeRTASBuilderDestroyExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeRTASBuilderDestroyExt(
+        ze_rtas_builder_ext_handle_t hBuilder           ///< [in][release] handle of builder object to destroy
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnDestroyExt = context.zeDdiTable.RTASBuilder.pfnDestroyExt;
+        if( nullptr != pfnDestroyExt )
+        {
+            result = pfnDestroyExt( hBuilder );
+        }
+        else
+        {
+            // generic implementation
+
+        }
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeRTASParallelOperationCreateExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeRTASParallelOperationCreateExt(
+        ze_driver_handle_t hDriver,                     ///< [in] handle of driver object
+        ze_rtas_parallel_operation_ext_handle_t* phParallelOperation///< [out] handle of parallel operation object
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnCreateExt = context.zeDdiTable.RTASParallelOperation.pfnCreateExt;
+        if( nullptr != pfnCreateExt )
+        {
+            result = pfnCreateExt( hDriver, phParallelOperation );
+        }
+        else
+        {
+            // generic implementation
+            *phParallelOperation = reinterpret_cast<ze_rtas_parallel_operation_ext_handle_t>( context.get() );
+
+        }
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeRTASParallelOperationGetPropertiesExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeRTASParallelOperationGetPropertiesExt(
+        ze_rtas_parallel_operation_ext_handle_t hParallelOperation, ///< [in] handle of parallel operation object
+        ze_rtas_parallel_operation_ext_properties_t* pProperties///< [in,out] query result for parallel operation properties
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnGetPropertiesExt = context.zeDdiTable.RTASParallelOperation.pfnGetPropertiesExt;
+        if( nullptr != pfnGetPropertiesExt )
+        {
+            result = pfnGetPropertiesExt( hParallelOperation, pProperties );
+        }
+        else
+        {
+            // generic implementation
+        }
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeRTASParallelOperationJoinExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeRTASParallelOperationJoinExt(
+        ze_rtas_parallel_operation_ext_handle_t hParallelOperation  ///< [in] handle of parallel operation object
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnJoinExt = context.zeDdiTable.RTASParallelOperation.pfnJoinExt;
+        if( nullptr != pfnJoinExt )
+        {
+            result = pfnJoinExt( hParallelOperation );
+        }
+        else
+        {
+            // generic implementation
+        }
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeRTASParallelOperationDestroyExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeRTASParallelOperationDestroyExt(
+        ze_rtas_parallel_operation_ext_handle_t hParallelOperation  ///< [in][release] handle of parallel operation object to destroy
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnDestroyExt = context.zeDdiTable.RTASParallelOperation.pfnDestroyExt;
+        if( nullptr != pfnDestroyExt )
+        {
+            result = pfnDestroyExt( hParallelOperation );
+        }
+        else
+        {
+            // generic implementation
+
+        }
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeDeviceGetVectorWidthPropertiesExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeDeviceGetVectorWidthPropertiesExt(
+        ze_device_handle_t hDevice,                     ///< [in] handle of the device
+        uint32_t* pCount,                               ///< [in,out] pointer to the number of vector width properties.
+                                                        ///< if count is zero, then the driver shall update the value with the
+                                                        ///< total number of vector width properties available.
+                                                        ///< if count is greater than the number of vector width properties
+                                                        ///< available, then the driver shall update the value with the correct
+                                                        ///< number of vector width properties available.
+        ze_device_vector_width_properties_ext_t* pVectorWidthProperties ///< [in,out][optional][range(0, *pCount)] array of vector width properties.
+                                                        ///< if count is less than the number of properties available, then the
+                                                        ///< driver will return only the number requested.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnGetVectorWidthPropertiesExt = context.zeDdiTable.Device.pfnGetVectorWidthPropertiesExt;
+        if( nullptr != pfnGetVectorWidthPropertiesExt )
+        {
+            result = pfnGetVectorWidthPropertiesExt( hDevice, pCount, pVectorWidthProperties );
         }
         else
         {
@@ -5295,6 +5597,41 @@ zeGetGlobalProcAddrTable(
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+/// @brief Exported function for filling application's RTASBuilder table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+ZE_DLLEXPORT ze_result_t ZE_APICALL
+zeGetRTASBuilderProcAddrTable(
+    ze_api_version_t version,                       ///< [in] API version requested
+    ze_rtas_builder_dditable_t* pDdiTable           ///< [in,out] pointer to table of DDI function pointers
+    )
+{
+    if( nullptr == pDdiTable )
+        return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+    if( driver::context.version < version )
+        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+
+    ze_result_t result = ZE_RESULT_SUCCESS;
+
+    pDdiTable->pfnCreateExt                              = driver::zeRTASBuilderCreateExt;
+
+    pDdiTable->pfnGetBuildPropertiesExt                  = driver::zeRTASBuilderGetBuildPropertiesExt;
+
+    pDdiTable->pfnBuildExt                               = driver::zeRTASBuilderBuildExt;
+
+    pDdiTable->pfnCommandListAppendCopyExt               = driver::zeRTASBuilderCommandListAppendCopyExt;
+
+    pDdiTable->pfnDestroyExt                             = driver::zeRTASBuilderDestroyExt;
+
+    return result;
+}
+
+///////////////////////////////////////////////////////////////////////////////
 /// @brief Exported function for filling application's RTASBuilderExp table
 ///        with current process' addresses
 ///
@@ -5323,6 +5660,39 @@ zeGetRTASBuilderExpProcAddrTable(
     pDdiTable->pfnBuildExp                               = driver::zeRTASBuilderBuildExp;
 
     pDdiTable->pfnDestroyExp                             = driver::zeRTASBuilderDestroyExp;
+
+    return result;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Exported function for filling application's RTASParallelOperation table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+ZE_DLLEXPORT ze_result_t ZE_APICALL
+zeGetRTASParallelOperationProcAddrTable(
+    ze_api_version_t version,                       ///< [in] API version requested
+    ze_rtas_parallel_operation_dditable_t* pDdiTable///< [in,out] pointer to table of DDI function pointers
+    )
+{
+    if( nullptr == pDdiTable )
+        return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+    if( driver::context.version < version )
+        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+
+    ze_result_t result = ZE_RESULT_SUCCESS;
+
+    pDdiTable->pfnCreateExt                              = driver::zeRTASParallelOperationCreateExt;
+
+    pDdiTable->pfnGetPropertiesExt                       = driver::zeRTASParallelOperationGetPropertiesExt;
+
+    pDdiTable->pfnJoinExt                                = driver::zeRTASParallelOperationJoinExt;
+
+    pDdiTable->pfnDestroyExt                             = driver::zeRTASParallelOperationDestroyExt;
 
     return result;
 }
@@ -5393,6 +5763,8 @@ zeGetDriverProcAddrTable(
     pDdiTable->pfnGetExtensionProperties                 = driver::zeDriverGetExtensionProperties;
 
     pDdiTable->pfnGetExtensionFunctionAddress            = driver::zeDriverGetExtensionFunctionAddress;
+
+    pDdiTable->pfnRTASFormatCompatibilityCheckExt        = driver::zeDriverRTASFormatCompatibilityCheckExt;
 
     pDdiTable->pfnGetLastErrorDescription                = driver::zeDriverGetLastErrorDescription;
 
@@ -5481,6 +5853,8 @@ zeGetDeviceProcAddrTable(
     pDdiTable->pfnImportExternalSemaphoreExt             = driver::zeDeviceImportExternalSemaphoreExt;
 
     pDdiTable->pfnReleaseExternalSemaphoreExt            = driver::zeDeviceReleaseExternalSemaphoreExt;
+
+    pDdiTable->pfnGetVectorWidthPropertiesExt            = driver::zeDeviceGetVectorWidthPropertiesExt;
 
     pDdiTable->pfnReserveCacheExt                        = driver::zeDeviceReserveCacheExt;
 

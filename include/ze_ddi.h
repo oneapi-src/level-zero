@@ -5,7 +5,7 @@
  * SPDX-License-Identifier: MIT
  *
  * @file ze_ddi.h
- * @version v1.12-r1.12.15
+ * @version v1.13-r1.13.1
  *
  */
 #ifndef _ZE_DDI_H
@@ -18,6 +18,88 @@
 #if defined(__cplusplus)
 extern "C" {
 #endif
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zeRTASBuilderCreateExt 
+typedef ze_result_t (ZE_APICALL *ze_pfnRTASBuilderCreateExt_t)(
+    ze_driver_handle_t,
+    const ze_rtas_builder_ext_desc_t*,
+    ze_rtas_builder_ext_handle_t*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zeRTASBuilderGetBuildPropertiesExt 
+typedef ze_result_t (ZE_APICALL *ze_pfnRTASBuilderGetBuildPropertiesExt_t)(
+    ze_rtas_builder_ext_handle_t,
+    const ze_rtas_builder_build_op_ext_desc_t*,
+    ze_rtas_builder_ext_properties_t*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zeRTASBuilderBuildExt 
+typedef ze_result_t (ZE_APICALL *ze_pfnRTASBuilderBuildExt_t)(
+    ze_rtas_builder_ext_handle_t,
+    const ze_rtas_builder_build_op_ext_desc_t*,
+    void*,
+    size_t,
+    void*,
+    size_t,
+    ze_rtas_parallel_operation_ext_handle_t,
+    void*,
+    ze_rtas_aabb_ext_t*,
+    size_t*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zeRTASBuilderCommandListAppendCopyExt 
+typedef ze_result_t (ZE_APICALL *ze_pfnRTASBuilderCommandListAppendCopyExt_t)(
+    ze_command_list_handle_t,
+    void*,
+    const void*,
+    size_t,
+    ze_event_handle_t,
+    uint32_t,
+    ze_event_handle_t*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zeRTASBuilderDestroyExt 
+typedef ze_result_t (ZE_APICALL *ze_pfnRTASBuilderDestroyExt_t)(
+    ze_rtas_builder_ext_handle_t
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Table of RTASBuilder functions pointers
+typedef struct _ze_rtas_builder_dditable_t
+{
+    ze_pfnRTASBuilderCreateExt_t                                pfnCreateExt;
+    ze_pfnRTASBuilderGetBuildPropertiesExt_t                    pfnGetBuildPropertiesExt;
+    ze_pfnRTASBuilderBuildExt_t                                 pfnBuildExt;
+    ze_pfnRTASBuilderCommandListAppendCopyExt_t                 pfnCommandListAppendCopyExt;
+    ze_pfnRTASBuilderDestroyExt_t                               pfnDestroyExt;
+} ze_rtas_builder_dditable_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Exported function for filling application's RTASBuilder table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+ZE_DLLEXPORT ze_result_t ZE_APICALL
+zeGetRTASBuilderProcAddrTable(
+    ze_api_version_t version,                                               ///< [in] API version requested
+    ze_rtas_builder_dditable_t* pDdiTable                                   ///< [in,out] pointer to table of DDI function pointers
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zeGetRTASBuilderProcAddrTable
+typedef ze_result_t (ZE_APICALL *ze_pfnGetRTASBuilderProcAddrTable_t)(
+    ze_api_version_t,
+    ze_rtas_builder_dditable_t*
+    );
 
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief Function-pointer for zeRTASBuilderCreateExp 
@@ -86,6 +168,64 @@ zeGetRTASBuilderExpProcAddrTable(
 typedef ze_result_t (ZE_APICALL *ze_pfnGetRTASBuilderExpProcAddrTable_t)(
     ze_api_version_t,
     ze_rtas_builder_exp_dditable_t*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zeRTASParallelOperationCreateExt 
+typedef ze_result_t (ZE_APICALL *ze_pfnRTASParallelOperationCreateExt_t)(
+    ze_driver_handle_t,
+    ze_rtas_parallel_operation_ext_handle_t*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zeRTASParallelOperationGetPropertiesExt 
+typedef ze_result_t (ZE_APICALL *ze_pfnRTASParallelOperationGetPropertiesExt_t)(
+    ze_rtas_parallel_operation_ext_handle_t,
+    ze_rtas_parallel_operation_ext_properties_t*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zeRTASParallelOperationJoinExt 
+typedef ze_result_t (ZE_APICALL *ze_pfnRTASParallelOperationJoinExt_t)(
+    ze_rtas_parallel_operation_ext_handle_t
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zeRTASParallelOperationDestroyExt 
+typedef ze_result_t (ZE_APICALL *ze_pfnRTASParallelOperationDestroyExt_t)(
+    ze_rtas_parallel_operation_ext_handle_t
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Table of RTASParallelOperation functions pointers
+typedef struct _ze_rtas_parallel_operation_dditable_t
+{
+    ze_pfnRTASParallelOperationCreateExt_t                      pfnCreateExt;
+    ze_pfnRTASParallelOperationGetPropertiesExt_t               pfnGetPropertiesExt;
+    ze_pfnRTASParallelOperationJoinExt_t                        pfnJoinExt;
+    ze_pfnRTASParallelOperationDestroyExt_t                     pfnDestroyExt;
+} ze_rtas_parallel_operation_dditable_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Exported function for filling application's RTASParallelOperation table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+ZE_DLLEXPORT ze_result_t ZE_APICALL
+zeGetRTASParallelOperationProcAddrTable(
+    ze_api_version_t version,                                               ///< [in] API version requested
+    ze_rtas_parallel_operation_dditable_t* pDdiTable                        ///< [in,out] pointer to table of DDI function pointers
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zeGetRTASParallelOperationProcAddrTable
+typedef ze_result_t (ZE_APICALL *ze_pfnGetRTASParallelOperationProcAddrTable_t)(
+    ze_api_version_t,
+    ze_rtas_parallel_operation_dditable_t*
     );
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -242,6 +382,14 @@ typedef ze_result_t (ZE_APICALL *ze_pfnDriverGetLastErrorDescription_t)(
     );
 
 ///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zeDriverRTASFormatCompatibilityCheckExt 
+typedef ze_result_t (ZE_APICALL *ze_pfnDriverRTASFormatCompatibilityCheckExt_t)(
+    ze_driver_handle_t,
+    ze_rtas_format_ext_t,
+    ze_rtas_format_ext_t
+    );
+
+///////////////////////////////////////////////////////////////////////////////
 /// @brief Table of Driver functions pointers
 typedef struct _ze_driver_dditable_t
 {
@@ -252,6 +400,7 @@ typedef struct _ze_driver_dditable_t
     ze_pfnDriverGetExtensionProperties_t                        pfnGetExtensionProperties;
     ze_pfnDriverGetExtensionFunctionAddress_t                   pfnGetExtensionFunctionAddress;
     ze_pfnDriverGetLastErrorDescription_t                       pfnGetLastErrorDescription;
+    ze_pfnDriverRTASFormatCompatibilityCheckExt_t               pfnRTASFormatCompatibilityCheckExt;
 } ze_driver_dditable_t;
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -471,6 +620,14 @@ typedef ze_result_t (ZE_APICALL *ze_pfnDeviceReleaseExternalSemaphoreExt_t)(
     );
 
 ///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zeDeviceGetVectorWidthPropertiesExt 
+typedef ze_result_t (ZE_APICALL *ze_pfnDeviceGetVectorWidthPropertiesExt_t)(
+    ze_device_handle_t,
+    uint32_t*,
+    ze_device_vector_width_properties_ext_t*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
 /// @brief Table of Device functions pointers
 typedef struct _ze_device_dditable_t
 {
@@ -495,6 +652,7 @@ typedef struct _ze_device_dditable_t
     ze_pfnDeviceGetRootDevice_t                                 pfnGetRootDevice;
     ze_pfnDeviceImportExternalSemaphoreExt_t                    pfnImportExternalSemaphoreExt;
     ze_pfnDeviceReleaseExternalSemaphoreExt_t                   pfnReleaseExternalSemaphoreExt;
+    ze_pfnDeviceGetVectorWidthPropertiesExt_t                   pfnGetVectorWidthPropertiesExt;
 } ze_device_dditable_t;
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -2588,7 +2746,9 @@ typedef ze_result_t (ZE_APICALL *ze_pfnGetFabricEdgeExpProcAddrTable_t)(
 /// @brief Container for all DDI tables
 typedef struct _ze_dditable_t
 {
+    ze_rtas_builder_dditable_t          RTASBuilder;
     ze_rtas_builder_exp_dditable_t      RTASBuilderExp;
+    ze_rtas_parallel_operation_dditable_t   RTASParallelOperation;
     ze_rtas_parallel_operation_exp_dditable_t   RTASParallelOperationExp;
     ze_global_dditable_t                Global;
     ze_driver_dditable_t                Driver;
@@ -2622,7 +2782,9 @@ typedef struct _ze_dditable_driver_t
 {
     ze_api_version_t    version;
     uint8_t             isValidFlag;
+    ze_rtas_builder_dditable_t *        RTASBuilder;
     ze_rtas_builder_exp_dditable_t *    RTASBuilderExp;
+    ze_rtas_parallel_operation_dditable_t * RTASParallelOperation;
     ze_rtas_parallel_operation_exp_dditable_t * RTASParallelOperationExp;
     ze_global_dditable_t *              Global;
     ze_driver_dditable_t *              Driver;
