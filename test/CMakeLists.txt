@@ -118,6 +118,16 @@ set_property(TEST test_zello_world_legacy_all_tracing PROPERTY ENVIRONMENT "ZE_E
 add_test(NAME test_zello_world_legacy_all_tracing_dynamic COMMAND zello_world --enable_legacy_init --enable_null_driver --force_loader_intercepts --enable_validation_layer --enable_tracing_layer_runtime)
 set_property(TEST test_zello_world_legacy_all_tracing_dynamic PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1")
 
+add_test(NAME tests_multi_driver_stdout COMMAND tests --gtest_filter=*GivenZeInitDriverWhenCalledThenNoOutputIsPrintedToStdout)
+if (MSVC)
+  set_property(TEST tests_multi_driver_stdout APPEND PROPERTY ENVIRONMENT "ZE_ENABLE_ALT_DRIVERS=${CMAKE_BINARY_DIR}/bin/$<CONFIG>/ze_null_test1.dll,${CMAKE_BINARY_DIR}/bin/$<CONFIG>/ze_null_test2.dll")
+else()
+  set_property(TEST tests_multi_driver_stdout APPEND PROPERTY ENVIRONMENT "ZE_ENABLE_ALT_DRIVERS=${CMAKE_BINARY_DIR}/lib/libze_null_test1.so,${CMAKE_BINARY_DIR}/lib/libze_null_test2.so")
+endif()
+
+add_test(NAME tests_sigle_driver_stdout COMMAND tests --gtest_filter=*GivenZeInitDriverWhenCalledThenNoOutputIsPrintedToStdout)
+set_property(TEST tests_sigle_driver_stdout PROPERTY ENVIRONMENT "ZE_ENABLE_NULL_DRIVER=1")
+
 # These tests are currently not supported on Windows. The reason is that the std::cerr is not being redirected to a pipe in Windows to be then checked against the expected output.
 if(NOT MSVC)
     add_test(NAME tests_event_deadlock COMMAND tests --gtest_filter=*GivenLevelZeroLoaderPresentWhenCallingzeCommandListAppendMemoryCopyWithCircularDependencyOnEventsThenValidationLayerPrintsWarningOfDeadlock*)
