@@ -5,7 +5,7 @@
  * SPDX-License-Identifier: MIT
  *
  * @file zet_ddi.h
- * @version v1.12-r1.12.15
+ * @version v1.13-r1.13.1
  *
  */
 #ifndef _ZET_DDI_H
@@ -282,11 +282,25 @@ typedef ze_result_t (ZE_APICALL *zet_pfnDeviceCreateMetricGroupsFromMetricsExp_t
     );
 
 ///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zetDeviceEnableMetricsExp 
+typedef ze_result_t (ZE_APICALL *zet_pfnDeviceEnableMetricsExp_t)(
+    zet_device_handle_t
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zetDeviceDisableMetricsExp 
+typedef ze_result_t (ZE_APICALL *zet_pfnDeviceDisableMetricsExp_t)(
+    zet_device_handle_t
+    );
+
+///////////////////////////////////////////////////////////////////////////////
 /// @brief Table of DeviceExp functions pointers
 typedef struct _zet_device_exp_dditable_t
 {
     zet_pfnDeviceGetConcurrentMetricGroupsExp_t                 pfnGetConcurrentMetricGroupsExp;
     zet_pfnDeviceCreateMetricGroupsFromMetricsExp_t             pfnCreateMetricGroupsFromMetricsExp;
+    zet_pfnDeviceEnableMetricsExp_t                             pfnEnableMetricsExp;
+    zet_pfnDeviceDisableMetricsExp_t                            pfnDisableMetricsExp;
 } zet_device_exp_dditable_t;
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -410,6 +424,43 @@ zetGetCommandListProcAddrTable(
 typedef ze_result_t (ZE_APICALL *zet_pfnGetCommandListProcAddrTable_t)(
     ze_api_version_t,
     zet_command_list_dditable_t*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zetCommandListAppendMarkerExp 
+typedef ze_result_t (ZE_APICALL *zet_pfnCommandListAppendMarkerExp_t)(
+    zet_command_list_handle_t,
+    zet_metric_group_handle_t,
+    uint32_t
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Table of CommandListExp functions pointers
+typedef struct _zet_command_list_exp_dditable_t
+{
+    zet_pfnCommandListAppendMarkerExp_t                         pfnAppendMarkerExp;
+} zet_command_list_exp_dditable_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Exported function for filling application's CommandListExp table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+ZE_DLLEXPORT ze_result_t ZE_APICALL
+zetGetCommandListExpProcAddrTable(
+    ze_api_version_t version,                                               ///< [in] API version requested
+    zet_command_list_exp_dditable_t* pDdiTable                              ///< [in,out] pointer to table of DDI function pointers
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zetGetCommandListExpProcAddrTable
+typedef ze_result_t (ZE_APICALL *zet_pfnGetCommandListExpProcAddrTable_t)(
+    ze_api_version_t,
+    zet_command_list_exp_dditable_t*
     );
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1154,6 +1205,7 @@ typedef struct _zet_dditable_t
     zet_device_exp_dditable_t           DeviceExp;
     zet_context_dditable_t              Context;
     zet_command_list_dditable_t         CommandList;
+    zet_command_list_exp_dditable_t     CommandListExp;
     zet_module_dditable_t               Module;
     zet_kernel_dditable_t               Kernel;
     zet_metric_dditable_t               Metric;
@@ -1178,6 +1230,7 @@ typedef struct _zet_dditable_driver_t
     zet_device_exp_dditable_t *         DeviceExp;
     zet_context_dditable_t *            Context;
     zet_command_list_dditable_t *       CommandList;
+    zet_command_list_exp_dditable_t *   CommandListExp;
     zet_module_dditable_t *             Module;
     zet_kernel_dditable_t *             Kernel;
     zet_metric_dditable_t *             Metric;

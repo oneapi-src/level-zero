@@ -738,8 +738,8 @@ zetDebugReadRegisters(
                                                     ///< than the `count` member of ::zet_debug_regset_properties_t for the
                                                     ///< type
     uint32_t count,                                 ///< [in] the number of registers to read; start+count must be less than or
-                                                    ///< equal to the `count` member of ::zet_debug_register_group_properties_t
-                                                    ///< for the type
+                                                    ///< equal to the `count` member of ::zet_debug_regset_properties_t for the
+                                                    ///< type
     void* pRegisterValues                           ///< [in,out][optional][range(0, count)] buffer of register values
     )
 {
@@ -798,8 +798,8 @@ zetDebugWriteRegisters(
                                                     ///< than the `count` member of ::zet_debug_regset_properties_t for the
                                                     ///< type
     uint32_t count,                                 ///< [in] the number of registers to write; start+count must be less than
-                                                    ///< or equal to the `count` member of
-                                                    ///< ::zet_debug_register_group_properties_t for the type
+                                                    ///< or equal to the `count` member of ::zet_debug_regset_properties_t for
+                                                    ///< the type
     void* pRegisterValues                           ///< [in,out][optional][range(0, count)] buffer of register values
     )
 {
@@ -3013,6 +3013,186 @@ zetMetricTracerDecodeExp(
     }
 
     return pfnDecodeExp( phMetricDecoder, pRawDataSize, pRawData, metricsCount, phMetrics, pSetCount, pMetricEntriesCountPerSet, pMetricEntriesCount, pMetricEntries );
+    #endif
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Append a Marker based on the Metric source of the Metric Group, to a
+///        Command List.
+/// 
+/// @details
+///     - This function appends a Marker based on the Metric source of the
+///       Metric Group, to Command List.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hCommandList`
+///         + `nullptr == hMetricGroup`
+ze_result_t ZE_APICALL
+zetCommandListAppendMarkerExp(
+    zet_command_list_handle_t hCommandList,         ///< [in] handle to the command list
+    zet_metric_group_handle_t hMetricGroup,         ///< [in] handle to the marker metric group.
+                                                    ///< ::zet_metric_group_type_exp_flags_t could be used to check whether
+                                                    ///< marker is supoported by the metric group.
+    uint32_t value                                  ///< [in] marker value
+    )
+{
+    #ifdef DYNAMIC_LOAD_LOADER
+    ze_result_t result = ZE_RESULT_SUCCESS;
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+    static const zet_pfnCommandListAppendMarkerExp_t pfnAppendMarkerExp = [&result] {
+        auto pfnAppendMarkerExp = ze_lib::context->zetDdiTable.load()->CommandListExp.pfnAppendMarkerExp;
+        if( nullptr == pfnAppendMarkerExp ) {
+            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+        }
+        return pfnAppendMarkerExp;
+    }();
+    if (result != ZE_RESULT_SUCCESS) {
+        return result;
+    }
+    return pfnAppendMarkerExp( hCommandList, hMetricGroup, value );
+    #else
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
+    auto pfnAppendMarkerExp = ze_lib::context->zetDdiTable.load()->CommandListExp.pfnAppendMarkerExp;
+    if( nullptr == pfnAppendMarkerExp ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    return pfnAppendMarkerExp( hCommandList, hMetricGroup, value );
+    #endif
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Enable Metrics collection during runtime.
+/// 
+/// @details
+///     - This API enables metric collection for a device/sub-device if not
+///       already enabled.
+///     - if ZET_ENABLE_METRICS=1 was already set, then calling this api would
+///       be a NOP.
+///     - This api should be called after calling zeInit().
+///     - If device is a root-device handle, then its sub-devices are also
+///       enabled.
+///     - ::zetDeviceDisableMetricsExp need not be called if if this api returns
+///       error.
+///     - This API can be used as runtime alternative to setting
+///       ZET_ENABLE_METRICS=1.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hDevice`
+ze_result_t ZE_APICALL
+zetDeviceEnableMetricsExp(
+    zet_device_handle_t hDevice                     ///< [in] handle of the device where metrics collection has to be enabled.
+    )
+{
+    #ifdef DYNAMIC_LOAD_LOADER
+    ze_result_t result = ZE_RESULT_SUCCESS;
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+    static const zet_pfnDeviceEnableMetricsExp_t pfnEnableMetricsExp = [&result] {
+        auto pfnEnableMetricsExp = ze_lib::context->zetDdiTable.load()->DeviceExp.pfnEnableMetricsExp;
+        if( nullptr == pfnEnableMetricsExp ) {
+            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+        }
+        return pfnEnableMetricsExp;
+    }();
+    if (result != ZE_RESULT_SUCCESS) {
+        return result;
+    }
+    return pfnEnableMetricsExp( hDevice );
+    #else
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
+    auto pfnEnableMetricsExp = ze_lib::context->zetDdiTable.load()->DeviceExp.pfnEnableMetricsExp;
+    if( nullptr == pfnEnableMetricsExp ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    return pfnEnableMetricsExp( hDevice );
+    #endif
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Disable Metrics collection during runtime, if it was already enabled.
+/// 
+/// @details
+///     - This API disables metrics collection for a device/sub-device, if it
+///       was previously enabled.
+///     - If device is a root-device handle, then its sub-devices are also
+///       disabled.
+///     - The application has to ensure that all metric operations are complete
+///       and all metric resources are released before this API is called.
+///     - If there are metric operations in progress or metric resources are not
+///       released, then ZE_RESULT_ERROR_HANDLE_OBJECT_IN_USE is returned.
+/// 
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_DEVICE_LOST
+///     - ::ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY
+///     - ::ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_HANDLE
+///         + `nullptr == hDevice`
+ze_result_t ZE_APICALL
+zetDeviceDisableMetricsExp(
+    zet_device_handle_t hDevice                     ///< [in] handle of the device where metrics collection has to be disabled
+    )
+{
+    #ifdef DYNAMIC_LOAD_LOADER
+    ze_result_t result = ZE_RESULT_SUCCESS;
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+    static const zet_pfnDeviceDisableMetricsExp_t pfnDisableMetricsExp = [&result] {
+        auto pfnDisableMetricsExp = ze_lib::context->zetDdiTable.load()->DeviceExp.pfnDisableMetricsExp;
+        if( nullptr == pfnDisableMetricsExp ) {
+            result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+        }
+        return pfnDisableMetricsExp;
+    }();
+    if (result != ZE_RESULT_SUCCESS) {
+        return result;
+    }
+    return pfnDisableMetricsExp( hDevice );
+    #else
+    if(ze_lib::destruction) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+
+    auto pfnDisableMetricsExp = ze_lib::context->zetDdiTable.load()->DeviceExp.pfnDisableMetricsExp;
+    if( nullptr == pfnDisableMetricsExp ) {
+        if(!ze_lib::context->isInitialized)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        else
+            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    return pfnDisableMetricsExp( hDevice );
     #endif
 }
 
