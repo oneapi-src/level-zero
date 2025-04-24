@@ -201,8 +201,8 @@ namespace validation_layer
                                                         ///< than the `count` member of ::zet_debug_regset_properties_t for the
                                                         ///< type
         uint32_t count,                                 ///< [in] the number of registers to read; start+count must be less than or
-                                                        ///< equal to the `count` member of ::zet_debug_register_group_properties_t
-                                                        ///< for the type
+                                                        ///< equal to the `count` member of ::zet_debug_regset_properties_t for the
+                                                        ///< type
         void* pRegisterValues                           ///< [in,out][optional][range(0, count)] buffer of register values
         )
     { 
@@ -221,8 +221,8 @@ namespace validation_layer
                                                         ///< than the `count` member of ::zet_debug_regset_properties_t for the
                                                         ///< type
         uint32_t count,                                 ///< [in] the number of registers to write; start+count must be less than
-                                                        ///< or equal to the `count` member of
-                                                        ///< ::zet_debug_register_group_properties_t for the type
+                                                        ///< or equal to the `count` member of ::zet_debug_regset_properties_t for
+                                                        ///< the type
         void* pRegisterValues                           ///< [in,out][optional][range(0, count)] buffer of register values
         )
     { 
@@ -865,6 +865,49 @@ namespace validation_layer
             if (!context.handleLifetime->isHandleValid( phMetrics[i] )){
                 return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
             }
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    ze_result_t
+    ZETHandleLifetimeValidation::zetCommandListAppendMarkerExpPrologue(
+        zet_command_list_handle_t hCommandList,         ///< [in] handle to the command list
+        zet_metric_group_handle_t hMetricGroup,         ///< [in] handle to the marker metric group.
+                                                        ///< ::zet_metric_group_type_exp_flags_t could be used to check whether
+                                                        ///< marker is supoported by the metric group.
+        uint32_t value                                  ///< [in] marker value
+        )
+    { 
+        
+        if ( !context.handleLifetime->isHandleValid( hCommandList )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        if (!context.handleLifetime->isOpen( hCommandList )){
+            return ZE_RESULT_ERROR_INVALID_ARGUMENT;
+        }
+        if ( !context.handleLifetime->isHandleValid( hMetricGroup )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    ze_result_t
+    ZETHandleLifetimeValidation::zetDeviceEnableMetricsExpPrologue(
+        zet_device_handle_t hDevice                     ///< [in] handle of the device where metrics collection has to be enabled.
+        )
+    { 
+        
+        if ( !context.handleLifetime->isHandleValid( hDevice )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    ze_result_t
+    ZETHandleLifetimeValidation::zetDeviceDisableMetricsExpPrologue(
+        zet_device_handle_t hDevice                     ///< [in] handle of the device where metrics collection has to be disabled
+        )
+    { 
+        
+        if ( !context.handleLifetime->isHandleValid( hDevice )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
         }
         return ZE_RESULT_SUCCESS;
     }
