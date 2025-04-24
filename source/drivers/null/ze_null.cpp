@@ -74,7 +74,6 @@ namespace driver
                 #endif
                 std::string null_driver_id_str = std::to_string(ZEL_NULL_DRIVER_ID);
                 if (pNext->stype == ZE_STRUCTURE_TYPE_DRIVER_DDI_HANDLES_EXT_PROPERTIES && (ddi_test_disable != null_driver_id_str && ddi_test_disable != "3")) {
-                    printf("ldr ddi pfnGetProperties, null driver id %d ddi ext\n", ZEL_NULL_DRIVER_ID);
                     ze_driver_ddi_handles_ext_properties_t *pDdiHandlesExtProperties = reinterpret_cast<ze_driver_ddi_handles_ext_properties_t *>(pNext);
                     pDdiHandlesExtProperties->flags = ze_driver_ddi_handle_ext_flag_t::ZE_DRIVER_DDI_HANDLE_EXT_FLAG_DDI_HANDLE_EXT_SUPPORTED;
                     context.ddiExtensionRequested = true;
