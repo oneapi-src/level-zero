@@ -1736,6 +1736,8 @@ def get_version(obj):
             ret_version = "ZE_API_VERSION_1_11"
         if version == "1.12":
             ret_version = "ZE_API_VERSION_1_12"
+        if version == "1.13":
+            ret_version = "ZE_API_VERSION_1_13"
         assert(ret_version != "ZE_API_VERSION_FORCE_UINT32")
         return ret_version
 

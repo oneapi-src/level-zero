@@ -368,8 +368,8 @@ namespace loader_driver_ddi
                                                         ///< than the `count` member of ::zet_debug_regset_properties_t for the
                                                         ///< type
         uint32_t count,                                 ///< [in] the number of registers to read; start+count must be less than or
-                                                        ///< equal to the `count` member of ::zet_debug_register_group_properties_t
-                                                        ///< for the type
+                                                        ///< equal to the `count` member of ::zet_debug_regset_properties_t for the
+                                                        ///< type
         void* pRegisterValues                           ///< [in,out][optional][range(0, count)] buffer of register values
         )
     {
@@ -402,8 +402,8 @@ namespace loader_driver_ddi
                                                         ///< than the `count` member of ::zet_debug_regset_properties_t for the
                                                         ///< type
         uint32_t count,                                 ///< [in] the number of registers to write; start+count must be less than
-                                                        ///< or equal to the `count` member of
-                                                        ///< ::zet_debug_register_group_properties_t for the type
+                                                        ///< or equal to the `count` member of ::zet_debug_regset_properties_t for
+                                                        ///< the type
         void* pRegisterValues                           ///< [in,out][optional][range(0, count)] buffer of register values
         )
     {
@@ -1471,6 +1471,85 @@ namespace loader_driver_ddi
     }
 
     ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zetCommandListAppendMarkerExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zetCommandListAppendMarkerExp(
+        zet_command_list_handle_t hCommandList,         ///< [in] handle to the command list
+        zet_metric_group_handle_t hMetricGroup,         ///< [in] handle to the marker metric group.
+                                                        ///< ::zet_metric_group_type_exp_flags_t could be used to check whether
+                                                        ///< marker is supoported by the metric group.
+        uint32_t value                                  ///< [in] marker value
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // extract handle's function pointer table
+        auto dditable = reinterpret_cast<ze_handle_t*>( hCommandList )->pTools;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_13) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
+        auto pfnAppendMarkerExp = dditable->CommandListExp->pfnAppendMarkerExp;
+        if( nullptr == pfnAppendMarkerExp )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        // forward to device-driver
+        result = pfnAppendMarkerExp( hCommandList, hMetricGroup, value );
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zetDeviceEnableMetricsExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zetDeviceEnableMetricsExp(
+        zet_device_handle_t hDevice                     ///< [in] handle of the device where metrics collection has to be enabled.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // extract handle's function pointer table
+        auto dditable = reinterpret_cast<ze_handle_t*>( hDevice )->pTools;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_13) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
+        auto pfnEnableMetricsExp = dditable->DeviceExp->pfnEnableMetricsExp;
+        if( nullptr == pfnEnableMetricsExp )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        // forward to device-driver
+        result = pfnEnableMetricsExp( hDevice );
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zetDeviceDisableMetricsExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zetDeviceDisableMetricsExp(
+        zet_device_handle_t hDevice                     ///< [in] handle of the device where metrics collection has to be disabled
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // extract handle's function pointer table
+        auto dditable = reinterpret_cast<ze_handle_t*>( hDevice )->pTools;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_13) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
+        auto pfnDisableMetricsExp = dditable->DeviceExp->pfnDisableMetricsExp;
+        if( nullptr == pfnDisableMetricsExp )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        // forward to device-driver
+        result = pfnDisableMetricsExp( hDevice );
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
     /// @brief Intercept function for zetMetricGroupCalculateMultipleMetricValuesExp
     __zedlllocal ze_result_t ZE_APICALL
     zetMetricGroupCalculateMultipleMetricValuesExp(
@@ -2059,6 +2138,7 @@ namespace loader_driver_ddi
         delete pDdiTable->DeviceExp;
         delete pDdiTable->Context;
         delete pDdiTable->CommandList;
+        delete pDdiTable->CommandListExp;
         delete pDdiTable->Kernel;
         delete pDdiTable->Module;
         delete pDdiTable->Debug;

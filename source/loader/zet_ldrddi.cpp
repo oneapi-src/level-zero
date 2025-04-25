@@ -2433,6 +2433,8 @@ zetGetDeviceExpProcAddrTableLegacy()
     // return pointers to the Loader's Functions.
     loader::loaderDispatch->pTools->DeviceExp->pfnGetConcurrentMetricGroupsExp             = loader::zetDeviceGetConcurrentMetricGroupsExp;
     loader::loaderDispatch->pTools->DeviceExp->pfnCreateMetricGroupsFromMetricsExp         = loader::zetDeviceCreateMetricGroupsFromMetricsExp;
+    loader::loaderDispatch->pTools->DeviceExp->pfnEnableMetricsExp                         = loader::zetDeviceEnableMetricsExp;
+    loader::loaderDispatch->pTools->DeviceExp->pfnDisableMetricsExp                        = loader::zetDeviceDisableMetricsExp;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -2454,6 +2456,15 @@ zetGetCommandListProcAddrTableLegacy()
     loader::loaderDispatch->pTools->CommandList->pfnAppendMetricQueryBegin                   = loader::zetCommandListAppendMetricQueryBegin;
     loader::loaderDispatch->pTools->CommandList->pfnAppendMetricQueryEnd                     = loader::zetCommandListAppendMetricQueryEnd;
     loader::loaderDispatch->pTools->CommandList->pfnAppendMetricMemoryBarrier                = loader::zetCommandListAppendMetricMemoryBarrier;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief function for filling the legacy api pointers for CommandListExp table
+__zedlllocal void ZE_APICALL
+zetGetCommandListExpProcAddrTableLegacy()
+{
+    // return pointers to the Loader's Functions.
+    loader::loaderDispatch->pTools->CommandListExp->pfnAppendMarkerExp                          = loader::zetCommandListAppendMarkerExp;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -2997,6 +3008,16 @@ zetGetDeviceExpProcAddrTable(
             } else {
                 pDdiTable->pfnCreateMetricGroupsFromMetricsExp         = loader::zetDeviceCreateMetricGroupsFromMetricsExp;
             }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnEnableMetricsExp                         = loader_driver_ddi::zetDeviceEnableMetricsExp;
+            } else {
+                pDdiTable->pfnEnableMetricsExp                         = loader::zetDeviceEnableMetricsExp;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnDisableMetricsExp                        = loader_driver_ddi::zetDeviceDisableMetricsExp;
+            } else {
+                pDdiTable->pfnDisableMetricsExp                        = loader::zetDeviceDisableMetricsExp;
+            }
             zetGetDeviceExpProcAddrTableLegacy();
         }
         else
@@ -3243,7 +3264,13 @@ zetGetCommandListExpProcAddrTable(
         if( ( loader::context->zeDrivers.size() > 1 ) || loader::context->forceIntercept )
         {
             // return pointers to loader's DDIs
-            pDdiTable->pfnAppendMarkerExp                          = loader::zetCommandListAppendMarkerExp;
+            loader::loaderDispatch->pTools->CommandListExp = new zet_command_list_exp_dditable_t;
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnAppendMarkerExp                          = loader_driver_ddi::zetCommandListAppendMarkerExp;
+            } else {
+                pDdiTable->pfnAppendMarkerExp                          = loader::zetCommandListAppendMarkerExp;
+            }
+            zetGetCommandListExpProcAddrTableLegacy();
         }
         else
         {

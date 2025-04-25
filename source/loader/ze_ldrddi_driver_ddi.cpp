@@ -19,7 +19,6 @@ namespace loader_driver_ddi
         ze_api_version_t* version                       ///< [out] api version
         )
     {
-        printf("DriverGetApiVersion driver_ddi called\n");
         ze_result_t result = ZE_RESULT_SUCCESS;
 
         // extract handle's function pointer table
@@ -3385,10 +3384,14 @@ namespace loader_driver_ddi
         char** pString                                  ///< [in,out][optional] pointer to application-managed character array
                                                         ///< (string data).
                                                         ///< If NULL, the string length of the kernel source attributes, including
-                                                        ///< a null-terminating character, is returned in pSize.
-                                                        ///< Otherwise, pString must point to valid application memory that is
-                                                        ///< greater than or equal to *pSize bytes in length, and on return the
-                                                        ///< pointed-to string will contain a space-separated list of kernel source attributes.
+                                                        ///< a null-terminating character, is returned in pSize. Otherwise, pString
+                                                        ///< must point to valid application memory that is greater than or equal
+                                                        ///< to *pSize bytes in length, and on return the pointed-to string will
+                                                        ///< contain a space-separated list of kernel source attributes. Note: This
+                                                        ///< API was originally intended to ship with a char *pString, however this
+                                                        ///< typo was introduced. Thus the API has to stay this way for backwards
+                                                        ///< compatible reasons. It can be corrected in v2.0. Suggestion is to
+                                                        ///< create your own char *pString and then pass to this API with &pString.
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
@@ -4218,6 +4221,320 @@ namespace loader_driver_ddi
             return ZE_RESULT_ERROR_UNINITIALIZED;
         // forward to device-driver
         result = pfnAppendWaitExternalSemaphoreExt( hCommandList, numSemaphores, phSemaphores, waitParams, hSignalEvent, numWaitEvents, phWaitEvents );
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeRTASBuilderCreateExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeRTASBuilderCreateExt(
+        ze_driver_handle_t hDriver,                     ///< [in] handle of driver object
+        const ze_rtas_builder_ext_desc_t* pDescriptor,  ///< [in] pointer to builder descriptor
+        ze_rtas_builder_ext_handle_t* phBuilder         ///< [out] handle of builder object
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // extract handle's function pointer table
+        auto dditable = reinterpret_cast<ze_handle_t*>( hDriver )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_13) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
+        auto pfnCreateExt = dditable->RTASBuilder->pfnCreateExt;
+        if( nullptr == pfnCreateExt )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        // forward to device-driver
+        result = pfnCreateExt( hDriver, pDescriptor, phBuilder );
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeRTASBuilderGetBuildPropertiesExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeRTASBuilderGetBuildPropertiesExt(
+        ze_rtas_builder_ext_handle_t hBuilder,          ///< [in] handle of builder object
+        const ze_rtas_builder_build_op_ext_desc_t* pBuildOpDescriptor,  ///< [in] pointer to build operation descriptor
+        ze_rtas_builder_ext_properties_t* pProperties   ///< [in,out] query result for builder properties
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // extract handle's function pointer table
+        auto dditable = reinterpret_cast<ze_handle_t*>( hBuilder )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_13) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
+        auto pfnGetBuildPropertiesExt = dditable->RTASBuilder->pfnGetBuildPropertiesExt;
+        if( nullptr == pfnGetBuildPropertiesExt )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        // forward to device-driver
+        result = pfnGetBuildPropertiesExt( hBuilder, pBuildOpDescriptor, pProperties );
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeDriverRTASFormatCompatibilityCheckExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeDriverRTASFormatCompatibilityCheckExt(
+        ze_driver_handle_t hDriver,                     ///< [in] handle of driver object
+        ze_rtas_format_ext_t rtasFormatA,               ///< [in] operand A
+        ze_rtas_format_ext_t rtasFormatB                ///< [in] operand B
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // extract handle's function pointer table
+        auto dditable = reinterpret_cast<ze_handle_t*>( hDriver )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_13) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
+        auto pfnRTASFormatCompatibilityCheckExt = dditable->Driver->pfnRTASFormatCompatibilityCheckExt;
+        if( nullptr == pfnRTASFormatCompatibilityCheckExt )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        // forward to device-driver
+        result = pfnRTASFormatCompatibilityCheckExt( hDriver, rtasFormatA, rtasFormatB );
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeRTASBuilderBuildExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeRTASBuilderBuildExt(
+        ze_rtas_builder_ext_handle_t hBuilder,          ///< [in] handle of builder object
+        const ze_rtas_builder_build_op_ext_desc_t* pBuildOpDescriptor,  ///< [in] pointer to build operation descriptor
+        void* pScratchBuffer,                           ///< [in][range(0, `scratchBufferSizeBytes`)] scratch buffer to be used
+                                                        ///< during acceleration structure construction
+        size_t scratchBufferSizeBytes,                  ///< [in] size of scratch buffer, in bytes
+        void* pRtasBuffer,                              ///< [in] pointer to destination buffer
+        size_t rtasBufferSizeBytes,                     ///< [in] destination buffer size, in bytes
+        ze_rtas_parallel_operation_ext_handle_t hParallelOperation, ///< [in][optional] handle to parallel operation object
+        void* pBuildUserPtr,                            ///< [in][optional] pointer passed to callbacks
+        ze_rtas_aabb_ext_t* pBounds,                    ///< [in,out][optional] pointer to destination address for acceleration
+                                                        ///< structure bounds
+        size_t* pRtasBufferSizeBytes                    ///< [out][optional] updated acceleration structure size requirement, in
+                                                        ///< bytes
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // extract handle's function pointer table
+        auto dditable = reinterpret_cast<ze_handle_t*>( hBuilder )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_13) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
+        auto pfnBuildExt = dditable->RTASBuilder->pfnBuildExt;
+        if( nullptr == pfnBuildExt )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        // forward to device-driver
+        result = pfnBuildExt( hBuilder, pBuildOpDescriptor, pScratchBuffer, scratchBufferSizeBytes, pRtasBuffer, rtasBufferSizeBytes, hParallelOperation, pBuildUserPtr, pBounds, pRtasBufferSizeBytes );
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeRTASBuilderCommandListAppendCopyExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeRTASBuilderCommandListAppendCopyExt(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of command list
+        void* dstptr,                                   ///< [in] pointer to destination in device memory to copy the ray tracing
+                                                        ///< acceleration structure to
+        const void* srcptr,                             ///< [in] pointer to a valid source ray tracing acceleration structure in
+                                                        ///< host memory to copy from
+        size_t size,                                    ///< [in] size in bytes to copy
+        ze_event_handle_t hSignalEvent,                 ///< [in][optional] handle of the event to signal on completion
+        uint32_t numWaitEvents,                         ///< [in][optional] number of events to wait on before launching; must be 0
+                                                        ///< if `nullptr == phWaitEvents`
+        ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
+                                                        ///< on before launching
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // extract handle's function pointer table
+        auto dditable = reinterpret_cast<ze_handle_t*>( hCommandList )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_13) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
+        auto pfnCommandListAppendCopyExt = dditable->RTASBuilder->pfnCommandListAppendCopyExt;
+        if( nullptr == pfnCommandListAppendCopyExt )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        // forward to device-driver
+        result = pfnCommandListAppendCopyExt( hCommandList, dstptr, srcptr, size, hSignalEvent, numWaitEvents, phWaitEvents );
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeRTASBuilderDestroyExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeRTASBuilderDestroyExt(
+        ze_rtas_builder_ext_handle_t hBuilder           ///< [in][release] handle of builder object to destroy
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // extract handle's function pointer table
+        auto dditable = reinterpret_cast<ze_handle_t*>( hBuilder )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_13) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
+        auto pfnDestroyExt = dditable->RTASBuilder->pfnDestroyExt;
+        if( nullptr == pfnDestroyExt )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        // forward to device-driver
+        result = pfnDestroyExt( hBuilder );
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeRTASParallelOperationCreateExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeRTASParallelOperationCreateExt(
+        ze_driver_handle_t hDriver,                     ///< [in] handle of driver object
+        ze_rtas_parallel_operation_ext_handle_t* phParallelOperation///< [out] handle of parallel operation object
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // extract handle's function pointer table
+        auto dditable = reinterpret_cast<ze_handle_t*>( hDriver )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_13) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
+        auto pfnCreateExt = dditable->RTASParallelOperation->pfnCreateExt;
+        if( nullptr == pfnCreateExt )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        // forward to device-driver
+        result = pfnCreateExt( hDriver, phParallelOperation );
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeRTASParallelOperationGetPropertiesExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeRTASParallelOperationGetPropertiesExt(
+        ze_rtas_parallel_operation_ext_handle_t hParallelOperation, ///< [in] handle of parallel operation object
+        ze_rtas_parallel_operation_ext_properties_t* pProperties///< [in,out] query result for parallel operation properties
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // extract handle's function pointer table
+        auto dditable = reinterpret_cast<ze_handle_t*>( hParallelOperation )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_13) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
+        auto pfnGetPropertiesExt = dditable->RTASParallelOperation->pfnGetPropertiesExt;
+        if( nullptr == pfnGetPropertiesExt )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        // forward to device-driver
+        result = pfnGetPropertiesExt( hParallelOperation, pProperties );
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeRTASParallelOperationJoinExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeRTASParallelOperationJoinExt(
+        ze_rtas_parallel_operation_ext_handle_t hParallelOperation  ///< [in] handle of parallel operation object
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // extract handle's function pointer table
+        auto dditable = reinterpret_cast<ze_handle_t*>( hParallelOperation )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_13) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
+        auto pfnJoinExt = dditable->RTASParallelOperation->pfnJoinExt;
+        if( nullptr == pfnJoinExt )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        // forward to device-driver
+        result = pfnJoinExt( hParallelOperation );
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeRTASParallelOperationDestroyExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeRTASParallelOperationDestroyExt(
+        ze_rtas_parallel_operation_ext_handle_t hParallelOperation  ///< [in][release] handle of parallel operation object to destroy
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // extract handle's function pointer table
+        auto dditable = reinterpret_cast<ze_handle_t*>( hParallelOperation )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_13) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
+        auto pfnDestroyExt = dditable->RTASParallelOperation->pfnDestroyExt;
+        if( nullptr == pfnDestroyExt )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        // forward to device-driver
+        result = pfnDestroyExt( hParallelOperation );
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeDeviceGetVectorWidthPropertiesExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeDeviceGetVectorWidthPropertiesExt(
+        ze_device_handle_t hDevice,                     ///< [in] handle of the device
+        uint32_t* pCount,                               ///< [in,out] pointer to the number of vector width properties.
+                                                        ///< if count is zero, then the driver shall update the value with the
+                                                        ///< total number of vector width properties available.
+                                                        ///< if count is greater than the number of vector width properties
+                                                        ///< available, then the driver shall update the value with the correct
+                                                        ///< number of vector width properties available.
+        ze_device_vector_width_properties_ext_t* pVectorWidthProperties ///< [in,out][optional][range(0, *pCount)] array of vector width properties.
+                                                        ///< if count is less than the number of properties available, then the
+                                                        ///< driver will return only the number requested.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // extract handle's function pointer table
+        auto dditable = reinterpret_cast<ze_handle_t*>( hDevice )->pCore;
+        if (dditable->isValidFlag == 0)
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        // Check that api version in the driver is supported by this version of the API
+        if (dditable->version < ZE_API_VERSION_1_13) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
+        auto pfnGetVectorWidthPropertiesExt = dditable->Device->pfnGetVectorWidthPropertiesExt;
+        if( nullptr == pfnGetVectorWidthPropertiesExt )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        // forward to device-driver
+        result = pfnGetVectorWidthPropertiesExt( hDevice, pCount, pVectorWidthProperties );
         return result;
     }
 
@@ -5423,7 +5740,9 @@ namespace loader_driver_ddi
     {
         // Delete ddi tables
         delete pDdiTable->Global;
+        delete pDdiTable->RTASBuilder;
         delete pDdiTable->RTASBuilderExp;
+        delete pDdiTable->RTASParallelOperation;
         delete pDdiTable->RTASParallelOperationExp;
         delete pDdiTable->Driver;
         delete pDdiTable->DriverExp;

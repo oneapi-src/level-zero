@@ -169,8 +169,8 @@ namespace loader_driver_ddi
                                                         ///< than the `count` member of ::zet_debug_regset_properties_t for the
                                                         ///< type
         uint32_t count,                                 ///< [in] the number of registers to read; start+count must be less than or
-                                                        ///< equal to the `count` member of ::zet_debug_register_group_properties_t
-                                                        ///< for the type
+                                                        ///< equal to the `count` member of ::zet_debug_regset_properties_t for the
+                                                        ///< type
         void* pRegisterValues                           ///< [in,out][optional][range(0, count)] buffer of register values
         );
     __zedlllocal ze_result_t ZE_APICALL
@@ -182,8 +182,8 @@ namespace loader_driver_ddi
                                                         ///< than the `count` member of ::zet_debug_regset_properties_t for the
                                                         ///< type
         uint32_t count,                                 ///< [in] the number of registers to write; start+count must be less than
-                                                        ///< or equal to the `count` member of
-                                                        ///< ::zet_debug_register_group_properties_t for the type
+                                                        ///< or equal to the `count` member of ::zet_debug_regset_properties_t for
+                                                        ///< the type
         void* pRegisterValues                           ///< [in,out][optional][range(0, count)] buffer of register values
         );
     __zedlllocal ze_result_t ZE_APICALL
@@ -497,6 +497,22 @@ namespace loader_driver_ddi
                                                         ///< decoded metric entries
         );
     __zedlllocal ze_result_t ZE_APICALL
+    zetCommandListAppendMarkerExp(
+        zet_command_list_handle_t hCommandList,         ///< [in] handle to the command list
+        zet_metric_group_handle_t hMetricGroup,         ///< [in] handle to the marker metric group.
+                                                        ///< ::zet_metric_group_type_exp_flags_t could be used to check whether
+                                                        ///< marker is supoported by the metric group.
+        uint32_t value                                  ///< [in] marker value
+        );
+    __zedlllocal ze_result_t ZE_APICALL
+    zetDeviceEnableMetricsExp(
+        zet_device_handle_t hDevice                     ///< [in] handle of the device where metrics collection has to be enabled.
+        );
+    __zedlllocal ze_result_t ZE_APICALL
+    zetDeviceDisableMetricsExp(
+        zet_device_handle_t hDevice                     ///< [in] handle of the device where metrics collection has to be disabled
+        );
+    __zedlllocal ze_result_t ZE_APICALL
     zetMetricGroupCalculateMultipleMetricValuesExp(
         zet_metric_group_handle_t hMetricGroup,         ///< [in] handle of the metric group
         zet_metric_group_calculation_type_t type,       ///< [in] calculation type to be applied on raw data
@@ -734,6 +750,8 @@ __zedlllocal void ZE_APICALL
 zetGetContextProcAddrTableLegacy();
 __zedlllocal void ZE_APICALL
 zetGetCommandListProcAddrTableLegacy();
+__zedlllocal void ZE_APICALL
+zetGetCommandListExpProcAddrTableLegacy();
 __zedlllocal void ZE_APICALL
 zetGetKernelProcAddrTableLegacy();
 __zedlllocal void ZE_APICALL
