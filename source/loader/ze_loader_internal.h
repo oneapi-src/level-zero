@@ -84,9 +84,7 @@ namespace loader
         ze_module_factory_t                 ze_module_factory;
         ze_physical_mem_factory_t           ze_physical_mem_factory;
         ze_rtas_builder_exp_factory_t       ze_rtas_builder_exp_factory;
-        ze_rtas_builder_ext_factory_t       ze_rtas_builder_ext_factory;
         ze_rtas_parallel_operation_exp_factory_t    ze_rtas_parallel_operation_exp_factory;
-        ze_rtas_parallel_operation_ext_factory_t    ze_rtas_parallel_operation_ext_factory;
         ze_sampler_factory_t                ze_sampler_factory;
         zes_device_factory_t                zes_device_factory;
         zes_diag_factory_t                  zes_diag_factory;

@@ -1,9 +1,5 @@
 # Level zero loader changelog
 
-## v1.22.0
-* Update to support v1.13.1 of the Level Zero Spec
-* Add testing stdout from zeInitDrivers in CI
-* Only Enable Teardown thread on windows and remove debug on success
 ## v1.21.9
 * Fix init checks when sorting legacy drivers
 * Fix MSVC Link optimization flags

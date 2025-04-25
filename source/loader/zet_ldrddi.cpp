@@ -376,8 +376,8 @@ namespace loader
                                                         ///< than the `count` member of ::zet_debug_regset_properties_t for the
                                                         ///< type
         uint32_t count,                                 ///< [in] the number of registers to read; start+count must be less than or
-                                                        ///< equal to the `count` member of ::zet_debug_regset_properties_t for the
-                                                        ///< type
+                                                        ///< equal to the `count` member of ::zet_debug_register_group_properties_t
+                                                        ///< for the type
         void* pRegisterValues                           ///< [in,out][optional][range(0, count)] buffer of register values
         )
     {
@@ -409,8 +409,8 @@ namespace loader
                                                         ///< than the `count` member of ::zet_debug_regset_properties_t for the
                                                         ///< type
         uint32_t count,                                 ///< [in] the number of registers to write; start+count must be less than
-                                                        ///< or equal to the `count` member of ::zet_debug_regset_properties_t for
-                                                        ///< the type
+                                                        ///< or equal to the `count` member of
+                                                        ///< ::zet_debug_register_group_properties_t for the type
         void* pRegisterValues                           ///< [in,out][optional][range(0, count)] buffer of register values
         )
     {
@@ -1655,85 +1655,6 @@ namespace loader
     }
 
     ///////////////////////////////////////////////////////////////////////////////
-    /// @brief Intercept function for zetCommandListAppendMarkerExp
-    __zedlllocal ze_result_t ZE_APICALL
-    zetCommandListAppendMarkerExp(
-        zet_command_list_handle_t hCommandList,         ///< [in] handle to the command list
-        zet_metric_group_handle_t hMetricGroup,         ///< [in] handle to the marker metric group.
-                                                        ///< ::zet_metric_group_type_exp_flags_t could be used to check whether
-                                                        ///< marker is supoported by the metric group.
-        uint32_t value                                  ///< [in] marker value
-        )
-    {
-        ze_result_t result = ZE_RESULT_SUCCESS;
-
-        // extract driver's function pointer table
-        auto dditable = reinterpret_cast<zet_command_list_object_t*>( hCommandList )->dditable;
-        auto pfnAppendMarkerExp = dditable->zet.CommandListExp.pfnAppendMarkerExp;
-        if( nullptr == pfnAppendMarkerExp )
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-
-        // convert loader handle to driver handle
-        hCommandList = reinterpret_cast<zet_command_list_object_t*>( hCommandList )->handle;
-
-        // convert loader handle to driver handle
-        hMetricGroup = reinterpret_cast<zet_metric_group_object_t*>( hMetricGroup )->handle;
-
-        // forward to device-driver
-        result = pfnAppendMarkerExp( hCommandList, hMetricGroup, value );
-
-        return result;
-    }
-
-    ///////////////////////////////////////////////////////////////////////////////
-    /// @brief Intercept function for zetDeviceEnableMetricsExp
-    __zedlllocal ze_result_t ZE_APICALL
-    zetDeviceEnableMetricsExp(
-        zet_device_handle_t hDevice                     ///< [in] handle of the device where metrics collection has to be enabled.
-        )
-    {
-        ze_result_t result = ZE_RESULT_SUCCESS;
-
-        // extract driver's function pointer table
-        auto dditable = reinterpret_cast<zet_device_object_t*>( hDevice )->dditable;
-        auto pfnEnableMetricsExp = dditable->zet.DeviceExp.pfnEnableMetricsExp;
-        if( nullptr == pfnEnableMetricsExp )
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-
-        // convert loader handle to driver handle
-        hDevice = reinterpret_cast<zet_device_object_t*>( hDevice )->handle;
-
-        // forward to device-driver
-        result = pfnEnableMetricsExp( hDevice );
-
-        return result;
-    }
-
-    ///////////////////////////////////////////////////////////////////////////////
-    /// @brief Intercept function for zetDeviceDisableMetricsExp
-    __zedlllocal ze_result_t ZE_APICALL
-    zetDeviceDisableMetricsExp(
-        zet_device_handle_t hDevice                     ///< [in] handle of the device where metrics collection has to be disabled
-        )
-    {
-        ze_result_t result = ZE_RESULT_SUCCESS;
-
-        // extract driver's function pointer table
-        auto dditable = reinterpret_cast<zet_device_object_t*>( hDevice )->dditable;
-        auto pfnDisableMetricsExp = dditable->zet.DeviceExp.pfnDisableMetricsExp;
-        if( nullptr == pfnDisableMetricsExp )
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-
-        // convert loader handle to driver handle
-        hDevice = reinterpret_cast<zet_device_object_t*>( hDevice )->handle;
-
-        // forward to device-driver
-        result = pfnDisableMetricsExp( hDevice );
-
-        return result;
-    }
-
-    ///////////////////////////////////////////////////////////////////////////////
     /// @brief Intercept function for zetMetricGroupCalculateMultipleMetricValuesExp
     __zedlllocal ze_result_t ZE_APICALL
     zetMetricGroupCalculateMultipleMetricValuesExp(
@@ -2711,8 +2632,6 @@ zetGetDeviceExpProcAddrTable(
             // return pointers to loader's DDIs
             pDdiTable->pfnGetConcurrentMetricGroupsExp             = loader::zetDeviceGetConcurrentMetricGroupsExp;
             pDdiTable->pfnCreateMetricGroupsFromMetricsExp         = loader::zetDeviceCreateMetricGroupsFromMetricsExp;
-            pDdiTable->pfnEnableMetricsExp                         = loader::zetDeviceEnableMetricsExp;
-            pDdiTable->pfnDisableMetricsExp                        = loader::zetDeviceDisableMetricsExp;
         }
         else
         {
@@ -2881,73 +2800,6 @@ zetGetCommandListProcAddrTable(
     {
         auto getTable = reinterpret_cast<zet_pfnGetCommandListProcAddrTable_t>(
             GET_FUNCTION_PTR(loader::context->validationLayer, "zetGetCommandListProcAddrTable") );
-        if(!getTable)
-            return ZE_RESULT_ERROR_UNINITIALIZED;
-        result = getTable( version, pDdiTable );
-    }
-
-    return result;
-}
-
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Exported function for filling application's CommandListExp table
-///        with current process' addresses
-///
-/// @returns
-///     - ::ZE_RESULT_SUCCESS
-///     - ::ZE_RESULT_ERROR_UNINITIALIZED
-///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
-///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
-ZE_DLLEXPORT ze_result_t ZE_APICALL
-zetGetCommandListExpProcAddrTable(
-    ze_api_version_t version,                       ///< [in] API version requested
-    zet_command_list_exp_dditable_t* pDdiTable      ///< [in,out] pointer to table of DDI function pointers
-    )
-{
-    if( loader::context->zeDrivers.size() < 1 ) {
-        return ZE_RESULT_ERROR_UNINITIALIZED;
-    }
-
-    if( nullptr == pDdiTable )
-        return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
-
-    if( loader::context->version < version )
-        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
-
-    ze_result_t result = ZE_RESULT_SUCCESS;
-
-    // Load the device-driver DDI tables
-    for( auto& drv : loader::context->zeDrivers )
-    {
-        if(drv.initStatus != ZE_RESULT_SUCCESS)
-            continue;
-        auto getTable = reinterpret_cast<zet_pfnGetCommandListExpProcAddrTable_t>(
-            GET_FUNCTION_PTR( drv.handle, "zetGetCommandListExpProcAddrTable") );
-        if(!getTable) 
-            continue; 
-        result = getTable( version, &drv.dditable.zet.CommandListExp);
-    }
-
-
-    if( ZE_RESULT_SUCCESS == result )
-    {
-        if( ( loader::context->zeDrivers.size() > 1 ) || loader::context->forceIntercept )
-        {
-            // return pointers to loader's DDIs
-            pDdiTable->pfnAppendMarkerExp                          = loader::zetCommandListAppendMarkerExp;
-        }
-        else
-        {
-            // return pointers directly to driver's DDIs
-            *pDdiTable = loader::context->zeDrivers.front().dditable.zet.CommandListExp;
-        }
-    }
-
-    // If the validation layer is enabled, then intercept the loader's DDIs
-    if(( ZE_RESULT_SUCCESS == result ) && ( nullptr != loader::context->validationLayer ))
-    {
-        auto getTable = reinterpret_cast<zet_pfnGetCommandListExpProcAddrTable_t>(
-            GET_FUNCTION_PTR(loader::context->validationLayer, "zetGetCommandListExpProcAddrTable") );
         if(!getTable)
             return ZE_RESULT_ERROR_UNINITIALIZED;
         result = getTable( version, pDdiTable );
