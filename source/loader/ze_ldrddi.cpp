@@ -9,6 +9,8 @@
  */
 #include "ze_loader_internal.h"
 
+using namespace loader_driver_ddi;
+
 namespace loader
 {
     ///////////////////////////////////////////////////////////////////////////////
@@ -96,8 +98,28 @@ namespace loader
                 {
                     for( uint32_t i = 0; i < library_driver_handle_count; ++i ) {
                         uint32_t driver_index = total_driver_handle_count + i;
-                        phDrivers[ driver_index ] = reinterpret_cast<ze_driver_handle_t>(
-                            context->ze_driver_factory.getInstance( phDrivers[ driver_index ], &drv.dditable ) );
+                        if (drv.driverDDIHandleSupportQueried == false) {
+                            drv.properties = {};
+                            drv.properties.stype = ZE_STRUCTURE_TYPE_DRIVER_DDI_HANDLES_EXT_PROPERTIES;
+                            drv.properties.pNext = nullptr;
+                            ze_driver_properties_t driverProperties = {};
+                            driverProperties.stype = ZE_STRUCTURE_TYPE_DRIVER_PROPERTIES;
+                            driverProperties.pNext = nullptr;
+                            driverProperties.pNext = &drv.properties;
+                            ze_result_t res = drv.dditable.ze.Driver.pfnGetProperties(phDrivers[ driver_index ], &driverProperties);
+                            if (res != ZE_RESULT_SUCCESS) {
+                                if (loader::context->debugTraceEnabled) {
+                                    std::string message = drv.name + " failed zeDriverGetProperties query, returned ";
+                                    loader::context->debug_trace_message(message, loader::to_string(res));
+                                }
+                                return res;
+                            }
+                            drv.driverDDIHandleSupportQueried = true;
+                        }
+                        if (!(drv.properties.flags & ZE_DRIVER_DDI_HANDLE_EXT_FLAG_DDI_HANDLE_EXT_SUPPORTED) || !loader::context->driverDDIPathDefault) {
+                            phDrivers[ driver_index ] = reinterpret_cast<ze_driver_handle_t>(
+                                context->ze_driver_factory.getInstance( phDrivers[ driver_index ], &drv.dditable ) );
+                        }
                     }
                 }
                 catch( std::bad_alloc& )
@@ -181,8 +203,28 @@ namespace loader
                 {
                     for( uint32_t i = 0; i < library_driver_handle_count; ++i ) {
                         uint32_t driver_index = total_driver_handle_count + i;
-                        phDrivers[ driver_index ] = reinterpret_cast<ze_driver_handle_t>(
-                            context->ze_driver_factory.getInstance( phDrivers[ driver_index ], &drv.dditable ) );
+                        if (drv.driverDDIHandleSupportQueried == false) {
+                            drv.properties = {};
+                            drv.properties.stype = ZE_STRUCTURE_TYPE_DRIVER_DDI_HANDLES_EXT_PROPERTIES;
+                            drv.properties.pNext = nullptr;
+                            ze_driver_properties_t driverProperties = {};
+                            driverProperties.stype = ZE_STRUCTURE_TYPE_DRIVER_PROPERTIES;
+                            driverProperties.pNext = nullptr;
+                            driverProperties.pNext = &drv.properties;
+                            ze_result_t res = drv.dditable.ze.Driver.pfnGetProperties(phDrivers[ driver_index ], &driverProperties);
+                            if (res != ZE_RESULT_SUCCESS) {
+                                if (loader::context->debugTraceEnabled) {
+                                    std::string message = drv.name + " failed zeDriverGetProperties query, returned ";
+                                    loader::context->debug_trace_message(message, loader::to_string(res));
+                                }
+                                return res;
+                            }
+                            drv.driverDDIHandleSupportQueried = true;
+                        }
+                        if (!(drv.properties.flags & ZE_DRIVER_DDI_HANDLE_EXT_FLAG_DDI_HANDLE_EXT_SUPPORTED) || !loader::context->driverDDIPathDefault) {
+                            phDrivers[ driver_index ] = reinterpret_cast<ze_driver_handle_t>(
+                                context->ze_driver_factory.getInstance( phDrivers[ driver_index ], &drv.dditable ) );
+                        }
                     }
                 }
                 catch( std::bad_alloc& )
@@ -6872,6 +6914,450 @@ extern "C" {
 #endif
 
 ///////////////////////////////////////////////////////////////////////////////
+/// @brief function for filling the legacy api pointers for Global table
+__zedlllocal void ZE_APICALL
+zeGetGlobalProcAddrTableLegacy()
+{
+    // return pointers to the Loader's Functions.
+    loader::loaderDispatch->pCore->Global->pfnInit                                     = loader::zeInit;
+    loader::loaderDispatch->pCore->Global->pfnInitDrivers                              = loader::zeInitDrivers;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief function for filling the legacy api pointers for RTASBuilder table
+__zedlllocal void ZE_APICALL
+zeGetRTASBuilderProcAddrTableLegacy()
+{
+    // return pointers to the Loader's Functions.
+    loader::loaderDispatch->pCore->RTASBuilder->pfnCreateExt                                = loader::zeRTASBuilderCreateExt;
+    loader::loaderDispatch->pCore->RTASBuilder->pfnGetBuildPropertiesExt                    = loader::zeRTASBuilderGetBuildPropertiesExt;
+    loader::loaderDispatch->pCore->RTASBuilder->pfnBuildExt                                 = loader::zeRTASBuilderBuildExt;
+    loader::loaderDispatch->pCore->RTASBuilder->pfnCommandListAppendCopyExt                 = loader::zeRTASBuilderCommandListAppendCopyExt;
+    loader::loaderDispatch->pCore->RTASBuilder->pfnDestroyExt                               = loader::zeRTASBuilderDestroyExt;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief function for filling the legacy api pointers for RTASBuilderExp table
+__zedlllocal void ZE_APICALL
+zeGetRTASBuilderExpProcAddrTableLegacy()
+{
+    // return pointers to the Loader's Functions.
+    loader::loaderDispatch->pCore->RTASBuilderExp->pfnCreateExp                                = loader::zeRTASBuilderCreateExp;
+    loader::loaderDispatch->pCore->RTASBuilderExp->pfnGetBuildPropertiesExp                    = loader::zeRTASBuilderGetBuildPropertiesExp;
+    loader::loaderDispatch->pCore->RTASBuilderExp->pfnBuildExp                                 = loader::zeRTASBuilderBuildExp;
+    loader::loaderDispatch->pCore->RTASBuilderExp->pfnDestroyExp                               = loader::zeRTASBuilderDestroyExp;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief function for filling the legacy api pointers for RTASParallelOperation table
+__zedlllocal void ZE_APICALL
+zeGetRTASParallelOperationProcAddrTableLegacy()
+{
+    // return pointers to the Loader's Functions.
+    loader::loaderDispatch->pCore->RTASParallelOperation->pfnCreateExt                                = loader::zeRTASParallelOperationCreateExt;
+    loader::loaderDispatch->pCore->RTASParallelOperation->pfnGetPropertiesExt                         = loader::zeRTASParallelOperationGetPropertiesExt;
+    loader::loaderDispatch->pCore->RTASParallelOperation->pfnJoinExt                                  = loader::zeRTASParallelOperationJoinExt;
+    loader::loaderDispatch->pCore->RTASParallelOperation->pfnDestroyExt                               = loader::zeRTASParallelOperationDestroyExt;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief function for filling the legacy api pointers for RTASParallelOperationExp table
+__zedlllocal void ZE_APICALL
+zeGetRTASParallelOperationExpProcAddrTableLegacy()
+{
+    // return pointers to the Loader's Functions.
+    loader::loaderDispatch->pCore->RTASParallelOperationExp->pfnCreateExp                                = loader::zeRTASParallelOperationCreateExp;
+    loader::loaderDispatch->pCore->RTASParallelOperationExp->pfnGetPropertiesExp                         = loader::zeRTASParallelOperationGetPropertiesExp;
+    loader::loaderDispatch->pCore->RTASParallelOperationExp->pfnJoinExp                                  = loader::zeRTASParallelOperationJoinExp;
+    loader::loaderDispatch->pCore->RTASParallelOperationExp->pfnDestroyExp                               = loader::zeRTASParallelOperationDestroyExp;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief function for filling the legacy api pointers for Driver table
+__zedlllocal void ZE_APICALL
+zeGetDriverProcAddrTableLegacy()
+{
+    // return pointers to the Loader's Functions.
+    loader::loaderDispatch->pCore->Driver->pfnGet                                      = loader::zeDriverGet;
+    loader::loaderDispatch->pCore->Driver->pfnGetApiVersion                            = loader::zeDriverGetApiVersion;
+    loader::loaderDispatch->pCore->Driver->pfnGetProperties                            = loader::zeDriverGetProperties;
+    loader::loaderDispatch->pCore->Driver->pfnGetIpcProperties                         = loader::zeDriverGetIpcProperties;
+    loader::loaderDispatch->pCore->Driver->pfnGetExtensionProperties                   = loader::zeDriverGetExtensionProperties;
+    loader::loaderDispatch->pCore->Driver->pfnGetExtensionFunctionAddress              = loader::zeDriverGetExtensionFunctionAddress;
+    loader::loaderDispatch->pCore->Driver->pfnRTASFormatCompatibilityCheckExt          = loader::zeDriverRTASFormatCompatibilityCheckExt;
+    loader::loaderDispatch->pCore->Driver->pfnGetLastErrorDescription                  = loader::zeDriverGetLastErrorDescription;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief function for filling the legacy api pointers for DriverExp table
+__zedlllocal void ZE_APICALL
+zeGetDriverExpProcAddrTableLegacy()
+{
+    // return pointers to the Loader's Functions.
+    loader::loaderDispatch->pCore->DriverExp->pfnRTASFormatCompatibilityCheckExp          = loader::zeDriverRTASFormatCompatibilityCheckExp;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief function for filling the legacy api pointers for Device table
+__zedlllocal void ZE_APICALL
+zeGetDeviceProcAddrTableLegacy()
+{
+    // return pointers to the Loader's Functions.
+    loader::loaderDispatch->pCore->Device->pfnGet                                      = loader::zeDeviceGet;
+    loader::loaderDispatch->pCore->Device->pfnGetSubDevices                            = loader::zeDeviceGetSubDevices;
+    loader::loaderDispatch->pCore->Device->pfnGetProperties                            = loader::zeDeviceGetProperties;
+    loader::loaderDispatch->pCore->Device->pfnGetComputeProperties                     = loader::zeDeviceGetComputeProperties;
+    loader::loaderDispatch->pCore->Device->pfnGetModuleProperties                      = loader::zeDeviceGetModuleProperties;
+    loader::loaderDispatch->pCore->Device->pfnGetCommandQueueGroupProperties           = loader::zeDeviceGetCommandQueueGroupProperties;
+    loader::loaderDispatch->pCore->Device->pfnGetMemoryProperties                      = loader::zeDeviceGetMemoryProperties;
+    loader::loaderDispatch->pCore->Device->pfnGetMemoryAccessProperties                = loader::zeDeviceGetMemoryAccessProperties;
+    loader::loaderDispatch->pCore->Device->pfnGetCacheProperties                       = loader::zeDeviceGetCacheProperties;
+    loader::loaderDispatch->pCore->Device->pfnGetImageProperties                       = loader::zeDeviceGetImageProperties;
+    loader::loaderDispatch->pCore->Device->pfnGetExternalMemoryProperties              = loader::zeDeviceGetExternalMemoryProperties;
+    loader::loaderDispatch->pCore->Device->pfnGetP2PProperties                         = loader::zeDeviceGetP2PProperties;
+    loader::loaderDispatch->pCore->Device->pfnCanAccessPeer                            = loader::zeDeviceCanAccessPeer;
+    loader::loaderDispatch->pCore->Device->pfnGetStatus                                = loader::zeDeviceGetStatus;
+    loader::loaderDispatch->pCore->Device->pfnGetGlobalTimestamps                      = loader::zeDeviceGetGlobalTimestamps;
+    loader::loaderDispatch->pCore->Device->pfnImportExternalSemaphoreExt               = loader::zeDeviceImportExternalSemaphoreExt;
+    loader::loaderDispatch->pCore->Device->pfnReleaseExternalSemaphoreExt              = loader::zeDeviceReleaseExternalSemaphoreExt;
+    loader::loaderDispatch->pCore->Device->pfnGetVectorWidthPropertiesExt              = loader::zeDeviceGetVectorWidthPropertiesExt;
+    loader::loaderDispatch->pCore->Device->pfnReserveCacheExt                          = loader::zeDeviceReserveCacheExt;
+    loader::loaderDispatch->pCore->Device->pfnSetCacheAdviceExt                        = loader::zeDeviceSetCacheAdviceExt;
+    loader::loaderDispatch->pCore->Device->pfnPciGetPropertiesExt                      = loader::zeDevicePciGetPropertiesExt;
+    loader::loaderDispatch->pCore->Device->pfnGetRootDevice                            = loader::zeDeviceGetRootDevice;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief function for filling the legacy api pointers for DeviceExp table
+__zedlllocal void ZE_APICALL
+zeGetDeviceExpProcAddrTableLegacy()
+{
+    // return pointers to the Loader's Functions.
+    loader::loaderDispatch->pCore->DeviceExp->pfnGetFabricVertexExp                       = loader::zeDeviceGetFabricVertexExp;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief function for filling the legacy api pointers for Context table
+__zedlllocal void ZE_APICALL
+zeGetContextProcAddrTableLegacy()
+{
+    // return pointers to the Loader's Functions.
+    loader::loaderDispatch->pCore->Context->pfnCreate                                   = loader::zeContextCreate;
+    loader::loaderDispatch->pCore->Context->pfnDestroy                                  = loader::zeContextDestroy;
+    loader::loaderDispatch->pCore->Context->pfnGetStatus                                = loader::zeContextGetStatus;
+    loader::loaderDispatch->pCore->Context->pfnSystemBarrier                            = loader::zeContextSystemBarrier;
+    loader::loaderDispatch->pCore->Context->pfnMakeMemoryResident                       = loader::zeContextMakeMemoryResident;
+    loader::loaderDispatch->pCore->Context->pfnEvictMemory                              = loader::zeContextEvictMemory;
+    loader::loaderDispatch->pCore->Context->pfnMakeImageResident                        = loader::zeContextMakeImageResident;
+    loader::loaderDispatch->pCore->Context->pfnEvictImage                               = loader::zeContextEvictImage;
+    loader::loaderDispatch->pCore->Context->pfnCreateEx                                 = loader::zeContextCreateEx;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief function for filling the legacy api pointers for CommandQueue table
+__zedlllocal void ZE_APICALL
+zeGetCommandQueueProcAddrTableLegacy()
+{
+    // return pointers to the Loader's Functions.
+    loader::loaderDispatch->pCore->CommandQueue->pfnCreate                                   = loader::zeCommandQueueCreate;
+    loader::loaderDispatch->pCore->CommandQueue->pfnDestroy                                  = loader::zeCommandQueueDestroy;
+    loader::loaderDispatch->pCore->CommandQueue->pfnExecuteCommandLists                      = loader::zeCommandQueueExecuteCommandLists;
+    loader::loaderDispatch->pCore->CommandQueue->pfnSynchronize                              = loader::zeCommandQueueSynchronize;
+    loader::loaderDispatch->pCore->CommandQueue->pfnGetOrdinal                               = loader::zeCommandQueueGetOrdinal;
+    loader::loaderDispatch->pCore->CommandQueue->pfnGetIndex                                 = loader::zeCommandQueueGetIndex;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief function for filling the legacy api pointers for CommandList table
+__zedlllocal void ZE_APICALL
+zeGetCommandListProcAddrTableLegacy()
+{
+    // return pointers to the Loader's Functions.
+    loader::loaderDispatch->pCore->CommandList->pfnCreate                                   = loader::zeCommandListCreate;
+    loader::loaderDispatch->pCore->CommandList->pfnCreateImmediate                          = loader::zeCommandListCreateImmediate;
+    loader::loaderDispatch->pCore->CommandList->pfnDestroy                                  = loader::zeCommandListDestroy;
+    loader::loaderDispatch->pCore->CommandList->pfnClose                                    = loader::zeCommandListClose;
+    loader::loaderDispatch->pCore->CommandList->pfnReset                                    = loader::zeCommandListReset;
+    loader::loaderDispatch->pCore->CommandList->pfnAppendWriteGlobalTimestamp               = loader::zeCommandListAppendWriteGlobalTimestamp;
+    loader::loaderDispatch->pCore->CommandList->pfnAppendBarrier                            = loader::zeCommandListAppendBarrier;
+    loader::loaderDispatch->pCore->CommandList->pfnAppendMemoryRangesBarrier                = loader::zeCommandListAppendMemoryRangesBarrier;
+    loader::loaderDispatch->pCore->CommandList->pfnAppendMemoryCopy                         = loader::zeCommandListAppendMemoryCopy;
+    loader::loaderDispatch->pCore->CommandList->pfnAppendMemoryFill                         = loader::zeCommandListAppendMemoryFill;
+    loader::loaderDispatch->pCore->CommandList->pfnAppendMemoryCopyRegion                   = loader::zeCommandListAppendMemoryCopyRegion;
+    loader::loaderDispatch->pCore->CommandList->pfnAppendMemoryCopyFromContext              = loader::zeCommandListAppendMemoryCopyFromContext;
+    loader::loaderDispatch->pCore->CommandList->pfnAppendImageCopy                          = loader::zeCommandListAppendImageCopy;
+    loader::loaderDispatch->pCore->CommandList->pfnAppendImageCopyRegion                    = loader::zeCommandListAppendImageCopyRegion;
+    loader::loaderDispatch->pCore->CommandList->pfnAppendImageCopyToMemory                  = loader::zeCommandListAppendImageCopyToMemory;
+    loader::loaderDispatch->pCore->CommandList->pfnAppendImageCopyFromMemory                = loader::zeCommandListAppendImageCopyFromMemory;
+    loader::loaderDispatch->pCore->CommandList->pfnAppendMemoryPrefetch                     = loader::zeCommandListAppendMemoryPrefetch;
+    loader::loaderDispatch->pCore->CommandList->pfnAppendMemAdvise                          = loader::zeCommandListAppendMemAdvise;
+    loader::loaderDispatch->pCore->CommandList->pfnAppendSignalEvent                        = loader::zeCommandListAppendSignalEvent;
+    loader::loaderDispatch->pCore->CommandList->pfnAppendWaitOnEvents                       = loader::zeCommandListAppendWaitOnEvents;
+    loader::loaderDispatch->pCore->CommandList->pfnAppendEventReset                         = loader::zeCommandListAppendEventReset;
+    loader::loaderDispatch->pCore->CommandList->pfnAppendQueryKernelTimestamps              = loader::zeCommandListAppendQueryKernelTimestamps;
+    loader::loaderDispatch->pCore->CommandList->pfnAppendLaunchKernel                       = loader::zeCommandListAppendLaunchKernel;
+    loader::loaderDispatch->pCore->CommandList->pfnAppendLaunchCooperativeKernel            = loader::zeCommandListAppendLaunchCooperativeKernel;
+    loader::loaderDispatch->pCore->CommandList->pfnAppendLaunchKernelIndirect               = loader::zeCommandListAppendLaunchKernelIndirect;
+    loader::loaderDispatch->pCore->CommandList->pfnAppendLaunchMultipleKernelsIndirect      = loader::zeCommandListAppendLaunchMultipleKernelsIndirect;
+    loader::loaderDispatch->pCore->CommandList->pfnAppendSignalExternalSemaphoreExt         = loader::zeCommandListAppendSignalExternalSemaphoreExt;
+    loader::loaderDispatch->pCore->CommandList->pfnAppendWaitExternalSemaphoreExt           = loader::zeCommandListAppendWaitExternalSemaphoreExt;
+    loader::loaderDispatch->pCore->CommandList->pfnAppendImageCopyToMemoryExt               = loader::zeCommandListAppendImageCopyToMemoryExt;
+    loader::loaderDispatch->pCore->CommandList->pfnAppendImageCopyFromMemoryExt             = loader::zeCommandListAppendImageCopyFromMemoryExt;
+    loader::loaderDispatch->pCore->CommandList->pfnHostSynchronize                          = loader::zeCommandListHostSynchronize;
+    loader::loaderDispatch->pCore->CommandList->pfnGetDeviceHandle                          = loader::zeCommandListGetDeviceHandle;
+    loader::loaderDispatch->pCore->CommandList->pfnGetContextHandle                         = loader::zeCommandListGetContextHandle;
+    loader::loaderDispatch->pCore->CommandList->pfnGetOrdinal                               = loader::zeCommandListGetOrdinal;
+    loader::loaderDispatch->pCore->CommandList->pfnImmediateGetIndex                        = loader::zeCommandListImmediateGetIndex;
+    loader::loaderDispatch->pCore->CommandList->pfnIsImmediate                              = loader::zeCommandListIsImmediate;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief function for filling the legacy api pointers for CommandListExp table
+__zedlllocal void ZE_APICALL
+zeGetCommandListExpProcAddrTableLegacy()
+{
+    // return pointers to the Loader's Functions.
+    loader::loaderDispatch->pCore->CommandListExp->pfnGetNextCommandIdWithKernelsExp           = loader::zeCommandListGetNextCommandIdWithKernelsExp;
+    loader::loaderDispatch->pCore->CommandListExp->pfnUpdateMutableCommandKernelsExp           = loader::zeCommandListUpdateMutableCommandKernelsExp;
+    loader::loaderDispatch->pCore->CommandListExp->pfnCreateCloneExp                           = loader::zeCommandListCreateCloneExp;
+    loader::loaderDispatch->pCore->CommandListExp->pfnImmediateAppendCommandListsExp           = loader::zeCommandListImmediateAppendCommandListsExp;
+    loader::loaderDispatch->pCore->CommandListExp->pfnGetNextCommandIdExp                      = loader::zeCommandListGetNextCommandIdExp;
+    loader::loaderDispatch->pCore->CommandListExp->pfnUpdateMutableCommandsExp                 = loader::zeCommandListUpdateMutableCommandsExp;
+    loader::loaderDispatch->pCore->CommandListExp->pfnUpdateMutableCommandSignalEventExp       = loader::zeCommandListUpdateMutableCommandSignalEventExp;
+    loader::loaderDispatch->pCore->CommandListExp->pfnUpdateMutableCommandWaitEventsExp        = loader::zeCommandListUpdateMutableCommandWaitEventsExp;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief function for filling the legacy api pointers for Event table
+__zedlllocal void ZE_APICALL
+zeGetEventProcAddrTableLegacy()
+{
+    // return pointers to the Loader's Functions.
+    loader::loaderDispatch->pCore->Event->pfnCreate                                   = loader::zeEventCreate;
+    loader::loaderDispatch->pCore->Event->pfnDestroy                                  = loader::zeEventDestroy;
+    loader::loaderDispatch->pCore->Event->pfnHostSignal                               = loader::zeEventHostSignal;
+    loader::loaderDispatch->pCore->Event->pfnHostSynchronize                          = loader::zeEventHostSynchronize;
+    loader::loaderDispatch->pCore->Event->pfnQueryStatus                              = loader::zeEventQueryStatus;
+    loader::loaderDispatch->pCore->Event->pfnHostReset                                = loader::zeEventHostReset;
+    loader::loaderDispatch->pCore->Event->pfnQueryKernelTimestamp                     = loader::zeEventQueryKernelTimestamp;
+    loader::loaderDispatch->pCore->Event->pfnQueryKernelTimestampsExt                 = loader::zeEventQueryKernelTimestampsExt;
+    loader::loaderDispatch->pCore->Event->pfnGetEventPool                             = loader::zeEventGetEventPool;
+    loader::loaderDispatch->pCore->Event->pfnGetSignalScope                           = loader::zeEventGetSignalScope;
+    loader::loaderDispatch->pCore->Event->pfnGetWaitScope                             = loader::zeEventGetWaitScope;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief function for filling the legacy api pointers for EventExp table
+__zedlllocal void ZE_APICALL
+zeGetEventExpProcAddrTableLegacy()
+{
+    // return pointers to the Loader's Functions.
+    loader::loaderDispatch->pCore->EventExp->pfnQueryTimestampsExp                       = loader::zeEventQueryTimestampsExp;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief function for filling the legacy api pointers for EventPool table
+__zedlllocal void ZE_APICALL
+zeGetEventPoolProcAddrTableLegacy()
+{
+    // return pointers to the Loader's Functions.
+    loader::loaderDispatch->pCore->EventPool->pfnCreate                                   = loader::zeEventPoolCreate;
+    loader::loaderDispatch->pCore->EventPool->pfnDestroy                                  = loader::zeEventPoolDestroy;
+    loader::loaderDispatch->pCore->EventPool->pfnGetIpcHandle                             = loader::zeEventPoolGetIpcHandle;
+    loader::loaderDispatch->pCore->EventPool->pfnOpenIpcHandle                            = loader::zeEventPoolOpenIpcHandle;
+    loader::loaderDispatch->pCore->EventPool->pfnCloseIpcHandle                           = loader::zeEventPoolCloseIpcHandle;
+    loader::loaderDispatch->pCore->EventPool->pfnPutIpcHandle                             = loader::zeEventPoolPutIpcHandle;
+    loader::loaderDispatch->pCore->EventPool->pfnGetContextHandle                         = loader::zeEventPoolGetContextHandle;
+    loader::loaderDispatch->pCore->EventPool->pfnGetFlags                                 = loader::zeEventPoolGetFlags;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief function for filling the legacy api pointers for Fence table
+__zedlllocal void ZE_APICALL
+zeGetFenceProcAddrTableLegacy()
+{
+    // return pointers to the Loader's Functions.
+    loader::loaderDispatch->pCore->Fence->pfnCreate                                   = loader::zeFenceCreate;
+    loader::loaderDispatch->pCore->Fence->pfnDestroy                                  = loader::zeFenceDestroy;
+    loader::loaderDispatch->pCore->Fence->pfnHostSynchronize                          = loader::zeFenceHostSynchronize;
+    loader::loaderDispatch->pCore->Fence->pfnQueryStatus                              = loader::zeFenceQueryStatus;
+    loader::loaderDispatch->pCore->Fence->pfnReset                                    = loader::zeFenceReset;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief function for filling the legacy api pointers for Image table
+__zedlllocal void ZE_APICALL
+zeGetImageProcAddrTableLegacy()
+{
+    // return pointers to the Loader's Functions.
+    loader::loaderDispatch->pCore->Image->pfnGetProperties                            = loader::zeImageGetProperties;
+    loader::loaderDispatch->pCore->Image->pfnCreate                                   = loader::zeImageCreate;
+    loader::loaderDispatch->pCore->Image->pfnDestroy                                  = loader::zeImageDestroy;
+    loader::loaderDispatch->pCore->Image->pfnGetAllocPropertiesExt                    = loader::zeImageGetAllocPropertiesExt;
+    loader::loaderDispatch->pCore->Image->pfnViewCreateExt                            = loader::zeImageViewCreateExt;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief function for filling the legacy api pointers for ImageExp table
+__zedlllocal void ZE_APICALL
+zeGetImageExpProcAddrTableLegacy()
+{
+    // return pointers to the Loader's Functions.
+    loader::loaderDispatch->pCore->ImageExp->pfnGetMemoryPropertiesExp                   = loader::zeImageGetMemoryPropertiesExp;
+    loader::loaderDispatch->pCore->ImageExp->pfnViewCreateExp                            = loader::zeImageViewCreateExp;
+    loader::loaderDispatch->pCore->ImageExp->pfnGetDeviceOffsetExp                       = loader::zeImageGetDeviceOffsetExp;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief function for filling the legacy api pointers for Kernel table
+__zedlllocal void ZE_APICALL
+zeGetKernelProcAddrTableLegacy()
+{
+    // return pointers to the Loader's Functions.
+    loader::loaderDispatch->pCore->Kernel->pfnCreate                                   = loader::zeKernelCreate;
+    loader::loaderDispatch->pCore->Kernel->pfnDestroy                                  = loader::zeKernelDestroy;
+    loader::loaderDispatch->pCore->Kernel->pfnSetCacheConfig                           = loader::zeKernelSetCacheConfig;
+    loader::loaderDispatch->pCore->Kernel->pfnSetGroupSize                             = loader::zeKernelSetGroupSize;
+    loader::loaderDispatch->pCore->Kernel->pfnSuggestGroupSize                         = loader::zeKernelSuggestGroupSize;
+    loader::loaderDispatch->pCore->Kernel->pfnSuggestMaxCooperativeGroupCount          = loader::zeKernelSuggestMaxCooperativeGroupCount;
+    loader::loaderDispatch->pCore->Kernel->pfnSetArgumentValue                         = loader::zeKernelSetArgumentValue;
+    loader::loaderDispatch->pCore->Kernel->pfnSetIndirectAccess                        = loader::zeKernelSetIndirectAccess;
+    loader::loaderDispatch->pCore->Kernel->pfnGetIndirectAccess                        = loader::zeKernelGetIndirectAccess;
+    loader::loaderDispatch->pCore->Kernel->pfnGetSourceAttributes                      = loader::zeKernelGetSourceAttributes;
+    loader::loaderDispatch->pCore->Kernel->pfnGetProperties                            = loader::zeKernelGetProperties;
+    loader::loaderDispatch->pCore->Kernel->pfnGetName                                  = loader::zeKernelGetName;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief function for filling the legacy api pointers for KernelExp table
+__zedlllocal void ZE_APICALL
+zeGetKernelExpProcAddrTableLegacy()
+{
+    // return pointers to the Loader's Functions.
+    loader::loaderDispatch->pCore->KernelExp->pfnSetGlobalOffsetExp                       = loader::zeKernelSetGlobalOffsetExp;
+    loader::loaderDispatch->pCore->KernelExp->pfnGetBinaryExp                             = loader::zeKernelGetBinaryExp;
+    loader::loaderDispatch->pCore->KernelExp->pfnSchedulingHintExp                        = loader::zeKernelSchedulingHintExp;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief function for filling the legacy api pointers for Mem table
+__zedlllocal void ZE_APICALL
+zeGetMemProcAddrTableLegacy()
+{
+    // return pointers to the Loader's Functions.
+    loader::loaderDispatch->pCore->Mem->pfnAllocShared                              = loader::zeMemAllocShared;
+    loader::loaderDispatch->pCore->Mem->pfnAllocDevice                              = loader::zeMemAllocDevice;
+    loader::loaderDispatch->pCore->Mem->pfnAllocHost                                = loader::zeMemAllocHost;
+    loader::loaderDispatch->pCore->Mem->pfnFree                                     = loader::zeMemFree;
+    loader::loaderDispatch->pCore->Mem->pfnGetAllocProperties                       = loader::zeMemGetAllocProperties;
+    loader::loaderDispatch->pCore->Mem->pfnGetAddressRange                          = loader::zeMemGetAddressRange;
+    loader::loaderDispatch->pCore->Mem->pfnGetIpcHandle                             = loader::zeMemGetIpcHandle;
+    loader::loaderDispatch->pCore->Mem->pfnOpenIpcHandle                            = loader::zeMemOpenIpcHandle;
+    loader::loaderDispatch->pCore->Mem->pfnCloseIpcHandle                           = loader::zeMemCloseIpcHandle;
+    loader::loaderDispatch->pCore->Mem->pfnFreeExt                                  = loader::zeMemFreeExt;
+    loader::loaderDispatch->pCore->Mem->pfnPutIpcHandle                             = loader::zeMemPutIpcHandle;
+    loader::loaderDispatch->pCore->Mem->pfnGetPitchFor2dImage                       = loader::zeMemGetPitchFor2dImage;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief function for filling the legacy api pointers for MemExp table
+__zedlllocal void ZE_APICALL
+zeGetMemExpProcAddrTableLegacy()
+{
+    // return pointers to the Loader's Functions.
+    loader::loaderDispatch->pCore->MemExp->pfnGetIpcHandleFromFileDescriptorExp        = loader::zeMemGetIpcHandleFromFileDescriptorExp;
+    loader::loaderDispatch->pCore->MemExp->pfnGetFileDescriptorFromIpcHandleExp        = loader::zeMemGetFileDescriptorFromIpcHandleExp;
+    loader::loaderDispatch->pCore->MemExp->pfnSetAtomicAccessAttributeExp              = loader::zeMemSetAtomicAccessAttributeExp;
+    loader::loaderDispatch->pCore->MemExp->pfnGetAtomicAccessAttributeExp              = loader::zeMemGetAtomicAccessAttributeExp;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief function for filling the legacy api pointers for Module table
+__zedlllocal void ZE_APICALL
+zeGetModuleProcAddrTableLegacy()
+{
+    // return pointers to the Loader's Functions.
+    loader::loaderDispatch->pCore->Module->pfnCreate                                   = loader::zeModuleCreate;
+    loader::loaderDispatch->pCore->Module->pfnDestroy                                  = loader::zeModuleDestroy;
+    loader::loaderDispatch->pCore->Module->pfnDynamicLink                              = loader::zeModuleDynamicLink;
+    loader::loaderDispatch->pCore->Module->pfnGetNativeBinary                          = loader::zeModuleGetNativeBinary;
+    loader::loaderDispatch->pCore->Module->pfnGetGlobalPointer                         = loader::zeModuleGetGlobalPointer;
+    loader::loaderDispatch->pCore->Module->pfnGetKernelNames                           = loader::zeModuleGetKernelNames;
+    loader::loaderDispatch->pCore->Module->pfnGetProperties                            = loader::zeModuleGetProperties;
+    loader::loaderDispatch->pCore->Module->pfnGetFunctionPointer                       = loader::zeModuleGetFunctionPointer;
+    loader::loaderDispatch->pCore->Module->pfnInspectLinkageExt                        = loader::zeModuleInspectLinkageExt;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief function for filling the legacy api pointers for ModuleBuildLog table
+__zedlllocal void ZE_APICALL
+zeGetModuleBuildLogProcAddrTableLegacy()
+{
+    // return pointers to the Loader's Functions.
+    loader::loaderDispatch->pCore->ModuleBuildLog->pfnDestroy                                  = loader::zeModuleBuildLogDestroy;
+    loader::loaderDispatch->pCore->ModuleBuildLog->pfnGetString                                = loader::zeModuleBuildLogGetString;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief function for filling the legacy api pointers for PhysicalMem table
+__zedlllocal void ZE_APICALL
+zeGetPhysicalMemProcAddrTableLegacy()
+{
+    // return pointers to the Loader's Functions.
+    loader::loaderDispatch->pCore->PhysicalMem->pfnCreate                                   = loader::zePhysicalMemCreate;
+    loader::loaderDispatch->pCore->PhysicalMem->pfnDestroy                                  = loader::zePhysicalMemDestroy;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief function for filling the legacy api pointers for Sampler table
+__zedlllocal void ZE_APICALL
+zeGetSamplerProcAddrTableLegacy()
+{
+    // return pointers to the Loader's Functions.
+    loader::loaderDispatch->pCore->Sampler->pfnCreate                                   = loader::zeSamplerCreate;
+    loader::loaderDispatch->pCore->Sampler->pfnDestroy                                  = loader::zeSamplerDestroy;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief function for filling the legacy api pointers for VirtualMem table
+__zedlllocal void ZE_APICALL
+zeGetVirtualMemProcAddrTableLegacy()
+{
+    // return pointers to the Loader's Functions.
+    loader::loaderDispatch->pCore->VirtualMem->pfnReserve                                  = loader::zeVirtualMemReserve;
+    loader::loaderDispatch->pCore->VirtualMem->pfnFree                                     = loader::zeVirtualMemFree;
+    loader::loaderDispatch->pCore->VirtualMem->pfnQueryPageSize                            = loader::zeVirtualMemQueryPageSize;
+    loader::loaderDispatch->pCore->VirtualMem->pfnMap                                      = loader::zeVirtualMemMap;
+    loader::loaderDispatch->pCore->VirtualMem->pfnUnmap                                    = loader::zeVirtualMemUnmap;
+    loader::loaderDispatch->pCore->VirtualMem->pfnSetAccessAttribute                       = loader::zeVirtualMemSetAccessAttribute;
+    loader::loaderDispatch->pCore->VirtualMem->pfnGetAccessAttribute                       = loader::zeVirtualMemGetAccessAttribute;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief function for filling the legacy api pointers for FabricEdgeExp table
+__zedlllocal void ZE_APICALL
+zeGetFabricEdgeExpProcAddrTableLegacy()
+{
+    // return pointers to the Loader's Functions.
+    loader::loaderDispatch->pCore->FabricEdgeExp->pfnGetExp                                   = loader::zeFabricEdgeGetExp;
+    loader::loaderDispatch->pCore->FabricEdgeExp->pfnGetVerticesExp                           = loader::zeFabricEdgeGetVerticesExp;
+    loader::loaderDispatch->pCore->FabricEdgeExp->pfnGetPropertiesExp                         = loader::zeFabricEdgeGetPropertiesExp;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief function for filling the legacy api pointers for FabricVertexExp table
+__zedlllocal void ZE_APICALL
+zeGetFabricVertexExpProcAddrTableLegacy()
+{
+    // return pointers to the Loader's Functions.
+    loader::loaderDispatch->pCore->FabricVertexExp->pfnGetExp                                   = loader::zeFabricVertexGetExp;
+    loader::loaderDispatch->pCore->FabricVertexExp->pfnGetSubVerticesExp                        = loader::zeFabricVertexGetSubVerticesExp;
+    loader::loaderDispatch->pCore->FabricVertexExp->pfnGetPropertiesExp                         = loader::zeFabricVertexGetPropertiesExp;
+    loader::loaderDispatch->pCore->FabricVertexExp->pfnGetDeviceExp                             = loader::zeFabricVertexGetDeviceExp;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
 /// @brief Exported function for filling application's Global table
 ///        with current process' addresses
 ///
@@ -6928,8 +7414,10 @@ zeGetGlobalProcAddrTable(
         if( ( loader::context->zeDrivers.size() > 1 ) || loader::context->forceIntercept )
         {
             // return pointers to loader's DDIs
+            loader::loaderDispatch->pCore->Global = new ze_global_dditable_t;
             pDdiTable->pfnInit                                     = loader::zeInit;
             pDdiTable->pfnInitDrivers                              = loader::zeInitDrivers;
+            zeGetGlobalProcAddrTableLegacy();
         }
         else
         {
@@ -7021,11 +7509,33 @@ zeGetRTASBuilderProcAddrTable(
         if( ( loader::context->zeDrivers.size() > 1 ) || loader::context->forceIntercept )
         {
             // return pointers to loader's DDIs
-            pDdiTable->pfnCreateExt                                = loader::zeRTASBuilderCreateExt;
-            pDdiTable->pfnGetBuildPropertiesExt                    = loader::zeRTASBuilderGetBuildPropertiesExt;
-            pDdiTable->pfnBuildExt                                 = loader::zeRTASBuilderBuildExt;
-            pDdiTable->pfnCommandListAppendCopyExt                 = loader::zeRTASBuilderCommandListAppendCopyExt;
-            pDdiTable->pfnDestroyExt                               = loader::zeRTASBuilderDestroyExt;
+            loader::loaderDispatch->pCore->RTASBuilder = new ze_rtas_builder_dditable_t;
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnCreateExt                                = loader_driver_ddi::zeRTASBuilderCreateExt;
+            } else {
+                pDdiTable->pfnCreateExt                                = loader::zeRTASBuilderCreateExt;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnGetBuildPropertiesExt                    = loader_driver_ddi::zeRTASBuilderGetBuildPropertiesExt;
+            } else {
+                pDdiTable->pfnGetBuildPropertiesExt                    = loader::zeRTASBuilderGetBuildPropertiesExt;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnBuildExt                                 = loader_driver_ddi::zeRTASBuilderBuildExt;
+            } else {
+                pDdiTable->pfnBuildExt                                 = loader::zeRTASBuilderBuildExt;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnCommandListAppendCopyExt                 = loader_driver_ddi::zeRTASBuilderCommandListAppendCopyExt;
+            } else {
+                pDdiTable->pfnCommandListAppendCopyExt                 = loader::zeRTASBuilderCommandListAppendCopyExt;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnDestroyExt                               = loader_driver_ddi::zeRTASBuilderDestroyExt;
+            } else {
+                pDdiTable->pfnDestroyExt                               = loader::zeRTASBuilderDestroyExt;
+            }
+            zeGetRTASBuilderProcAddrTableLegacy();
         }
         else
         {
@@ -7108,10 +7618,28 @@ zeGetRTASBuilderExpProcAddrTable(
         if( ( loader::context->zeDrivers.size() > 1 ) || loader::context->forceIntercept )
         {
             // return pointers to loader's DDIs
-            pDdiTable->pfnCreateExp                                = loader::zeRTASBuilderCreateExp;
-            pDdiTable->pfnGetBuildPropertiesExp                    = loader::zeRTASBuilderGetBuildPropertiesExp;
-            pDdiTable->pfnBuildExp                                 = loader::zeRTASBuilderBuildExp;
-            pDdiTable->pfnDestroyExp                               = loader::zeRTASBuilderDestroyExp;
+            loader::loaderDispatch->pCore->RTASBuilderExp = new ze_rtas_builder_exp_dditable_t;
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnCreateExp                                = loader_driver_ddi::zeRTASBuilderCreateExp;
+            } else {
+                pDdiTable->pfnCreateExp                                = loader::zeRTASBuilderCreateExp;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnGetBuildPropertiesExp                    = loader_driver_ddi::zeRTASBuilderGetBuildPropertiesExp;
+            } else {
+                pDdiTable->pfnGetBuildPropertiesExp                    = loader::zeRTASBuilderGetBuildPropertiesExp;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnBuildExp                                 = loader_driver_ddi::zeRTASBuilderBuildExp;
+            } else {
+                pDdiTable->pfnBuildExp                                 = loader::zeRTASBuilderBuildExp;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnDestroyExp                               = loader_driver_ddi::zeRTASBuilderDestroyExp;
+            } else {
+                pDdiTable->pfnDestroyExp                               = loader::zeRTASBuilderDestroyExp;
+            }
+            zeGetRTASBuilderExpProcAddrTableLegacy();
         }
         else
         {
@@ -7203,10 +7731,28 @@ zeGetRTASParallelOperationProcAddrTable(
         if( ( loader::context->zeDrivers.size() > 1 ) || loader::context->forceIntercept )
         {
             // return pointers to loader's DDIs
-            pDdiTable->pfnCreateExt                                = loader::zeRTASParallelOperationCreateExt;
-            pDdiTable->pfnGetPropertiesExt                         = loader::zeRTASParallelOperationGetPropertiesExt;
-            pDdiTable->pfnJoinExt                                  = loader::zeRTASParallelOperationJoinExt;
-            pDdiTable->pfnDestroyExt                               = loader::zeRTASParallelOperationDestroyExt;
+            loader::loaderDispatch->pCore->RTASParallelOperation = new ze_rtas_parallel_operation_dditable_t;
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnCreateExt                                = loader_driver_ddi::zeRTASParallelOperationCreateExt;
+            } else {
+                pDdiTable->pfnCreateExt                                = loader::zeRTASParallelOperationCreateExt;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnGetPropertiesExt                         = loader_driver_ddi::zeRTASParallelOperationGetPropertiesExt;
+            } else {
+                pDdiTable->pfnGetPropertiesExt                         = loader::zeRTASParallelOperationGetPropertiesExt;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnJoinExt                                  = loader_driver_ddi::zeRTASParallelOperationJoinExt;
+            } else {
+                pDdiTable->pfnJoinExt                                  = loader::zeRTASParallelOperationJoinExt;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnDestroyExt                               = loader_driver_ddi::zeRTASParallelOperationDestroyExt;
+            } else {
+                pDdiTable->pfnDestroyExt                               = loader::zeRTASParallelOperationDestroyExt;
+            }
+            zeGetRTASParallelOperationProcAddrTableLegacy();
         }
         else
         {
@@ -7289,10 +7835,28 @@ zeGetRTASParallelOperationExpProcAddrTable(
         if( ( loader::context->zeDrivers.size() > 1 ) || loader::context->forceIntercept )
         {
             // return pointers to loader's DDIs
-            pDdiTable->pfnCreateExp                                = loader::zeRTASParallelOperationCreateExp;
-            pDdiTable->pfnGetPropertiesExp                         = loader::zeRTASParallelOperationGetPropertiesExp;
-            pDdiTable->pfnJoinExp                                  = loader::zeRTASParallelOperationJoinExp;
-            pDdiTable->pfnDestroyExp                               = loader::zeRTASParallelOperationDestroyExp;
+            loader::loaderDispatch->pCore->RTASParallelOperationExp = new ze_rtas_parallel_operation_exp_dditable_t;
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnCreateExp                                = loader_driver_ddi::zeRTASParallelOperationCreateExp;
+            } else {
+                pDdiTable->pfnCreateExp                                = loader::zeRTASParallelOperationCreateExp;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnGetPropertiesExp                         = loader_driver_ddi::zeRTASParallelOperationGetPropertiesExp;
+            } else {
+                pDdiTable->pfnGetPropertiesExp                         = loader::zeRTASParallelOperationGetPropertiesExp;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnJoinExp                                  = loader_driver_ddi::zeRTASParallelOperationJoinExp;
+            } else {
+                pDdiTable->pfnJoinExp                                  = loader::zeRTASParallelOperationJoinExp;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnDestroyExp                               = loader_driver_ddi::zeRTASParallelOperationDestroyExp;
+            } else {
+                pDdiTable->pfnDestroyExp                               = loader::zeRTASParallelOperationDestroyExp;
+            }
+            zeGetRTASParallelOperationExpProcAddrTableLegacy();
         }
         else
         {
@@ -7384,14 +7948,44 @@ zeGetDriverProcAddrTable(
         if( ( loader::context->zeDrivers.size() > 1 ) || loader::context->forceIntercept )
         {
             // return pointers to loader's DDIs
+            loader::loaderDispatch->pCore->Driver = new ze_driver_dditable_t;
             pDdiTable->pfnGet                                      = loader::zeDriverGet;
-            pDdiTable->pfnGetApiVersion                            = loader::zeDriverGetApiVersion;
-            pDdiTable->pfnGetProperties                            = loader::zeDriverGetProperties;
-            pDdiTable->pfnGetIpcProperties                         = loader::zeDriverGetIpcProperties;
-            pDdiTable->pfnGetExtensionProperties                   = loader::zeDriverGetExtensionProperties;
-            pDdiTable->pfnGetExtensionFunctionAddress              = loader::zeDriverGetExtensionFunctionAddress;
-            pDdiTable->pfnRTASFormatCompatibilityCheckExt          = loader::zeDriverRTASFormatCompatibilityCheckExt;
-            pDdiTable->pfnGetLastErrorDescription                  = loader::zeDriverGetLastErrorDescription;
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnGetApiVersion                            = loader_driver_ddi::zeDriverGetApiVersion;
+            } else {
+                pDdiTable->pfnGetApiVersion                            = loader::zeDriverGetApiVersion;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnGetProperties                            = loader_driver_ddi::zeDriverGetProperties;
+            } else {
+                pDdiTable->pfnGetProperties                            = loader::zeDriverGetProperties;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnGetIpcProperties                         = loader_driver_ddi::zeDriverGetIpcProperties;
+            } else {
+                pDdiTable->pfnGetIpcProperties                         = loader::zeDriverGetIpcProperties;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnGetExtensionProperties                   = loader_driver_ddi::zeDriverGetExtensionProperties;
+            } else {
+                pDdiTable->pfnGetExtensionProperties                   = loader::zeDriverGetExtensionProperties;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnGetExtensionFunctionAddress              = loader_driver_ddi::zeDriverGetExtensionFunctionAddress;
+            } else {
+                pDdiTable->pfnGetExtensionFunctionAddress              = loader::zeDriverGetExtensionFunctionAddress;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnRTASFormatCompatibilityCheckExt          = loader_driver_ddi::zeDriverRTASFormatCompatibilityCheckExt;
+            } else {
+                pDdiTable->pfnRTASFormatCompatibilityCheckExt          = loader::zeDriverRTASFormatCompatibilityCheckExt;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnGetLastErrorDescription                  = loader_driver_ddi::zeDriverGetLastErrorDescription;
+            } else {
+                pDdiTable->pfnGetLastErrorDescription                  = loader::zeDriverGetLastErrorDescription;
+            }
+            zeGetDriverProcAddrTableLegacy();
         }
         else
         {
@@ -7474,7 +8068,13 @@ zeGetDriverExpProcAddrTable(
         if( ( loader::context->zeDrivers.size() > 1 ) || loader::context->forceIntercept )
         {
             // return pointers to loader's DDIs
-            pDdiTable->pfnRTASFormatCompatibilityCheckExp          = loader::zeDriverRTASFormatCompatibilityCheckExp;
+            loader::loaderDispatch->pCore->DriverExp = new ze_driver_exp_dditable_t;
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnRTASFormatCompatibilityCheckExp          = loader_driver_ddi::zeDriverRTASFormatCompatibilityCheckExp;
+            } else {
+                pDdiTable->pfnRTASFormatCompatibilityCheckExp          = loader::zeDriverRTASFormatCompatibilityCheckExp;
+            }
+            zeGetDriverExpProcAddrTableLegacy();
         }
         else
         {
@@ -7566,28 +8166,118 @@ zeGetDeviceProcAddrTable(
         if( ( loader::context->zeDrivers.size() > 1 ) || loader::context->forceIntercept )
         {
             // return pointers to loader's DDIs
-            pDdiTable->pfnGet                                      = loader::zeDeviceGet;
-            pDdiTable->pfnGetSubDevices                            = loader::zeDeviceGetSubDevices;
-            pDdiTable->pfnGetProperties                            = loader::zeDeviceGetProperties;
-            pDdiTable->pfnGetComputeProperties                     = loader::zeDeviceGetComputeProperties;
-            pDdiTable->pfnGetModuleProperties                      = loader::zeDeviceGetModuleProperties;
-            pDdiTable->pfnGetCommandQueueGroupProperties           = loader::zeDeviceGetCommandQueueGroupProperties;
-            pDdiTable->pfnGetMemoryProperties                      = loader::zeDeviceGetMemoryProperties;
-            pDdiTable->pfnGetMemoryAccessProperties                = loader::zeDeviceGetMemoryAccessProperties;
-            pDdiTable->pfnGetCacheProperties                       = loader::zeDeviceGetCacheProperties;
-            pDdiTable->pfnGetImageProperties                       = loader::zeDeviceGetImageProperties;
-            pDdiTable->pfnGetExternalMemoryProperties              = loader::zeDeviceGetExternalMemoryProperties;
-            pDdiTable->pfnGetP2PProperties                         = loader::zeDeviceGetP2PProperties;
-            pDdiTable->pfnCanAccessPeer                            = loader::zeDeviceCanAccessPeer;
-            pDdiTable->pfnGetStatus                                = loader::zeDeviceGetStatus;
-            pDdiTable->pfnGetGlobalTimestamps                      = loader::zeDeviceGetGlobalTimestamps;
-            pDdiTable->pfnImportExternalSemaphoreExt               = loader::zeDeviceImportExternalSemaphoreExt;
-            pDdiTable->pfnReleaseExternalSemaphoreExt              = loader::zeDeviceReleaseExternalSemaphoreExt;
-            pDdiTable->pfnGetVectorWidthPropertiesExt              = loader::zeDeviceGetVectorWidthPropertiesExt;
-            pDdiTable->pfnReserveCacheExt                          = loader::zeDeviceReserveCacheExt;
-            pDdiTable->pfnSetCacheAdviceExt                        = loader::zeDeviceSetCacheAdviceExt;
-            pDdiTable->pfnPciGetPropertiesExt                      = loader::zeDevicePciGetPropertiesExt;
-            pDdiTable->pfnGetRootDevice                            = loader::zeDeviceGetRootDevice;
+            loader::loaderDispatch->pCore->Device = new ze_device_dditable_t;
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnGet                                      = loader_driver_ddi::zeDeviceGet;
+            } else {
+                pDdiTable->pfnGet                                      = loader::zeDeviceGet;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnGetSubDevices                            = loader_driver_ddi::zeDeviceGetSubDevices;
+            } else {
+                pDdiTable->pfnGetSubDevices                            = loader::zeDeviceGetSubDevices;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnGetProperties                            = loader_driver_ddi::zeDeviceGetProperties;
+            } else {
+                pDdiTable->pfnGetProperties                            = loader::zeDeviceGetProperties;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnGetComputeProperties                     = loader_driver_ddi::zeDeviceGetComputeProperties;
+            } else {
+                pDdiTable->pfnGetComputeProperties                     = loader::zeDeviceGetComputeProperties;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnGetModuleProperties                      = loader_driver_ddi::zeDeviceGetModuleProperties;
+            } else {
+                pDdiTable->pfnGetModuleProperties                      = loader::zeDeviceGetModuleProperties;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnGetCommandQueueGroupProperties           = loader_driver_ddi::zeDeviceGetCommandQueueGroupProperties;
+            } else {
+                pDdiTable->pfnGetCommandQueueGroupProperties           = loader::zeDeviceGetCommandQueueGroupProperties;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnGetMemoryProperties                      = loader_driver_ddi::zeDeviceGetMemoryProperties;
+            } else {
+                pDdiTable->pfnGetMemoryProperties                      = loader::zeDeviceGetMemoryProperties;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnGetMemoryAccessProperties                = loader_driver_ddi::zeDeviceGetMemoryAccessProperties;
+            } else {
+                pDdiTable->pfnGetMemoryAccessProperties                = loader::zeDeviceGetMemoryAccessProperties;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnGetCacheProperties                       = loader_driver_ddi::zeDeviceGetCacheProperties;
+            } else {
+                pDdiTable->pfnGetCacheProperties                       = loader::zeDeviceGetCacheProperties;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnGetImageProperties                       = loader_driver_ddi::zeDeviceGetImageProperties;
+            } else {
+                pDdiTable->pfnGetImageProperties                       = loader::zeDeviceGetImageProperties;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnGetExternalMemoryProperties              = loader_driver_ddi::zeDeviceGetExternalMemoryProperties;
+            } else {
+                pDdiTable->pfnGetExternalMemoryProperties              = loader::zeDeviceGetExternalMemoryProperties;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnGetP2PProperties                         = loader_driver_ddi::zeDeviceGetP2PProperties;
+            } else {
+                pDdiTable->pfnGetP2PProperties                         = loader::zeDeviceGetP2PProperties;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnCanAccessPeer                            = loader_driver_ddi::zeDeviceCanAccessPeer;
+            } else {
+                pDdiTable->pfnCanAccessPeer                            = loader::zeDeviceCanAccessPeer;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnGetStatus                                = loader_driver_ddi::zeDeviceGetStatus;
+            } else {
+                pDdiTable->pfnGetStatus                                = loader::zeDeviceGetStatus;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnGetGlobalTimestamps                      = loader_driver_ddi::zeDeviceGetGlobalTimestamps;
+            } else {
+                pDdiTable->pfnGetGlobalTimestamps                      = loader::zeDeviceGetGlobalTimestamps;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnImportExternalSemaphoreExt               = loader_driver_ddi::zeDeviceImportExternalSemaphoreExt;
+            } else {
+                pDdiTable->pfnImportExternalSemaphoreExt               = loader::zeDeviceImportExternalSemaphoreExt;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnReleaseExternalSemaphoreExt              = loader_driver_ddi::zeDeviceReleaseExternalSemaphoreExt;
+            } else {
+                pDdiTable->pfnReleaseExternalSemaphoreExt              = loader::zeDeviceReleaseExternalSemaphoreExt;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnGetVectorWidthPropertiesExt              = loader_driver_ddi::zeDeviceGetVectorWidthPropertiesExt;
+            } else {
+                pDdiTable->pfnGetVectorWidthPropertiesExt              = loader::zeDeviceGetVectorWidthPropertiesExt;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnReserveCacheExt                          = loader_driver_ddi::zeDeviceReserveCacheExt;
+            } else {
+                pDdiTable->pfnReserveCacheExt                          = loader::zeDeviceReserveCacheExt;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnSetCacheAdviceExt                        = loader_driver_ddi::zeDeviceSetCacheAdviceExt;
+            } else {
+                pDdiTable->pfnSetCacheAdviceExt                        = loader::zeDeviceSetCacheAdviceExt;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnPciGetPropertiesExt                      = loader_driver_ddi::zeDevicePciGetPropertiesExt;
+            } else {
+                pDdiTable->pfnPciGetPropertiesExt                      = loader::zeDevicePciGetPropertiesExt;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnGetRootDevice                            = loader_driver_ddi::zeDeviceGetRootDevice;
+            } else {
+                pDdiTable->pfnGetRootDevice                            = loader::zeDeviceGetRootDevice;
+            }
+            zeGetDeviceProcAddrTableLegacy();
         }
         else
         {
@@ -7670,7 +8360,13 @@ zeGetDeviceExpProcAddrTable(
         if( ( loader::context->zeDrivers.size() > 1 ) || loader::context->forceIntercept )
         {
             // return pointers to loader's DDIs
-            pDdiTable->pfnGetFabricVertexExp                       = loader::zeDeviceGetFabricVertexExp;
+            loader::loaderDispatch->pCore->DeviceExp = new ze_device_exp_dditable_t;
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnGetFabricVertexExp                       = loader_driver_ddi::zeDeviceGetFabricVertexExp;
+            } else {
+                pDdiTable->pfnGetFabricVertexExp                       = loader::zeDeviceGetFabricVertexExp;
+            }
+            zeGetDeviceExpProcAddrTableLegacy();
         }
         else
         {
@@ -7762,15 +8458,53 @@ zeGetContextProcAddrTable(
         if( ( loader::context->zeDrivers.size() > 1 ) || loader::context->forceIntercept )
         {
             // return pointers to loader's DDIs
-            pDdiTable->pfnCreate                                   = loader::zeContextCreate;
-            pDdiTable->pfnDestroy                                  = loader::zeContextDestroy;
-            pDdiTable->pfnGetStatus                                = loader::zeContextGetStatus;
-            pDdiTable->pfnSystemBarrier                            = loader::zeContextSystemBarrier;
-            pDdiTable->pfnMakeMemoryResident                       = loader::zeContextMakeMemoryResident;
-            pDdiTable->pfnEvictMemory                              = loader::zeContextEvictMemory;
-            pDdiTable->pfnMakeImageResident                        = loader::zeContextMakeImageResident;
-            pDdiTable->pfnEvictImage                               = loader::zeContextEvictImage;
-            pDdiTable->pfnCreateEx                                 = loader::zeContextCreateEx;
+            loader::loaderDispatch->pCore->Context = new ze_context_dditable_t;
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnCreate                                   = loader_driver_ddi::zeContextCreate;
+            } else {
+                pDdiTable->pfnCreate                                   = loader::zeContextCreate;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnDestroy                                  = loader_driver_ddi::zeContextDestroy;
+            } else {
+                pDdiTable->pfnDestroy                                  = loader::zeContextDestroy;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnGetStatus                                = loader_driver_ddi::zeContextGetStatus;
+            } else {
+                pDdiTable->pfnGetStatus                                = loader::zeContextGetStatus;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnSystemBarrier                            = loader_driver_ddi::zeContextSystemBarrier;
+            } else {
+                pDdiTable->pfnSystemBarrier                            = loader::zeContextSystemBarrier;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnMakeMemoryResident                       = loader_driver_ddi::zeContextMakeMemoryResident;
+            } else {
+                pDdiTable->pfnMakeMemoryResident                       = loader::zeContextMakeMemoryResident;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnEvictMemory                              = loader_driver_ddi::zeContextEvictMemory;
+            } else {
+                pDdiTable->pfnEvictMemory                              = loader::zeContextEvictMemory;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnMakeImageResident                        = loader_driver_ddi::zeContextMakeImageResident;
+            } else {
+                pDdiTable->pfnMakeImageResident                        = loader::zeContextMakeImageResident;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnEvictImage                               = loader_driver_ddi::zeContextEvictImage;
+            } else {
+                pDdiTable->pfnEvictImage                               = loader::zeContextEvictImage;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnCreateEx                                 = loader_driver_ddi::zeContextCreateEx;
+            } else {
+                pDdiTable->pfnCreateEx                                 = loader::zeContextCreateEx;
+            }
+            zeGetContextProcAddrTableLegacy();
         }
         else
         {
@@ -7862,12 +8596,38 @@ zeGetCommandQueueProcAddrTable(
         if( ( loader::context->zeDrivers.size() > 1 ) || loader::context->forceIntercept )
         {
             // return pointers to loader's DDIs
-            pDdiTable->pfnCreate                                   = loader::zeCommandQueueCreate;
-            pDdiTable->pfnDestroy                                  = loader::zeCommandQueueDestroy;
-            pDdiTable->pfnExecuteCommandLists                      = loader::zeCommandQueueExecuteCommandLists;
-            pDdiTable->pfnSynchronize                              = loader::zeCommandQueueSynchronize;
-            pDdiTable->pfnGetOrdinal                               = loader::zeCommandQueueGetOrdinal;
-            pDdiTable->pfnGetIndex                                 = loader::zeCommandQueueGetIndex;
+            loader::loaderDispatch->pCore->CommandQueue = new ze_command_queue_dditable_t;
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnCreate                                   = loader_driver_ddi::zeCommandQueueCreate;
+            } else {
+                pDdiTable->pfnCreate                                   = loader::zeCommandQueueCreate;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnDestroy                                  = loader_driver_ddi::zeCommandQueueDestroy;
+            } else {
+                pDdiTable->pfnDestroy                                  = loader::zeCommandQueueDestroy;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnExecuteCommandLists                      = loader_driver_ddi::zeCommandQueueExecuteCommandLists;
+            } else {
+                pDdiTable->pfnExecuteCommandLists                      = loader::zeCommandQueueExecuteCommandLists;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnSynchronize                              = loader_driver_ddi::zeCommandQueueSynchronize;
+            } else {
+                pDdiTable->pfnSynchronize                              = loader::zeCommandQueueSynchronize;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnGetOrdinal                               = loader_driver_ddi::zeCommandQueueGetOrdinal;
+            } else {
+                pDdiTable->pfnGetOrdinal                               = loader::zeCommandQueueGetOrdinal;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnGetIndex                                 = loader_driver_ddi::zeCommandQueueGetIndex;
+            } else {
+                pDdiTable->pfnGetIndex                                 = loader::zeCommandQueueGetIndex;
+            }
+            zeGetCommandQueueProcAddrTableLegacy();
         }
         else
         {
@@ -7959,42 +8719,188 @@ zeGetCommandListProcAddrTable(
         if( ( loader::context->zeDrivers.size() > 1 ) || loader::context->forceIntercept )
         {
             // return pointers to loader's DDIs
-            pDdiTable->pfnCreate                                   = loader::zeCommandListCreate;
-            pDdiTable->pfnCreateImmediate                          = loader::zeCommandListCreateImmediate;
-            pDdiTable->pfnDestroy                                  = loader::zeCommandListDestroy;
-            pDdiTable->pfnClose                                    = loader::zeCommandListClose;
-            pDdiTable->pfnReset                                    = loader::zeCommandListReset;
-            pDdiTable->pfnAppendWriteGlobalTimestamp               = loader::zeCommandListAppendWriteGlobalTimestamp;
-            pDdiTable->pfnAppendBarrier                            = loader::zeCommandListAppendBarrier;
-            pDdiTable->pfnAppendMemoryRangesBarrier                = loader::zeCommandListAppendMemoryRangesBarrier;
-            pDdiTable->pfnAppendMemoryCopy                         = loader::zeCommandListAppendMemoryCopy;
-            pDdiTable->pfnAppendMemoryFill                         = loader::zeCommandListAppendMemoryFill;
-            pDdiTable->pfnAppendMemoryCopyRegion                   = loader::zeCommandListAppendMemoryCopyRegion;
-            pDdiTable->pfnAppendMemoryCopyFromContext              = loader::zeCommandListAppendMemoryCopyFromContext;
-            pDdiTable->pfnAppendImageCopy                          = loader::zeCommandListAppendImageCopy;
-            pDdiTable->pfnAppendImageCopyRegion                    = loader::zeCommandListAppendImageCopyRegion;
-            pDdiTable->pfnAppendImageCopyToMemory                  = loader::zeCommandListAppendImageCopyToMemory;
-            pDdiTable->pfnAppendImageCopyFromMemory                = loader::zeCommandListAppendImageCopyFromMemory;
-            pDdiTable->pfnAppendMemoryPrefetch                     = loader::zeCommandListAppendMemoryPrefetch;
-            pDdiTable->pfnAppendMemAdvise                          = loader::zeCommandListAppendMemAdvise;
-            pDdiTable->pfnAppendSignalEvent                        = loader::zeCommandListAppendSignalEvent;
-            pDdiTable->pfnAppendWaitOnEvents                       = loader::zeCommandListAppendWaitOnEvents;
-            pDdiTable->pfnAppendEventReset                         = loader::zeCommandListAppendEventReset;
-            pDdiTable->pfnAppendQueryKernelTimestamps              = loader::zeCommandListAppendQueryKernelTimestamps;
-            pDdiTable->pfnAppendLaunchKernel                       = loader::zeCommandListAppendLaunchKernel;
-            pDdiTable->pfnAppendLaunchCooperativeKernel            = loader::zeCommandListAppendLaunchCooperativeKernel;
-            pDdiTable->pfnAppendLaunchKernelIndirect               = loader::zeCommandListAppendLaunchKernelIndirect;
-            pDdiTable->pfnAppendLaunchMultipleKernelsIndirect      = loader::zeCommandListAppendLaunchMultipleKernelsIndirect;
-            pDdiTable->pfnAppendSignalExternalSemaphoreExt         = loader::zeCommandListAppendSignalExternalSemaphoreExt;
-            pDdiTable->pfnAppendWaitExternalSemaphoreExt           = loader::zeCommandListAppendWaitExternalSemaphoreExt;
-            pDdiTable->pfnAppendImageCopyToMemoryExt               = loader::zeCommandListAppendImageCopyToMemoryExt;
-            pDdiTable->pfnAppendImageCopyFromMemoryExt             = loader::zeCommandListAppendImageCopyFromMemoryExt;
-            pDdiTable->pfnHostSynchronize                          = loader::zeCommandListHostSynchronize;
-            pDdiTable->pfnGetDeviceHandle                          = loader::zeCommandListGetDeviceHandle;
-            pDdiTable->pfnGetContextHandle                         = loader::zeCommandListGetContextHandle;
-            pDdiTable->pfnGetOrdinal                               = loader::zeCommandListGetOrdinal;
-            pDdiTable->pfnImmediateGetIndex                        = loader::zeCommandListImmediateGetIndex;
-            pDdiTable->pfnIsImmediate                              = loader::zeCommandListIsImmediate;
+            loader::loaderDispatch->pCore->CommandList = new ze_command_list_dditable_t;
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnCreate                                   = loader_driver_ddi::zeCommandListCreate;
+            } else {
+                pDdiTable->pfnCreate                                   = loader::zeCommandListCreate;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnCreateImmediate                          = loader_driver_ddi::zeCommandListCreateImmediate;
+            } else {
+                pDdiTable->pfnCreateImmediate                          = loader::zeCommandListCreateImmediate;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnDestroy                                  = loader_driver_ddi::zeCommandListDestroy;
+            } else {
+                pDdiTable->pfnDestroy                                  = loader::zeCommandListDestroy;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnClose                                    = loader_driver_ddi::zeCommandListClose;
+            } else {
+                pDdiTable->pfnClose                                    = loader::zeCommandListClose;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnReset                                    = loader_driver_ddi::zeCommandListReset;
+            } else {
+                pDdiTable->pfnReset                                    = loader::zeCommandListReset;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnAppendWriteGlobalTimestamp               = loader_driver_ddi::zeCommandListAppendWriteGlobalTimestamp;
+            } else {
+                pDdiTable->pfnAppendWriteGlobalTimestamp               = loader::zeCommandListAppendWriteGlobalTimestamp;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnAppendBarrier                            = loader_driver_ddi::zeCommandListAppendBarrier;
+            } else {
+                pDdiTable->pfnAppendBarrier                            = loader::zeCommandListAppendBarrier;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnAppendMemoryRangesBarrier                = loader_driver_ddi::zeCommandListAppendMemoryRangesBarrier;
+            } else {
+                pDdiTable->pfnAppendMemoryRangesBarrier                = loader::zeCommandListAppendMemoryRangesBarrier;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnAppendMemoryCopy                         = loader_driver_ddi::zeCommandListAppendMemoryCopy;
+            } else {
+                pDdiTable->pfnAppendMemoryCopy                         = loader::zeCommandListAppendMemoryCopy;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnAppendMemoryFill                         = loader_driver_ddi::zeCommandListAppendMemoryFill;
+            } else {
+                pDdiTable->pfnAppendMemoryFill                         = loader::zeCommandListAppendMemoryFill;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnAppendMemoryCopyRegion                   = loader_driver_ddi::zeCommandListAppendMemoryCopyRegion;
+            } else {
+                pDdiTable->pfnAppendMemoryCopyRegion                   = loader::zeCommandListAppendMemoryCopyRegion;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnAppendMemoryCopyFromContext              = loader_driver_ddi::zeCommandListAppendMemoryCopyFromContext;
+            } else {
+                pDdiTable->pfnAppendMemoryCopyFromContext              = loader::zeCommandListAppendMemoryCopyFromContext;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnAppendImageCopy                          = loader_driver_ddi::zeCommandListAppendImageCopy;
+            } else {
+                pDdiTable->pfnAppendImageCopy                          = loader::zeCommandListAppendImageCopy;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnAppendImageCopyRegion                    = loader_driver_ddi::zeCommandListAppendImageCopyRegion;
+            } else {
+                pDdiTable->pfnAppendImageCopyRegion                    = loader::zeCommandListAppendImageCopyRegion;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnAppendImageCopyToMemory                  = loader_driver_ddi::zeCommandListAppendImageCopyToMemory;
+            } else {
+                pDdiTable->pfnAppendImageCopyToMemory                  = loader::zeCommandListAppendImageCopyToMemory;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnAppendImageCopyFromMemory                = loader_driver_ddi::zeCommandListAppendImageCopyFromMemory;
+            } else {
+                pDdiTable->pfnAppendImageCopyFromMemory                = loader::zeCommandListAppendImageCopyFromMemory;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnAppendMemoryPrefetch                     = loader_driver_ddi::zeCommandListAppendMemoryPrefetch;
+            } else {
+                pDdiTable->pfnAppendMemoryPrefetch                     = loader::zeCommandListAppendMemoryPrefetch;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnAppendMemAdvise                          = loader_driver_ddi::zeCommandListAppendMemAdvise;
+            } else {
+                pDdiTable->pfnAppendMemAdvise                          = loader::zeCommandListAppendMemAdvise;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnAppendSignalEvent                        = loader_driver_ddi::zeCommandListAppendSignalEvent;
+            } else {
+                pDdiTable->pfnAppendSignalEvent                        = loader::zeCommandListAppendSignalEvent;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnAppendWaitOnEvents                       = loader_driver_ddi::zeCommandListAppendWaitOnEvents;
+            } else {
+                pDdiTable->pfnAppendWaitOnEvents                       = loader::zeCommandListAppendWaitOnEvents;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnAppendEventReset                         = loader_driver_ddi::zeCommandListAppendEventReset;
+            } else {
+                pDdiTable->pfnAppendEventReset                         = loader::zeCommandListAppendEventReset;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnAppendQueryKernelTimestamps              = loader_driver_ddi::zeCommandListAppendQueryKernelTimestamps;
+            } else {
+                pDdiTable->pfnAppendQueryKernelTimestamps              = loader::zeCommandListAppendQueryKernelTimestamps;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnAppendLaunchKernel                       = loader_driver_ddi::zeCommandListAppendLaunchKernel;
+            } else {
+                pDdiTable->pfnAppendLaunchKernel                       = loader::zeCommandListAppendLaunchKernel;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnAppendLaunchCooperativeKernel            = loader_driver_ddi::zeCommandListAppendLaunchCooperativeKernel;
+            } else {
+                pDdiTable->pfnAppendLaunchCooperativeKernel            = loader::zeCommandListAppendLaunchCooperativeKernel;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnAppendLaunchKernelIndirect               = loader_driver_ddi::zeCommandListAppendLaunchKernelIndirect;
+            } else {
+                pDdiTable->pfnAppendLaunchKernelIndirect               = loader::zeCommandListAppendLaunchKernelIndirect;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnAppendLaunchMultipleKernelsIndirect      = loader_driver_ddi::zeCommandListAppendLaunchMultipleKernelsIndirect;
+            } else {
+                pDdiTable->pfnAppendLaunchMultipleKernelsIndirect      = loader::zeCommandListAppendLaunchMultipleKernelsIndirect;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnAppendSignalExternalSemaphoreExt         = loader_driver_ddi::zeCommandListAppendSignalExternalSemaphoreExt;
+            } else {
+                pDdiTable->pfnAppendSignalExternalSemaphoreExt         = loader::zeCommandListAppendSignalExternalSemaphoreExt;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnAppendWaitExternalSemaphoreExt           = loader_driver_ddi::zeCommandListAppendWaitExternalSemaphoreExt;
+            } else {
+                pDdiTable->pfnAppendWaitExternalSemaphoreExt           = loader::zeCommandListAppendWaitExternalSemaphoreExt;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnAppendImageCopyToMemoryExt               = loader_driver_ddi::zeCommandListAppendImageCopyToMemoryExt;
+            } else {
+                pDdiTable->pfnAppendImageCopyToMemoryExt               = loader::zeCommandListAppendImageCopyToMemoryExt;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnAppendImageCopyFromMemoryExt             = loader_driver_ddi::zeCommandListAppendImageCopyFromMemoryExt;
+            } else {
+                pDdiTable->pfnAppendImageCopyFromMemoryExt             = loader::zeCommandListAppendImageCopyFromMemoryExt;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnHostSynchronize                          = loader_driver_ddi::zeCommandListHostSynchronize;
+            } else {
+                pDdiTable->pfnHostSynchronize                          = loader::zeCommandListHostSynchronize;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnGetDeviceHandle                          = loader_driver_ddi::zeCommandListGetDeviceHandle;
+            } else {
+                pDdiTable->pfnGetDeviceHandle                          = loader::zeCommandListGetDeviceHandle;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnGetContextHandle                         = loader_driver_ddi::zeCommandListGetContextHandle;
+            } else {
+                pDdiTable->pfnGetContextHandle                         = loader::zeCommandListGetContextHandle;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnGetOrdinal                               = loader_driver_ddi::zeCommandListGetOrdinal;
+            } else {
+                pDdiTable->pfnGetOrdinal                               = loader::zeCommandListGetOrdinal;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnImmediateGetIndex                        = loader_driver_ddi::zeCommandListImmediateGetIndex;
+            } else {
+                pDdiTable->pfnImmediateGetIndex                        = loader::zeCommandListImmediateGetIndex;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnIsImmediate                              = loader_driver_ddi::zeCommandListIsImmediate;
+            } else {
+                pDdiTable->pfnIsImmediate                              = loader::zeCommandListIsImmediate;
+            }
+            zeGetCommandListProcAddrTableLegacy();
         }
         else
         {
@@ -8077,14 +8983,48 @@ zeGetCommandListExpProcAddrTable(
         if( ( loader::context->zeDrivers.size() > 1 ) || loader::context->forceIntercept )
         {
             // return pointers to loader's DDIs
-            pDdiTable->pfnGetNextCommandIdWithKernelsExp           = loader::zeCommandListGetNextCommandIdWithKernelsExp;
-            pDdiTable->pfnUpdateMutableCommandKernelsExp           = loader::zeCommandListUpdateMutableCommandKernelsExp;
-            pDdiTable->pfnCreateCloneExp                           = loader::zeCommandListCreateCloneExp;
-            pDdiTable->pfnImmediateAppendCommandListsExp           = loader::zeCommandListImmediateAppendCommandListsExp;
-            pDdiTable->pfnGetNextCommandIdExp                      = loader::zeCommandListGetNextCommandIdExp;
-            pDdiTable->pfnUpdateMutableCommandsExp                 = loader::zeCommandListUpdateMutableCommandsExp;
-            pDdiTable->pfnUpdateMutableCommandSignalEventExp       = loader::zeCommandListUpdateMutableCommandSignalEventExp;
-            pDdiTable->pfnUpdateMutableCommandWaitEventsExp        = loader::zeCommandListUpdateMutableCommandWaitEventsExp;
+            loader::loaderDispatch->pCore->CommandListExp = new ze_command_list_exp_dditable_t;
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnGetNextCommandIdWithKernelsExp           = loader_driver_ddi::zeCommandListGetNextCommandIdWithKernelsExp;
+            } else {
+                pDdiTable->pfnGetNextCommandIdWithKernelsExp           = loader::zeCommandListGetNextCommandIdWithKernelsExp;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnUpdateMutableCommandKernelsExp           = loader_driver_ddi::zeCommandListUpdateMutableCommandKernelsExp;
+            } else {
+                pDdiTable->pfnUpdateMutableCommandKernelsExp           = loader::zeCommandListUpdateMutableCommandKernelsExp;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnCreateCloneExp                           = loader_driver_ddi::zeCommandListCreateCloneExp;
+            } else {
+                pDdiTable->pfnCreateCloneExp                           = loader::zeCommandListCreateCloneExp;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnImmediateAppendCommandListsExp           = loader_driver_ddi::zeCommandListImmediateAppendCommandListsExp;
+            } else {
+                pDdiTable->pfnImmediateAppendCommandListsExp           = loader::zeCommandListImmediateAppendCommandListsExp;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnGetNextCommandIdExp                      = loader_driver_ddi::zeCommandListGetNextCommandIdExp;
+            } else {
+                pDdiTable->pfnGetNextCommandIdExp                      = loader::zeCommandListGetNextCommandIdExp;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnUpdateMutableCommandsExp                 = loader_driver_ddi::zeCommandListUpdateMutableCommandsExp;
+            } else {
+                pDdiTable->pfnUpdateMutableCommandsExp                 = loader::zeCommandListUpdateMutableCommandsExp;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnUpdateMutableCommandSignalEventExp       = loader_driver_ddi::zeCommandListUpdateMutableCommandSignalEventExp;
+            } else {
+                pDdiTable->pfnUpdateMutableCommandSignalEventExp       = loader::zeCommandListUpdateMutableCommandSignalEventExp;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnUpdateMutableCommandWaitEventsExp        = loader_driver_ddi::zeCommandListUpdateMutableCommandWaitEventsExp;
+            } else {
+                pDdiTable->pfnUpdateMutableCommandWaitEventsExp        = loader::zeCommandListUpdateMutableCommandWaitEventsExp;
+            }
+            zeGetCommandListExpProcAddrTableLegacy();
         }
         else
         {
@@ -8176,17 +9116,63 @@ zeGetEventProcAddrTable(
         if( ( loader::context->zeDrivers.size() > 1 ) || loader::context->forceIntercept )
         {
             // return pointers to loader's DDIs
-            pDdiTable->pfnCreate                                   = loader::zeEventCreate;
-            pDdiTable->pfnDestroy                                  = loader::zeEventDestroy;
-            pDdiTable->pfnHostSignal                               = loader::zeEventHostSignal;
-            pDdiTable->pfnHostSynchronize                          = loader::zeEventHostSynchronize;
-            pDdiTable->pfnQueryStatus                              = loader::zeEventQueryStatus;
-            pDdiTable->pfnHostReset                                = loader::zeEventHostReset;
-            pDdiTable->pfnQueryKernelTimestamp                     = loader::zeEventQueryKernelTimestamp;
-            pDdiTable->pfnQueryKernelTimestampsExt                 = loader::zeEventQueryKernelTimestampsExt;
-            pDdiTable->pfnGetEventPool                             = loader::zeEventGetEventPool;
-            pDdiTable->pfnGetSignalScope                           = loader::zeEventGetSignalScope;
-            pDdiTable->pfnGetWaitScope                             = loader::zeEventGetWaitScope;
+            loader::loaderDispatch->pCore->Event = new ze_event_dditable_t;
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnCreate                                   = loader_driver_ddi::zeEventCreate;
+            } else {
+                pDdiTable->pfnCreate                                   = loader::zeEventCreate;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnDestroy                                  = loader_driver_ddi::zeEventDestroy;
+            } else {
+                pDdiTable->pfnDestroy                                  = loader::zeEventDestroy;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnHostSignal                               = loader_driver_ddi::zeEventHostSignal;
+            } else {
+                pDdiTable->pfnHostSignal                               = loader::zeEventHostSignal;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnHostSynchronize                          = loader_driver_ddi::zeEventHostSynchronize;
+            } else {
+                pDdiTable->pfnHostSynchronize                          = loader::zeEventHostSynchronize;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnQueryStatus                              = loader_driver_ddi::zeEventQueryStatus;
+            } else {
+                pDdiTable->pfnQueryStatus                              = loader::zeEventQueryStatus;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnHostReset                                = loader_driver_ddi::zeEventHostReset;
+            } else {
+                pDdiTable->pfnHostReset                                = loader::zeEventHostReset;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnQueryKernelTimestamp                     = loader_driver_ddi::zeEventQueryKernelTimestamp;
+            } else {
+                pDdiTable->pfnQueryKernelTimestamp                     = loader::zeEventQueryKernelTimestamp;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnQueryKernelTimestampsExt                 = loader_driver_ddi::zeEventQueryKernelTimestampsExt;
+            } else {
+                pDdiTable->pfnQueryKernelTimestampsExt                 = loader::zeEventQueryKernelTimestampsExt;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnGetEventPool                             = loader_driver_ddi::zeEventGetEventPool;
+            } else {
+                pDdiTable->pfnGetEventPool                             = loader::zeEventGetEventPool;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnGetSignalScope                           = loader_driver_ddi::zeEventGetSignalScope;
+            } else {
+                pDdiTable->pfnGetSignalScope                           = loader::zeEventGetSignalScope;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnGetWaitScope                             = loader_driver_ddi::zeEventGetWaitScope;
+            } else {
+                pDdiTable->pfnGetWaitScope                             = loader::zeEventGetWaitScope;
+            }
+            zeGetEventProcAddrTableLegacy();
         }
         else
         {
@@ -8269,7 +9255,13 @@ zeGetEventExpProcAddrTable(
         if( ( loader::context->zeDrivers.size() > 1 ) || loader::context->forceIntercept )
         {
             // return pointers to loader's DDIs
-            pDdiTable->pfnQueryTimestampsExp                       = loader::zeEventQueryTimestampsExp;
+            loader::loaderDispatch->pCore->EventExp = new ze_event_exp_dditable_t;
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnQueryTimestampsExp                       = loader_driver_ddi::zeEventQueryTimestampsExp;
+            } else {
+                pDdiTable->pfnQueryTimestampsExp                       = loader::zeEventQueryTimestampsExp;
+            }
+            zeGetEventExpProcAddrTableLegacy();
         }
         else
         {
@@ -8361,14 +9353,48 @@ zeGetEventPoolProcAddrTable(
         if( ( loader::context->zeDrivers.size() > 1 ) || loader::context->forceIntercept )
         {
             // return pointers to loader's DDIs
-            pDdiTable->pfnCreate                                   = loader::zeEventPoolCreate;
-            pDdiTable->pfnDestroy                                  = loader::zeEventPoolDestroy;
-            pDdiTable->pfnGetIpcHandle                             = loader::zeEventPoolGetIpcHandle;
-            pDdiTable->pfnOpenIpcHandle                            = loader::zeEventPoolOpenIpcHandle;
-            pDdiTable->pfnCloseIpcHandle                           = loader::zeEventPoolCloseIpcHandle;
-            pDdiTable->pfnPutIpcHandle                             = loader::zeEventPoolPutIpcHandle;
-            pDdiTable->pfnGetContextHandle                         = loader::zeEventPoolGetContextHandle;
-            pDdiTable->pfnGetFlags                                 = loader::zeEventPoolGetFlags;
+            loader::loaderDispatch->pCore->EventPool = new ze_event_pool_dditable_t;
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnCreate                                   = loader_driver_ddi::zeEventPoolCreate;
+            } else {
+                pDdiTable->pfnCreate                                   = loader::zeEventPoolCreate;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnDestroy                                  = loader_driver_ddi::zeEventPoolDestroy;
+            } else {
+                pDdiTable->pfnDestroy                                  = loader::zeEventPoolDestroy;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnGetIpcHandle                             = loader_driver_ddi::zeEventPoolGetIpcHandle;
+            } else {
+                pDdiTable->pfnGetIpcHandle                             = loader::zeEventPoolGetIpcHandle;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnOpenIpcHandle                            = loader_driver_ddi::zeEventPoolOpenIpcHandle;
+            } else {
+                pDdiTable->pfnOpenIpcHandle                            = loader::zeEventPoolOpenIpcHandle;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnCloseIpcHandle                           = loader_driver_ddi::zeEventPoolCloseIpcHandle;
+            } else {
+                pDdiTable->pfnCloseIpcHandle                           = loader::zeEventPoolCloseIpcHandle;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnPutIpcHandle                             = loader_driver_ddi::zeEventPoolPutIpcHandle;
+            } else {
+                pDdiTable->pfnPutIpcHandle                             = loader::zeEventPoolPutIpcHandle;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnGetContextHandle                         = loader_driver_ddi::zeEventPoolGetContextHandle;
+            } else {
+                pDdiTable->pfnGetContextHandle                         = loader::zeEventPoolGetContextHandle;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnGetFlags                                 = loader_driver_ddi::zeEventPoolGetFlags;
+            } else {
+                pDdiTable->pfnGetFlags                                 = loader::zeEventPoolGetFlags;
+            }
+            zeGetEventPoolProcAddrTableLegacy();
         }
         else
         {
@@ -8460,11 +9486,33 @@ zeGetFenceProcAddrTable(
         if( ( loader::context->zeDrivers.size() > 1 ) || loader::context->forceIntercept )
         {
             // return pointers to loader's DDIs
-            pDdiTable->pfnCreate                                   = loader::zeFenceCreate;
-            pDdiTable->pfnDestroy                                  = loader::zeFenceDestroy;
-            pDdiTable->pfnHostSynchronize                          = loader::zeFenceHostSynchronize;
-            pDdiTable->pfnQueryStatus                              = loader::zeFenceQueryStatus;
-            pDdiTable->pfnReset                                    = loader::zeFenceReset;
+            loader::loaderDispatch->pCore->Fence = new ze_fence_dditable_t;
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnCreate                                   = loader_driver_ddi::zeFenceCreate;
+            } else {
+                pDdiTable->pfnCreate                                   = loader::zeFenceCreate;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnDestroy                                  = loader_driver_ddi::zeFenceDestroy;
+            } else {
+                pDdiTable->pfnDestroy                                  = loader::zeFenceDestroy;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnHostSynchronize                          = loader_driver_ddi::zeFenceHostSynchronize;
+            } else {
+                pDdiTable->pfnHostSynchronize                          = loader::zeFenceHostSynchronize;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnQueryStatus                              = loader_driver_ddi::zeFenceQueryStatus;
+            } else {
+                pDdiTable->pfnQueryStatus                              = loader::zeFenceQueryStatus;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnReset                                    = loader_driver_ddi::zeFenceReset;
+            } else {
+                pDdiTable->pfnReset                                    = loader::zeFenceReset;
+            }
+            zeGetFenceProcAddrTableLegacy();
         }
         else
         {
@@ -8556,11 +9604,33 @@ zeGetImageProcAddrTable(
         if( ( loader::context->zeDrivers.size() > 1 ) || loader::context->forceIntercept )
         {
             // return pointers to loader's DDIs
-            pDdiTable->pfnGetProperties                            = loader::zeImageGetProperties;
-            pDdiTable->pfnCreate                                   = loader::zeImageCreate;
-            pDdiTable->pfnDestroy                                  = loader::zeImageDestroy;
-            pDdiTable->pfnGetAllocPropertiesExt                    = loader::zeImageGetAllocPropertiesExt;
-            pDdiTable->pfnViewCreateExt                            = loader::zeImageViewCreateExt;
+            loader::loaderDispatch->pCore->Image = new ze_image_dditable_t;
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnGetProperties                            = loader_driver_ddi::zeImageGetProperties;
+            } else {
+                pDdiTable->pfnGetProperties                            = loader::zeImageGetProperties;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnCreate                                   = loader_driver_ddi::zeImageCreate;
+            } else {
+                pDdiTable->pfnCreate                                   = loader::zeImageCreate;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnDestroy                                  = loader_driver_ddi::zeImageDestroy;
+            } else {
+                pDdiTable->pfnDestroy                                  = loader::zeImageDestroy;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnGetAllocPropertiesExt                    = loader_driver_ddi::zeImageGetAllocPropertiesExt;
+            } else {
+                pDdiTable->pfnGetAllocPropertiesExt                    = loader::zeImageGetAllocPropertiesExt;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnViewCreateExt                            = loader_driver_ddi::zeImageViewCreateExt;
+            } else {
+                pDdiTable->pfnViewCreateExt                            = loader::zeImageViewCreateExt;
+            }
+            zeGetImageProcAddrTableLegacy();
         }
         else
         {
@@ -8643,9 +9713,23 @@ zeGetImageExpProcAddrTable(
         if( ( loader::context->zeDrivers.size() > 1 ) || loader::context->forceIntercept )
         {
             // return pointers to loader's DDIs
-            pDdiTable->pfnGetMemoryPropertiesExp                   = loader::zeImageGetMemoryPropertiesExp;
-            pDdiTable->pfnViewCreateExp                            = loader::zeImageViewCreateExp;
-            pDdiTable->pfnGetDeviceOffsetExp                       = loader::zeImageGetDeviceOffsetExp;
+            loader::loaderDispatch->pCore->ImageExp = new ze_image_exp_dditable_t;
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnGetMemoryPropertiesExp                   = loader_driver_ddi::zeImageGetMemoryPropertiesExp;
+            } else {
+                pDdiTable->pfnGetMemoryPropertiesExp                   = loader::zeImageGetMemoryPropertiesExp;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnViewCreateExp                            = loader_driver_ddi::zeImageViewCreateExp;
+            } else {
+                pDdiTable->pfnViewCreateExp                            = loader::zeImageViewCreateExp;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnGetDeviceOffsetExp                       = loader_driver_ddi::zeImageGetDeviceOffsetExp;
+            } else {
+                pDdiTable->pfnGetDeviceOffsetExp                       = loader::zeImageGetDeviceOffsetExp;
+            }
+            zeGetImageExpProcAddrTableLegacy();
         }
         else
         {
@@ -8737,18 +9821,68 @@ zeGetKernelProcAddrTable(
         if( ( loader::context->zeDrivers.size() > 1 ) || loader::context->forceIntercept )
         {
             // return pointers to loader's DDIs
-            pDdiTable->pfnCreate                                   = loader::zeKernelCreate;
-            pDdiTable->pfnDestroy                                  = loader::zeKernelDestroy;
-            pDdiTable->pfnSetCacheConfig                           = loader::zeKernelSetCacheConfig;
-            pDdiTable->pfnSetGroupSize                             = loader::zeKernelSetGroupSize;
-            pDdiTable->pfnSuggestGroupSize                         = loader::zeKernelSuggestGroupSize;
-            pDdiTable->pfnSuggestMaxCooperativeGroupCount          = loader::zeKernelSuggestMaxCooperativeGroupCount;
-            pDdiTable->pfnSetArgumentValue                         = loader::zeKernelSetArgumentValue;
-            pDdiTable->pfnSetIndirectAccess                        = loader::zeKernelSetIndirectAccess;
-            pDdiTable->pfnGetIndirectAccess                        = loader::zeKernelGetIndirectAccess;
-            pDdiTable->pfnGetSourceAttributes                      = loader::zeKernelGetSourceAttributes;
-            pDdiTable->pfnGetProperties                            = loader::zeKernelGetProperties;
-            pDdiTable->pfnGetName                                  = loader::zeKernelGetName;
+            loader::loaderDispatch->pCore->Kernel = new ze_kernel_dditable_t;
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnCreate                                   = loader_driver_ddi::zeKernelCreate;
+            } else {
+                pDdiTable->pfnCreate                                   = loader::zeKernelCreate;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnDestroy                                  = loader_driver_ddi::zeKernelDestroy;
+            } else {
+                pDdiTable->pfnDestroy                                  = loader::zeKernelDestroy;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnSetCacheConfig                           = loader_driver_ddi::zeKernelSetCacheConfig;
+            } else {
+                pDdiTable->pfnSetCacheConfig                           = loader::zeKernelSetCacheConfig;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnSetGroupSize                             = loader_driver_ddi::zeKernelSetGroupSize;
+            } else {
+                pDdiTable->pfnSetGroupSize                             = loader::zeKernelSetGroupSize;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnSuggestGroupSize                         = loader_driver_ddi::zeKernelSuggestGroupSize;
+            } else {
+                pDdiTable->pfnSuggestGroupSize                         = loader::zeKernelSuggestGroupSize;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnSuggestMaxCooperativeGroupCount          = loader_driver_ddi::zeKernelSuggestMaxCooperativeGroupCount;
+            } else {
+                pDdiTable->pfnSuggestMaxCooperativeGroupCount          = loader::zeKernelSuggestMaxCooperativeGroupCount;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnSetArgumentValue                         = loader_driver_ddi::zeKernelSetArgumentValue;
+            } else {
+                pDdiTable->pfnSetArgumentValue                         = loader::zeKernelSetArgumentValue;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnSetIndirectAccess                        = loader_driver_ddi::zeKernelSetIndirectAccess;
+            } else {
+                pDdiTable->pfnSetIndirectAccess                        = loader::zeKernelSetIndirectAccess;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnGetIndirectAccess                        = loader_driver_ddi::zeKernelGetIndirectAccess;
+            } else {
+                pDdiTable->pfnGetIndirectAccess                        = loader::zeKernelGetIndirectAccess;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnGetSourceAttributes                      = loader_driver_ddi::zeKernelGetSourceAttributes;
+            } else {
+                pDdiTable->pfnGetSourceAttributes                      = loader::zeKernelGetSourceAttributes;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnGetProperties                            = loader_driver_ddi::zeKernelGetProperties;
+            } else {
+                pDdiTable->pfnGetProperties                            = loader::zeKernelGetProperties;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnGetName                                  = loader_driver_ddi::zeKernelGetName;
+            } else {
+                pDdiTable->pfnGetName                                  = loader::zeKernelGetName;
+            }
+            zeGetKernelProcAddrTableLegacy();
         }
         else
         {
@@ -8831,9 +9965,23 @@ zeGetKernelExpProcAddrTable(
         if( ( loader::context->zeDrivers.size() > 1 ) || loader::context->forceIntercept )
         {
             // return pointers to loader's DDIs
-            pDdiTable->pfnSetGlobalOffsetExp                       = loader::zeKernelSetGlobalOffsetExp;
-            pDdiTable->pfnGetBinaryExp                             = loader::zeKernelGetBinaryExp;
-            pDdiTable->pfnSchedulingHintExp                        = loader::zeKernelSchedulingHintExp;
+            loader::loaderDispatch->pCore->KernelExp = new ze_kernel_exp_dditable_t;
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnSetGlobalOffsetExp                       = loader_driver_ddi::zeKernelSetGlobalOffsetExp;
+            } else {
+                pDdiTable->pfnSetGlobalOffsetExp                       = loader::zeKernelSetGlobalOffsetExp;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnGetBinaryExp                             = loader_driver_ddi::zeKernelGetBinaryExp;
+            } else {
+                pDdiTable->pfnGetBinaryExp                             = loader::zeKernelGetBinaryExp;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnSchedulingHintExp                        = loader_driver_ddi::zeKernelSchedulingHintExp;
+            } else {
+                pDdiTable->pfnSchedulingHintExp                        = loader::zeKernelSchedulingHintExp;
+            }
+            zeGetKernelExpProcAddrTableLegacy();
         }
         else
         {
@@ -8925,18 +10073,68 @@ zeGetMemProcAddrTable(
         if( ( loader::context->zeDrivers.size() > 1 ) || loader::context->forceIntercept )
         {
             // return pointers to loader's DDIs
-            pDdiTable->pfnAllocShared                              = loader::zeMemAllocShared;
-            pDdiTable->pfnAllocDevice                              = loader::zeMemAllocDevice;
-            pDdiTable->pfnAllocHost                                = loader::zeMemAllocHost;
-            pDdiTable->pfnFree                                     = loader::zeMemFree;
-            pDdiTable->pfnGetAllocProperties                       = loader::zeMemGetAllocProperties;
-            pDdiTable->pfnGetAddressRange                          = loader::zeMemGetAddressRange;
-            pDdiTable->pfnGetIpcHandle                             = loader::zeMemGetIpcHandle;
-            pDdiTable->pfnOpenIpcHandle                            = loader::zeMemOpenIpcHandle;
-            pDdiTable->pfnCloseIpcHandle                           = loader::zeMemCloseIpcHandle;
-            pDdiTable->pfnFreeExt                                  = loader::zeMemFreeExt;
-            pDdiTable->pfnPutIpcHandle                             = loader::zeMemPutIpcHandle;
-            pDdiTable->pfnGetPitchFor2dImage                       = loader::zeMemGetPitchFor2dImage;
+            loader::loaderDispatch->pCore->Mem = new ze_mem_dditable_t;
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnAllocShared                              = loader_driver_ddi::zeMemAllocShared;
+            } else {
+                pDdiTable->pfnAllocShared                              = loader::zeMemAllocShared;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnAllocDevice                              = loader_driver_ddi::zeMemAllocDevice;
+            } else {
+                pDdiTable->pfnAllocDevice                              = loader::zeMemAllocDevice;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnAllocHost                                = loader_driver_ddi::zeMemAllocHost;
+            } else {
+                pDdiTable->pfnAllocHost                                = loader::zeMemAllocHost;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnFree                                     = loader_driver_ddi::zeMemFree;
+            } else {
+                pDdiTable->pfnFree                                     = loader::zeMemFree;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnGetAllocProperties                       = loader_driver_ddi::zeMemGetAllocProperties;
+            } else {
+                pDdiTable->pfnGetAllocProperties                       = loader::zeMemGetAllocProperties;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnGetAddressRange                          = loader_driver_ddi::zeMemGetAddressRange;
+            } else {
+                pDdiTable->pfnGetAddressRange                          = loader::zeMemGetAddressRange;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnGetIpcHandle                             = loader_driver_ddi::zeMemGetIpcHandle;
+            } else {
+                pDdiTable->pfnGetIpcHandle                             = loader::zeMemGetIpcHandle;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnOpenIpcHandle                            = loader_driver_ddi::zeMemOpenIpcHandle;
+            } else {
+                pDdiTable->pfnOpenIpcHandle                            = loader::zeMemOpenIpcHandle;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnCloseIpcHandle                           = loader_driver_ddi::zeMemCloseIpcHandle;
+            } else {
+                pDdiTable->pfnCloseIpcHandle                           = loader::zeMemCloseIpcHandle;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnFreeExt                                  = loader_driver_ddi::zeMemFreeExt;
+            } else {
+                pDdiTable->pfnFreeExt                                  = loader::zeMemFreeExt;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnPutIpcHandle                             = loader_driver_ddi::zeMemPutIpcHandle;
+            } else {
+                pDdiTable->pfnPutIpcHandle                             = loader::zeMemPutIpcHandle;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnGetPitchFor2dImage                       = loader_driver_ddi::zeMemGetPitchFor2dImage;
+            } else {
+                pDdiTable->pfnGetPitchFor2dImage                       = loader::zeMemGetPitchFor2dImage;
+            }
+            zeGetMemProcAddrTableLegacy();
         }
         else
         {
@@ -9019,10 +10217,28 @@ zeGetMemExpProcAddrTable(
         if( ( loader::context->zeDrivers.size() > 1 ) || loader::context->forceIntercept )
         {
             // return pointers to loader's DDIs
-            pDdiTable->pfnGetIpcHandleFromFileDescriptorExp        = loader::zeMemGetIpcHandleFromFileDescriptorExp;
-            pDdiTable->pfnGetFileDescriptorFromIpcHandleExp        = loader::zeMemGetFileDescriptorFromIpcHandleExp;
-            pDdiTable->pfnSetAtomicAccessAttributeExp              = loader::zeMemSetAtomicAccessAttributeExp;
-            pDdiTable->pfnGetAtomicAccessAttributeExp              = loader::zeMemGetAtomicAccessAttributeExp;
+            loader::loaderDispatch->pCore->MemExp = new ze_mem_exp_dditable_t;
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnGetIpcHandleFromFileDescriptorExp        = loader_driver_ddi::zeMemGetIpcHandleFromFileDescriptorExp;
+            } else {
+                pDdiTable->pfnGetIpcHandleFromFileDescriptorExp        = loader::zeMemGetIpcHandleFromFileDescriptorExp;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnGetFileDescriptorFromIpcHandleExp        = loader_driver_ddi::zeMemGetFileDescriptorFromIpcHandleExp;
+            } else {
+                pDdiTable->pfnGetFileDescriptorFromIpcHandleExp        = loader::zeMemGetFileDescriptorFromIpcHandleExp;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnSetAtomicAccessAttributeExp              = loader_driver_ddi::zeMemSetAtomicAccessAttributeExp;
+            } else {
+                pDdiTable->pfnSetAtomicAccessAttributeExp              = loader::zeMemSetAtomicAccessAttributeExp;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnGetAtomicAccessAttributeExp              = loader_driver_ddi::zeMemGetAtomicAccessAttributeExp;
+            } else {
+                pDdiTable->pfnGetAtomicAccessAttributeExp              = loader::zeMemGetAtomicAccessAttributeExp;
+            }
+            zeGetMemExpProcAddrTableLegacy();
         }
         else
         {
@@ -9114,15 +10330,53 @@ zeGetModuleProcAddrTable(
         if( ( loader::context->zeDrivers.size() > 1 ) || loader::context->forceIntercept )
         {
             // return pointers to loader's DDIs
-            pDdiTable->pfnCreate                                   = loader::zeModuleCreate;
-            pDdiTable->pfnDestroy                                  = loader::zeModuleDestroy;
-            pDdiTable->pfnDynamicLink                              = loader::zeModuleDynamicLink;
-            pDdiTable->pfnGetNativeBinary                          = loader::zeModuleGetNativeBinary;
-            pDdiTable->pfnGetGlobalPointer                         = loader::zeModuleGetGlobalPointer;
-            pDdiTable->pfnGetKernelNames                           = loader::zeModuleGetKernelNames;
-            pDdiTable->pfnGetProperties                            = loader::zeModuleGetProperties;
-            pDdiTable->pfnGetFunctionPointer                       = loader::zeModuleGetFunctionPointer;
-            pDdiTable->pfnInspectLinkageExt                        = loader::zeModuleInspectLinkageExt;
+            loader::loaderDispatch->pCore->Module = new ze_module_dditable_t;
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnCreate                                   = loader_driver_ddi::zeModuleCreate;
+            } else {
+                pDdiTable->pfnCreate                                   = loader::zeModuleCreate;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnDestroy                                  = loader_driver_ddi::zeModuleDestroy;
+            } else {
+                pDdiTable->pfnDestroy                                  = loader::zeModuleDestroy;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnDynamicLink                              = loader_driver_ddi::zeModuleDynamicLink;
+            } else {
+                pDdiTable->pfnDynamicLink                              = loader::zeModuleDynamicLink;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnGetNativeBinary                          = loader_driver_ddi::zeModuleGetNativeBinary;
+            } else {
+                pDdiTable->pfnGetNativeBinary                          = loader::zeModuleGetNativeBinary;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnGetGlobalPointer                         = loader_driver_ddi::zeModuleGetGlobalPointer;
+            } else {
+                pDdiTable->pfnGetGlobalPointer                         = loader::zeModuleGetGlobalPointer;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnGetKernelNames                           = loader_driver_ddi::zeModuleGetKernelNames;
+            } else {
+                pDdiTable->pfnGetKernelNames                           = loader::zeModuleGetKernelNames;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnGetProperties                            = loader_driver_ddi::zeModuleGetProperties;
+            } else {
+                pDdiTable->pfnGetProperties                            = loader::zeModuleGetProperties;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnGetFunctionPointer                       = loader_driver_ddi::zeModuleGetFunctionPointer;
+            } else {
+                pDdiTable->pfnGetFunctionPointer                       = loader::zeModuleGetFunctionPointer;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnInspectLinkageExt                        = loader_driver_ddi::zeModuleInspectLinkageExt;
+            } else {
+                pDdiTable->pfnInspectLinkageExt                        = loader::zeModuleInspectLinkageExt;
+            }
+            zeGetModuleProcAddrTableLegacy();
         }
         else
         {
@@ -9214,8 +10468,18 @@ zeGetModuleBuildLogProcAddrTable(
         if( ( loader::context->zeDrivers.size() > 1 ) || loader::context->forceIntercept )
         {
             // return pointers to loader's DDIs
-            pDdiTable->pfnDestroy                                  = loader::zeModuleBuildLogDestroy;
-            pDdiTable->pfnGetString                                = loader::zeModuleBuildLogGetString;
+            loader::loaderDispatch->pCore->ModuleBuildLog = new ze_module_build_log_dditable_t;
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnDestroy                                  = loader_driver_ddi::zeModuleBuildLogDestroy;
+            } else {
+                pDdiTable->pfnDestroy                                  = loader::zeModuleBuildLogDestroy;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnGetString                                = loader_driver_ddi::zeModuleBuildLogGetString;
+            } else {
+                pDdiTable->pfnGetString                                = loader::zeModuleBuildLogGetString;
+            }
+            zeGetModuleBuildLogProcAddrTableLegacy();
         }
         else
         {
@@ -9307,8 +10571,18 @@ zeGetPhysicalMemProcAddrTable(
         if( ( loader::context->zeDrivers.size() > 1 ) || loader::context->forceIntercept )
         {
             // return pointers to loader's DDIs
-            pDdiTable->pfnCreate                                   = loader::zePhysicalMemCreate;
-            pDdiTable->pfnDestroy                                  = loader::zePhysicalMemDestroy;
+            loader::loaderDispatch->pCore->PhysicalMem = new ze_physical_mem_dditable_t;
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnCreate                                   = loader_driver_ddi::zePhysicalMemCreate;
+            } else {
+                pDdiTable->pfnCreate                                   = loader::zePhysicalMemCreate;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnDestroy                                  = loader_driver_ddi::zePhysicalMemDestroy;
+            } else {
+                pDdiTable->pfnDestroy                                  = loader::zePhysicalMemDestroy;
+            }
+            zeGetPhysicalMemProcAddrTableLegacy();
         }
         else
         {
@@ -9400,8 +10674,18 @@ zeGetSamplerProcAddrTable(
         if( ( loader::context->zeDrivers.size() > 1 ) || loader::context->forceIntercept )
         {
             // return pointers to loader's DDIs
-            pDdiTable->pfnCreate                                   = loader::zeSamplerCreate;
-            pDdiTable->pfnDestroy                                  = loader::zeSamplerDestroy;
+            loader::loaderDispatch->pCore->Sampler = new ze_sampler_dditable_t;
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnCreate                                   = loader_driver_ddi::zeSamplerCreate;
+            } else {
+                pDdiTable->pfnCreate                                   = loader::zeSamplerCreate;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnDestroy                                  = loader_driver_ddi::zeSamplerDestroy;
+            } else {
+                pDdiTable->pfnDestroy                                  = loader::zeSamplerDestroy;
+            }
+            zeGetSamplerProcAddrTableLegacy();
         }
         else
         {
@@ -9493,13 +10777,43 @@ zeGetVirtualMemProcAddrTable(
         if( ( loader::context->zeDrivers.size() > 1 ) || loader::context->forceIntercept )
         {
             // return pointers to loader's DDIs
-            pDdiTable->pfnReserve                                  = loader::zeVirtualMemReserve;
-            pDdiTable->pfnFree                                     = loader::zeVirtualMemFree;
-            pDdiTable->pfnQueryPageSize                            = loader::zeVirtualMemQueryPageSize;
-            pDdiTable->pfnMap                                      = loader::zeVirtualMemMap;
-            pDdiTable->pfnUnmap                                    = loader::zeVirtualMemUnmap;
-            pDdiTable->pfnSetAccessAttribute                       = loader::zeVirtualMemSetAccessAttribute;
-            pDdiTable->pfnGetAccessAttribute                       = loader::zeVirtualMemGetAccessAttribute;
+            loader::loaderDispatch->pCore->VirtualMem = new ze_virtual_mem_dditable_t;
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnReserve                                  = loader_driver_ddi::zeVirtualMemReserve;
+            } else {
+                pDdiTable->pfnReserve                                  = loader::zeVirtualMemReserve;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnFree                                     = loader_driver_ddi::zeVirtualMemFree;
+            } else {
+                pDdiTable->pfnFree                                     = loader::zeVirtualMemFree;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnQueryPageSize                            = loader_driver_ddi::zeVirtualMemQueryPageSize;
+            } else {
+                pDdiTable->pfnQueryPageSize                            = loader::zeVirtualMemQueryPageSize;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnMap                                      = loader_driver_ddi::zeVirtualMemMap;
+            } else {
+                pDdiTable->pfnMap                                      = loader::zeVirtualMemMap;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnUnmap                                    = loader_driver_ddi::zeVirtualMemUnmap;
+            } else {
+                pDdiTable->pfnUnmap                                    = loader::zeVirtualMemUnmap;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnSetAccessAttribute                       = loader_driver_ddi::zeVirtualMemSetAccessAttribute;
+            } else {
+                pDdiTable->pfnSetAccessAttribute                       = loader::zeVirtualMemSetAccessAttribute;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnGetAccessAttribute                       = loader_driver_ddi::zeVirtualMemGetAccessAttribute;
+            } else {
+                pDdiTable->pfnGetAccessAttribute                       = loader::zeVirtualMemGetAccessAttribute;
+            }
+            zeGetVirtualMemProcAddrTableLegacy();
         }
         else
         {
@@ -9582,9 +10896,23 @@ zeGetFabricEdgeExpProcAddrTable(
         if( ( loader::context->zeDrivers.size() > 1 ) || loader::context->forceIntercept )
         {
             // return pointers to loader's DDIs
-            pDdiTable->pfnGetExp                                   = loader::zeFabricEdgeGetExp;
-            pDdiTable->pfnGetVerticesExp                           = loader::zeFabricEdgeGetVerticesExp;
-            pDdiTable->pfnGetPropertiesExp                         = loader::zeFabricEdgeGetPropertiesExp;
+            loader::loaderDispatch->pCore->FabricEdgeExp = new ze_fabric_edge_exp_dditable_t;
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnGetExp                                   = loader_driver_ddi::zeFabricEdgeGetExp;
+            } else {
+                pDdiTable->pfnGetExp                                   = loader::zeFabricEdgeGetExp;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnGetVerticesExp                           = loader_driver_ddi::zeFabricEdgeGetVerticesExp;
+            } else {
+                pDdiTable->pfnGetVerticesExp                           = loader::zeFabricEdgeGetVerticesExp;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnGetPropertiesExp                         = loader_driver_ddi::zeFabricEdgeGetPropertiesExp;
+            } else {
+                pDdiTable->pfnGetPropertiesExp                         = loader::zeFabricEdgeGetPropertiesExp;
+            }
+            zeGetFabricEdgeExpProcAddrTableLegacy();
         }
         else
         {
@@ -9667,10 +10995,28 @@ zeGetFabricVertexExpProcAddrTable(
         if( ( loader::context->zeDrivers.size() > 1 ) || loader::context->forceIntercept )
         {
             // return pointers to loader's DDIs
-            pDdiTable->pfnGetExp                                   = loader::zeFabricVertexGetExp;
-            pDdiTable->pfnGetSubVerticesExp                        = loader::zeFabricVertexGetSubVerticesExp;
-            pDdiTable->pfnGetPropertiesExp                         = loader::zeFabricVertexGetPropertiesExp;
-            pDdiTable->pfnGetDeviceExp                             = loader::zeFabricVertexGetDeviceExp;
+            loader::loaderDispatch->pCore->FabricVertexExp = new ze_fabric_vertex_exp_dditable_t;
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnGetExp                                   = loader_driver_ddi::zeFabricVertexGetExp;
+            } else {
+                pDdiTable->pfnGetExp                                   = loader::zeFabricVertexGetExp;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnGetSubVerticesExp                        = loader_driver_ddi::zeFabricVertexGetSubVerticesExp;
+            } else {
+                pDdiTable->pfnGetSubVerticesExp                        = loader::zeFabricVertexGetSubVerticesExp;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnGetPropertiesExp                         = loader_driver_ddi::zeFabricVertexGetPropertiesExp;
+            } else {
+                pDdiTable->pfnGetPropertiesExp                         = loader::zeFabricVertexGetPropertiesExp;
+            }
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnGetDeviceExp                             = loader_driver_ddi::zeFabricVertexGetDeviceExp;
+            } else {
+                pDdiTable->pfnGetDeviceExp                             = loader::zeFabricVertexGetDeviceExp;
+            }
+            zeGetFabricVertexExpProcAddrTableLegacy();
         }
         else
         {
