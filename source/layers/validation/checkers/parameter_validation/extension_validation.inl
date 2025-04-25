@@ -146,7 +146,7 @@ inline ze_result_t ParameterValidation::validateExtensions(const ze_device_cache
     }
 
     std::vector<ze_structure_type_t> baseTypes = {ZE_STRUCTURE_TYPE_DEVICE_CACHE_PROPERTIES};
-    std::vector<ze_structure_type_t> types = {ZE_STRUCTURE_TYPE_CACHE_RESERVATION_EXT_DESC};
+    std::vector<ze_structure_type_t> types = {ZE_STRUCTURE_TYPE_CACHE_RESERVATION_EXT_DESC,ZE_STRUCTURE_TYPE_DEVICE_CACHELINE_SIZE_EXT};
 
     return validateStructureTypes<ze_structure_type_t, ze_base_properties_t>(descriptor, baseTypes, types);
 }

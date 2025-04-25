@@ -30,6 +30,11 @@ typedef struct _zel_global_callbacks_t
 /// @brief Table of RTASBuilder callback functions pointers
 typedef struct _zel_rtas_builder_callbacks_t
 {
+    ze_pfnRTASBuilderCreateExtCb_t                                  pfnCreateExtCb;
+    ze_pfnRTASBuilderGetBuildPropertiesExtCb_t                      pfnGetBuildPropertiesExtCb;
+    ze_pfnRTASBuilderBuildExtCb_t                                   pfnBuildExtCb;
+    ze_pfnRTASBuilderCommandListAppendCopyExtCb_t                   pfnCommandListAppendCopyExtCb;
+    ze_pfnRTASBuilderDestroyExtCb_t                                 pfnDestroyExtCb;
     ze_pfnRTASBuilderCreateExpCb_t                                  pfnCreateExpCb;
     ze_pfnRTASBuilderGetBuildPropertiesExpCb_t                      pfnGetBuildPropertiesExpCb;
     ze_pfnRTASBuilderBuildExpCb_t                                   pfnBuildExpCb;
@@ -40,6 +45,10 @@ typedef struct _zel_rtas_builder_callbacks_t
 /// @brief Table of RTASParallelOperation callback functions pointers
 typedef struct _zel_rtas_parallel_operation_callbacks_t
 {
+    ze_pfnRTASParallelOperationCreateExtCb_t                        pfnCreateExtCb;
+    ze_pfnRTASParallelOperationGetPropertiesExtCb_t                 pfnGetPropertiesExtCb;
+    ze_pfnRTASParallelOperationJoinExtCb_t                          pfnJoinExtCb;
+    ze_pfnRTASParallelOperationDestroyExtCb_t                       pfnDestroyExtCb;
     ze_pfnRTASParallelOperationCreateExpCb_t                        pfnCreateExpCb;
     ze_pfnRTASParallelOperationGetPropertiesExpCb_t                 pfnGetPropertiesExpCb;
     ze_pfnRTASParallelOperationJoinExpCb_t                          pfnJoinExpCb;
@@ -56,6 +65,7 @@ typedef struct _zel_driver_callbacks_t
     ze_pfnDriverGetIpcPropertiesCb_t                                pfnGetIpcPropertiesCb;
     ze_pfnDriverGetExtensionPropertiesCb_t                          pfnGetExtensionPropertiesCb;
     ze_pfnDriverGetExtensionFunctionAddressCb_t                     pfnGetExtensionFunctionAddressCb;
+    ze_pfnDriverRTASFormatCompatibilityCheckExtCb_t                 pfnRTASFormatCompatibilityCheckExtCb;
     ze_pfnDriverGetLastErrorDescriptionCb_t                         pfnGetLastErrorDescriptionCb;
     ze_pfnDriverRTASFormatCompatibilityCheckExpCb_t                 pfnRTASFormatCompatibilityCheckExpCb;
 } zel_driver_callbacks_t;
@@ -81,6 +91,7 @@ typedef struct _zel_device_callbacks_t
     ze_pfnDeviceGetGlobalTimestampsCb_t                             pfnGetGlobalTimestampsCb;
     ze_pfnDeviceImportExternalSemaphoreExtCb_t                      pfnImportExternalSemaphoreExtCb;
     ze_pfnDeviceReleaseExternalSemaphoreExtCb_t                     pfnReleaseExternalSemaphoreExtCb;
+    ze_pfnDeviceGetVectorWidthPropertiesExtCb_t                     pfnGetVectorWidthPropertiesExtCb;
     ze_pfnDeviceReserveCacheExtCb_t                                 pfnReserveCacheExtCb;
     ze_pfnDeviceSetCacheAdviceExtCb_t                               pfnSetCacheAdviceExtCb;
     ze_pfnDevicePciGetPropertiesExtCb_t                             pfnPciGetPropertiesExtCb;

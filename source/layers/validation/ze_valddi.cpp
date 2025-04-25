@@ -5589,10 +5589,14 @@ namespace validation_layer
         char** pString                                  ///< [in,out][optional] pointer to application-managed character array
                                                         ///< (string data).
                                                         ///< If NULL, the string length of the kernel source attributes, including
-                                                        ///< a null-terminating character, is returned in pSize.
-                                                        ///< Otherwise, pString must point to valid application memory that is
-                                                        ///< greater than or equal to *pSize bytes in length, and on return the
-                                                        ///< pointed-to string will contain a space-separated list of kernel source attributes.
+                                                        ///< a null-terminating character, is returned in pSize. Otherwise, pString
+                                                        ///< must point to valid application memory that is greater than or equal
+                                                        ///< to *pSize bytes in length, and on return the pointed-to string will
+                                                        ///< contain a space-separated list of kernel source attributes. Note: This
+                                                        ///< API was originally intended to ship with a char *pString, however this
+                                                        ///< typo was introduced. Thus the API has to stay this way for backwards
+                                                        ///< compatible reasons. It can be corrected in v2.0. Suggestion is to
+                                                        ///< create your own char *pString and then pass to this API with &pString.
         )
     {
         context.logger->log_trace("zeKernelGetSourceAttributes(hKernel, pSize, pString)");
@@ -6909,6 +6913,514 @@ namespace validation_layer
         }
 
         return logAndPropagateResult("zeCommandListAppendWaitExternalSemaphoreExt", driver_result);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeRTASBuilderCreateExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeRTASBuilderCreateExt(
+        ze_driver_handle_t hDriver,                     ///< [in] handle of driver object
+        const ze_rtas_builder_ext_desc_t* pDescriptor,  ///< [in] pointer to builder descriptor
+        ze_rtas_builder_ext_handle_t* phBuilder         ///< [out] handle of builder object
+        )
+    {
+        context.logger->log_trace("zeRTASBuilderCreateExt(hDriver, pDescriptor, phBuilder)");
+
+        auto pfnCreateExt = context.zeDdiTable.RTASBuilder.pfnCreateExt;
+
+        if( nullptr == pfnCreateExt )
+            return logAndPropagateResult("zeRTASBuilderCreateExt", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeRTASBuilderCreateExtPrologue( hDriver, pDescriptor, phBuilder );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeRTASBuilderCreateExt", result);
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeRTASBuilderCreateExtPrologue( hDriver, pDescriptor, phBuilder );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeRTASBuilderCreateExt", result);
+        }
+
+        auto driver_result = pfnCreateExt( hDriver, pDescriptor, phBuilder );
+
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeRTASBuilderCreateExtEpilogue( hDriver, pDescriptor, phBuilder ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeRTASBuilderCreateExt", result);
+        }
+
+
+        if( driver_result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
+            
+            if (phBuilder){
+                context.handleLifetime->addHandle( *phBuilder );
+                context.handleLifetime->addDependent( hDriver, *phBuilder );
+
+            }
+        }
+        return logAndPropagateResult("zeRTASBuilderCreateExt", driver_result);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeRTASBuilderGetBuildPropertiesExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeRTASBuilderGetBuildPropertiesExt(
+        ze_rtas_builder_ext_handle_t hBuilder,          ///< [in] handle of builder object
+        const ze_rtas_builder_build_op_ext_desc_t* pBuildOpDescriptor,  ///< [in] pointer to build operation descriptor
+        ze_rtas_builder_ext_properties_t* pProperties   ///< [in,out] query result for builder properties
+        )
+    {
+        context.logger->log_trace("zeRTASBuilderGetBuildPropertiesExt(hBuilder, pBuildOpDescriptor, pProperties)");
+
+        auto pfnGetBuildPropertiesExt = context.zeDdiTable.RTASBuilder.pfnGetBuildPropertiesExt;
+
+        if( nullptr == pfnGetBuildPropertiesExt )
+            return logAndPropagateResult("zeRTASBuilderGetBuildPropertiesExt", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeRTASBuilderGetBuildPropertiesExtPrologue( hBuilder, pBuildOpDescriptor, pProperties );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeRTASBuilderGetBuildPropertiesExt", result);
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeRTASBuilderGetBuildPropertiesExtPrologue( hBuilder, pBuildOpDescriptor, pProperties );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeRTASBuilderGetBuildPropertiesExt", result);
+        }
+
+        auto driver_result = pfnGetBuildPropertiesExt( hBuilder, pBuildOpDescriptor, pProperties );
+
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeRTASBuilderGetBuildPropertiesExtEpilogue( hBuilder, pBuildOpDescriptor, pProperties ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeRTASBuilderGetBuildPropertiesExt", result);
+        }
+
+        return logAndPropagateResult("zeRTASBuilderGetBuildPropertiesExt", driver_result);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeDriverRTASFormatCompatibilityCheckExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeDriverRTASFormatCompatibilityCheckExt(
+        ze_driver_handle_t hDriver,                     ///< [in] handle of driver object
+        ze_rtas_format_ext_t rtasFormatA,               ///< [in] operand A
+        ze_rtas_format_ext_t rtasFormatB                ///< [in] operand B
+        )
+    {
+        context.logger->log_trace("zeDriverRTASFormatCompatibilityCheckExt(hDriver, rtasFormatA, rtasFormatB)");
+
+        auto pfnRTASFormatCompatibilityCheckExt = context.zeDdiTable.Driver.pfnRTASFormatCompatibilityCheckExt;
+
+        if( nullptr == pfnRTASFormatCompatibilityCheckExt )
+            return logAndPropagateResult("zeDriverRTASFormatCompatibilityCheckExt", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeDriverRTASFormatCompatibilityCheckExtPrologue( hDriver, rtasFormatA, rtasFormatB );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeDriverRTASFormatCompatibilityCheckExt", result);
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeDriverRTASFormatCompatibilityCheckExtPrologue( hDriver, rtasFormatA, rtasFormatB );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeDriverRTASFormatCompatibilityCheckExt", result);
+        }
+
+        auto driver_result = pfnRTASFormatCompatibilityCheckExt( hDriver, rtasFormatA, rtasFormatB );
+
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeDriverRTASFormatCompatibilityCheckExtEpilogue( hDriver, rtasFormatA, rtasFormatB ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeDriverRTASFormatCompatibilityCheckExt", result);
+        }
+
+        return logAndPropagateResult("zeDriverRTASFormatCompatibilityCheckExt", driver_result);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeRTASBuilderBuildExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeRTASBuilderBuildExt(
+        ze_rtas_builder_ext_handle_t hBuilder,          ///< [in] handle of builder object
+        const ze_rtas_builder_build_op_ext_desc_t* pBuildOpDescriptor,  ///< [in] pointer to build operation descriptor
+        void* pScratchBuffer,                           ///< [in][range(0, `scratchBufferSizeBytes`)] scratch buffer to be used
+                                                        ///< during acceleration structure construction
+        size_t scratchBufferSizeBytes,                  ///< [in] size of scratch buffer, in bytes
+        void* pRtasBuffer,                              ///< [in] pointer to destination buffer
+        size_t rtasBufferSizeBytes,                     ///< [in] destination buffer size, in bytes
+        ze_rtas_parallel_operation_ext_handle_t hParallelOperation, ///< [in][optional] handle to parallel operation object
+        void* pBuildUserPtr,                            ///< [in][optional] pointer passed to callbacks
+        ze_rtas_aabb_ext_t* pBounds,                    ///< [in,out][optional] pointer to destination address for acceleration
+                                                        ///< structure bounds
+        size_t* pRtasBufferSizeBytes                    ///< [out][optional] updated acceleration structure size requirement, in
+                                                        ///< bytes
+        )
+    {
+        context.logger->log_trace("zeRTASBuilderBuildExt(hBuilder, pBuildOpDescriptor, pScratchBuffer, scratchBufferSizeBytes, pRtasBuffer, rtasBufferSizeBytes, hParallelOperation, pBuildUserPtr, pBounds, pRtasBufferSizeBytes)");
+
+        auto pfnBuildExt = context.zeDdiTable.RTASBuilder.pfnBuildExt;
+
+        if( nullptr == pfnBuildExt )
+            return logAndPropagateResult("zeRTASBuilderBuildExt", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeRTASBuilderBuildExtPrologue( hBuilder, pBuildOpDescriptor, pScratchBuffer, scratchBufferSizeBytes, pRtasBuffer, rtasBufferSizeBytes, hParallelOperation, pBuildUserPtr, pBounds, pRtasBufferSizeBytes );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeRTASBuilderBuildExt", result);
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeRTASBuilderBuildExtPrologue( hBuilder, pBuildOpDescriptor, pScratchBuffer, scratchBufferSizeBytes, pRtasBuffer, rtasBufferSizeBytes, hParallelOperation, pBuildUserPtr, pBounds, pRtasBufferSizeBytes );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeRTASBuilderBuildExt", result);
+        }
+
+        auto driver_result = pfnBuildExt( hBuilder, pBuildOpDescriptor, pScratchBuffer, scratchBufferSizeBytes, pRtasBuffer, rtasBufferSizeBytes, hParallelOperation, pBuildUserPtr, pBounds, pRtasBufferSizeBytes );
+
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeRTASBuilderBuildExtEpilogue( hBuilder, pBuildOpDescriptor, pScratchBuffer, scratchBufferSizeBytes, pRtasBuffer, rtasBufferSizeBytes, hParallelOperation, pBuildUserPtr, pBounds, pRtasBufferSizeBytes ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeRTASBuilderBuildExt", result);
+        }
+
+        return logAndPropagateResult("zeRTASBuilderBuildExt", driver_result);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeRTASBuilderCommandListAppendCopyExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeRTASBuilderCommandListAppendCopyExt(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of command list
+        void* dstptr,                                   ///< [in] pointer to destination in device memory to copy the ray tracing
+                                                        ///< acceleration structure to
+        const void* srcptr,                             ///< [in] pointer to a valid source ray tracing acceleration structure in
+                                                        ///< host memory to copy from
+        size_t size,                                    ///< [in] size in bytes to copy
+        ze_event_handle_t hSignalEvent,                 ///< [in][optional] handle of the event to signal on completion
+        uint32_t numWaitEvents,                         ///< [in][optional] number of events to wait on before launching; must be 0
+                                                        ///< if `nullptr == phWaitEvents`
+        ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
+                                                        ///< on before launching
+        )
+    {
+        context.logger->log_trace("zeRTASBuilderCommandListAppendCopyExt(hCommandList, dstptr, srcptr, size, hSignalEvent, numWaitEvents, phWaitEventsLocal)");
+
+        auto pfnCommandListAppendCopyExt = context.zeDdiTable.RTASBuilder.pfnCommandListAppendCopyExt;
+
+        if( nullptr == pfnCommandListAppendCopyExt )
+            return logAndPropagateResult("zeRTASBuilderCommandListAppendCopyExt", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeRTASBuilderCommandListAppendCopyExtPrologue( hCommandList, dstptr, srcptr, size, hSignalEvent, numWaitEvents, phWaitEvents );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeRTASBuilderCommandListAppendCopyExt", result);
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeRTASBuilderCommandListAppendCopyExtPrologue( hCommandList, dstptr, srcptr, size, hSignalEvent, numWaitEvents, phWaitEvents );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeRTASBuilderCommandListAppendCopyExt", result);
+        }
+
+        auto driver_result = pfnCommandListAppendCopyExt( hCommandList, dstptr, srcptr, size, hSignalEvent, numWaitEvents, phWaitEvents );
+
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeRTASBuilderCommandListAppendCopyExtEpilogue( hCommandList, dstptr, srcptr, size, hSignalEvent, numWaitEvents, phWaitEvents ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeRTASBuilderCommandListAppendCopyExt", result);
+        }
+
+        return logAndPropagateResult("zeRTASBuilderCommandListAppendCopyExt", driver_result);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeRTASBuilderDestroyExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeRTASBuilderDestroyExt(
+        ze_rtas_builder_ext_handle_t hBuilder           ///< [in][release] handle of builder object to destroy
+        )
+    {
+        context.logger->log_trace("zeRTASBuilderDestroyExt(hBuilder)");
+
+        auto pfnDestroyExt = context.zeDdiTable.RTASBuilder.pfnDestroyExt;
+
+        if( nullptr == pfnDestroyExt )
+            return logAndPropagateResult("zeRTASBuilderDestroyExt", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeRTASBuilderDestroyExtPrologue( hBuilder );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeRTASBuilderDestroyExt", result);
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeRTASBuilderDestroyExtPrologue( hBuilder );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeRTASBuilderDestroyExt", result);
+        }
+
+        auto driver_result = pfnDestroyExt( hBuilder );
+
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeRTASBuilderDestroyExtEpilogue( hBuilder ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeRTASBuilderDestroyExt", result);
+        }
+
+        return logAndPropagateResult("zeRTASBuilderDestroyExt", driver_result);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeRTASParallelOperationCreateExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeRTASParallelOperationCreateExt(
+        ze_driver_handle_t hDriver,                     ///< [in] handle of driver object
+        ze_rtas_parallel_operation_ext_handle_t* phParallelOperation///< [out] handle of parallel operation object
+        )
+    {
+        context.logger->log_trace("zeRTASParallelOperationCreateExt(hDriver, phParallelOperation)");
+
+        auto pfnCreateExt = context.zeDdiTable.RTASParallelOperation.pfnCreateExt;
+
+        if( nullptr == pfnCreateExt )
+            return logAndPropagateResult("zeRTASParallelOperationCreateExt", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeRTASParallelOperationCreateExtPrologue( hDriver, phParallelOperation );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeRTASParallelOperationCreateExt", result);
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeRTASParallelOperationCreateExtPrologue( hDriver, phParallelOperation );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeRTASParallelOperationCreateExt", result);
+        }
+
+        auto driver_result = pfnCreateExt( hDriver, phParallelOperation );
+
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeRTASParallelOperationCreateExtEpilogue( hDriver, phParallelOperation ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeRTASParallelOperationCreateExt", result);
+        }
+
+
+        if( driver_result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
+            
+            if (phParallelOperation){
+                context.handleLifetime->addHandle( *phParallelOperation );
+                context.handleLifetime->addDependent( hDriver, *phParallelOperation );
+
+            }
+        }
+        return logAndPropagateResult("zeRTASParallelOperationCreateExt", driver_result);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeRTASParallelOperationGetPropertiesExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeRTASParallelOperationGetPropertiesExt(
+        ze_rtas_parallel_operation_ext_handle_t hParallelOperation, ///< [in] handle of parallel operation object
+        ze_rtas_parallel_operation_ext_properties_t* pProperties///< [in,out] query result for parallel operation properties
+        )
+    {
+        context.logger->log_trace("zeRTASParallelOperationGetPropertiesExt(hParallelOperation, pProperties)");
+
+        auto pfnGetPropertiesExt = context.zeDdiTable.RTASParallelOperation.pfnGetPropertiesExt;
+
+        if( nullptr == pfnGetPropertiesExt )
+            return logAndPropagateResult("zeRTASParallelOperationGetPropertiesExt", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeRTASParallelOperationGetPropertiesExtPrologue( hParallelOperation, pProperties );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeRTASParallelOperationGetPropertiesExt", result);
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeRTASParallelOperationGetPropertiesExtPrologue( hParallelOperation, pProperties );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeRTASParallelOperationGetPropertiesExt", result);
+        }
+
+        auto driver_result = pfnGetPropertiesExt( hParallelOperation, pProperties );
+
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeRTASParallelOperationGetPropertiesExtEpilogue( hParallelOperation, pProperties ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeRTASParallelOperationGetPropertiesExt", result);
+        }
+
+        return logAndPropagateResult("zeRTASParallelOperationGetPropertiesExt", driver_result);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeRTASParallelOperationJoinExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeRTASParallelOperationJoinExt(
+        ze_rtas_parallel_operation_ext_handle_t hParallelOperation  ///< [in] handle of parallel operation object
+        )
+    {
+        context.logger->log_trace("zeRTASParallelOperationJoinExt(hParallelOperation)");
+
+        auto pfnJoinExt = context.zeDdiTable.RTASParallelOperation.pfnJoinExt;
+
+        if( nullptr == pfnJoinExt )
+            return logAndPropagateResult("zeRTASParallelOperationJoinExt", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeRTASParallelOperationJoinExtPrologue( hParallelOperation );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeRTASParallelOperationJoinExt", result);
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeRTASParallelOperationJoinExtPrologue( hParallelOperation );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeRTASParallelOperationJoinExt", result);
+        }
+
+        auto driver_result = pfnJoinExt( hParallelOperation );
+
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeRTASParallelOperationJoinExtEpilogue( hParallelOperation ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeRTASParallelOperationJoinExt", result);
+        }
+
+        return logAndPropagateResult("zeRTASParallelOperationJoinExt", driver_result);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeRTASParallelOperationDestroyExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeRTASParallelOperationDestroyExt(
+        ze_rtas_parallel_operation_ext_handle_t hParallelOperation  ///< [in][release] handle of parallel operation object to destroy
+        )
+    {
+        context.logger->log_trace("zeRTASParallelOperationDestroyExt(hParallelOperation)");
+
+        auto pfnDestroyExt = context.zeDdiTable.RTASParallelOperation.pfnDestroyExt;
+
+        if( nullptr == pfnDestroyExt )
+            return logAndPropagateResult("zeRTASParallelOperationDestroyExt", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeRTASParallelOperationDestroyExtPrologue( hParallelOperation );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeRTASParallelOperationDestroyExt", result);
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeRTASParallelOperationDestroyExtPrologue( hParallelOperation );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeRTASParallelOperationDestroyExt", result);
+        }
+
+        auto driver_result = pfnDestroyExt( hParallelOperation );
+
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeRTASParallelOperationDestroyExtEpilogue( hParallelOperation ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeRTASParallelOperationDestroyExt", result);
+        }
+
+        return logAndPropagateResult("zeRTASParallelOperationDestroyExt", driver_result);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeDeviceGetVectorWidthPropertiesExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeDeviceGetVectorWidthPropertiesExt(
+        ze_device_handle_t hDevice,                     ///< [in] handle of the device
+        uint32_t* pCount,                               ///< [in,out] pointer to the number of vector width properties.
+                                                        ///< if count is zero, then the driver shall update the value with the
+                                                        ///< total number of vector width properties available.
+                                                        ///< if count is greater than the number of vector width properties
+                                                        ///< available, then the driver shall update the value with the correct
+                                                        ///< number of vector width properties available.
+        ze_device_vector_width_properties_ext_t* pVectorWidthProperties ///< [in,out][optional][range(0, *pCount)] array of vector width properties.
+                                                        ///< if count is less than the number of properties available, then the
+                                                        ///< driver will return only the number requested.
+        )
+    {
+        context.logger->log_trace("zeDeviceGetVectorWidthPropertiesExt(hDevice, pCount, pVectorWidthProperties)");
+
+        auto pfnGetVectorWidthPropertiesExt = context.zeDdiTable.Device.pfnGetVectorWidthPropertiesExt;
+
+        if( nullptr == pfnGetVectorWidthPropertiesExt )
+            return logAndPropagateResult("zeDeviceGetVectorWidthPropertiesExt", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeDeviceGetVectorWidthPropertiesExtPrologue( hDevice, pCount, pVectorWidthProperties );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeDeviceGetVectorWidthPropertiesExt", result);
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeDeviceGetVectorWidthPropertiesExtPrologue( hDevice, pCount, pVectorWidthProperties );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeDeviceGetVectorWidthPropertiesExt", result);
+        }
+
+        auto driver_result = pfnGetVectorWidthPropertiesExt( hDevice, pCount, pVectorWidthProperties );
+
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeDeviceGetVectorWidthPropertiesExtEpilogue( hDevice, pCount, pVectorWidthProperties ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeDeviceGetVectorWidthPropertiesExt", result);
+        }
+
+        return logAndPropagateResult("zeDeviceGetVectorWidthPropertiesExt", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -8942,6 +9454,53 @@ zeGetGlobalProcAddrTable(
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+/// @brief Exported function for filling application's RTASBuilder table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+ZE_DLLEXPORT ze_result_t ZE_APICALL
+zeGetRTASBuilderProcAddrTable(
+    ze_api_version_t version,                       ///< [in] API version requested
+    ze_rtas_builder_dditable_t* pDdiTable           ///< [in,out] pointer to table of DDI function pointers
+    )
+{
+    auto& dditable = validation_layer::context.zeDdiTable.RTASBuilder;
+
+    if( nullptr == pDdiTable )
+        return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+    if (validation_layer::context.version < version)
+        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+
+    ze_result_t result = ZE_RESULT_SUCCESS;
+
+    if (version >= ZE_API_VERSION_1_13) {
+        dditable.pfnCreateExt                                = pDdiTable->pfnCreateExt;
+        pDdiTable->pfnCreateExt                              = validation_layer::zeRTASBuilderCreateExt;
+    }
+    if (version >= ZE_API_VERSION_1_13) {
+        dditable.pfnGetBuildPropertiesExt                    = pDdiTable->pfnGetBuildPropertiesExt;
+        pDdiTable->pfnGetBuildPropertiesExt                  = validation_layer::zeRTASBuilderGetBuildPropertiesExt;
+    }
+    if (version >= ZE_API_VERSION_1_13) {
+        dditable.pfnBuildExt                                 = pDdiTable->pfnBuildExt;
+        pDdiTable->pfnBuildExt                               = validation_layer::zeRTASBuilderBuildExt;
+    }
+    if (version >= ZE_API_VERSION_1_13) {
+        dditable.pfnCommandListAppendCopyExt                 = pDdiTable->pfnCommandListAppendCopyExt;
+        pDdiTable->pfnCommandListAppendCopyExt               = validation_layer::zeRTASBuilderCommandListAppendCopyExt;
+    }
+    if (version >= ZE_API_VERSION_1_13) {
+        dditable.pfnDestroyExt                               = pDdiTable->pfnDestroyExt;
+        pDdiTable->pfnDestroyExt                             = validation_layer::zeRTASBuilderDestroyExt;
+    }
+    return result;
+}
+
+///////////////////////////////////////////////////////////////////////////////
 /// @brief Exported function for filling application's RTASBuilderExp table
 ///        with current process' addresses
 ///
@@ -8980,6 +9539,49 @@ zeGetRTASBuilderExpProcAddrTable(
     if (version >= ZE_API_VERSION_1_7) {
         dditable.pfnDestroyExp                               = pDdiTable->pfnDestroyExp;
         pDdiTable->pfnDestroyExp                             = validation_layer::zeRTASBuilderDestroyExp;
+    }
+    return result;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Exported function for filling application's RTASParallelOperation table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+ZE_DLLEXPORT ze_result_t ZE_APICALL
+zeGetRTASParallelOperationProcAddrTable(
+    ze_api_version_t version,                       ///< [in] API version requested
+    ze_rtas_parallel_operation_dditable_t* pDdiTable///< [in,out] pointer to table of DDI function pointers
+    )
+{
+    auto& dditable = validation_layer::context.zeDdiTable.RTASParallelOperation;
+
+    if( nullptr == pDdiTable )
+        return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+    if (validation_layer::context.version < version)
+        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+
+    ze_result_t result = ZE_RESULT_SUCCESS;
+
+    if (version >= ZE_API_VERSION_1_13) {
+        dditable.pfnCreateExt                                = pDdiTable->pfnCreateExt;
+        pDdiTable->pfnCreateExt                              = validation_layer::zeRTASParallelOperationCreateExt;
+    }
+    if (version >= ZE_API_VERSION_1_13) {
+        dditable.pfnGetPropertiesExt                         = pDdiTable->pfnGetPropertiesExt;
+        pDdiTable->pfnGetPropertiesExt                       = validation_layer::zeRTASParallelOperationGetPropertiesExt;
+    }
+    if (version >= ZE_API_VERSION_1_13) {
+        dditable.pfnJoinExt                                  = pDdiTable->pfnJoinExt;
+        pDdiTable->pfnJoinExt                                = validation_layer::zeRTASParallelOperationJoinExt;
+    }
+    if (version >= ZE_API_VERSION_1_13) {
+        dditable.pfnDestroyExt                               = pDdiTable->pfnDestroyExt;
+        pDdiTable->pfnDestroyExt                             = validation_layer::zeRTASParallelOperationDestroyExt;
     }
     return result;
 }
@@ -9074,6 +9676,10 @@ zeGetDriverProcAddrTable(
     if (version >= ZE_API_VERSION_1_1) {
         dditable.pfnGetExtensionFunctionAddress              = pDdiTable->pfnGetExtensionFunctionAddress;
         pDdiTable->pfnGetExtensionFunctionAddress            = validation_layer::zeDriverGetExtensionFunctionAddress;
+    }
+    if (version >= ZE_API_VERSION_1_13) {
+        dditable.pfnRTASFormatCompatibilityCheckExt          = pDdiTable->pfnRTASFormatCompatibilityCheckExt;
+        pDdiTable->pfnRTASFormatCompatibilityCheckExt        = validation_layer::zeDriverRTASFormatCompatibilityCheckExt;
     }
     if (version >= ZE_API_VERSION_1_6) {
         dditable.pfnGetLastErrorDescription                  = pDdiTable->pfnGetLastErrorDescription;
@@ -9204,6 +9810,10 @@ zeGetDeviceProcAddrTable(
     if (version >= ZE_API_VERSION_1_12) {
         dditable.pfnReleaseExternalSemaphoreExt              = pDdiTable->pfnReleaseExternalSemaphoreExt;
         pDdiTable->pfnReleaseExternalSemaphoreExt            = validation_layer::zeDeviceReleaseExternalSemaphoreExt;
+    }
+    if (version >= ZE_API_VERSION_1_13) {
+        dditable.pfnGetVectorWidthPropertiesExt              = pDdiTable->pfnGetVectorWidthPropertiesExt;
+        pDdiTable->pfnGetVectorWidthPropertiesExt            = validation_layer::zeDeviceGetVectorWidthPropertiesExt;
     }
     if (version >= ZE_API_VERSION_1_2) {
         dditable.pfnReserveCacheExt                          = pDdiTable->pfnReserveCacheExt;

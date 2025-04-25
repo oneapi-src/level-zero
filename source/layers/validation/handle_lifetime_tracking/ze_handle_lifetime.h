@@ -167,6 +167,17 @@ namespace validation_layer
         ze_result_t zeDeviceReleaseExternalSemaphoreExtPrologue( ze_external_semaphore_ext_handle_t hSemaphore ) override;
         ze_result_t zeCommandListAppendSignalExternalSemaphoreExtPrologue( ze_command_list_handle_t hCommandList, uint32_t numSemaphores, ze_external_semaphore_ext_handle_t* phSemaphores, ze_external_semaphore_signal_params_ext_t* signalParams, ze_event_handle_t hSignalEvent, uint32_t numWaitEvents, ze_event_handle_t* phWaitEvents ) override;
         ze_result_t zeCommandListAppendWaitExternalSemaphoreExtPrologue( ze_command_list_handle_t hCommandList, uint32_t numSemaphores, ze_external_semaphore_ext_handle_t* phSemaphores, ze_external_semaphore_wait_params_ext_t* waitParams, ze_event_handle_t hSignalEvent, uint32_t numWaitEvents, ze_event_handle_t* phWaitEvents ) override;
+        ze_result_t zeRTASBuilderCreateExtPrologue( ze_driver_handle_t hDriver, const ze_rtas_builder_ext_desc_t* pDescriptor, ze_rtas_builder_ext_handle_t* phBuilder ) override;
+        ze_result_t zeRTASBuilderGetBuildPropertiesExtPrologue( ze_rtas_builder_ext_handle_t hBuilder, const ze_rtas_builder_build_op_ext_desc_t* pBuildOpDescriptor, ze_rtas_builder_ext_properties_t* pProperties ) override;
+        ze_result_t zeDriverRTASFormatCompatibilityCheckExtPrologue( ze_driver_handle_t hDriver, ze_rtas_format_ext_t rtasFormatA, ze_rtas_format_ext_t rtasFormatB ) override;
+        ze_result_t zeRTASBuilderBuildExtPrologue( ze_rtas_builder_ext_handle_t hBuilder, const ze_rtas_builder_build_op_ext_desc_t* pBuildOpDescriptor, void* pScratchBuffer, size_t scratchBufferSizeBytes, void* pRtasBuffer, size_t rtasBufferSizeBytes, ze_rtas_parallel_operation_ext_handle_t hParallelOperation, void* pBuildUserPtr, ze_rtas_aabb_ext_t* pBounds, size_t* pRtasBufferSizeBytes ) override;
+        ze_result_t zeRTASBuilderCommandListAppendCopyExtPrologue( ze_command_list_handle_t hCommandList, void* dstptr, const void* srcptr, size_t size, ze_event_handle_t hSignalEvent, uint32_t numWaitEvents, ze_event_handle_t* phWaitEvents ) override;
+        ze_result_t zeRTASBuilderDestroyExtPrologue( ze_rtas_builder_ext_handle_t hBuilder ) override;
+        ze_result_t zeRTASParallelOperationCreateExtPrologue( ze_driver_handle_t hDriver, ze_rtas_parallel_operation_ext_handle_t* phParallelOperation ) override;
+        ze_result_t zeRTASParallelOperationGetPropertiesExtPrologue( ze_rtas_parallel_operation_ext_handle_t hParallelOperation, ze_rtas_parallel_operation_ext_properties_t* pProperties ) override;
+        ze_result_t zeRTASParallelOperationJoinExtPrologue( ze_rtas_parallel_operation_ext_handle_t hParallelOperation ) override;
+        ze_result_t zeRTASParallelOperationDestroyExtPrologue( ze_rtas_parallel_operation_ext_handle_t hParallelOperation ) override;
+        ze_result_t zeDeviceGetVectorWidthPropertiesExtPrologue( ze_device_handle_t hDevice, uint32_t* pCount, ze_device_vector_width_properties_ext_t* pVectorWidthProperties ) override;
         ze_result_t zeDeviceReserveCacheExtPrologue( ze_device_handle_t hDevice, size_t cacheLevel, size_t cacheReservationSize ) override;
         ze_result_t zeDeviceSetCacheAdviceExtPrologue( ze_device_handle_t hDevice, void* ptr, size_t regionSize, ze_cache_ext_region_t cacheRegion ) override;
         ze_result_t zeEventQueryTimestampsExpPrologue( ze_event_handle_t hEvent, ze_device_handle_t hDevice, uint32_t* pCount, ze_kernel_timestamp_result_t* pTimestamps ) override;

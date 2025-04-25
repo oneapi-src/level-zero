@@ -569,8 +569,8 @@ namespace validation_layer
                                                         ///< than the `count` member of ::zet_debug_regset_properties_t for the
                                                         ///< type
         uint32_t count,                                 ///< [in] the number of registers to read; start+count must be less than or
-                                                        ///< equal to the `count` member of ::zet_debug_register_group_properties_t
-                                                        ///< for the type
+                                                        ///< equal to the `count` member of ::zet_debug_regset_properties_t for the
+                                                        ///< type
         void* pRegisterValues                           ///< [in,out][optional][range(0, count)] buffer of register values
         )
     {
@@ -619,8 +619,8 @@ namespace validation_layer
                                                         ///< than the `count` member of ::zet_debug_regset_properties_t for the
                                                         ///< type
         uint32_t count,                                 ///< [in] the number of registers to write; start+count must be less than
-                                                        ///< or equal to the `count` member of
-                                                        ///< ::zet_debug_register_group_properties_t for the type
+                                                        ///< or equal to the `count` member of ::zet_debug_regset_properties_t for
+                                                        ///< the type
         void* pRegisterValues                           ///< [in,out][optional][range(0, count)] buffer of register values
         )
     {
@@ -2343,6 +2343,133 @@ namespace validation_layer
     }
 
     ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zetCommandListAppendMarkerExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zetCommandListAppendMarkerExp(
+        zet_command_list_handle_t hCommandList,         ///< [in] handle to the command list
+        zet_metric_group_handle_t hMetricGroup,         ///< [in] handle to the marker metric group.
+                                                        ///< ::zet_metric_group_type_exp_flags_t could be used to check whether
+                                                        ///< marker is supoported by the metric group.
+        uint32_t value                                  ///< [in] marker value
+        )
+    {
+        context.logger->log_trace("zetCommandListAppendMarkerExp(hCommandList, hMetricGroup, value)");
+
+        auto pfnAppendMarkerExp = context.zetDdiTable.CommandListExp.pfnAppendMarkerExp;
+
+        if( nullptr == pfnAppendMarkerExp )
+            return logAndPropagateResult("zetCommandListAppendMarkerExp", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zetValidation->zetCommandListAppendMarkerExpPrologue( hCommandList, hMetricGroup, value );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zetCommandListAppendMarkerExp", result);
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zetHandleLifetime.zetCommandListAppendMarkerExpPrologue( hCommandList, hMetricGroup, value );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zetCommandListAppendMarkerExp", result);
+        }
+
+        auto driver_result = pfnAppendMarkerExp( hCommandList, hMetricGroup, value );
+
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zetValidation->zetCommandListAppendMarkerExpEpilogue( hCommandList, hMetricGroup, value ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zetCommandListAppendMarkerExp", result);
+        }
+
+        return logAndPropagateResult("zetCommandListAppendMarkerExp", driver_result);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zetDeviceEnableMetricsExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zetDeviceEnableMetricsExp(
+        zet_device_handle_t hDevice                     ///< [in] handle of the device where metrics collection has to be enabled.
+        )
+    {
+        context.logger->log_trace("zetDeviceEnableMetricsExp(hDevice)");
+
+        auto pfnEnableMetricsExp = context.zetDdiTable.DeviceExp.pfnEnableMetricsExp;
+
+        if( nullptr == pfnEnableMetricsExp )
+            return logAndPropagateResult("zetDeviceEnableMetricsExp", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zetValidation->zetDeviceEnableMetricsExpPrologue( hDevice );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zetDeviceEnableMetricsExp", result);
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zetHandleLifetime.zetDeviceEnableMetricsExpPrologue( hDevice );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zetDeviceEnableMetricsExp", result);
+        }
+
+        auto driver_result = pfnEnableMetricsExp( hDevice );
+
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zetValidation->zetDeviceEnableMetricsExpEpilogue( hDevice ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zetDeviceEnableMetricsExp", result);
+        }
+
+        return logAndPropagateResult("zetDeviceEnableMetricsExp", driver_result);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zetDeviceDisableMetricsExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zetDeviceDisableMetricsExp(
+        zet_device_handle_t hDevice                     ///< [in] handle of the device where metrics collection has to be disabled
+        )
+    {
+        context.logger->log_trace("zetDeviceDisableMetricsExp(hDevice)");
+
+        auto pfnDisableMetricsExp = context.zetDdiTable.DeviceExp.pfnDisableMetricsExp;
+
+        if( nullptr == pfnDisableMetricsExp )
+            return logAndPropagateResult("zetDeviceDisableMetricsExp", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zetValidation->zetDeviceDisableMetricsExpPrologue( hDevice );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zetDeviceDisableMetricsExp", result);
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zetHandleLifetime.zetDeviceDisableMetricsExpPrologue( hDevice );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zetDeviceDisableMetricsExp", result);
+        }
+
+        auto driver_result = pfnDisableMetricsExp( hDevice );
+
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zetValidation->zetDeviceDisableMetricsExpEpilogue( hDevice ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zetDeviceDisableMetricsExp", result);
+        }
+
+        return logAndPropagateResult("zetDeviceDisableMetricsExp", driver_result);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
     /// @brief Intercept function for zetMetricGroupCalculateMultipleMetricValuesExp
     __zedlllocal ze_result_t ZE_APICALL
     zetMetricGroupCalculateMultipleMetricValuesExp(
@@ -3460,6 +3587,14 @@ zetGetDeviceExpProcAddrTable(
         dditable.pfnCreateMetricGroupsFromMetricsExp         = pDdiTable->pfnCreateMetricGroupsFromMetricsExp;
         pDdiTable->pfnCreateMetricGroupsFromMetricsExp       = validation_layer::zetDeviceCreateMetricGroupsFromMetricsExp;
     }
+    if (version >= ZE_API_VERSION_1_13) {
+        dditable.pfnEnableMetricsExp                         = pDdiTable->pfnEnableMetricsExp;
+        pDdiTable->pfnEnableMetricsExp                       = validation_layer::zetDeviceEnableMetricsExp;
+    }
+    if (version >= ZE_API_VERSION_1_13) {
+        dditable.pfnDisableMetricsExp                        = pDdiTable->pfnDisableMetricsExp;
+        pDdiTable->pfnDisableMetricsExp                      = validation_layer::zetDeviceDisableMetricsExp;
+    }
     return result;
 }
 
@@ -3533,6 +3668,37 @@ zetGetCommandListProcAddrTable(
     if (version >= ZE_API_VERSION_1_0) {
         dditable.pfnAppendMetricMemoryBarrier                = pDdiTable->pfnAppendMetricMemoryBarrier;
         pDdiTable->pfnAppendMetricMemoryBarrier              = validation_layer::zetCommandListAppendMetricMemoryBarrier;
+    }
+    return result;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Exported function for filling application's CommandListExp table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+ZE_DLLEXPORT ze_result_t ZE_APICALL
+zetGetCommandListExpProcAddrTable(
+    ze_api_version_t version,                       ///< [in] API version requested
+    zet_command_list_exp_dditable_t* pDdiTable      ///< [in,out] pointer to table of DDI function pointers
+    )
+{
+    auto& dditable = validation_layer::context.zetDdiTable.CommandListExp;
+
+    if( nullptr == pDdiTable )
+        return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+    if (validation_layer::context.version < version)
+        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+
+    ze_result_t result = ZE_RESULT_SUCCESS;
+
+    if (version >= ZE_API_VERSION_1_13) {
+        dditable.pfnAppendMarkerExp                          = pDdiTable->pfnAppendMarkerExp;
+        pDdiTable->pfnAppendMarkerExp                        = validation_layer::zetCommandListAppendMarkerExp;
     }
     return result;
 }
