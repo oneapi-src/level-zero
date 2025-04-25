@@ -91,25 +91,25 @@ ${tbl['export']['name']}(
     if( nullptr == pDdiTable )
         return ${X}_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if (ZE_MAJOR_VERSION(tracing_layer::context.version) != ZE_MAJOR_VERSION(version) ||
-        ZE_MINOR_VERSION(tracing_layer::context.version) > ZE_MINOR_VERSION(version))
+    if (tracing_layer::context.version < version)
         return ${X}_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ${x}_result_t result = ${X}_RESULT_SUCCESS;
 
     %for obj in tbl['functions']:
+    if (version >= ${th.get_version(obj)}) {
     %if 'condition' in obj:
 #if ${th.subt(n, tags, obj['condition'])}
     %endif
-    dditable.${th.append_ws(th.make_pfn_name(n, tags, obj), 43)} = pDdiTable->${th.make_pfn_name(n, tags, obj)};
-    pDdiTable->${th.append_ws(th.make_pfn_name(n, tags, obj), 41)} = tracing_layer::${th.make_func_name(n, tags, obj)};
+        dditable.${th.append_ws(th.make_pfn_name(n, tags, obj), 43)} = pDdiTable->${th.make_pfn_name(n, tags, obj)};
+        pDdiTable->${th.append_ws(th.make_pfn_name(n, tags, obj), 41)} = tracing_layer::${th.make_func_name(n, tags, obj)};
     %if 'condition' in obj:
 #else
-    dditable.${th.append_ws(th.make_pfn_name(n, tags, obj), 43)} = nullptr;
-    pDdiTable->${th.append_ws(th.make_pfn_name(n, tags, obj), 41)} = nullptr;
+        dditable.${th.append_ws(th.make_pfn_name(n, tags, obj), 43)} = nullptr;
+        pDdiTable->${th.append_ws(th.make_pfn_name(n, tags, obj), 41)} = nullptr;
 #endif
     %endif
-
+    }
     %endfor
     return result;
 }

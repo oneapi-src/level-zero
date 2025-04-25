@@ -1728,6 +1728,46 @@ def get_class_function_objs_exp(specs, cname):
 
 """
 Public:
+    returns the version of a function object
+"""
+def get_version(obj):
+    if obj_traits.is_function(obj):
+        ret_version = "ZE_API_VERSION_FORCE_UINT32"
+        version = obj.get('version')
+        if version == "1.0":
+            ret_version = "ZE_API_VERSION_1_0"
+        if version == "1.1":
+            ret_version = "ZE_API_VERSION_1_1"
+        if version == "1.2":
+            ret_version = "ZE_API_VERSION_1_2"
+        if version == "1.3":
+            ret_version = "ZE_API_VERSION_1_3"
+        if version == "1.4":
+            ret_version = "ZE_API_VERSION_1_4"
+        if version == "1.5":
+            ret_version = "ZE_API_VERSION_1_5"
+        if version == "1.6":
+            ret_version = "ZE_API_VERSION_1_6"
+        if version == "1.7":
+            ret_version = "ZE_API_VERSION_1_7"
+        if version == "1.8":
+            ret_version = "ZE_API_VERSION_1_8"
+        if version == "1.9":
+            ret_version = "ZE_API_VERSION_1_9"
+        if version == "1.10":
+            ret_version = "ZE_API_VERSION_1_10"
+        if version == "1.11":
+            ret_version = "ZE_API_VERSION_1_11"
+        if version == "1.12":
+            ret_version = "ZE_API_VERSION_1_12"
+        if version == "1.13":
+            ret_version = "ZE_API_VERSION_1_13"
+        if (ret_version == "ZE_API_VERSION_FORCE_UINT32"):
+            ret_version = "ZE_API_VERSION_1_0"
+        return ret_version
+
+"""
+Public:
     returns string name of DDI table for function object
 """
 def get_table_name(namespace, tags, obj):

@@ -443,15 +443,17 @@ ${tbl['export']['name']}(
         {
             // return pointers to loader's DDIs
             %for obj in tbl['functions']:
+            if (version >= ${th.get_version(obj)}) {
             %if 'condition' in obj:
         #if ${th.subt(n, tags, obj['condition'])}
             %endif
-            pDdiTable->${th.append_ws(th.make_pfn_name(n, tags, obj), 43)} = loader::${th.make_func_name(n, tags, obj)};
+                pDdiTable->${th.append_ws(th.make_pfn_name(n, tags, obj), 43)} = loader::${th.make_func_name(n, tags, obj)};
             %if 'condition' in obj:
         #else
-            pDdiTable->${th.append_ws(th.make_pfn_name(n, tags, obj), 43)} = nullptr;
+                pDdiTable->${th.append_ws(th.make_pfn_name(n, tags, obj), 43)} = nullptr;
         #endif
             %endif
+            }
             %endfor
         }
         else

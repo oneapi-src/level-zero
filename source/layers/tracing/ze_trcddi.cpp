@@ -7751,18 +7751,19 @@ zeGetGlobalProcAddrTable(
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if (ZE_MAJOR_VERSION(tracing_layer::context.version) != ZE_MAJOR_VERSION(version) ||
-        ZE_MINOR_VERSION(tracing_layer::context.version) > ZE_MINOR_VERSION(version))
+    if (tracing_layer::context.version < version)
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
-    dditable.pfnInit                                     = pDdiTable->pfnInit;
-    pDdiTable->pfnInit                                   = tracing_layer::zeInit;
-
-    dditable.pfnInitDrivers                              = pDdiTable->pfnInitDrivers;
-    pDdiTable->pfnInitDrivers                            = tracing_layer::zeInitDrivers;
-
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnInit                                     = pDdiTable->pfnInit;
+        pDdiTable->pfnInit                                   = tracing_layer::zeInit;
+    }
+    if (version >= ZE_API_VERSION_1_10) {
+        dditable.pfnInitDrivers                              = pDdiTable->pfnInitDrivers;
+        pDdiTable->pfnInitDrivers                            = tracing_layer::zeInitDrivers;
+    }
     return result;
 }
 
@@ -7785,24 +7786,27 @@ zeGetRTASBuilderExpProcAddrTable(
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if (ZE_MAJOR_VERSION(tracing_layer::context.version) != ZE_MAJOR_VERSION(version) ||
-        ZE_MINOR_VERSION(tracing_layer::context.version) > ZE_MINOR_VERSION(version))
+    if (tracing_layer::context.version < version)
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
-    dditable.pfnCreateExp                                = pDdiTable->pfnCreateExp;
-    pDdiTable->pfnCreateExp                              = tracing_layer::zeRTASBuilderCreateExp;
-
-    dditable.pfnGetBuildPropertiesExp                    = pDdiTable->pfnGetBuildPropertiesExp;
-    pDdiTable->pfnGetBuildPropertiesExp                  = tracing_layer::zeRTASBuilderGetBuildPropertiesExp;
-
-    dditable.pfnBuildExp                                 = pDdiTable->pfnBuildExp;
-    pDdiTable->pfnBuildExp                               = tracing_layer::zeRTASBuilderBuildExp;
-
-    dditable.pfnDestroyExp                               = pDdiTable->pfnDestroyExp;
-    pDdiTable->pfnDestroyExp                             = tracing_layer::zeRTASBuilderDestroyExp;
-
+    if (version >= ZE_API_VERSION_1_7) {
+        dditable.pfnCreateExp                                = pDdiTable->pfnCreateExp;
+        pDdiTable->pfnCreateExp                              = tracing_layer::zeRTASBuilderCreateExp;
+    }
+    if (version >= ZE_API_VERSION_1_7) {
+        dditable.pfnGetBuildPropertiesExp                    = pDdiTable->pfnGetBuildPropertiesExp;
+        pDdiTable->pfnGetBuildPropertiesExp                  = tracing_layer::zeRTASBuilderGetBuildPropertiesExp;
+    }
+    if (version >= ZE_API_VERSION_1_7) {
+        dditable.pfnBuildExp                                 = pDdiTable->pfnBuildExp;
+        pDdiTable->pfnBuildExp                               = tracing_layer::zeRTASBuilderBuildExp;
+    }
+    if (version >= ZE_API_VERSION_1_7) {
+        dditable.pfnDestroyExp                               = pDdiTable->pfnDestroyExp;
+        pDdiTable->pfnDestroyExp                             = tracing_layer::zeRTASBuilderDestroyExp;
+    }
     return result;
 }
 
@@ -7825,24 +7829,27 @@ zeGetRTASParallelOperationExpProcAddrTable(
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if (ZE_MAJOR_VERSION(tracing_layer::context.version) != ZE_MAJOR_VERSION(version) ||
-        ZE_MINOR_VERSION(tracing_layer::context.version) > ZE_MINOR_VERSION(version))
+    if (tracing_layer::context.version < version)
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
-    dditable.pfnCreateExp                                = pDdiTable->pfnCreateExp;
-    pDdiTable->pfnCreateExp                              = tracing_layer::zeRTASParallelOperationCreateExp;
-
-    dditable.pfnGetPropertiesExp                         = pDdiTable->pfnGetPropertiesExp;
-    pDdiTable->pfnGetPropertiesExp                       = tracing_layer::zeRTASParallelOperationGetPropertiesExp;
-
-    dditable.pfnJoinExp                                  = pDdiTable->pfnJoinExp;
-    pDdiTable->pfnJoinExp                                = tracing_layer::zeRTASParallelOperationJoinExp;
-
-    dditable.pfnDestroyExp                               = pDdiTable->pfnDestroyExp;
-    pDdiTable->pfnDestroyExp                             = tracing_layer::zeRTASParallelOperationDestroyExp;
-
+    if (version >= ZE_API_VERSION_1_7) {
+        dditable.pfnCreateExp                                = pDdiTable->pfnCreateExp;
+        pDdiTable->pfnCreateExp                              = tracing_layer::zeRTASParallelOperationCreateExp;
+    }
+    if (version >= ZE_API_VERSION_1_7) {
+        dditable.pfnGetPropertiesExp                         = pDdiTable->pfnGetPropertiesExp;
+        pDdiTable->pfnGetPropertiesExp                       = tracing_layer::zeRTASParallelOperationGetPropertiesExp;
+    }
+    if (version >= ZE_API_VERSION_1_7) {
+        dditable.pfnJoinExp                                  = pDdiTable->pfnJoinExp;
+        pDdiTable->pfnJoinExp                                = tracing_layer::zeRTASParallelOperationJoinExp;
+    }
+    if (version >= ZE_API_VERSION_1_7) {
+        dditable.pfnDestroyExp                               = pDdiTable->pfnDestroyExp;
+        pDdiTable->pfnDestroyExp                             = tracing_layer::zeRTASParallelOperationDestroyExp;
+    }
     return result;
 }
 
@@ -7865,33 +7872,39 @@ zeGetDriverProcAddrTable(
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if (ZE_MAJOR_VERSION(tracing_layer::context.version) != ZE_MAJOR_VERSION(version) ||
-        ZE_MINOR_VERSION(tracing_layer::context.version) > ZE_MINOR_VERSION(version))
+    if (tracing_layer::context.version < version)
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
-    dditable.pfnGet                                      = pDdiTable->pfnGet;
-    pDdiTable->pfnGet                                    = tracing_layer::zeDriverGet;
-
-    dditable.pfnGetApiVersion                            = pDdiTable->pfnGetApiVersion;
-    pDdiTable->pfnGetApiVersion                          = tracing_layer::zeDriverGetApiVersion;
-
-    dditable.pfnGetProperties                            = pDdiTable->pfnGetProperties;
-    pDdiTable->pfnGetProperties                          = tracing_layer::zeDriverGetProperties;
-
-    dditable.pfnGetIpcProperties                         = pDdiTable->pfnGetIpcProperties;
-    pDdiTable->pfnGetIpcProperties                       = tracing_layer::zeDriverGetIpcProperties;
-
-    dditable.pfnGetExtensionProperties                   = pDdiTable->pfnGetExtensionProperties;
-    pDdiTable->pfnGetExtensionProperties                 = tracing_layer::zeDriverGetExtensionProperties;
-
-    dditable.pfnGetExtensionFunctionAddress              = pDdiTable->pfnGetExtensionFunctionAddress;
-    pDdiTable->pfnGetExtensionFunctionAddress            = tracing_layer::zeDriverGetExtensionFunctionAddress;
-
-    dditable.pfnGetLastErrorDescription                  = pDdiTable->pfnGetLastErrorDescription;
-    pDdiTable->pfnGetLastErrorDescription                = tracing_layer::zeDriverGetLastErrorDescription;
-
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnGet                                      = pDdiTable->pfnGet;
+        pDdiTable->pfnGet                                    = tracing_layer::zeDriverGet;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnGetApiVersion                            = pDdiTable->pfnGetApiVersion;
+        pDdiTable->pfnGetApiVersion                          = tracing_layer::zeDriverGetApiVersion;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnGetProperties                            = pDdiTable->pfnGetProperties;
+        pDdiTable->pfnGetProperties                          = tracing_layer::zeDriverGetProperties;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnGetIpcProperties                         = pDdiTable->pfnGetIpcProperties;
+        pDdiTable->pfnGetIpcProperties                       = tracing_layer::zeDriverGetIpcProperties;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnGetExtensionProperties                   = pDdiTable->pfnGetExtensionProperties;
+        pDdiTable->pfnGetExtensionProperties                 = tracing_layer::zeDriverGetExtensionProperties;
+    }
+    if (version >= ZE_API_VERSION_1_1) {
+        dditable.pfnGetExtensionFunctionAddress              = pDdiTable->pfnGetExtensionFunctionAddress;
+        pDdiTable->pfnGetExtensionFunctionAddress            = tracing_layer::zeDriverGetExtensionFunctionAddress;
+    }
+    if (version >= ZE_API_VERSION_1_6) {
+        dditable.pfnGetLastErrorDescription                  = pDdiTable->pfnGetLastErrorDescription;
+        pDdiTable->pfnGetLastErrorDescription                = tracing_layer::zeDriverGetLastErrorDescription;
+    }
     return result;
 }
 
@@ -7914,15 +7927,15 @@ zeGetDriverExpProcAddrTable(
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if (ZE_MAJOR_VERSION(tracing_layer::context.version) != ZE_MAJOR_VERSION(version) ||
-        ZE_MINOR_VERSION(tracing_layer::context.version) > ZE_MINOR_VERSION(version))
+    if (tracing_layer::context.version < version)
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
-    dditable.pfnRTASFormatCompatibilityCheckExp          = pDdiTable->pfnRTASFormatCompatibilityCheckExp;
-    pDdiTable->pfnRTASFormatCompatibilityCheckExp        = tracing_layer::zeDriverRTASFormatCompatibilityCheckExp;
-
+    if (version >= ZE_API_VERSION_1_7) {
+        dditable.pfnRTASFormatCompatibilityCheckExp          = pDdiTable->pfnRTASFormatCompatibilityCheckExp;
+        pDdiTable->pfnRTASFormatCompatibilityCheckExp        = tracing_layer::zeDriverRTASFormatCompatibilityCheckExp;
+    }
     return result;
 }
 
@@ -7945,75 +7958,95 @@ zeGetDeviceProcAddrTable(
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if (ZE_MAJOR_VERSION(tracing_layer::context.version) != ZE_MAJOR_VERSION(version) ||
-        ZE_MINOR_VERSION(tracing_layer::context.version) > ZE_MINOR_VERSION(version))
+    if (tracing_layer::context.version < version)
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
-    dditable.pfnGet                                      = pDdiTable->pfnGet;
-    pDdiTable->pfnGet                                    = tracing_layer::zeDeviceGet;
-
-    dditable.pfnGetSubDevices                            = pDdiTable->pfnGetSubDevices;
-    pDdiTable->pfnGetSubDevices                          = tracing_layer::zeDeviceGetSubDevices;
-
-    dditable.pfnGetProperties                            = pDdiTable->pfnGetProperties;
-    pDdiTable->pfnGetProperties                          = tracing_layer::zeDeviceGetProperties;
-
-    dditable.pfnGetComputeProperties                     = pDdiTable->pfnGetComputeProperties;
-    pDdiTable->pfnGetComputeProperties                   = tracing_layer::zeDeviceGetComputeProperties;
-
-    dditable.pfnGetModuleProperties                      = pDdiTable->pfnGetModuleProperties;
-    pDdiTable->pfnGetModuleProperties                    = tracing_layer::zeDeviceGetModuleProperties;
-
-    dditable.pfnGetCommandQueueGroupProperties           = pDdiTable->pfnGetCommandQueueGroupProperties;
-    pDdiTable->pfnGetCommandQueueGroupProperties         = tracing_layer::zeDeviceGetCommandQueueGroupProperties;
-
-    dditable.pfnGetMemoryProperties                      = pDdiTable->pfnGetMemoryProperties;
-    pDdiTable->pfnGetMemoryProperties                    = tracing_layer::zeDeviceGetMemoryProperties;
-
-    dditable.pfnGetMemoryAccessProperties                = pDdiTable->pfnGetMemoryAccessProperties;
-    pDdiTable->pfnGetMemoryAccessProperties              = tracing_layer::zeDeviceGetMemoryAccessProperties;
-
-    dditable.pfnGetCacheProperties                       = pDdiTable->pfnGetCacheProperties;
-    pDdiTable->pfnGetCacheProperties                     = tracing_layer::zeDeviceGetCacheProperties;
-
-    dditable.pfnGetImageProperties                       = pDdiTable->pfnGetImageProperties;
-    pDdiTable->pfnGetImageProperties                     = tracing_layer::zeDeviceGetImageProperties;
-
-    dditable.pfnGetExternalMemoryProperties              = pDdiTable->pfnGetExternalMemoryProperties;
-    pDdiTable->pfnGetExternalMemoryProperties            = tracing_layer::zeDeviceGetExternalMemoryProperties;
-
-    dditable.pfnGetP2PProperties                         = pDdiTable->pfnGetP2PProperties;
-    pDdiTable->pfnGetP2PProperties                       = tracing_layer::zeDeviceGetP2PProperties;
-
-    dditable.pfnCanAccessPeer                            = pDdiTable->pfnCanAccessPeer;
-    pDdiTable->pfnCanAccessPeer                          = tracing_layer::zeDeviceCanAccessPeer;
-
-    dditable.pfnGetStatus                                = pDdiTable->pfnGetStatus;
-    pDdiTable->pfnGetStatus                              = tracing_layer::zeDeviceGetStatus;
-
-    dditable.pfnGetGlobalTimestamps                      = pDdiTable->pfnGetGlobalTimestamps;
-    pDdiTable->pfnGetGlobalTimestamps                    = tracing_layer::zeDeviceGetGlobalTimestamps;
-
-    dditable.pfnImportExternalSemaphoreExt               = pDdiTable->pfnImportExternalSemaphoreExt;
-    pDdiTable->pfnImportExternalSemaphoreExt             = tracing_layer::zeDeviceImportExternalSemaphoreExt;
-
-    dditable.pfnReleaseExternalSemaphoreExt              = pDdiTable->pfnReleaseExternalSemaphoreExt;
-    pDdiTable->pfnReleaseExternalSemaphoreExt            = tracing_layer::zeDeviceReleaseExternalSemaphoreExt;
-
-    dditable.pfnReserveCacheExt                          = pDdiTable->pfnReserveCacheExt;
-    pDdiTable->pfnReserveCacheExt                        = tracing_layer::zeDeviceReserveCacheExt;
-
-    dditable.pfnSetCacheAdviceExt                        = pDdiTable->pfnSetCacheAdviceExt;
-    pDdiTable->pfnSetCacheAdviceExt                      = tracing_layer::zeDeviceSetCacheAdviceExt;
-
-    dditable.pfnPciGetPropertiesExt                      = pDdiTable->pfnPciGetPropertiesExt;
-    pDdiTable->pfnPciGetPropertiesExt                    = tracing_layer::zeDevicePciGetPropertiesExt;
-
-    dditable.pfnGetRootDevice                            = pDdiTable->pfnGetRootDevice;
-    pDdiTable->pfnGetRootDevice                          = tracing_layer::zeDeviceGetRootDevice;
-
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnGet                                      = pDdiTable->pfnGet;
+        pDdiTable->pfnGet                                    = tracing_layer::zeDeviceGet;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnGetSubDevices                            = pDdiTable->pfnGetSubDevices;
+        pDdiTable->pfnGetSubDevices                          = tracing_layer::zeDeviceGetSubDevices;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnGetProperties                            = pDdiTable->pfnGetProperties;
+        pDdiTable->pfnGetProperties                          = tracing_layer::zeDeviceGetProperties;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnGetComputeProperties                     = pDdiTable->pfnGetComputeProperties;
+        pDdiTable->pfnGetComputeProperties                   = tracing_layer::zeDeviceGetComputeProperties;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnGetModuleProperties                      = pDdiTable->pfnGetModuleProperties;
+        pDdiTable->pfnGetModuleProperties                    = tracing_layer::zeDeviceGetModuleProperties;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnGetCommandQueueGroupProperties           = pDdiTable->pfnGetCommandQueueGroupProperties;
+        pDdiTable->pfnGetCommandQueueGroupProperties         = tracing_layer::zeDeviceGetCommandQueueGroupProperties;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnGetMemoryProperties                      = pDdiTable->pfnGetMemoryProperties;
+        pDdiTable->pfnGetMemoryProperties                    = tracing_layer::zeDeviceGetMemoryProperties;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnGetMemoryAccessProperties                = pDdiTable->pfnGetMemoryAccessProperties;
+        pDdiTable->pfnGetMemoryAccessProperties              = tracing_layer::zeDeviceGetMemoryAccessProperties;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnGetCacheProperties                       = pDdiTable->pfnGetCacheProperties;
+        pDdiTable->pfnGetCacheProperties                     = tracing_layer::zeDeviceGetCacheProperties;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnGetImageProperties                       = pDdiTable->pfnGetImageProperties;
+        pDdiTable->pfnGetImageProperties                     = tracing_layer::zeDeviceGetImageProperties;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnGetExternalMemoryProperties              = pDdiTable->pfnGetExternalMemoryProperties;
+        pDdiTable->pfnGetExternalMemoryProperties            = tracing_layer::zeDeviceGetExternalMemoryProperties;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnGetP2PProperties                         = pDdiTable->pfnGetP2PProperties;
+        pDdiTable->pfnGetP2PProperties                       = tracing_layer::zeDeviceGetP2PProperties;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnCanAccessPeer                            = pDdiTable->pfnCanAccessPeer;
+        pDdiTable->pfnCanAccessPeer                          = tracing_layer::zeDeviceCanAccessPeer;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnGetStatus                                = pDdiTable->pfnGetStatus;
+        pDdiTable->pfnGetStatus                              = tracing_layer::zeDeviceGetStatus;
+    }
+    if (version >= ZE_API_VERSION_1_1) {
+        dditable.pfnGetGlobalTimestamps                      = pDdiTable->pfnGetGlobalTimestamps;
+        pDdiTable->pfnGetGlobalTimestamps                    = tracing_layer::zeDeviceGetGlobalTimestamps;
+    }
+    if (version >= ZE_API_VERSION_1_12) {
+        dditable.pfnImportExternalSemaphoreExt               = pDdiTable->pfnImportExternalSemaphoreExt;
+        pDdiTable->pfnImportExternalSemaphoreExt             = tracing_layer::zeDeviceImportExternalSemaphoreExt;
+    }
+    if (version >= ZE_API_VERSION_1_12) {
+        dditable.pfnReleaseExternalSemaphoreExt              = pDdiTable->pfnReleaseExternalSemaphoreExt;
+        pDdiTable->pfnReleaseExternalSemaphoreExt            = tracing_layer::zeDeviceReleaseExternalSemaphoreExt;
+    }
+    if (version >= ZE_API_VERSION_1_2) {
+        dditable.pfnReserveCacheExt                          = pDdiTable->pfnReserveCacheExt;
+        pDdiTable->pfnReserveCacheExt                        = tracing_layer::zeDeviceReserveCacheExt;
+    }
+    if (version >= ZE_API_VERSION_1_2) {
+        dditable.pfnSetCacheAdviceExt                        = pDdiTable->pfnSetCacheAdviceExt;
+        pDdiTable->pfnSetCacheAdviceExt                      = tracing_layer::zeDeviceSetCacheAdviceExt;
+    }
+    if (version >= ZE_API_VERSION_1_3) {
+        dditable.pfnPciGetPropertiesExt                      = pDdiTable->pfnPciGetPropertiesExt;
+        pDdiTable->pfnPciGetPropertiesExt                    = tracing_layer::zeDevicePciGetPropertiesExt;
+    }
+    if (version >= ZE_API_VERSION_1_7) {
+        dditable.pfnGetRootDevice                            = pDdiTable->pfnGetRootDevice;
+        pDdiTable->pfnGetRootDevice                          = tracing_layer::zeDeviceGetRootDevice;
+    }
     return result;
 }
 
@@ -8036,15 +8069,15 @@ zeGetDeviceExpProcAddrTable(
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if (ZE_MAJOR_VERSION(tracing_layer::context.version) != ZE_MAJOR_VERSION(version) ||
-        ZE_MINOR_VERSION(tracing_layer::context.version) > ZE_MINOR_VERSION(version))
+    if (tracing_layer::context.version < version)
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
-    dditable.pfnGetFabricVertexExp                       = pDdiTable->pfnGetFabricVertexExp;
-    pDdiTable->pfnGetFabricVertexExp                     = tracing_layer::zeDeviceGetFabricVertexExp;
-
+    if (version >= ZE_API_VERSION_1_4) {
+        dditable.pfnGetFabricVertexExp                       = pDdiTable->pfnGetFabricVertexExp;
+        pDdiTable->pfnGetFabricVertexExp                     = tracing_layer::zeDeviceGetFabricVertexExp;
+    }
     return result;
 }
 
@@ -8067,39 +8100,47 @@ zeGetContextProcAddrTable(
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if (ZE_MAJOR_VERSION(tracing_layer::context.version) != ZE_MAJOR_VERSION(version) ||
-        ZE_MINOR_VERSION(tracing_layer::context.version) > ZE_MINOR_VERSION(version))
+    if (tracing_layer::context.version < version)
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
-    dditable.pfnCreate                                   = pDdiTable->pfnCreate;
-    pDdiTable->pfnCreate                                 = tracing_layer::zeContextCreate;
-
-    dditable.pfnDestroy                                  = pDdiTable->pfnDestroy;
-    pDdiTable->pfnDestroy                                = tracing_layer::zeContextDestroy;
-
-    dditable.pfnGetStatus                                = pDdiTable->pfnGetStatus;
-    pDdiTable->pfnGetStatus                              = tracing_layer::zeContextGetStatus;
-
-    dditable.pfnSystemBarrier                            = pDdiTable->pfnSystemBarrier;
-    pDdiTable->pfnSystemBarrier                          = tracing_layer::zeContextSystemBarrier;
-
-    dditable.pfnMakeMemoryResident                       = pDdiTable->pfnMakeMemoryResident;
-    pDdiTable->pfnMakeMemoryResident                     = tracing_layer::zeContextMakeMemoryResident;
-
-    dditable.pfnEvictMemory                              = pDdiTable->pfnEvictMemory;
-    pDdiTable->pfnEvictMemory                            = tracing_layer::zeContextEvictMemory;
-
-    dditable.pfnMakeImageResident                        = pDdiTable->pfnMakeImageResident;
-    pDdiTable->pfnMakeImageResident                      = tracing_layer::zeContextMakeImageResident;
-
-    dditable.pfnEvictImage                               = pDdiTable->pfnEvictImage;
-    pDdiTable->pfnEvictImage                             = tracing_layer::zeContextEvictImage;
-
-    dditable.pfnCreateEx                                 = pDdiTable->pfnCreateEx;
-    pDdiTable->pfnCreateEx                               = tracing_layer::zeContextCreateEx;
-
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnCreate                                   = pDdiTable->pfnCreate;
+        pDdiTable->pfnCreate                                 = tracing_layer::zeContextCreate;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnDestroy                                  = pDdiTable->pfnDestroy;
+        pDdiTable->pfnDestroy                                = tracing_layer::zeContextDestroy;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnGetStatus                                = pDdiTable->pfnGetStatus;
+        pDdiTable->pfnGetStatus                              = tracing_layer::zeContextGetStatus;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnSystemBarrier                            = pDdiTable->pfnSystemBarrier;
+        pDdiTable->pfnSystemBarrier                          = tracing_layer::zeContextSystemBarrier;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnMakeMemoryResident                       = pDdiTable->pfnMakeMemoryResident;
+        pDdiTable->pfnMakeMemoryResident                     = tracing_layer::zeContextMakeMemoryResident;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnEvictMemory                              = pDdiTable->pfnEvictMemory;
+        pDdiTable->pfnEvictMemory                            = tracing_layer::zeContextEvictMemory;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnMakeImageResident                        = pDdiTable->pfnMakeImageResident;
+        pDdiTable->pfnMakeImageResident                      = tracing_layer::zeContextMakeImageResident;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnEvictImage                               = pDdiTable->pfnEvictImage;
+        pDdiTable->pfnEvictImage                             = tracing_layer::zeContextEvictImage;
+    }
+    if (version >= ZE_API_VERSION_1_1) {
+        dditable.pfnCreateEx                                 = pDdiTable->pfnCreateEx;
+        pDdiTable->pfnCreateEx                               = tracing_layer::zeContextCreateEx;
+    }
     return result;
 }
 
@@ -8122,30 +8163,35 @@ zeGetCommandQueueProcAddrTable(
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if (ZE_MAJOR_VERSION(tracing_layer::context.version) != ZE_MAJOR_VERSION(version) ||
-        ZE_MINOR_VERSION(tracing_layer::context.version) > ZE_MINOR_VERSION(version))
+    if (tracing_layer::context.version < version)
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
-    dditable.pfnCreate                                   = pDdiTable->pfnCreate;
-    pDdiTable->pfnCreate                                 = tracing_layer::zeCommandQueueCreate;
-
-    dditable.pfnDestroy                                  = pDdiTable->pfnDestroy;
-    pDdiTable->pfnDestroy                                = tracing_layer::zeCommandQueueDestroy;
-
-    dditable.pfnExecuteCommandLists                      = pDdiTable->pfnExecuteCommandLists;
-    pDdiTable->pfnExecuteCommandLists                    = tracing_layer::zeCommandQueueExecuteCommandLists;
-
-    dditable.pfnSynchronize                              = pDdiTable->pfnSynchronize;
-    pDdiTable->pfnSynchronize                            = tracing_layer::zeCommandQueueSynchronize;
-
-    dditable.pfnGetOrdinal                               = pDdiTable->pfnGetOrdinal;
-    pDdiTable->pfnGetOrdinal                             = tracing_layer::zeCommandQueueGetOrdinal;
-
-    dditable.pfnGetIndex                                 = pDdiTable->pfnGetIndex;
-    pDdiTable->pfnGetIndex                               = tracing_layer::zeCommandQueueGetIndex;
-
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnCreate                                   = pDdiTable->pfnCreate;
+        pDdiTable->pfnCreate                                 = tracing_layer::zeCommandQueueCreate;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnDestroy                                  = pDdiTable->pfnDestroy;
+        pDdiTable->pfnDestroy                                = tracing_layer::zeCommandQueueDestroy;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnExecuteCommandLists                      = pDdiTable->pfnExecuteCommandLists;
+        pDdiTable->pfnExecuteCommandLists                    = tracing_layer::zeCommandQueueExecuteCommandLists;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnSynchronize                              = pDdiTable->pfnSynchronize;
+        pDdiTable->pfnSynchronize                            = tracing_layer::zeCommandQueueSynchronize;
+    }
+    if (version >= ZE_API_VERSION_1_9) {
+        dditable.pfnGetOrdinal                               = pDdiTable->pfnGetOrdinal;
+        pDdiTable->pfnGetOrdinal                             = tracing_layer::zeCommandQueueGetOrdinal;
+    }
+    if (version >= ZE_API_VERSION_1_9) {
+        dditable.pfnGetIndex                                 = pDdiTable->pfnGetIndex;
+        pDdiTable->pfnGetIndex                               = tracing_layer::zeCommandQueueGetIndex;
+    }
     return result;
 }
 
@@ -8168,120 +8214,155 @@ zeGetCommandListProcAddrTable(
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if (ZE_MAJOR_VERSION(tracing_layer::context.version) != ZE_MAJOR_VERSION(version) ||
-        ZE_MINOR_VERSION(tracing_layer::context.version) > ZE_MINOR_VERSION(version))
+    if (tracing_layer::context.version < version)
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
-    dditable.pfnCreate                                   = pDdiTable->pfnCreate;
-    pDdiTable->pfnCreate                                 = tracing_layer::zeCommandListCreate;
-
-    dditable.pfnCreateImmediate                          = pDdiTable->pfnCreateImmediate;
-    pDdiTable->pfnCreateImmediate                        = tracing_layer::zeCommandListCreateImmediate;
-
-    dditable.pfnDestroy                                  = pDdiTable->pfnDestroy;
-    pDdiTable->pfnDestroy                                = tracing_layer::zeCommandListDestroy;
-
-    dditable.pfnClose                                    = pDdiTable->pfnClose;
-    pDdiTable->pfnClose                                  = tracing_layer::zeCommandListClose;
-
-    dditable.pfnReset                                    = pDdiTable->pfnReset;
-    pDdiTable->pfnReset                                  = tracing_layer::zeCommandListReset;
-
-    dditable.pfnAppendWriteGlobalTimestamp               = pDdiTable->pfnAppendWriteGlobalTimestamp;
-    pDdiTable->pfnAppendWriteGlobalTimestamp             = tracing_layer::zeCommandListAppendWriteGlobalTimestamp;
-
-    dditable.pfnAppendBarrier                            = pDdiTable->pfnAppendBarrier;
-    pDdiTable->pfnAppendBarrier                          = tracing_layer::zeCommandListAppendBarrier;
-
-    dditable.pfnAppendMemoryRangesBarrier                = pDdiTable->pfnAppendMemoryRangesBarrier;
-    pDdiTable->pfnAppendMemoryRangesBarrier              = tracing_layer::zeCommandListAppendMemoryRangesBarrier;
-
-    dditable.pfnAppendMemoryCopy                         = pDdiTable->pfnAppendMemoryCopy;
-    pDdiTable->pfnAppendMemoryCopy                       = tracing_layer::zeCommandListAppendMemoryCopy;
-
-    dditable.pfnAppendMemoryFill                         = pDdiTable->pfnAppendMemoryFill;
-    pDdiTable->pfnAppendMemoryFill                       = tracing_layer::zeCommandListAppendMemoryFill;
-
-    dditable.pfnAppendMemoryCopyRegion                   = pDdiTable->pfnAppendMemoryCopyRegion;
-    pDdiTable->pfnAppendMemoryCopyRegion                 = tracing_layer::zeCommandListAppendMemoryCopyRegion;
-
-    dditable.pfnAppendMemoryCopyFromContext              = pDdiTable->pfnAppendMemoryCopyFromContext;
-    pDdiTable->pfnAppendMemoryCopyFromContext            = tracing_layer::zeCommandListAppendMemoryCopyFromContext;
-
-    dditable.pfnAppendImageCopy                          = pDdiTable->pfnAppendImageCopy;
-    pDdiTable->pfnAppendImageCopy                        = tracing_layer::zeCommandListAppendImageCopy;
-
-    dditable.pfnAppendImageCopyRegion                    = pDdiTable->pfnAppendImageCopyRegion;
-    pDdiTable->pfnAppendImageCopyRegion                  = tracing_layer::zeCommandListAppendImageCopyRegion;
-
-    dditable.pfnAppendImageCopyToMemory                  = pDdiTable->pfnAppendImageCopyToMemory;
-    pDdiTable->pfnAppendImageCopyToMemory                = tracing_layer::zeCommandListAppendImageCopyToMemory;
-
-    dditable.pfnAppendImageCopyFromMemory                = pDdiTable->pfnAppendImageCopyFromMemory;
-    pDdiTable->pfnAppendImageCopyFromMemory              = tracing_layer::zeCommandListAppendImageCopyFromMemory;
-
-    dditable.pfnAppendMemoryPrefetch                     = pDdiTable->pfnAppendMemoryPrefetch;
-    pDdiTable->pfnAppendMemoryPrefetch                   = tracing_layer::zeCommandListAppendMemoryPrefetch;
-
-    dditable.pfnAppendMemAdvise                          = pDdiTable->pfnAppendMemAdvise;
-    pDdiTable->pfnAppendMemAdvise                        = tracing_layer::zeCommandListAppendMemAdvise;
-
-    dditable.pfnAppendSignalEvent                        = pDdiTable->pfnAppendSignalEvent;
-    pDdiTable->pfnAppendSignalEvent                      = tracing_layer::zeCommandListAppendSignalEvent;
-
-    dditable.pfnAppendWaitOnEvents                       = pDdiTable->pfnAppendWaitOnEvents;
-    pDdiTable->pfnAppendWaitOnEvents                     = tracing_layer::zeCommandListAppendWaitOnEvents;
-
-    dditable.pfnAppendEventReset                         = pDdiTable->pfnAppendEventReset;
-    pDdiTable->pfnAppendEventReset                       = tracing_layer::zeCommandListAppendEventReset;
-
-    dditable.pfnAppendQueryKernelTimestamps              = pDdiTable->pfnAppendQueryKernelTimestamps;
-    pDdiTable->pfnAppendQueryKernelTimestamps            = tracing_layer::zeCommandListAppendQueryKernelTimestamps;
-
-    dditable.pfnAppendLaunchKernel                       = pDdiTable->pfnAppendLaunchKernel;
-    pDdiTable->pfnAppendLaunchKernel                     = tracing_layer::zeCommandListAppendLaunchKernel;
-
-    dditable.pfnAppendLaunchCooperativeKernel            = pDdiTable->pfnAppendLaunchCooperativeKernel;
-    pDdiTable->pfnAppendLaunchCooperativeKernel          = tracing_layer::zeCommandListAppendLaunchCooperativeKernel;
-
-    dditable.pfnAppendLaunchKernelIndirect               = pDdiTable->pfnAppendLaunchKernelIndirect;
-    pDdiTable->pfnAppendLaunchKernelIndirect             = tracing_layer::zeCommandListAppendLaunchKernelIndirect;
-
-    dditable.pfnAppendLaunchMultipleKernelsIndirect      = pDdiTable->pfnAppendLaunchMultipleKernelsIndirect;
-    pDdiTable->pfnAppendLaunchMultipleKernelsIndirect    = tracing_layer::zeCommandListAppendLaunchMultipleKernelsIndirect;
-
-    dditable.pfnAppendSignalExternalSemaphoreExt         = pDdiTable->pfnAppendSignalExternalSemaphoreExt;
-    pDdiTable->pfnAppendSignalExternalSemaphoreExt       = tracing_layer::zeCommandListAppendSignalExternalSemaphoreExt;
-
-    dditable.pfnAppendWaitExternalSemaphoreExt           = pDdiTable->pfnAppendWaitExternalSemaphoreExt;
-    pDdiTable->pfnAppendWaitExternalSemaphoreExt         = tracing_layer::zeCommandListAppendWaitExternalSemaphoreExt;
-
-    dditable.pfnAppendImageCopyToMemoryExt               = pDdiTable->pfnAppendImageCopyToMemoryExt;
-    pDdiTable->pfnAppendImageCopyToMemoryExt             = tracing_layer::zeCommandListAppendImageCopyToMemoryExt;
-
-    dditable.pfnAppendImageCopyFromMemoryExt             = pDdiTable->pfnAppendImageCopyFromMemoryExt;
-    pDdiTable->pfnAppendImageCopyFromMemoryExt           = tracing_layer::zeCommandListAppendImageCopyFromMemoryExt;
-
-    dditable.pfnHostSynchronize                          = pDdiTable->pfnHostSynchronize;
-    pDdiTable->pfnHostSynchronize                        = tracing_layer::zeCommandListHostSynchronize;
-
-    dditable.pfnGetDeviceHandle                          = pDdiTable->pfnGetDeviceHandle;
-    pDdiTable->pfnGetDeviceHandle                        = tracing_layer::zeCommandListGetDeviceHandle;
-
-    dditable.pfnGetContextHandle                         = pDdiTable->pfnGetContextHandle;
-    pDdiTable->pfnGetContextHandle                       = tracing_layer::zeCommandListGetContextHandle;
-
-    dditable.pfnGetOrdinal                               = pDdiTable->pfnGetOrdinal;
-    pDdiTable->pfnGetOrdinal                             = tracing_layer::zeCommandListGetOrdinal;
-
-    dditable.pfnImmediateGetIndex                        = pDdiTable->pfnImmediateGetIndex;
-    pDdiTable->pfnImmediateGetIndex                      = tracing_layer::zeCommandListImmediateGetIndex;
-
-    dditable.pfnIsImmediate                              = pDdiTable->pfnIsImmediate;
-    pDdiTable->pfnIsImmediate                            = tracing_layer::zeCommandListIsImmediate;
-
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnCreate                                   = pDdiTable->pfnCreate;
+        pDdiTable->pfnCreate                                 = tracing_layer::zeCommandListCreate;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnCreateImmediate                          = pDdiTable->pfnCreateImmediate;
+        pDdiTable->pfnCreateImmediate                        = tracing_layer::zeCommandListCreateImmediate;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnDestroy                                  = pDdiTable->pfnDestroy;
+        pDdiTable->pfnDestroy                                = tracing_layer::zeCommandListDestroy;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnClose                                    = pDdiTable->pfnClose;
+        pDdiTable->pfnClose                                  = tracing_layer::zeCommandListClose;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnReset                                    = pDdiTable->pfnReset;
+        pDdiTable->pfnReset                                  = tracing_layer::zeCommandListReset;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnAppendWriteGlobalTimestamp               = pDdiTable->pfnAppendWriteGlobalTimestamp;
+        pDdiTable->pfnAppendWriteGlobalTimestamp             = tracing_layer::zeCommandListAppendWriteGlobalTimestamp;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnAppendBarrier                            = pDdiTable->pfnAppendBarrier;
+        pDdiTable->pfnAppendBarrier                          = tracing_layer::zeCommandListAppendBarrier;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnAppendMemoryRangesBarrier                = pDdiTable->pfnAppendMemoryRangesBarrier;
+        pDdiTable->pfnAppendMemoryRangesBarrier              = tracing_layer::zeCommandListAppendMemoryRangesBarrier;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnAppendMemoryCopy                         = pDdiTable->pfnAppendMemoryCopy;
+        pDdiTable->pfnAppendMemoryCopy                       = tracing_layer::zeCommandListAppendMemoryCopy;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnAppendMemoryFill                         = pDdiTable->pfnAppendMemoryFill;
+        pDdiTable->pfnAppendMemoryFill                       = tracing_layer::zeCommandListAppendMemoryFill;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnAppendMemoryCopyRegion                   = pDdiTable->pfnAppendMemoryCopyRegion;
+        pDdiTable->pfnAppendMemoryCopyRegion                 = tracing_layer::zeCommandListAppendMemoryCopyRegion;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnAppendMemoryCopyFromContext              = pDdiTable->pfnAppendMemoryCopyFromContext;
+        pDdiTable->pfnAppendMemoryCopyFromContext            = tracing_layer::zeCommandListAppendMemoryCopyFromContext;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnAppendImageCopy                          = pDdiTable->pfnAppendImageCopy;
+        pDdiTable->pfnAppendImageCopy                        = tracing_layer::zeCommandListAppendImageCopy;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnAppendImageCopyRegion                    = pDdiTable->pfnAppendImageCopyRegion;
+        pDdiTable->pfnAppendImageCopyRegion                  = tracing_layer::zeCommandListAppendImageCopyRegion;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnAppendImageCopyToMemory                  = pDdiTable->pfnAppendImageCopyToMemory;
+        pDdiTable->pfnAppendImageCopyToMemory                = tracing_layer::zeCommandListAppendImageCopyToMemory;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnAppendImageCopyFromMemory                = pDdiTable->pfnAppendImageCopyFromMemory;
+        pDdiTable->pfnAppendImageCopyFromMemory              = tracing_layer::zeCommandListAppendImageCopyFromMemory;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnAppendMemoryPrefetch                     = pDdiTable->pfnAppendMemoryPrefetch;
+        pDdiTable->pfnAppendMemoryPrefetch                   = tracing_layer::zeCommandListAppendMemoryPrefetch;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnAppendMemAdvise                          = pDdiTable->pfnAppendMemAdvise;
+        pDdiTable->pfnAppendMemAdvise                        = tracing_layer::zeCommandListAppendMemAdvise;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnAppendSignalEvent                        = pDdiTable->pfnAppendSignalEvent;
+        pDdiTable->pfnAppendSignalEvent                      = tracing_layer::zeCommandListAppendSignalEvent;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnAppendWaitOnEvents                       = pDdiTable->pfnAppendWaitOnEvents;
+        pDdiTable->pfnAppendWaitOnEvents                     = tracing_layer::zeCommandListAppendWaitOnEvents;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnAppendEventReset                         = pDdiTable->pfnAppendEventReset;
+        pDdiTable->pfnAppendEventReset                       = tracing_layer::zeCommandListAppendEventReset;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnAppendQueryKernelTimestamps              = pDdiTable->pfnAppendQueryKernelTimestamps;
+        pDdiTable->pfnAppendQueryKernelTimestamps            = tracing_layer::zeCommandListAppendQueryKernelTimestamps;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnAppendLaunchKernel                       = pDdiTable->pfnAppendLaunchKernel;
+        pDdiTable->pfnAppendLaunchKernel                     = tracing_layer::zeCommandListAppendLaunchKernel;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnAppendLaunchCooperativeKernel            = pDdiTable->pfnAppendLaunchCooperativeKernel;
+        pDdiTable->pfnAppendLaunchCooperativeKernel          = tracing_layer::zeCommandListAppendLaunchCooperativeKernel;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnAppendLaunchKernelIndirect               = pDdiTable->pfnAppendLaunchKernelIndirect;
+        pDdiTable->pfnAppendLaunchKernelIndirect             = tracing_layer::zeCommandListAppendLaunchKernelIndirect;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnAppendLaunchMultipleKernelsIndirect      = pDdiTable->pfnAppendLaunchMultipleKernelsIndirect;
+        pDdiTable->pfnAppendLaunchMultipleKernelsIndirect    = tracing_layer::zeCommandListAppendLaunchMultipleKernelsIndirect;
+    }
+    if (version >= ZE_API_VERSION_1_12) {
+        dditable.pfnAppendSignalExternalSemaphoreExt         = pDdiTable->pfnAppendSignalExternalSemaphoreExt;
+        pDdiTable->pfnAppendSignalExternalSemaphoreExt       = tracing_layer::zeCommandListAppendSignalExternalSemaphoreExt;
+    }
+    if (version >= ZE_API_VERSION_1_12) {
+        dditable.pfnAppendWaitExternalSemaphoreExt           = pDdiTable->pfnAppendWaitExternalSemaphoreExt;
+        pDdiTable->pfnAppendWaitExternalSemaphoreExt         = tracing_layer::zeCommandListAppendWaitExternalSemaphoreExt;
+    }
+    if (version >= ZE_API_VERSION_1_3) {
+        dditable.pfnAppendImageCopyToMemoryExt               = pDdiTable->pfnAppendImageCopyToMemoryExt;
+        pDdiTable->pfnAppendImageCopyToMemoryExt             = tracing_layer::zeCommandListAppendImageCopyToMemoryExt;
+    }
+    if (version >= ZE_API_VERSION_1_3) {
+        dditable.pfnAppendImageCopyFromMemoryExt             = pDdiTable->pfnAppendImageCopyFromMemoryExt;
+        pDdiTable->pfnAppendImageCopyFromMemoryExt           = tracing_layer::zeCommandListAppendImageCopyFromMemoryExt;
+    }
+    if (version >= ZE_API_VERSION_1_6) {
+        dditable.pfnHostSynchronize                          = pDdiTable->pfnHostSynchronize;
+        pDdiTable->pfnHostSynchronize                        = tracing_layer::zeCommandListHostSynchronize;
+    }
+    if (version >= ZE_API_VERSION_1_9) {
+        dditable.pfnGetDeviceHandle                          = pDdiTable->pfnGetDeviceHandle;
+        pDdiTable->pfnGetDeviceHandle                        = tracing_layer::zeCommandListGetDeviceHandle;
+    }
+    if (version >= ZE_API_VERSION_1_9) {
+        dditable.pfnGetContextHandle                         = pDdiTable->pfnGetContextHandle;
+        pDdiTable->pfnGetContextHandle                       = tracing_layer::zeCommandListGetContextHandle;
+    }
+    if (version >= ZE_API_VERSION_1_9) {
+        dditable.pfnGetOrdinal                               = pDdiTable->pfnGetOrdinal;
+        pDdiTable->pfnGetOrdinal                             = tracing_layer::zeCommandListGetOrdinal;
+    }
+    if (version >= ZE_API_VERSION_1_9) {
+        dditable.pfnImmediateGetIndex                        = pDdiTable->pfnImmediateGetIndex;
+        pDdiTable->pfnImmediateGetIndex                      = tracing_layer::zeCommandListImmediateGetIndex;
+    }
+    if (version >= ZE_API_VERSION_1_9) {
+        dditable.pfnIsImmediate                              = pDdiTable->pfnIsImmediate;
+        pDdiTable->pfnIsImmediate                            = tracing_layer::zeCommandListIsImmediate;
+    }
     return result;
 }
 
@@ -8304,36 +8385,43 @@ zeGetCommandListExpProcAddrTable(
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if (ZE_MAJOR_VERSION(tracing_layer::context.version) != ZE_MAJOR_VERSION(version) ||
-        ZE_MINOR_VERSION(tracing_layer::context.version) > ZE_MINOR_VERSION(version))
+    if (tracing_layer::context.version < version)
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
-    dditable.pfnGetNextCommandIdWithKernelsExp           = pDdiTable->pfnGetNextCommandIdWithKernelsExp;
-    pDdiTable->pfnGetNextCommandIdWithKernelsExp         = tracing_layer::zeCommandListGetNextCommandIdWithKernelsExp;
-
-    dditable.pfnUpdateMutableCommandKernelsExp           = pDdiTable->pfnUpdateMutableCommandKernelsExp;
-    pDdiTable->pfnUpdateMutableCommandKernelsExp         = tracing_layer::zeCommandListUpdateMutableCommandKernelsExp;
-
-    dditable.pfnCreateCloneExp                           = pDdiTable->pfnCreateCloneExp;
-    pDdiTable->pfnCreateCloneExp                         = tracing_layer::zeCommandListCreateCloneExp;
-
-    dditable.pfnImmediateAppendCommandListsExp           = pDdiTable->pfnImmediateAppendCommandListsExp;
-    pDdiTable->pfnImmediateAppendCommandListsExp         = tracing_layer::zeCommandListImmediateAppendCommandListsExp;
-
-    dditable.pfnGetNextCommandIdExp                      = pDdiTable->pfnGetNextCommandIdExp;
-    pDdiTable->pfnGetNextCommandIdExp                    = tracing_layer::zeCommandListGetNextCommandIdExp;
-
-    dditable.pfnUpdateMutableCommandsExp                 = pDdiTable->pfnUpdateMutableCommandsExp;
-    pDdiTable->pfnUpdateMutableCommandsExp               = tracing_layer::zeCommandListUpdateMutableCommandsExp;
-
-    dditable.pfnUpdateMutableCommandSignalEventExp       = pDdiTable->pfnUpdateMutableCommandSignalEventExp;
-    pDdiTable->pfnUpdateMutableCommandSignalEventExp     = tracing_layer::zeCommandListUpdateMutableCommandSignalEventExp;
-
-    dditable.pfnUpdateMutableCommandWaitEventsExp        = pDdiTable->pfnUpdateMutableCommandWaitEventsExp;
-    pDdiTable->pfnUpdateMutableCommandWaitEventsExp      = tracing_layer::zeCommandListUpdateMutableCommandWaitEventsExp;
-
+    if (version >= ZE_API_VERSION_1_10) {
+        dditable.pfnGetNextCommandIdWithKernelsExp           = pDdiTable->pfnGetNextCommandIdWithKernelsExp;
+        pDdiTable->pfnGetNextCommandIdWithKernelsExp         = tracing_layer::zeCommandListGetNextCommandIdWithKernelsExp;
+    }
+    if (version >= ZE_API_VERSION_1_10) {
+        dditable.pfnUpdateMutableCommandKernelsExp           = pDdiTable->pfnUpdateMutableCommandKernelsExp;
+        pDdiTable->pfnUpdateMutableCommandKernelsExp         = tracing_layer::zeCommandListUpdateMutableCommandKernelsExp;
+    }
+    if (version >= ZE_API_VERSION_1_9) {
+        dditable.pfnCreateCloneExp                           = pDdiTable->pfnCreateCloneExp;
+        pDdiTable->pfnCreateCloneExp                         = tracing_layer::zeCommandListCreateCloneExp;
+    }
+    if (version >= ZE_API_VERSION_1_9) {
+        dditable.pfnImmediateAppendCommandListsExp           = pDdiTable->pfnImmediateAppendCommandListsExp;
+        pDdiTable->pfnImmediateAppendCommandListsExp         = tracing_layer::zeCommandListImmediateAppendCommandListsExp;
+    }
+    if (version >= ZE_API_VERSION_1_9) {
+        dditable.pfnGetNextCommandIdExp                      = pDdiTable->pfnGetNextCommandIdExp;
+        pDdiTable->pfnGetNextCommandIdExp                    = tracing_layer::zeCommandListGetNextCommandIdExp;
+    }
+    if (version >= ZE_API_VERSION_1_9) {
+        dditable.pfnUpdateMutableCommandsExp                 = pDdiTable->pfnUpdateMutableCommandsExp;
+        pDdiTable->pfnUpdateMutableCommandsExp               = tracing_layer::zeCommandListUpdateMutableCommandsExp;
+    }
+    if (version >= ZE_API_VERSION_1_9) {
+        dditable.pfnUpdateMutableCommandSignalEventExp       = pDdiTable->pfnUpdateMutableCommandSignalEventExp;
+        pDdiTable->pfnUpdateMutableCommandSignalEventExp     = tracing_layer::zeCommandListUpdateMutableCommandSignalEventExp;
+    }
+    if (version >= ZE_API_VERSION_1_9) {
+        dditable.pfnUpdateMutableCommandWaitEventsExp        = pDdiTable->pfnUpdateMutableCommandWaitEventsExp;
+        pDdiTable->pfnUpdateMutableCommandWaitEventsExp      = tracing_layer::zeCommandListUpdateMutableCommandWaitEventsExp;
+    }
     return result;
 }
 
@@ -8356,45 +8444,55 @@ zeGetEventProcAddrTable(
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if (ZE_MAJOR_VERSION(tracing_layer::context.version) != ZE_MAJOR_VERSION(version) ||
-        ZE_MINOR_VERSION(tracing_layer::context.version) > ZE_MINOR_VERSION(version))
+    if (tracing_layer::context.version < version)
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
-    dditable.pfnCreate                                   = pDdiTable->pfnCreate;
-    pDdiTable->pfnCreate                                 = tracing_layer::zeEventCreate;
-
-    dditable.pfnDestroy                                  = pDdiTable->pfnDestroy;
-    pDdiTable->pfnDestroy                                = tracing_layer::zeEventDestroy;
-
-    dditable.pfnHostSignal                               = pDdiTable->pfnHostSignal;
-    pDdiTable->pfnHostSignal                             = tracing_layer::zeEventHostSignal;
-
-    dditable.pfnHostSynchronize                          = pDdiTable->pfnHostSynchronize;
-    pDdiTable->pfnHostSynchronize                        = tracing_layer::zeEventHostSynchronize;
-
-    dditable.pfnQueryStatus                              = pDdiTable->pfnQueryStatus;
-    pDdiTable->pfnQueryStatus                            = tracing_layer::zeEventQueryStatus;
-
-    dditable.pfnHostReset                                = pDdiTable->pfnHostReset;
-    pDdiTable->pfnHostReset                              = tracing_layer::zeEventHostReset;
-
-    dditable.pfnQueryKernelTimestamp                     = pDdiTable->pfnQueryKernelTimestamp;
-    pDdiTable->pfnQueryKernelTimestamp                   = tracing_layer::zeEventQueryKernelTimestamp;
-
-    dditable.pfnQueryKernelTimestampsExt                 = pDdiTable->pfnQueryKernelTimestampsExt;
-    pDdiTable->pfnQueryKernelTimestampsExt               = tracing_layer::zeEventQueryKernelTimestampsExt;
-
-    dditable.pfnGetEventPool                             = pDdiTable->pfnGetEventPool;
-    pDdiTable->pfnGetEventPool                           = tracing_layer::zeEventGetEventPool;
-
-    dditable.pfnGetSignalScope                           = pDdiTable->pfnGetSignalScope;
-    pDdiTable->pfnGetSignalScope                         = tracing_layer::zeEventGetSignalScope;
-
-    dditable.pfnGetWaitScope                             = pDdiTable->pfnGetWaitScope;
-    pDdiTable->pfnGetWaitScope                           = tracing_layer::zeEventGetWaitScope;
-
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnCreate                                   = pDdiTable->pfnCreate;
+        pDdiTable->pfnCreate                                 = tracing_layer::zeEventCreate;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnDestroy                                  = pDdiTable->pfnDestroy;
+        pDdiTable->pfnDestroy                                = tracing_layer::zeEventDestroy;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnHostSignal                               = pDdiTable->pfnHostSignal;
+        pDdiTable->pfnHostSignal                             = tracing_layer::zeEventHostSignal;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnHostSynchronize                          = pDdiTable->pfnHostSynchronize;
+        pDdiTable->pfnHostSynchronize                        = tracing_layer::zeEventHostSynchronize;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnQueryStatus                              = pDdiTable->pfnQueryStatus;
+        pDdiTable->pfnQueryStatus                            = tracing_layer::zeEventQueryStatus;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnHostReset                                = pDdiTable->pfnHostReset;
+        pDdiTable->pfnHostReset                              = tracing_layer::zeEventHostReset;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnQueryKernelTimestamp                     = pDdiTable->pfnQueryKernelTimestamp;
+        pDdiTable->pfnQueryKernelTimestamp                   = tracing_layer::zeEventQueryKernelTimestamp;
+    }
+    if (version >= ZE_API_VERSION_1_6) {
+        dditable.pfnQueryKernelTimestampsExt                 = pDdiTable->pfnQueryKernelTimestampsExt;
+        pDdiTable->pfnQueryKernelTimestampsExt               = tracing_layer::zeEventQueryKernelTimestampsExt;
+    }
+    if (version >= ZE_API_VERSION_1_9) {
+        dditable.pfnGetEventPool                             = pDdiTable->pfnGetEventPool;
+        pDdiTable->pfnGetEventPool                           = tracing_layer::zeEventGetEventPool;
+    }
+    if (version >= ZE_API_VERSION_1_9) {
+        dditable.pfnGetSignalScope                           = pDdiTable->pfnGetSignalScope;
+        pDdiTable->pfnGetSignalScope                         = tracing_layer::zeEventGetSignalScope;
+    }
+    if (version >= ZE_API_VERSION_1_9) {
+        dditable.pfnGetWaitScope                             = pDdiTable->pfnGetWaitScope;
+        pDdiTable->pfnGetWaitScope                           = tracing_layer::zeEventGetWaitScope;
+    }
     return result;
 }
 
@@ -8417,15 +8515,15 @@ zeGetEventExpProcAddrTable(
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if (ZE_MAJOR_VERSION(tracing_layer::context.version) != ZE_MAJOR_VERSION(version) ||
-        ZE_MINOR_VERSION(tracing_layer::context.version) > ZE_MINOR_VERSION(version))
+    if (tracing_layer::context.version < version)
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
-    dditable.pfnQueryTimestampsExp                       = pDdiTable->pfnQueryTimestampsExp;
-    pDdiTable->pfnQueryTimestampsExp                     = tracing_layer::zeEventQueryTimestampsExp;
-
+    if (version >= ZE_API_VERSION_1_2) {
+        dditable.pfnQueryTimestampsExp                       = pDdiTable->pfnQueryTimestampsExp;
+        pDdiTable->pfnQueryTimestampsExp                     = tracing_layer::zeEventQueryTimestampsExp;
+    }
     return result;
 }
 
@@ -8448,36 +8546,43 @@ zeGetEventPoolProcAddrTable(
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if (ZE_MAJOR_VERSION(tracing_layer::context.version) != ZE_MAJOR_VERSION(version) ||
-        ZE_MINOR_VERSION(tracing_layer::context.version) > ZE_MINOR_VERSION(version))
+    if (tracing_layer::context.version < version)
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
-    dditable.pfnCreate                                   = pDdiTable->pfnCreate;
-    pDdiTable->pfnCreate                                 = tracing_layer::zeEventPoolCreate;
-
-    dditable.pfnDestroy                                  = pDdiTable->pfnDestroy;
-    pDdiTable->pfnDestroy                                = tracing_layer::zeEventPoolDestroy;
-
-    dditable.pfnGetIpcHandle                             = pDdiTable->pfnGetIpcHandle;
-    pDdiTable->pfnGetIpcHandle                           = tracing_layer::zeEventPoolGetIpcHandle;
-
-    dditable.pfnOpenIpcHandle                            = pDdiTable->pfnOpenIpcHandle;
-    pDdiTable->pfnOpenIpcHandle                          = tracing_layer::zeEventPoolOpenIpcHandle;
-
-    dditable.pfnCloseIpcHandle                           = pDdiTable->pfnCloseIpcHandle;
-    pDdiTable->pfnCloseIpcHandle                         = tracing_layer::zeEventPoolCloseIpcHandle;
-
-    dditable.pfnPutIpcHandle                             = pDdiTable->pfnPutIpcHandle;
-    pDdiTable->pfnPutIpcHandle                           = tracing_layer::zeEventPoolPutIpcHandle;
-
-    dditable.pfnGetContextHandle                         = pDdiTable->pfnGetContextHandle;
-    pDdiTable->pfnGetContextHandle                       = tracing_layer::zeEventPoolGetContextHandle;
-
-    dditable.pfnGetFlags                                 = pDdiTable->pfnGetFlags;
-    pDdiTable->pfnGetFlags                               = tracing_layer::zeEventPoolGetFlags;
-
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnCreate                                   = pDdiTable->pfnCreate;
+        pDdiTable->pfnCreate                                 = tracing_layer::zeEventPoolCreate;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnDestroy                                  = pDdiTable->pfnDestroy;
+        pDdiTable->pfnDestroy                                = tracing_layer::zeEventPoolDestroy;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnGetIpcHandle                             = pDdiTable->pfnGetIpcHandle;
+        pDdiTable->pfnGetIpcHandle                           = tracing_layer::zeEventPoolGetIpcHandle;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnOpenIpcHandle                            = pDdiTable->pfnOpenIpcHandle;
+        pDdiTable->pfnOpenIpcHandle                          = tracing_layer::zeEventPoolOpenIpcHandle;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnCloseIpcHandle                           = pDdiTable->pfnCloseIpcHandle;
+        pDdiTable->pfnCloseIpcHandle                         = tracing_layer::zeEventPoolCloseIpcHandle;
+    }
+    if (version >= ZE_API_VERSION_1_6) {
+        dditable.pfnPutIpcHandle                             = pDdiTable->pfnPutIpcHandle;
+        pDdiTable->pfnPutIpcHandle                           = tracing_layer::zeEventPoolPutIpcHandle;
+    }
+    if (version >= ZE_API_VERSION_1_9) {
+        dditable.pfnGetContextHandle                         = pDdiTable->pfnGetContextHandle;
+        pDdiTable->pfnGetContextHandle                       = tracing_layer::zeEventPoolGetContextHandle;
+    }
+    if (version >= ZE_API_VERSION_1_9) {
+        dditable.pfnGetFlags                                 = pDdiTable->pfnGetFlags;
+        pDdiTable->pfnGetFlags                               = tracing_layer::zeEventPoolGetFlags;
+    }
     return result;
 }
 
@@ -8500,27 +8605,31 @@ zeGetFenceProcAddrTable(
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if (ZE_MAJOR_VERSION(tracing_layer::context.version) != ZE_MAJOR_VERSION(version) ||
-        ZE_MINOR_VERSION(tracing_layer::context.version) > ZE_MINOR_VERSION(version))
+    if (tracing_layer::context.version < version)
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
-    dditable.pfnCreate                                   = pDdiTable->pfnCreate;
-    pDdiTable->pfnCreate                                 = tracing_layer::zeFenceCreate;
-
-    dditable.pfnDestroy                                  = pDdiTable->pfnDestroy;
-    pDdiTable->pfnDestroy                                = tracing_layer::zeFenceDestroy;
-
-    dditable.pfnHostSynchronize                          = pDdiTable->pfnHostSynchronize;
-    pDdiTable->pfnHostSynchronize                        = tracing_layer::zeFenceHostSynchronize;
-
-    dditable.pfnQueryStatus                              = pDdiTable->pfnQueryStatus;
-    pDdiTable->pfnQueryStatus                            = tracing_layer::zeFenceQueryStatus;
-
-    dditable.pfnReset                                    = pDdiTable->pfnReset;
-    pDdiTable->pfnReset                                  = tracing_layer::zeFenceReset;
-
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnCreate                                   = pDdiTable->pfnCreate;
+        pDdiTable->pfnCreate                                 = tracing_layer::zeFenceCreate;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnDestroy                                  = pDdiTable->pfnDestroy;
+        pDdiTable->pfnDestroy                                = tracing_layer::zeFenceDestroy;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnHostSynchronize                          = pDdiTable->pfnHostSynchronize;
+        pDdiTable->pfnHostSynchronize                        = tracing_layer::zeFenceHostSynchronize;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnQueryStatus                              = pDdiTable->pfnQueryStatus;
+        pDdiTable->pfnQueryStatus                            = tracing_layer::zeFenceQueryStatus;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnReset                                    = pDdiTable->pfnReset;
+        pDdiTable->pfnReset                                  = tracing_layer::zeFenceReset;
+    }
     return result;
 }
 
@@ -8543,27 +8652,31 @@ zeGetImageProcAddrTable(
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if (ZE_MAJOR_VERSION(tracing_layer::context.version) != ZE_MAJOR_VERSION(version) ||
-        ZE_MINOR_VERSION(tracing_layer::context.version) > ZE_MINOR_VERSION(version))
+    if (tracing_layer::context.version < version)
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
-    dditable.pfnGetProperties                            = pDdiTable->pfnGetProperties;
-    pDdiTable->pfnGetProperties                          = tracing_layer::zeImageGetProperties;
-
-    dditable.pfnCreate                                   = pDdiTable->pfnCreate;
-    pDdiTable->pfnCreate                                 = tracing_layer::zeImageCreate;
-
-    dditable.pfnDestroy                                  = pDdiTable->pfnDestroy;
-    pDdiTable->pfnDestroy                                = tracing_layer::zeImageDestroy;
-
-    dditable.pfnGetAllocPropertiesExt                    = pDdiTable->pfnGetAllocPropertiesExt;
-    pDdiTable->pfnGetAllocPropertiesExt                  = tracing_layer::zeImageGetAllocPropertiesExt;
-
-    dditable.pfnViewCreateExt                            = pDdiTable->pfnViewCreateExt;
-    pDdiTable->pfnViewCreateExt                          = tracing_layer::zeImageViewCreateExt;
-
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnGetProperties                            = pDdiTable->pfnGetProperties;
+        pDdiTable->pfnGetProperties                          = tracing_layer::zeImageGetProperties;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnCreate                                   = pDdiTable->pfnCreate;
+        pDdiTable->pfnCreate                                 = tracing_layer::zeImageCreate;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnDestroy                                  = pDdiTable->pfnDestroy;
+        pDdiTable->pfnDestroy                                = tracing_layer::zeImageDestroy;
+    }
+    if (version >= ZE_API_VERSION_1_3) {
+        dditable.pfnGetAllocPropertiesExt                    = pDdiTable->pfnGetAllocPropertiesExt;
+        pDdiTable->pfnGetAllocPropertiesExt                  = tracing_layer::zeImageGetAllocPropertiesExt;
+    }
+    if (version >= ZE_API_VERSION_1_5) {
+        dditable.pfnViewCreateExt                            = pDdiTable->pfnViewCreateExt;
+        pDdiTable->pfnViewCreateExt                          = tracing_layer::zeImageViewCreateExt;
+    }
     return result;
 }
 
@@ -8586,21 +8699,23 @@ zeGetImageExpProcAddrTable(
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if (ZE_MAJOR_VERSION(tracing_layer::context.version) != ZE_MAJOR_VERSION(version) ||
-        ZE_MINOR_VERSION(tracing_layer::context.version) > ZE_MINOR_VERSION(version))
+    if (tracing_layer::context.version < version)
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
-    dditable.pfnGetMemoryPropertiesExp                   = pDdiTable->pfnGetMemoryPropertiesExp;
-    pDdiTable->pfnGetMemoryPropertiesExp                 = tracing_layer::zeImageGetMemoryPropertiesExp;
-
-    dditable.pfnViewCreateExp                            = pDdiTable->pfnViewCreateExp;
-    pDdiTable->pfnViewCreateExp                          = tracing_layer::zeImageViewCreateExp;
-
-    dditable.pfnGetDeviceOffsetExp                       = pDdiTable->pfnGetDeviceOffsetExp;
-    pDdiTable->pfnGetDeviceOffsetExp                     = tracing_layer::zeImageGetDeviceOffsetExp;
-
+    if (version >= ZE_API_VERSION_1_2) {
+        dditable.pfnGetMemoryPropertiesExp                   = pDdiTable->pfnGetMemoryPropertiesExp;
+        pDdiTable->pfnGetMemoryPropertiesExp                 = tracing_layer::zeImageGetMemoryPropertiesExp;
+    }
+    if (version >= ZE_API_VERSION_1_2) {
+        dditable.pfnViewCreateExp                            = pDdiTable->pfnViewCreateExp;
+        pDdiTable->pfnViewCreateExp                          = tracing_layer::zeImageViewCreateExp;
+    }
+    if (version >= ZE_API_VERSION_1_9) {
+        dditable.pfnGetDeviceOffsetExp                       = pDdiTable->pfnGetDeviceOffsetExp;
+        pDdiTable->pfnGetDeviceOffsetExp                     = tracing_layer::zeImageGetDeviceOffsetExp;
+    }
     return result;
 }
 
@@ -8623,48 +8738,59 @@ zeGetKernelProcAddrTable(
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if (ZE_MAJOR_VERSION(tracing_layer::context.version) != ZE_MAJOR_VERSION(version) ||
-        ZE_MINOR_VERSION(tracing_layer::context.version) > ZE_MINOR_VERSION(version))
+    if (tracing_layer::context.version < version)
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
-    dditable.pfnCreate                                   = pDdiTable->pfnCreate;
-    pDdiTable->pfnCreate                                 = tracing_layer::zeKernelCreate;
-
-    dditable.pfnDestroy                                  = pDdiTable->pfnDestroy;
-    pDdiTable->pfnDestroy                                = tracing_layer::zeKernelDestroy;
-
-    dditable.pfnSetCacheConfig                           = pDdiTable->pfnSetCacheConfig;
-    pDdiTable->pfnSetCacheConfig                         = tracing_layer::zeKernelSetCacheConfig;
-
-    dditable.pfnSetGroupSize                             = pDdiTable->pfnSetGroupSize;
-    pDdiTable->pfnSetGroupSize                           = tracing_layer::zeKernelSetGroupSize;
-
-    dditable.pfnSuggestGroupSize                         = pDdiTable->pfnSuggestGroupSize;
-    pDdiTable->pfnSuggestGroupSize                       = tracing_layer::zeKernelSuggestGroupSize;
-
-    dditable.pfnSuggestMaxCooperativeGroupCount          = pDdiTable->pfnSuggestMaxCooperativeGroupCount;
-    pDdiTable->pfnSuggestMaxCooperativeGroupCount        = tracing_layer::zeKernelSuggestMaxCooperativeGroupCount;
-
-    dditable.pfnSetArgumentValue                         = pDdiTable->pfnSetArgumentValue;
-    pDdiTable->pfnSetArgumentValue                       = tracing_layer::zeKernelSetArgumentValue;
-
-    dditable.pfnSetIndirectAccess                        = pDdiTable->pfnSetIndirectAccess;
-    pDdiTable->pfnSetIndirectAccess                      = tracing_layer::zeKernelSetIndirectAccess;
-
-    dditable.pfnGetIndirectAccess                        = pDdiTable->pfnGetIndirectAccess;
-    pDdiTable->pfnGetIndirectAccess                      = tracing_layer::zeKernelGetIndirectAccess;
-
-    dditable.pfnGetSourceAttributes                      = pDdiTable->pfnGetSourceAttributes;
-    pDdiTable->pfnGetSourceAttributes                    = tracing_layer::zeKernelGetSourceAttributes;
-
-    dditable.pfnGetProperties                            = pDdiTable->pfnGetProperties;
-    pDdiTable->pfnGetProperties                          = tracing_layer::zeKernelGetProperties;
-
-    dditable.pfnGetName                                  = pDdiTable->pfnGetName;
-    pDdiTable->pfnGetName                                = tracing_layer::zeKernelGetName;
-
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnCreate                                   = pDdiTable->pfnCreate;
+        pDdiTable->pfnCreate                                 = tracing_layer::zeKernelCreate;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnDestroy                                  = pDdiTable->pfnDestroy;
+        pDdiTable->pfnDestroy                                = tracing_layer::zeKernelDestroy;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnSetCacheConfig                           = pDdiTable->pfnSetCacheConfig;
+        pDdiTable->pfnSetCacheConfig                         = tracing_layer::zeKernelSetCacheConfig;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnSetGroupSize                             = pDdiTable->pfnSetGroupSize;
+        pDdiTable->pfnSetGroupSize                           = tracing_layer::zeKernelSetGroupSize;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnSuggestGroupSize                         = pDdiTable->pfnSuggestGroupSize;
+        pDdiTable->pfnSuggestGroupSize                       = tracing_layer::zeKernelSuggestGroupSize;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnSuggestMaxCooperativeGroupCount          = pDdiTable->pfnSuggestMaxCooperativeGroupCount;
+        pDdiTable->pfnSuggestMaxCooperativeGroupCount        = tracing_layer::zeKernelSuggestMaxCooperativeGroupCount;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnSetArgumentValue                         = pDdiTable->pfnSetArgumentValue;
+        pDdiTable->pfnSetArgumentValue                       = tracing_layer::zeKernelSetArgumentValue;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnSetIndirectAccess                        = pDdiTable->pfnSetIndirectAccess;
+        pDdiTable->pfnSetIndirectAccess                      = tracing_layer::zeKernelSetIndirectAccess;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnGetIndirectAccess                        = pDdiTable->pfnGetIndirectAccess;
+        pDdiTable->pfnGetIndirectAccess                      = tracing_layer::zeKernelGetIndirectAccess;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnGetSourceAttributes                      = pDdiTable->pfnGetSourceAttributes;
+        pDdiTable->pfnGetSourceAttributes                    = tracing_layer::zeKernelGetSourceAttributes;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnGetProperties                            = pDdiTable->pfnGetProperties;
+        pDdiTable->pfnGetProperties                          = tracing_layer::zeKernelGetProperties;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnGetName                                  = pDdiTable->pfnGetName;
+        pDdiTable->pfnGetName                                = tracing_layer::zeKernelGetName;
+    }
     return result;
 }
 
@@ -8687,21 +8813,23 @@ zeGetKernelExpProcAddrTable(
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if (ZE_MAJOR_VERSION(tracing_layer::context.version) != ZE_MAJOR_VERSION(version) ||
-        ZE_MINOR_VERSION(tracing_layer::context.version) > ZE_MINOR_VERSION(version))
+    if (tracing_layer::context.version < version)
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
-    dditable.pfnSetGlobalOffsetExp                       = pDdiTable->pfnSetGlobalOffsetExp;
-    pDdiTable->pfnSetGlobalOffsetExp                     = tracing_layer::zeKernelSetGlobalOffsetExp;
-
-    dditable.pfnGetBinaryExp                             = pDdiTable->pfnGetBinaryExp;
-    pDdiTable->pfnGetBinaryExp                           = tracing_layer::zeKernelGetBinaryExp;
-
-    dditable.pfnSchedulingHintExp                        = pDdiTable->pfnSchedulingHintExp;
-    pDdiTable->pfnSchedulingHintExp                      = tracing_layer::zeKernelSchedulingHintExp;
-
+    if (version >= ZE_API_VERSION_1_1) {
+        dditable.pfnSetGlobalOffsetExp                       = pDdiTable->pfnSetGlobalOffsetExp;
+        pDdiTable->pfnSetGlobalOffsetExp                     = tracing_layer::zeKernelSetGlobalOffsetExp;
+    }
+    if (version >= ZE_API_VERSION_1_11) {
+        dditable.pfnGetBinaryExp                             = pDdiTable->pfnGetBinaryExp;
+        pDdiTable->pfnGetBinaryExp                           = tracing_layer::zeKernelGetBinaryExp;
+    }
+    if (version >= ZE_API_VERSION_1_2) {
+        dditable.pfnSchedulingHintExp                        = pDdiTable->pfnSchedulingHintExp;
+        pDdiTable->pfnSchedulingHintExp                      = tracing_layer::zeKernelSchedulingHintExp;
+    }
     return result;
 }
 
@@ -8724,48 +8852,59 @@ zeGetMemProcAddrTable(
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if (ZE_MAJOR_VERSION(tracing_layer::context.version) != ZE_MAJOR_VERSION(version) ||
-        ZE_MINOR_VERSION(tracing_layer::context.version) > ZE_MINOR_VERSION(version))
+    if (tracing_layer::context.version < version)
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
-    dditable.pfnAllocShared                              = pDdiTable->pfnAllocShared;
-    pDdiTable->pfnAllocShared                            = tracing_layer::zeMemAllocShared;
-
-    dditable.pfnAllocDevice                              = pDdiTable->pfnAllocDevice;
-    pDdiTable->pfnAllocDevice                            = tracing_layer::zeMemAllocDevice;
-
-    dditable.pfnAllocHost                                = pDdiTable->pfnAllocHost;
-    pDdiTable->pfnAllocHost                              = tracing_layer::zeMemAllocHost;
-
-    dditable.pfnFree                                     = pDdiTable->pfnFree;
-    pDdiTable->pfnFree                                   = tracing_layer::zeMemFree;
-
-    dditable.pfnGetAllocProperties                       = pDdiTable->pfnGetAllocProperties;
-    pDdiTable->pfnGetAllocProperties                     = tracing_layer::zeMemGetAllocProperties;
-
-    dditable.pfnGetAddressRange                          = pDdiTable->pfnGetAddressRange;
-    pDdiTable->pfnGetAddressRange                        = tracing_layer::zeMemGetAddressRange;
-
-    dditable.pfnGetIpcHandle                             = pDdiTable->pfnGetIpcHandle;
-    pDdiTable->pfnGetIpcHandle                           = tracing_layer::zeMemGetIpcHandle;
-
-    dditable.pfnOpenIpcHandle                            = pDdiTable->pfnOpenIpcHandle;
-    pDdiTable->pfnOpenIpcHandle                          = tracing_layer::zeMemOpenIpcHandle;
-
-    dditable.pfnCloseIpcHandle                           = pDdiTable->pfnCloseIpcHandle;
-    pDdiTable->pfnCloseIpcHandle                         = tracing_layer::zeMemCloseIpcHandle;
-
-    dditable.pfnFreeExt                                  = pDdiTable->pfnFreeExt;
-    pDdiTable->pfnFreeExt                                = tracing_layer::zeMemFreeExt;
-
-    dditable.pfnPutIpcHandle                             = pDdiTable->pfnPutIpcHandle;
-    pDdiTable->pfnPutIpcHandle                           = tracing_layer::zeMemPutIpcHandle;
-
-    dditable.pfnGetPitchFor2dImage                       = pDdiTable->pfnGetPitchFor2dImage;
-    pDdiTable->pfnGetPitchFor2dImage                     = tracing_layer::zeMemGetPitchFor2dImage;
-
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnAllocShared                              = pDdiTable->pfnAllocShared;
+        pDdiTable->pfnAllocShared                            = tracing_layer::zeMemAllocShared;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnAllocDevice                              = pDdiTable->pfnAllocDevice;
+        pDdiTable->pfnAllocDevice                            = tracing_layer::zeMemAllocDevice;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnAllocHost                                = pDdiTable->pfnAllocHost;
+        pDdiTable->pfnAllocHost                              = tracing_layer::zeMemAllocHost;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnFree                                     = pDdiTable->pfnFree;
+        pDdiTable->pfnFree                                   = tracing_layer::zeMemFree;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnGetAllocProperties                       = pDdiTable->pfnGetAllocProperties;
+        pDdiTable->pfnGetAllocProperties                     = tracing_layer::zeMemGetAllocProperties;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnGetAddressRange                          = pDdiTable->pfnGetAddressRange;
+        pDdiTable->pfnGetAddressRange                        = tracing_layer::zeMemGetAddressRange;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnGetIpcHandle                             = pDdiTable->pfnGetIpcHandle;
+        pDdiTable->pfnGetIpcHandle                           = tracing_layer::zeMemGetIpcHandle;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnOpenIpcHandle                            = pDdiTable->pfnOpenIpcHandle;
+        pDdiTable->pfnOpenIpcHandle                          = tracing_layer::zeMemOpenIpcHandle;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnCloseIpcHandle                           = pDdiTable->pfnCloseIpcHandle;
+        pDdiTable->pfnCloseIpcHandle                         = tracing_layer::zeMemCloseIpcHandle;
+    }
+    if (version >= ZE_API_VERSION_1_3) {
+        dditable.pfnFreeExt                                  = pDdiTable->pfnFreeExt;
+        pDdiTable->pfnFreeExt                                = tracing_layer::zeMemFreeExt;
+    }
+    if (version >= ZE_API_VERSION_1_6) {
+        dditable.pfnPutIpcHandle                             = pDdiTable->pfnPutIpcHandle;
+        pDdiTable->pfnPutIpcHandle                           = tracing_layer::zeMemPutIpcHandle;
+    }
+    if (version >= ZE_API_VERSION_1_9) {
+        dditable.pfnGetPitchFor2dImage                       = pDdiTable->pfnGetPitchFor2dImage;
+        pDdiTable->pfnGetPitchFor2dImage                     = tracing_layer::zeMemGetPitchFor2dImage;
+    }
     return result;
 }
 
@@ -8788,24 +8927,27 @@ zeGetMemExpProcAddrTable(
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if (ZE_MAJOR_VERSION(tracing_layer::context.version) != ZE_MAJOR_VERSION(version) ||
-        ZE_MINOR_VERSION(tracing_layer::context.version) > ZE_MINOR_VERSION(version))
+    if (tracing_layer::context.version < version)
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
-    dditable.pfnGetIpcHandleFromFileDescriptorExp        = pDdiTable->pfnGetIpcHandleFromFileDescriptorExp;
-    pDdiTable->pfnGetIpcHandleFromFileDescriptorExp      = tracing_layer::zeMemGetIpcHandleFromFileDescriptorExp;
-
-    dditable.pfnGetFileDescriptorFromIpcHandleExp        = pDdiTable->pfnGetFileDescriptorFromIpcHandleExp;
-    pDdiTable->pfnGetFileDescriptorFromIpcHandleExp      = tracing_layer::zeMemGetFileDescriptorFromIpcHandleExp;
-
-    dditable.pfnSetAtomicAccessAttributeExp              = pDdiTable->pfnSetAtomicAccessAttributeExp;
-    pDdiTable->pfnSetAtomicAccessAttributeExp            = tracing_layer::zeMemSetAtomicAccessAttributeExp;
-
-    dditable.pfnGetAtomicAccessAttributeExp              = pDdiTable->pfnGetAtomicAccessAttributeExp;
-    pDdiTable->pfnGetAtomicAccessAttributeExp            = tracing_layer::zeMemGetAtomicAccessAttributeExp;
-
+    if (version >= ZE_API_VERSION_1_6) {
+        dditable.pfnGetIpcHandleFromFileDescriptorExp        = pDdiTable->pfnGetIpcHandleFromFileDescriptorExp;
+        pDdiTable->pfnGetIpcHandleFromFileDescriptorExp      = tracing_layer::zeMemGetIpcHandleFromFileDescriptorExp;
+    }
+    if (version >= ZE_API_VERSION_1_6) {
+        dditable.pfnGetFileDescriptorFromIpcHandleExp        = pDdiTable->pfnGetFileDescriptorFromIpcHandleExp;
+        pDdiTable->pfnGetFileDescriptorFromIpcHandleExp      = tracing_layer::zeMemGetFileDescriptorFromIpcHandleExp;
+    }
+    if (version >= ZE_API_VERSION_1_7) {
+        dditable.pfnSetAtomicAccessAttributeExp              = pDdiTable->pfnSetAtomicAccessAttributeExp;
+        pDdiTable->pfnSetAtomicAccessAttributeExp            = tracing_layer::zeMemSetAtomicAccessAttributeExp;
+    }
+    if (version >= ZE_API_VERSION_1_7) {
+        dditable.pfnGetAtomicAccessAttributeExp              = pDdiTable->pfnGetAtomicAccessAttributeExp;
+        pDdiTable->pfnGetAtomicAccessAttributeExp            = tracing_layer::zeMemGetAtomicAccessAttributeExp;
+    }
     return result;
 }
 
@@ -8828,39 +8970,47 @@ zeGetModuleProcAddrTable(
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if (ZE_MAJOR_VERSION(tracing_layer::context.version) != ZE_MAJOR_VERSION(version) ||
-        ZE_MINOR_VERSION(tracing_layer::context.version) > ZE_MINOR_VERSION(version))
+    if (tracing_layer::context.version < version)
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
-    dditable.pfnCreate                                   = pDdiTable->pfnCreate;
-    pDdiTable->pfnCreate                                 = tracing_layer::zeModuleCreate;
-
-    dditable.pfnDestroy                                  = pDdiTable->pfnDestroy;
-    pDdiTable->pfnDestroy                                = tracing_layer::zeModuleDestroy;
-
-    dditable.pfnDynamicLink                              = pDdiTable->pfnDynamicLink;
-    pDdiTable->pfnDynamicLink                            = tracing_layer::zeModuleDynamicLink;
-
-    dditable.pfnGetNativeBinary                          = pDdiTable->pfnGetNativeBinary;
-    pDdiTable->pfnGetNativeBinary                        = tracing_layer::zeModuleGetNativeBinary;
-
-    dditable.pfnGetGlobalPointer                         = pDdiTable->pfnGetGlobalPointer;
-    pDdiTable->pfnGetGlobalPointer                       = tracing_layer::zeModuleGetGlobalPointer;
-
-    dditable.pfnGetKernelNames                           = pDdiTable->pfnGetKernelNames;
-    pDdiTable->pfnGetKernelNames                         = tracing_layer::zeModuleGetKernelNames;
-
-    dditable.pfnGetProperties                            = pDdiTable->pfnGetProperties;
-    pDdiTable->pfnGetProperties                          = tracing_layer::zeModuleGetProperties;
-
-    dditable.pfnGetFunctionPointer                       = pDdiTable->pfnGetFunctionPointer;
-    pDdiTable->pfnGetFunctionPointer                     = tracing_layer::zeModuleGetFunctionPointer;
-
-    dditable.pfnInspectLinkageExt                        = pDdiTable->pfnInspectLinkageExt;
-    pDdiTable->pfnInspectLinkageExt                      = tracing_layer::zeModuleInspectLinkageExt;
-
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnCreate                                   = pDdiTable->pfnCreate;
+        pDdiTable->pfnCreate                                 = tracing_layer::zeModuleCreate;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnDestroy                                  = pDdiTable->pfnDestroy;
+        pDdiTable->pfnDestroy                                = tracing_layer::zeModuleDestroy;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnDynamicLink                              = pDdiTable->pfnDynamicLink;
+        pDdiTable->pfnDynamicLink                            = tracing_layer::zeModuleDynamicLink;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnGetNativeBinary                          = pDdiTable->pfnGetNativeBinary;
+        pDdiTable->pfnGetNativeBinary                        = tracing_layer::zeModuleGetNativeBinary;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnGetGlobalPointer                         = pDdiTable->pfnGetGlobalPointer;
+        pDdiTable->pfnGetGlobalPointer                       = tracing_layer::zeModuleGetGlobalPointer;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnGetKernelNames                           = pDdiTable->pfnGetKernelNames;
+        pDdiTable->pfnGetKernelNames                         = tracing_layer::zeModuleGetKernelNames;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnGetProperties                            = pDdiTable->pfnGetProperties;
+        pDdiTable->pfnGetProperties                          = tracing_layer::zeModuleGetProperties;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnGetFunctionPointer                       = pDdiTable->pfnGetFunctionPointer;
+        pDdiTable->pfnGetFunctionPointer                     = tracing_layer::zeModuleGetFunctionPointer;
+    }
+    if (version >= ZE_API_VERSION_1_3) {
+        dditable.pfnInspectLinkageExt                        = pDdiTable->pfnInspectLinkageExt;
+        pDdiTable->pfnInspectLinkageExt                      = tracing_layer::zeModuleInspectLinkageExt;
+    }
     return result;
 }
 
@@ -8883,18 +9033,19 @@ zeGetModuleBuildLogProcAddrTable(
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if (ZE_MAJOR_VERSION(tracing_layer::context.version) != ZE_MAJOR_VERSION(version) ||
-        ZE_MINOR_VERSION(tracing_layer::context.version) > ZE_MINOR_VERSION(version))
+    if (tracing_layer::context.version < version)
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
-    dditable.pfnDestroy                                  = pDdiTable->pfnDestroy;
-    pDdiTable->pfnDestroy                                = tracing_layer::zeModuleBuildLogDestroy;
-
-    dditable.pfnGetString                                = pDdiTable->pfnGetString;
-    pDdiTable->pfnGetString                              = tracing_layer::zeModuleBuildLogGetString;
-
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnDestroy                                  = pDdiTable->pfnDestroy;
+        pDdiTable->pfnDestroy                                = tracing_layer::zeModuleBuildLogDestroy;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnGetString                                = pDdiTable->pfnGetString;
+        pDdiTable->pfnGetString                              = tracing_layer::zeModuleBuildLogGetString;
+    }
     return result;
 }
 
@@ -8917,18 +9068,19 @@ zeGetPhysicalMemProcAddrTable(
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if (ZE_MAJOR_VERSION(tracing_layer::context.version) != ZE_MAJOR_VERSION(version) ||
-        ZE_MINOR_VERSION(tracing_layer::context.version) > ZE_MINOR_VERSION(version))
+    if (tracing_layer::context.version < version)
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
-    dditable.pfnCreate                                   = pDdiTable->pfnCreate;
-    pDdiTable->pfnCreate                                 = tracing_layer::zePhysicalMemCreate;
-
-    dditable.pfnDestroy                                  = pDdiTable->pfnDestroy;
-    pDdiTable->pfnDestroy                                = tracing_layer::zePhysicalMemDestroy;
-
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnCreate                                   = pDdiTable->pfnCreate;
+        pDdiTable->pfnCreate                                 = tracing_layer::zePhysicalMemCreate;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnDestroy                                  = pDdiTable->pfnDestroy;
+        pDdiTable->pfnDestroy                                = tracing_layer::zePhysicalMemDestroy;
+    }
     return result;
 }
 
@@ -8951,18 +9103,19 @@ zeGetSamplerProcAddrTable(
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if (ZE_MAJOR_VERSION(tracing_layer::context.version) != ZE_MAJOR_VERSION(version) ||
-        ZE_MINOR_VERSION(tracing_layer::context.version) > ZE_MINOR_VERSION(version))
+    if (tracing_layer::context.version < version)
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
-    dditable.pfnCreate                                   = pDdiTable->pfnCreate;
-    pDdiTable->pfnCreate                                 = tracing_layer::zeSamplerCreate;
-
-    dditable.pfnDestroy                                  = pDdiTable->pfnDestroy;
-    pDdiTable->pfnDestroy                                = tracing_layer::zeSamplerDestroy;
-
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnCreate                                   = pDdiTable->pfnCreate;
+        pDdiTable->pfnCreate                                 = tracing_layer::zeSamplerCreate;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnDestroy                                  = pDdiTable->pfnDestroy;
+        pDdiTable->pfnDestroy                                = tracing_layer::zeSamplerDestroy;
+    }
     return result;
 }
 
@@ -8985,33 +9138,39 @@ zeGetVirtualMemProcAddrTable(
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if (ZE_MAJOR_VERSION(tracing_layer::context.version) != ZE_MAJOR_VERSION(version) ||
-        ZE_MINOR_VERSION(tracing_layer::context.version) > ZE_MINOR_VERSION(version))
+    if (tracing_layer::context.version < version)
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
-    dditable.pfnReserve                                  = pDdiTable->pfnReserve;
-    pDdiTable->pfnReserve                                = tracing_layer::zeVirtualMemReserve;
-
-    dditable.pfnFree                                     = pDdiTable->pfnFree;
-    pDdiTable->pfnFree                                   = tracing_layer::zeVirtualMemFree;
-
-    dditable.pfnQueryPageSize                            = pDdiTable->pfnQueryPageSize;
-    pDdiTable->pfnQueryPageSize                          = tracing_layer::zeVirtualMemQueryPageSize;
-
-    dditable.pfnMap                                      = pDdiTable->pfnMap;
-    pDdiTable->pfnMap                                    = tracing_layer::zeVirtualMemMap;
-
-    dditable.pfnUnmap                                    = pDdiTable->pfnUnmap;
-    pDdiTable->pfnUnmap                                  = tracing_layer::zeVirtualMemUnmap;
-
-    dditable.pfnSetAccessAttribute                       = pDdiTable->pfnSetAccessAttribute;
-    pDdiTable->pfnSetAccessAttribute                     = tracing_layer::zeVirtualMemSetAccessAttribute;
-
-    dditable.pfnGetAccessAttribute                       = pDdiTable->pfnGetAccessAttribute;
-    pDdiTable->pfnGetAccessAttribute                     = tracing_layer::zeVirtualMemGetAccessAttribute;
-
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnReserve                                  = pDdiTable->pfnReserve;
+        pDdiTable->pfnReserve                                = tracing_layer::zeVirtualMemReserve;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnFree                                     = pDdiTable->pfnFree;
+        pDdiTable->pfnFree                                   = tracing_layer::zeVirtualMemFree;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnQueryPageSize                            = pDdiTable->pfnQueryPageSize;
+        pDdiTable->pfnQueryPageSize                          = tracing_layer::zeVirtualMemQueryPageSize;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnMap                                      = pDdiTable->pfnMap;
+        pDdiTable->pfnMap                                    = tracing_layer::zeVirtualMemMap;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnUnmap                                    = pDdiTable->pfnUnmap;
+        pDdiTable->pfnUnmap                                  = tracing_layer::zeVirtualMemUnmap;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnSetAccessAttribute                       = pDdiTable->pfnSetAccessAttribute;
+        pDdiTable->pfnSetAccessAttribute                     = tracing_layer::zeVirtualMemSetAccessAttribute;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnGetAccessAttribute                       = pDdiTable->pfnGetAccessAttribute;
+        pDdiTable->pfnGetAccessAttribute                     = tracing_layer::zeVirtualMemGetAccessAttribute;
+    }
     return result;
 }
 
@@ -9034,21 +9193,23 @@ zeGetFabricEdgeExpProcAddrTable(
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if (ZE_MAJOR_VERSION(tracing_layer::context.version) != ZE_MAJOR_VERSION(version) ||
-        ZE_MINOR_VERSION(tracing_layer::context.version) > ZE_MINOR_VERSION(version))
+    if (tracing_layer::context.version < version)
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
-    dditable.pfnGetExp                                   = pDdiTable->pfnGetExp;
-    pDdiTable->pfnGetExp                                 = tracing_layer::zeFabricEdgeGetExp;
-
-    dditable.pfnGetVerticesExp                           = pDdiTable->pfnGetVerticesExp;
-    pDdiTable->pfnGetVerticesExp                         = tracing_layer::zeFabricEdgeGetVerticesExp;
-
-    dditable.pfnGetPropertiesExp                         = pDdiTable->pfnGetPropertiesExp;
-    pDdiTable->pfnGetPropertiesExp                       = tracing_layer::zeFabricEdgeGetPropertiesExp;
-
+    if (version >= ZE_API_VERSION_1_4) {
+        dditable.pfnGetExp                                   = pDdiTable->pfnGetExp;
+        pDdiTable->pfnGetExp                                 = tracing_layer::zeFabricEdgeGetExp;
+    }
+    if (version >= ZE_API_VERSION_1_4) {
+        dditable.pfnGetVerticesExp                           = pDdiTable->pfnGetVerticesExp;
+        pDdiTable->pfnGetVerticesExp                         = tracing_layer::zeFabricEdgeGetVerticesExp;
+    }
+    if (version >= ZE_API_VERSION_1_4) {
+        dditable.pfnGetPropertiesExp                         = pDdiTable->pfnGetPropertiesExp;
+        pDdiTable->pfnGetPropertiesExp                       = tracing_layer::zeFabricEdgeGetPropertiesExp;
+    }
     return result;
 }
 
@@ -9071,24 +9232,27 @@ zeGetFabricVertexExpProcAddrTable(
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if (ZE_MAJOR_VERSION(tracing_layer::context.version) != ZE_MAJOR_VERSION(version) ||
-        ZE_MINOR_VERSION(tracing_layer::context.version) > ZE_MINOR_VERSION(version))
+    if (tracing_layer::context.version < version)
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
-    dditable.pfnGetExp                                   = pDdiTable->pfnGetExp;
-    pDdiTable->pfnGetExp                                 = tracing_layer::zeFabricVertexGetExp;
-
-    dditable.pfnGetSubVerticesExp                        = pDdiTable->pfnGetSubVerticesExp;
-    pDdiTable->pfnGetSubVerticesExp                      = tracing_layer::zeFabricVertexGetSubVerticesExp;
-
-    dditable.pfnGetPropertiesExp                         = pDdiTable->pfnGetPropertiesExp;
-    pDdiTable->pfnGetPropertiesExp                       = tracing_layer::zeFabricVertexGetPropertiesExp;
-
-    dditable.pfnGetDeviceExp                             = pDdiTable->pfnGetDeviceExp;
-    pDdiTable->pfnGetDeviceExp                           = tracing_layer::zeFabricVertexGetDeviceExp;
-
+    if (version >= ZE_API_VERSION_1_4) {
+        dditable.pfnGetExp                                   = pDdiTable->pfnGetExp;
+        pDdiTable->pfnGetExp                                 = tracing_layer::zeFabricVertexGetExp;
+    }
+    if (version >= ZE_API_VERSION_1_4) {
+        dditable.pfnGetSubVerticesExp                        = pDdiTable->pfnGetSubVerticesExp;
+        pDdiTable->pfnGetSubVerticesExp                      = tracing_layer::zeFabricVertexGetSubVerticesExp;
+    }
+    if (version >= ZE_API_VERSION_1_4) {
+        dditable.pfnGetPropertiesExp                         = pDdiTable->pfnGetPropertiesExp;
+        pDdiTable->pfnGetPropertiesExp                       = tracing_layer::zeFabricVertexGetPropertiesExp;
+    }
+    if (version >= ZE_API_VERSION_1_4) {
+        dditable.pfnGetDeviceExp                             = pDdiTable->pfnGetDeviceExp;
+        pDdiTable->pfnGetDeviceExp                           = tracing_layer::zeFabricVertexGetDeviceExp;
+    }
     return result;
 }
 

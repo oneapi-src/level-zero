@@ -6813,15 +6813,15 @@ zesGetGlobalProcAddrTable(
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if (ZE_MAJOR_VERSION(validation_layer::context.version) != ZE_MAJOR_VERSION(version) ||
-        ZE_MINOR_VERSION(validation_layer::context.version) > ZE_MINOR_VERSION(version))
+    if (validation_layer::context.version < version)
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
-    dditable.pfnInit                                     = pDdiTable->pfnInit;
-    pDdiTable->pfnInit                                   = validation_layer::zesInit;
-
+    if (version >= ZE_API_VERSION_1_5) {
+        dditable.pfnInit                                     = pDdiTable->pfnInit;
+        pDdiTable->pfnInit                                   = validation_layer::zesInit;
+    }
     return result;
 }
 
@@ -6844,123 +6844,159 @@ zesGetDeviceProcAddrTable(
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if (ZE_MAJOR_VERSION(validation_layer::context.version) != ZE_MAJOR_VERSION(version) ||
-        ZE_MINOR_VERSION(validation_layer::context.version) > ZE_MINOR_VERSION(version))
+    if (validation_layer::context.version < version)
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
-    dditable.pfnGetProperties                            = pDdiTable->pfnGetProperties;
-    pDdiTable->pfnGetProperties                          = validation_layer::zesDeviceGetProperties;
-
-    dditable.pfnGetState                                 = pDdiTable->pfnGetState;
-    pDdiTable->pfnGetState                               = validation_layer::zesDeviceGetState;
-
-    dditable.pfnReset                                    = pDdiTable->pfnReset;
-    pDdiTable->pfnReset                                  = validation_layer::zesDeviceReset;
-
-    dditable.pfnProcessesGetState                        = pDdiTable->pfnProcessesGetState;
-    pDdiTable->pfnProcessesGetState                      = validation_layer::zesDeviceProcessesGetState;
-
-    dditable.pfnPciGetProperties                         = pDdiTable->pfnPciGetProperties;
-    pDdiTable->pfnPciGetProperties                       = validation_layer::zesDevicePciGetProperties;
-
-    dditable.pfnPciGetState                              = pDdiTable->pfnPciGetState;
-    pDdiTable->pfnPciGetState                            = validation_layer::zesDevicePciGetState;
-
-    dditable.pfnPciGetBars                               = pDdiTable->pfnPciGetBars;
-    pDdiTable->pfnPciGetBars                             = validation_layer::zesDevicePciGetBars;
-
-    dditable.pfnPciGetStats                              = pDdiTable->pfnPciGetStats;
-    pDdiTable->pfnPciGetStats                            = validation_layer::zesDevicePciGetStats;
-
-    dditable.pfnEnumDiagnosticTestSuites                 = pDdiTable->pfnEnumDiagnosticTestSuites;
-    pDdiTable->pfnEnumDiagnosticTestSuites               = validation_layer::zesDeviceEnumDiagnosticTestSuites;
-
-    dditable.pfnEnumEngineGroups                         = pDdiTable->pfnEnumEngineGroups;
-    pDdiTable->pfnEnumEngineGroups                       = validation_layer::zesDeviceEnumEngineGroups;
-
-    dditable.pfnEventRegister                            = pDdiTable->pfnEventRegister;
-    pDdiTable->pfnEventRegister                          = validation_layer::zesDeviceEventRegister;
-
-    dditable.pfnEnumFabricPorts                          = pDdiTable->pfnEnumFabricPorts;
-    pDdiTable->pfnEnumFabricPorts                        = validation_layer::zesDeviceEnumFabricPorts;
-
-    dditable.pfnEnumFans                                 = pDdiTable->pfnEnumFans;
-    pDdiTable->pfnEnumFans                               = validation_layer::zesDeviceEnumFans;
-
-    dditable.pfnEnumFirmwares                            = pDdiTable->pfnEnumFirmwares;
-    pDdiTable->pfnEnumFirmwares                          = validation_layer::zesDeviceEnumFirmwares;
-
-    dditable.pfnEnumFrequencyDomains                     = pDdiTable->pfnEnumFrequencyDomains;
-    pDdiTable->pfnEnumFrequencyDomains                   = validation_layer::zesDeviceEnumFrequencyDomains;
-
-    dditable.pfnEnumLeds                                 = pDdiTable->pfnEnumLeds;
-    pDdiTable->pfnEnumLeds                               = validation_layer::zesDeviceEnumLeds;
-
-    dditable.pfnEnumMemoryModules                        = pDdiTable->pfnEnumMemoryModules;
-    pDdiTable->pfnEnumMemoryModules                      = validation_layer::zesDeviceEnumMemoryModules;
-
-    dditable.pfnEnumPerformanceFactorDomains             = pDdiTable->pfnEnumPerformanceFactorDomains;
-    pDdiTable->pfnEnumPerformanceFactorDomains           = validation_layer::zesDeviceEnumPerformanceFactorDomains;
-
-    dditable.pfnEnumPowerDomains                         = pDdiTable->pfnEnumPowerDomains;
-    pDdiTable->pfnEnumPowerDomains                       = validation_layer::zesDeviceEnumPowerDomains;
-
-    dditable.pfnGetCardPowerDomain                       = pDdiTable->pfnGetCardPowerDomain;
-    pDdiTable->pfnGetCardPowerDomain                     = validation_layer::zesDeviceGetCardPowerDomain;
-
-    dditable.pfnEnumPsus                                 = pDdiTable->pfnEnumPsus;
-    pDdiTable->pfnEnumPsus                               = validation_layer::zesDeviceEnumPsus;
-
-    dditable.pfnEnumRasErrorSets                         = pDdiTable->pfnEnumRasErrorSets;
-    pDdiTable->pfnEnumRasErrorSets                       = validation_layer::zesDeviceEnumRasErrorSets;
-
-    dditable.pfnEnumSchedulers                           = pDdiTable->pfnEnumSchedulers;
-    pDdiTable->pfnEnumSchedulers                         = validation_layer::zesDeviceEnumSchedulers;
-
-    dditable.pfnEnumStandbyDomains                       = pDdiTable->pfnEnumStandbyDomains;
-    pDdiTable->pfnEnumStandbyDomains                     = validation_layer::zesDeviceEnumStandbyDomains;
-
-    dditable.pfnEnumTemperatureSensors                   = pDdiTable->pfnEnumTemperatureSensors;
-    pDdiTable->pfnEnumTemperatureSensors                 = validation_layer::zesDeviceEnumTemperatureSensors;
-
-    dditable.pfnEccAvailable                             = pDdiTable->pfnEccAvailable;
-    pDdiTable->pfnEccAvailable                           = validation_layer::zesDeviceEccAvailable;
-
-    dditable.pfnEccConfigurable                          = pDdiTable->pfnEccConfigurable;
-    pDdiTable->pfnEccConfigurable                        = validation_layer::zesDeviceEccConfigurable;
-
-    dditable.pfnGetEccState                              = pDdiTable->pfnGetEccState;
-    pDdiTable->pfnGetEccState                            = validation_layer::zesDeviceGetEccState;
-
-    dditable.pfnSetEccState                              = pDdiTable->pfnSetEccState;
-    pDdiTable->pfnSetEccState                            = validation_layer::zesDeviceSetEccState;
-
-    dditable.pfnGet                                      = pDdiTable->pfnGet;
-    pDdiTable->pfnGet                                    = validation_layer::zesDeviceGet;
-
-    dditable.pfnSetOverclockWaiver                       = pDdiTable->pfnSetOverclockWaiver;
-    pDdiTable->pfnSetOverclockWaiver                     = validation_layer::zesDeviceSetOverclockWaiver;
-
-    dditable.pfnGetOverclockDomains                      = pDdiTable->pfnGetOverclockDomains;
-    pDdiTable->pfnGetOverclockDomains                    = validation_layer::zesDeviceGetOverclockDomains;
-
-    dditable.pfnGetOverclockControls                     = pDdiTable->pfnGetOverclockControls;
-    pDdiTable->pfnGetOverclockControls                   = validation_layer::zesDeviceGetOverclockControls;
-
-    dditable.pfnResetOverclockSettings                   = pDdiTable->pfnResetOverclockSettings;
-    pDdiTable->pfnResetOverclockSettings                 = validation_layer::zesDeviceResetOverclockSettings;
-
-    dditable.pfnReadOverclockState                       = pDdiTable->pfnReadOverclockState;
-    pDdiTable->pfnReadOverclockState                     = validation_layer::zesDeviceReadOverclockState;
-
-    dditable.pfnEnumOverclockDomains                     = pDdiTable->pfnEnumOverclockDomains;
-    pDdiTable->pfnEnumOverclockDomains                   = validation_layer::zesDeviceEnumOverclockDomains;
-
-    dditable.pfnResetExt                                 = pDdiTable->pfnResetExt;
-    pDdiTable->pfnResetExt                               = validation_layer::zesDeviceResetExt;
-
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnGetProperties                            = pDdiTable->pfnGetProperties;
+        pDdiTable->pfnGetProperties                          = validation_layer::zesDeviceGetProperties;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnGetState                                 = pDdiTable->pfnGetState;
+        pDdiTable->pfnGetState                               = validation_layer::zesDeviceGetState;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnReset                                    = pDdiTable->pfnReset;
+        pDdiTable->pfnReset                                  = validation_layer::zesDeviceReset;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnProcessesGetState                        = pDdiTable->pfnProcessesGetState;
+        pDdiTable->pfnProcessesGetState                      = validation_layer::zesDeviceProcessesGetState;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnPciGetProperties                         = pDdiTable->pfnPciGetProperties;
+        pDdiTable->pfnPciGetProperties                       = validation_layer::zesDevicePciGetProperties;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnPciGetState                              = pDdiTable->pfnPciGetState;
+        pDdiTable->pfnPciGetState                            = validation_layer::zesDevicePciGetState;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnPciGetBars                               = pDdiTable->pfnPciGetBars;
+        pDdiTable->pfnPciGetBars                             = validation_layer::zesDevicePciGetBars;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnPciGetStats                              = pDdiTable->pfnPciGetStats;
+        pDdiTable->pfnPciGetStats                            = validation_layer::zesDevicePciGetStats;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnEnumDiagnosticTestSuites                 = pDdiTable->pfnEnumDiagnosticTestSuites;
+        pDdiTable->pfnEnumDiagnosticTestSuites               = validation_layer::zesDeviceEnumDiagnosticTestSuites;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnEnumEngineGroups                         = pDdiTable->pfnEnumEngineGroups;
+        pDdiTable->pfnEnumEngineGroups                       = validation_layer::zesDeviceEnumEngineGroups;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnEventRegister                            = pDdiTable->pfnEventRegister;
+        pDdiTable->pfnEventRegister                          = validation_layer::zesDeviceEventRegister;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnEnumFabricPorts                          = pDdiTable->pfnEnumFabricPorts;
+        pDdiTable->pfnEnumFabricPorts                        = validation_layer::zesDeviceEnumFabricPorts;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnEnumFans                                 = pDdiTable->pfnEnumFans;
+        pDdiTable->pfnEnumFans                               = validation_layer::zesDeviceEnumFans;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnEnumFirmwares                            = pDdiTable->pfnEnumFirmwares;
+        pDdiTable->pfnEnumFirmwares                          = validation_layer::zesDeviceEnumFirmwares;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnEnumFrequencyDomains                     = pDdiTable->pfnEnumFrequencyDomains;
+        pDdiTable->pfnEnumFrequencyDomains                   = validation_layer::zesDeviceEnumFrequencyDomains;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnEnumLeds                                 = pDdiTable->pfnEnumLeds;
+        pDdiTable->pfnEnumLeds                               = validation_layer::zesDeviceEnumLeds;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnEnumMemoryModules                        = pDdiTable->pfnEnumMemoryModules;
+        pDdiTable->pfnEnumMemoryModules                      = validation_layer::zesDeviceEnumMemoryModules;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnEnumPerformanceFactorDomains             = pDdiTable->pfnEnumPerformanceFactorDomains;
+        pDdiTable->pfnEnumPerformanceFactorDomains           = validation_layer::zesDeviceEnumPerformanceFactorDomains;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnEnumPowerDomains                         = pDdiTable->pfnEnumPowerDomains;
+        pDdiTable->pfnEnumPowerDomains                       = validation_layer::zesDeviceEnumPowerDomains;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnGetCardPowerDomain                       = pDdiTable->pfnGetCardPowerDomain;
+        pDdiTable->pfnGetCardPowerDomain                     = validation_layer::zesDeviceGetCardPowerDomain;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnEnumPsus                                 = pDdiTable->pfnEnumPsus;
+        pDdiTable->pfnEnumPsus                               = validation_layer::zesDeviceEnumPsus;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnEnumRasErrorSets                         = pDdiTable->pfnEnumRasErrorSets;
+        pDdiTable->pfnEnumRasErrorSets                       = validation_layer::zesDeviceEnumRasErrorSets;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnEnumSchedulers                           = pDdiTable->pfnEnumSchedulers;
+        pDdiTable->pfnEnumSchedulers                         = validation_layer::zesDeviceEnumSchedulers;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnEnumStandbyDomains                       = pDdiTable->pfnEnumStandbyDomains;
+        pDdiTable->pfnEnumStandbyDomains                     = validation_layer::zesDeviceEnumStandbyDomains;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnEnumTemperatureSensors                   = pDdiTable->pfnEnumTemperatureSensors;
+        pDdiTable->pfnEnumTemperatureSensors                 = validation_layer::zesDeviceEnumTemperatureSensors;
+    }
+    if (version >= ZE_API_VERSION_1_4) {
+        dditable.pfnEccAvailable                             = pDdiTable->pfnEccAvailable;
+        pDdiTable->pfnEccAvailable                           = validation_layer::zesDeviceEccAvailable;
+    }
+    if (version >= ZE_API_VERSION_1_4) {
+        dditable.pfnEccConfigurable                          = pDdiTable->pfnEccConfigurable;
+        pDdiTable->pfnEccConfigurable                        = validation_layer::zesDeviceEccConfigurable;
+    }
+    if (version >= ZE_API_VERSION_1_4) {
+        dditable.pfnGetEccState                              = pDdiTable->pfnGetEccState;
+        pDdiTable->pfnGetEccState                            = validation_layer::zesDeviceGetEccState;
+    }
+    if (version >= ZE_API_VERSION_1_4) {
+        dditable.pfnSetEccState                              = pDdiTable->pfnSetEccState;
+        pDdiTable->pfnSetEccState                            = validation_layer::zesDeviceSetEccState;
+    }
+    if (version >= ZE_API_VERSION_1_5) {
+        dditable.pfnGet                                      = pDdiTable->pfnGet;
+        pDdiTable->pfnGet                                    = validation_layer::zesDeviceGet;
+    }
+    if (version >= ZE_API_VERSION_1_5) {
+        dditable.pfnSetOverclockWaiver                       = pDdiTable->pfnSetOverclockWaiver;
+        pDdiTable->pfnSetOverclockWaiver                     = validation_layer::zesDeviceSetOverclockWaiver;
+    }
+    if (version >= ZE_API_VERSION_1_5) {
+        dditable.pfnGetOverclockDomains                      = pDdiTable->pfnGetOverclockDomains;
+        pDdiTable->pfnGetOverclockDomains                    = validation_layer::zesDeviceGetOverclockDomains;
+    }
+    if (version >= ZE_API_VERSION_1_5) {
+        dditable.pfnGetOverclockControls                     = pDdiTable->pfnGetOverclockControls;
+        pDdiTable->pfnGetOverclockControls                   = validation_layer::zesDeviceGetOverclockControls;
+    }
+    if (version >= ZE_API_VERSION_1_5) {
+        dditable.pfnResetOverclockSettings                   = pDdiTable->pfnResetOverclockSettings;
+        pDdiTable->pfnResetOverclockSettings                 = validation_layer::zesDeviceResetOverclockSettings;
+    }
+    if (version >= ZE_API_VERSION_1_5) {
+        dditable.pfnReadOverclockState                       = pDdiTable->pfnReadOverclockState;
+        pDdiTable->pfnReadOverclockState                     = validation_layer::zesDeviceReadOverclockState;
+    }
+    if (version >= ZE_API_VERSION_1_5) {
+        dditable.pfnEnumOverclockDomains                     = pDdiTable->pfnEnumOverclockDomains;
+        pDdiTable->pfnEnumOverclockDomains                   = validation_layer::zesDeviceEnumOverclockDomains;
+    }
+    if (version >= ZE_API_VERSION_1_7) {
+        dditable.pfnResetExt                                 = pDdiTable->pfnResetExt;
+        pDdiTable->pfnResetExt                               = validation_layer::zesDeviceResetExt;
+    }
     return result;
 }
 
@@ -6983,21 +7019,23 @@ zesGetDeviceExpProcAddrTable(
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if (ZE_MAJOR_VERSION(validation_layer::context.version) != ZE_MAJOR_VERSION(version) ||
-        ZE_MINOR_VERSION(validation_layer::context.version) > ZE_MINOR_VERSION(version))
+    if (validation_layer::context.version < version)
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
-    dditable.pfnEnumEnabledVFExp                         = pDdiTable->pfnEnumEnabledVFExp;
-    pDdiTable->pfnEnumEnabledVFExp                       = validation_layer::zesDeviceEnumEnabledVFExp;
-
-    dditable.pfnGetSubDevicePropertiesExp                = pDdiTable->pfnGetSubDevicePropertiesExp;
-    pDdiTable->pfnGetSubDevicePropertiesExp              = validation_layer::zesDeviceGetSubDevicePropertiesExp;
-
-    dditable.pfnEnumActiveVFExp                          = pDdiTable->pfnEnumActiveVFExp;
-    pDdiTable->pfnEnumActiveVFExp                        = validation_layer::zesDeviceEnumActiveVFExp;
-
+    if (version >= ZE_API_VERSION_1_10) {
+        dditable.pfnEnumEnabledVFExp                         = pDdiTable->pfnEnumEnabledVFExp;
+        pDdiTable->pfnEnumEnabledVFExp                       = validation_layer::zesDeviceEnumEnabledVFExp;
+    }
+    if (version >= ZE_API_VERSION_1_9) {
+        dditable.pfnGetSubDevicePropertiesExp                = pDdiTable->pfnGetSubDevicePropertiesExp;
+        pDdiTable->pfnGetSubDevicePropertiesExp              = validation_layer::zesDeviceGetSubDevicePropertiesExp;
+    }
+    if (version >= ZE_API_VERSION_1_9) {
+        dditable.pfnEnumActiveVFExp                          = pDdiTable->pfnEnumActiveVFExp;
+        pDdiTable->pfnEnumActiveVFExp                        = validation_layer::zesDeviceEnumActiveVFExp;
+    }
     return result;
 }
 
@@ -7020,27 +7058,31 @@ zesGetDriverProcAddrTable(
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if (ZE_MAJOR_VERSION(validation_layer::context.version) != ZE_MAJOR_VERSION(version) ||
-        ZE_MINOR_VERSION(validation_layer::context.version) > ZE_MINOR_VERSION(version))
+    if (validation_layer::context.version < version)
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
-    dditable.pfnEventListen                              = pDdiTable->pfnEventListen;
-    pDdiTable->pfnEventListen                            = validation_layer::zesDriverEventListen;
-
-    dditable.pfnEventListenEx                            = pDdiTable->pfnEventListenEx;
-    pDdiTable->pfnEventListenEx                          = validation_layer::zesDriverEventListenEx;
-
-    dditable.pfnGet                                      = pDdiTable->pfnGet;
-    pDdiTable->pfnGet                                    = validation_layer::zesDriverGet;
-
-    dditable.pfnGetExtensionProperties                   = pDdiTable->pfnGetExtensionProperties;
-    pDdiTable->pfnGetExtensionProperties                 = validation_layer::zesDriverGetExtensionProperties;
-
-    dditable.pfnGetExtensionFunctionAddress              = pDdiTable->pfnGetExtensionFunctionAddress;
-    pDdiTable->pfnGetExtensionFunctionAddress            = validation_layer::zesDriverGetExtensionFunctionAddress;
-
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnEventListen                              = pDdiTable->pfnEventListen;
+        pDdiTable->pfnEventListen                            = validation_layer::zesDriverEventListen;
+    }
+    if (version >= ZE_API_VERSION_1_1) {
+        dditable.pfnEventListenEx                            = pDdiTable->pfnEventListenEx;
+        pDdiTable->pfnEventListenEx                          = validation_layer::zesDriverEventListenEx;
+    }
+    if (version >= ZE_API_VERSION_1_5) {
+        dditable.pfnGet                                      = pDdiTable->pfnGet;
+        pDdiTable->pfnGet                                    = validation_layer::zesDriverGet;
+    }
+    if (version >= ZE_API_VERSION_1_8) {
+        dditable.pfnGetExtensionProperties                   = pDdiTable->pfnGetExtensionProperties;
+        pDdiTable->pfnGetExtensionProperties                 = validation_layer::zesDriverGetExtensionProperties;
+    }
+    if (version >= ZE_API_VERSION_1_8) {
+        dditable.pfnGetExtensionFunctionAddress              = pDdiTable->pfnGetExtensionFunctionAddress;
+        pDdiTable->pfnGetExtensionFunctionAddress            = validation_layer::zesDriverGetExtensionFunctionAddress;
+    }
     return result;
 }
 
@@ -7063,15 +7105,15 @@ zesGetDriverExpProcAddrTable(
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if (ZE_MAJOR_VERSION(validation_layer::context.version) != ZE_MAJOR_VERSION(version) ||
-        ZE_MINOR_VERSION(validation_layer::context.version) > ZE_MINOR_VERSION(version))
+    if (validation_layer::context.version < version)
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
-    dditable.pfnGetDeviceByUuidExp                       = pDdiTable->pfnGetDeviceByUuidExp;
-    pDdiTable->pfnGetDeviceByUuidExp                     = validation_layer::zesDriverGetDeviceByUuidExp;
-
+    if (version >= ZE_API_VERSION_1_9) {
+        dditable.pfnGetDeviceByUuidExp                       = pDdiTable->pfnGetDeviceByUuidExp;
+        pDdiTable->pfnGetDeviceByUuidExp                     = validation_layer::zesDriverGetDeviceByUuidExp;
+    }
     return result;
 }
 
@@ -7094,21 +7136,23 @@ zesGetDiagnosticsProcAddrTable(
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if (ZE_MAJOR_VERSION(validation_layer::context.version) != ZE_MAJOR_VERSION(version) ||
-        ZE_MINOR_VERSION(validation_layer::context.version) > ZE_MINOR_VERSION(version))
+    if (validation_layer::context.version < version)
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
-    dditable.pfnGetProperties                            = pDdiTable->pfnGetProperties;
-    pDdiTable->pfnGetProperties                          = validation_layer::zesDiagnosticsGetProperties;
-
-    dditable.pfnGetTests                                 = pDdiTable->pfnGetTests;
-    pDdiTable->pfnGetTests                               = validation_layer::zesDiagnosticsGetTests;
-
-    dditable.pfnRunTests                                 = pDdiTable->pfnRunTests;
-    pDdiTable->pfnRunTests                               = validation_layer::zesDiagnosticsRunTests;
-
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnGetProperties                            = pDdiTable->pfnGetProperties;
+        pDdiTable->pfnGetProperties                          = validation_layer::zesDiagnosticsGetProperties;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnGetTests                                 = pDdiTable->pfnGetTests;
+        pDdiTable->pfnGetTests                               = validation_layer::zesDiagnosticsGetTests;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnRunTests                                 = pDdiTable->pfnRunTests;
+        pDdiTable->pfnRunTests                               = validation_layer::zesDiagnosticsRunTests;
+    }
     return result;
 }
 
@@ -7131,21 +7175,23 @@ zesGetEngineProcAddrTable(
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if (ZE_MAJOR_VERSION(validation_layer::context.version) != ZE_MAJOR_VERSION(version) ||
-        ZE_MINOR_VERSION(validation_layer::context.version) > ZE_MINOR_VERSION(version))
+    if (validation_layer::context.version < version)
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
-    dditable.pfnGetProperties                            = pDdiTable->pfnGetProperties;
-    pDdiTable->pfnGetProperties                          = validation_layer::zesEngineGetProperties;
-
-    dditable.pfnGetActivity                              = pDdiTable->pfnGetActivity;
-    pDdiTable->pfnGetActivity                            = validation_layer::zesEngineGetActivity;
-
-    dditable.pfnGetActivityExt                           = pDdiTable->pfnGetActivityExt;
-    pDdiTable->pfnGetActivityExt                         = validation_layer::zesEngineGetActivityExt;
-
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnGetProperties                            = pDdiTable->pfnGetProperties;
+        pDdiTable->pfnGetProperties                          = validation_layer::zesEngineGetProperties;
+    }
+    if (version >= ZE_API_VERSION_1_7) {
+        dditable.pfnGetActivity                              = pDdiTable->pfnGetActivity;
+        pDdiTable->pfnGetActivity                            = validation_layer::zesEngineGetActivity;
+    }
+    if (version >= ZE_API_VERSION_1_7) {
+        dditable.pfnGetActivityExt                           = pDdiTable->pfnGetActivityExt;
+        pDdiTable->pfnGetActivityExt                         = validation_layer::zesEngineGetActivityExt;
+    }
     return result;
 }
 
@@ -7168,36 +7214,43 @@ zesGetFabricPortProcAddrTable(
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if (ZE_MAJOR_VERSION(validation_layer::context.version) != ZE_MAJOR_VERSION(version) ||
-        ZE_MINOR_VERSION(validation_layer::context.version) > ZE_MINOR_VERSION(version))
+    if (validation_layer::context.version < version)
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
-    dditable.pfnGetProperties                            = pDdiTable->pfnGetProperties;
-    pDdiTable->pfnGetProperties                          = validation_layer::zesFabricPortGetProperties;
-
-    dditable.pfnGetLinkType                              = pDdiTable->pfnGetLinkType;
-    pDdiTable->pfnGetLinkType                            = validation_layer::zesFabricPortGetLinkType;
-
-    dditable.pfnGetConfig                                = pDdiTable->pfnGetConfig;
-    pDdiTable->pfnGetConfig                              = validation_layer::zesFabricPortGetConfig;
-
-    dditable.pfnSetConfig                                = pDdiTable->pfnSetConfig;
-    pDdiTable->pfnSetConfig                              = validation_layer::zesFabricPortSetConfig;
-
-    dditable.pfnGetState                                 = pDdiTable->pfnGetState;
-    pDdiTable->pfnGetState                               = validation_layer::zesFabricPortGetState;
-
-    dditable.pfnGetThroughput                            = pDdiTable->pfnGetThroughput;
-    pDdiTable->pfnGetThroughput                          = validation_layer::zesFabricPortGetThroughput;
-
-    dditable.pfnGetFabricErrorCounters                   = pDdiTable->pfnGetFabricErrorCounters;
-    pDdiTable->pfnGetFabricErrorCounters                 = validation_layer::zesFabricPortGetFabricErrorCounters;
-
-    dditable.pfnGetMultiPortThroughput                   = pDdiTable->pfnGetMultiPortThroughput;
-    pDdiTable->pfnGetMultiPortThroughput                 = validation_layer::zesFabricPortGetMultiPortThroughput;
-
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnGetProperties                            = pDdiTable->pfnGetProperties;
+        pDdiTable->pfnGetProperties                          = validation_layer::zesFabricPortGetProperties;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnGetLinkType                              = pDdiTable->pfnGetLinkType;
+        pDdiTable->pfnGetLinkType                            = validation_layer::zesFabricPortGetLinkType;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnGetConfig                                = pDdiTable->pfnGetConfig;
+        pDdiTable->pfnGetConfig                              = validation_layer::zesFabricPortGetConfig;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnSetConfig                                = pDdiTable->pfnSetConfig;
+        pDdiTable->pfnSetConfig                              = validation_layer::zesFabricPortSetConfig;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnGetState                                 = pDdiTable->pfnGetState;
+        pDdiTable->pfnGetState                               = validation_layer::zesFabricPortGetState;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnGetThroughput                            = pDdiTable->pfnGetThroughput;
+        pDdiTable->pfnGetThroughput                          = validation_layer::zesFabricPortGetThroughput;
+    }
+    if (version >= ZE_API_VERSION_1_7) {
+        dditable.pfnGetFabricErrorCounters                   = pDdiTable->pfnGetFabricErrorCounters;
+        pDdiTable->pfnGetFabricErrorCounters                 = validation_layer::zesFabricPortGetFabricErrorCounters;
+    }
+    if (version >= ZE_API_VERSION_1_7) {
+        dditable.pfnGetMultiPortThroughput                   = pDdiTable->pfnGetMultiPortThroughput;
+        pDdiTable->pfnGetMultiPortThroughput                 = validation_layer::zesFabricPortGetMultiPortThroughput;
+    }
     return result;
 }
 
@@ -7220,30 +7273,35 @@ zesGetFanProcAddrTable(
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if (ZE_MAJOR_VERSION(validation_layer::context.version) != ZE_MAJOR_VERSION(version) ||
-        ZE_MINOR_VERSION(validation_layer::context.version) > ZE_MINOR_VERSION(version))
+    if (validation_layer::context.version < version)
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
-    dditable.pfnGetProperties                            = pDdiTable->pfnGetProperties;
-    pDdiTable->pfnGetProperties                          = validation_layer::zesFanGetProperties;
-
-    dditable.pfnGetConfig                                = pDdiTable->pfnGetConfig;
-    pDdiTable->pfnGetConfig                              = validation_layer::zesFanGetConfig;
-
-    dditable.pfnSetDefaultMode                           = pDdiTable->pfnSetDefaultMode;
-    pDdiTable->pfnSetDefaultMode                         = validation_layer::zesFanSetDefaultMode;
-
-    dditable.pfnSetFixedSpeedMode                        = pDdiTable->pfnSetFixedSpeedMode;
-    pDdiTable->pfnSetFixedSpeedMode                      = validation_layer::zesFanSetFixedSpeedMode;
-
-    dditable.pfnSetSpeedTableMode                        = pDdiTable->pfnSetSpeedTableMode;
-    pDdiTable->pfnSetSpeedTableMode                      = validation_layer::zesFanSetSpeedTableMode;
-
-    dditable.pfnGetState                                 = pDdiTable->pfnGetState;
-    pDdiTable->pfnGetState                               = validation_layer::zesFanGetState;
-
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnGetProperties                            = pDdiTable->pfnGetProperties;
+        pDdiTable->pfnGetProperties                          = validation_layer::zesFanGetProperties;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnGetConfig                                = pDdiTable->pfnGetConfig;
+        pDdiTable->pfnGetConfig                              = validation_layer::zesFanGetConfig;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnSetDefaultMode                           = pDdiTable->pfnSetDefaultMode;
+        pDdiTable->pfnSetDefaultMode                         = validation_layer::zesFanSetDefaultMode;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnSetFixedSpeedMode                        = pDdiTable->pfnSetFixedSpeedMode;
+        pDdiTable->pfnSetFixedSpeedMode                      = validation_layer::zesFanSetFixedSpeedMode;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnSetSpeedTableMode                        = pDdiTable->pfnSetSpeedTableMode;
+        pDdiTable->pfnSetSpeedTableMode                      = validation_layer::zesFanSetSpeedTableMode;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnGetState                                 = pDdiTable->pfnGetState;
+        pDdiTable->pfnGetState                               = validation_layer::zesFanGetState;
+    }
     return result;
 }
 
@@ -7266,24 +7324,27 @@ zesGetFirmwareProcAddrTable(
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if (ZE_MAJOR_VERSION(validation_layer::context.version) != ZE_MAJOR_VERSION(version) ||
-        ZE_MINOR_VERSION(validation_layer::context.version) > ZE_MINOR_VERSION(version))
+    if (validation_layer::context.version < version)
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
-    dditable.pfnGetProperties                            = pDdiTable->pfnGetProperties;
-    pDdiTable->pfnGetProperties                          = validation_layer::zesFirmwareGetProperties;
-
-    dditable.pfnFlash                                    = pDdiTable->pfnFlash;
-    pDdiTable->pfnFlash                                  = validation_layer::zesFirmwareFlash;
-
-    dditable.pfnGetFlashProgress                         = pDdiTable->pfnGetFlashProgress;
-    pDdiTable->pfnGetFlashProgress                       = validation_layer::zesFirmwareGetFlashProgress;
-
-    dditable.pfnGetConsoleLogs                           = pDdiTable->pfnGetConsoleLogs;
-    pDdiTable->pfnGetConsoleLogs                         = validation_layer::zesFirmwareGetConsoleLogs;
-
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnGetProperties                            = pDdiTable->pfnGetProperties;
+        pDdiTable->pfnGetProperties                          = validation_layer::zesFirmwareGetProperties;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnFlash                                    = pDdiTable->pfnFlash;
+        pDdiTable->pfnFlash                                  = validation_layer::zesFirmwareFlash;
+    }
+    if (version >= ZE_API_VERSION_1_8) {
+        dditable.pfnGetFlashProgress                         = pDdiTable->pfnGetFlashProgress;
+        pDdiTable->pfnGetFlashProgress                       = validation_layer::zesFirmwareGetFlashProgress;
+    }
+    if (version >= ZE_API_VERSION_1_9) {
+        dditable.pfnGetConsoleLogs                           = pDdiTable->pfnGetConsoleLogs;
+        pDdiTable->pfnGetConsoleLogs                         = validation_layer::zesFirmwareGetConsoleLogs;
+    }
     return result;
 }
 
@@ -7306,18 +7367,19 @@ zesGetFirmwareExpProcAddrTable(
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if (ZE_MAJOR_VERSION(validation_layer::context.version) != ZE_MAJOR_VERSION(version) ||
-        ZE_MINOR_VERSION(validation_layer::context.version) > ZE_MINOR_VERSION(version))
+    if (validation_layer::context.version < version)
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
-    dditable.pfnGetSecurityVersionExp                    = pDdiTable->pfnGetSecurityVersionExp;
-    pDdiTable->pfnGetSecurityVersionExp                  = validation_layer::zesFirmwareGetSecurityVersionExp;
-
-    dditable.pfnSetSecurityVersionExp                    = pDdiTable->pfnSetSecurityVersionExp;
-    pDdiTable->pfnSetSecurityVersionExp                  = validation_layer::zesFirmwareSetSecurityVersionExp;
-
+    if (version >= ZE_API_VERSION_1_9) {
+        dditable.pfnGetSecurityVersionExp                    = pDdiTable->pfnGetSecurityVersionExp;
+        pDdiTable->pfnGetSecurityVersionExp                  = validation_layer::zesFirmwareGetSecurityVersionExp;
+    }
+    if (version >= ZE_API_VERSION_1_9) {
+        dditable.pfnSetSecurityVersionExp                    = pDdiTable->pfnSetSecurityVersionExp;
+        pDdiTable->pfnSetSecurityVersionExp                  = validation_layer::zesFirmwareSetSecurityVersionExp;
+    }
     return result;
 }
 
@@ -7340,63 +7402,79 @@ zesGetFrequencyProcAddrTable(
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if (ZE_MAJOR_VERSION(validation_layer::context.version) != ZE_MAJOR_VERSION(version) ||
-        ZE_MINOR_VERSION(validation_layer::context.version) > ZE_MINOR_VERSION(version))
+    if (validation_layer::context.version < version)
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
-    dditable.pfnGetProperties                            = pDdiTable->pfnGetProperties;
-    pDdiTable->pfnGetProperties                          = validation_layer::zesFrequencyGetProperties;
-
-    dditable.pfnGetAvailableClocks                       = pDdiTable->pfnGetAvailableClocks;
-    pDdiTable->pfnGetAvailableClocks                     = validation_layer::zesFrequencyGetAvailableClocks;
-
-    dditable.pfnGetRange                                 = pDdiTable->pfnGetRange;
-    pDdiTable->pfnGetRange                               = validation_layer::zesFrequencyGetRange;
-
-    dditable.pfnSetRange                                 = pDdiTable->pfnSetRange;
-    pDdiTable->pfnSetRange                               = validation_layer::zesFrequencySetRange;
-
-    dditable.pfnGetState                                 = pDdiTable->pfnGetState;
-    pDdiTable->pfnGetState                               = validation_layer::zesFrequencyGetState;
-
-    dditable.pfnGetThrottleTime                          = pDdiTable->pfnGetThrottleTime;
-    pDdiTable->pfnGetThrottleTime                        = validation_layer::zesFrequencyGetThrottleTime;
-
-    dditable.pfnOcGetCapabilities                        = pDdiTable->pfnOcGetCapabilities;
-    pDdiTable->pfnOcGetCapabilities                      = validation_layer::zesFrequencyOcGetCapabilities;
-
-    dditable.pfnOcGetFrequencyTarget                     = pDdiTable->pfnOcGetFrequencyTarget;
-    pDdiTable->pfnOcGetFrequencyTarget                   = validation_layer::zesFrequencyOcGetFrequencyTarget;
-
-    dditable.pfnOcSetFrequencyTarget                     = pDdiTable->pfnOcSetFrequencyTarget;
-    pDdiTable->pfnOcSetFrequencyTarget                   = validation_layer::zesFrequencyOcSetFrequencyTarget;
-
-    dditable.pfnOcGetVoltageTarget                       = pDdiTable->pfnOcGetVoltageTarget;
-    pDdiTable->pfnOcGetVoltageTarget                     = validation_layer::zesFrequencyOcGetVoltageTarget;
-
-    dditable.pfnOcSetVoltageTarget                       = pDdiTable->pfnOcSetVoltageTarget;
-    pDdiTable->pfnOcSetVoltageTarget                     = validation_layer::zesFrequencyOcSetVoltageTarget;
-
-    dditable.pfnOcSetMode                                = pDdiTable->pfnOcSetMode;
-    pDdiTable->pfnOcSetMode                              = validation_layer::zesFrequencyOcSetMode;
-
-    dditable.pfnOcGetMode                                = pDdiTable->pfnOcGetMode;
-    pDdiTable->pfnOcGetMode                              = validation_layer::zesFrequencyOcGetMode;
-
-    dditable.pfnOcGetIccMax                              = pDdiTable->pfnOcGetIccMax;
-    pDdiTable->pfnOcGetIccMax                            = validation_layer::zesFrequencyOcGetIccMax;
-
-    dditable.pfnOcSetIccMax                              = pDdiTable->pfnOcSetIccMax;
-    pDdiTable->pfnOcSetIccMax                            = validation_layer::zesFrequencyOcSetIccMax;
-
-    dditable.pfnOcGetTjMax                               = pDdiTable->pfnOcGetTjMax;
-    pDdiTable->pfnOcGetTjMax                             = validation_layer::zesFrequencyOcGetTjMax;
-
-    dditable.pfnOcSetTjMax                               = pDdiTable->pfnOcSetTjMax;
-    pDdiTable->pfnOcSetTjMax                             = validation_layer::zesFrequencyOcSetTjMax;
-
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnGetProperties                            = pDdiTable->pfnGetProperties;
+        pDdiTable->pfnGetProperties                          = validation_layer::zesFrequencyGetProperties;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnGetAvailableClocks                       = pDdiTable->pfnGetAvailableClocks;
+        pDdiTable->pfnGetAvailableClocks                     = validation_layer::zesFrequencyGetAvailableClocks;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnGetRange                                 = pDdiTable->pfnGetRange;
+        pDdiTable->pfnGetRange                               = validation_layer::zesFrequencyGetRange;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnSetRange                                 = pDdiTable->pfnSetRange;
+        pDdiTable->pfnSetRange                               = validation_layer::zesFrequencySetRange;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnGetState                                 = pDdiTable->pfnGetState;
+        pDdiTable->pfnGetState                               = validation_layer::zesFrequencyGetState;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnGetThrottleTime                          = pDdiTable->pfnGetThrottleTime;
+        pDdiTable->pfnGetThrottleTime                        = validation_layer::zesFrequencyGetThrottleTime;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnOcGetCapabilities                        = pDdiTable->pfnOcGetCapabilities;
+        pDdiTable->pfnOcGetCapabilities                      = validation_layer::zesFrequencyOcGetCapabilities;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnOcGetFrequencyTarget                     = pDdiTable->pfnOcGetFrequencyTarget;
+        pDdiTable->pfnOcGetFrequencyTarget                   = validation_layer::zesFrequencyOcGetFrequencyTarget;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnOcSetFrequencyTarget                     = pDdiTable->pfnOcSetFrequencyTarget;
+        pDdiTable->pfnOcSetFrequencyTarget                   = validation_layer::zesFrequencyOcSetFrequencyTarget;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnOcGetVoltageTarget                       = pDdiTable->pfnOcGetVoltageTarget;
+        pDdiTable->pfnOcGetVoltageTarget                     = validation_layer::zesFrequencyOcGetVoltageTarget;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnOcSetVoltageTarget                       = pDdiTable->pfnOcSetVoltageTarget;
+        pDdiTable->pfnOcSetVoltageTarget                     = validation_layer::zesFrequencyOcSetVoltageTarget;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnOcSetMode                                = pDdiTable->pfnOcSetMode;
+        pDdiTable->pfnOcSetMode                              = validation_layer::zesFrequencyOcSetMode;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnOcGetMode                                = pDdiTable->pfnOcGetMode;
+        pDdiTable->pfnOcGetMode                              = validation_layer::zesFrequencyOcGetMode;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnOcGetIccMax                              = pDdiTable->pfnOcGetIccMax;
+        pDdiTable->pfnOcGetIccMax                            = validation_layer::zesFrequencyOcGetIccMax;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnOcSetIccMax                              = pDdiTable->pfnOcSetIccMax;
+        pDdiTable->pfnOcSetIccMax                            = validation_layer::zesFrequencyOcSetIccMax;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnOcGetTjMax                               = pDdiTable->pfnOcGetTjMax;
+        pDdiTable->pfnOcGetTjMax                             = validation_layer::zesFrequencyOcGetTjMax;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnOcSetTjMax                               = pDdiTable->pfnOcSetTjMax;
+        pDdiTable->pfnOcSetTjMax                             = validation_layer::zesFrequencyOcSetTjMax;
+    }
     return result;
 }
 
@@ -7419,24 +7497,27 @@ zesGetLedProcAddrTable(
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if (ZE_MAJOR_VERSION(validation_layer::context.version) != ZE_MAJOR_VERSION(version) ||
-        ZE_MINOR_VERSION(validation_layer::context.version) > ZE_MINOR_VERSION(version))
+    if (validation_layer::context.version < version)
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
-    dditable.pfnGetProperties                            = pDdiTable->pfnGetProperties;
-    pDdiTable->pfnGetProperties                          = validation_layer::zesLedGetProperties;
-
-    dditable.pfnGetState                                 = pDdiTable->pfnGetState;
-    pDdiTable->pfnGetState                               = validation_layer::zesLedGetState;
-
-    dditable.pfnSetState                                 = pDdiTable->pfnSetState;
-    pDdiTable->pfnSetState                               = validation_layer::zesLedSetState;
-
-    dditable.pfnSetColor                                 = pDdiTable->pfnSetColor;
-    pDdiTable->pfnSetColor                               = validation_layer::zesLedSetColor;
-
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnGetProperties                            = pDdiTable->pfnGetProperties;
+        pDdiTable->pfnGetProperties                          = validation_layer::zesLedGetProperties;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnGetState                                 = pDdiTable->pfnGetState;
+        pDdiTable->pfnGetState                               = validation_layer::zesLedGetState;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnSetState                                 = pDdiTable->pfnSetState;
+        pDdiTable->pfnSetState                               = validation_layer::zesLedSetState;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnSetColor                                 = pDdiTable->pfnSetColor;
+        pDdiTable->pfnSetColor                               = validation_layer::zesLedSetColor;
+    }
     return result;
 }
 
@@ -7459,21 +7540,23 @@ zesGetMemoryProcAddrTable(
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if (ZE_MAJOR_VERSION(validation_layer::context.version) != ZE_MAJOR_VERSION(version) ||
-        ZE_MINOR_VERSION(validation_layer::context.version) > ZE_MINOR_VERSION(version))
+    if (validation_layer::context.version < version)
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
-    dditable.pfnGetProperties                            = pDdiTable->pfnGetProperties;
-    pDdiTable->pfnGetProperties                          = validation_layer::zesMemoryGetProperties;
-
-    dditable.pfnGetState                                 = pDdiTable->pfnGetState;
-    pDdiTable->pfnGetState                               = validation_layer::zesMemoryGetState;
-
-    dditable.pfnGetBandwidth                             = pDdiTable->pfnGetBandwidth;
-    pDdiTable->pfnGetBandwidth                           = validation_layer::zesMemoryGetBandwidth;
-
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnGetProperties                            = pDdiTable->pfnGetProperties;
+        pDdiTable->pfnGetProperties                          = validation_layer::zesMemoryGetProperties;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnGetState                                 = pDdiTable->pfnGetState;
+        pDdiTable->pfnGetState                               = validation_layer::zesMemoryGetState;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnGetBandwidth                             = pDdiTable->pfnGetBandwidth;
+        pDdiTable->pfnGetBandwidth                           = validation_layer::zesMemoryGetBandwidth;
+    }
     return result;
 }
 
@@ -7496,39 +7579,47 @@ zesGetOverclockProcAddrTable(
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if (ZE_MAJOR_VERSION(validation_layer::context.version) != ZE_MAJOR_VERSION(version) ||
-        ZE_MINOR_VERSION(validation_layer::context.version) > ZE_MINOR_VERSION(version))
+    if (validation_layer::context.version < version)
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
-    dditable.pfnGetDomainProperties                      = pDdiTable->pfnGetDomainProperties;
-    pDdiTable->pfnGetDomainProperties                    = validation_layer::zesOverclockGetDomainProperties;
-
-    dditable.pfnGetDomainVFProperties                    = pDdiTable->pfnGetDomainVFProperties;
-    pDdiTable->pfnGetDomainVFProperties                  = validation_layer::zesOverclockGetDomainVFProperties;
-
-    dditable.pfnGetDomainControlProperties               = pDdiTable->pfnGetDomainControlProperties;
-    pDdiTable->pfnGetDomainControlProperties             = validation_layer::zesOverclockGetDomainControlProperties;
-
-    dditable.pfnGetControlCurrentValue                   = pDdiTable->pfnGetControlCurrentValue;
-    pDdiTable->pfnGetControlCurrentValue                 = validation_layer::zesOverclockGetControlCurrentValue;
-
-    dditable.pfnGetControlPendingValue                   = pDdiTable->pfnGetControlPendingValue;
-    pDdiTable->pfnGetControlPendingValue                 = validation_layer::zesOverclockGetControlPendingValue;
-
-    dditable.pfnSetControlUserValue                      = pDdiTable->pfnSetControlUserValue;
-    pDdiTable->pfnSetControlUserValue                    = validation_layer::zesOverclockSetControlUserValue;
-
-    dditable.pfnGetControlState                          = pDdiTable->pfnGetControlState;
-    pDdiTable->pfnGetControlState                        = validation_layer::zesOverclockGetControlState;
-
-    dditable.pfnGetVFPointValues                         = pDdiTable->pfnGetVFPointValues;
-    pDdiTable->pfnGetVFPointValues                       = validation_layer::zesOverclockGetVFPointValues;
-
-    dditable.pfnSetVFPointValues                         = pDdiTable->pfnSetVFPointValues;
-    pDdiTable->pfnSetVFPointValues                       = validation_layer::zesOverclockSetVFPointValues;
-
+    if (version >= ZE_API_VERSION_1_5) {
+        dditable.pfnGetDomainProperties                      = pDdiTable->pfnGetDomainProperties;
+        pDdiTable->pfnGetDomainProperties                    = validation_layer::zesOverclockGetDomainProperties;
+    }
+    if (version >= ZE_API_VERSION_1_5) {
+        dditable.pfnGetDomainVFProperties                    = pDdiTable->pfnGetDomainVFProperties;
+        pDdiTable->pfnGetDomainVFProperties                  = validation_layer::zesOverclockGetDomainVFProperties;
+    }
+    if (version >= ZE_API_VERSION_1_5) {
+        dditable.pfnGetDomainControlProperties               = pDdiTable->pfnGetDomainControlProperties;
+        pDdiTable->pfnGetDomainControlProperties             = validation_layer::zesOverclockGetDomainControlProperties;
+    }
+    if (version >= ZE_API_VERSION_1_5) {
+        dditable.pfnGetControlCurrentValue                   = pDdiTable->pfnGetControlCurrentValue;
+        pDdiTable->pfnGetControlCurrentValue                 = validation_layer::zesOverclockGetControlCurrentValue;
+    }
+    if (version >= ZE_API_VERSION_1_5) {
+        dditable.pfnGetControlPendingValue                   = pDdiTable->pfnGetControlPendingValue;
+        pDdiTable->pfnGetControlPendingValue                 = validation_layer::zesOverclockGetControlPendingValue;
+    }
+    if (version >= ZE_API_VERSION_1_5) {
+        dditable.pfnSetControlUserValue                      = pDdiTable->pfnSetControlUserValue;
+        pDdiTable->pfnSetControlUserValue                    = validation_layer::zesOverclockSetControlUserValue;
+    }
+    if (version >= ZE_API_VERSION_1_5) {
+        dditable.pfnGetControlState                          = pDdiTable->pfnGetControlState;
+        pDdiTable->pfnGetControlState                        = validation_layer::zesOverclockGetControlState;
+    }
+    if (version >= ZE_API_VERSION_1_5) {
+        dditable.pfnGetVFPointValues                         = pDdiTable->pfnGetVFPointValues;
+        pDdiTable->pfnGetVFPointValues                       = validation_layer::zesOverclockGetVFPointValues;
+    }
+    if (version >= ZE_API_VERSION_1_5) {
+        dditable.pfnSetVFPointValues                         = pDdiTable->pfnSetVFPointValues;
+        pDdiTable->pfnSetVFPointValues                       = validation_layer::zesOverclockSetVFPointValues;
+    }
     return result;
 }
 
@@ -7551,21 +7642,23 @@ zesGetPerformanceFactorProcAddrTable(
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if (ZE_MAJOR_VERSION(validation_layer::context.version) != ZE_MAJOR_VERSION(version) ||
-        ZE_MINOR_VERSION(validation_layer::context.version) > ZE_MINOR_VERSION(version))
+    if (validation_layer::context.version < version)
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
-    dditable.pfnGetProperties                            = pDdiTable->pfnGetProperties;
-    pDdiTable->pfnGetProperties                          = validation_layer::zesPerformanceFactorGetProperties;
-
-    dditable.pfnGetConfig                                = pDdiTable->pfnGetConfig;
-    pDdiTable->pfnGetConfig                              = validation_layer::zesPerformanceFactorGetConfig;
-
-    dditable.pfnSetConfig                                = pDdiTable->pfnSetConfig;
-    pDdiTable->pfnSetConfig                              = validation_layer::zesPerformanceFactorSetConfig;
-
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnGetProperties                            = pDdiTable->pfnGetProperties;
+        pDdiTable->pfnGetProperties                          = validation_layer::zesPerformanceFactorGetProperties;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnGetConfig                                = pDdiTable->pfnGetConfig;
+        pDdiTable->pfnGetConfig                              = validation_layer::zesPerformanceFactorGetConfig;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnSetConfig                                = pDdiTable->pfnSetConfig;
+        pDdiTable->pfnSetConfig                              = validation_layer::zesPerformanceFactorSetConfig;
+    }
     return result;
 }
 
@@ -7588,36 +7681,43 @@ zesGetPowerProcAddrTable(
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if (ZE_MAJOR_VERSION(validation_layer::context.version) != ZE_MAJOR_VERSION(version) ||
-        ZE_MINOR_VERSION(validation_layer::context.version) > ZE_MINOR_VERSION(version))
+    if (validation_layer::context.version < version)
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
-    dditable.pfnGetProperties                            = pDdiTable->pfnGetProperties;
-    pDdiTable->pfnGetProperties                          = validation_layer::zesPowerGetProperties;
-
-    dditable.pfnGetEnergyCounter                         = pDdiTable->pfnGetEnergyCounter;
-    pDdiTable->pfnGetEnergyCounter                       = validation_layer::zesPowerGetEnergyCounter;
-
-    dditable.pfnGetLimits                                = pDdiTable->pfnGetLimits;
-    pDdiTable->pfnGetLimits                              = validation_layer::zesPowerGetLimits;
-
-    dditable.pfnSetLimits                                = pDdiTable->pfnSetLimits;
-    pDdiTable->pfnSetLimits                              = validation_layer::zesPowerSetLimits;
-
-    dditable.pfnGetEnergyThreshold                       = pDdiTable->pfnGetEnergyThreshold;
-    pDdiTable->pfnGetEnergyThreshold                     = validation_layer::zesPowerGetEnergyThreshold;
-
-    dditable.pfnSetEnergyThreshold                       = pDdiTable->pfnSetEnergyThreshold;
-    pDdiTable->pfnSetEnergyThreshold                     = validation_layer::zesPowerSetEnergyThreshold;
-
-    dditable.pfnGetLimitsExt                             = pDdiTable->pfnGetLimitsExt;
-    pDdiTable->pfnGetLimitsExt                           = validation_layer::zesPowerGetLimitsExt;
-
-    dditable.pfnSetLimitsExt                             = pDdiTable->pfnSetLimitsExt;
-    pDdiTable->pfnSetLimitsExt                           = validation_layer::zesPowerSetLimitsExt;
-
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnGetProperties                            = pDdiTable->pfnGetProperties;
+        pDdiTable->pfnGetProperties                          = validation_layer::zesPowerGetProperties;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnGetEnergyCounter                         = pDdiTable->pfnGetEnergyCounter;
+        pDdiTable->pfnGetEnergyCounter                       = validation_layer::zesPowerGetEnergyCounter;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnGetLimits                                = pDdiTable->pfnGetLimits;
+        pDdiTable->pfnGetLimits                              = validation_layer::zesPowerGetLimits;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnSetLimits                                = pDdiTable->pfnSetLimits;
+        pDdiTable->pfnSetLimits                              = validation_layer::zesPowerSetLimits;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnGetEnergyThreshold                       = pDdiTable->pfnGetEnergyThreshold;
+        pDdiTable->pfnGetEnergyThreshold                     = validation_layer::zesPowerGetEnergyThreshold;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnSetEnergyThreshold                       = pDdiTable->pfnSetEnergyThreshold;
+        pDdiTable->pfnSetEnergyThreshold                     = validation_layer::zesPowerSetEnergyThreshold;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnGetLimitsExt                             = pDdiTable->pfnGetLimitsExt;
+        pDdiTable->pfnGetLimitsExt                           = validation_layer::zesPowerGetLimitsExt;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnSetLimitsExt                             = pDdiTable->pfnSetLimitsExt;
+        pDdiTable->pfnSetLimitsExt                           = validation_layer::zesPowerSetLimitsExt;
+    }
     return result;
 }
 
@@ -7640,18 +7740,19 @@ zesGetPsuProcAddrTable(
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if (ZE_MAJOR_VERSION(validation_layer::context.version) != ZE_MAJOR_VERSION(version) ||
-        ZE_MINOR_VERSION(validation_layer::context.version) > ZE_MINOR_VERSION(version))
+    if (validation_layer::context.version < version)
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
-    dditable.pfnGetProperties                            = pDdiTable->pfnGetProperties;
-    pDdiTable->pfnGetProperties                          = validation_layer::zesPsuGetProperties;
-
-    dditable.pfnGetState                                 = pDdiTable->pfnGetState;
-    pDdiTable->pfnGetState                               = validation_layer::zesPsuGetState;
-
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnGetProperties                            = pDdiTable->pfnGetProperties;
+        pDdiTable->pfnGetProperties                          = validation_layer::zesPsuGetProperties;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnGetState                                 = pDdiTable->pfnGetState;
+        pDdiTable->pfnGetState                               = validation_layer::zesPsuGetState;
+    }
     return result;
 }
 
@@ -7674,24 +7775,27 @@ zesGetRasProcAddrTable(
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if (ZE_MAJOR_VERSION(validation_layer::context.version) != ZE_MAJOR_VERSION(version) ||
-        ZE_MINOR_VERSION(validation_layer::context.version) > ZE_MINOR_VERSION(version))
+    if (validation_layer::context.version < version)
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
-    dditable.pfnGetProperties                            = pDdiTable->pfnGetProperties;
-    pDdiTable->pfnGetProperties                          = validation_layer::zesRasGetProperties;
-
-    dditable.pfnGetConfig                                = pDdiTable->pfnGetConfig;
-    pDdiTable->pfnGetConfig                              = validation_layer::zesRasGetConfig;
-
-    dditable.pfnSetConfig                                = pDdiTable->pfnSetConfig;
-    pDdiTable->pfnSetConfig                              = validation_layer::zesRasSetConfig;
-
-    dditable.pfnGetState                                 = pDdiTable->pfnGetState;
-    pDdiTable->pfnGetState                               = validation_layer::zesRasGetState;
-
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnGetProperties                            = pDdiTable->pfnGetProperties;
+        pDdiTable->pfnGetProperties                          = validation_layer::zesRasGetProperties;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnGetConfig                                = pDdiTable->pfnGetConfig;
+        pDdiTable->pfnGetConfig                              = validation_layer::zesRasGetConfig;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnSetConfig                                = pDdiTable->pfnSetConfig;
+        pDdiTable->pfnSetConfig                              = validation_layer::zesRasSetConfig;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnGetState                                 = pDdiTable->pfnGetState;
+        pDdiTable->pfnGetState                               = validation_layer::zesRasGetState;
+    }
     return result;
 }
 
@@ -7714,18 +7818,19 @@ zesGetRasExpProcAddrTable(
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if (ZE_MAJOR_VERSION(validation_layer::context.version) != ZE_MAJOR_VERSION(version) ||
-        ZE_MINOR_VERSION(validation_layer::context.version) > ZE_MINOR_VERSION(version))
+    if (validation_layer::context.version < version)
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
-    dditable.pfnGetStateExp                              = pDdiTable->pfnGetStateExp;
-    pDdiTable->pfnGetStateExp                            = validation_layer::zesRasGetStateExp;
-
-    dditable.pfnClearStateExp                            = pDdiTable->pfnClearStateExp;
-    pDdiTable->pfnClearStateExp                          = validation_layer::zesRasClearStateExp;
-
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnGetStateExp                              = pDdiTable->pfnGetStateExp;
+        pDdiTable->pfnGetStateExp                            = validation_layer::zesRasGetStateExp;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnClearStateExp                            = pDdiTable->pfnClearStateExp;
+        pDdiTable->pfnClearStateExp                          = validation_layer::zesRasClearStateExp;
+    }
     return result;
 }
 
@@ -7748,36 +7853,43 @@ zesGetSchedulerProcAddrTable(
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if (ZE_MAJOR_VERSION(validation_layer::context.version) != ZE_MAJOR_VERSION(version) ||
-        ZE_MINOR_VERSION(validation_layer::context.version) > ZE_MINOR_VERSION(version))
+    if (validation_layer::context.version < version)
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
-    dditable.pfnGetProperties                            = pDdiTable->pfnGetProperties;
-    pDdiTable->pfnGetProperties                          = validation_layer::zesSchedulerGetProperties;
-
-    dditable.pfnGetCurrentMode                           = pDdiTable->pfnGetCurrentMode;
-    pDdiTable->pfnGetCurrentMode                         = validation_layer::zesSchedulerGetCurrentMode;
-
-    dditable.pfnGetTimeoutModeProperties                 = pDdiTable->pfnGetTimeoutModeProperties;
-    pDdiTable->pfnGetTimeoutModeProperties               = validation_layer::zesSchedulerGetTimeoutModeProperties;
-
-    dditable.pfnGetTimesliceModeProperties               = pDdiTable->pfnGetTimesliceModeProperties;
-    pDdiTable->pfnGetTimesliceModeProperties             = validation_layer::zesSchedulerGetTimesliceModeProperties;
-
-    dditable.pfnSetTimeoutMode                           = pDdiTable->pfnSetTimeoutMode;
-    pDdiTable->pfnSetTimeoutMode                         = validation_layer::zesSchedulerSetTimeoutMode;
-
-    dditable.pfnSetTimesliceMode                         = pDdiTable->pfnSetTimesliceMode;
-    pDdiTable->pfnSetTimesliceMode                       = validation_layer::zesSchedulerSetTimesliceMode;
-
-    dditable.pfnSetExclusiveMode                         = pDdiTable->pfnSetExclusiveMode;
-    pDdiTable->pfnSetExclusiveMode                       = validation_layer::zesSchedulerSetExclusiveMode;
-
-    dditable.pfnSetComputeUnitDebugMode                  = pDdiTable->pfnSetComputeUnitDebugMode;
-    pDdiTable->pfnSetComputeUnitDebugMode                = validation_layer::zesSchedulerSetComputeUnitDebugMode;
-
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnGetProperties                            = pDdiTable->pfnGetProperties;
+        pDdiTable->pfnGetProperties                          = validation_layer::zesSchedulerGetProperties;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnGetCurrentMode                           = pDdiTable->pfnGetCurrentMode;
+        pDdiTable->pfnGetCurrentMode                         = validation_layer::zesSchedulerGetCurrentMode;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnGetTimeoutModeProperties                 = pDdiTable->pfnGetTimeoutModeProperties;
+        pDdiTable->pfnGetTimeoutModeProperties               = validation_layer::zesSchedulerGetTimeoutModeProperties;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnGetTimesliceModeProperties               = pDdiTable->pfnGetTimesliceModeProperties;
+        pDdiTable->pfnGetTimesliceModeProperties             = validation_layer::zesSchedulerGetTimesliceModeProperties;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnSetTimeoutMode                           = pDdiTable->pfnSetTimeoutMode;
+        pDdiTable->pfnSetTimeoutMode                         = validation_layer::zesSchedulerSetTimeoutMode;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnSetTimesliceMode                         = pDdiTable->pfnSetTimesliceMode;
+        pDdiTable->pfnSetTimesliceMode                       = validation_layer::zesSchedulerSetTimesliceMode;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnSetExclusiveMode                         = pDdiTable->pfnSetExclusiveMode;
+        pDdiTable->pfnSetExclusiveMode                       = validation_layer::zesSchedulerSetExclusiveMode;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnSetComputeUnitDebugMode                  = pDdiTable->pfnSetComputeUnitDebugMode;
+        pDdiTable->pfnSetComputeUnitDebugMode                = validation_layer::zesSchedulerSetComputeUnitDebugMode;
+    }
     return result;
 }
 
@@ -7800,21 +7912,23 @@ zesGetStandbyProcAddrTable(
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if (ZE_MAJOR_VERSION(validation_layer::context.version) != ZE_MAJOR_VERSION(version) ||
-        ZE_MINOR_VERSION(validation_layer::context.version) > ZE_MINOR_VERSION(version))
+    if (validation_layer::context.version < version)
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
-    dditable.pfnGetProperties                            = pDdiTable->pfnGetProperties;
-    pDdiTable->pfnGetProperties                          = validation_layer::zesStandbyGetProperties;
-
-    dditable.pfnGetMode                                  = pDdiTable->pfnGetMode;
-    pDdiTable->pfnGetMode                                = validation_layer::zesStandbyGetMode;
-
-    dditable.pfnSetMode                                  = pDdiTable->pfnSetMode;
-    pDdiTable->pfnSetMode                                = validation_layer::zesStandbySetMode;
-
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnGetProperties                            = pDdiTable->pfnGetProperties;
+        pDdiTable->pfnGetProperties                          = validation_layer::zesStandbyGetProperties;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnGetMode                                  = pDdiTable->pfnGetMode;
+        pDdiTable->pfnGetMode                                = validation_layer::zesStandbyGetMode;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnSetMode                                  = pDdiTable->pfnSetMode;
+        pDdiTable->pfnSetMode                                = validation_layer::zesStandbySetMode;
+    }
     return result;
 }
 
@@ -7837,24 +7951,27 @@ zesGetTemperatureProcAddrTable(
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if (ZE_MAJOR_VERSION(validation_layer::context.version) != ZE_MAJOR_VERSION(version) ||
-        ZE_MINOR_VERSION(validation_layer::context.version) > ZE_MINOR_VERSION(version))
+    if (validation_layer::context.version < version)
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
-    dditable.pfnGetProperties                            = pDdiTable->pfnGetProperties;
-    pDdiTable->pfnGetProperties                          = validation_layer::zesTemperatureGetProperties;
-
-    dditable.pfnGetConfig                                = pDdiTable->pfnGetConfig;
-    pDdiTable->pfnGetConfig                              = validation_layer::zesTemperatureGetConfig;
-
-    dditable.pfnSetConfig                                = pDdiTable->pfnSetConfig;
-    pDdiTable->pfnSetConfig                              = validation_layer::zesTemperatureSetConfig;
-
-    dditable.pfnGetState                                 = pDdiTable->pfnGetState;
-    pDdiTable->pfnGetState                               = validation_layer::zesTemperatureGetState;
-
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnGetProperties                            = pDdiTable->pfnGetProperties;
+        pDdiTable->pfnGetProperties                          = validation_layer::zesTemperatureGetProperties;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnGetConfig                                = pDdiTable->pfnGetConfig;
+        pDdiTable->pfnGetConfig                              = validation_layer::zesTemperatureGetConfig;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnSetConfig                                = pDdiTable->pfnSetConfig;
+        pDdiTable->pfnSetConfig                              = validation_layer::zesTemperatureSetConfig;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnGetState                                 = pDdiTable->pfnGetState;
+        pDdiTable->pfnGetState                               = validation_layer::zesTemperatureGetState;
+    }
     return result;
 }
 
@@ -7877,39 +7994,47 @@ zesGetVFManagementExpProcAddrTable(
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if (ZE_MAJOR_VERSION(validation_layer::context.version) != ZE_MAJOR_VERSION(version) ||
-        ZE_MINOR_VERSION(validation_layer::context.version) > ZE_MINOR_VERSION(version))
+    if (validation_layer::context.version < version)
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
-    dditable.pfnGetVFCapabilitiesExp                     = pDdiTable->pfnGetVFCapabilitiesExp;
-    pDdiTable->pfnGetVFCapabilitiesExp                   = validation_layer::zesVFManagementGetVFCapabilitiesExp;
-
-    dditable.pfnGetVFMemoryUtilizationExp2               = pDdiTable->pfnGetVFMemoryUtilizationExp2;
-    pDdiTable->pfnGetVFMemoryUtilizationExp2             = validation_layer::zesVFManagementGetVFMemoryUtilizationExp2;
-
-    dditable.pfnGetVFEngineUtilizationExp2               = pDdiTable->pfnGetVFEngineUtilizationExp2;
-    pDdiTable->pfnGetVFEngineUtilizationExp2             = validation_layer::zesVFManagementGetVFEngineUtilizationExp2;
-
-    dditable.pfnGetVFCapabilitiesExp2                    = pDdiTable->pfnGetVFCapabilitiesExp2;
-    pDdiTable->pfnGetVFCapabilitiesExp2                  = validation_layer::zesVFManagementGetVFCapabilitiesExp2;
-
-    dditable.pfnGetVFPropertiesExp                       = pDdiTable->pfnGetVFPropertiesExp;
-    pDdiTable->pfnGetVFPropertiesExp                     = validation_layer::zesVFManagementGetVFPropertiesExp;
-
-    dditable.pfnGetVFMemoryUtilizationExp                = pDdiTable->pfnGetVFMemoryUtilizationExp;
-    pDdiTable->pfnGetVFMemoryUtilizationExp              = validation_layer::zesVFManagementGetVFMemoryUtilizationExp;
-
-    dditable.pfnGetVFEngineUtilizationExp                = pDdiTable->pfnGetVFEngineUtilizationExp;
-    pDdiTable->pfnGetVFEngineUtilizationExp              = validation_layer::zesVFManagementGetVFEngineUtilizationExp;
-
-    dditable.pfnSetVFTelemetryModeExp                    = pDdiTable->pfnSetVFTelemetryModeExp;
-    pDdiTable->pfnSetVFTelemetryModeExp                  = validation_layer::zesVFManagementSetVFTelemetryModeExp;
-
-    dditable.pfnSetVFTelemetrySamplingIntervalExp        = pDdiTable->pfnSetVFTelemetrySamplingIntervalExp;
-    pDdiTable->pfnSetVFTelemetrySamplingIntervalExp      = validation_layer::zesVFManagementSetVFTelemetrySamplingIntervalExp;
-
+    if (version >= ZE_API_VERSION_1_10) {
+        dditable.pfnGetVFCapabilitiesExp                     = pDdiTable->pfnGetVFCapabilitiesExp;
+        pDdiTable->pfnGetVFCapabilitiesExp                   = validation_layer::zesVFManagementGetVFCapabilitiesExp;
+    }
+    if (version >= ZE_API_VERSION_1_10) {
+        dditable.pfnGetVFMemoryUtilizationExp2               = pDdiTable->pfnGetVFMemoryUtilizationExp2;
+        pDdiTable->pfnGetVFMemoryUtilizationExp2             = validation_layer::zesVFManagementGetVFMemoryUtilizationExp2;
+    }
+    if (version >= ZE_API_VERSION_1_10) {
+        dditable.pfnGetVFEngineUtilizationExp2               = pDdiTable->pfnGetVFEngineUtilizationExp2;
+        pDdiTable->pfnGetVFEngineUtilizationExp2             = validation_layer::zesVFManagementGetVFEngineUtilizationExp2;
+    }
+    if (version >= ZE_API_VERSION_1_12) {
+        dditable.pfnGetVFCapabilitiesExp2                    = pDdiTable->pfnGetVFCapabilitiesExp2;
+        pDdiTable->pfnGetVFCapabilitiesExp2                  = validation_layer::zesVFManagementGetVFCapabilitiesExp2;
+    }
+    if (version >= ZE_API_VERSION_1_9) {
+        dditable.pfnGetVFPropertiesExp                       = pDdiTable->pfnGetVFPropertiesExp;
+        pDdiTable->pfnGetVFPropertiesExp                     = validation_layer::zesVFManagementGetVFPropertiesExp;
+    }
+    if (version >= ZE_API_VERSION_1_9) {
+        dditable.pfnGetVFMemoryUtilizationExp                = pDdiTable->pfnGetVFMemoryUtilizationExp;
+        pDdiTable->pfnGetVFMemoryUtilizationExp              = validation_layer::zesVFManagementGetVFMemoryUtilizationExp;
+    }
+    if (version >= ZE_API_VERSION_1_9) {
+        dditable.pfnGetVFEngineUtilizationExp                = pDdiTable->pfnGetVFEngineUtilizationExp;
+        pDdiTable->pfnGetVFEngineUtilizationExp              = validation_layer::zesVFManagementGetVFEngineUtilizationExp;
+    }
+    if (version >= ZE_API_VERSION_1_9) {
+        dditable.pfnSetVFTelemetryModeExp                    = pDdiTable->pfnSetVFTelemetryModeExp;
+        pDdiTable->pfnSetVFTelemetryModeExp                  = validation_layer::zesVFManagementSetVFTelemetryModeExp;
+    }
+    if (version >= ZE_API_VERSION_1_9) {
+        dditable.pfnSetVFTelemetrySamplingIntervalExp        = pDdiTable->pfnSetVFTelemetrySamplingIntervalExp;
+        pDdiTable->pfnSetVFTelemetrySamplingIntervalExp      = validation_layer::zesVFManagementSetVFTelemetrySamplingIntervalExp;
+    }
     return result;
 }
 
