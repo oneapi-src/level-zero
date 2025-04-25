@@ -101,6 +101,7 @@ namespace ze_lib
         }
 
         bool zeInitDriversSupport = true;
+        ze_api_version_t current_api_version = version;
         const std::string loader_name = "loader";
         for (auto &component : versions) {
             if (loader_name == component.component_name) {
@@ -119,6 +120,12 @@ namespace ze_lib
                     return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
                 }
             }
+        }
+
+        if (version > current_api_version) {
+            version = current_api_version;
+            std::string message = "ze_lib Context Init() Static Loader Requesting Loader API Version v" + std::to_string(ZE_MAJOR_VERSION(version)) + "." + std::to_string(ZE_MINOR_VERSION(version));
+            debug_trace_message(message, "");
         }
 
         typedef HMODULE (ZE_APICALL *getTracing_t)();
