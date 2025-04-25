@@ -152,6 +152,7 @@ namespace loader
         ~context_t();
         bool intercept_enabled = false;
         bool debugTraceEnabled = false;
+        bool driverDDIPathDefault = false;
         bool tracingLayerEnabled = false;
         std::once_flag coreDriverSortOnce;
         std::once_flag sysmanDriverSortOnce;

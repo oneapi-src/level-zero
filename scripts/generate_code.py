@@ -151,10 +151,10 @@ def _mako_loader_cpp(path, namespace, tags, version, specs, meta):
         specs=specs,
         meta=meta)
 
-    template = "ldrddi_legacy.cpp.mako"
+    template = "ldrddi_driver_ddi.cpp.mako"
     fin = os.path.join(templates_dir, template)
 
-    name = "%s_ldrddi_legacy"%(namespace)
+    name = "%s_ldrddi_driver_ddi"%(namespace)
     filename = "%s.cpp"%(name)
     fout = os.path.join(path, filename)
 

@@ -18,6 +18,8 @@ from templates import helper as th
  */
 #include "${x}_loader_internal.h"
 
+using namespace loader_driver_ddi;
+
 namespace loader
 {
     %for obj in th.extract_objs(specs, r"function"):
@@ -179,7 +181,7 @@ namespace loader
                             }
                             drv.driverDDIHandleSupportQueried = true;
                         }
-                        if (!(drv.properties.flags & ZE_DRIVER_DDI_HANDLE_EXT_FLAG_DDI_HANDLE_EXT_SUPPORTED)) {
+                        if (!(drv.properties.flags & ZE_DRIVER_DDI_HANDLE_EXT_FLAG_DDI_HANDLE_EXT_SUPPORTED) || !loader::context->driverDDIPathDefault) {
                             ${obj['params'][1]['name']}[ driver_index ] = reinterpret_cast<${n}_driver_handle_t>(
                                 context->${n}_driver_factory.getInstance( ${obj['params'][1]['name']}[ driver_index ], &drv.dditable ) );
                         }
@@ -204,67 +206,206 @@ namespace loader
         %else:
         %for i, item in enumerate(th.get_loader_prologue(n, tags, obj, meta)):
         %if 0 == i:
-        // extract handle's function pointer table
+        // extract driver's function pointer table
         %if 'range' in item:
-        %if namespace == "ze":
-        auto dditable = reinterpret_cast<ze_handle_t*>( ${item['name']}[ 0 ] )->pCore;
-        %elif namespace == "zet":
-        auto dditable = reinterpret_cast<ze_handle_t*>( ${item['name']}[ 0 ] )->pTools;
-        %elif namespace == "zes":
-        auto dditable = reinterpret_cast<ze_handle_t*>( ${item['name']}[ 0 ] )->pSysman;
-        %endif
+        auto dditable = reinterpret_cast<${item['obj']}*>( ${item['name']}[ 0 ] )->dditable;
         %else:
-        %if namespace == "ze":
-        auto dditable = reinterpret_cast<ze_handle_t*>( ${item['name']} )->pCore;
-        %elif namespace == "zet":
-        auto dditable = reinterpret_cast<ze_handle_t*>( ${item['name']} )->pTools;
-        %elif namespace == "zes":
-        auto dditable = reinterpret_cast<ze_handle_t*>( ${item['name']} )->pSysman;
+        auto dditable = reinterpret_cast<${item['obj']}*>( ${item['name']} )->dditable;
         %endif
-        %endif
-        if (dditable->isValidFlag == 0)
-            return ${X}_RESULT_ERROR_UNINITIALIZED;
-        // Check that api version in the driver is supported by this version of the API
-        if (dditable->version < ${th.get_version(obj)}) {
-            return ${X}_RESULT_ERROR_UNSUPPORTED_VERSION;
-        }
-        auto ${th.make_pfn_name(n, tags, obj)} = dditable->${th.get_table_name(n, tags, obj)}->${th.make_pfn_name(n, tags, obj)};
+        auto ${th.make_pfn_name(n, tags, obj)} = dditable->${n}.${th.get_table_name(n, tags, obj)}.${th.make_pfn_name(n, tags, obj)};
         if( nullptr == ${th.make_pfn_name(n, tags, obj)} )
             return ${X}_RESULT_ERROR_UNINITIALIZED;
+
+        %endif
+        %if 'range' in item:
+        <%
+        add_local = True%>// convert loader handles to driver handles
+        auto ${item['name']}Local = new ${item['type']} [${item['range'][1]}];
+        <%
+        arrays_to_delete.append(item['name']+ 'Local')
+        %>for( size_t i = ${item['range'][0]}; ( nullptr != ${item['name']} ) && ( i < ${item['range'][1]} ); ++i )
+            ${item['name']}Local[ i ] = reinterpret_cast<${item['obj']}*>( ${item['name']}[ i ] )->handle;
+        %else:
+        %if item['optional']:
+        // convert loader handle to driver handle
+        ${item['name']} = ( ${item['name']} ) ? reinterpret_cast<${item['obj']}*>( ${item['name']} )->handle : nullptr;
+        %else:
+        %if re.match(r"\w+ImageDestroy$", th.make_func_name(n, tags, obj)):
+        // remove the handle from the kernel arugment map
+        {
+            std::lock_guard<std::mutex> lock(context->image_handle_map_lock);
+            context->image_handle_map.erase(reinterpret_cast<ze_image_object_t*>(hImage));
+        }
+        %endif
+        %if re.match(r"\w+SamplerDestroy$", th.make_func_name(n, tags, obj)):
+        // remove the handle from the kernel arugment map
+        {
+            std::lock_guard<std::mutex> lock(context->sampler_handle_map_lock);
+            context->sampler_handle_map.erase(reinterpret_cast<ze_sampler_object_t*>(hSampler));
+        }
+        %endif
+        // convert loader handle to driver handle
+        ${item['name']} = reinterpret_cast<${item['obj']}*>( ${item['name']} )->handle;
+        %endif
+        %endif
+
+        %endfor
+        %if re.match(r"\w+KernelSetArgumentValue$", th.make_func_name(n, tags, obj)):
+        // convert pArgValue to correct handle if applicable
+        void *internalArgValue = const_cast<void *>(pArgValue);
+        if (pArgValue) {
+            // check if the arg value is a translated handle
+            ze_image_object_t **imageHandle = static_cast<ze_image_object_t **>(internalArgValue);
+            ze_sampler_object_t **samplerHandle = static_cast<ze_sampler_object_t **>(internalArgValue);
+            {
+                std::lock_guard<std::mutex> image_lock(context->image_handle_map_lock);
+                std::lock_guard<std::mutex> sampler_lock(context->sampler_handle_map_lock);
+                if( context->image_handle_map.find(*imageHandle) != context->image_handle_map.end() ) {
+                    internalArgValue = &context->image_handle_map[*imageHandle];
+                } else if( context->sampler_handle_map.find(*samplerHandle) != context->sampler_handle_map.end() ) {
+                    internalArgValue = &context->sampler_handle_map[*samplerHandle];
+                }
+            }
+        }
+        %endif
+        ## Workaround due to incorrect defintion of phWaitEvents in the ze headers which missed the range values.
+        ## To be removed once the headers have been updated in a new spec release.
+        %if re.match(r"\w+CommandListAppendMetricQueryEnd$", th.make_func_name(n, tags, obj)):
+        // convert loader handles to driver handles
+        auto phWaitEventsLocal = new ze_event_handle_t [numWaitEvents];
+        for( size_t i = 0; ( nullptr != phWaitEvents ) && ( i < numWaitEvents ); ++i )
+            phWaitEventsLocal[ i ] = reinterpret_cast<ze_event_object_t*>( phWaitEvents[ i ] )->handle;
+
+        // forward to device-driver
+        result = pfnAppendMetricQueryEnd( hCommandList, hMetricQuery, hSignalEvent, numWaitEvents, phWaitEventsLocal );
+        delete []phWaitEventsLocal;
+        %else:
+        // forward to device-driver
+        %if add_local:
+        result = ${th.make_pfn_name(n, tags, obj)}( ${", ".join(th.make_param_lines(n, tags, obj, format=["name", "local"]))} );
+        %for array_name in arrays_to_delete:
+        delete []${array_name};
+        %endfor
+        %else:
+        %if re.match(r"\w+KernelSetArgumentValue$", th.make_func_name(n, tags, obj)):
+        result = pfnSetArgumentValue( hKernel, argIndex, argSize, const_cast<const void *>(internalArgValue) );
+        %else:
+        result = ${th.make_pfn_name(n, tags, obj)}( ${", ".join(th.make_param_lines(n, tags, obj, format=["name"]))} );
+        %endif
+        %endif
+        %endif
+<%
+        del arrays_to_delete
+        del add_local%>
+        %for i, item in enumerate(th.get_loader_epilogue(n, tags, obj, meta)):
+        %if 0 == i:
+        %if not re.match(r"\w+ModuleDynamicLink$", th.make_func_name(n, tags, obj)) and not re.match(r"\w+ModuleCreate$", th.make_func_name(n, tags, obj)):
+        if( ${X}_RESULT_SUCCESS != result )
+            return result;
+
+        %endif
+        %endif
+        %if item['release']:
+        // release loader handle
+        context->${item['factory']}.release( ${item['name']} );
+        %else:
+        try
+        {
+            %if 'range' in item:
+            // convert driver handles to loader handles
+            for( size_t i = ${item['range'][0]}; ( nullptr != ${item['name']} ) && ( i < ${item['range'][1]} ); ++i )
+                ${item['name']}[ i ] = reinterpret_cast<${item['type']}>(
+                    context->${item['factory']}.getInstance( ${item['name']}[ i ], dditable ) );
+            %else:
+            // convert driver handle to loader handle
+            %if item['optional']:
+            if( nullptr != ${item['name']} )
+                *${item['name']} = reinterpret_cast<${item['type']}>(
+                    context->${item['factory']}.getInstance( *${item['name']}, dditable ) );
+            %else:
+            %if re.match(r"\w+ImageCreate$", th.make_func_name(n, tags, obj)) or re.match(r"\w+SamplerCreate$", th.make_func_name(n, tags, obj)) or re.match(r"\w+ImageViewCreateExp$", th.make_func_name(n, tags, obj)):
+            ${item['type']} internalHandlePtr = *${item['name']};
+            %endif
+            *${item['name']} = reinterpret_cast<${item['type']}>(
+                context->${item['factory']}.getInstance( *${item['name']}, dditable ) );
+            %if re.match(r"\w+ImageCreate$", th.make_func_name(n, tags, obj)) or re.match(r"\w+ImageViewCreateExp$", th.make_func_name(n, tags, obj)):
+            // convert loader handle to driver handle and store in map
+            {
+                std::lock_guard<std::mutex> lock(context->image_handle_map_lock);
+                context->image_handle_map.insert({context->ze_image_factory.getInstance( internalHandlePtr, dditable ), internalHandlePtr});
+            }
+            %endif
+            %if re.match(r"\w+SamplerCreate$", th.make_func_name(n, tags, obj)):
+            // convert loader handle to driver handle and store in map
+            {
+                std::lock_guard<std::mutex> lock(context->sampler_handle_map_lock);
+                context->sampler_handle_map.insert({context->ze_sampler_factory.getInstance( internalHandlePtr, dditable ), internalHandlePtr});
+            }
+            %endif
+            %endif
+            %endif
+        }
+        catch( std::bad_alloc& )
+        {
+            result = ${X}_RESULT_ERROR_OUT_OF_HOST_MEMORY;
+        }
+        %endif
+
+        %if 0 == i:
+        %if re.match(r"\w+ModuleDynamicLink$", th.make_func_name(n, tags, obj)) or re.match(r"\w+ModuleCreate$", th.make_func_name(n, tags, obj)):
+        if( ${X}_RESULT_SUCCESS != result )
+            return result;
+
+        %endif
         %endif
         %endfor
-        // forward to device-driver
-        result = ${th.make_pfn_name(n, tags, obj)}( ${", ".join(th.make_param_lines(n, tags, obj, format=["name"]))} );
+        %endif
         return result;
     }
     %if 'condition' in obj:
     #endif // ${th.subt(n, tags, obj['condition'])}
     %endif
 
-    %endif
-    %if re.match(r"Init", obj['name']) or re.match(r"\w+InitDrivers$", th.make_func_name(n, tags, obj)) or re.match(r"\w+DriverGet$", th.make_func_name(n, tags, obj)):
-        return result;
-    }
-    %endif
     %endfor
-
-    ///////////////////////////////////////////////////////////////////////////////
-    /// @brief function for removing the ddi driver tables for ${n}
-    __${x}dlllocal void ${X}_APICALL
-    ${n}DestroyDDiDriverTables(${n}_dditable_driver_t* pDdiTable)
-    {
-        // Delete ddi tables
-%for tbl in th.get_pfntables(specs, meta, n, tags):
-        delete pDdiTable->${tbl['name']};
-%endfor
-        delete pDdiTable;
-    }
-
 } // namespace loader
 
 #if defined(__cplusplus)
 extern "C" {
 #endif
+
+%for tbl in th.get_pfntables(specs, meta, n, tags):
+///////////////////////////////////////////////////////////////////////////////
+/// @brief function for filling the legacy api pointers for ${tbl['name']} table
+__${x}dlllocal void ${X}_APICALL
+${tbl['export']['name']}Legacy()
+{
+    // return pointers to the Loader's Functions.
+    %for obj in tbl['functions']:
+    %if 'condition' in obj:
+#if ${th.subt(n, tags, obj['condition'])}
+    %endif
+    %if namespace == "ze":
+    loader::loaderDispatch->pCore->${tbl['name']}->${th.append_ws(th.make_pfn_name(n, tags, obj), 43)} = loader::${th.make_func_name(n, tags, obj)};
+    %elif namespace == "zet":
+    loader::loaderDispatch->pTools->${tbl['name']}->${th.append_ws(th.make_pfn_name(n, tags, obj), 43)} = loader::${th.make_func_name(n, tags, obj)};
+    %elif namespace == "zes":
+    loader::loaderDispatch->pSysman->${tbl['name']}->${th.append_ws(th.make_pfn_name(n, tags, obj), 43)} = loader::${th.make_func_name(n, tags, obj)};
+    %endif
+    %if 'condition' in obj:
+#else
+    %if namespace == "ze":
+    loader::loaderDispatch->pCore->${tbl['name']}->${th.append_ws(th.make_pfn_name(n, tags, obj), 43)} = nullptr;
+    %elif namespace == "zet":
+    loader::loaderDispatch->pTools->${tbl['name']}->${th.append_ws(th.make_pfn_name(n, tags, obj), 43)} = nullptr;
+    %elif namespace == "zes":
+    loader::loaderDispatch->pSysman->${tbl['name']}->${th.append_ws(th.make_pfn_name(n, tags, obj), 43)} = nullptr;
+    %endif
+#endif
+    %endif
+    %endfor
+}
+
+%endfor
 
 %for tbl in th.get_pfntables(specs, meta, n, tags):
 ///////////////////////////////////////////////////////////////////////////////
@@ -368,7 +509,15 @@ ${tbl['export']['name']}(
             %if 'condition' in obj:
         #if ${th.subt(n, tags, obj['condition'])}
             %endif
+            %if not (re.match(r"Init", obj['name']) or re.match(r"\w+InitDrivers$", th.make_func_name(n, tags, obj)) or re.match(r"\w+DriverGet$", th.make_func_name(n, tags, obj))):
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->${th.append_ws(th.make_pfn_name(n, tags, obj), 43)} = loader_driver_ddi::${th.make_func_name(n, tags, obj)};
+            } else {
+                pDdiTable->${th.append_ws(th.make_pfn_name(n, tags, obj), 43)} = loader::${th.make_func_name(n, tags, obj)};
+            }
+            %else:
             pDdiTable->${th.append_ws(th.make_pfn_name(n, tags, obj), 43)} = loader::${th.make_func_name(n, tags, obj)};
+            %endif
             %if 'condition' in obj:
         #else
             pDdiTable->${th.append_ws(th.make_pfn_name(n, tags, obj), 43)} = nullptr;

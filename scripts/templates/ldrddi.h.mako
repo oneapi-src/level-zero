@@ -32,8 +32,22 @@ namespace loader
 
     %endif
     %endfor
+}
+
+namespace loader_driver_ddi
+{
     __${x}dlllocal void ${X}_APICALL
     ${n}DestroyDDiDriverTables(${n}_dditable_driver_t* pDdiTable);
+    %for obj in th.extract_objs(specs, r"function"):
+    %if not (re.match(r"Init", obj['name']) or re.match(r"\w+InitDrivers$", th.make_func_name(n, tags, obj)) or re.match(r"\w+DriverGet$", th.make_func_name(n, tags, obj))):
+    __${x}dlllocal ${x}_result_t ${X}_APICALL
+    ${th.make_func_name(n, tags, obj)}(
+        %for line in th.make_param_lines(n, tags, obj):
+        ${line}
+        %endfor
+        );
+    %endif
+    %endfor
 }
 
 #if defined(__cplusplus)

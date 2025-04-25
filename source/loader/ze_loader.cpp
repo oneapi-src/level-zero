@@ -478,6 +478,7 @@ namespace loader
         loader::loaderZetDdiTable = new zet_dditable_t();
         loader::loaderZesDdiTable = new zes_dditable_t();
         debugTraceEnabled = getenv_tobool( "ZE_ENABLE_LOADER_DEBUG_TRACE" );
+        driverDDIPathDefault = getenv_tobool( "ZE_ENABLE_LOADER_DRIVER_DDI_PATH" );
         auto discoveredDrivers = discoverEnabledDrivers();
         std::string loadLibraryErrorValue;
 
@@ -681,9 +682,9 @@ namespace loader
                 }
             }
         }
-        loader::zeDestroyDDiDriverTables(loader::loaderDispatch->pCore);
-        loader::zetDestroyDDiDriverTables(loader::loaderDispatch->pTools);
-        loader::zesDestroyDDiDriverTables(loader::loaderDispatch->pSysman);
+        loader_driver_ddi::zeDestroyDDiDriverTables(loader::loaderDispatch->pCore);
+        loader_driver_ddi::zetDestroyDDiDriverTables(loader::loaderDispatch->pTools);
+        loader_driver_ddi::zesDestroyDDiDriverTables(loader::loaderDispatch->pSysman);
         delete loader::loaderDispatch;
     };
 
