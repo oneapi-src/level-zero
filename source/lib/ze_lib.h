@@ -27,6 +27,7 @@
 namespace ze_lib
 {
     ///////////////////////////////////////////////////////////////////////////////
+    typedef bool (ZE_APICALL *zelCheckIsLoaderInTearDown_t)();
     class __zedlllocal context_t
     {
     public:
@@ -175,6 +176,7 @@ namespace ze_lib
         bool debugTraceEnabled = false;
         bool dynamicTracingSupported = true;
         ze_pfnDriverGet_t loaderDriverGet = nullptr;
+        zelCheckIsLoaderInTearDown_t checkIsLoaderInTearDown = nullptr;
     };
 
     extern bool destruction;

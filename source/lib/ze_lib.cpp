@@ -156,6 +156,8 @@ namespace ze_lib
         std::string version_message = "Loader API Version to be requested is v" + std::to_string(ZE_MAJOR_VERSION(version)) + "." + std::to_string(ZE_MINOR_VERSION(version));
         debug_trace_message(version_message, "");
         loaderDriverGet = reinterpret_cast<ze_pfnDriverGet_t>(GET_FUNCTION_PTR(loader, "zeDriverGet"));
+        checkIsLoaderInTearDown = reinterpret_cast<zelCheckIsLoaderInTearDown_t>(
+            GET_FUNCTION_PTR(loader, "zelCheckIsLoaderInTearDown"));
 #else
         result = zeLoaderInit();
         if( ZE_RESULT_SUCCESS == result ) {
@@ -497,6 +499,9 @@ zelCheckIsLoaderInTearDown() {
         return true;
     }
     #if defined(DYNAMIC_LOAD_LOADER) && defined(_WIN32)
+    if (ze_lib::context->checkIsLoaderInTearDown) {
+        return ze_lib::context->checkIsLoaderInTearDown();
+    }
     std::promise<int> stabilityPromise;
     std::future<int> resultFuture = stabilityPromise.get_future();
     int result = -1;
