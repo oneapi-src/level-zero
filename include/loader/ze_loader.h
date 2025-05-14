@@ -95,6 +95,17 @@ ZE_DLLEXPORT bool ZE_APICALL
 zelCheckIsLoaderInTearDown();
 
 ///////////////////////////////////////////////////////////////////////////////
+/// @brief Exported function for registering a callback to indicate teardown.
+/// @details The callback function will be invoked when the loader is in teardown.
+///
+typedef void (*zel_teardown_callback_t)(void);
+
+ZE_DLLEXPORT ze_result_t ZE_APICALL
+zelRegisterTeardownCallback(
+   zel_teardown_callback_t callback // [in] Pointer to the callback function
+);
+
+///////////////////////////////////////////////////////////////////////////////
 /// @brief Exported function for Disabling the Tracing Layer During Runtime.
 ///
 ZE_DLLEXPORT ze_result_t ZE_APICALL

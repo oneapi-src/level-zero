@@ -24,6 +24,8 @@
 #include <typeinfo>
 #include <iostream>
 
+typedef void (*zel_teardown_callback_t)(void);
+
 namespace ze_lib
 {
     ///////////////////////////////////////////////////////////////////////////////
@@ -175,12 +177,14 @@ namespace ze_lib
         bool debugTraceEnabled = false;
         bool dynamicTracingSupported = true;
         ze_pfnDriverGet_t loaderDriverGet = nullptr;
+        std::vector<zel_teardown_callback_t> teardownCallbacks;
     };
 
     extern bool destruction;
     extern context_t *context;
     #ifdef DYNAMIC_LOAD_LOADER
     extern bool delayContextDestruction;
+    extern bool loaderTeardownCallbackReceived;
     #endif
 
 } // namespace ze_lib

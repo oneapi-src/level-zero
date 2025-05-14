@@ -27,6 +27,10 @@ namespace ze_lib
         }
     }
     bool delayContextDestruction = false;
+    bool loaderTeardownCallbackReceived = false;
+    void teardownCallback() {
+        loaderTeardownCallbackReceived = true;
+    }
     #endif
     bool destruction = false;
 
@@ -39,6 +43,14 @@ namespace ze_lib
     ///////////////////////////////////////////////////////////////////////////////
     __zedlllocal context_t::~context_t()
     {
+        if (debugTraceEnabled) {
+            debug_trace_message("ze_lib Context Destructor", "");
+        }
+        // Call the teardown callbacks
+        for (auto &callback : teardownCallbacks) {
+            callback();
+        }
+        teardownCallbacks.clear();
 #ifdef DYNAMIC_LOAD_LOADER
         if (loader) {
             FREE_DRIVER_LIBRARY( loader );
@@ -346,6 +358,7 @@ namespace ze_lib
         if (!delayContextDestruction) {
             std::atexit(context_at_exit_destructor);
         }
+        zelRegisterTeardownCallback(teardownCallback);
         #endif
         return result;
     }
@@ -397,6 +410,13 @@ zelSetDriverTeardown()
 {
     ze_result_t result = ZE_RESULT_SUCCESS;
     if (!ze_lib::destruction) {
+        if (ze_lib::context) {
+            // Call the teardown callbacks
+            for (auto &callback : ze_lib::context->teardownCallbacks) {
+                callback();
+            }
+        }
+
         ze_lib::destruction = true;
     }
     return result;
@@ -476,6 +496,18 @@ void stabilityCheck(std::promise<int> stabilityPromise) {
 }
 #endif
 
+ZE_DLLEXPORT ze_result_t ZE_APICALL
+zelRegisterTeardownCallback(
+   zel_teardown_callback_t callback // [in] Pointer to the callback function
+) {
+    ze_result_t result = ZE_RESULT_SUCCESS;
+    if (nullptr == callback) {
+        return ZE_RESULT_ERROR_INVALID_ARGUMENT;
+    }
+    ze_lib::context->teardownCallbacks.push_back(callback);
+    return result;
+}
+
 /**
  * @brief Checks if the loader is in the process of tearing down.
  *
@@ -497,6 +529,9 @@ zelCheckIsLoaderInTearDown() {
         return true;
     }
     #if defined(DYNAMIC_LOAD_LOADER) && defined(_WIN32)
+    if (ze_lib::loaderTeardownCallbackReceived) {
+        return true;
+    }
     std::promise<int> stabilityPromise;
     std::future<int> resultFuture = stabilityPromise.get_future();
     int result = -1;
