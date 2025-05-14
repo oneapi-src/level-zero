@@ -93,6 +93,7 @@ namespace loader
         std::unordered_map<ze_image_object_t *, ze_image_handle_t>            image_handle_map;
         std::unordered_map<ze_sampler_object_t *, ze_sampler_handle_t>        sampler_handle_map;
         ze_api_version_t version = ZE_API_VERSION_CURRENT;
+        ze_api_version_t configured_version = ZE_API_VERSION_CURRENT;
 
         driver_vector_t allDrivers;
         driver_vector_t zeDrivers;

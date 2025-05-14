@@ -410,9 +410,10 @@ ${tbl['export']['name']}(
         %endif
         %if tbl['experimental'] is False: #//Experimental Tables may not be implemented in driver
         auto getTableResult = getTable( version, &drv.dditable.${n}.${tbl['name']});
-        if(getTableResult == ZE_RESULT_SUCCESS) 
+        if(getTableResult == ZE_RESULT_SUCCESS) {
             atLeastOneDriverValid = true;
-        else
+            loader::context->configured_version = version;
+        } else
             drv.initStatus = getTableResult;
         %if namespace != "zes":
         %if tbl['name'] == "Global":

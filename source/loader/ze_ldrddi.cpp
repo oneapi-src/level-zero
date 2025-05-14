@@ -6909,9 +6909,10 @@ zeGetGlobalProcAddrTable(
         if(!getTable) 
             continue; 
         auto getTableResult = getTable( version, &drv.dditable.ze.Global);
-        if(getTableResult == ZE_RESULT_SUCCESS) 
+        if(getTableResult == ZE_RESULT_SUCCESS) {
             atLeastOneDriverValid = true;
-        else
+            loader::context->configured_version = version;
+        } else
             drv.initStatus = getTableResult;
         if (drv.dditable.ze.Global.pfnInitDrivers) {
             loader::context->initDriversSupport = true;
@@ -7009,9 +7010,10 @@ zeGetRTASBuilderProcAddrTable(
         if(!getTable) 
             continue; 
         auto getTableResult = getTable( version, &drv.dditable.ze.RTASBuilder);
-        if(getTableResult == ZE_RESULT_SUCCESS) 
+        if(getTableResult == ZE_RESULT_SUCCESS) {
             atLeastOneDriverValid = true;
-        else
+            loader::context->configured_version = version;
+        } else
             drv.initStatus = getTableResult;
     }
 
@@ -7209,9 +7211,10 @@ zeGetRTASParallelOperationProcAddrTable(
         if(!getTable) 
             continue; 
         auto getTableResult = getTable( version, &drv.dditable.ze.RTASParallelOperation);
-        if(getTableResult == ZE_RESULT_SUCCESS) 
+        if(getTableResult == ZE_RESULT_SUCCESS) {
             atLeastOneDriverValid = true;
-        else
+            loader::context->configured_version = version;
+        } else
             drv.initStatus = getTableResult;
     }
 
@@ -7406,9 +7409,10 @@ zeGetDriverProcAddrTable(
         if(!getTable) 
             continue; 
         auto getTableResult = getTable( version, &drv.dditable.ze.Driver);
-        if(getTableResult == ZE_RESULT_SUCCESS) 
+        if(getTableResult == ZE_RESULT_SUCCESS) {
             atLeastOneDriverValid = true;
-        else
+            loader::context->configured_version = version;
+        } else
             drv.initStatus = getTableResult;
     }
 
@@ -7606,9 +7610,10 @@ zeGetDeviceProcAddrTable(
         if(!getTable) 
             continue; 
         auto getTableResult = getTable( version, &drv.dditable.ze.Device);
-        if(getTableResult == ZE_RESULT_SUCCESS) 
+        if(getTableResult == ZE_RESULT_SUCCESS) {
             atLeastOneDriverValid = true;
-        else
+            loader::context->configured_version = version;
+        } else
             drv.initStatus = getTableResult;
     }
 
@@ -7848,9 +7853,10 @@ zeGetContextProcAddrTable(
         if(!getTable) 
             continue; 
         auto getTableResult = getTable( version, &drv.dditable.ze.Context);
-        if(getTableResult == ZE_RESULT_SUCCESS) 
+        if(getTableResult == ZE_RESULT_SUCCESS) {
             atLeastOneDriverValid = true;
-        else
+            loader::context->configured_version = version;
+        } else
             drv.initStatus = getTableResult;
     }
 
@@ -7966,9 +7972,10 @@ zeGetCommandQueueProcAddrTable(
         if(!getTable) 
             continue; 
         auto getTableResult = getTable( version, &drv.dditable.ze.CommandQueue);
-        if(getTableResult == ZE_RESULT_SUCCESS) 
+        if(getTableResult == ZE_RESULT_SUCCESS) {
             atLeastOneDriverValid = true;
-        else
+            loader::context->configured_version = version;
+        } else
             drv.initStatus = getTableResult;
     }
 
@@ -8075,9 +8082,10 @@ zeGetCommandListProcAddrTable(
         if(!getTable) 
             continue; 
         auto getTableResult = getTable( version, &drv.dditable.ze.CommandList);
-        if(getTableResult == ZE_RESULT_SUCCESS) 
+        if(getTableResult == ZE_RESULT_SUCCESS) {
             atLeastOneDriverValid = true;
-        else
+            loader::context->configured_version = version;
+        } else
             drv.initStatus = getTableResult;
     }
 
@@ -8380,9 +8388,10 @@ zeGetEventProcAddrTable(
         if(!getTable) 
             continue; 
         auto getTableResult = getTable( version, &drv.dditable.ze.Event);
-        if(getTableResult == ZE_RESULT_SUCCESS) 
+        if(getTableResult == ZE_RESULT_SUCCESS) {
             atLeastOneDriverValid = true;
-        else
+            loader::context->configured_version = version;
+        } else
             drv.initStatus = getTableResult;
     }
 
@@ -8589,9 +8598,10 @@ zeGetEventPoolProcAddrTable(
         if(!getTable) 
             continue; 
         auto getTableResult = getTable( version, &drv.dditable.ze.EventPool);
-        if(getTableResult == ZE_RESULT_SUCCESS) 
+        if(getTableResult == ZE_RESULT_SUCCESS) {
             atLeastOneDriverValid = true;
-        else
+            loader::context->configured_version = version;
+        } else
             drv.initStatus = getTableResult;
     }
 
@@ -8704,9 +8714,10 @@ zeGetFenceProcAddrTable(
         if(!getTable) 
             continue; 
         auto getTableResult = getTable( version, &drv.dditable.ze.Fence);
-        if(getTableResult == ZE_RESULT_SUCCESS) 
+        if(getTableResult == ZE_RESULT_SUCCESS) {
             atLeastOneDriverValid = true;
-        else
+            loader::context->configured_version = version;
+        } else
             drv.initStatus = getTableResult;
     }
 
@@ -8810,9 +8821,10 @@ zeGetImageProcAddrTable(
         if(!getTable) 
             continue; 
         auto getTableResult = getTable( version, &drv.dditable.ze.Image);
-        if(getTableResult == ZE_RESULT_SUCCESS) 
+        if(getTableResult == ZE_RESULT_SUCCESS) {
             atLeastOneDriverValid = true;
-        else
+            loader::context->configured_version = version;
+        } else
             drv.initStatus = getTableResult;
     }
 
@@ -9007,9 +9019,10 @@ zeGetKernelProcAddrTable(
         if(!getTable) 
             continue; 
         auto getTableResult = getTable( version, &drv.dditable.ze.Kernel);
-        if(getTableResult == ZE_RESULT_SUCCESS) 
+        if(getTableResult == ZE_RESULT_SUCCESS) {
             atLeastOneDriverValid = true;
-        else
+            loader::context->configured_version = version;
+        } else
             drv.initStatus = getTableResult;
     }
 
@@ -9225,9 +9238,10 @@ zeGetMemProcAddrTable(
         if(!getTable) 
             continue; 
         auto getTableResult = getTable( version, &drv.dditable.ze.Mem);
-        if(getTableResult == ZE_RESULT_SUCCESS) 
+        if(getTableResult == ZE_RESULT_SUCCESS) {
             atLeastOneDriverValid = true;
-        else
+            loader::context->configured_version = version;
+        } else
             drv.initStatus = getTableResult;
     }
 
@@ -9446,9 +9460,10 @@ zeGetModuleProcAddrTable(
         if(!getTable) 
             continue; 
         auto getTableResult = getTable( version, &drv.dditable.ze.Module);
-        if(getTableResult == ZE_RESULT_SUCCESS) 
+        if(getTableResult == ZE_RESULT_SUCCESS) {
             atLeastOneDriverValid = true;
-        else
+            loader::context->configured_version = version;
+        } else
             drv.initStatus = getTableResult;
     }
 
@@ -9564,9 +9579,10 @@ zeGetModuleBuildLogProcAddrTable(
         if(!getTable) 
             continue; 
         auto getTableResult = getTable( version, &drv.dditable.ze.ModuleBuildLog);
-        if(getTableResult == ZE_RESULT_SUCCESS) 
+        if(getTableResult == ZE_RESULT_SUCCESS) {
             atLeastOneDriverValid = true;
-        else
+            loader::context->configured_version = version;
+        } else
             drv.initStatus = getTableResult;
     }
 
@@ -9661,9 +9677,10 @@ zeGetPhysicalMemProcAddrTable(
         if(!getTable) 
             continue; 
         auto getTableResult = getTable( version, &drv.dditable.ze.PhysicalMem);
-        if(getTableResult == ZE_RESULT_SUCCESS) 
+        if(getTableResult == ZE_RESULT_SUCCESS) {
             atLeastOneDriverValid = true;
-        else
+            loader::context->configured_version = version;
+        } else
             drv.initStatus = getTableResult;
     }
 
@@ -9758,9 +9775,10 @@ zeGetSamplerProcAddrTable(
         if(!getTable) 
             continue; 
         auto getTableResult = getTable( version, &drv.dditable.ze.Sampler);
-        if(getTableResult == ZE_RESULT_SUCCESS) 
+        if(getTableResult == ZE_RESULT_SUCCESS) {
             atLeastOneDriverValid = true;
-        else
+            loader::context->configured_version = version;
+        } else
             drv.initStatus = getTableResult;
     }
 
@@ -9855,9 +9873,10 @@ zeGetVirtualMemProcAddrTable(
         if(!getTable) 
             continue; 
         auto getTableResult = getTable( version, &drv.dditable.ze.VirtualMem);
-        if(getTableResult == ZE_RESULT_SUCCESS) 
+        if(getTableResult == ZE_RESULT_SUCCESS) {
             atLeastOneDriverValid = true;
-        else
+            loader::context->configured_version = version;
+        } else
             drv.initStatus = getTableResult;
     }
 
