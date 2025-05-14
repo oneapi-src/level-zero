@@ -24,6 +24,9 @@
 #include <typeinfo>
 #include <iostream>
 
+typedef void (*zel_loader_teardown_callback_t)();
+typedef void (*zel_application_teardown_callback_t)(uint32_t index);
+
 namespace ze_lib
 {
     ///////////////////////////////////////////////////////////////////////////////
@@ -175,12 +178,20 @@ namespace ze_lib
         bool debugTraceEnabled = false;
         bool dynamicTracingSupported = true;
         ze_pfnDriverGet_t loaderDriverGet = nullptr;
+        std::atomic<uint32_t> teardownCallbacksCount{0};
+        std::map<uint32_t, zel_loader_teardown_callback_t> teardownCallbacks;
+        #ifdef DYNAMIC_LOAD_LOADER
+        std::once_flag initTeardownCallbacksOnce;
+        zel_application_teardown_callback_t loaderTeardownCallback = nullptr;
+        uint32_t loaderTeardownCallbackIndex = 0;
+        #endif
     };
 
     extern bool destruction;
     extern context_t *context;
     #ifdef DYNAMIC_LOAD_LOADER
     extern bool delayContextDestruction;
+    extern bool loaderTeardownCallbackReceived;
     #endif
 
 } // namespace ze_lib
