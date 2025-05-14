@@ -372,7 +372,7 @@ namespace loader
             }
 
             zes_global_dditable_t global;
-            auto getTableResult = getTable(ZE_API_VERSION_CURRENT, &global);
+            auto getTableResult = getTable(this->configured_version, &global);
             if(getTableResult != ZE_RESULT_SUCCESS) {
                 if (debugTraceEnabled) {
                     std::string errorMessage = "init driver " + driver.name + " failed, zesGetGlobalProcAddrTable() failed with ";

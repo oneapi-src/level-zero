@@ -2652,9 +2652,10 @@ zetGetDeviceProcAddrTable(
         if(!getTable) 
             continue; 
         auto getTableResult = getTable( version, &drv.dditable.zet.Device);
-        if(getTableResult == ZE_RESULT_SUCCESS) 
+        if(getTableResult == ZE_RESULT_SUCCESS) {
             atLeastOneDriverValid = true;
-        else
+            loader::context->configured_version = version;
+        } else
             drv.initStatus = getTableResult;
     }
 
@@ -2808,9 +2809,10 @@ zetGetContextProcAddrTable(
         if(!getTable) 
             continue; 
         auto getTableResult = getTable( version, &drv.dditable.zet.Context);
-        if(getTableResult == ZE_RESULT_SUCCESS) 
+        if(getTableResult == ZE_RESULT_SUCCESS) {
             atLeastOneDriverValid = true;
-        else
+            loader::context->configured_version = version;
+        } else
             drv.initStatus = getTableResult;
     }
 
@@ -2886,9 +2888,10 @@ zetGetCommandListProcAddrTable(
         if(!getTable) 
             continue; 
         auto getTableResult = getTable( version, &drv.dditable.zet.CommandList);
-        if(getTableResult == ZE_RESULT_SUCCESS) 
+        if(getTableResult == ZE_RESULT_SUCCESS) {
             atLeastOneDriverValid = true;
-        else
+            loader::context->configured_version = version;
+        } else
             drv.initStatus = getTableResult;
     }
 
@@ -3042,9 +3045,10 @@ zetGetKernelProcAddrTable(
         if(!getTable) 
             continue; 
         auto getTableResult = getTable( version, &drv.dditable.zet.Kernel);
-        if(getTableResult == ZE_RESULT_SUCCESS) 
+        if(getTableResult == ZE_RESULT_SUCCESS) {
             atLeastOneDriverValid = true;
-        else
+            loader::context->configured_version = version;
+        } else
             drv.initStatus = getTableResult;
     }
 
@@ -3120,9 +3124,10 @@ zetGetModuleProcAddrTable(
         if(!getTable) 
             continue; 
         auto getTableResult = getTable( version, &drv.dditable.zet.Module);
-        if(getTableResult == ZE_RESULT_SUCCESS) 
+        if(getTableResult == ZE_RESULT_SUCCESS) {
             atLeastOneDriverValid = true;
-        else
+            loader::context->configured_version = version;
+        } else
             drv.initStatus = getTableResult;
     }
 
@@ -3198,9 +3203,10 @@ zetGetDebugProcAddrTable(
         if(!getTable) 
             continue; 
         auto getTableResult = getTable( version, &drv.dditable.zet.Debug);
-        if(getTableResult == ZE_RESULT_SUCCESS) 
+        if(getTableResult == ZE_RESULT_SUCCESS) {
             atLeastOneDriverValid = true;
-        else
+            loader::context->configured_version = version;
+        } else
             drv.initStatus = getTableResult;
     }
 
@@ -3309,9 +3315,10 @@ zetGetMetricProcAddrTable(
         if(!getTable) 
             continue; 
         auto getTableResult = getTable( version, &drv.dditable.zet.Metric);
-        if(getTableResult == ZE_RESULT_SUCCESS) 
+        if(getTableResult == ZE_RESULT_SUCCESS) {
             atLeastOneDriverValid = true;
-        else
+            loader::context->configured_version = version;
+        } else
             drv.initStatus = getTableResult;
     }
 
@@ -3465,9 +3472,10 @@ zetGetMetricGroupProcAddrTable(
         if(!getTable) 
             continue; 
         auto getTableResult = getTable( version, &drv.dditable.zet.MetricGroup);
-        if(getTableResult == ZE_RESULT_SUCCESS) 
+        if(getTableResult == ZE_RESULT_SUCCESS) {
             atLeastOneDriverValid = true;
-        else
+            loader::context->configured_version = version;
+        } else
             drv.initStatus = getTableResult;
     }
 
@@ -3642,9 +3650,10 @@ zetGetMetricQueryProcAddrTable(
         if(!getTable) 
             continue; 
         auto getTableResult = getTable( version, &drv.dditable.zet.MetricQuery);
-        if(getTableResult == ZE_RESULT_SUCCESS) 
+        if(getTableResult == ZE_RESULT_SUCCESS) {
             atLeastOneDriverValid = true;
-        else
+            loader::context->configured_version = version;
+        } else
             drv.initStatus = getTableResult;
     }
 
@@ -3729,9 +3738,10 @@ zetGetMetricQueryPoolProcAddrTable(
         if(!getTable) 
             continue; 
         auto getTableResult = getTable( version, &drv.dditable.zet.MetricQueryPool);
-        if(getTableResult == ZE_RESULT_SUCCESS) 
+        if(getTableResult == ZE_RESULT_SUCCESS) {
             atLeastOneDriverValid = true;
-        else
+            loader::context->configured_version = version;
+        } else
             drv.initStatus = getTableResult;
     }
 
@@ -3810,9 +3820,10 @@ zetGetMetricStreamerProcAddrTable(
         if(!getTable) 
             continue; 
         auto getTableResult = getTable( version, &drv.dditable.zet.MetricStreamer);
-        if(getTableResult == ZE_RESULT_SUCCESS) 
+        if(getTableResult == ZE_RESULT_SUCCESS) {
             atLeastOneDriverValid = true;
-        else
+            loader::context->configured_version = version;
+        } else
             drv.initStatus = getTableResult;
     }
 
@@ -3894,9 +3905,10 @@ zetGetTracerExpProcAddrTable(
         if(!getTable) 
             continue; 
         auto getTableResult = getTable( version, &drv.dditable.zet.TracerExp);
-        if(getTableResult == ZE_RESULT_SUCCESS) 
+        if(getTableResult == ZE_RESULT_SUCCESS) {
             atLeastOneDriverValid = true;
-        else
+            loader::context->configured_version = version;
+        } else
             drv.initStatus = getTableResult;
     }
 
