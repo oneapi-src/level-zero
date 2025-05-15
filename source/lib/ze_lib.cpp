@@ -373,7 +373,9 @@ namespace ze_lib
                 uint32_t*);
             auto pfnZelRegisterTeardownCallback = reinterpret_cast<zelRegisterTeardownCallback_t>(
                 GET_FUNCTION_PTR(loader, "zelRegisterTeardownCallback"));
-            pfnZelRegisterTeardownCallback(staticLoaderTeardownCallback, &loaderTeardownCallback, &loaderTeardownCallbackIndex);
+            if (pfnZelRegisterTeardownCallback != nullptr) {
+                pfnZelRegisterTeardownCallback(staticLoaderTeardownCallback, &loaderTeardownCallback, &loaderTeardownCallbackIndex);
+            }
         });
         #endif
         return result;
