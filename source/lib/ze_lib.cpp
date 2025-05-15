@@ -50,6 +50,10 @@ namespace ze_lib
      */
     void applicationTeardownCallback(uint32_t index) {
         if (ze_lib::context->teardownCallbacks.find(index) != ze_lib::context->teardownCallbacks.end()) {
+            if (ze_lib::context->debugTraceEnabled) {
+                std::string message = "applicationTeardownCallback received for index: " + std::to_string(index);
+                ze_lib::context->debug_trace_message(message, "");
+            }
             ze_lib::context->teardownCallbacks.erase(index);
         }
     }
