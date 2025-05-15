@@ -520,21 +520,16 @@ zelRegisterTeardownCallback(
     return result;
 }
 
-/**
- * @brief Checks if the loader is in the process of tearing down.
- *
- * This function determines whether the loader is in a teardown state by
- * checking the destruction flag or the context pointer. If the loader is
- * dynamically loaded thru the static loader code path, then it performs
- * an additional stability check using a separate thread that could be killed.
- *
- * @return true if the loader is in teardown based on the stack variablrs
- *         or the stability check fails; false otherwise.
- *
- * @note If the macro DYNAMIC_LOAD_LOADER is defined, a stability checker
- *       thread is launched to perform additional checks. Any exceptions
- *       or errors during this process are logged if debug tracing is enabled.
- */
+/// @brief Checks if the Level Zero loader is currently in the teardown state.
+///
+/// This function determines whether the loader is in the process of being destroyed or is otherwise
+/// unavailable for further API calls. It performs several checks, including:
+/// - Whether the loader's destruction flag is set or the context is null.
+/// - On Windows with dynamic loading, it checks for loader teardown notifications,
+///   registration status, and the stability of the loader by attempting to call `loaderDriverGet`.
+/// - If any of these checks indicate the loader is in teardown or unstable, the function returns true.
+///
+/// @return true if the loader is in teardown or unstable; false otherwise.
 bool ZE_APICALL
 zelCheckIsLoaderInTearDown() {
     if (ze_lib::destruction || ze_lib::context == nullptr) {
