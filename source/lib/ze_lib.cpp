@@ -28,6 +28,7 @@ namespace ze_lib
     }
     bool delayContextDestruction = false;
     bool loaderTeardownCallbackReceived = false;
+    bool loaderTeardownRegistrationEnabled = false;
     void staticLoaderTeardownCallback() {
         loaderTeardownCallbackReceived = true;
     }
@@ -370,6 +371,7 @@ namespace ze_lib
                 GET_FUNCTION_PTR(loader, "zelRegisterTeardownCallback"));
             if (pfnZelRegisterTeardownCallback != nullptr) {
                 pfnZelRegisterTeardownCallback(staticLoaderTeardownCallback, &loaderTeardownCallback, &loaderTeardownCallbackIndex);
+                loaderTeardownRegistrationEnabled = true;
             }
         });
         #endif
@@ -557,31 +559,33 @@ zelCheckIsLoaderInTearDown() {
     if (ze_lib::loaderTeardownCallbackReceived) {
         return true;
     }
-    std::promise<int> stabilityPromise;
-    std::future<int> resultFuture = stabilityPromise.get_future();
-    int result = -1;
-    try {
-        // Launch the stability checker thread
-        std::thread stabilityThread(stabilityCheck, std::move(stabilityPromise));
-        result = resultFuture.get(); // Blocks until the result is available
-        stabilityThread.join();
-    } catch (const std::exception& e) {
-        if (ze_lib::context->debugTraceEnabled) {
-            std::string message = "Exception caught in parent thread: " + std::string(e.what());
-            ze_lib::context->debug_trace_message(message, "");
+    if (!ze_lib::loaderTeardownRegistrationEnabled) {
+        std::promise<int> stabilityPromise;
+        std::future<int> resultFuture = stabilityPromise.get_future();
+        int result = -1;
+        try {
+            // Launch the stability checker thread
+            std::thread stabilityThread(stabilityCheck, std::move(stabilityPromise));
+            result = resultFuture.get(); // Blocks until the result is available
+            stabilityThread.join();
+        } catch (const std::exception& e) {
+            if (ze_lib::context->debugTraceEnabled) {
+                std::string message = "Exception caught in parent thread: " + std::string(e.what());
+                ze_lib::context->debug_trace_message(message, "");
+            }
+        } catch (...) {
+            if (ze_lib::context->debugTraceEnabled) {
+                std::string message = "Unknown exception caught in parent thread.";
+                ze_lib::context->debug_trace_message(message, "");
+            }
         }
-    } catch (...) {
-        if (ze_lib::context->debugTraceEnabled) {
-            std::string message = "Unknown exception caught in parent thread.";
-            ze_lib::context->debug_trace_message(message, "");
+        if (result != ZEL_STABILITY_CHECK_RESULT_SUCCESS) {
+            if (ze_lib::context->debugTraceEnabled) {
+                std::string message = "Loader stability check failed with result: " + std::to_string(result);
+                ze_lib::context->debug_trace_message(message, "");
+            }
+            return true;
         }
-    }
-    if (result != ZEL_STABILITY_CHECK_RESULT_SUCCESS) {
-        if (ze_lib::context->debugTraceEnabled) {
-            std::string message = "Loader stability check failed with result: " + std::to_string(result);
-            ze_lib::context->debug_trace_message(message, "");
-        }
-        return true;
     }
     #endif
     return false;

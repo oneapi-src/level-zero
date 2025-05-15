@@ -190,6 +190,7 @@ namespace ze_lib
     #ifdef DYNAMIC_LOAD_LOADER
     extern bool delayContextDestruction;
     extern bool loaderTeardownCallbackReceived;
+    extern bool loaderTeardownRegistrationEnabled;
     #endif
 
 } // namespace ze_lib
