@@ -29,12 +29,10 @@ namespace ze_lib
     bool delayContextDestruction = false;
     bool loaderTeardownCallbackReceived = false;
     void staticLoaderTeardownCallback() {
-        printf("ze_lib Static Teardown Callback\n");
         loaderTeardownCallbackReceived = true;
     }
     #endif
     void applicationTeardownCallback(uint32_t index) {
-        printf("ze_lib Application Teardown Callback %d\n", index);
         if (ze_lib::context->teardownCallbacks.find(index) != ze_lib::context->teardownCallbacks.end()) {
             ze_lib::context->teardownCallbacks.erase(index);
         }
@@ -50,9 +48,6 @@ namespace ze_lib
     ///////////////////////////////////////////////////////////////////////////////
     __zedlllocal context_t::~context_t()
     {
-        if (debugTraceEnabled) {
-            debug_trace_message("ze_lib Context Destructor", "");
-        }
 #ifdef DYNAMIC_LOAD_LOADER
         if (!loaderTeardownCallbackReceived) {
             loaderTeardownCallback(loaderTeardownCallbackIndex);
@@ -368,8 +363,8 @@ namespace ze_lib
             }
             // Get the function pointer for zelRegisterTeardownCallback from the loader
             typedef ze_result_t (ZE_APICALL *zelRegisterTeardownCallback_t)(
-                zel_loader_teardown_callback_t, 
-                zel_application_teardown_callback_t*, 
+                zel_loader_teardown_callback_t,
+                zel_application_teardown_callback_t*,
                 uint32_t*);
             auto pfnZelRegisterTeardownCallback = reinterpret_cast<zelRegisterTeardownCallback_t>(
                 GET_FUNCTION_PTR(loader, "zelRegisterTeardownCallback"));
@@ -514,11 +509,11 @@ void stabilityCheck(std::promise<int> stabilityPromise) {
 }
 #endif
 
-ZE_DLLEXPORT ze_result_t ZE_APICALL
+ze_result_t ZE_APICALL
 zelRegisterTeardownCallback(
-   zel_loader_teardown_callback_t application_callback, // [in] Pointer to the user's application callback function
-   zel_application_teardown_callback_t *loader_callback,      // [out] Pointer to the L0 Loader's callback function 
-   uint32_t *index // [out] Index of the callback function
+   zel_loader_teardown_callback_t application_callback, // [in] Application's callback function to be called during loader teardown
+   zel_application_teardown_callback_t *loader_callback, // [out] Pointer to the loader's callback function
+   uint32_t *index // [out] Index assigned to the registered callback
 ) {
     ze_result_t result = ZE_RESULT_SUCCESS;
     if (nullptr == application_callback) {

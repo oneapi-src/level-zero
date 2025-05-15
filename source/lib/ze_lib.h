@@ -17,15 +17,13 @@
 #include "layers/zel_tracing_api.h"
 #include "layers/zel_tracing_ddi.h"
 #include "../utils/logging.h"
+#include "loader/ze_loader.h"
 #include "ze_util.h"
 #include <vector>
 #include <mutex>
 #include <atomic>
 #include <typeinfo>
 #include <iostream>
-
-typedef void (*zel_loader_teardown_callback_t)();
-typedef void (*zel_application_teardown_callback_t)(uint32_t index);
 
 namespace ze_lib
 {

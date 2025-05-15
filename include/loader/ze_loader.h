@@ -95,17 +95,19 @@ ZE_DLLEXPORT bool ZE_APICALL
 zelCheckIsLoaderInTearDown();
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Exported function for registering a callback to indicate teardown.
-/// @details The callback function will be invoked when the loader is in teardown.
-///
+/// @brief Exported function for registering a teardown callback.
+/// @details The provided application callback will be invoked when the loader enters teardown.
+///          The loader's callback and the index for this application's callback reference are returned for later reference.
+///          The loader's callback will be invoked when the application is torndown to inform the loader that the application
+///          is being torn down and cannot be called to inform the loader of its teardown.
 typedef void (*zel_loader_teardown_callback_t)();
 typedef void (*zel_application_teardown_callback_t)(uint32_t index);
 
 ZE_DLLEXPORT ze_result_t ZE_APICALL
 zelRegisterTeardownCallback(
-   zel_loader_teardown_callback_t application_callback, // [in] Pointer to the user's application callback function
-   zel_application_teardown_callback_t *loader_callback,      // [out] Pointer to the L0 Loader's callback function 
-   uint32_t *index // [out] Index of the callback function
+   zel_loader_teardown_callback_t application_callback, // [in] Application's callback function to be called during loader teardown
+   zel_application_teardown_callback_t *loader_callback, // [out] Pointer to the loader's callback function
+   uint32_t *index // [out] Index assigned to the registered callback
 );
 
 ///////////////////////////////////////////////////////////////////////////////
