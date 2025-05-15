@@ -94,15 +94,24 @@ zelEnableTracingLayer();
 ZE_DLLEXPORT bool ZE_APICALL
 zelCheckIsLoaderInTearDown();
 
-///////////////////////////////////////////////////////////////////////////////
-/// @brief Exported function for registering a teardown callback.
-/// @details The provided application callback will be invoked when the loader enters teardown.
-///          The loader's callback and the index for this application's callback reference are returned for later reference.
-///          The loader's callback will be invoked when the application is torndown to inform the loader that the application
-///          is being torn down and cannot be called to inform the loader of its teardown.
 typedef void (*zel_loader_teardown_callback_t)();
 typedef void (*zel_application_teardown_callback_t)(uint32_t index);
 
+/**
+ * @brief Registers a teardown callback to be invoked during loader teardown.
+ *
+ * This function allows the application to register a callback function that will be called
+ * when the loader is being torn down. The loader will also provide its own callback function
+ * and assign an index to the registered callback.
+ *
+ * @param[in] application_callback  Application's callback function to be called during loader teardown.
+ * @param[out] loader_callback      Pointer to the loader's callback function.
+ * @param[out] index                Index assigned to the registered callback.
+ *
+ * @return
+ *     - ZE_RESULT_SUCCESS if the callback was successfully registered.
+ *     - Appropriate error code otherwise.
+ */
 ZE_DLLEXPORT ze_result_t ZE_APICALL
 zelRegisterTeardownCallback(
    zel_loader_teardown_callback_t application_callback, // [in] Application's callback function to be called during loader teardown

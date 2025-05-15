@@ -29,10 +29,25 @@ namespace ze_lib
     bool delayContextDestruction = false;
     bool loaderTeardownCallbackReceived = false;
     bool loaderTeardownRegistrationEnabled = false;
+
+    /// @brief Callback function to handle loader teardown events.
+    ///
+    /// This function sets the `loaderTeardownCallbackReceived` flag to true,
+    /// indicating that a loader teardown callback has been received.
+    /// It is intended to be used as a static callback during the loader's
+    /// teardown process.
     void staticLoaderTeardownCallback() {
         loaderTeardownCallbackReceived = true;
     }
     #endif
+    /**
+     * @brief Removes a teardown callback from the context's callback registry.
+     *
+     * This function checks if a teardown callback with the specified index exists
+     * in the context's teardownCallbacks map. If it exists, the callback is removed.
+     *
+     * @param index The unique identifier of the teardown callback to remove.
+     */
     void applicationTeardownCallback(uint32_t index) {
         if (ze_lib::context->teardownCallbacks.find(index) != ze_lib::context->teardownCallbacks.end()) {
             ze_lib::context->teardownCallbacks.erase(index);
@@ -57,10 +72,11 @@ namespace ze_lib
             FREE_DRIVER_LIBRARY( loader );
         }
 #else
-        // Call the teardown callbacks
+        // Given the loader teardown, notify the registered callbacks that the loader is being torn down.
         for (auto &callback : teardownCallbacks) {
             callback.second();
         }
+        // Clear the teardown callbacks map once the callbacks have been executed.
         teardownCallbacks.clear();
 #endif
         ze_lib::destruction = true;
@@ -362,7 +378,7 @@ namespace ze_lib
             if (!delayContextDestruction) {
                 std::atexit(context_at_exit_destructor);
             }
-            // Get the function pointer for zelRegisterTeardownCallback from the loader
+            // Get the function pointer for zelRegisterTeardownCallback from the dynamic loader
             typedef ze_result_t (ZE_APICALL *zelRegisterTeardownCallback_t)(
                 zel_loader_teardown_callback_t,
                 zel_application_teardown_callback_t*,
@@ -370,8 +386,15 @@ namespace ze_lib
             auto pfnZelRegisterTeardownCallback = reinterpret_cast<zelRegisterTeardownCallback_t>(
                 GET_FUNCTION_PTR(loader, "zelRegisterTeardownCallback"));
             if (pfnZelRegisterTeardownCallback != nullptr) {
-                pfnZelRegisterTeardownCallback(staticLoaderTeardownCallback, &loaderTeardownCallback, &loaderTeardownCallbackIndex);
-                loaderTeardownRegistrationEnabled = true;
+                auto register_teardown_result = pfnZelRegisterTeardownCallback(staticLoaderTeardownCallback, &loaderTeardownCallback, &loaderTeardownCallbackIndex);
+                if (register_teardown_result != ZE_RESULT_SUCCESS) {
+                    std::string message = "ze_lib Context Init() zelRegisterTeardownCallback failed with ";
+                    debug_trace_message(message, to_string(register_teardown_result));
+                } else {
+                    loaderTeardownRegistrationEnabled = true;
+                    std::string message = "ze_lib Context Init() zelRegisterTeardownCallback completed for the static loader with";
+                    debug_trace_message(message, to_string(register_teardown_result));
+                }
             }
         });
         #endif
@@ -426,10 +449,12 @@ zelSetDriverTeardown()
     ze_result_t result = ZE_RESULT_SUCCESS;
     if (!ze_lib::destruction) {
         if (ze_lib::context) {
-            // Call the teardown callbacks
+            // Given the driver teardown, notify the registered callbacks that the loader is being torn down.
             for (auto &callback : ze_lib::context->teardownCallbacks) {
                 callback.second();
             }
+            // Clear the registered callbacks now that they have been called.
+            ze_lib::context->teardownCallbacks.clear();
         }
 
         ze_lib::destruction = true;
@@ -511,6 +536,23 @@ void stabilityCheck(std::promise<int> stabilityPromise) {
 }
 #endif
 
+/// @brief Registers a teardown callback function to be invoked during loader teardown.
+///
+/// This function allows an application to register a callback that will be called when the loader is being torn down.
+/// The loader provides a callback function pointer to the application, which the application should call to notify
+/// the loader that it is tearing down. The loader will then remove the application's callback from its list of registered callbacks.
+///
+/// @param[in] application_callback
+///     The application's callback function to be called during loader teardown. Must not be nullptr.
+/// @param[out] loader_callback
+///     Pointer to the loader's callback function. The application should call this function to notify the loader of teardown.
+/// @param[out] index
+///     Pointer to a uint32_t that will receive the index assigned to the registered callback.
+///
+/// @return
+///     - ZE_RESULT_SUCCESS: The callback was successfully registered.
+///     - ZE_RESULT_ERROR_INVALID_ARGUMENT: The application_callback parameter is nullptr.
+///     - ZE_RESULT_ERROR_UNINITIALIZED: The loader context is not initialized.
 ze_result_t ZE_APICALL
 zelRegisterTeardownCallback(
    zel_loader_teardown_callback_t application_callback, // [in] Application's callback function to be called during loader teardown
@@ -524,7 +566,10 @@ zelRegisterTeardownCallback(
     if (!ze_lib::context) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
+    // Assign the loader's callback function to the application callback such that the application can notify the loader
+    // that it is tearing down. The loader will then remove the application's callback from the list of callbacks.
     *loader_callback = ze_lib::applicationTeardownCallback;
+    // Increment the teardown callback count and assign the index to the application callback.
     ze_lib::context->teardownCallbacksCount.fetch_add(1);
     *index = ze_lib::context->teardownCallbacksCount.load();
     ze_lib::context->teardownCallbacks.insert(std::pair<uint32_t, zel_loader_teardown_callback_t>(*index, application_callback));
@@ -557,6 +602,10 @@ zelCheckIsLoaderInTearDown() {
     }
     #if defined(DYNAMIC_LOAD_LOADER) && defined(_WIN32)
     if (ze_lib::loaderTeardownCallbackReceived) {
+        if (ze_lib::context->debugTraceEnabled) {
+            std::string message = "Loader Teardown Notification Received, loader in teardown state.";
+            ze_lib::context->debug_trace_message(message, "");
+        }
         return true;
     }
     if (!ze_lib::loaderTeardownRegistrationEnabled) {
