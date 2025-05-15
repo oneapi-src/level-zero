@@ -178,6 +178,7 @@ namespace ze_lib
         ze_pfnDriverGet_t loaderDriverGet = nullptr;
         std::atomic<uint32_t> teardownCallbacksCount{0};
         std::map<uint32_t, zel_loader_teardown_callback_t> teardownCallbacks;
+        std::mutex teardownCallbacksMutex;
         #ifdef DYNAMIC_LOAD_LOADER
         std::once_flag initTeardownCallbacksOnce;
         zel_application_teardown_callback_t loaderTeardownCallback = nullptr;

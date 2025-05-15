@@ -49,6 +49,7 @@ namespace ze_lib
      * @param index The unique identifier of the teardown callback to remove.
      */
     void applicationTeardownCallback(uint32_t index) {
+        std::lock_guard<std::mutex> lock(ze_lib::context->teardownCallbacksMutex);
         if (ze_lib::context->teardownCallbacks.find(index) != ze_lib::context->teardownCallbacks.end()) {
             if (ze_lib::context->debugTraceEnabled) {
                 std::string message = "applicationTeardownCallback received for index: " + std::to_string(index);
@@ -506,16 +507,19 @@ zelRegisterTeardownCallback(
     if (!ze_lib::context) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    // Assign the loader's callback function to the application callback such that the application can notify the loader
-    // that it is tearing down. The loader will then remove the application's callback from the list of callbacks.
-    *loader_callback = ze_lib::applicationTeardownCallback;
-    // Increment the teardown callback count and assign the index to the application callback.
-    ze_lib::context->teardownCallbacksCount.fetch_add(1);
-    *index = ze_lib::context->teardownCallbacksCount.load();
-    ze_lib::context->teardownCallbacks.insert(std::pair<uint32_t, zel_loader_teardown_callback_t>(*index, application_callback));
-    if (ze_lib::context->debugTraceEnabled) {
-        std::string message = "Registered teardown callback with index: " + std::to_string(*index);
-        ze_lib::context->debug_trace_message(message, "");
+    {
+        std::lock_guard<std::mutex> lock(ze_lib::context->teardownCallbacksMutex);
+        // Assign the loader's callback function to the application callback such that the application can notify the loader
+        // that it is tearing down. The loader will then remove the application's callback from the list of callbacks.
+        *loader_callback = ze_lib::applicationTeardownCallback;
+        // Increment the teardown callback count and assign the index to the application callback.
+        ze_lib::context->teardownCallbacksCount.fetch_add(1);
+        *index = ze_lib::context->teardownCallbacksCount.load();
+        ze_lib::context->teardownCallbacks.insert(std::pair<uint32_t, zel_loader_teardown_callback_t>(*index, application_callback));
+        if (ze_lib::context->debugTraceEnabled) {
+            std::string message = "Registered teardown callback with index: " + std::to_string(*index);
+            ze_lib::context->debug_trace_message(message, "");
+        }
     }
     return result;
 }
