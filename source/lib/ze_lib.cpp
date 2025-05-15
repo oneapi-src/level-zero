@@ -69,7 +69,7 @@ namespace ze_lib
     __zedlllocal context_t::~context_t()
     {
 #ifdef DYNAMIC_LOAD_LOADER
-        if (!loaderTeardownCallbackReceived) {
+        if (loaderTeardownRegistrationEnabled && !loaderTeardownCallbackReceived) {
             loaderTeardownCallback(loaderTeardownCallbackIndex);
         }
         if (loader) {
@@ -476,70 +476,6 @@ zelSetDelayLoaderContextTeardown()
     #endif
 }
 
-#ifdef DYNAMIC_LOAD_LOADER
-#define ZEL_STABILITY_CHECK_RESULT_SUCCESS 0
-#define ZEL_STABILITY_CHECK_RESULT_DRIVER_GET_NULL 1
-#define ZEL_STABILITY_CHECK_RESULT_DRIVER_GET_FAILED 2
-#define ZEL_STABILITY_CHECK_RESULT_EXCEPTION 3
-
-/**
- * @brief Performs a stability check for the Level Zero loader.
- *
- * This function checks the stability of the Level Zero loader by verifying
- * the presence of the loader module, the validity of the `zeDriverGet` function
- * pointer, and the ability to retrieve driver information. The result of the
- * stability check is communicated through the provided promise.
- *
- * @param stabilityPromise A promise object used to communicate the result of
- *                         the stability check. The promise is set with one of
- *                         the following values:
- *                         - ZEL_STABILITY_CHECK_RESULT_DRIVER_GET_NULL: The
- *                           `zeDriverGet` function pointer is invalid.
- *                         - ZEL_STABILITY_CHECK_RESULT_DRIVER_GET_FAILED: The
- *                           loader failed to retrieve driver information.
- *                         - ZEL_STABILITY_CHECK_RESULT_EXCEPTION: An
- *                           exception occurred during the stability check.
- *                         - ZEL_STABILITY_CHECK_RESULT_SUCCESS: The stability
- *                           check was successful.
- *
- * @note If debug tracing is enabled, debug messages are logged for each failure
- *       scenario.
- * @note If the Loader is completely torn down, this thread is expected to be killed
- *      due to invalid memory access and the stability check will determine a failure.
- *
- * @exception This function catches all exceptions internally and does not throw.
- */
-void stabilityCheck(std::promise<int> stabilityPromise) {
-    try {
-        if (!ze_lib::context->loaderDriverGet) {
-            if (ze_lib::context->debugTraceEnabled) {
-                std::string message = "LoaderDriverGet is a bad pointer. Exiting stability checker thread.";
-                ze_lib::context->debug_trace_message(message, "");
-            }
-            stabilityPromise.set_value(ZEL_STABILITY_CHECK_RESULT_DRIVER_GET_NULL);
-            return;
-        }
-
-        uint32_t driverCount = 0;
-        ze_result_t result = ZE_RESULT_ERROR_UNINITIALIZED;
-        result = ze_lib::context->loaderDriverGet(&driverCount, nullptr);
-        if (result != ZE_RESULT_SUCCESS || driverCount == 0) {
-            if (ze_lib::context->debugTraceEnabled) {
-                std::string message = "Loader stability check failed. Exiting stability checker thread.";
-                ze_lib::context->debug_trace_message(message, "");
-            }
-            stabilityPromise.set_value(ZEL_STABILITY_CHECK_RESULT_DRIVER_GET_FAILED);
-            return;
-        }
-        stabilityPromise.set_value(ZEL_STABILITY_CHECK_RESULT_SUCCESS);
-        return;
-    } catch (...) {
-        stabilityPromise.set_value(ZEL_STABILITY_CHECK_RESULT_EXCEPTION);
-        return;
-    }
-}
-#endif
-
 /// @brief Registers a teardown callback function to be invoked during loader teardown.
 ///
 /// This function allows an application to register a callback that will be called when the loader is being torn down.
@@ -605,38 +541,50 @@ zelCheckIsLoaderInTearDown() {
         return true;
     }
     #if defined(DYNAMIC_LOAD_LOADER) && defined(_WIN32)
+    static bool loaderIsStable = true;
+    if (!loaderIsStable) {
+        if (ze_lib::context->debugTraceEnabled) {
+            std::string message = "Loader Teardown check failed before, exiting.";
+            ze_lib::context->debug_trace_message(message, "");
+        }
+        return true;
+    }
     if (ze_lib::loaderTeardownCallbackReceived) {
         if (ze_lib::context->debugTraceEnabled) {
             std::string message = "Loader Teardown Notification Received, loader in teardown state.";
             ze_lib::context->debug_trace_message(message, "");
         }
+        loaderIsStable = false;
         return true;
     }
     if (!ze_lib::loaderTeardownRegistrationEnabled) {
-        std::promise<int> stabilityPromise;
-        std::future<int> resultFuture = stabilityPromise.get_future();
-        int result = -1;
         try {
-            // Launch the stability checker thread
-            std::thread stabilityThread(stabilityCheck, std::move(stabilityPromise));
-            result = resultFuture.get(); // Blocks until the result is available
-            stabilityThread.join();
-        } catch (const std::exception& e) {
-            if (ze_lib::context->debugTraceEnabled) {
-                std::string message = "Exception caught in parent thread: " + std::string(e.what());
-                ze_lib::context->debug_trace_message(message, "");
+            if (!ze_lib::context->loaderDriverGet) {
+                if (ze_lib::context->debugTraceEnabled) {
+                    std::string message = "LoaderDriverGet is a bad pointer. Exiting stability checker.";
+                    ze_lib::context->debug_trace_message(message, "");
+                }
+                loaderIsStable = false;
+                return true;
+            }
+
+            uint32_t driverCount = 0;
+            ze_result_t result = ZE_RESULT_ERROR_UNINITIALIZED;
+            result = ze_lib::context->loaderDriverGet(&driverCount, nullptr);
+            if (result != ZE_RESULT_SUCCESS || driverCount == 0) {
+                if (ze_lib::context->debugTraceEnabled) {
+                    std::string message = "Loader stability check failed. Exiting stability checker.";
+                    ze_lib::context->debug_trace_message(message, "");
+                }
+                loaderIsStable = false;
+                return true;
             }
         } catch (...) {
             if (ze_lib::context->debugTraceEnabled) {
-                std::string message = "Unknown exception caught in parent thread.";
+                std::string message = "Loader stability check failed. Exception occurred.";
                 ze_lib::context->debug_trace_message(message, "");
             }
-        }
-        if (result != ZEL_STABILITY_CHECK_RESULT_SUCCESS) {
-            if (ze_lib::context->debugTraceEnabled) {
-                std::string message = "Loader stability check failed with result: " + std::to_string(result);
-                ze_lib::context->debug_trace_message(message, "");
-            }
+            loaderIsStable = false;
             return true;
         }
     }
