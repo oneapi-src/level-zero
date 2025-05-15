@@ -174,16 +174,12 @@ namespace ze_lib
         // Given zesInit, then zesDrivers needs to be used as the sysmanInstanceDrivers;
         bool loaderContextAccessAllowed = true;
 #ifdef DYNAMIC_LOAD_LOADER
+        loaderContextAccessAllowed = false;
         loader::context_t *loaderContext = nullptr;
-        if (loaderGetContext == nullptr) {
-            loaderContextAccessAllowed = false;
-        } else {
-            loaderContext = loaderGetContext();
-        }
 #else
         loader::context_t *loaderContext = loader::context;
 #endif
-        if (sysmanOnly && loaderContextAccessAllowed) {
+        if (sysmanOnly && loaderContextAccessAllowed && loaderContext != nullptr) {
             loaderContext->sysmanInstanceDrivers = &loaderContext->zesDrivers;
         }
 
