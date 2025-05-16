@@ -27,7 +27,37 @@ namespace ze_lib
         }
     }
     bool delayContextDestruction = false;
+    bool loaderTeardownCallbackReceived = false;
+    bool loaderTeardownRegistrationEnabled = false;
+
+    /// @brief Callback function to handle loader teardown events.
+    ///
+    /// This function sets the `loaderTeardownCallbackReceived` flag to true,
+    /// indicating that a loader teardown callback has been received.
+    /// It is intended to be used as a static callback during the loader's
+    /// teardown process.
+    void staticLoaderTeardownCallback() {
+        loaderTeardownCallbackReceived = true;
+    }
     #endif
+    /**
+     * @brief Removes a teardown callback from the context's callback registry.
+     *
+     * This function checks if a teardown callback with the specified index exists
+     * in the context's teardownCallbacks map. If it exists, the callback is removed.
+     *
+     * @param index The unique identifier of the teardown callback to remove.
+     */
+    void applicationTeardownCallback(uint32_t index) {
+        std::lock_guard<std::mutex> lock(ze_lib::context->teardownCallbacksMutex);
+        if (ze_lib::context->teardownCallbacks.find(index) != ze_lib::context->teardownCallbacks.end()) {
+            if (ze_lib::context->debugTraceEnabled) {
+                std::string message = "applicationTeardownCallback received for index: " + std::to_string(index);
+                ze_lib::context->debug_trace_message(message, "");
+            }
+            ze_lib::context->teardownCallbacks.erase(index);
+        }
+    }
     bool destruction = false;
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -40,9 +70,19 @@ namespace ze_lib
     __zedlllocal context_t::~context_t()
     {
 #ifdef DYNAMIC_LOAD_LOADER
+        if (loaderTeardownRegistrationEnabled && !loaderTeardownCallbackReceived) {
+            loaderTeardownCallback(loaderTeardownCallbackIndex);
+        }
         if (loader) {
             FREE_DRIVER_LIBRARY( loader );
         }
+#else
+        // Given the loader teardown, notify the registered callbacks that the loader is being torn down.
+        for (auto &callback : teardownCallbacks) {
+            callback.second();
+        }
+        // Clear the teardown callbacks map once the callbacks have been executed.
+        teardownCallbacks.clear();
 #endif
         ze_lib::destruction = true;
     };
@@ -339,9 +379,29 @@ namespace ze_lib
             isInitialized = true;
         }
         #ifdef DYNAMIC_LOAD_LOADER
-        if (!delayContextDestruction) {
-            std::atexit(context_at_exit_destructor);
-        }
+        std::call_once(ze_lib::context->initTeardownCallbacksOnce, [this]() {
+            if (!delayContextDestruction) {
+                std::atexit(context_at_exit_destructor);
+            }
+            // Get the function pointer for zelRegisterTeardownCallback from the dynamic loader
+            typedef ze_result_t (ZE_APICALL *zelRegisterTeardownCallback_t)(
+                zel_loader_teardown_callback_t,
+                zel_application_teardown_callback_t*,
+                uint32_t*);
+            auto pfnZelRegisterTeardownCallback = reinterpret_cast<zelRegisterTeardownCallback_t>(
+                GET_FUNCTION_PTR(loader, "zelRegisterTeardownCallback"));
+            if (pfnZelRegisterTeardownCallback != nullptr) {
+                auto register_teardown_result = pfnZelRegisterTeardownCallback(staticLoaderTeardownCallback, &loaderTeardownCallback, &loaderTeardownCallbackIndex);
+                if (register_teardown_result != ZE_RESULT_SUCCESS) {
+                    std::string message = "ze_lib Context Init() zelRegisterTeardownCallback failed with ";
+                    debug_trace_message(message, to_string(register_teardown_result));
+                } else {
+                    loaderTeardownRegistrationEnabled = true;
+                    std::string message = "ze_lib Context Init() zelRegisterTeardownCallback completed for the static loader with";
+                    debug_trace_message(message, to_string(register_teardown_result));
+                }
+            }
+        });
         #endif
         return result;
     }
@@ -393,6 +453,15 @@ zelSetDriverTeardown()
 {
     ze_result_t result = ZE_RESULT_SUCCESS;
     if (!ze_lib::destruction) {
+        if (ze_lib::context) {
+            // Given the driver teardown, notify the registered callbacks that the loader is being torn down.
+            for (auto &callback : ze_lib::context->teardownCallbacks) {
+                callback.second();
+            }
+            // Clear the registered callbacks now that they have been called.
+            ze_lib::context->teardownCallbacks.clear();
+        }
+
         ze_lib::destruction = true;
     }
     return result;
@@ -408,116 +477,115 @@ zelSetDelayLoaderContextTeardown()
     #endif
 }
 
-#ifdef DYNAMIC_LOAD_LOADER
-#define ZEL_STABILITY_CHECK_RESULT_SUCCESS 0
-#define ZEL_STABILITY_CHECK_RESULT_DRIVER_GET_NULL 1
-#define ZEL_STABILITY_CHECK_RESULT_DRIVER_GET_FAILED 2
-#define ZEL_STABILITY_CHECK_RESULT_EXCEPTION 3
-
-/**
- * @brief Performs a stability check for the Level Zero loader.
- *
- * This function checks the stability of the Level Zero loader by verifying
- * the presence of the loader module, the validity of the `zeDriverGet` function
- * pointer, and the ability to retrieve driver information. The result of the
- * stability check is communicated through the provided promise.
- *
- * @param stabilityPromise A promise object used to communicate the result of
- *                         the stability check. The promise is set with one of
- *                         the following values:
- *                         - ZEL_STABILITY_CHECK_RESULT_DRIVER_GET_NULL: The
- *                           `zeDriverGet` function pointer is invalid.
- *                         - ZEL_STABILITY_CHECK_RESULT_DRIVER_GET_FAILED: The
- *                           loader failed to retrieve driver information.
- *                         - ZEL_STABILITY_CHECK_RESULT_EXCEPTION: An
- *                           exception occurred during the stability check.
- *                         - ZEL_STABILITY_CHECK_RESULT_SUCCESS: The stability
- *                           check was successful.
- *
- * @note If debug tracing is enabled, debug messages are logged for each failure
- *       scenario.
- * @note If the Loader is completely torn down, this thread is expected to be killed
- *      due to invalid memory access and the stability check will determine a failure.
- *
- * @exception This function catches all exceptions internally and does not throw.
- */
-void stabilityCheck(std::promise<int> stabilityPromise) {
-    try {
-        if (!ze_lib::context->loaderDriverGet) {
-            if (ze_lib::context->debugTraceEnabled) {
-                std::string message = "LoaderDriverGet is a bad pointer. Exiting stability checker thread.";
-                ze_lib::context->debug_trace_message(message, "");
-            }
-            stabilityPromise.set_value(ZEL_STABILITY_CHECK_RESULT_DRIVER_GET_NULL);
-            return;
-        }
-
-        uint32_t driverCount = 0;
-        ze_result_t result = ZE_RESULT_ERROR_UNINITIALIZED;
-        result = ze_lib::context->loaderDriverGet(&driverCount, nullptr);
-        if (result != ZE_RESULT_SUCCESS || driverCount == 0) {
-            if (ze_lib::context->debugTraceEnabled) {
-                std::string message = "Loader stability check failed. Exiting stability checker thread.";
-                ze_lib::context->debug_trace_message(message, "");
-            }
-            stabilityPromise.set_value(ZEL_STABILITY_CHECK_RESULT_DRIVER_GET_FAILED);
-            return;
-        }
-        stabilityPromise.set_value(ZEL_STABILITY_CHECK_RESULT_SUCCESS);
-        return;
-    } catch (...) {
-        stabilityPromise.set_value(ZEL_STABILITY_CHECK_RESULT_EXCEPTION);
-        return;
+/// @brief Registers a teardown callback function to be invoked during loader teardown.
+///
+/// This function allows an application to register a callback that will be called when the loader is being torn down.
+/// The loader provides a callback function pointer to the application, which the application should call to notify
+/// the loader that it is tearing down. The loader will then remove the application's callback from its list of registered callbacks.
+///
+/// @param[in] application_callback
+///     The application's callback function to be called during loader teardown. Must not be nullptr.
+/// @param[out] loader_callback
+///     Pointer to the loader's callback function. The application should call this function to notify the loader of teardown.
+/// @param[out] index
+///     Pointer to a uint32_t that will receive the index assigned to the registered callback.
+///
+/// @return
+///     - ZE_RESULT_SUCCESS: The callback was successfully registered.
+///     - ZE_RESULT_ERROR_INVALID_ARGUMENT: The application_callback parameter is nullptr.
+///     - ZE_RESULT_ERROR_UNINITIALIZED: The loader context is not initialized.
+ze_result_t ZE_APICALL
+zelRegisterTeardownCallback(
+   zel_loader_teardown_callback_t application_callback, // [in] Application's callback function to be called during loader teardown
+   zel_application_teardown_callback_t *loader_callback, // [out] Pointer to the loader's callback function
+   uint32_t *index // [out] Index assigned to the registered callback
+) {
+    ze_result_t result = ZE_RESULT_SUCCESS;
+    if (nullptr == application_callback) {
+        return ZE_RESULT_ERROR_INVALID_ARGUMENT;
     }
+    if (!ze_lib::context) {
+        return ZE_RESULT_ERROR_UNINITIALIZED;
+    }
+    {
+        std::lock_guard<std::mutex> lock(ze_lib::context->teardownCallbacksMutex);
+        // Assign the loader's callback function to the application callback such that the application can notify the loader
+        // that it is tearing down. The loader will then remove the application's callback from the list of callbacks.
+        *loader_callback = ze_lib::applicationTeardownCallback;
+        // Increment the teardown callback count and assign the index to the application callback.
+        ze_lib::context->teardownCallbacksCount.fetch_add(1);
+        *index = ze_lib::context->teardownCallbacksCount.load();
+        ze_lib::context->teardownCallbacks.insert(std::pair<uint32_t, zel_loader_teardown_callback_t>(*index, application_callback));
+        if (ze_lib::context->debugTraceEnabled) {
+            std::string message = "Registered teardown callback with index: " + std::to_string(*index);
+            ze_lib::context->debug_trace_message(message, "");
+        }
+    }
+    return result;
 }
-#endif
 
-/**
- * @brief Checks if the loader is in the process of tearing down.
- *
- * This function determines whether the loader is in a teardown state by
- * checking the destruction flag or the context pointer. If the loader is
- * dynamically loaded thru the static loader code path, then it performs
- * an additional stability check using a separate thread that could be killed.
- *
- * @return true if the loader is in teardown based on the stack variablrs
- *         or the stability check fails; false otherwise.
- *
- * @note If the macro DYNAMIC_LOAD_LOADER is defined, a stability checker
- *       thread is launched to perform additional checks. Any exceptions
- *       or errors during this process are logged if debug tracing is enabled.
- */
+/// @brief Checks if the Level Zero loader is currently in the teardown state.
+///
+/// This function determines whether the loader is in the process of being destroyed or is otherwise
+/// unavailable for further API calls. It performs several checks, including:
+/// - Whether the loader's destruction flag is set or the context is null.
+/// - On Windows with dynamic loading, it checks for loader teardown notifications,
+///   registration status, and the stability of the loader by attempting to call `loaderDriverGet`.
+/// - If any of these checks indicate the loader is in teardown or unstable, the function returns true.
+///
+/// @return true if the loader is in teardown or unstable; false otherwise.
 bool ZE_APICALL
 zelCheckIsLoaderInTearDown() {
     if (ze_lib::destruction || ze_lib::context == nullptr) {
         return true;
     }
     #if defined(DYNAMIC_LOAD_LOADER) && defined(_WIN32)
-    std::promise<int> stabilityPromise;
-    std::future<int> resultFuture = stabilityPromise.get_future();
-    int result = -1;
-    try {
-        // Launch the stability checker thread
-        std::thread stabilityThread(stabilityCheck, std::move(stabilityPromise));
-        result = resultFuture.get(); // Blocks until the result is available
-        stabilityThread.join();
-    } catch (const std::exception& e) {
+    static bool loaderIsStable = true;
+    if (!loaderIsStable) {
         if (ze_lib::context->debugTraceEnabled) {
-            std::string message = "Exception caught in parent thread: " + std::string(e.what());
-            ze_lib::context->debug_trace_message(message, "");
-        }
-    } catch (...) {
-        if (ze_lib::context->debugTraceEnabled) {
-            std::string message = "Unknown exception caught in parent thread.";
-            ze_lib::context->debug_trace_message(message, "");
-        }
-    }
-    if (result != ZEL_STABILITY_CHECK_RESULT_SUCCESS) {
-        if (ze_lib::context->debugTraceEnabled) {
-            std::string message = "Loader stability check failed with result: " + std::to_string(result);
+            std::string message = "Loader Teardown check failed before, exiting.";
             ze_lib::context->debug_trace_message(message, "");
         }
         return true;
+    }
+    if (ze_lib::loaderTeardownCallbackReceived) {
+        if (ze_lib::context->debugTraceEnabled) {
+            std::string message = "Loader Teardown Notification Received, loader in teardown state.";
+            ze_lib::context->debug_trace_message(message, "");
+        }
+        loaderIsStable = false;
+        return true;
+    }
+    if (!ze_lib::loaderTeardownRegistrationEnabled) {
+        try {
+            if (!ze_lib::context->loaderDriverGet) {
+                if (ze_lib::context->debugTraceEnabled) {
+                    std::string message = "LoaderDriverGet is a bad pointer. Exiting stability checker.";
+                    ze_lib::context->debug_trace_message(message, "");
+                }
+                loaderIsStable = false;
+                return true;
+            }
+
+            uint32_t driverCount = 0;
+            ze_result_t result = ZE_RESULT_ERROR_UNINITIALIZED;
+            result = ze_lib::context->loaderDriverGet(&driverCount, nullptr);
+            if (result != ZE_RESULT_SUCCESS || driverCount == 0) {
+                if (ze_lib::context->debugTraceEnabled) {
+                    std::string message = "Loader stability check failed. Exiting stability checker.";
+                    ze_lib::context->debug_trace_message(message, "");
+                }
+                loaderIsStable = false;
+                return true;
+            }
+        } catch (...) {
+            if (ze_lib::context->debugTraceEnabled) {
+                std::string message = "Loader stability check failed. Exception occurred.";
+                ze_lib::context->debug_trace_message(message, "");
+            }
+            loaderIsStable = false;
+            return true;
+        }
     }
     #endif
     return false;

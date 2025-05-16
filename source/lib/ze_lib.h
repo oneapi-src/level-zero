@@ -17,6 +17,7 @@
 #include "layers/zel_tracing_api.h"
 #include "layers/zel_tracing_ddi.h"
 #include "../utils/logging.h"
+#include "loader/ze_loader.h"
 #include "ze_util.h"
 #include <vector>
 #include <mutex>
@@ -175,12 +176,22 @@ namespace ze_lib
         bool debugTraceEnabled = false;
         bool dynamicTracingSupported = true;
         ze_pfnDriverGet_t loaderDriverGet = nullptr;
+        std::atomic<uint32_t> teardownCallbacksCount{0};
+        std::map<uint32_t, zel_loader_teardown_callback_t> teardownCallbacks;
+        std::mutex teardownCallbacksMutex;
+        #ifdef DYNAMIC_LOAD_LOADER
+        std::once_flag initTeardownCallbacksOnce;
+        zel_application_teardown_callback_t loaderTeardownCallback = nullptr;
+        uint32_t loaderTeardownCallbackIndex = 0;
+        #endif
     };
 
     extern bool destruction;
     extern context_t *context;
     #ifdef DYNAMIC_LOAD_LOADER
     extern bool delayContextDestruction;
+    extern bool loaderTeardownCallbackReceived;
+    extern bool loaderTeardownRegistrationEnabled;
     #endif
 
 } // namespace ze_lib
