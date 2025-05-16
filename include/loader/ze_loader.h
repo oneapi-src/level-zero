@@ -104,6 +104,16 @@ typedef void (*zel_application_teardown_callback_t)(uint32_t index);
  * when the loader is being torn down. The loader will also provide its own callback function
  * and assign an index to the registered callback.
  *
+ * The application_callback is required to be a function that takes no arguments and returns void.
+ * In addition, the application_callback should be thread-safe and not block to prevent deadlocking the
+ * loader teardown process.
+ *
+ * For example, the application_callback used by the static loader is:
+ *  void staticLoaderTeardownCallback() {
+ *    loaderTeardownCallbackReceived = true;
+ *  }
+ * The application_callback should provide a simple notification to the application that the loader is being torn down.
+ *
  * @param[in] application_callback  Application's callback function to be called during loader teardown.
  * @param[out] loader_callback      Pointer to the loader's callback function.
  * @param[out] index                Index assigned to the registered callback.
