@@ -558,7 +558,15 @@ zelCheckIsLoaderInTearDown() {
     }
     if (!ze_lib::loaderTeardownRegistrationEnabled) {
         try {
-            if (!ze_lib::context->loaderDriverGet) {
+            std::string loaderLibraryPath;
+            auto loaderLibraryPathEnv = getenv_string("ZEL_LIBRARY_PATH");
+            if (!loaderLibraryPathEnv.empty()) {
+                loaderLibraryPath = loaderLibraryPathEnv;
+            }
+            std::string loaderFullLibraryPath = create_library_path(MAKE_LIBRARY_NAME( "ze_loader", L0_LOADER_VERSION), loaderLibraryPath.c_str());
+            auto loaderTest = LOAD_DRIVER_LIBRARY(loaderFullLibraryPath.c_str());
+            auto loaderDriverGet = reinterpret_cast<ze_pfnDriverGet_t>(GET_FUNCTION_PTR(loaderTest, "zeDriverGet"));
+            if (!loaderDriverGet) {
                 if (ze_lib::context->debugTraceEnabled) {
                     std::string message = "LoaderDriverGet is a bad pointer. Exiting stability checker.";
                     ze_lib::context->debug_trace_message(message, "");
@@ -569,7 +577,7 @@ zelCheckIsLoaderInTearDown() {
 
             uint32_t driverCount = 0;
             ze_result_t result = ZE_RESULT_ERROR_UNINITIALIZED;
-            result = ze_lib::context->loaderDriverGet(&driverCount, nullptr);
+            result = loaderDriverGet(&driverCount, nullptr);
             if (result != ZE_RESULT_SUCCESS || driverCount == 0) {
                 if (ze_lib::context->debugTraceEnabled) {
                     std::string message = "Loader stability check failed. Exiting stability checker.";
