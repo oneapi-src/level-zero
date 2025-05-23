@@ -17,7 +17,7 @@ from templates import helper as th
  *
  */
 #include "${x}_lib.h"
-#ifndef DYNAMIC_LOAD_LOADER
+#ifndef L0_STATIC_LOADER_BUILD
 #include "${n}_ddi.h"
 #endif
 
@@ -25,7 +25,7 @@ namespace ${x}_lib
 {
     ///////////////////////////////////////////////////////////////////////////////
 
-#ifdef DYNAMIC_LOAD_LOADER
+#ifdef L0_STATIC_LOADER_BUILD
     __zedlllocal ${x}_result_t context_t::${n}DdiTableInit(ze_api_version_t version)
     {
         ${x}_result_t result = ${X}_RESULT_SUCCESS;

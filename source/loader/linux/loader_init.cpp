@@ -10,7 +10,7 @@
 
 namespace loader
 {
-#ifndef DYNAMIC_LOAD_LOADER
+#ifndef L0_STATIC_LOADER_BUILD
     void __attribute__((constructor)) createLoaderContext() {
         context = new context_t;
     }
