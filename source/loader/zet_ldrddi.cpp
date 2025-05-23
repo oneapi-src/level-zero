@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (C) 2019-2024 Intel Corporation
+ * Copyright (C) 2019-2025 Intel Corporation
  *
  * SPDX-License-Identifier: MIT
  *
@@ -8,6 +8,8 @@
  *
  */
 #include "ze_loader_internal.h"
+
+using namespace loader_driver_ddi;
 
 namespace loader
 {
@@ -2378,6 +2380,228 @@ extern "C" {
 #endif
 
 ///////////////////////////////////////////////////////////////////////////////
+/// @brief function for filling the legacy api pointers for MetricDecoderExp table
+__zedlllocal void ZE_APICALL
+zetGetMetricDecoderExpProcAddrTableLegacy()
+{
+    // return pointers to the Loader's Functions.
+    loader::loaderDispatch->pTools->MetricDecoderExp->pfnCreateExp                                = loader::zetMetricDecoderCreateExp;
+    loader::loaderDispatch->pTools->MetricDecoderExp->pfnDestroyExp                               = loader::zetMetricDecoderDestroyExp;
+    loader::loaderDispatch->pTools->MetricDecoderExp->pfnGetDecodableMetricsExp                   = loader::zetMetricDecoderGetDecodableMetricsExp;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief function for filling the legacy api pointers for MetricProgrammableExp table
+__zedlllocal void ZE_APICALL
+zetGetMetricProgrammableExpProcAddrTableLegacy()
+{
+    // return pointers to the Loader's Functions.
+    loader::loaderDispatch->pTools->MetricProgrammableExp->pfnGetExp                                   = loader::zetMetricProgrammableGetExp;
+    loader::loaderDispatch->pTools->MetricProgrammableExp->pfnGetPropertiesExp                         = loader::zetMetricProgrammableGetPropertiesExp;
+    loader::loaderDispatch->pTools->MetricProgrammableExp->pfnGetParamInfoExp                          = loader::zetMetricProgrammableGetParamInfoExp;
+    loader::loaderDispatch->pTools->MetricProgrammableExp->pfnGetParamValueInfoExp                     = loader::zetMetricProgrammableGetParamValueInfoExp;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief function for filling the legacy api pointers for MetricTracerExp table
+__zedlllocal void ZE_APICALL
+zetGetMetricTracerExpProcAddrTableLegacy()
+{
+    // return pointers to the Loader's Functions.
+    loader::loaderDispatch->pTools->MetricTracerExp->pfnCreateExp                                = loader::zetMetricTracerCreateExp;
+    loader::loaderDispatch->pTools->MetricTracerExp->pfnDestroyExp                               = loader::zetMetricTracerDestroyExp;
+    loader::loaderDispatch->pTools->MetricTracerExp->pfnEnableExp                                = loader::zetMetricTracerEnableExp;
+    loader::loaderDispatch->pTools->MetricTracerExp->pfnDisableExp                               = loader::zetMetricTracerDisableExp;
+    loader::loaderDispatch->pTools->MetricTracerExp->pfnReadDataExp                              = loader::zetMetricTracerReadDataExp;
+    loader::loaderDispatch->pTools->MetricTracerExp->pfnDecodeExp                                = loader::zetMetricTracerDecodeExp;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief function for filling the legacy api pointers for Device table
+__zedlllocal void ZE_APICALL
+zetGetDeviceProcAddrTableLegacy()
+{
+    // return pointers to the Loader's Functions.
+    loader::loaderDispatch->pTools->Device->pfnGetDebugProperties                       = loader::zetDeviceGetDebugProperties;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief function for filling the legacy api pointers for DeviceExp table
+__zedlllocal void ZE_APICALL
+zetGetDeviceExpProcAddrTableLegacy()
+{
+    // return pointers to the Loader's Functions.
+    loader::loaderDispatch->pTools->DeviceExp->pfnGetConcurrentMetricGroupsExp             = loader::zetDeviceGetConcurrentMetricGroupsExp;
+    loader::loaderDispatch->pTools->DeviceExp->pfnCreateMetricGroupsFromMetricsExp         = loader::zetDeviceCreateMetricGroupsFromMetricsExp;
+    loader::loaderDispatch->pTools->DeviceExp->pfnEnableMetricsExp                         = loader::zetDeviceEnableMetricsExp;
+    loader::loaderDispatch->pTools->DeviceExp->pfnDisableMetricsExp                        = loader::zetDeviceDisableMetricsExp;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief function for filling the legacy api pointers for Context table
+__zedlllocal void ZE_APICALL
+zetGetContextProcAddrTableLegacy()
+{
+    // return pointers to the Loader's Functions.
+    loader::loaderDispatch->pTools->Context->pfnActivateMetricGroups                     = loader::zetContextActivateMetricGroups;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief function for filling the legacy api pointers for CommandList table
+__zedlllocal void ZE_APICALL
+zetGetCommandListProcAddrTableLegacy()
+{
+    // return pointers to the Loader's Functions.
+    loader::loaderDispatch->pTools->CommandList->pfnAppendMetricStreamerMarker               = loader::zetCommandListAppendMetricStreamerMarker;
+    loader::loaderDispatch->pTools->CommandList->pfnAppendMetricQueryBegin                   = loader::zetCommandListAppendMetricQueryBegin;
+    loader::loaderDispatch->pTools->CommandList->pfnAppendMetricQueryEnd                     = loader::zetCommandListAppendMetricQueryEnd;
+    loader::loaderDispatch->pTools->CommandList->pfnAppendMetricMemoryBarrier                = loader::zetCommandListAppendMetricMemoryBarrier;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief function for filling the legacy api pointers for CommandListExp table
+__zedlllocal void ZE_APICALL
+zetGetCommandListExpProcAddrTableLegacy()
+{
+    // return pointers to the Loader's Functions.
+    loader::loaderDispatch->pTools->CommandListExp->pfnAppendMarkerExp                          = loader::zetCommandListAppendMarkerExp;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief function for filling the legacy api pointers for Kernel table
+__zedlllocal void ZE_APICALL
+zetGetKernelProcAddrTableLegacy()
+{
+    // return pointers to the Loader's Functions.
+    loader::loaderDispatch->pTools->Kernel->pfnGetProfileInfo                           = loader::zetKernelGetProfileInfo;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief function for filling the legacy api pointers for Module table
+__zedlllocal void ZE_APICALL
+zetGetModuleProcAddrTableLegacy()
+{
+    // return pointers to the Loader's Functions.
+    loader::loaderDispatch->pTools->Module->pfnGetDebugInfo                             = loader::zetModuleGetDebugInfo;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief function for filling the legacy api pointers for Debug table
+__zedlllocal void ZE_APICALL
+zetGetDebugProcAddrTableLegacy()
+{
+    // return pointers to the Loader's Functions.
+    loader::loaderDispatch->pTools->Debug->pfnAttach                                   = loader::zetDebugAttach;
+    loader::loaderDispatch->pTools->Debug->pfnDetach                                   = loader::zetDebugDetach;
+    loader::loaderDispatch->pTools->Debug->pfnReadEvent                                = loader::zetDebugReadEvent;
+    loader::loaderDispatch->pTools->Debug->pfnAcknowledgeEvent                         = loader::zetDebugAcknowledgeEvent;
+    loader::loaderDispatch->pTools->Debug->pfnInterrupt                                = loader::zetDebugInterrupt;
+    loader::loaderDispatch->pTools->Debug->pfnResume                                   = loader::zetDebugResume;
+    loader::loaderDispatch->pTools->Debug->pfnReadMemory                               = loader::zetDebugReadMemory;
+    loader::loaderDispatch->pTools->Debug->pfnWriteMemory                              = loader::zetDebugWriteMemory;
+    loader::loaderDispatch->pTools->Debug->pfnGetRegisterSetProperties                 = loader::zetDebugGetRegisterSetProperties;
+    loader::loaderDispatch->pTools->Debug->pfnReadRegisters                            = loader::zetDebugReadRegisters;
+    loader::loaderDispatch->pTools->Debug->pfnWriteRegisters                           = loader::zetDebugWriteRegisters;
+    loader::loaderDispatch->pTools->Debug->pfnGetThreadRegisterSetProperties           = loader::zetDebugGetThreadRegisterSetProperties;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief function for filling the legacy api pointers for Metric table
+__zedlllocal void ZE_APICALL
+zetGetMetricProcAddrTableLegacy()
+{
+    // return pointers to the Loader's Functions.
+    loader::loaderDispatch->pTools->Metric->pfnGet                                      = loader::zetMetricGet;
+    loader::loaderDispatch->pTools->Metric->pfnGetProperties                            = loader::zetMetricGetProperties;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief function for filling the legacy api pointers for MetricExp table
+__zedlllocal void ZE_APICALL
+zetGetMetricExpProcAddrTableLegacy()
+{
+    // return pointers to the Loader's Functions.
+    loader::loaderDispatch->pTools->MetricExp->pfnCreateFromProgrammableExp2               = loader::zetMetricCreateFromProgrammableExp2;
+    loader::loaderDispatch->pTools->MetricExp->pfnCreateFromProgrammableExp                = loader::zetMetricCreateFromProgrammableExp;
+    loader::loaderDispatch->pTools->MetricExp->pfnDestroyExp                               = loader::zetMetricDestroyExp;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief function for filling the legacy api pointers for MetricGroup table
+__zedlllocal void ZE_APICALL
+zetGetMetricGroupProcAddrTableLegacy()
+{
+    // return pointers to the Loader's Functions.
+    loader::loaderDispatch->pTools->MetricGroup->pfnGet                                      = loader::zetMetricGroupGet;
+    loader::loaderDispatch->pTools->MetricGroup->pfnGetProperties                            = loader::zetMetricGroupGetProperties;
+    loader::loaderDispatch->pTools->MetricGroup->pfnCalculateMetricValues                    = loader::zetMetricGroupCalculateMetricValues;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief function for filling the legacy api pointers for MetricGroupExp table
+__zedlllocal void ZE_APICALL
+zetGetMetricGroupExpProcAddrTableLegacy()
+{
+    // return pointers to the Loader's Functions.
+    loader::loaderDispatch->pTools->MetricGroupExp->pfnCalculateMultipleMetricValuesExp         = loader::zetMetricGroupCalculateMultipleMetricValuesExp;
+    loader::loaderDispatch->pTools->MetricGroupExp->pfnGetGlobalTimestampsExp                   = loader::zetMetricGroupGetGlobalTimestampsExp;
+    loader::loaderDispatch->pTools->MetricGroupExp->pfnGetExportDataExp                         = loader::zetMetricGroupGetExportDataExp;
+    loader::loaderDispatch->pTools->MetricGroupExp->pfnCalculateMetricExportDataExp             = loader::zetMetricGroupCalculateMetricExportDataExp;
+    loader::loaderDispatch->pTools->MetricGroupExp->pfnCreateExp                                = loader::zetMetricGroupCreateExp;
+    loader::loaderDispatch->pTools->MetricGroupExp->pfnAddMetricExp                             = loader::zetMetricGroupAddMetricExp;
+    loader::loaderDispatch->pTools->MetricGroupExp->pfnRemoveMetricExp                          = loader::zetMetricGroupRemoveMetricExp;
+    loader::loaderDispatch->pTools->MetricGroupExp->pfnCloseExp                                 = loader::zetMetricGroupCloseExp;
+    loader::loaderDispatch->pTools->MetricGroupExp->pfnDestroyExp                               = loader::zetMetricGroupDestroyExp;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief function for filling the legacy api pointers for MetricQuery table
+__zedlllocal void ZE_APICALL
+zetGetMetricQueryProcAddrTableLegacy()
+{
+    // return pointers to the Loader's Functions.
+    loader::loaderDispatch->pTools->MetricQuery->pfnCreate                                   = loader::zetMetricQueryCreate;
+    loader::loaderDispatch->pTools->MetricQuery->pfnDestroy                                  = loader::zetMetricQueryDestroy;
+    loader::loaderDispatch->pTools->MetricQuery->pfnReset                                    = loader::zetMetricQueryReset;
+    loader::loaderDispatch->pTools->MetricQuery->pfnGetData                                  = loader::zetMetricQueryGetData;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief function for filling the legacy api pointers for MetricQueryPool table
+__zedlllocal void ZE_APICALL
+zetGetMetricQueryPoolProcAddrTableLegacy()
+{
+    // return pointers to the Loader's Functions.
+    loader::loaderDispatch->pTools->MetricQueryPool->pfnCreate                                   = loader::zetMetricQueryPoolCreate;
+    loader::loaderDispatch->pTools->MetricQueryPool->pfnDestroy                                  = loader::zetMetricQueryPoolDestroy;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief function for filling the legacy api pointers for MetricStreamer table
+__zedlllocal void ZE_APICALL
+zetGetMetricStreamerProcAddrTableLegacy()
+{
+    // return pointers to the Loader's Functions.
+    loader::loaderDispatch->pTools->MetricStreamer->pfnOpen                                     = loader::zetMetricStreamerOpen;
+    loader::loaderDispatch->pTools->MetricStreamer->pfnClose                                    = loader::zetMetricStreamerClose;
+    loader::loaderDispatch->pTools->MetricStreamer->pfnReadData                                 = loader::zetMetricStreamerReadData;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief function for filling the legacy api pointers for TracerExp table
+__zedlllocal void ZE_APICALL
+zetGetTracerExpProcAddrTableLegacy()
+{
+    // return pointers to the Loader's Functions.
+    loader::loaderDispatch->pTools->TracerExp->pfnCreate                                   = loader::zetTracerExpCreate;
+    loader::loaderDispatch->pTools->TracerExp->pfnDestroy                                  = loader::zetTracerExpDestroy;
+    loader::loaderDispatch->pTools->TracerExp->pfnSetPrologues                             = loader::zetTracerExpSetPrologues;
+    loader::loaderDispatch->pTools->TracerExp->pfnSetEpilogues                             = loader::zetTracerExpSetEpilogues;
+    loader::loaderDispatch->pTools->TracerExp->pfnSetEnabled                               = loader::zetTracerExpSetEnabled;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
 /// @brief Exported function for filling application's MetricDecoderExp table
 ///        with current process' addresses
 ///
@@ -2422,15 +2646,29 @@ zetGetMetricDecoderExpProcAddrTable(
         if( ( loader::context->zeDrivers.size() > 1 ) || loader::context->forceIntercept )
         {
             // return pointers to loader's DDIs
+            loader::loaderDispatch->pTools->MetricDecoderExp = new zet_metric_decoder_exp_dditable_t;
             if (version >= ZE_API_VERSION_1_10) {
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnCreateExp                                = loader_driver_ddi::zetMetricDecoderCreateExp;
+            } else {
                 pDdiTable->pfnCreateExp                                = loader::zetMetricDecoderCreateExp;
             }
+            }
             if (version >= ZE_API_VERSION_1_10) {
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnDestroyExp                               = loader_driver_ddi::zetMetricDecoderDestroyExp;
+            } else {
                 pDdiTable->pfnDestroyExp                               = loader::zetMetricDecoderDestroyExp;
             }
+            }
             if (version >= ZE_API_VERSION_1_10) {
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnGetDecodableMetricsExp                   = loader_driver_ddi::zetMetricDecoderGetDecodableMetricsExp;
+            } else {
                 pDdiTable->pfnGetDecodableMetricsExp                   = loader::zetMetricDecoderGetDecodableMetricsExp;
             }
+            }
+            zetGetMetricDecoderExpProcAddrTableLegacy();
         }
         else
         {
@@ -2497,18 +2735,36 @@ zetGetMetricProgrammableExpProcAddrTable(
         if( ( loader::context->zeDrivers.size() > 1 ) || loader::context->forceIntercept )
         {
             // return pointers to loader's DDIs
+            loader::loaderDispatch->pTools->MetricProgrammableExp = new zet_metric_programmable_exp_dditable_t;
             if (version >= ZE_API_VERSION_1_9) {
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnGetExp                                   = loader_driver_ddi::zetMetricProgrammableGetExp;
+            } else {
                 pDdiTable->pfnGetExp                                   = loader::zetMetricProgrammableGetExp;
             }
+            }
             if (version >= ZE_API_VERSION_1_9) {
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnGetPropertiesExp                         = loader_driver_ddi::zetMetricProgrammableGetPropertiesExp;
+            } else {
                 pDdiTable->pfnGetPropertiesExp                         = loader::zetMetricProgrammableGetPropertiesExp;
             }
+            }
             if (version >= ZE_API_VERSION_1_9) {
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnGetParamInfoExp                          = loader_driver_ddi::zetMetricProgrammableGetParamInfoExp;
+            } else {
                 pDdiTable->pfnGetParamInfoExp                          = loader::zetMetricProgrammableGetParamInfoExp;
             }
+            }
             if (version >= ZE_API_VERSION_1_9) {
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnGetParamValueInfoExp                     = loader_driver_ddi::zetMetricProgrammableGetParamValueInfoExp;
+            } else {
                 pDdiTable->pfnGetParamValueInfoExp                     = loader::zetMetricProgrammableGetParamValueInfoExp;
             }
+            }
+            zetGetMetricProgrammableExpProcAddrTableLegacy();
         }
         else
         {
@@ -2575,24 +2831,50 @@ zetGetMetricTracerExpProcAddrTable(
         if( ( loader::context->zeDrivers.size() > 1 ) || loader::context->forceIntercept )
         {
             // return pointers to loader's DDIs
+            loader::loaderDispatch->pTools->MetricTracerExp = new zet_metric_tracer_exp_dditable_t;
             if (version >= ZE_API_VERSION_1_10) {
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnCreateExp                                = loader_driver_ddi::zetMetricTracerCreateExp;
+            } else {
                 pDdiTable->pfnCreateExp                                = loader::zetMetricTracerCreateExp;
             }
+            }
             if (version >= ZE_API_VERSION_1_10) {
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnDestroyExp                               = loader_driver_ddi::zetMetricTracerDestroyExp;
+            } else {
                 pDdiTable->pfnDestroyExp                               = loader::zetMetricTracerDestroyExp;
             }
+            }
             if (version >= ZE_API_VERSION_1_10) {
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnEnableExp                                = loader_driver_ddi::zetMetricTracerEnableExp;
+            } else {
                 pDdiTable->pfnEnableExp                                = loader::zetMetricTracerEnableExp;
             }
+            }
             if (version >= ZE_API_VERSION_1_10) {
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnDisableExp                               = loader_driver_ddi::zetMetricTracerDisableExp;
+            } else {
                 pDdiTable->pfnDisableExp                               = loader::zetMetricTracerDisableExp;
             }
+            }
             if (version >= ZE_API_VERSION_1_10) {
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnReadDataExp                              = loader_driver_ddi::zetMetricTracerReadDataExp;
+            } else {
                 pDdiTable->pfnReadDataExp                              = loader::zetMetricTracerReadDataExp;
             }
+            }
             if (version >= ZE_API_VERSION_1_10) {
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnDecodeExp                                = loader_driver_ddi::zetMetricTracerDecodeExp;
+            } else {
                 pDdiTable->pfnDecodeExp                                = loader::zetMetricTracerDecodeExp;
             }
+            }
+            zetGetMetricTracerExpProcAddrTableLegacy();
         }
         else
         {
@@ -2669,9 +2951,15 @@ zetGetDeviceProcAddrTable(
         if( ( loader::context->zeDrivers.size() > 1 ) || loader::context->forceIntercept )
         {
             // return pointers to loader's DDIs
+            loader::loaderDispatch->pTools->Device = new zet_device_dditable_t;
             if (version >= ZE_API_VERSION_1_0) {
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnGetDebugProperties                       = loader_driver_ddi::zetDeviceGetDebugProperties;
+            } else {
                 pDdiTable->pfnGetDebugProperties                       = loader::zetDeviceGetDebugProperties;
             }
+            }
+            zetGetDeviceProcAddrTableLegacy();
         }
         else
         {
@@ -2738,18 +3026,36 @@ zetGetDeviceExpProcAddrTable(
         if( ( loader::context->zeDrivers.size() > 1 ) || loader::context->forceIntercept )
         {
             // return pointers to loader's DDIs
+            loader::loaderDispatch->pTools->DeviceExp = new zet_device_exp_dditable_t;
             if (version >= ZE_API_VERSION_1_10) {
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnGetConcurrentMetricGroupsExp             = loader_driver_ddi::zetDeviceGetConcurrentMetricGroupsExp;
+            } else {
                 pDdiTable->pfnGetConcurrentMetricGroupsExp             = loader::zetDeviceGetConcurrentMetricGroupsExp;
             }
+            }
             if (version >= ZE_API_VERSION_1_10) {
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnCreateMetricGroupsFromMetricsExp         = loader_driver_ddi::zetDeviceCreateMetricGroupsFromMetricsExp;
+            } else {
                 pDdiTable->pfnCreateMetricGroupsFromMetricsExp         = loader::zetDeviceCreateMetricGroupsFromMetricsExp;
             }
+            }
             if (version >= ZE_API_VERSION_1_13) {
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnEnableMetricsExp                         = loader_driver_ddi::zetDeviceEnableMetricsExp;
+            } else {
                 pDdiTable->pfnEnableMetricsExp                         = loader::zetDeviceEnableMetricsExp;
             }
+            }
             if (version >= ZE_API_VERSION_1_13) {
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnDisableMetricsExp                        = loader_driver_ddi::zetDeviceDisableMetricsExp;
+            } else {
                 pDdiTable->pfnDisableMetricsExp                        = loader::zetDeviceDisableMetricsExp;
             }
+            }
+            zetGetDeviceExpProcAddrTableLegacy();
         }
         else
         {
@@ -2826,9 +3132,15 @@ zetGetContextProcAddrTable(
         if( ( loader::context->zeDrivers.size() > 1 ) || loader::context->forceIntercept )
         {
             // return pointers to loader's DDIs
+            loader::loaderDispatch->pTools->Context = new zet_context_dditable_t;
             if (version >= ZE_API_VERSION_1_0) {
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnActivateMetricGroups                     = loader_driver_ddi::zetContextActivateMetricGroups;
+            } else {
                 pDdiTable->pfnActivateMetricGroups                     = loader::zetContextActivateMetricGroups;
             }
+            }
+            zetGetContextProcAddrTableLegacy();
         }
         else
         {
@@ -2905,18 +3217,36 @@ zetGetCommandListProcAddrTable(
         if( ( loader::context->zeDrivers.size() > 1 ) || loader::context->forceIntercept )
         {
             // return pointers to loader's DDIs
+            loader::loaderDispatch->pTools->CommandList = new zet_command_list_dditable_t;
             if (version >= ZE_API_VERSION_1_0) {
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnAppendMetricStreamerMarker               = loader_driver_ddi::zetCommandListAppendMetricStreamerMarker;
+            } else {
                 pDdiTable->pfnAppendMetricStreamerMarker               = loader::zetCommandListAppendMetricStreamerMarker;
             }
+            }
             if (version >= ZE_API_VERSION_1_0) {
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnAppendMetricQueryBegin                   = loader_driver_ddi::zetCommandListAppendMetricQueryBegin;
+            } else {
                 pDdiTable->pfnAppendMetricQueryBegin                   = loader::zetCommandListAppendMetricQueryBegin;
             }
+            }
             if (version >= ZE_API_VERSION_1_0) {
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnAppendMetricQueryEnd                     = loader_driver_ddi::zetCommandListAppendMetricQueryEnd;
+            } else {
                 pDdiTable->pfnAppendMetricQueryEnd                     = loader::zetCommandListAppendMetricQueryEnd;
             }
+            }
             if (version >= ZE_API_VERSION_1_0) {
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnAppendMetricMemoryBarrier                = loader_driver_ddi::zetCommandListAppendMetricMemoryBarrier;
+            } else {
                 pDdiTable->pfnAppendMetricMemoryBarrier                = loader::zetCommandListAppendMetricMemoryBarrier;
             }
+            }
+            zetGetCommandListProcAddrTableLegacy();
         }
         else
         {
@@ -2983,9 +3313,15 @@ zetGetCommandListExpProcAddrTable(
         if( ( loader::context->zeDrivers.size() > 1 ) || loader::context->forceIntercept )
         {
             // return pointers to loader's DDIs
+            loader::loaderDispatch->pTools->CommandListExp = new zet_command_list_exp_dditable_t;
             if (version >= ZE_API_VERSION_1_13) {
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnAppendMarkerExp                          = loader_driver_ddi::zetCommandListAppendMarkerExp;
+            } else {
                 pDdiTable->pfnAppendMarkerExp                          = loader::zetCommandListAppendMarkerExp;
             }
+            }
+            zetGetCommandListExpProcAddrTableLegacy();
         }
         else
         {
@@ -3062,9 +3398,15 @@ zetGetKernelProcAddrTable(
         if( ( loader::context->zeDrivers.size() > 1 ) || loader::context->forceIntercept )
         {
             // return pointers to loader's DDIs
+            loader::loaderDispatch->pTools->Kernel = new zet_kernel_dditable_t;
             if (version >= ZE_API_VERSION_1_0) {
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnGetProfileInfo                           = loader_driver_ddi::zetKernelGetProfileInfo;
+            } else {
                 pDdiTable->pfnGetProfileInfo                           = loader::zetKernelGetProfileInfo;
             }
+            }
+            zetGetKernelProcAddrTableLegacy();
         }
         else
         {
@@ -3141,9 +3483,15 @@ zetGetModuleProcAddrTable(
         if( ( loader::context->zeDrivers.size() > 1 ) || loader::context->forceIntercept )
         {
             // return pointers to loader's DDIs
+            loader::loaderDispatch->pTools->Module = new zet_module_dditable_t;
             if (version >= ZE_API_VERSION_1_0) {
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnGetDebugInfo                             = loader_driver_ddi::zetModuleGetDebugInfo;
+            } else {
                 pDdiTable->pfnGetDebugInfo                             = loader::zetModuleGetDebugInfo;
             }
+            }
+            zetGetModuleProcAddrTableLegacy();
         }
         else
         {
@@ -3220,42 +3568,92 @@ zetGetDebugProcAddrTable(
         if( ( loader::context->zeDrivers.size() > 1 ) || loader::context->forceIntercept )
         {
             // return pointers to loader's DDIs
+            loader::loaderDispatch->pTools->Debug = new zet_debug_dditable_t;
             if (version >= ZE_API_VERSION_1_0) {
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnAttach                                   = loader_driver_ddi::zetDebugAttach;
+            } else {
                 pDdiTable->pfnAttach                                   = loader::zetDebugAttach;
             }
+            }
             if (version >= ZE_API_VERSION_1_0) {
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnDetach                                   = loader_driver_ddi::zetDebugDetach;
+            } else {
                 pDdiTable->pfnDetach                                   = loader::zetDebugDetach;
             }
+            }
             if (version >= ZE_API_VERSION_1_0) {
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnReadEvent                                = loader_driver_ddi::zetDebugReadEvent;
+            } else {
                 pDdiTable->pfnReadEvent                                = loader::zetDebugReadEvent;
             }
+            }
             if (version >= ZE_API_VERSION_1_0) {
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnAcknowledgeEvent                         = loader_driver_ddi::zetDebugAcknowledgeEvent;
+            } else {
                 pDdiTable->pfnAcknowledgeEvent                         = loader::zetDebugAcknowledgeEvent;
             }
+            }
             if (version >= ZE_API_VERSION_1_0) {
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnInterrupt                                = loader_driver_ddi::zetDebugInterrupt;
+            } else {
                 pDdiTable->pfnInterrupt                                = loader::zetDebugInterrupt;
             }
+            }
             if (version >= ZE_API_VERSION_1_0) {
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnResume                                   = loader_driver_ddi::zetDebugResume;
+            } else {
                 pDdiTable->pfnResume                                   = loader::zetDebugResume;
             }
+            }
             if (version >= ZE_API_VERSION_1_0) {
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnReadMemory                               = loader_driver_ddi::zetDebugReadMemory;
+            } else {
                 pDdiTable->pfnReadMemory                               = loader::zetDebugReadMemory;
             }
+            }
             if (version >= ZE_API_VERSION_1_0) {
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnWriteMemory                              = loader_driver_ddi::zetDebugWriteMemory;
+            } else {
                 pDdiTable->pfnWriteMemory                              = loader::zetDebugWriteMemory;
             }
+            }
             if (version >= ZE_API_VERSION_1_0) {
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnGetRegisterSetProperties                 = loader_driver_ddi::zetDebugGetRegisterSetProperties;
+            } else {
                 pDdiTable->pfnGetRegisterSetProperties                 = loader::zetDebugGetRegisterSetProperties;
             }
+            }
             if (version >= ZE_API_VERSION_1_0) {
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnReadRegisters                            = loader_driver_ddi::zetDebugReadRegisters;
+            } else {
                 pDdiTable->pfnReadRegisters                            = loader::zetDebugReadRegisters;
             }
+            }
             if (version >= ZE_API_VERSION_1_0) {
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnWriteRegisters                           = loader_driver_ddi::zetDebugWriteRegisters;
+            } else {
                 pDdiTable->pfnWriteRegisters                           = loader::zetDebugWriteRegisters;
             }
+            }
             if (version >= ZE_API_VERSION_1_5) {
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnGetThreadRegisterSetProperties           = loader_driver_ddi::zetDebugGetThreadRegisterSetProperties;
+            } else {
                 pDdiTable->pfnGetThreadRegisterSetProperties           = loader::zetDebugGetThreadRegisterSetProperties;
             }
+            }
+            zetGetDebugProcAddrTableLegacy();
         }
         else
         {
@@ -3332,12 +3730,22 @@ zetGetMetricProcAddrTable(
         if( ( loader::context->zeDrivers.size() > 1 ) || loader::context->forceIntercept )
         {
             // return pointers to loader's DDIs
+            loader::loaderDispatch->pTools->Metric = new zet_metric_dditable_t;
             if (version >= ZE_API_VERSION_1_0) {
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnGet                                      = loader_driver_ddi::zetMetricGet;
+            } else {
                 pDdiTable->pfnGet                                      = loader::zetMetricGet;
             }
+            }
             if (version >= ZE_API_VERSION_1_0) {
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnGetProperties                            = loader_driver_ddi::zetMetricGetProperties;
+            } else {
                 pDdiTable->pfnGetProperties                            = loader::zetMetricGetProperties;
             }
+            }
+            zetGetMetricProcAddrTableLegacy();
         }
         else
         {
@@ -3404,15 +3812,29 @@ zetGetMetricExpProcAddrTable(
         if( ( loader::context->zeDrivers.size() > 1 ) || loader::context->forceIntercept )
         {
             // return pointers to loader's DDIs
+            loader::loaderDispatch->pTools->MetricExp = new zet_metric_exp_dditable_t;
             if (version >= ZE_API_VERSION_1_11) {
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnCreateFromProgrammableExp2               = loader_driver_ddi::zetMetricCreateFromProgrammableExp2;
+            } else {
                 pDdiTable->pfnCreateFromProgrammableExp2               = loader::zetMetricCreateFromProgrammableExp2;
             }
+            }
             if (version >= ZE_API_VERSION_1_9) {
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnCreateFromProgrammableExp                = loader_driver_ddi::zetMetricCreateFromProgrammableExp;
+            } else {
                 pDdiTable->pfnCreateFromProgrammableExp                = loader::zetMetricCreateFromProgrammableExp;
             }
+            }
             if (version >= ZE_API_VERSION_1_9) {
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnDestroyExp                               = loader_driver_ddi::zetMetricDestroyExp;
+            } else {
                 pDdiTable->pfnDestroyExp                               = loader::zetMetricDestroyExp;
             }
+            }
+            zetGetMetricExpProcAddrTableLegacy();
         }
         else
         {
@@ -3489,15 +3911,29 @@ zetGetMetricGroupProcAddrTable(
         if( ( loader::context->zeDrivers.size() > 1 ) || loader::context->forceIntercept )
         {
             // return pointers to loader's DDIs
+            loader::loaderDispatch->pTools->MetricGroup = new zet_metric_group_dditable_t;
             if (version >= ZE_API_VERSION_1_0) {
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnGet                                      = loader_driver_ddi::zetMetricGroupGet;
+            } else {
                 pDdiTable->pfnGet                                      = loader::zetMetricGroupGet;
             }
+            }
             if (version >= ZE_API_VERSION_1_0) {
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnGetProperties                            = loader_driver_ddi::zetMetricGroupGetProperties;
+            } else {
                 pDdiTable->pfnGetProperties                            = loader::zetMetricGroupGetProperties;
             }
+            }
             if (version >= ZE_API_VERSION_1_0) {
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnCalculateMetricValues                    = loader_driver_ddi::zetMetricGroupCalculateMetricValues;
+            } else {
                 pDdiTable->pfnCalculateMetricValues                    = loader::zetMetricGroupCalculateMetricValues;
             }
+            }
+            zetGetMetricGroupProcAddrTableLegacy();
         }
         else
         {
@@ -3564,33 +4000,71 @@ zetGetMetricGroupExpProcAddrTable(
         if( ( loader::context->zeDrivers.size() > 1 ) || loader::context->forceIntercept )
         {
             // return pointers to loader's DDIs
+            loader::loaderDispatch->pTools->MetricGroupExp = new zet_metric_group_exp_dditable_t;
             if (version >= ZE_API_VERSION_1_2) {
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnCalculateMultipleMetricValuesExp         = loader_driver_ddi::zetMetricGroupCalculateMultipleMetricValuesExp;
+            } else {
                 pDdiTable->pfnCalculateMultipleMetricValuesExp         = loader::zetMetricGroupCalculateMultipleMetricValuesExp;
             }
+            }
             if (version >= ZE_API_VERSION_1_5) {
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnGetGlobalTimestampsExp                   = loader_driver_ddi::zetMetricGroupGetGlobalTimestampsExp;
+            } else {
                 pDdiTable->pfnGetGlobalTimestampsExp                   = loader::zetMetricGroupGetGlobalTimestampsExp;
             }
+            }
             if (version >= ZE_API_VERSION_1_6) {
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnGetExportDataExp                         = loader_driver_ddi::zetMetricGroupGetExportDataExp;
+            } else {
                 pDdiTable->pfnGetExportDataExp                         = loader::zetMetricGroupGetExportDataExp;
             }
+            }
             if (version >= ZE_API_VERSION_1_6) {
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnCalculateMetricExportDataExp             = loader_driver_ddi::zetMetricGroupCalculateMetricExportDataExp;
+            } else {
                 pDdiTable->pfnCalculateMetricExportDataExp             = loader::zetMetricGroupCalculateMetricExportDataExp;
             }
+            }
             if (version >= ZE_API_VERSION_1_9) {
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnCreateExp                                = loader_driver_ddi::zetMetricGroupCreateExp;
+            } else {
                 pDdiTable->pfnCreateExp                                = loader::zetMetricGroupCreateExp;
             }
+            }
             if (version >= ZE_API_VERSION_1_9) {
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnAddMetricExp                             = loader_driver_ddi::zetMetricGroupAddMetricExp;
+            } else {
                 pDdiTable->pfnAddMetricExp                             = loader::zetMetricGroupAddMetricExp;
             }
+            }
             if (version >= ZE_API_VERSION_1_9) {
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnRemoveMetricExp                          = loader_driver_ddi::zetMetricGroupRemoveMetricExp;
+            } else {
                 pDdiTable->pfnRemoveMetricExp                          = loader::zetMetricGroupRemoveMetricExp;
             }
+            }
             if (version >= ZE_API_VERSION_1_9) {
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnCloseExp                                 = loader_driver_ddi::zetMetricGroupCloseExp;
+            } else {
                 pDdiTable->pfnCloseExp                                 = loader::zetMetricGroupCloseExp;
             }
+            }
             if (version >= ZE_API_VERSION_1_9) {
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnDestroyExp                               = loader_driver_ddi::zetMetricGroupDestroyExp;
+            } else {
                 pDdiTable->pfnDestroyExp                               = loader::zetMetricGroupDestroyExp;
             }
+            }
+            zetGetMetricGroupExpProcAddrTableLegacy();
         }
         else
         {
@@ -3667,18 +4141,36 @@ zetGetMetricQueryProcAddrTable(
         if( ( loader::context->zeDrivers.size() > 1 ) || loader::context->forceIntercept )
         {
             // return pointers to loader's DDIs
+            loader::loaderDispatch->pTools->MetricQuery = new zet_metric_query_dditable_t;
             if (version >= ZE_API_VERSION_1_0) {
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnCreate                                   = loader_driver_ddi::zetMetricQueryCreate;
+            } else {
                 pDdiTable->pfnCreate                                   = loader::zetMetricQueryCreate;
             }
+            }
             if (version >= ZE_API_VERSION_1_0) {
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnDestroy                                  = loader_driver_ddi::zetMetricQueryDestroy;
+            } else {
                 pDdiTable->pfnDestroy                                  = loader::zetMetricQueryDestroy;
             }
+            }
             if (version >= ZE_API_VERSION_1_0) {
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnReset                                    = loader_driver_ddi::zetMetricQueryReset;
+            } else {
                 pDdiTable->pfnReset                                    = loader::zetMetricQueryReset;
             }
+            }
             if (version >= ZE_API_VERSION_1_0) {
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnGetData                                  = loader_driver_ddi::zetMetricQueryGetData;
+            } else {
                 pDdiTable->pfnGetData                                  = loader::zetMetricQueryGetData;
             }
+            }
+            zetGetMetricQueryProcAddrTableLegacy();
         }
         else
         {
@@ -3755,12 +4247,22 @@ zetGetMetricQueryPoolProcAddrTable(
         if( ( loader::context->zeDrivers.size() > 1 ) || loader::context->forceIntercept )
         {
             // return pointers to loader's DDIs
+            loader::loaderDispatch->pTools->MetricQueryPool = new zet_metric_query_pool_dditable_t;
             if (version >= ZE_API_VERSION_1_0) {
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnCreate                                   = loader_driver_ddi::zetMetricQueryPoolCreate;
+            } else {
                 pDdiTable->pfnCreate                                   = loader::zetMetricQueryPoolCreate;
             }
+            }
             if (version >= ZE_API_VERSION_1_0) {
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnDestroy                                  = loader_driver_ddi::zetMetricQueryPoolDestroy;
+            } else {
                 pDdiTable->pfnDestroy                                  = loader::zetMetricQueryPoolDestroy;
             }
+            }
+            zetGetMetricQueryPoolProcAddrTableLegacy();
         }
         else
         {
@@ -3837,15 +4339,29 @@ zetGetMetricStreamerProcAddrTable(
         if( ( loader::context->zeDrivers.size() > 1 ) || loader::context->forceIntercept )
         {
             // return pointers to loader's DDIs
+            loader::loaderDispatch->pTools->MetricStreamer = new zet_metric_streamer_dditable_t;
             if (version >= ZE_API_VERSION_1_0) {
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnOpen                                     = loader_driver_ddi::zetMetricStreamerOpen;
+            } else {
                 pDdiTable->pfnOpen                                     = loader::zetMetricStreamerOpen;
             }
+            }
             if (version >= ZE_API_VERSION_1_0) {
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnClose                                    = loader_driver_ddi::zetMetricStreamerClose;
+            } else {
                 pDdiTable->pfnClose                                    = loader::zetMetricStreamerClose;
             }
+            }
             if (version >= ZE_API_VERSION_1_0) {
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnReadData                                 = loader_driver_ddi::zetMetricStreamerReadData;
+            } else {
                 pDdiTable->pfnReadData                                 = loader::zetMetricStreamerReadData;
             }
+            }
+            zetGetMetricStreamerProcAddrTableLegacy();
         }
         else
         {
@@ -3922,21 +4438,43 @@ zetGetTracerExpProcAddrTable(
         if( ( loader::context->zeDrivers.size() > 1 ) || loader::context->forceIntercept )
         {
             // return pointers to loader's DDIs
+            loader::loaderDispatch->pTools->TracerExp = new zet_tracer_exp_dditable_t;
             if (version >= ZE_API_VERSION_1_0) {
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnCreate                                   = loader_driver_ddi::zetTracerExpCreate;
+            } else {
                 pDdiTable->pfnCreate                                   = loader::zetTracerExpCreate;
             }
+            }
             if (version >= ZE_API_VERSION_1_0) {
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnDestroy                                  = loader_driver_ddi::zetTracerExpDestroy;
+            } else {
                 pDdiTable->pfnDestroy                                  = loader::zetTracerExpDestroy;
             }
+            }
             if (version >= ZE_API_VERSION_1_0) {
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnSetPrologues                             = loader_driver_ddi::zetTracerExpSetPrologues;
+            } else {
                 pDdiTable->pfnSetPrologues                             = loader::zetTracerExpSetPrologues;
             }
+            }
             if (version >= ZE_API_VERSION_1_0) {
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnSetEpilogues                             = loader_driver_ddi::zetTracerExpSetEpilogues;
+            } else {
                 pDdiTable->pfnSetEpilogues                             = loader::zetTracerExpSetEpilogues;
             }
+            }
             if (version >= ZE_API_VERSION_1_0) {
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnSetEnabled                               = loader_driver_ddi::zetTracerExpSetEnabled;
+            } else {
                 pDdiTable->pfnSetEnabled                               = loader::zetTracerExpSetEnabled;
             }
+            }
+            zetGetTracerExpProcAddrTableLegacy();
         }
         else
         {
