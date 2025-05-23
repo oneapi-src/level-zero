@@ -31,7 +31,7 @@ namespace ze_lib
     class __zedlllocal context_t
     {
     public:
-#ifdef DYNAMIC_LOAD_LOADER
+#ifdef L0_STATIC_LOADER_BUILD
         HMODULE loader = nullptr;
 #endif
 
@@ -179,7 +179,7 @@ namespace ze_lib
         std::atomic<uint32_t> teardownCallbacksCount{0};
         std::map<uint32_t, zel_loader_teardown_callback_t> teardownCallbacks;
         std::mutex teardownCallbacksMutex;
-        #ifdef DYNAMIC_LOAD_LOADER
+        #ifdef L0_STATIC_LOADER_BUILD
         std::once_flag initTeardownCallbacksOnce;
         zel_application_teardown_callback_t loaderTeardownCallback = nullptr;
         uint32_t loaderTeardownCallbackIndex = 0;
@@ -188,7 +188,7 @@ namespace ze_lib
 
     extern bool destruction;
     extern context_t *context;
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     extern bool delayContextDestruction;
     extern bool loaderTeardownCallbackReceived;
     extern bool loaderTeardownRegistrationEnabled;

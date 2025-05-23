@@ -10,7 +10,7 @@
 
 namespace ze_lib
 {
-#ifndef DYNAMIC_LOAD_LOADER
+#ifndef L0_STATIC_LOADER_BUILD
     void __attribute__((constructor)) createLibContext() {
         context = new context_t;
     }

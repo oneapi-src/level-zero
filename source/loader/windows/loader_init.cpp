@@ -10,7 +10,7 @@
 
 namespace loader
 {
-#ifdef DYNAMIC_LOAD_LOADER
+#ifdef L0_STATIC_LOADER_BUILD
     extern "C" BOOL APIENTRY DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved) {
         if (fdwReason == DLL_PROCESS_DETACH) {
             delete context;

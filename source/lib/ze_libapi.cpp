@@ -46,7 +46,7 @@ zeInit(
     )
 {
     static ze_result_t result = ZE_RESULT_SUCCESS;
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     if (!ze_lib::context) {
         ze_lib::context = new ze_lib::context_t;
     }
@@ -120,7 +120,7 @@ zeDriverGet(
                                                     ///< shall only retrieve that number of drivers.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -223,7 +223,7 @@ zeInitDrivers(
     )
 {
     ze_result_t result = ZE_RESULT_SUCCESS;
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     if (!ze_lib::context) {
         ze_lib::context = new ze_lib::context_t;
     }
@@ -283,7 +283,7 @@ zeDriverGetApiVersion(
     ze_api_version_t* version                       ///< [out] api version
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -343,7 +343,7 @@ zeDriverGetProperties(
     ze_driver_properties_t* pDriverProperties       ///< [in,out] query result for driver properties
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -399,7 +399,7 @@ zeDriverGetIpcProperties(
     ze_driver_ipc_properties_t* pIpcProperties      ///< [in,out] query result for IPC properties
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -468,7 +468,7 @@ zeDriverGetExtensionProperties(
                                                     ///< then driver shall only retrieve that number of extension properties.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -527,7 +527,7 @@ zeDriverGetExtensionFunctionAddress(
     void** ppFunctionAddress                        ///< [out] pointer to function pointer
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -590,7 +590,7 @@ zeDriverGetLastErrorDescription(
                                                     ///< cause of error.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -658,7 +658,7 @@ zeDeviceGet(
                                                     ///< shall only retrieve that number of devices.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -722,7 +722,7 @@ zeDeviceGetRootDevice(
     ze_device_handle_t* phRootDevice                ///< [in,out] parent root device.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -795,7 +795,7 @@ zeDeviceGetSubDevices(
                                                     ///< shall only retrieve that number of sub-devices.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -855,7 +855,7 @@ zeDeviceGetProperties(
     ze_device_properties_t* pDeviceProperties       ///< [in,out] query result for device properties
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -915,7 +915,7 @@ zeDeviceGetComputeProperties(
     ze_device_compute_properties_t* pComputeProperties  ///< [in,out] query result for compute properties
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -971,7 +971,7 @@ zeDeviceGetModuleProperties(
     ze_device_module_properties_t* pModuleProperties///< [in,out] query result for module properties
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1047,7 +1047,7 @@ zeDeviceGetCommandQueueGroupProperties(
                                                     ///< queue group properties.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1122,7 +1122,7 @@ zeDeviceGetMemoryProperties(
                                                     ///< driver shall only retrieve that number of memory properties.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1182,7 +1182,7 @@ zeDeviceGetMemoryAccessProperties(
     ze_device_memory_access_properties_t* pMemAccessProperties  ///< [in,out] query result for memory access properties
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1250,7 +1250,7 @@ zeDeviceGetCacheProperties(
                                                     ///< driver shall only retrieve that number of cache properties.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1307,7 +1307,7 @@ zeDeviceGetImageProperties(
     ze_device_image_properties_t* pImageProperties  ///< [in,out] query result for image properties
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1363,7 +1363,7 @@ zeDeviceGetExternalMemoryProperties(
     ze_device_external_memory_properties_t* pExternalMemoryProperties   ///< [in,out] query result for external memory properties
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1422,7 +1422,7 @@ zeDeviceGetP2PProperties(
     ze_device_p2p_properties_t* pP2PProperties      ///< [in,out] Peer-to-Peer properties between source and peer device
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1494,7 +1494,7 @@ zeDeviceCanAccessPeer(
     ze_bool_t* value                                ///< [out] returned access capability
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1554,7 +1554,7 @@ zeDeviceGetStatus(
     ze_device_handle_t hDevice                      ///< [in] handle of the device
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1617,7 +1617,7 @@ zeDeviceGetGlobalTimestamps(
                                                     ///< Host's global timestamp value.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1679,7 +1679,7 @@ zeContextCreate(
     ze_context_handle_t* phContext                  ///< [out] pointer to handle of context object created
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1753,7 +1753,7 @@ zeContextCreateEx(
     ze_context_handle_t* phContext                  ///< [out] pointer to handle of context object created
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1812,7 +1812,7 @@ zeContextDestroy(
     ze_context_handle_t hContext                    ///< [in][release] handle of context object to destroy
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1870,7 +1870,7 @@ zeContextGetStatus(
     ze_context_handle_t hContext                    ///< [in] handle of context object
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1942,7 +1942,7 @@ zeCommandQueueCreate(
     ze_command_queue_handle_t* phCommandQueue       ///< [out] pointer to handle of command queue object created
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -2007,7 +2007,7 @@ zeCommandQueueDestroy(
     ze_command_queue_handle_t hCommandQueue         ///< [in][release] handle of command queue object to destroy
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -2089,7 +2089,7 @@ zeCommandQueueExecuteCommandLists(
     ze_fence_handle_t hFence                        ///< [in][optional] handle of the fence to signal on completion
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -2151,7 +2151,7 @@ zeCommandQueueSynchronize(
                                                     ///< value allowed by the accuracy of those dependencies.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -2207,7 +2207,7 @@ zeCommandQueueGetOrdinal(
     uint32_t* pOrdinal                              ///< [out] command queue group ordinal
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -2263,7 +2263,7 @@ zeCommandQueueGetIndex(
     uint32_t* pIndex                                ///< [out] command queue index within the group
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -2330,7 +2330,7 @@ zeCommandListCreate(
     ze_command_list_handle_t* phCommandList         ///< [out] pointer to handle of command list object created
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -2405,7 +2405,7 @@ zeCommandListCreateImmediate(
     ze_command_list_handle_t* phCommandList         ///< [out] pointer to handle of command list object created
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -2464,7 +2464,7 @@ zeCommandListDestroy(
     ze_command_list_handle_t hCommandList           ///< [in][release] handle of command list object to destroy
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -2518,7 +2518,7 @@ zeCommandListClose(
     ze_command_list_handle_t hCommandList           ///< [in] handle of command list object to close
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -2575,7 +2575,7 @@ zeCommandListReset(
     ze_command_list_handle_t hCommandList           ///< [in] handle of command list object to reset
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -2652,7 +2652,7 @@ zeCommandListAppendWriteGlobalTimestamp(
                                                     ///< on before executing query
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -2723,7 +2723,7 @@ zeCommandListHostSynchronize(
                                                     ///< value allowed by the accuracy of those dependencies.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -2779,7 +2779,7 @@ zeCommandListGetDeviceHandle(
     ze_device_handle_t* phDevice                    ///< [out] handle of the device on which the command list was created
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -2835,7 +2835,7 @@ zeCommandListGetContextHandle(
     ze_context_handle_t* phContext                  ///< [out] handle of the context on which the command list was created
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -2892,7 +2892,7 @@ zeCommandListGetOrdinal(
     uint32_t* pOrdinal                              ///< [out] command queue group ordinal to which command list is submitted
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -2954,7 +2954,7 @@ zeCommandListImmediateGetIndex(
                                                     ///< command list is submitted
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -3011,7 +3011,7 @@ zeCommandListIsImmediate(
                                                     ///< command list (true) or not (false)
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -3087,7 +3087,7 @@ zeCommandListAppendBarrier(
                                                     ///< on before executing barrier
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -3163,7 +3163,7 @@ zeCommandListAppendMemoryRangesBarrier(
                                                     ///< on before executing barrier
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -3224,7 +3224,7 @@ zeContextSystemBarrier(
     ze_device_handle_t hDevice                      ///< [in] handle of the device
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -3308,7 +3308,7 @@ zeCommandListAppendMemoryCopy(
                                                     ///< on before launching
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -3396,7 +3396,7 @@ zeCommandListAppendMemoryFill(
                                                     ///< on before launching
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -3489,7 +3489,7 @@ zeCommandListAppendMemoryCopyRegion(
                                                     ///< on before launching
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -3569,7 +3569,7 @@ zeCommandListAppendMemoryCopyFromContext(
                                                     ///< on before launching
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -3645,7 +3645,7 @@ zeCommandListAppendImageCopy(
                                                     ///< on before launching
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -3723,7 +3723,7 @@ zeCommandListAppendImageCopyRegion(
                                                     ///< on before launching
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -3806,7 +3806,7 @@ zeCommandListAppendImageCopyToMemory(
                                                     ///< on before launching
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -3889,7 +3889,7 @@ zeCommandListAppendImageCopyFromMemory(
                                                     ///< on before launching
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -3968,7 +3968,7 @@ zeCommandListAppendMemoryPrefetch(
     size_t size                                     ///< [in] size in bytes of the memory range to prefetch
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -4047,7 +4047,7 @@ zeCommandListAppendMemAdvise(
     ze_memory_advice_t advice                       ///< [in] Memory advice for the memory range
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -4118,7 +4118,7 @@ zeEventPoolCreate(
     ze_event_pool_handle_t* phEventPool             ///< [out] pointer handle of event pool object created
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -4179,7 +4179,7 @@ zeEventPoolDestroy(
     ze_event_pool_handle_t hEventPool               ///< [in][release] handle of event pool object to destroy
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -4250,7 +4250,7 @@ zeEventCreate(
     ze_event_handle_t* phEvent                      ///< [out] pointer to handle of event object created
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -4314,7 +4314,7 @@ zeEventDestroy(
     ze_event_handle_t hEvent                        ///< [in][release] handle of event object to destroy
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -4372,7 +4372,7 @@ zeEventPoolGetIpcHandle(
     ze_ipc_event_pool_handle_t* phIpc               ///< [out] Returned IPC event handle
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -4436,7 +4436,7 @@ zeEventPoolPutIpcHandle(
     ze_ipc_event_pool_handle_t hIpc                 ///< [in] IPC event pool handle
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -4510,7 +4510,7 @@ zeEventPoolOpenIpcHandle(
     ze_event_pool_handle_t* phEventPool             ///< [out] pointer handle of event pool object created
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -4565,7 +4565,7 @@ zeEventPoolCloseIpcHandle(
     ze_event_pool_handle_t hEventPool               ///< [in][release] handle of event pool object
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -4636,7 +4636,7 @@ zeCommandListAppendSignalEvent(
     ze_event_handle_t hEvent                        ///< [in] handle of the event
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -4700,7 +4700,7 @@ zeCommandListAppendWaitOnEvents(
                                                     ///< continuing
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -4763,7 +4763,7 @@ zeEventHostSignal(
     ze_event_handle_t hEvent                        ///< [in] handle of the event
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -4830,7 +4830,7 @@ zeEventHostSynchronize(
                                                     ///< value allowed by the accuracy of those dependencies.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -4891,7 +4891,7 @@ zeEventQueryStatus(
     ze_event_handle_t hEvent                        ///< [in] handle of the event
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -4957,7 +4957,7 @@ zeCommandListAppendEventReset(
     ze_event_handle_t hEvent                        ///< [in] handle of the event
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -5015,7 +5015,7 @@ zeEventHostReset(
     ze_event_handle_t hEvent                        ///< [in] handle of the event
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -5079,7 +5079,7 @@ zeEventQueryKernelTimestamp(
     ze_kernel_timestamp_result_t* dstptr            ///< [in,out] pointer to memory for where timestamp result will be written.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -5164,7 +5164,7 @@ zeCommandListAppendQueryKernelTimestamps(
                                                     ///< on before executing query
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -5220,7 +5220,7 @@ zeEventGetEventPool(
     ze_event_pool_handle_t* phEventPool             ///< [out] handle of the event pool for the event
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -5278,7 +5278,7 @@ zeEventGetSignalScope(
                                                     ///< triggered. May be 0 or a valid combination of ::ze_event_scope_flag_t.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -5336,7 +5336,7 @@ zeEventGetWaitScope(
                                                     ///< May be 0 or a valid combination of ::ze_event_scope_flag_t.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -5392,7 +5392,7 @@ zeEventPoolGetContextHandle(
     ze_context_handle_t* phContext                  ///< [out] handle of the context on which the event pool was created
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -5449,7 +5449,7 @@ zeEventPoolGetFlags(
                                                     ///< valid combination of ::ze_event_pool_flag_t
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -5517,7 +5517,7 @@ zeFenceCreate(
     ze_fence_handle_t* phFence                      ///< [out] pointer to handle of fence object created
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -5580,7 +5580,7 @@ zeFenceDestroy(
     ze_fence_handle_t hFence                        ///< [in][release] handle of fence object to destroy
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -5647,7 +5647,7 @@ zeFenceHostSynchronize(
                                                     ///< value allowed by the accuracy of those dependencies.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -5707,7 +5707,7 @@ zeFenceQueryStatus(
     ze_fence_handle_t hFence                        ///< [in] handle of the fence
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -5764,7 +5764,7 @@ zeFenceReset(
     ze_fence_handle_t hFence                        ///< [in] handle of the fence
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -5825,7 +5825,7 @@ zeImageGetProperties(
     ze_image_properties_t* pImageProperties         ///< [out] pointer to image properties
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -5895,7 +5895,7 @@ zeImageCreate(
     ze_image_handle_t* phImage                      ///< [out] pointer to handle of image object created
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -5954,7 +5954,7 @@ zeImageDestroy(
     ze_image_handle_t hImage                        ///< [in][release] handle of image object to destroy
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -6042,7 +6042,7 @@ zeMemAllocShared(
     void** pptr                                     ///< [out] pointer to shared allocation
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -6118,7 +6118,7 @@ zeMemAllocDevice(
     void** pptr                                     ///< [out] pointer to device allocation
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -6194,7 +6194,7 @@ zeMemAllocHost(
     void** pptr                                     ///< [out] pointer to host allocation
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -6259,7 +6259,7 @@ zeMemFree(
     void* ptr                                       ///< [in][release] pointer to memory to free
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -6322,7 +6322,7 @@ zeMemGetAllocProperties(
     ze_device_handle_t* phDevice                    ///< [out][optional] device associated with this allocation
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -6379,7 +6379,7 @@ zeMemGetAddressRange(
     size_t* pSize                                   ///< [in,out][optional] size of the allocation
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -6442,7 +6442,7 @@ zeMemGetIpcHandle(
     ze_ipc_mem_handle_t* pIpcHandle                 ///< [out] Returned IPC memory handle
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -6503,7 +6503,7 @@ zeMemGetIpcHandleFromFileDescriptorExp(
     ze_ipc_mem_handle_t* pIpcHandle                 ///< [out] Returned IPC memory handle
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -6562,7 +6562,7 @@ zeMemGetFileDescriptorFromIpcHandleExp(
     uint64_t* pHandle                               ///< [out] Returned file descriptor
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -6625,7 +6625,7 @@ zeMemPutIpcHandle(
     ze_ipc_mem_handle_t handle                      ///< [in] IPC memory handle
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -6695,7 +6695,7 @@ zeMemOpenIpcHandle(
     void** pptr                                     ///< [out] pointer to device allocation in this process
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -6754,7 +6754,7 @@ zeMemCloseIpcHandle(
     const void* ptr                                 ///< [in][release] pointer to device allocation in this process
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -6833,7 +6833,7 @@ zeMemSetAtomicAccessAttributeExp(
                                                     ///< Must be 0 (default) or a valid combination of ::ze_memory_atomic_attr_exp_flag_t.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -6896,7 +6896,7 @@ zeMemGetAtomicAccessAttributeExp(
     ze_memory_atomic_attr_exp_flags_t* pAttr        ///< [out] Atomic access attributes for the specified range
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -6973,7 +6973,7 @@ zeModuleCreate(
     ze_module_build_log_handle_t* phBuildLog        ///< [out][optional] pointer to handle of module's build log.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -7034,7 +7034,7 @@ zeModuleDestroy(
     ze_module_handle_t hModule                      ///< [in][release] handle of the module
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -7117,7 +7117,7 @@ zeModuleDynamicLink(
     ze_module_build_log_handle_t* phLinkLog         ///< [out][optional] pointer to handle of dynamic link log.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -7176,7 +7176,7 @@ zeModuleBuildLogDestroy(
     ze_module_build_log_handle_t hModuleBuildLog    ///< [in][release] handle of the module build log object.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -7235,7 +7235,7 @@ zeModuleBuildLogGetString(
     char* pBuildLog                                 ///< [in,out][optional] pointer to null-terminated string of the log.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -7300,7 +7300,7 @@ zeModuleGetNativeBinary(
     uint8_t* pModuleNativeBinary                    ///< [in,out][optional] byte pointer to native binary
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -7363,7 +7363,7 @@ zeModuleGetGlobalPointer(
     void** pptr                                     ///< [in,out][optional] device visible pointer
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -7426,7 +7426,7 @@ zeModuleGetKernelNames(
                                                     ///< only retrieve that number of names.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -7482,7 +7482,7 @@ zeModuleGetProperties(
     ze_module_properties_t* pModuleProperties       ///< [in,out] query result for module properties.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -7547,7 +7547,7 @@ zeKernelCreate(
     ze_kernel_handle_t* phKernel                    ///< [out] handle of the Function object
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -7606,7 +7606,7 @@ zeKernelDestroy(
     ze_kernel_handle_t hKernel                      ///< [in][release] handle of the kernel object
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -7670,7 +7670,7 @@ zeModuleGetFunctionPointer(
     void** pfnFunction                              ///< [out] pointer to function.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -7730,7 +7730,7 @@ zeKernelSetGroupSize(
     uint32_t groupSizeZ                             ///< [in] group size for Z dimension to use for this kernel
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -7797,7 +7797,7 @@ zeKernelSuggestGroupSize(
     uint32_t* groupSizeZ                            ///< [out] recommended size of group for Z dimension
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -7853,7 +7853,7 @@ zeKernelSuggestMaxCooperativeGroupCount(
     uint32_t* totalGroupCount                       ///< [out] recommended total group count.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -7915,7 +7915,7 @@ zeKernelSetArgumentValue(
                                                     ///< null then argument value is considered null.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -7975,7 +7975,7 @@ zeKernelSetIndirectAccess(
     ze_kernel_indirect_access_flags_t flags         ///< [in] kernel indirect access flags
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -8032,7 +8032,7 @@ zeKernelGetIndirectAccess(
     ze_kernel_indirect_access_flags_t* pFlags       ///< [out] query result for kernel indirect access flags.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -8102,7 +8102,7 @@ zeKernelGetSourceAttributes(
                                                     ///< create your own char *pString and then pass to this API with &pString.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -8163,7 +8163,7 @@ zeKernelSetCacheConfig(
                                                     ///< must be 0 (default configuration) or a valid combination of ::ze_cache_config_flag_t.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -8219,7 +8219,7 @@ zeKernelGetProperties(
     ze_kernel_properties_t* pKernelProperties       ///< [in,out] query result for kernel properties.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -8280,7 +8280,7 @@ zeKernelGetName(
     char* pName                                     ///< [in,out][optional] char pointer to kernel name.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -8353,7 +8353,7 @@ zeCommandListAppendLaunchKernel(
                                                     ///< on before launching
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -8430,7 +8430,7 @@ zeCommandListAppendLaunchCooperativeKernel(
                                                     ///< on before launching
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -8509,7 +8509,7 @@ zeCommandListAppendLaunchKernelIndirect(
                                                     ///< on before launching
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -8595,7 +8595,7 @@ zeCommandListAppendLaunchMultipleKernelsIndirect(
                                                     ///< on before launching
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -8658,7 +8658,7 @@ zeContextMakeMemoryResident(
     size_t size                                     ///< [in] size in bytes to make resident
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -8721,7 +8721,7 @@ zeContextEvictMemory(
     size_t size                                     ///< [in] size in bytes to evict
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -8780,7 +8780,7 @@ zeContextMakeImageResident(
     ze_image_handle_t hImage                        ///< [in] handle of image to make resident
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -8841,7 +8841,7 @@ zeContextEvictImage(
     ze_image_handle_t hImage                        ///< [in] handle of image to make evict
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -8906,7 +8906,7 @@ zeSamplerCreate(
     ze_sampler_handle_t* phSampler                  ///< [out] handle of the sampler
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -8965,7 +8965,7 @@ zeSamplerDestroy(
     ze_sampler_handle_t hSampler                    ///< [in][release] handle of the sampler
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -9035,7 +9035,7 @@ zeVirtualMemReserve(
     void** pptr                                     ///< [out] pointer to virtual reservation.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -9098,7 +9098,7 @@ zeVirtualMemFree(
     size_t size                                     ///< [in] size in bytes to free; must be page aligned.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -9161,7 +9161,7 @@ zeVirtualMemQueryPageSize(
                                                     ///< alignments.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -9232,7 +9232,7 @@ zePhysicalMemCreate(
     ze_physical_mem_handle_t* phPhysicalMemory      ///< [out] pointer to handle of physical memory object created
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -9291,7 +9291,7 @@ zePhysicalMemDestroy(
     ze_physical_mem_handle_t hPhysicalMemory        ///< [in][release] handle of physical memory object to destroy
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -9369,7 +9369,7 @@ zeVirtualMemMap(
                                                     ///< range.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -9434,7 +9434,7 @@ zeVirtualMemUnmap(
     size_t size                                     ///< [in] size in bytes to unmap; must be page aligned.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -9501,7 +9501,7 @@ zeVirtualMemSetAccessAttribute(
                                                     ///< range.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -9571,7 +9571,7 @@ zeVirtualMemGetAccessAttribute(
                                                     ///< that shares same access attribute.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -9630,7 +9630,7 @@ zeKernelSetGlobalOffsetExp(
     uint32_t offsetZ                                ///< [in] global offset for Z dimension to use for this kernel
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -9691,7 +9691,7 @@ zeKernelGetBinaryExp(
     uint8_t* pKernelBinary                          ///< [in,out] pointer to storage area for GEN ISA binary function.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -9753,7 +9753,7 @@ zeDeviceImportExternalSemaphoreExt(
     ze_external_semaphore_ext_handle_t* phSemaphore ///< [out] The handle of the external semaphore imported.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -9810,7 +9810,7 @@ zeDeviceReleaseExternalSemaphoreExt(
     ze_external_semaphore_ext_handle_t hSemaphore   ///< [in] The handle of the external semaphore.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -9885,7 +9885,7 @@ zeCommandListAppendSignalExternalSemaphoreExt(
                                                     ///< on before launching
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -9960,7 +9960,7 @@ zeCommandListAppendWaitExternalSemaphoreExt(
                                                     ///< on before launching
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -10021,7 +10021,7 @@ zeRTASBuilderCreateExt(
     ze_rtas_builder_ext_handle_t* phBuilder         ///< [out] handle of builder object
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -10083,7 +10083,7 @@ zeRTASBuilderGetBuildPropertiesExt(
     ze_rtas_builder_ext_properties_t* pProperties   ///< [in,out] query result for builder properties
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -10145,7 +10145,7 @@ zeDriverRTASFormatCompatibilityCheckExt(
     ze_rtas_format_ext_t rtasFormatB                ///< [in] operand B
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -10267,7 +10267,7 @@ zeRTASBuilderBuildExt(
                                                     ///< bytes
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -10351,7 +10351,7 @@ zeRTASBuilderCommandListAppendCopyExt(
                                                     ///< on before launching
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -10408,7 +10408,7 @@ zeRTASBuilderDestroyExt(
     ze_rtas_builder_ext_handle_t hBuilder           ///< [in][release] handle of builder object to destroy
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -10466,7 +10466,7 @@ zeRTASParallelOperationCreateExt(
     ze_rtas_parallel_operation_ext_handle_t* phParallelOperation///< [out] handle of parallel operation object
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -10528,7 +10528,7 @@ zeRTASParallelOperationGetPropertiesExt(
     ze_rtas_parallel_operation_ext_properties_t* pProperties///< [in,out] query result for parallel operation properties
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -10581,7 +10581,7 @@ zeRTASParallelOperationJoinExt(
     ze_rtas_parallel_operation_ext_handle_t hParallelOperation  ///< [in] handle of parallel operation object
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -10639,7 +10639,7 @@ zeRTASParallelOperationDestroyExt(
     ze_rtas_parallel_operation_ext_handle_t hParallelOperation  ///< [in][release] handle of parallel operation object to destroy
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -10711,7 +10711,7 @@ zeDeviceGetVectorWidthPropertiesExt(
                                                     ///< driver will return only the number requested.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -10773,7 +10773,7 @@ zeDeviceReserveCacheExt(
                                                     ///< shall remove prior reservation
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -10833,7 +10833,7 @@ zeDeviceSetCacheAdviceExt(
     ze_cache_ext_region_t cacheRegion               ///< [in] reservation region
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -10910,7 +10910,7 @@ zeEventQueryTimestampsExp(
                                                     ///< shall only retrieve that number of timestamps.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -10972,7 +10972,7 @@ zeImageGetMemoryPropertiesExp(
     ze_image_memory_properties_exp_t* pMemoryProperties ///< [in,out] query result for image memory properties.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -11051,7 +11051,7 @@ zeImageViewCreateExt(
     ze_image_handle_t* phImageView                  ///< [out] pointer to handle of image object created for view
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -11133,7 +11133,7 @@ zeImageViewCreateExp(
     ze_image_handle_t* phImageView                  ///< [out] pointer to handle of image object created for view
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -11198,7 +11198,7 @@ zeKernelSchedulingHintExp(
     ze_scheduling_hint_exp_desc_t* pHint            ///< [in] pointer to kernel scheduling hint descriptor
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -11258,7 +11258,7 @@ zeDevicePciGetPropertiesExt(
     ze_pci_ext_properties_t* pPciProperties         ///< [in,out] returns the PCI properties of the device.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -11355,7 +11355,7 @@ zeCommandListAppendImageCopyToMemoryExt(
                                                     ///< on before launching
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -11452,7 +11452,7 @@ zeCommandListAppendImageCopyFromMemoryExt(
                                                     ///< on before launching
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -11509,7 +11509,7 @@ zeImageGetAllocPropertiesExt(
     ze_image_allocation_ext_properties_t* pImageAllocProperties ///< [in,out] query result for image allocation properties
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -11575,7 +11575,7 @@ zeModuleInspectLinkageExt(
                                                     ///< contain separate lists of imports, un-resolvable imports, and exports.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -11640,7 +11640,7 @@ zeMemFreeExt(
     void* ptr                                       ///< [in][release] pointer to memory to free
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -11706,7 +11706,7 @@ zeFabricVertexGetExp(
                                                     ///< driver shall only retrieve that number of fabric vertices.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -11774,7 +11774,7 @@ zeFabricVertexGetSubVerticesExp(
                                                     ///< driver shall only retrieve that number of sub-vertices.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -11830,7 +11830,7 @@ zeFabricVertexGetPropertiesExp(
     ze_fabric_vertex_exp_properties_t* pVertexProperties///< [in,out] query result for fabric vertex properties
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -11890,7 +11890,7 @@ zeFabricVertexGetDeviceExp(
     ze_device_handle_t* phDevice                    ///< [out] device handle corresponding to fabric vertex
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -11948,7 +11948,7 @@ zeDeviceGetFabricVertexExp(
     ze_fabric_vertex_handle_t* phVertex             ///< [out] fabric vertex handle corresponding to device
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -12016,7 +12016,7 @@ zeFabricEdgeGetExp(
                                                     ///< driver shall only retrieve that number of fabric edges.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -12076,7 +12076,7 @@ zeFabricEdgeGetVerticesExp(
     ze_fabric_vertex_handle_t* phVertexB            ///< [out] fabric vertex connected to other end of the given fabric edge.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -12132,7 +12132,7 @@ zeFabricEdgeGetPropertiesExp(
     ze_fabric_edge_exp_properties_t* pEdgeProperties///< [in,out] query result for fabric edge properties
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -12222,7 +12222,7 @@ zeEventQueryKernelTimestampsExt(
                                                     ///< available, the driver may only update the valid elements.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -12284,7 +12284,7 @@ zeRTASBuilderCreateExp(
     ze_rtas_builder_exp_handle_t* phBuilder         ///< [out] handle of builder object
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -12346,7 +12346,7 @@ zeRTASBuilderGetBuildPropertiesExp(
     ze_rtas_builder_exp_properties_t* pProperties   ///< [in,out] query result for builder properties
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -12408,7 +12408,7 @@ zeDriverRTASFormatCompatibilityCheckExp(
     ze_rtas_format_exp_t rtasFormatB                ///< [in] operand B
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -12530,7 +12530,7 @@ zeRTASBuilderBuildExp(
                                                     ///< bytes
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -12587,7 +12587,7 @@ zeRTASBuilderDestroyExp(
     ze_rtas_builder_exp_handle_t hBuilder           ///< [in][release] handle of builder object to destroy
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -12646,7 +12646,7 @@ zeRTASParallelOperationCreateExp(
     ze_rtas_parallel_operation_exp_handle_t* phParallelOperation///< [out] handle of parallel operation object
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -12708,7 +12708,7 @@ zeRTASParallelOperationGetPropertiesExp(
     ze_rtas_parallel_operation_exp_properties_t* pProperties///< [in,out] query result for parallel operation properties
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -12761,7 +12761,7 @@ zeRTASParallelOperationJoinExp(
     ze_rtas_parallel_operation_exp_handle_t hParallelOperation  ///< [in] handle of parallel operation object
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -12819,7 +12819,7 @@ zeRTASParallelOperationDestroyExp(
     ze_rtas_parallel_operation_exp_handle_t hParallelOperation  ///< [in][release] handle of parallel operation object to destroy
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -12883,7 +12883,7 @@ zeMemGetPitchFor2dImage(
     size_t * rowPitch                               ///< [out] rowPitch
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -12942,7 +12942,7 @@ zeImageGetDeviceOffsetExp(
     uint64_t* pDeviceOffset                         ///< [out] bindless device offset for image
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -13009,7 +13009,7 @@ zeCommandListCreateCloneExp(
     ze_command_list_handle_t* phClonedCommandList   ///< [out] pointer to handle of the cloned command list
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -13080,7 +13080,7 @@ zeCommandListImmediateAppendCommandListsExp(
                                                     ///< of any appended command list(s)
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -13144,7 +13144,7 @@ zeCommandListGetNextCommandIdExp(
     uint64_t* pCommandId                            ///< [out] pointer to mutable command identifier to be written
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -13214,7 +13214,7 @@ zeCommandListGetNextCommandIdWithKernelsExp(
     uint64_t* pCommandId                            ///< [out] pointer to mutable command identifier to be written
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -13279,7 +13279,7 @@ zeCommandListUpdateMutableCommandsExp(
                                                     ///< be chained via `pNext` member
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -13343,7 +13343,7 @@ zeCommandListUpdateMutableCommandSignalEventExp(
     ze_event_handle_t hSignalEvent                  ///< [in][optional] handle of the event to signal on completion
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -13416,7 +13416,7 @@ zeCommandListUpdateMutableCommandWaitEventsExp(
                                                     ///< on before launching
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -13487,7 +13487,7 @@ zeCommandListUpdateMutableCommandKernelsExp(
                                                     ///< identifier to switch to
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;

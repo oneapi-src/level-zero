@@ -19,7 +19,7 @@ if (BUILD_STATIC)
         ""
         ${CMAKE_CURRENT_BINARY_DIR}/ZeLoaderVersion.rc
     )
-    add_definitions(-DDYNAMIC_LOAD_LOADER="1")
+    add_definitions(-DL0_STATIC_LOADER_BUILD="1")
 else()
     message(STATUS "Building loader as dynamic library")
     add_library(${TARGET_LOADER_NAME}

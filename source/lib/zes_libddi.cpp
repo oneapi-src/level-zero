@@ -8,7 +8,7 @@
  *
  */
 #include "ze_lib.h"
-#ifndef DYNAMIC_LOAD_LOADER
+#ifndef L0_STATIC_LOADER_BUILD
 #include "zes_ddi.h"
 #endif
 
@@ -16,7 +16,7 @@ namespace ze_lib
 {
     ///////////////////////////////////////////////////////////////////////////////
 
-#ifdef DYNAMIC_LOAD_LOADER
+#ifdef L0_STATIC_LOADER_BUILD
     __zedlllocal ze_result_t context_t::zesDdiTableInit(ze_api_version_t version)
     {
         ze_result_t result = ZE_RESULT_SUCCESS;

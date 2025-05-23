@@ -18,7 +18,7 @@ namespace ze_lib
 {
     ///////////////////////////////////////////////////////////////////////////////
     context_t *context = nullptr;
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     void context_at_exit_destructor()
     {
         if (ze_lib::context) {
@@ -69,7 +69,7 @@ namespace ze_lib
     ///////////////////////////////////////////////////////////////////////////////
     __zedlllocal context_t::~context_t()
     {
-#ifdef DYNAMIC_LOAD_LOADER
+#ifdef L0_STATIC_LOADER_BUILD
         if (loaderTeardownRegistrationEnabled && !loaderTeardownCallbackReceived) {
             loaderTeardownCallback(loaderTeardownCallbackIndex);
         }
@@ -92,7 +92,7 @@ namespace ze_lib
     {
         ze_result_t result;
         ze_api_version_t version = ZE_API_VERSION_CURRENT;
-#ifdef DYNAMIC_LOAD_LOADER
+#ifdef L0_STATIC_LOADER_BUILD
         std::string loaderLibraryPath;
         auto loaderLibraryPathEnv = getenv_string("ZEL_LIBRARY_PATH");
         if (!loaderLibraryPathEnv.empty()) {
@@ -213,7 +213,7 @@ namespace ze_lib
 
         // Given zesInit, then zesDrivers needs to be used as the sysmanInstanceDrivers;
         bool loaderContextAccessAllowed = true;
-#ifdef DYNAMIC_LOAD_LOADER
+#ifdef L0_STATIC_LOADER_BUILD
         loaderContextAccessAllowed = false;
         loader::context_t *loaderContext = nullptr;
 #else
@@ -264,7 +264,7 @@ namespace ze_lib
         // Init the stored ddi tables for the tracing layer
         if( ZE_RESULT_SUCCESS == result )
         {
-            #ifdef DYNAMIC_LOAD_LOADER
+            #ifdef L0_STATIC_LOADER_BUILD
             if (loaderTracingLayerInit) {
                 result = loaderTracingLayerInit(this->pTracingZeDdiTable);
             }
@@ -280,7 +280,7 @@ namespace ze_lib
             // Check which drivers support the ze_driver_flag_t specified
             // No need to check if only initializing sysman
             bool requireDdiReinit = false;
-            #ifdef DYNAMIC_LOAD_LOADER
+            #ifdef L0_STATIC_LOADER_BUILD
             if (zeInitDriversSupport) {
                 typedef ze_result_t (ZE_APICALL *zelLoaderDriverCheck_t)(ze_init_flags_t flags, ze_init_driver_type_desc_t* desc, ze_global_dditable_t *globalInitStored, zes_global_dditable_t *sysmanGlobalInitStored, bool *requireDdiReinit, bool sysmanOnly);
                 auto loaderDriverCheck = reinterpret_cast<zelLoaderDriverCheck_t>(
@@ -341,7 +341,7 @@ namespace ze_lib
 
         if( ZE_RESULT_SUCCESS == result )
         {
-#ifdef DYNAMIC_LOAD_LOADER
+#ifdef L0_STATIC_LOADER_BUILD
             // Init Dynamic Loader's Lib Context:
             auto initDriversLoader = reinterpret_cast<ze_pfnInitDrivers_t>(
                 GET_FUNCTION_PTR(loader, "zeInitDrivers") );
@@ -378,7 +378,7 @@ namespace ze_lib
 #endif
             isInitialized = true;
         }
-        #ifdef DYNAMIC_LOAD_LOADER
+        #ifdef L0_STATIC_LOADER_BUILD
         std::call_once(ze_lib::context->initTeardownCallbacksOnce, [this]() {
             if (!delayContextDestruction) {
                 std::atexit(context_at_exit_destructor);
@@ -416,7 +416,7 @@ zelLoaderGetVersions(
    size_t *num_elems,                     //Pointer to num versions to get.
    zel_component_version_t *versions)     //Pointer to array of versions. If set to NULL, num_elems is returned
 {
-#ifdef DYNAMIC_LOAD_LOADER
+#ifdef L0_STATIC_LOADER_BUILD
     if(nullptr == ze_lib::context->loader)
         return ZE_RESULT_ERROR_UNINITIALIZED;
     typedef ze_result_t (ZE_APICALL *zelLoaderGetVersions_t)(size_t *num_elems, zel_component_version_t *versions);
@@ -436,7 +436,7 @@ zelLoaderTranslateHandle(
    void **handleOut)
 
 {
-#ifdef DYNAMIC_LOAD_LOADER
+#ifdef L0_STATIC_LOADER_BUILD
     if(nullptr == ze_lib::context->loader)
         return ZE_RESULT_ERROR_UNINITIALIZED;
     typedef ze_result_t (ZE_APICALL *zelLoaderTranslateHandleInternal_t)(zel_handle_type_t handleType, void *handleIn, void **handleOut);
@@ -470,7 +470,7 @@ zelSetDriverTeardown()
 void ZE_APICALL
 zelSetDelayLoaderContextTeardown()
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     if (!ze_lib::delayContextDestruction) {
         ze_lib::delayContextDestruction = true;
     }
@@ -539,7 +539,7 @@ zelCheckIsLoaderInTearDown() {
     if (ze_lib::destruction || ze_lib::context == nullptr) {
         return true;
     }
-    #if defined(DYNAMIC_LOAD_LOADER) && defined(_WIN32)
+    #if defined(L0_STATIC_LOADER_BUILD) && defined(_WIN32)
     static bool loaderIsStable = true;
     if (!loaderIsStable) {
         if (ze_lib::context->debugTraceEnabled) {
@@ -594,7 +594,7 @@ zelCheckIsLoaderInTearDown() {
 void ZE_APICALL
 zelLoaderContextTeardown()
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     if (ze_lib::delayContextDestruction && ze_lib::context) {
         delete ze_lib::context;
         ze_lib::context = nullptr;
@@ -605,7 +605,7 @@ zelLoaderContextTeardown()
 ze_result_t ZE_APICALL
 zelEnableTracingLayer()
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     if(nullptr == ze_lib::context->loader)
         return ZE_RESULT_ERROR_UNINITIALIZED;
     typedef ze_result_t (ZE_APICALL *zelEnableTracingLayerInternal_t)();
@@ -626,7 +626,7 @@ zelEnableTracingLayer()
 ze_result_t ZE_APICALL
 zelDisableTracingLayer()
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     if(nullptr == ze_lib::context->loader)
         return ZE_RESULT_ERROR_UNINITIALIZED;
     typedef ze_result_t (ZE_APICALL *zelDisableTracingLayerInternal_t)();

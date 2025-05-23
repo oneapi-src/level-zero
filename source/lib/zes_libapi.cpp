@@ -48,7 +48,7 @@ zesInit(
                                                     ///< currently unused, must be 0 (default).
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     if (!ze_lib::context) {
         ze_lib::context = new ze_lib::context_t;
     }
@@ -110,7 +110,7 @@ zesDriverGet(
                                                     ///< loader shall only retrieve that number of sysman drivers.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -183,7 +183,7 @@ zesDriverGetExtensionProperties(
                                                     ///< then driver shall only retrieve that number of extension properties.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -242,7 +242,7 @@ zesDriverGetExtensionFunctionAddress(
     void** ppFunctionAddress                        ///< [out] pointer to function pointer
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -311,7 +311,7 @@ zesDeviceGet(
                                                     ///< driver shall only retrieve that number of sysman devices.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -367,7 +367,7 @@ zesDeviceGetProperties(
     zes_device_properties_t* pProperties            ///< [in,out] Structure that will contain information about the device.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -424,7 +424,7 @@ zesDeviceGetState(
     zes_device_state_t* pState                      ///< [in,out] Structure that will contain information about the device.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -492,7 +492,7 @@ zesDeviceReset(
                                                     ///< device will be forcibly killed.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -561,7 +561,7 @@ zesDeviceResetExt(
     zes_reset_properties_t* pProperties             ///< [in] Device reset properties to apply
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -635,7 +635,7 @@ zesDeviceProcessesGetState(
                                                     ///< number of processes. In this case, the return code will ::ZE_RESULT_ERROR_INVALID_SIZE.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -691,7 +691,7 @@ zesDevicePciGetProperties(
     zes_pci_properties_t* pProperties               ///< [in,out] Will contain the PCI properties.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -747,7 +747,7 @@ zesDevicePciGetState(
     zes_pci_state_t* pState                         ///< [in,out] Will contain the PCI properties.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -811,7 +811,7 @@ zesDevicePciGetBars(
                                                     ///< driver shall only retrieve information about that number of PCI bars.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -869,7 +869,7 @@ zesDevicePciGetStats(
     zes_pci_stats_t* pStats                         ///< [in,out] Will contain a snapshot of the latest stats.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -925,7 +925,7 @@ zesDeviceSetOverclockWaiver(
     zes_device_handle_t hDevice                     ///< [in] Sysman handle of the device.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -985,7 +985,7 @@ zesDeviceGetOverclockDomains(
                                                     ///< doesn't support overclocking.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1049,7 +1049,7 @@ zesDeviceGetOverclockControls(
                                                     ///< ::zes_overclock_control_t).
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1107,7 +1107,7 @@ zesDeviceResetOverclockSettings(
                                                     ///< manufacturing state
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1174,7 +1174,7 @@ zesDeviceReadOverclockState(
     ze_bool_t* pPendingReset                        ///< [out] Pending reset 0 =manufacturing state, 1= shipped state)..
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1240,7 +1240,7 @@ zesDeviceEnumOverclockDomains(
                                                     ///< component handles.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1298,7 +1298,7 @@ zesOverclockGetDomainProperties(
     zes_overclock_properties_t* pDomainProperties   ///< [in,out] The overclock properties for the specified domain.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1356,7 +1356,7 @@ zesOverclockGetDomainVFProperties(
     zes_vf_property_t* pVFProperties                ///< [in,out] The VF min,max,step for a specified domain.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1417,7 +1417,7 @@ zesOverclockGetDomainControlProperties(
     zes_control_property_t* pControlProperties      ///< [in,out] overclock control values.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1478,7 +1478,7 @@ zesOverclockGetControlCurrentValue(
     double* pValue                                  ///< [in,out] Getting overclock control value for the specified control.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1540,7 +1540,7 @@ zesOverclockGetControlPendingValue(
                                                     ///< format of the value depend on the control type.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1603,7 +1603,7 @@ zesOverclockSetControlUserValue(
     zes_pending_action_t* pPendingAction            ///< [out] Pending overclock setting.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1666,7 +1666,7 @@ zesOverclockGetControlState(
     zes_pending_action_t* pPendingAction            ///< [out] Pending overclock setting.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1732,7 +1732,7 @@ zesOverclockGetVFPointValues(
                                                     ///< units from the custom V-F curve at the specified zero-based index 
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1793,7 +1793,7 @@ zesOverclockSetVFPointValues(
                                                     ///< custom V-F curve at the specified zero-based index 
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1859,7 +1859,7 @@ zesDeviceEnumDiagnosticTestSuites(
                                                     ///< component handles.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1916,7 +1916,7 @@ zesDiagnosticsGetProperties(
                                                     ///< suite
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1984,7 +1984,7 @@ zesDiagnosticsGetTests(
                                                     ///< driver shall only retrieve that number of tests.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -2055,7 +2055,7 @@ zesDiagnosticsRunTests(
     zes_diag_result_t* pResult                      ///< [in,out] The result of the diagnostics
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -2111,7 +2111,7 @@ zesDeviceEccAvailable(
     ze_bool_t* pAvailable                           ///< [out] ECC functionality is available (true)/unavailable (false).
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -2167,7 +2167,7 @@ zesDeviceEccConfigurable(
     ze_bool_t* pConfigurable                        ///< [out] ECC can be enabled/disabled (true)/enabled/disabled (false).
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -2223,7 +2223,7 @@ zesDeviceGetEccState(
     zes_device_ecc_properties_t* pState             ///< [out] ECC state, pending state, and pending action for state change.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -2287,7 +2287,7 @@ zesDeviceSetEccState(
     zes_device_ecc_properties_t* pState             ///< [out] ECC state, pending state, and pending action for state change.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -2353,7 +2353,7 @@ zesDeviceEnumEngineGroups(
                                                     ///< component handles.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -2409,7 +2409,7 @@ zesEngineGetProperties(
     zes_engine_properties_t* pProperties            ///< [in,out] The properties for the specified engine group.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -2468,7 +2468,7 @@ zesEngineGetActivity(
                                                     ///< counters.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -2524,7 +2524,7 @@ zesDeviceEventRegister(
     zes_event_type_flags_t events                   ///< [in] List of events to listen to.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -2602,7 +2602,7 @@ zesDriverEventListen(
                                                     ///< entry will be zero.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -2680,7 +2680,7 @@ zesDriverEventListenEx(
                                                     ///< entry will be zero.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -2746,7 +2746,7 @@ zesDeviceEnumFabricPorts(
                                                     ///< component handles.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -2802,7 +2802,7 @@ zesFabricPortGetProperties(
     zes_fabric_port_properties_t* pProperties       ///< [in,out] Will contain properties of the Fabric Port.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -2859,7 +2859,7 @@ zesFabricPortGetLinkType(
                                                     ///< port.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -2915,7 +2915,7 @@ zesFabricPortGetConfig(
     zes_fabric_port_config_t* pConfig               ///< [in,out] Will contain configuration of the Fabric Port.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -2973,7 +2973,7 @@ zesFabricPortSetConfig(
     const zes_fabric_port_config_t* pConfig         ///< [in] Contains new configuration of the Fabric Port.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -3030,7 +3030,7 @@ zesFabricPortGetState(
     zes_fabric_port_state_t* pState                 ///< [in,out] Will contain the current state of the Fabric Port
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -3088,7 +3088,7 @@ zesFabricPortGetThroughput(
     zes_fabric_port_throughput_t* pThroughput       ///< [in,out] Will contain the Fabric port throughput counters.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -3149,7 +3149,7 @@ zesFabricPortGetFabricErrorCounters(
     zes_fabric_port_error_counters_t* pErrors       ///< [in,out] Will contain the Fabric port Error counters.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -3210,7 +3210,7 @@ zesFabricPortGetMultiPortThroughput(
                                                     ///< from multiple ports of type ::zes_fabric_port_throughput_t.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -3276,7 +3276,7 @@ zesDeviceEnumFans(
                                                     ///< component handles.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -3332,7 +3332,7 @@ zesFanGetProperties(
     zes_fan_properties_t* pProperties               ///< [in,out] Will contain the properties of the fan.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -3389,7 +3389,7 @@ zesFanGetConfig(
     zes_fan_config_t* pConfig                       ///< [in,out] Will contain the current configuration of the fan.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -3445,7 +3445,7 @@ zesFanSetDefaultMode(
     zes_fan_handle_t hFan                           ///< [in] Handle for the component.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -3506,7 +3506,7 @@ zesFanSetFixedSpeedMode(
     const zes_fan_speed_t* speed                    ///< [in] The fixed fan speed setting
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -3569,7 +3569,7 @@ zesFanSetSpeedTableMode(
     const zes_fan_speed_table_t* speedTable         ///< [in] A table containing temperature/speed pairs.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -3632,7 +3632,7 @@ zesFanGetState(
                                                     ///< measured.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -3698,7 +3698,7 @@ zesDeviceEnumFirmwares(
                                                     ///< component handles.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -3755,7 +3755,7 @@ zesFirmwareGetProperties(
                                                     ///< firmware
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -3818,7 +3818,7 @@ zesFirmwareFlash(
     uint32_t size                                   ///< [in] Size of the flash image.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -3874,7 +3874,7 @@ zesFirmwareGetFlashProgress(
     uint32_t* pCompletionPercent                    ///< [in,out] Pointer to the Completion Percentage of Firmware Update
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -3934,7 +3934,7 @@ zesFirmwareGetConsoleLogs(
     char* pFirmwareLog                              ///< [in,out][optional] pointer to null-terminated string of the log.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -4000,7 +4000,7 @@ zesDeviceEnumFrequencyDomains(
                                                     ///< component handles.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -4056,7 +4056,7 @@ zesFrequencyGetProperties(
     zes_freq_properties_t* pProperties              ///< [in,out] The frequency properties for the specified domain.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -4123,7 +4123,7 @@ zesFrequencyGetAvailableClocks(
                                                     ///< then the driver shall only retrieve that number of frequencies.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -4180,7 +4180,7 @@ zesFrequencyGetRange(
                                                     ///< specified domain.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -4242,7 +4242,7 @@ zesFrequencySetRange(
                                                     ///< specified domain.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -4299,7 +4299,7 @@ zesFrequencyGetState(
     zes_freq_state_t* pState                        ///< [in,out] Frequency state for the specified domain.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -4356,7 +4356,7 @@ zesFrequencyGetThrottleTime(
                                                     ///< specified domain.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -4413,7 +4413,7 @@ zesFrequencyOcGetCapabilities(
     zes_oc_capabilities_t* pOcCapabilities          ///< [in,out] Pointer to the capabilities structure.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -4482,7 +4482,7 @@ zesFrequencyOcGetFrequencyTarget(
                                                     ///< ::zes_oc_capabilities_t.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -4549,7 +4549,7 @@ zesFrequencyOcSetFrequencyTarget(
                                                     ///< ::zes_oc_capabilities_t.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -4620,7 +4620,7 @@ zesFrequencyOcGetVoltageTarget(
                                                     ///< `maxOcVoltageOffset` members of ::zes_oc_capabilities_t.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -4688,7 +4688,7 @@ zesFrequencyOcSetVoltageTarget(
                                                     ///< `maxOcVoltageOffset` members of ::zes_oc_capabilities_t.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -4753,7 +4753,7 @@ zesFrequencyOcSetMode(
     zes_oc_mode_t CurrentOcMode                     ///< [in] Current Overclocking Mode ::zes_oc_mode_t.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -4818,7 +4818,7 @@ zesFrequencyOcGetMode(
     zes_oc_mode_t* pCurrentOcMode                   ///< [out] Current Overclocking Mode ::zes_oc_mode_t.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -4879,7 +4879,7 @@ zesFrequencyOcGetIccMax(
                                                     ///< successful return.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -4944,7 +4944,7 @@ zesFrequencyOcSetIccMax(
     double ocIccMax                                 ///< [in] The new maximum current limit in Amperes.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -5004,7 +5004,7 @@ zesFrequencyOcGetTjMax(
                                                     ///< on successful return.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -5069,7 +5069,7 @@ zesFrequencyOcSetTjMax(
     double ocTjMax                                  ///< [in] The new maximum temperature limit in degrees Celsius.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -5135,7 +5135,7 @@ zesDeviceEnumLeds(
                                                     ///< component handles.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -5191,7 +5191,7 @@ zesLedGetProperties(
     zes_led_properties_t* pProperties               ///< [in,out] Will contain the properties of the LED.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -5247,7 +5247,7 @@ zesLedGetState(
     zes_led_state_t* pState                         ///< [in,out] Will contain the current state of the LED.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -5303,7 +5303,7 @@ zesLedSetState(
     ze_bool_t enable                                ///< [in] Set to TRUE to turn the LED on, FALSE to turn off.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -5363,7 +5363,7 @@ zesLedSetColor(
     const zes_led_color_t* pColor                   ///< [in] New color of the LED.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -5429,7 +5429,7 @@ zesDeviceEnumMemoryModules(
                                                     ///< component handles.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -5485,7 +5485,7 @@ zesMemoryGetProperties(
     zes_mem_properties_t* pProperties               ///< [in,out] Will contain memory properties.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -5541,7 +5541,7 @@ zesMemoryGetState(
     zes_mem_state_t* pState                         ///< [in,out] Will contain the current health and allocated memory.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -5600,7 +5600,7 @@ zesMemoryGetBandwidth(
                                                     ///< to memory, as well as the current maximum bandwidth.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -5668,7 +5668,7 @@ zesDeviceEnumPerformanceFactorDomains(
                                                     ///< component handles.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -5725,7 +5725,7 @@ zesPerformanceFactorGetProperties(
                                                     ///< Factor domain.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -5782,7 +5782,7 @@ zesPerformanceFactorGetConfig(
                                                     ///< hardware (may not be the same as the requested Performance Factor).
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -5841,7 +5841,7 @@ zesPerformanceFactorSetConfig(
     double factor                                   ///< [in] The new Performance Factor.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -5907,7 +5907,7 @@ zesDeviceEnumPowerDomains(
                                                     ///< component handles.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -5966,7 +5966,7 @@ zesDeviceGetCardPowerDomain(
     zes_pwr_handle_t* phPower                       ///< [in,out] power domain handle for the entire PCIe card.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -6022,7 +6022,7 @@ zesPowerGetProperties(
     zes_power_properties_t* pProperties             ///< [in,out] Structure that will contain property data.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -6079,7 +6079,7 @@ zesPowerGetEnergyCounter(
                                                     ///< timestamp when the last counter value was measured.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -6139,7 +6139,7 @@ zesPowerGetLimits(
                                                     ///< power limits will not be returned.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -6203,7 +6203,7 @@ zesPowerSetLimits(
                                                     ///< be made to the peak power limits.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -6264,7 +6264,7 @@ zesPowerGetEnergyThreshold(
                                                     ///< enabled/energy threshold/process ID.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -6338,7 +6338,7 @@ zesPowerSetEnergyThreshold(
     double threshold                                ///< [in] The energy threshold to be set in joules.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -6404,7 +6404,7 @@ zesDeviceEnumPsus(
                                                     ///< component handles.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -6460,7 +6460,7 @@ zesPsuGetProperties(
     zes_psu_properties_t* pProperties               ///< [in,out] Will contain the properties of the power supply.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -6516,7 +6516,7 @@ zesPsuGetState(
     zes_psu_state_t* pState                         ///< [in,out] Will contain the current state of the power supply.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -6592,7 +6592,7 @@ zesDeviceEnumRasErrorSets(
                                                     ///< component handles.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -6650,7 +6650,7 @@ zesRasGetProperties(
     zes_ras_properties_t* pProperties               ///< [in,out] Structure describing RAS properties
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -6716,7 +6716,7 @@ zesRasGetConfig(
                                                     ///< thresholds used to trigger events
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -6787,7 +6787,7 @@ zesRasSetConfig(
     const zes_ras_config_t* pConfig                 ///< [in] Change the RAS configuration - thresholds used to trigger events
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -6849,7 +6849,7 @@ zesRasGetState(
     zes_ras_state_t* pState                         ///< [in,out] Breakdown of where errors have occurred
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -6921,7 +6921,7 @@ zesDeviceEnumSchedulers(
                                                     ///< component handles.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -6977,7 +6977,7 @@ zesSchedulerGetProperties(
     zes_sched_properties_t* pProperties             ///< [in,out] Structure that will contain property data.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -7035,7 +7035,7 @@ zesSchedulerGetCurrentMode(
     zes_sched_mode_t* pMode                         ///< [in,out] Will contain the current scheduler mode.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -7095,7 +7095,7 @@ zesSchedulerGetTimeoutModeProperties(
     zes_sched_timeout_properties_t* pConfig         ///< [in,out] Will contain the current parameters for this mode.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -7155,7 +7155,7 @@ zesSchedulerGetTimesliceModeProperties(
     zes_sched_timeslice_properties_t* pConfig       ///< [in,out] Will contain the current parameters for this mode.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -7223,7 +7223,7 @@ zesSchedulerSetTimeoutMode(
                                                     ///< apply the new scheduler mode.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -7290,7 +7290,7 @@ zesSchedulerSetTimesliceMode(
                                                     ///< apply the new scheduler mode.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -7355,7 +7355,7 @@ zesSchedulerSetExclusiveMode(
                                                     ///< apply the new scheduler mode.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -7422,7 +7422,7 @@ zesSchedulerSetComputeUnitDebugMode(
                                                     ///< apply the new scheduler mode.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -7488,7 +7488,7 @@ zesDeviceEnumStandbyDomains(
                                                     ///< component handles.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -7544,7 +7544,7 @@ zesStandbyGetProperties(
     zes_standby_properties_t* pProperties           ///< [in,out] Will contain the standby hardware properties.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -7600,7 +7600,7 @@ zesStandbyGetMode(
     zes_standby_promo_mode_t* pMode                 ///< [in,out] Will contain the current standby mode.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -7658,7 +7658,7 @@ zesStandbySetMode(
     zes_standby_promo_mode_t mode                   ///< [in] New standby mode.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -7724,7 +7724,7 @@ zesDeviceEnumTemperatureSensors(
                                                     ///< component handles.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -7780,7 +7780,7 @@ zesTemperatureGetProperties(
     zes_temp_properties_t* pProperties              ///< [in,out] Will contain the temperature sensor properties.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -7842,7 +7842,7 @@ zesTemperatureGetConfig(
     zes_temp_config_t* pConfig                      ///< [in,out] Returns current configuration.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -7921,7 +7921,7 @@ zesTemperatureSetConfig(
     const zes_temp_config_t* pConfig                ///< [in] New configuration.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -7978,7 +7978,7 @@ zesTemperatureGetState(
                                                     ///< in degrees Celsius.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -8044,7 +8044,7 @@ zesPowerGetLimitsExt(
                                                     ///< number of components.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -8113,7 +8113,7 @@ zesPowerSetLimitsExt(
     zes_power_limit_ext_desc_t* pSustained          ///< [in][optional][range(0, *pCount)] Array of power limit descriptors.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -8184,7 +8184,7 @@ zesEngineGetActivityExt(
                                                     ///< of VF engine stats.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -8250,7 +8250,7 @@ zesRasGetStateExp(
                                                     ///< shall only retrieve that number of RAS states.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -8313,7 +8313,7 @@ zesRasClearStateExp(
     zes_ras_error_category_exp_t category           ///< [in] category for which error counter is to be cleared.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -8374,7 +8374,7 @@ zesFirmwareGetSecurityVersionExp(
                                                     ///< returned if this property cannot be determined.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -8427,7 +8427,7 @@ zesFirmwareSetSecurityVersionExp(
     zes_firmware_handle_t hFirmware                 ///< [in] Handle for the component.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -8491,7 +8491,7 @@ zesDeviceGetSubDevicePropertiesExp(
                                                     ///< the driver shall only retrieve that number of sub device property structures.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -8554,7 +8554,7 @@ zesDriverGetDeviceByUuidExp(
     uint32_t* subdeviceId                           ///< [out] If onSubdevice is true, this gives the ID of the sub-device
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -8621,7 +8621,7 @@ zesDeviceEnumActiveVFExp(
                                                     ///< component handles.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -8679,7 +8679,7 @@ zesVFManagementGetVFPropertiesExp(
     zes_vf_exp_properties_t* pProperties            ///< [in,out] Will contain VF properties.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -8750,7 +8750,7 @@ zesVFManagementGetVFMemoryUtilizationExp(
                                                     ///< memory stats.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -8821,7 +8821,7 @@ zesVFManagementGetVFEngineUtilizationExp(
                                                     ///< engine stats.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -8881,7 +8881,7 @@ zesVFManagementSetVFTelemetryModeExp(
     ze_bool_t enable                                ///< [in] Enable utilization telemetry.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -8941,7 +8941,7 @@ zesVFManagementSetVFTelemetrySamplingIntervalExp(
     uint64_t samplingInterval                       ///< [in] Sampling interval value.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -9007,7 +9007,7 @@ zesDeviceEnumEnabledVFExp(
                                                     ///< component handles.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -9065,7 +9065,7 @@ zesVFManagementGetVFCapabilitiesExp(
     zes_vf_exp_capabilities_t* pCapability          ///< [in,out] Will contain VF capability.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -9133,7 +9133,7 @@ zesVFManagementGetVFMemoryUtilizationExp2(
                                                     ///< memory stats.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -9201,7 +9201,7 @@ zesVFManagementGetVFEngineUtilizationExp2(
                                                     ///< engine stats.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -9257,7 +9257,7 @@ zesVFManagementGetVFCapabilitiesExp2(
     zes_vf_exp2_capabilities_t* pCapability         ///< [in,out] Will contain VF capability.
     )
 {
-    #ifdef DYNAMIC_LOAD_LOADER
+    #ifdef L0_STATIC_LOADER_BUILD
     ze_result_t result = ZE_RESULT_SUCCESS;
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
