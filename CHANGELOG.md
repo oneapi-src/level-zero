@@ -1,5 +1,10 @@
 # Level zero loader changelog
 
+## v1.22.3
+* Fix sysman-only initialization to block loader context retrieval when versions are incompatible
+* Add ability to register a TeardownCallback to notify release of L0 resources
+## v1.22.2
+* Fix zesInit to init the correct requested api version
 ## v1.22.1
 * fix ddi compatibility to avoid assigning values which don't exist
 * Fix static loader to request current version as the latest APIs

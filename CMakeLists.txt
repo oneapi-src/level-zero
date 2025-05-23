@@ -13,7 +13,7 @@ if(MSVC AND (MSVC_VERSION LESS 1900))
 endif()
 
 # This project follows semantic versioning (https://semver.org/)
-project(level-zero VERSION 1.22.2)
+project(level-zero VERSION 1.22.3)
 
 include(GNUInstallDirs)
 
@@ -252,6 +252,11 @@ install(FILES ${LEVEL_ZERO_LOADER_API_HEADERS}
     COMPONENT ${SDK_COMPONENT_STRING}
 )
 
+if (MSVC)
+    set (PYTHON_EXECUTABLE "python")
+else()
+    set (PYTHON_EXECUTABLE "python3")
+endif()
 set(PRODUCT_GUID_FILE "${CMAKE_CURRENT_SOURCE_DIR}/PRODUCT_GUID.txt")
 if(EXISTS "${PRODUCT_GUID_FILE}")
     file(STRINGS "${PRODUCT_GUID_FILE}" SAVED_PRODUCT_GUID)
@@ -259,23 +264,22 @@ if(EXISTS "${PRODUCT_GUID_FILE}")
     message(STATUS "Saved Product GUID: ${SAVED_PRODUCT_GUID_VERSION}")
     message(STATUS "project version: ${PROJECT_VERSION}")
     if(NOT SAVED_PRODUCT_GUID_VERSION STREQUAL "${PROJECT_VERSION}")
-
-    execute_process(
-        COMMAND python ${CMAKE_CURRENT_SOURCE_DIR}/scripts/generate_wix_guid.py
-        OUTPUT_VARIABLE GENERATED_PRODUCT_GUID
-        OUTPUT_STRIP_TRAILING_WHITESPACE
-    )
-    file(WRITE "${PRODUCT_GUID_FILE}" "${PROJECT_VERSION}\n${GENERATED_PRODUCT_GUID}")
-    message(STATUS "Generated Product GUID: ${GENERATED_PRODUCT_GUID} for version ${PROJECT_VERSION}")
-    else()
-    string(REPLACE "\n" ";" GUID_CONTENTS "${SAVED_PRODUCT_GUID}")
-    list(GET GUID_CONTENTS 1 GENERATED_PRODUCT_GUID)
+        execute_process(
+            COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/scripts/generate_wix_guid.py
+            OUTPUT_VARIABLE GENERATED_PRODUCT_GUID
+            OUTPUT_STRIP_TRAILING_WHITESPACE
+        )
+        file(WRITE "${PRODUCT_GUID_FILE}" "${PROJECT_VERSION}\n${GENERATED_PRODUCT_GUID}")
+        message(STATUS "Generated Product GUID: ${GENERATED_PRODUCT_GUID} for version ${PROJECT_VERSION}")
+        else()
+        string(REPLACE "\n" ";" GUID_CONTENTS "${SAVED_PRODUCT_GUID}")
+        list(GET GUID_CONTENTS 1 GENERATED_PRODUCT_GUID)
     endif()
 else()
     execute_process(
-    COMMAND python ${CMAKE_CURRENT_SOURCE_DIR}/scripts/generate_wix_guid.py
-    OUTPUT_VARIABLE GENERATED_PRODUCT_GUID
-    OUTPUT_STRIP_TRAILING_WHITESPACE
+        COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/scripts/generate_wix_guid.py
+        OUTPUT_VARIABLE GENERATED_PRODUCT_GUID
+        OUTPUT_STRIP_TRAILING_WHITESPACE
     )
     file(WRITE "${PRODUCT_GUID_FILE}" "${PROJECT_VERSION}\n${GENERATED_PRODUCT_GUID}")
 endif()
