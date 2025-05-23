@@ -111,6 +111,16 @@ before known device types.
 
 NOTE: Due to known issues with Program Instrumentation usecases, when ZET_ENABLE_PROGRAM_INSTRUMENTATION is enabled, driver sorting is not possible in the loader.
 
+## Windows
+Use Microsoft* Visual Studio x64 command prompt to run the following commands and build the project:
+```sh
+mkdir build
+cd build
+cmake -G "NMake Makefiles" CMAKE_CXX_FLAGS="/EHsc" ..
+nmake
+```
+
+
 # Contributing
 
 See [CONTRIBUTING](CONTRIBUTING.md) for more information.
