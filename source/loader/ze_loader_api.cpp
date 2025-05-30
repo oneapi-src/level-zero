@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (C) 2020-2021 Intel Corporation
+ * Copyright (C) 2020-2025 Intel Corporation
  *
  * SPDX-License-Identifier: MIT
  *
@@ -87,57 +87,89 @@ zelLoaderGetVersionsInternal(
 ZE_DLLEXPORT ze_result_t ZE_APICALL
 zelLoaderTranslateHandleInternal(
    zel_handle_type_t handleType,
-   void *handleIn,                       
+   void *handleIn,
    void **handleOut)
 {
+    if (!handleIn || !handleOut) {
+        return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+    }
 
     if(!loader::context->intercept_enabled) {
         *handleOut = handleIn;
         return ZE_RESULT_SUCCESS;
     }
 
+    *handleOut = handleIn;
     switch(handleType){
         case ZEL_HANDLE_DRIVER: 
-            *handleOut = reinterpret_cast<loader::ze_driver_object_t*>( handleIn )->handle;
+            if (loader::context->ze_driver_factory.hasInstance(reinterpret_cast<loader::ze_driver_object_t*>(handleIn)->handle)) {
+                *handleOut = reinterpret_cast<loader::ze_driver_object_t*>( handleIn )->handle;
+            }
             break;
         case ZEL_HANDLE_DEVICE: 
-            *handleOut = reinterpret_cast<loader::ze_device_object_t*>( handleIn )->handle;
+            if (loader::context->ze_device_factory.hasInstance(reinterpret_cast<loader::ze_device_object_t*>(handleIn)->handle)){
+                *handleOut = reinterpret_cast<loader::ze_device_object_t*>( handleIn )->handle;
+            }
             break;
         case ZEL_HANDLE_CONTEXT: 
-            *handleOut = reinterpret_cast<loader::ze_context_object_t*>( handleIn )->handle;
-            break;            
-        case ZEL_HANDLE_COMMAND_QUEUE: 
-            *handleOut = reinterpret_cast<loader::ze_command_queue_object_t*>( handleIn )->handle;
+            if (loader::context->ze_context_factory.hasInstance(reinterpret_cast<loader::ze_context_object_t*>(handleIn)->handle)) {
+                *handleOut = reinterpret_cast<loader::ze_context_object_t*>( handleIn )->handle;
+            }
             break;
-        case ZEL_HANDLE_COMMAND_LIST: 
-            *handleOut = reinterpret_cast<loader::ze_command_list_object_t*>( handleIn )->handle;
+        case ZEL_HANDLE_COMMAND_QUEUE:
+            if (loader::context->ze_command_queue_factory.hasInstance(reinterpret_cast<loader::ze_command_queue_object_t*>(handleIn)->handle)) {
+                *handleOut = reinterpret_cast<loader::ze_command_queue_object_t*>( handleIn )->handle;
+            }
             break;
-        case ZEL_HANDLE_FENCE: 
-            *handleOut = reinterpret_cast<loader::ze_fence_object_t*>( handleIn )->handle;
+        case ZEL_HANDLE_COMMAND_LIST:
+            if (loader::context->ze_command_list_factory.hasInstance(reinterpret_cast<loader::ze_command_list_object_t*>(handleIn)->handle)) {
+                *handleOut = reinterpret_cast<loader::ze_command_list_object_t*>( handleIn )->handle;
+            }
             break;
-        case ZEL_HANDLE_EVENT_POOL: 
-            *handleOut = reinterpret_cast<loader::ze_event_pool_object_t*>( handleIn )->handle;
+        case ZEL_HANDLE_FENCE:
+            if (loader::context->ze_fence_factory.hasInstance(reinterpret_cast<loader::ze_fence_object_t*>(handleIn)->handle)) {
+                *handleOut = reinterpret_cast<loader::ze_fence_object_t*>( handleIn )->handle;
+            }
             break;
-        case ZEL_HANDLE_EVENT: 
-            *handleOut = reinterpret_cast<loader::ze_event_object_t*>( handleIn )->handle;
+        case ZEL_HANDLE_EVENT_POOL:
+            if (loader::context->ze_event_pool_factory.hasInstance(reinterpret_cast<loader::ze_event_pool_object_t*>(handleIn)->handle)) {
+                *handleOut = reinterpret_cast<loader::ze_event_pool_object_t*>( handleIn )->handle;
+            }
             break;
-        case ZEL_HANDLE_IMAGE: 
-            *handleOut = reinterpret_cast<loader::ze_image_object_t*>( handleIn )->handle;
+        case ZEL_HANDLE_EVENT:
+            if (loader::context->ze_event_factory.hasInstance(reinterpret_cast<loader::ze_event_object_t*>(handleIn)->handle)) {
+                *handleOut = reinterpret_cast<loader::ze_event_object_t*>( handleIn )->handle;
+            }
             break;
-        case ZEL_HANDLE_MODULE: 
-            *handleOut = reinterpret_cast<loader::ze_module_object_t*>( handleIn )->handle;
+        case ZEL_HANDLE_IMAGE:
+            if (loader::context->ze_image_factory.hasInstance(reinterpret_cast<loader::ze_image_object_t*>(handleIn)->handle)) {
+                *handleOut = reinterpret_cast<loader::ze_image_object_t*>( handleIn )->handle;
+            }
             break;
-        case ZEL_HANDLE_MODULE_BUILD_LOG: 
-            *handleOut = reinterpret_cast<loader::ze_module_build_log_object_t*>( handleIn )->handle;
+        case ZEL_HANDLE_MODULE:
+            if (loader::context->ze_module_factory.hasInstance(reinterpret_cast<loader::ze_module_object_t*>(handleIn)->handle)) {
+                *handleOut = reinterpret_cast<loader::ze_module_object_t*>( handleIn )->handle;
+            }
             break;
-        case ZEL_HANDLE_KERNEL: 
-            *handleOut = reinterpret_cast<loader::ze_kernel_object_t*>( handleIn )->handle;
+        case ZEL_HANDLE_MODULE_BUILD_LOG:
+            if (loader::context->ze_module_build_log_factory.hasInstance(reinterpret_cast<loader::ze_module_build_log_object_t*>(handleIn)->handle)) {
+                *handleOut = reinterpret_cast<loader::ze_module_build_log_object_t*>( handleIn )->handle;
+            }
             break;
-        case ZEL_HANDLE_SAMPLER: 
-            *handleOut = reinterpret_cast<loader::ze_sampler_object_t*>( handleIn )->handle;
+        case ZEL_HANDLE_KERNEL:
+            if (loader::context->ze_kernel_factory.hasInstance(reinterpret_cast<loader::ze_kernel_object_t*>(handleIn)->handle)) {
+                *handleOut = reinterpret_cast<loader::ze_kernel_object_t*>( handleIn )->handle;
+            }
             break;
-        case ZEL_HANDLE_PHYSICAL_MEM: 
-            *handleOut = reinterpret_cast<loader::ze_physical_mem_object_t*>( handleIn )->handle;
+        case ZEL_HANDLE_SAMPLER:
+            if (loader::context->ze_sampler_factory.hasInstance(reinterpret_cast<loader::ze_sampler_object_t*>(handleIn)->handle)) {
+                *handleOut = reinterpret_cast<loader::ze_sampler_object_t*>( handleIn )->handle;
+            }
+            break;
+        case ZEL_HANDLE_PHYSICAL_MEM:
+            if (loader::context->ze_physical_mem_factory.hasInstance(reinterpret_cast<loader::ze_physical_mem_object_t*>(handleIn)->handle)) {
+                *handleOut = reinterpret_cast<loader::ze_physical_mem_object_t*>( handleIn )->handle;
+            }
             break;
         default:
             return ZE_RESULT_ERROR_INVALID_ENUMERATION;
