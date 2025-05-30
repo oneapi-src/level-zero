@@ -14,7 +14,7 @@ namespace ze_lib
 {
     ///////////////////////////////////////////////////////////////////////////////
 
-#ifdef DYNAMIC_LOAD_LOADER
+#ifdef L0_STATIC_LOADER_BUILD
     __zedlllocal ze_result_t context_t::zelTracingDdiTableInit(ze_api_version_t version)
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
