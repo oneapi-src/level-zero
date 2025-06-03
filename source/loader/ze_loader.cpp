@@ -68,199 +68,6 @@ namespace loader
         return a.driverType < b.driverType;
     }
 
-    bool context_t::driverSorting(driver_vector_t *drivers, ze_init_driver_type_desc_t* desc, bool sysmanOnly) {
-        ze_init_driver_type_desc_t permissiveDesc = {};
-        permissiveDesc.stype = ZE_STRUCTURE_TYPE_INIT_DRIVER_TYPE_DESC;
-        permissiveDesc.pNext = nullptr;
-        permissiveDesc.flags = UINT32_MAX;
-        for (auto &driver : *drivers) {
-            if (sysmanOnly) {
-                for (auto &coreDriver : this->zeDrivers) {
-                    if (coreDriver.name == driver.name) {
-                        if (!driver.dditable.ze.Global.pfnInitDrivers) {
-                            driver.dditable.ze.Global.pfnInitDrivers = coreDriver.dditable.ze.Global.pfnInitDrivers;
-                        }
-                        if (!driver.dditable.ze.Driver.pfnGet) {
-                            driver.dditable.ze.Driver.pfnGet = coreDriver.dditable.ze.Driver.pfnGet;
-                        }
-                        if (!driver.dditable.ze.Driver.pfnGetProperties) {
-                            driver.dditable.ze.Driver.pfnGetProperties = coreDriver.dditable.ze.Driver.pfnGetProperties;
-                        }
-                        if (!driver.dditable.ze.Device.pfnGet) {
-                            driver.dditable.ze.Device.pfnGet = coreDriver.dditable.ze.Device.pfnGet;
-                        }
-                        if (!driver.dditable.ze.Device.pfnGetProperties) {
-                            driver.dditable.ze.Device.pfnGetProperties = coreDriver.dditable.ze.Device.pfnGetProperties;
-                        }
-                        break;
-                    }
-                }
-            }
-            uint32_t pCount = 0;
-            std::vector<ze_driver_handle_t> driverHandles;
-            ze_result_t res = ZE_RESULT_SUCCESS;
-            if (desc && driver.dditable.ze.Global.pfnInitDrivers) {
-                if (driver.initDriversStatus != ZE_RESULT_SUCCESS) {
-                    if (debugTraceEnabled) {
-                        std::string message = "driverSorting " + driver.name + " failed, zeInitDrivers returned ";
-                        debug_trace_message(message, loader::to_string(driver.initDriversStatus));
-                    }
-                    continue;
-                }
-                if (debugTraceEnabled) {
-                    std::string message = "driverSorting " + driver.name + " using zeInitDrivers(" + loader::to_string(&permissiveDesc) + ")";
-                    debug_trace_message(message, "");
-                }
-                pCount = 0;
-                res = driver.dditable.ze.Global.pfnInitDrivers(&pCount, nullptr, &permissiveDesc);
-                // Verify that this driver successfully init in the call above.
-                if (res != ZE_RESULT_SUCCESS) {
-                    if (debugTraceEnabled) {
-                        std::string message = "driverSorting " + driver.name + " zeInitDrivers(" + loader::to_string(&permissiveDesc) + ") returning ";
-                        debug_trace_message(message, loader::to_string(res));
-                    }
-                    continue;
-                }
-                driverHandles.resize(pCount);
-                // Use the driver's init function to query the driver handles and read the properties.
-                res = driver.dditable.ze.Global.pfnInitDrivers(&pCount, driverHandles.data(), &permissiveDesc);
-                // Verify that this driver successfully init in the call above.
-                if (res != ZE_RESULT_SUCCESS) {
-                    if (debugTraceEnabled) {
-                        std::string message = "driverSorting " + driver.name + " zeInitDrivers(" + loader::to_string(&permissiveDesc) + ") returning ";
-                        debug_trace_message(message, loader::to_string(res));
-                    }
-                    continue;
-                }
-            } else if (driver.dditable.ze.Driver.pfnGet) {
-                if (driver.initStatus != ZE_RESULT_SUCCESS || !driver.legacyInitAttempted) {
-                    if (debugTraceEnabled) {
-                        std::string message = "driverSorting " + driver.name + " failed, zeInit returned ";
-                        debug_trace_message(message, loader::to_string(driver.initStatus));
-                    }
-                    continue;
-                }
-                if (debugTraceEnabled) {
-                    std::string message = "driverSorting " + driver.name + " using zeDriverGet";
-                    debug_trace_message(message, "");
-                }
-                res = driver.dditable.ze.Driver.pfnGet(&pCount, nullptr);
-                // Verify that this driver successfully init in the call above.
-                if (res != ZE_RESULT_SUCCESS) {
-                    if (debugTraceEnabled) {
-                        std::string message = "driverSorting " + driver.name + " zeDriverGet returning ";
-                        debug_trace_message(message, loader::to_string(res));
-                    }
-                    continue;
-                }
-                driverHandles.resize(pCount);
-                res = driver.dditable.ze.Driver.pfnGet(&pCount, driverHandles.data());
-                // Verify that this driver successfully init in the call above.
-                if (res != ZE_RESULT_SUCCESS) {
-                    if (debugTraceEnabled) {
-                        std::string message = "driverSorting " + driver.name + " zeDriverGet returning ";
-                        debug_trace_message(message, loader::to_string(res));
-                    }
-                    continue;
-                }
-            } else {
-                if (debugTraceEnabled) {
-                    std::string message = "driverSorting " + driver.name + " zeDriverGet and zeInitDrivers not supported, skipping driver";
-                    debug_trace_message(message, loader::to_string(res));
-                }
-                continue;
-            }
-
-            for (auto handle : driverHandles) {
-                ze_driver_properties_t properties = {};
-                properties.stype = ZE_STRUCTURE_TYPE_DRIVER_PROPERTIES;
-                properties.pNext = nullptr;
-                ze_result_t res = driver.dditable.ze.Driver.pfnGetProperties(handle, &properties);
-                if (res != ZE_RESULT_SUCCESS) {
-                    if (debugTraceEnabled) {
-                        std::string message = "driverSorting " + driver.name + " failed, zeDriverGetProperties returned ";
-                        debug_trace_message(message, loader::to_string(res));
-                    }
-                    continue;
-                }
-                driver.properties = properties;
-                uint32_t deviceCount = 0;
-                res = driver.dditable.ze.Device.pfnGet( handle, &deviceCount, nullptr );
-                if( ZE_RESULT_SUCCESS != res ) {
-                    if (debugTraceEnabled) {
-                        std::string message = "driverSorting " + driver.name + " failed, zeDeviceGet returned ";
-                        debug_trace_message(message, loader::to_string(res));
-                    }
-                    continue;
-                }
-                if (deviceCount == 0) {
-                    if (debugTraceEnabled) {
-                        std::string message = "driverSorting " + driver.name + " failed, zeDeviceGet returned 0 devices";
-                        debug_trace_message(message, "");
-                    }
-                    continue;
-                }
-                std::vector<ze_device_handle_t> deviceHandles(deviceCount);
-                res = driver.dditable.ze.Device.pfnGet( handle, &deviceCount, deviceHandles.data() );
-                if( ZE_RESULT_SUCCESS != res ) {
-                    if (debugTraceEnabled) {
-                        std::string message = "driverSorting " + driver.name + " failed, zeDeviceGet returned ";
-                        debug_trace_message(message, loader::to_string(res));
-                    }
-                    continue;
-                }
-                bool integratedGPU = false;
-                bool discreteGPU = false;
-                bool other = false;
-                for( auto device : deviceHandles ) {
-                    ze_device_properties_t deviceProperties = {};
-                    deviceProperties.stype = ZE_STRUCTURE_TYPE_DEVICE_PROPERTIES;
-                    deviceProperties.pNext = nullptr;
-                    res = driver.dditable.ze.Device.pfnGetProperties(device, &deviceProperties);
-                    if( ZE_RESULT_SUCCESS != res ) {
-                        if (debugTraceEnabled) {
-                            std::string message = "driverSorting " + driver.name + " failed, zeDeviceGetProperties returned ";
-                            debug_trace_message(message, loader::to_string(res));
-                        }
-                        continue;
-                    }
-                    if (deviceProperties.type == ZE_DEVICE_TYPE_GPU) {
-                        if (deviceProperties.flags & ZE_DEVICE_PROPERTY_FLAG_INTEGRATED) {
-                            integratedGPU = true;
-                        } else {
-                            discreteGPU = true;
-                        }
-                    } else {
-                        other = true;
-                    }
-                }
-                if (integratedGPU && discreteGPU && other) {
-                    driver.driverType = ZEL_DRIVER_TYPE_MIXED;
-                } else if (integratedGPU && discreteGPU) {
-                    driver.driverType = ZEL_DRIVER_TYPE_GPU;
-                } else if (integratedGPU) {
-                    driver.driverType = ZEL_DRIVER_TYPE_INTEGRATED_GPU;
-                } else if (discreteGPU) {
-                    driver.driverType = ZEL_DRIVER_TYPE_DISCRETE_GPU;
-                } else if (other) {
-                    driver.driverType = ZEL_DRIVER_TYPE_OTHER;
-                }
-            }
-        }
-
-        // Sort drivers in ascending order of driver type unless ZE_ENABLE_PCI_ID_DEVICE_ORDER, then in decending order with MIXED and OTHER at the end.
-        std::sort(drivers->begin(), drivers->end(), driverSortComparator);
-
-        if (debugTraceEnabled) {
-            std::string message = "Drivers after sorting:";
-            for (const auto& driver : *drivers) {
-                message += "\nDriver Type: " + std::to_string(driver.driverType) + " Driver Name: " + driver.name;
-            }
-            debug_trace_message(message, "");
-        }
-        return true;
-    }
-
     /**
      * @brief Checks and initializes drivers based on the provided flags and descriptors.
      *
@@ -273,8 +80,10 @@ namespace loader
      *    - If the number of drivers becomes one and interception is not forced, sets the `requireDdiReinit` flag to true.
      *    - If the initialization fails and `return_first_driver_result` is true, returns the result immediately.
      *    - If initialization succeeds, marks the driver as in use.
-     * 5. If no drivers are left, returns `ZE_RESULT_ERROR_UNINITIALIZED`.
-     * 6. Returns `ZE_RESULT_SUCCESS` if at least one driver is successfully initialized.
+     * 5. Sorts the drivers in ascending order of driver type using `driverSortComparator`.
+     * 6. Logs the sorted driver list if debug tracing is enabled.
+     * 7. If no drivers are left, returns `ZE_RESULT_ERROR_UNINITIALIZED`.
+     * 8. Returns `ZE_RESULT_SUCCESS` if at least one driver is successfully initialized.
      *
      * @param flags Initialization flags.
      * @param desc Driver type descriptor (optional).
@@ -320,7 +129,6 @@ namespace loader
             return_first_driver_result=true;
         }
         bool pciOrderingRequested = getenv_tobool( "ZE_ENABLE_PCI_ID_DEVICE_ORDER" );
-        loader::context->instrumentationEnabled = getenv_tobool( "ZET_ENABLE_PROGRAM_INSTRUMENTATION" );
 
         for(auto it = drivers->begin(); it != drivers->end(); )
         {
@@ -351,6 +159,17 @@ namespace loader
                 it->driverInuse = true;
                 it++;
             }
+        }
+
+        // Sort drivers in ascending order of driver type unless ZE_ENABLE_PCI_ID_DEVICE_ORDER, then in decending order with MIXED and OTHER at the end.
+        std::sort(drivers->begin(), drivers->end(), driverSortComparator);
+
+        if (debugTraceEnabled) {
+            std::string message = "Drivers after sorting:";
+            for (const auto& driver : *drivers) {
+                message += "\nDriver Type: " + std::to_string(driver.driverType) + " Driver Name: " + driver.name;
+            }
+            debug_trace_message(message, "");
         }
 
         if(drivers->size() == 0)
@@ -401,6 +220,9 @@ namespace loader
             }
             return res;
         } else {
+            uint32_t pCount = 0;
+            std::vector<ze_driver_handle_t> driverHandles;
+
             if (!desc) {
                 auto pfnInit = driver.dditable.ze.Global.pfnInit;
                 if(nullptr == pfnInit || globalInitStored->pfnInit == nullptr) {
@@ -423,6 +245,25 @@ namespace loader
                     }
                     return res;
                 }
+                res = driver.dditable.ze.Driver.pfnGet(&pCount, nullptr);
+                // Verify that this driver successfully init in the call above.
+                if (res != ZE_RESULT_SUCCESS) {
+                    if (debugTraceEnabled) {
+                        std::string message = "init driver " + driver.name + " zeDriverGet(" + loader::to_string(desc) + ") returning ";
+                        debug_trace_message(message, loader::to_string(res));
+                    }
+                    return res;
+                }
+                driverHandles.resize(pCount);
+                res = driver.dditable.ze.Driver.pfnGet(&pCount, driverHandles.data());
+                // Verify that this driver successfully init in the call above.
+                if (res != ZE_RESULT_SUCCESS) {
+                    if (debugTraceEnabled) {
+                        std::string message = "init driver " + driver.name + " zeDriverGet(" + loader::to_string(desc) + ") returning ";
+                        debug_trace_message(message, loader::to_string(res));
+                    }
+                    return res;
+                }
             } else {
                 auto pfnInitDrivers = driver.dditable.ze.Global.pfnInitDrivers;
                 if(nullptr == pfnInitDrivers || globalInitStored->pfnInitDrivers == nullptr) {
@@ -433,8 +274,8 @@ namespace loader
                     return ZE_RESULT_ERROR_UNINITIALIZED;
                 }
 
-                uint32_t pCount = 0;
-                // Use the previously init ddi table pointer to zeInitDrivers to allow for intercept of the zeInitDrivers calls
+                pCount = 0;
+                // Use the previously init ddi table pointer to zeInit to allow for intercept of the zeInit calls
                 ze_result_t res = globalInitStored->pfnInitDrivers(&pCount, nullptr, desc);
                 // Verify that this driver successfully init in the call above.
                 if (res != ZE_RESULT_SUCCESS || driver.initDriversStatus != ZE_RESULT_SUCCESS) {
@@ -445,6 +286,105 @@ namespace loader
                         debug_trace_message(message, loader::to_string(res));
                     }
                     return res;
+                }
+
+                // Reset pCount to 0 when calling the driver init function from the driver's ddi table.
+                pCount = 0;
+                res = driver.dditable.ze.Global.pfnInitDrivers(&pCount, nullptr, desc);
+                // Verify that this driver successfully init in the call above.
+                if (res != ZE_RESULT_SUCCESS) {
+                    if (debugTraceEnabled) {
+                        std::string message = "init driver (driver ddi) " + driver.name + " zeInitDrivers(" + loader::to_string(desc) + ") returning ";
+                        debug_trace_message(message, loader::to_string(res));
+                    }
+                    return res;
+                }
+                driverHandles.resize(pCount);
+                // Use the driver's init function to query the driver handles and read the properties.
+                res = driver.dditable.ze.Global.pfnInitDrivers(&pCount, driverHandles.data(), desc);
+                // Verify that this driver successfully init in the call above.
+                if (res != ZE_RESULT_SUCCESS) {
+                    if (debugTraceEnabled) {
+                        std::string message = "init driver (driver ddi) " + driver.name + " zeInitDrivers(" + loader::to_string(desc) + ") returning ";
+                        debug_trace_message(message, loader::to_string(res));
+                    }
+                    return res;
+                }
+            }
+
+            for (auto handle : driverHandles) {
+                ze_driver_properties_t properties = {};
+                properties.stype = ZE_STRUCTURE_TYPE_DRIVER_PROPERTIES;
+                properties.pNext = nullptr;
+                ze_result_t res = driver.dditable.ze.Driver.pfnGetProperties(handle, &properties);
+                if (res != ZE_RESULT_SUCCESS) {
+                    if (debugTraceEnabled) {
+                        std::string message = "init driver " + driver.name + " failed, zeDriverGetProperties returned ";
+                        debug_trace_message(message, loader::to_string(res));
+                    }
+                    return res;
+                }
+                driver.properties = properties;
+                uint32_t deviceCount = 0;
+                res = driver.dditable.ze.Device.pfnGet( handle, &deviceCount, nullptr );
+                if( ZE_RESULT_SUCCESS != res ) {
+                    if (debugTraceEnabled) {
+                        std::string message = "init driver " + driver.name + " failed, zeDeviceGet returned ";
+                        debug_trace_message(message, loader::to_string(res));
+                    }
+                    return res;
+                }
+                if (deviceCount == 0) {
+                    if (debugTraceEnabled) {
+                        std::string message = "init driver " + driver.name + " failed, zeDeviceGet returned 0 devices";
+                        debug_trace_message(message, "");
+                    }
+                    return ZE_RESULT_ERROR_UNINITIALIZED;
+                }
+                std::vector<ze_device_handle_t> deviceHandles(deviceCount);
+                res = driver.dditable.ze.Device.pfnGet( handle, &deviceCount, deviceHandles.data() );
+                if( ZE_RESULT_SUCCESS != res ) {
+                    if (debugTraceEnabled) {
+                        std::string message = "init driver " + driver.name + " failed, zeDeviceGet returned ";
+                        debug_trace_message(message, loader::to_string(res));
+                    }
+                    return res;
+                }
+                bool integratedGPU = false;
+                bool discreteGPU = false;
+                bool other = false;
+                for( auto device : deviceHandles ) {
+                    ze_device_properties_t deviceProperties = {};
+                    deviceProperties.stype = ZE_STRUCTURE_TYPE_DEVICE_PROPERTIES;
+                    deviceProperties.pNext = nullptr;
+                    res = driver.dditable.ze.Device.pfnGetProperties(device, &deviceProperties);
+                    if( ZE_RESULT_SUCCESS != res ) {
+                        if (debugTraceEnabled) {
+                            std::string message = "init driver " + driver.name + " failed, zeDeviceGetProperties returned ";
+                            debug_trace_message(message, loader::to_string(res));
+                        }
+                        return res;
+                    }
+                    if (deviceProperties.type == ZE_DEVICE_TYPE_GPU) {
+                        if (deviceProperties.flags & ZE_DEVICE_PROPERTY_FLAG_INTEGRATED) {
+                            integratedGPU = true;
+                        } else {
+                            discreteGPU = true;
+                        }
+                    } else {
+                        other = true;
+                    }
+                }
+                if (integratedGPU && discreteGPU && other) {
+                    driver.driverType = ZEL_DRIVER_TYPE_MIXED;
+                } else if (integratedGPU && discreteGPU) {
+                    driver.driverType = ZEL_DRIVER_TYPE_GPU;
+                } else if (integratedGPU) {
+                    driver.driverType = ZEL_DRIVER_TYPE_INTEGRATED_GPU;
+                } else if (discreteGPU) {
+                    driver.driverType = ZEL_DRIVER_TYPE_DISCRETE_GPU;
+                } else if (other) {
+                    driver.driverType = ZEL_DRIVER_TYPE_OTHER;
                 }
             }
             return ZE_RESULT_SUCCESS;

@@ -62,7 +62,7 @@ namespace loader
         dditable_t dditable = {};
         std::string name;
         bool driverInuse = false;
-        zel_driver_type_t driverType = ZEL_DRIVER_TYPE_FORCE_UINT32;
+        zel_driver_type_t driverType;
         ze_driver_properties_t properties;
         bool pciOrderingRequested = false;
         bool legacyInitAttempted = false;
@@ -113,15 +113,14 @@ namespace loader
         ze_result_t init();
         ze_result_t init_driver(driver_t &driver, ze_init_flags_t flags, ze_init_driver_type_desc_t* desc, ze_global_dditable_t *globalInitStored, zes_global_dditable_t *sysmanGlobalInitStored, bool sysmanOnly);
         void add_loader_version();
+<<<<<<< HEAD
         bool driverSorting(driver_vector_t *drivers, ze_init_driver_type_desc_t* desc, bool sysmanOnly);
+=======
+>>>>>>> parent of e1c7124 (Fix driver sorting given driver failures and instrumentation (#288))
         ~context_t();
         bool intercept_enabled = false;
         bool debugTraceEnabled = false;
         bool tracingLayerEnabled = false;
-        std::once_flag coreDriverSortOnce;
-        std::once_flag sysmanDriverSortOnce;
-        std::atomic<bool> sortingInProgress = {false};
-        bool instrumentationEnabled = false;
         dditable_t tracing_dditable = {};
         std::shared_ptr<Logger> zel_logger;
     };
