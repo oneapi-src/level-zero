@@ -79,6 +79,8 @@ namespace loader
         %elif re.match(r"\w+DriverGet$", th.make_func_name(n, tags, obj)) or re.match(r"\w+InitDrivers$", th.make_func_name(n, tags, obj)):
         uint32_t total_driver_handle_count = 0;
 
+    {
+        std::lock_guard<std::mutex> lock(loader::context->sortMutex);
         if (!loader::context->sortingInProgress.exchange(true) && !loader::context->instrumentationEnabled) {
             %if namespace != "zes":
             %if not re.match(r"\w+InitDrivers$", th.make_func_name(n, tags, obj)):
@@ -97,6 +99,7 @@ namespace loader
             %endif
             loader::context->sortingInProgress.store(false);
         }
+    }
 
         %if namespace != "zes":
         for( auto& drv : loader::context->zeDrivers )
