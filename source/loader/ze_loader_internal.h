@@ -53,7 +53,7 @@ namespace loader
         dditable_t dditable = {};
         std::string name;
         bool driverInuse = false;
-        zel_driver_type_t driverType;
+        zel_driver_type_t driverType = ZEL_DRIVER_TYPE_FORCE_UINT32;
         ze_driver_properties_t properties;
         bool pciOrderingRequested = false;
         bool legacyInitAttempted = false;

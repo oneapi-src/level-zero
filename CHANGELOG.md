@@ -1,5 +1,7 @@
 # Level zero loader changelog
 
+## v1.21.10
+* Sort Drivers during init driver to avoid legacy drivers accessing invalid driver entries after sort.
 ## v1.21.9
 * Fix init checks when sorting legacy drivers
 * Fix MSVC Link optimization flags

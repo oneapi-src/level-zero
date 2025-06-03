@@ -109,6 +109,7 @@ The ordering of the drivers reported to the user is based on the order of the en
 When additional driver types are added, they should be added to the end of the list to avoid reporting new device types
 before known device types.
 
+NOTE: Due to known issues with Program Instrumentation usecases, when ZET_ENABLE_PROGRAM_INSTRUMENTATION is enabled, driver sorting is not possible in the loader.
 
 # Contributing
 

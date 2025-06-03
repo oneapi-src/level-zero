@@ -129,6 +129,18 @@ namespace loader
             return_first_driver_result=true;
         }
         bool pciOrderingRequested = getenv_tobool( "ZE_ENABLE_PCI_ID_DEVICE_ORDER" );
+        bool instrumentationEnabled = getenv_tobool( "ZET_ENABLE_PROGRAM_INSTRUMENTATION" );
+        auto EnvDriverSorting = getenv_string( "ZEL_SET_DRIVER_SORTING" );
+        bool allowDriverSorting = false;
+        if (std::strcmp(EnvDriverSorting.c_str(), "0") == 0) {
+            allowDriverSorting = false; // Disable driver sorting
+        }
+        else if (std::strcmp(EnvDriverSorting.c_str(), "1") == 0) {
+            allowDriverSorting = true; // Enable driver sorting
+        } else {
+            if (!instrumentationEnabled)
+                allowDriverSorting = true; // Default to true if instrumentation is not enabled
+        }
 
         for(auto it = drivers->begin(); it != drivers->end(); )
         {
@@ -161,15 +173,17 @@ namespace loader
             }
         }
 
-        // Sort drivers in ascending order of driver type unless ZE_ENABLE_PCI_ID_DEVICE_ORDER, then in decending order with MIXED and OTHER at the end.
-        std::sort(drivers->begin(), drivers->end(), driverSortComparator);
+        if (allowDriverSorting) {
+            // Sort drivers in ascending order of driver type unless ZE_ENABLE_PCI_ID_DEVICE_ORDER, then in decending order with MIXED and OTHER at the end.
+            std::sort(drivers->begin(), drivers->end(), driverSortComparator);
 
-        if (debugTraceEnabled) {
-            std::string message = "Drivers after sorting:";
-            for (const auto& driver : *drivers) {
-                message += "\nDriver Type: " + std::to_string(driver.driverType) + " Driver Name: " + driver.name;
+            if (debugTraceEnabled) {
+                std::string message = "Drivers after sorting:";
+                for (const auto& driver : *drivers) {
+                    message += "\nDriver Type: " + std::to_string(driver.driverType) + " Driver Name: " + driver.name;
+                }
+                debug_trace_message(message, "");
             }
-            debug_trace_message(message, "");
         }
 
         if(drivers->size() == 0)
