@@ -1,5 +1,8 @@
 # Level zero loader changelog
 
+
+## v1.21.10
+* Block all calls to get until after init has completed to avoid race during sorting.
 ## v1.21.9
 * Fix init checks when sorting legacy drivers
 * Fix MSVC Link optimization flags
