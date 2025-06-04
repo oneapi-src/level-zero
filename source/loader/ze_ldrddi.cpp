@@ -56,11 +56,14 @@ namespace loader
 
         uint32_t total_driver_handle_count = 0;
 
-        if (!loader::context->sortingInProgress.exchange(true) && !loader::context->instrumentationEnabled) {
-            std::call_once(loader::context->coreDriverSortOnce, []() {
-                loader::context->driverSorting(&loader::context->zeDrivers, nullptr, false);
-            });
-            loader::context->sortingInProgress.store(false);
+        {
+            std::lock_guard<std::mutex> lock(loader::context->sortMutex);
+            if (!loader::context->sortingInProgress.exchange(true) && !loader::context->instrumentationEnabled) {
+                std::call_once(loader::context->coreDriverSortOnce, []() {
+                    loader::context->driverSorting(&loader::context->zeDrivers, nullptr, false);
+                });
+                loader::context->sortingInProgress.store(false);
+            }
         }
 
         for( auto& drv : loader::context->zeDrivers )
@@ -139,11 +142,14 @@ namespace loader
 
         uint32_t total_driver_handle_count = 0;
 
-        if (!loader::context->sortingInProgress.exchange(true) && !loader::context->instrumentationEnabled) {
-            std::call_once(loader::context->coreDriverSortOnce, [desc]() {
-                loader::context->driverSorting(&loader::context->zeDrivers, desc, false);
-            });
-            loader::context->sortingInProgress.store(false);
+        {
+            std::lock_guard<std::mutex> lock(loader::context->sortMutex);
+            if (!loader::context->sortingInProgress.exchange(true) && !loader::context->instrumentationEnabled) {
+                std::call_once(loader::context->coreDriverSortOnce, [desc]() {
+                    loader::context->driverSorting(&loader::context->zeDrivers, desc, false);
+                });
+                loader::context->sortingInProgress.store(false);
+            }
         }
 
         for( auto& drv : loader::context->zeDrivers )
