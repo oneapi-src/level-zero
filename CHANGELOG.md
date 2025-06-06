@@ -1,5 +1,7 @@
 # Level zero loader changelog
 
+## v1.22.4
+* Block all calls to get until after init has completed to avoid race during sorting.
 ## v1.22.3
 * Fix sysman-only initialization to block loader context retrieval when versions are incompatible
 * Add ability to register a TeardownCallback to notify release of L0 resources
