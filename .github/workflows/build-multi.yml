@@ -1,8 +1,8 @@
 on:
   push:
-    branches: [ master ]
+    branches: [ master,release_branch* ]
   pull_request:
-    branches: [ master ]
+    branches: [ master,release_branch* ]
   workflow_dispatch:
 
 permissions: read-all
