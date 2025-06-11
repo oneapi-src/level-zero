@@ -9,7 +9,7 @@ from templates import helper as th
     X=x.upper()
 %>/*
  *
- * Copyright (C) 2019-2024 Intel Corporation
+ * Copyright (C) 2019-2025 Intel Corporation
  *
  * SPDX-License-Identifier: MIT
  *
@@ -17,6 +17,8 @@ from templates import helper as th
  *
  */
 #include "${x}_loader_internal.h"
+
+using namespace loader_driver_ddi;
 
 namespace loader
 {
@@ -164,8 +166,28 @@ namespace loader
                 {
                     for( uint32_t i = 0; i < library_driver_handle_count; ++i ) {
                         uint32_t driver_index = total_driver_handle_count + i;
-                        ${obj['params'][1]['name']}[ driver_index ] = reinterpret_cast<${n}_driver_handle_t>(
-                            context->${n}_driver_factory.getInstance( ${obj['params'][1]['name']}[ driver_index ], &drv.dditable ) );
+                        if (drv.driverDDIHandleSupportQueried == false) {
+                            drv.properties = {};
+                            drv.properties.stype = ZE_STRUCTURE_TYPE_DRIVER_DDI_HANDLES_EXT_PROPERTIES;
+                            drv.properties.pNext = nullptr;
+                            ze_driver_properties_t driverProperties = {};
+                            driverProperties.stype = ZE_STRUCTURE_TYPE_DRIVER_PROPERTIES;
+                            driverProperties.pNext = nullptr;
+                            driverProperties.pNext = &drv.properties;
+                            ze_result_t res = drv.dditable.ze.Driver.pfnGetProperties(${obj['params'][1]['name']}[ driver_index ], &driverProperties);
+                            if (res != ZE_RESULT_SUCCESS) {
+                                if (loader::context->debugTraceEnabled) {
+                                    std::string message = drv.name + " failed zeDriverGetProperties query, returned ";
+                                    loader::context->debug_trace_message(message, loader::to_string(res));
+                                }
+                                return res;
+                            }
+                            drv.driverDDIHandleSupportQueried = true;
+                        }
+                        if (!(drv.properties.flags & ZE_DRIVER_DDI_HANDLE_EXT_FLAG_DDI_HANDLE_EXT_SUPPORTED) || !loader::context->driverDDIPathDefault) {
+                            ${obj['params'][1]['name']}[ driver_index ] = reinterpret_cast<${n}_driver_handle_t>(
+                                context->${n}_driver_factory.getInstance( ${obj['params'][1]['name']}[ driver_index ], &drv.dditable ) );
+                        }
                     }
                 }
                 catch( std::bad_alloc& )
@@ -356,6 +378,40 @@ extern "C" {
 
 %for tbl in th.get_pfntables(specs, meta, n, tags):
 ///////////////////////////////////////////////////////////////////////////////
+/// @brief function for filling the legacy api pointers for ${tbl['name']} table
+__${x}dlllocal void ${X}_APICALL
+${tbl['export']['name']}Legacy()
+{
+    // return pointers to the Loader's Functions.
+    %for obj in tbl['functions']:
+    %if 'condition' in obj:
+#if ${th.subt(n, tags, obj['condition'])}
+    %endif
+    %if namespace == "ze":
+    loader::loaderDispatch->pCore->${tbl['name']}->${th.append_ws(th.make_pfn_name(n, tags, obj), 43)} = loader::${th.make_func_name(n, tags, obj)};
+    %elif namespace == "zet":
+    loader::loaderDispatch->pTools->${tbl['name']}->${th.append_ws(th.make_pfn_name(n, tags, obj), 43)} = loader::${th.make_func_name(n, tags, obj)};
+    %elif namespace == "zes":
+    loader::loaderDispatch->pSysman->${tbl['name']}->${th.append_ws(th.make_pfn_name(n, tags, obj), 43)} = loader::${th.make_func_name(n, tags, obj)};
+    %endif
+    %if 'condition' in obj:
+#else
+    %if namespace == "ze":
+    loader::loaderDispatch->pCore->${tbl['name']}->${th.append_ws(th.make_pfn_name(n, tags, obj), 43)} = nullptr;
+    %elif namespace == "zet":
+    loader::loaderDispatch->pTools->${tbl['name']}->${th.append_ws(th.make_pfn_name(n, tags, obj), 43)} = nullptr;
+    %elif namespace == "zes":
+    loader::loaderDispatch->pSysman->${tbl['name']}->${th.append_ws(th.make_pfn_name(n, tags, obj), 43)} = nullptr;
+    %endif
+#endif
+    %endif
+    %endfor
+}
+
+%endfor
+
+%for tbl in th.get_pfntables(specs, meta, n, tags):
+///////////////////////////////////////////////////////////////////////////////
 /// @brief Exported function for filling application's ${tbl['name']} table
 ///        with current process' addresses
 ///
@@ -446,12 +502,27 @@ ${tbl['export']['name']}(
         %endif
         {
             // return pointers to loader's DDIs
+            %if namespace == "ze":
+            loader::loaderDispatch->pCore->${tbl['name']} = new ${tbl['type']};
+            %elif namespace == "zet":
+            loader::loaderDispatch->pTools->${tbl['name']} = new ${tbl['type']};
+            %elif namespace == "zes":
+            loader::loaderDispatch->pSysman->${tbl['name']} = new ${tbl['type']};
+            %endif
             %for obj in tbl['functions']:
             if (version >= ${th.get_version(obj)}) {
             %if 'condition' in obj:
         #if ${th.subt(n, tags, obj['condition'])}
             %endif
+            %if not (re.match(r"Init", obj['name']) or re.match(r"\w+InitDrivers$", th.make_func_name(n, tags, obj)) or re.match(r"\w+DriverGet$", th.make_func_name(n, tags, obj))):
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->${th.append_ws(th.make_pfn_name(n, tags, obj), 43)} = loader_driver_ddi::${th.make_func_name(n, tags, obj)};
+            } else {
                 pDdiTable->${th.append_ws(th.make_pfn_name(n, tags, obj), 43)} = loader::${th.make_func_name(n, tags, obj)};
+            }
+            %else:
+            pDdiTable->${th.append_ws(th.make_pfn_name(n, tags, obj), 43)} = loader::${th.make_func_name(n, tags, obj)};
+            %endif
             %if 'condition' in obj:
         #else
                 pDdiTable->${th.append_ws(th.make_pfn_name(n, tags, obj), 43)} = nullptr;
@@ -459,6 +530,7 @@ ${tbl['export']['name']}(
             %endif
             }
             %endfor
+            ${tbl['export']['name']}Legacy();
         }
         else
         {

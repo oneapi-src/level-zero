@@ -42,7 +42,7 @@ jobs:
       - env:
           ZEL_LIBRARY_PATH: '${{ github.workspace }}/dynamic_build/lib'
         working-directory: build
-        run: ls $ZEL_LIBRARY_PATH;ZE_ENABLE_LOADER_DEBUG_TRACE=1 ctest -V
+        run: ls $ZEL_LIBRARY_PATH;ctest -V
 
   build-windows:
     if: github.repository_owner == 'oneapi-src'
@@ -56,7 +56,6 @@ jobs:
           cmake -D BUILD_L0_LOADER_TESTS=1 -D BUILD_STATIC=1 ..
           cmake --build . --config Release
       - env:
-          ZE_ENABLE_LOADER_DEBUG_TRACE: '1'
           ZEL_LIBRARY_PATH: '${{ github.workspace }}/build/bin/Release'
         working-directory: build
         run: ctest -C Release -V
