@@ -163,7 +163,8 @@ validation_files = {
     'param.cpp.mako' : ('checkers/parameter_validation', 'parameter_validation.cpp'),
     'param.h.mako' : ('checkers/parameter_validation', 'parameter_validation.h'),
     'handle_lifetime.h.mako' : ('handle_lifetime_tracking', 'handle_lifetime.h'),
-    'handle_lifetime.cpp.mako' : ('handle_lifetime_tracking', 'handle_lifetime.cpp')
+    'handle_lifetime.cpp.mako' : ('handle_lifetime_tracking', 'handle_lifetime.cpp'),
+    'certification.h.mako' : ('checkers/certification/generated', 'certification.h'),
 }
 
 def _mako_validation_layer_cpp(path, namespace, tags, version, specs, meta):
