@@ -1,5 +1,9 @@
 # Level zero loader changelog
 
+## v1.22.5
+* cmake/msvc: unify CRT model and add VTune-safe flags for RelWithDebInfo
+* Init certification checker in the Validation Layer
+* Fix CI to run on release branches
 ## v1.22.4
 * Block all calls to get until after init has completed to avoid race during sorting.
 ## v1.22.3
