@@ -21,6 +21,7 @@ By default, no validation modes will be enabled. The individual validation modes
 - `ZEL_ENABLE_EVENTS_CHECKER`
 - `ZEL_ENABLE_BASIC_LEAK_CHECKER`
 - `ZE_ENABLE_THREADING_VALIDATION` (Not yet Implemented)
+- `ZEL_ENABLE_CERTIFICATION_CHECKER`
 
 ## Validation Modes
 
@@ -83,6 +84,10 @@ Basic leak checker in the validation layer which tracks the Create and Destroy c
 Validates:
 - Objects are not concurrently reused in free-threaded API calls
 
+### `ZEL_ENABLE_CERTIFICATION_CHECKER`
+
+When this mode is enabled, the certification checker validates API usage against the version supported by the driver or an explicitly specified version.
+If an API is used that was introduced in a version higher than the supported version, the checker will return `ZE_RESULT_ERROR_UNSUPPORTED_VERSION`.
 
 
 ## Testing
