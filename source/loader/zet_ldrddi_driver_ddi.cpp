@@ -31,6 +31,10 @@ namespace loader_driver_ddi
         if (dditable->version < ZE_API_VERSION_1_0) {
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
         }
+        // Check that the driver has the function pointer table init
+        if (dditable->Module == nullptr) {
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         auto pfnGetDebugInfo = dditable->Module->pfnGetDebugInfo;
         if( nullptr == pfnGetDebugInfo )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -56,6 +60,10 @@ namespace loader_driver_ddi
         // Check that api version in the driver is supported by this version of the API
         if (dditable->version < ZE_API_VERSION_1_0) {
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
+        // Check that the driver has the function pointer table init
+        if (dditable->Device == nullptr) {
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnGetDebugProperties = dditable->Device->pfnGetDebugProperties;
         if( nullptr == pfnGetDebugProperties )
@@ -84,6 +92,10 @@ namespace loader_driver_ddi
         if (dditable->version < ZE_API_VERSION_1_0) {
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
         }
+        // Check that the driver has the function pointer table init
+        if (dditable->Debug == nullptr) {
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         auto pfnAttach = dditable->Debug->pfnAttach;
         if( nullptr == pfnAttach )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -108,6 +120,10 @@ namespace loader_driver_ddi
         // Check that api version in the driver is supported by this version of the API
         if (dditable->version < ZE_API_VERSION_1_0) {
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
+        // Check that the driver has the function pointer table init
+        if (dditable->Debug == nullptr) {
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnDetach = dditable->Debug->pfnDetach;
         if( nullptr == pfnDetach )
@@ -142,6 +158,10 @@ namespace loader_driver_ddi
         if (dditable->version < ZE_API_VERSION_1_0) {
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
         }
+        // Check that the driver has the function pointer table init
+        if (dditable->Debug == nullptr) {
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         auto pfnReadEvent = dditable->Debug->pfnReadEvent;
         if( nullptr == pfnReadEvent )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -167,6 +187,10 @@ namespace loader_driver_ddi
         // Check that api version in the driver is supported by this version of the API
         if (dditable->version < ZE_API_VERSION_1_0) {
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
+        // Check that the driver has the function pointer table init
+        if (dditable->Debug == nullptr) {
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnAcknowledgeEvent = dditable->Debug->pfnAcknowledgeEvent;
         if( nullptr == pfnAcknowledgeEvent )
@@ -194,6 +218,10 @@ namespace loader_driver_ddi
         if (dditable->version < ZE_API_VERSION_1_0) {
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
         }
+        // Check that the driver has the function pointer table init
+        if (dditable->Debug == nullptr) {
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         auto pfnInterrupt = dditable->Debug->pfnInterrupt;
         if( nullptr == pfnInterrupt )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -219,6 +247,10 @@ namespace loader_driver_ddi
         // Check that api version in the driver is supported by this version of the API
         if (dditable->version < ZE_API_VERSION_1_0) {
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
+        // Check that the driver has the function pointer table init
+        if (dditable->Debug == nullptr) {
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnResume = dditable->Debug->pfnResume;
         if( nullptr == pfnResume )
@@ -249,6 +281,10 @@ namespace loader_driver_ddi
         if (dditable->version < ZE_API_VERSION_1_0) {
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
         }
+        // Check that the driver has the function pointer table init
+        if (dditable->Debug == nullptr) {
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         auto pfnReadMemory = dditable->Debug->pfnReadMemory;
         if( nullptr == pfnReadMemory )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -277,6 +313,10 @@ namespace loader_driver_ddi
         // Check that api version in the driver is supported by this version of the API
         if (dditable->version < ZE_API_VERSION_1_0) {
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
+        // Check that the driver has the function pointer table init
+        if (dditable->Debug == nullptr) {
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnWriteMemory = dditable->Debug->pfnWriteMemory;
         if( nullptr == pfnWriteMemory )
@@ -312,6 +352,10 @@ namespace loader_driver_ddi
         // Check that api version in the driver is supported by this version of the API
         if (dditable->version < ZE_API_VERSION_1_0) {
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
+        // Check that the driver has the function pointer table init
+        if (dditable->Debug == nullptr) {
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnGetRegisterSetProperties = dditable->Debug->pfnGetRegisterSetProperties;
         if( nullptr == pfnGetRegisterSetProperties )
@@ -349,6 +393,10 @@ namespace loader_driver_ddi
         if (dditable->version < ZE_API_VERSION_1_5) {
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
         }
+        // Check that the driver has the function pointer table init
+        if (dditable->Debug == nullptr) {
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         auto pfnGetThreadRegisterSetProperties = dditable->Debug->pfnGetThreadRegisterSetProperties;
         if( nullptr == pfnGetThreadRegisterSetProperties )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -382,6 +430,10 @@ namespace loader_driver_ddi
         // Check that api version in the driver is supported by this version of the API
         if (dditable->version < ZE_API_VERSION_1_0) {
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
+        // Check that the driver has the function pointer table init
+        if (dditable->Debug == nullptr) {
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnReadRegisters = dditable->Debug->pfnReadRegisters;
         if( nullptr == pfnReadRegisters )
@@ -417,6 +469,10 @@ namespace loader_driver_ddi
         if (dditable->version < ZE_API_VERSION_1_0) {
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
         }
+        // Check that the driver has the function pointer table init
+        if (dditable->Debug == nullptr) {
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         auto pfnWriteRegisters = dditable->Debug->pfnWriteRegisters;
         if( nullptr == pfnWriteRegisters )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -451,6 +507,10 @@ namespace loader_driver_ddi
         if (dditable->version < ZE_API_VERSION_1_0) {
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
         }
+        // Check that the driver has the function pointer table init
+        if (dditable->MetricGroup == nullptr) {
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         auto pfnGet = dditable->MetricGroup->pfnGet;
         if( nullptr == pfnGet )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -476,6 +536,10 @@ namespace loader_driver_ddi
         // Check that api version in the driver is supported by this version of the API
         if (dditable->version < ZE_API_VERSION_1_0) {
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
+        // Check that the driver has the function pointer table init
+        if (dditable->MetricGroup == nullptr) {
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnGetProperties = dditable->MetricGroup->pfnGetProperties;
         if( nullptr == pfnGetProperties )
@@ -514,6 +578,10 @@ namespace loader_driver_ddi
         if (dditable->version < ZE_API_VERSION_1_0) {
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
         }
+        // Check that the driver has the function pointer table init
+        if (dditable->MetricGroup == nullptr) {
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         auto pfnCalculateMetricValues = dditable->MetricGroup->pfnCalculateMetricValues;
         if( nullptr == pfnCalculateMetricValues )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -547,6 +615,10 @@ namespace loader_driver_ddi
         if (dditable->version < ZE_API_VERSION_1_0) {
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
         }
+        // Check that the driver has the function pointer table init
+        if (dditable->Metric == nullptr) {
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         auto pfnGet = dditable->Metric->pfnGet;
         if( nullptr == pfnGet )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -572,6 +644,10 @@ namespace loader_driver_ddi
         // Check that api version in the driver is supported by this version of the API
         if (dditable->version < ZE_API_VERSION_1_0) {
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
+        // Check that the driver has the function pointer table init
+        if (dditable->Metric == nullptr) {
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnGetProperties = dditable->Metric->pfnGetProperties;
         if( nullptr == pfnGetProperties )
@@ -605,6 +681,10 @@ namespace loader_driver_ddi
         if (dditable->version < ZE_API_VERSION_1_0) {
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
         }
+        // Check that the driver has the function pointer table init
+        if (dditable->Context == nullptr) {
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         auto pfnActivateMetricGroups = dditable->Context->pfnActivateMetricGroups;
         if( nullptr == pfnActivateMetricGroups )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -635,6 +715,10 @@ namespace loader_driver_ddi
         if (dditable->version < ZE_API_VERSION_1_0) {
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
         }
+        // Check that the driver has the function pointer table init
+        if (dditable->MetricStreamer == nullptr) {
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         auto pfnOpen = dditable->MetricStreamer->pfnOpen;
         if( nullptr == pfnOpen )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -662,6 +746,10 @@ namespace loader_driver_ddi
         if (dditable->version < ZE_API_VERSION_1_0) {
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
         }
+        // Check that the driver has the function pointer table init
+        if (dditable->CommandList == nullptr) {
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         auto pfnAppendMetricStreamerMarker = dditable->CommandList->pfnAppendMetricStreamerMarker;
         if( nullptr == pfnAppendMetricStreamerMarker )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -686,6 +774,10 @@ namespace loader_driver_ddi
         // Check that api version in the driver is supported by this version of the API
         if (dditable->version < ZE_API_VERSION_1_0) {
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
+        // Check that the driver has the function pointer table init
+        if (dditable->MetricStreamer == nullptr) {
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnClose = dditable->MetricStreamer->pfnClose;
         if( nullptr == pfnClose )
@@ -723,6 +815,10 @@ namespace loader_driver_ddi
         if (dditable->version < ZE_API_VERSION_1_0) {
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
         }
+        // Check that the driver has the function pointer table init
+        if (dditable->MetricStreamer == nullptr) {
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         auto pfnReadData = dditable->MetricStreamer->pfnReadData;
         if( nullptr == pfnReadData )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -752,6 +848,10 @@ namespace loader_driver_ddi
         if (dditable->version < ZE_API_VERSION_1_0) {
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
         }
+        // Check that the driver has the function pointer table init
+        if (dditable->MetricQueryPool == nullptr) {
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         auto pfnCreate = dditable->MetricQueryPool->pfnCreate;
         if( nullptr == pfnCreate )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -776,6 +876,10 @@ namespace loader_driver_ddi
         // Check that api version in the driver is supported by this version of the API
         if (dditable->version < ZE_API_VERSION_1_0) {
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
+        // Check that the driver has the function pointer table init
+        if (dditable->MetricQueryPool == nullptr) {
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnDestroy = dditable->MetricQueryPool->pfnDestroy;
         if( nullptr == pfnDestroy )
@@ -804,6 +908,10 @@ namespace loader_driver_ddi
         if (dditable->version < ZE_API_VERSION_1_0) {
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
         }
+        // Check that the driver has the function pointer table init
+        if (dditable->MetricQuery == nullptr) {
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         auto pfnCreate = dditable->MetricQuery->pfnCreate;
         if( nullptr == pfnCreate )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -828,6 +936,10 @@ namespace loader_driver_ddi
         // Check that api version in the driver is supported by this version of the API
         if (dditable->version < ZE_API_VERSION_1_0) {
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
+        // Check that the driver has the function pointer table init
+        if (dditable->MetricQuery == nullptr) {
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnDestroy = dditable->MetricQuery->pfnDestroy;
         if( nullptr == pfnDestroy )
@@ -854,6 +966,10 @@ namespace loader_driver_ddi
         if (dditable->version < ZE_API_VERSION_1_0) {
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
         }
+        // Check that the driver has the function pointer table init
+        if (dditable->MetricQuery == nullptr) {
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         auto pfnReset = dditable->MetricQuery->pfnReset;
         if( nullptr == pfnReset )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -879,6 +995,10 @@ namespace loader_driver_ddi
         // Check that api version in the driver is supported by this version of the API
         if (dditable->version < ZE_API_VERSION_1_0) {
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
+        // Check that the driver has the function pointer table init
+        if (dditable->CommandList == nullptr) {
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnAppendMetricQueryBegin = dditable->CommandList->pfnAppendMetricQueryBegin;
         if( nullptr == pfnAppendMetricQueryBegin )
@@ -909,6 +1029,10 @@ namespace loader_driver_ddi
         if (dditable->version < ZE_API_VERSION_1_0) {
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
         }
+        // Check that the driver has the function pointer table init
+        if (dditable->CommandList == nullptr) {
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         auto pfnAppendMetricQueryEnd = dditable->CommandList->pfnAppendMetricQueryEnd;
         if( nullptr == pfnAppendMetricQueryEnd )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -933,6 +1057,10 @@ namespace loader_driver_ddi
         // Check that api version in the driver is supported by this version of the API
         if (dditable->version < ZE_API_VERSION_1_0) {
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
+        // Check that the driver has the function pointer table init
+        if (dditable->CommandList == nullptr) {
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnAppendMetricMemoryBarrier = dditable->CommandList->pfnAppendMetricMemoryBarrier;
         if( nullptr == pfnAppendMetricMemoryBarrier )
@@ -968,6 +1096,10 @@ namespace loader_driver_ddi
         if (dditable->version < ZE_API_VERSION_1_0) {
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
         }
+        // Check that the driver has the function pointer table init
+        if (dditable->MetricQuery == nullptr) {
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         auto pfnGetData = dditable->MetricQuery->pfnGetData;
         if( nullptr == pfnGetData )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -993,6 +1125,10 @@ namespace loader_driver_ddi
         // Check that api version in the driver is supported by this version of the API
         if (dditable->version < ZE_API_VERSION_1_0) {
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
+        // Check that the driver has the function pointer table init
+        if (dditable->Kernel == nullptr) {
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnGetProfileInfo = dditable->Kernel->pfnGetProfileInfo;
         if( nullptr == pfnGetProfileInfo )
@@ -1021,6 +1157,10 @@ namespace loader_driver_ddi
         if (dditable->version < ZE_API_VERSION_1_0) {
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
         }
+        // Check that the driver has the function pointer table init
+        if (dditable->TracerExp == nullptr) {
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         auto pfnCreate = dditable->TracerExp->pfnCreate;
         if( nullptr == pfnCreate )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1045,6 +1185,10 @@ namespace loader_driver_ddi
         // Check that api version in the driver is supported by this version of the API
         if (dditable->version < ZE_API_VERSION_1_0) {
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
+        // Check that the driver has the function pointer table init
+        if (dditable->TracerExp == nullptr) {
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnDestroy = dditable->TracerExp->pfnDestroy;
         if( nullptr == pfnDestroy )
@@ -1072,6 +1216,10 @@ namespace loader_driver_ddi
         if (dditable->version < ZE_API_VERSION_1_0) {
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
         }
+        // Check that the driver has the function pointer table init
+        if (dditable->TracerExp == nullptr) {
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         auto pfnSetPrologues = dditable->TracerExp->pfnSetPrologues;
         if( nullptr == pfnSetPrologues )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1098,6 +1246,10 @@ namespace loader_driver_ddi
         if (dditable->version < ZE_API_VERSION_1_0) {
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
         }
+        // Check that the driver has the function pointer table init
+        if (dditable->TracerExp == nullptr) {
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         auto pfnSetEpilogues = dditable->TracerExp->pfnSetEpilogues;
         if( nullptr == pfnSetEpilogues )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1123,6 +1275,10 @@ namespace loader_driver_ddi
         // Check that api version in the driver is supported by this version of the API
         if (dditable->version < ZE_API_VERSION_1_0) {
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
+        // Check that the driver has the function pointer table init
+        if (dditable->TracerExp == nullptr) {
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnSetEnabled = dditable->TracerExp->pfnSetEnabled;
         if( nullptr == pfnSetEnabled )
@@ -1156,6 +1312,10 @@ namespace loader_driver_ddi
         // Check that api version in the driver is supported by this version of the API
         if (dditable->version < ZE_API_VERSION_1_10) {
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
+        // Check that the driver has the function pointer table init
+        if (dditable->DeviceExp == nullptr) {
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnGetConcurrentMetricGroupsExp = dditable->DeviceExp->pfnGetConcurrentMetricGroupsExp;
         if( nullptr == pfnGetConcurrentMetricGroupsExp )
@@ -1191,6 +1351,10 @@ namespace loader_driver_ddi
         if (dditable->version < ZE_API_VERSION_1_10) {
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
         }
+        // Check that the driver has the function pointer table init
+        if (dditable->MetricTracerExp == nullptr) {
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         auto pfnCreateExp = dditable->MetricTracerExp->pfnCreateExp;
         if( nullptr == pfnCreateExp )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1215,6 +1379,10 @@ namespace loader_driver_ddi
         // Check that api version in the driver is supported by this version of the API
         if (dditable->version < ZE_API_VERSION_1_10) {
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
+        // Check that the driver has the function pointer table init
+        if (dditable->MetricTracerExp == nullptr) {
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnDestroyExp = dditable->MetricTracerExp->pfnDestroyExp;
         if( nullptr == pfnDestroyExp )
@@ -1246,6 +1414,10 @@ namespace loader_driver_ddi
         if (dditable->version < ZE_API_VERSION_1_10) {
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
         }
+        // Check that the driver has the function pointer table init
+        if (dditable->MetricTracerExp == nullptr) {
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         auto pfnEnableExp = dditable->MetricTracerExp->pfnEnableExp;
         if( nullptr == pfnEnableExp )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1276,6 +1448,10 @@ namespace loader_driver_ddi
         // Check that api version in the driver is supported by this version of the API
         if (dditable->version < ZE_API_VERSION_1_10) {
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
+        // Check that the driver has the function pointer table init
+        if (dditable->MetricTracerExp == nullptr) {
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnDisableExp = dditable->MetricTracerExp->pfnDisableExp;
         if( nullptr == pfnDisableExp )
@@ -1311,6 +1487,10 @@ namespace loader_driver_ddi
         if (dditable->version < ZE_API_VERSION_1_10) {
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
         }
+        // Check that the driver has the function pointer table init
+        if (dditable->MetricTracerExp == nullptr) {
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         auto pfnReadDataExp = dditable->MetricTracerExp->pfnReadDataExp;
         if( nullptr == pfnReadDataExp )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1337,6 +1517,10 @@ namespace loader_driver_ddi
         if (dditable->version < ZE_API_VERSION_1_10) {
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
         }
+        // Check that the driver has the function pointer table init
+        if (dditable->MetricDecoderExp == nullptr) {
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         auto pfnCreateExp = dditable->MetricDecoderExp->pfnCreateExp;
         if( nullptr == pfnCreateExp )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1361,6 +1545,10 @@ namespace loader_driver_ddi
         // Check that api version in the driver is supported by this version of the API
         if (dditable->version < ZE_API_VERSION_1_10) {
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
+        // Check that the driver has the function pointer table init
+        if (dditable->MetricDecoderExp == nullptr) {
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnDestroyExp = dditable->MetricDecoderExp->pfnDestroyExp;
         if( nullptr == pfnDestroyExp )
@@ -1397,6 +1585,10 @@ namespace loader_driver_ddi
         // Check that api version in the driver is supported by this version of the API
         if (dditable->version < ZE_API_VERSION_1_10) {
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
+        // Check that the driver has the function pointer table init
+        if (dditable->MetricDecoderExp == nullptr) {
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnGetDecodableMetricsExp = dditable->MetricDecoderExp->pfnGetDecodableMetricsExp;
         if( nullptr == pfnGetDecodableMetricsExp )
@@ -1462,6 +1654,10 @@ namespace loader_driver_ddi
         if (dditable->version < ZE_API_VERSION_1_10) {
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
         }
+        // Check that the driver has the function pointer table init
+        if (dditable->MetricTracerExp == nullptr) {
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         auto pfnDecodeExp = dditable->MetricTracerExp->pfnDecodeExp;
         if( nullptr == pfnDecodeExp )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1491,6 +1687,10 @@ namespace loader_driver_ddi
         if (dditable->version < ZE_API_VERSION_1_13) {
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
         }
+        // Check that the driver has the function pointer table init
+        if (dditable->CommandListExp == nullptr) {
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         auto pfnAppendMarkerExp = dditable->CommandListExp->pfnAppendMarkerExp;
         if( nullptr == pfnAppendMarkerExp )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1516,6 +1716,10 @@ namespace loader_driver_ddi
         if (dditable->version < ZE_API_VERSION_1_13) {
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
         }
+        // Check that the driver has the function pointer table init
+        if (dditable->DeviceExp == nullptr) {
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         auto pfnEnableMetricsExp = dditable->DeviceExp->pfnEnableMetricsExp;
         if( nullptr == pfnEnableMetricsExp )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1540,6 +1744,10 @@ namespace loader_driver_ddi
         // Check that api version in the driver is supported by this version of the API
         if (dditable->version < ZE_API_VERSION_1_13) {
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
+        // Check that the driver has the function pointer table init
+        if (dditable->DeviceExp == nullptr) {
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnDisableMetricsExp = dditable->DeviceExp->pfnDisableMetricsExp;
         if( nullptr == pfnDisableMetricsExp )
@@ -1588,6 +1796,10 @@ namespace loader_driver_ddi
         if (dditable->version < ZE_API_VERSION_1_2) {
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
         }
+        // Check that the driver has the function pointer table init
+        if (dditable->MetricGroupExp == nullptr) {
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         auto pfnCalculateMultipleMetricValuesExp = dditable->MetricGroupExp->pfnCalculateMultipleMetricValuesExp;
         if( nullptr == pfnCalculateMultipleMetricValuesExp )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1615,6 +1827,10 @@ namespace loader_driver_ddi
         // Check that api version in the driver is supported by this version of the API
         if (dditable->version < ZE_API_VERSION_1_5) {
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
+        // Check that the driver has the function pointer table init
+        if (dditable->MetricGroupExp == nullptr) {
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnGetGlobalTimestampsExp = dditable->MetricGroupExp->pfnGetGlobalTimestampsExp;
         if( nullptr == pfnGetGlobalTimestampsExp )
@@ -1648,6 +1864,10 @@ namespace loader_driver_ddi
         // Check that api version in the driver is supported by this version of the API
         if (dditable->version < ZE_API_VERSION_1_6) {
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
+        // Check that the driver has the function pointer table init
+        if (dditable->MetricGroupExp == nullptr) {
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnGetExportDataExp = dditable->MetricGroupExp->pfnGetExportDataExp;
         if( nullptr == pfnGetExportDataExp )
@@ -1697,6 +1917,10 @@ namespace loader_driver_ddi
         if (dditable->version < ZE_API_VERSION_1_6) {
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
         }
+        // Check that the driver has the function pointer table init
+        if (dditable->MetricGroupExp == nullptr) {
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         auto pfnCalculateMetricExportDataExp = dditable->MetricGroupExp->pfnCalculateMetricExportDataExp;
         if( nullptr == pfnCalculateMetricExportDataExp )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1731,6 +1955,10 @@ namespace loader_driver_ddi
         if (dditable->version < ZE_API_VERSION_1_9) {
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
         }
+        // Check that the driver has the function pointer table init
+        if (dditable->MetricProgrammableExp == nullptr) {
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         auto pfnGetExp = dditable->MetricProgrammableExp->pfnGetExp;
         if( nullptr == pfnGetExp )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1756,6 +1984,10 @@ namespace loader_driver_ddi
         // Check that api version in the driver is supported by this version of the API
         if (dditable->version < ZE_API_VERSION_1_9) {
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
+        // Check that the driver has the function pointer table init
+        if (dditable->MetricProgrammableExp == nullptr) {
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnGetPropertiesExp = dditable->MetricProgrammableExp->pfnGetPropertiesExp;
         if( nullptr == pfnGetPropertiesExp )
@@ -1790,6 +2022,10 @@ namespace loader_driver_ddi
         if (dditable->version < ZE_API_VERSION_1_9) {
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
         }
+        // Check that the driver has the function pointer table init
+        if (dditable->MetricProgrammableExp == nullptr) {
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         auto pfnGetParamInfoExp = dditable->MetricProgrammableExp->pfnGetParamInfoExp;
         if( nullptr == pfnGetParamInfoExp )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1823,6 +2059,10 @@ namespace loader_driver_ddi
         // Check that api version in the driver is supported by this version of the API
         if (dditable->version < ZE_API_VERSION_1_9) {
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
+        // Check that the driver has the function pointer table init
+        if (dditable->MetricProgrammableExp == nullptr) {
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnGetParamValueInfoExp = dditable->MetricProgrammableExp->pfnGetParamValueInfoExp;
         if( nullptr == pfnGetParamValueInfoExp )
@@ -1865,6 +2105,10 @@ namespace loader_driver_ddi
         if (dditable->version < ZE_API_VERSION_1_11) {
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
         }
+        // Check that the driver has the function pointer table init
+        if (dditable->MetricExp == nullptr) {
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         auto pfnCreateFromProgrammableExp2 = dditable->MetricExp->pfnCreateFromProgrammableExp2;
         if( nullptr == pfnCreateFromProgrammableExp2 )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1905,6 +2149,10 @@ namespace loader_driver_ddi
         // Check that api version in the driver is supported by this version of the API
         if (dditable->version < ZE_API_VERSION_1_9) {
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
+        // Check that the driver has the function pointer table init
+        if (dditable->MetricExp == nullptr) {
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnCreateFromProgrammableExp = dditable->MetricExp->pfnCreateFromProgrammableExp;
         if( nullptr == pfnCreateFromProgrammableExp )
@@ -1950,6 +2198,10 @@ namespace loader_driver_ddi
         if (dditable->version < ZE_API_VERSION_1_10) {
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
         }
+        // Check that the driver has the function pointer table init
+        if (dditable->DeviceExp == nullptr) {
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         auto pfnCreateMetricGroupsFromMetricsExp = dditable->DeviceExp->pfnCreateMetricGroupsFromMetricsExp;
         if( nullptr == pfnCreateMetricGroupsFromMetricsExp )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -1981,6 +2233,10 @@ namespace loader_driver_ddi
         // Check that api version in the driver is supported by this version of the API
         if (dditable->version < ZE_API_VERSION_1_9) {
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
+        // Check that the driver has the function pointer table init
+        if (dditable->MetricGroupExp == nullptr) {
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnCreateExp = dditable->MetricGroupExp->pfnCreateExp;
         if( nullptr == pfnCreateExp )
@@ -2015,6 +2271,10 @@ namespace loader_driver_ddi
         if (dditable->version < ZE_API_VERSION_1_9) {
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
         }
+        // Check that the driver has the function pointer table init
+        if (dditable->MetricGroupExp == nullptr) {
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         auto pfnAddMetricExp = dditable->MetricGroupExp->pfnAddMetricExp;
         if( nullptr == pfnAddMetricExp )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -2041,6 +2301,10 @@ namespace loader_driver_ddi
         if (dditable->version < ZE_API_VERSION_1_9) {
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
         }
+        // Check that the driver has the function pointer table init
+        if (dditable->MetricGroupExp == nullptr) {
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         auto pfnRemoveMetricExp = dditable->MetricGroupExp->pfnRemoveMetricExp;
         if( nullptr == pfnRemoveMetricExp )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -2065,6 +2329,10 @@ namespace loader_driver_ddi
         // Check that api version in the driver is supported by this version of the API
         if (dditable->version < ZE_API_VERSION_1_9) {
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
+        // Check that the driver has the function pointer table init
+        if (dditable->MetricGroupExp == nullptr) {
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnCloseExp = dditable->MetricGroupExp->pfnCloseExp;
         if( nullptr == pfnCloseExp )
@@ -2091,6 +2359,10 @@ namespace loader_driver_ddi
         if (dditable->version < ZE_API_VERSION_1_9) {
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
         }
+        // Check that the driver has the function pointer table init
+        if (dditable->MetricGroupExp == nullptr) {
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+        }
         auto pfnDestroyExp = dditable->MetricGroupExp->pfnDestroyExp;
         if( nullptr == pfnDestroyExp )
             return ZE_RESULT_ERROR_UNINITIALIZED;
@@ -2115,6 +2387,10 @@ namespace loader_driver_ddi
         // Check that api version in the driver is supported by this version of the API
         if (dditable->version < ZE_API_VERSION_1_9) {
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
+        // Check that the driver has the function pointer table init
+        if (dditable->MetricExp == nullptr) {
+            return ZE_RESULT_ERROR_UNINITIALIZED;
         }
         auto pfnDestroyExp = dditable->MetricExp->pfnDestroyExp;
         if( nullptr == pfnDestroyExp )
