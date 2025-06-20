@@ -65,6 +65,10 @@ namespace loader_driver_ddi
         if (dditable->version < ${th.get_version(obj)}) {
             return ${X}_RESULT_ERROR_UNSUPPORTED_VERSION;
         }
+        // Check that the driver has the function pointer table init
+        if (dditable->${th.get_table_name(n, tags, obj)} == nullptr) {
+            return ${X}_RESULT_ERROR_UNINITIALIZED;
+        }
         auto ${th.make_pfn_name(n, tags, obj)} = dditable->${th.get_table_name(n, tags, obj)}->${th.make_pfn_name(n, tags, obj)};
         if( nullptr == ${th.make_pfn_name(n, tags, obj)} )
             return ${X}_RESULT_ERROR_UNINITIALIZED;
