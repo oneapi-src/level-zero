@@ -682,10 +682,13 @@ namespace loader
                 }
             }
         }
-        loader_driver_ddi::zeDestroyDDiDriverTables(loader::loaderDispatch->pCore);
-        loader_driver_ddi::zetDestroyDDiDriverTables(loader::loaderDispatch->pTools);
-        loader_driver_ddi::zesDestroyDDiDriverTables(loader::loaderDispatch->pSysman);
-        delete loader::loaderDispatch;
+        if (loader::loaderDispatch) {
+            loader_driver_ddi::zeDestroyDDiDriverTables(loader::loaderDispatch->pCore);
+            loader_driver_ddi::zetDestroyDDiDriverTables(loader::loaderDispatch->pTools);
+            loader_driver_ddi::zesDestroyDDiDriverTables(loader::loaderDispatch->pSysman);
+            delete loader::loaderDispatch;
+            loader::loaderDispatch = nullptr;
+        }
     };
 
     void context_t::add_loader_version(){
