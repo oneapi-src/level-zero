@@ -52,7 +52,7 @@ endif()
 
 include(FetchContent)
 
-if(BUILD_L0_LOADER_TESTS AND (NOT MSVC OR (MSVC AND NOT BUILD_STATIC)))
+if(BUILD_L0_LOADER_TESTS)
     FetchContent_Declare(
         googletest
         GIT_REPOSITORY https://github.com/google/googletest.git
@@ -60,11 +60,6 @@ if(BUILD_L0_LOADER_TESTS AND (NOT MSVC OR (MSVC AND NOT BUILD_STATIC)))
     )
     add_library(GTest::GTest INTERFACE IMPORTED)
     target_link_libraries(GTest::GTest INTERFACE gtest_main)
-
-	# For Windows: Prevent overriding the parent project's compiler/linker settings
-    if(MSVC)
-        set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
-    endif()
 
 	FetchContent_MakeAvailable(googletest)
 
@@ -229,7 +224,7 @@ set(TARGET_LOADER_NAME ze_loader)
 add_subdirectory(source)
 add_subdirectory(samples)
 
-if(BUILD_L0_LOADER_TESTS AND (NOT MSVC OR (MSVC AND NOT BUILD_STATIC)))
+if(BUILD_L0_LOADER_TESTS)
     include(CTest)
     add_subdirectory(test)
 endif()
