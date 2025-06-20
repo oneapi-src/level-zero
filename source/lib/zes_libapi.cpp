@@ -115,7 +115,7 @@ zesDriverGet(
     if(ze_lib::destruction) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
-    if (ze_lib::context->zesDdiTable == nullptr) {
+    if (!ze_lib::context || ze_lib::context->zesDdiTable == nullptr) {
         return ZE_RESULT_ERROR_UNINITIALIZED;
     }
     static const zes_pfnDriverGet_t pfnGet = [&result] {

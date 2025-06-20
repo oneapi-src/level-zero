@@ -166,7 +166,7 @@ ${th.make_func_name(n, tags, obj)}(
         return ${X}_RESULT_ERROR_UNINITIALIZED;
     }
 %if re.match(r"\w+DriverGet$", th.make_func_name(n, tags, obj)):
-    if (${x}_lib::context->${n}DdiTable == nullptr) {
+    if (!${x}_lib::context || ${x}_lib::context->${n}DdiTable == nullptr) {
         return ${X}_RESULT_ERROR_UNINITIALIZED;
     }
 %endif
