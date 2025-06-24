@@ -1,5 +1,10 @@
 # Level zero loader changelog
 
+## v1.23.0
+* fix build for certification checker
+* Fix missing code gen and add check in sysman device get for context
+* Fix gtest build to work for windows static or dynamic
+* DDI extension support
 ## v1.22.5
 * cmake/msvc: unify CRT model and add VTune-safe flags for RelWithDebInfo
 * Init certification checker in the Validation Layer
