@@ -77,29 +77,10 @@ namespace loader
         permissiveDesc.stype = ZE_STRUCTURE_TYPE_INIT_DRIVER_TYPE_DESC;
         permissiveDesc.pNext = nullptr;
         permissiveDesc.flags = UINT32_MAX;
+        if (sysmanOnly) {
+            return true; // Sorting not fully supported by the spec due to missing zesDriverGetProperties for sysman drivers.
+        }
         for (auto &driver : *drivers) {
-            if (sysmanOnly) {
-                for (auto &coreDriver : this->zeDrivers) {
-                    if (coreDriver.name == driver.name) {
-                        if (!driver.dditable.ze.Global.pfnInitDrivers) {
-                            driver.dditable.ze.Global.pfnInitDrivers = coreDriver.dditable.ze.Global.pfnInitDrivers;
-                        }
-                        if (!driver.dditable.ze.Driver.pfnGet) {
-                            driver.dditable.ze.Driver.pfnGet = coreDriver.dditable.ze.Driver.pfnGet;
-                        }
-                        if (!driver.dditable.ze.Driver.pfnGetProperties) {
-                            driver.dditable.ze.Driver.pfnGetProperties = coreDriver.dditable.ze.Driver.pfnGetProperties;
-                        }
-                        if (!driver.dditable.ze.Device.pfnGet) {
-                            driver.dditable.ze.Device.pfnGet = coreDriver.dditable.ze.Device.pfnGet;
-                        }
-                        if (!driver.dditable.ze.Device.pfnGetProperties) {
-                            driver.dditable.ze.Device.pfnGetProperties = coreDriver.dditable.ze.Device.pfnGetProperties;
-                        }
-                        break;
-                    }
-                }
-            }
             uint32_t pCount = 0;
             std::vector<ze_driver_handle_t> driverHandles;
             ze_result_t res = ZE_RESULT_SUCCESS;

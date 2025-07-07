@@ -166,6 +166,7 @@ namespace loader
                 {
                     for( uint32_t i = 0; i < library_driver_handle_count; ++i ) {
                         uint32_t driver_index = total_driver_handle_count + i;
+                        %if namespace != "zes":
                         if (drv.driverDDIHandleSupportQueried == false) {
                             drv.properties = {};
                             drv.properties.stype = ZE_STRUCTURE_TYPE_DRIVER_DDI_HANDLES_EXT_PROPERTIES;
@@ -185,9 +186,22 @@ namespace loader
                             drv.driverDDIHandleSupportQueried = true;
                         }
                         if (!(drv.properties.flags & ZE_DRIVER_DDI_HANDLE_EXT_FLAG_DDI_HANDLE_EXT_SUPPORTED) || !loader::context->driverDDIPathDefault) {
+                            if (loader::context->debugTraceEnabled) {
+                                std::string message = "Driver DDI Handles Not Supported for " + drv.name;
+                                loader::context->debug_trace_message(message, "");
+                            }
                             ${obj['params'][1]['name']}[ driver_index ] = reinterpret_cast<${n}_driver_handle_t>(
                                 context->${n}_driver_factory.getInstance( ${obj['params'][1]['name']}[ driver_index ], &drv.dditable ) );
+                        } else if (drv.properties.flags & ZE_DRIVER_DDI_HANDLE_EXT_FLAG_DDI_HANDLE_EXT_SUPPORTED) {
+                            if (loader::context->debugTraceEnabled) {
+                                std::string message = "Driver DDI Handles Supported for " + drv.name;
+                                loader::context->debug_trace_message(message, "");
+                            }
                         }
+                        %else:
+                        ${obj['params'][1]['name']}[ driver_index ] = reinterpret_cast<${n}_driver_handle_t>(
+                            context->${n}_driver_factory.getInstance( ${obj['params'][1]['name']}[ driver_index ], &drv.dditable ) );
+                        %endif
                     }
                 }
                 catch( std::bad_alloc& )
