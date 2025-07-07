@@ -1,5 +1,6 @@
 # Level zero loader changelog
-
+## v1.23.1
+* Fix Sysman only DDI Init for zesDriver compatability
 ## v1.23.0
 * fix build for certification checker
 * Fix missing code gen and add check in sysman device get for context

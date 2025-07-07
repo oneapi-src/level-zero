@@ -120,8 +120,17 @@ namespace loader
                             drv.driverDDIHandleSupportQueried = true;
                         }
                         if (!(drv.properties.flags & ZE_DRIVER_DDI_HANDLE_EXT_FLAG_DDI_HANDLE_EXT_SUPPORTED) || !loader::context->driverDDIPathDefault) {
+                            if (loader::context->debugTraceEnabled) {
+                                std::string message = "Driver DDI Handles Not Supported for " + drv.name;
+                                loader::context->debug_trace_message(message, "");
+                            }
                             phDrivers[ driver_index ] = reinterpret_cast<ze_driver_handle_t>(
                                 context->ze_driver_factory.getInstance( phDrivers[ driver_index ], &drv.dditable ) );
+                        } else if (drv.properties.flags & ZE_DRIVER_DDI_HANDLE_EXT_FLAG_DDI_HANDLE_EXT_SUPPORTED) {
+                            if (loader::context->debugTraceEnabled) {
+                                std::string message = "Driver DDI Handles Supported for " + drv.name;
+                                loader::context->debug_trace_message(message, "");
+                            }
                         }
                     }
                 }
@@ -228,8 +237,17 @@ namespace loader
                             drv.driverDDIHandleSupportQueried = true;
                         }
                         if (!(drv.properties.flags & ZE_DRIVER_DDI_HANDLE_EXT_FLAG_DDI_HANDLE_EXT_SUPPORTED) || !loader::context->driverDDIPathDefault) {
+                            if (loader::context->debugTraceEnabled) {
+                                std::string message = "Driver DDI Handles Not Supported for " + drv.name;
+                                loader::context->debug_trace_message(message, "");
+                            }
                             phDrivers[ driver_index ] = reinterpret_cast<ze_driver_handle_t>(
                                 context->ze_driver_factory.getInstance( phDrivers[ driver_index ], &drv.dditable ) );
+                        } else if (drv.properties.flags & ZE_DRIVER_DDI_HANDLE_EXT_FLAG_DDI_HANDLE_EXT_SUPPORTED) {
+                            if (loader::context->debugTraceEnabled) {
+                                std::string message = "Driver DDI Handles Supported for " + drv.name;
+                                loader::context->debug_trace_message(message, "");
+                            }
                         }
                     }
                 }
