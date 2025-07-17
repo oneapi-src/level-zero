@@ -57,6 +57,8 @@ namespace driver
                 return reinterpret_cast<void*>( ++count );
             }
         }
+
+	char *setenv_var_with_driver_id(const std::string &key, uint32_t driverId);
     };
 
     extern context_t context;
