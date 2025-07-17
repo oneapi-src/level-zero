@@ -629,6 +629,19 @@ namespace driver
         pSysman.isValidFlag = 1;
         pSysman.version = ZE_API_VERSION_CURRENT;
     }
+
+    context_t::~context_t()
+    {
+        for (auto handle : globalBaseNullHandle)
+        {
+            delete handle;
+        }
+
+        for (const auto &env_var : env_vars)
+        {
+            delete env_var;
+        }
+    }
 } // namespace driver
 
 namespace instrumented

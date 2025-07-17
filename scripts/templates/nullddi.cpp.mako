@@ -92,6 +92,12 @@ namespace driver
 
             %endfor
         }
+        %if not fname.endswith("DriverGet") and not re.match("Init", obj['name']):
+        
+        char *env_str = strdup_safe((std::string("${fname}=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
+        %endif
 
         return result;
     }

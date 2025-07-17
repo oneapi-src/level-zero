@@ -42,17 +42,14 @@ namespace driver
         zet_dditable_t  zetDdiTable = {};
         zes_dditable_t  zesDdiTable = {};
         std::vector<BaseNullHandle*> globalBaseNullHandle;
-        bool ddiExtensionRequested = false;
+	bool ddiExtensionRequested = false;
+	std::vector<char *> env_vars{};
         context_t();
-        ~context_t() {
-            for (auto handle : globalBaseNullHandle) {
-                delete handle;
-            }
-        }
+        ~context_t();
 
         void* get( void )
         {
-            static uint64_t count = 0x80800000;
+            static uint64_t count = 0x80800000 >> ZEL_NULL_DRIVER_ID;
             if (ddiExtensionRequested) {
                 globalBaseNullHandle.push_back(new BaseNullHandle());
                 return reinterpret_cast<void*>(globalBaseNullHandle.back());
