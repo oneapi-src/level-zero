@@ -35,8 +35,7 @@ namespace driver
             // generic implementation
         }
         
-        char *env_str = strdup_safe((std::string("zetModuleGetDebugInfo=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
-        putenv_safe(env_str);
+        char *env_str = context.setenv_var_with_driver_id("zetModuleGetDebugInfo", ZEL_NULL_DRIVER_ID);
         context.env_vars.push_back(env_str);
 
         return result;
@@ -63,8 +62,7 @@ namespace driver
             // generic implementation
         }
         
-        char *env_str = strdup_safe((std::string("zetDeviceGetDebugProperties=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
-        putenv_safe(env_str);
+        char *env_str = context.setenv_var_with_driver_id("zetDeviceGetDebugProperties", ZEL_NULL_DRIVER_ID);
         context.env_vars.push_back(env_str);
 
         return result;
@@ -94,8 +92,7 @@ namespace driver
 
         }
         
-        char *env_str = strdup_safe((std::string("zetDebugAttach=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
-        putenv_safe(env_str);
+        char *env_str = context.setenv_var_with_driver_id("zetDebugAttach", ZEL_NULL_DRIVER_ID);
         context.env_vars.push_back(env_str);
 
         return result;
@@ -122,8 +119,7 @@ namespace driver
 
         }
         
-        char *env_str = strdup_safe((std::string("zetDebugDetach=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
-        putenv_safe(env_str);
+        char *env_str = context.setenv_var_with_driver_id("zetDebugDetach", ZEL_NULL_DRIVER_ID);
         context.env_vars.push_back(env_str);
 
         return result;
@@ -157,8 +153,7 @@ namespace driver
             // generic implementation
         }
         
-        char *env_str = strdup_safe((std::string("zetDebugReadEvent=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
-        putenv_safe(env_str);
+        char *env_str = context.setenv_var_with_driver_id("zetDebugReadEvent", ZEL_NULL_DRIVER_ID);
         context.env_vars.push_back(env_str);
 
         return result;
@@ -185,8 +180,7 @@ namespace driver
             // generic implementation
         }
         
-        char *env_str = strdup_safe((std::string("zetDebugAcknowledgeEvent=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
-        putenv_safe(env_str);
+        char *env_str = context.setenv_var_with_driver_id("zetDebugAcknowledgeEvent", ZEL_NULL_DRIVER_ID);
         context.env_vars.push_back(env_str);
 
         return result;
@@ -213,8 +207,7 @@ namespace driver
             // generic implementation
         }
         
-        char *env_str = strdup_safe((std::string("zetDebugInterrupt=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
-        putenv_safe(env_str);
+        char *env_str = context.setenv_var_with_driver_id("zetDebugInterrupt", ZEL_NULL_DRIVER_ID);
         context.env_vars.push_back(env_str);
 
         return result;
@@ -241,8 +234,7 @@ namespace driver
             // generic implementation
         }
         
-        char *env_str = strdup_safe((std::string("zetDebugResume=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
-        putenv_safe(env_str);
+        char *env_str = context.setenv_var_with_driver_id("zetDebugResume", ZEL_NULL_DRIVER_ID);
         context.env_vars.push_back(env_str);
 
         return result;
@@ -272,8 +264,7 @@ namespace driver
             // generic implementation
         }
         
-        char *env_str = strdup_safe((std::string("zetDebugReadMemory=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
-        putenv_safe(env_str);
+        char *env_str = context.setenv_var_with_driver_id("zetDebugReadMemory", ZEL_NULL_DRIVER_ID);
         context.env_vars.push_back(env_str);
 
         return result;
@@ -303,8 +294,7 @@ namespace driver
             // generic implementation
         }
         
-        char *env_str = strdup_safe((std::string("zetDebugWriteMemory=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
-        putenv_safe(env_str);
+        char *env_str = context.setenv_var_with_driver_id("zetDebugWriteMemory", ZEL_NULL_DRIVER_ID);
         context.env_vars.push_back(env_str);
 
         return result;
@@ -340,8 +330,7 @@ namespace driver
             // generic implementation
         }
         
-        char *env_str = strdup_safe((std::string("zetDebugGetRegisterSetProperties=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
-        putenv_safe(env_str);
+        char *env_str = context.setenv_var_with_driver_id("zetDebugGetRegisterSetProperties", ZEL_NULL_DRIVER_ID);
         context.env_vars.push_back(env_str);
 
         return result;
@@ -378,8 +367,7 @@ namespace driver
             // generic implementation
         }
         
-        char *env_str = strdup_safe((std::string("zetDebugGetThreadRegisterSetProperties=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
-        putenv_safe(env_str);
+        char *env_str = context.setenv_var_with_driver_id("zetDebugGetThreadRegisterSetProperties", ZEL_NULL_DRIVER_ID);
         context.env_vars.push_back(env_str);
 
         return result;
@@ -414,8 +402,7 @@ namespace driver
             // generic implementation
         }
         
-        char *env_str = strdup_safe((std::string("zetDebugReadRegisters=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
-        putenv_safe(env_str);
+        char *env_str = context.setenv_var_with_driver_id("zetDebugReadRegisters", ZEL_NULL_DRIVER_ID);
         context.env_vars.push_back(env_str);
 
         return result;
@@ -450,8 +437,7 @@ namespace driver
             // generic implementation
         }
         
-        char *env_str = strdup_safe((std::string("zetDebugWriteRegisters=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
-        putenv_safe(env_str);
+        char *env_str = context.setenv_var_with_driver_id("zetDebugWriteRegisters", ZEL_NULL_DRIVER_ID);
         context.env_vars.push_back(env_str);
 
         return result;
@@ -489,8 +475,7 @@ namespace driver
 
         }
         
-        char *env_str = strdup_safe((std::string("zetMetricGroupGet=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
-        putenv_safe(env_str);
+        char *env_str = context.setenv_var_with_driver_id("zetMetricGroupGet", ZEL_NULL_DRIVER_ID);
         context.env_vars.push_back(env_str);
 
         return result;
@@ -517,8 +502,7 @@ namespace driver
             // generic implementation
         }
         
-        char *env_str = strdup_safe((std::string("zetMetricGroupGetProperties=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
-        putenv_safe(env_str);
+        char *env_str = context.setenv_var_with_driver_id("zetMetricGroupGetProperties", ZEL_NULL_DRIVER_ID);
         context.env_vars.push_back(env_str);
 
         return result;
@@ -556,8 +540,7 @@ namespace driver
             // generic implementation
         }
         
-        char *env_str = strdup_safe((std::string("zetMetricGroupCalculateMetricValues=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
-        putenv_safe(env_str);
+        char *env_str = context.setenv_var_with_driver_id("zetMetricGroupCalculateMetricValues", ZEL_NULL_DRIVER_ID);
         context.env_vars.push_back(env_str);
 
         return result;
@@ -594,8 +577,7 @@ namespace driver
 
         }
         
-        char *env_str = strdup_safe((std::string("zetMetricGet=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
-        putenv_safe(env_str);
+        char *env_str = context.setenv_var_with_driver_id("zetMetricGet", ZEL_NULL_DRIVER_ID);
         context.env_vars.push_back(env_str);
 
         return result;
@@ -622,8 +604,7 @@ namespace driver
             // generic implementation
         }
         
-        char *env_str = strdup_safe((std::string("zetMetricGetProperties=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
-        putenv_safe(env_str);
+        char *env_str = context.setenv_var_with_driver_id("zetMetricGetProperties", ZEL_NULL_DRIVER_ID);
         context.env_vars.push_back(env_str);
 
         return result;
@@ -656,8 +637,7 @@ namespace driver
             // generic implementation
         }
         
-        char *env_str = strdup_safe((std::string("zetContextActivateMetricGroups=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
-        putenv_safe(env_str);
+        char *env_str = context.setenv_var_with_driver_id("zetContextActivateMetricGroups", ZEL_NULL_DRIVER_ID);
         context.env_vars.push_back(env_str);
 
         return result;
@@ -690,8 +670,7 @@ namespace driver
 
         }
         
-        char *env_str = strdup_safe((std::string("zetMetricStreamerOpen=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
-        putenv_safe(env_str);
+        char *env_str = context.setenv_var_with_driver_id("zetMetricStreamerOpen", ZEL_NULL_DRIVER_ID);
         context.env_vars.push_back(env_str);
 
         return result;
@@ -719,8 +698,7 @@ namespace driver
             // generic implementation
         }
         
-        char *env_str = strdup_safe((std::string("zetCommandListAppendMetricStreamerMarker=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
-        putenv_safe(env_str);
+        char *env_str = context.setenv_var_with_driver_id("zetCommandListAppendMetricStreamerMarker", ZEL_NULL_DRIVER_ID);
         context.env_vars.push_back(env_str);
 
         return result;
@@ -747,8 +725,7 @@ namespace driver
 
         }
         
-        char *env_str = strdup_safe((std::string("zetMetricStreamerClose=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
-        putenv_safe(env_str);
+        char *env_str = context.setenv_var_with_driver_id("zetMetricStreamerClose", ZEL_NULL_DRIVER_ID);
         context.env_vars.push_back(env_str);
 
         return result;
@@ -785,8 +762,7 @@ namespace driver
             // generic implementation
         }
         
-        char *env_str = strdup_safe((std::string("zetMetricStreamerReadData=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
-        putenv_safe(env_str);
+        char *env_str = context.setenv_var_with_driver_id("zetMetricStreamerReadData", ZEL_NULL_DRIVER_ID);
         context.env_vars.push_back(env_str);
 
         return result;
@@ -818,8 +794,7 @@ namespace driver
 
         }
         
-        char *env_str = strdup_safe((std::string("zetMetricQueryPoolCreate=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
-        putenv_safe(env_str);
+        char *env_str = context.setenv_var_with_driver_id("zetMetricQueryPoolCreate", ZEL_NULL_DRIVER_ID);
         context.env_vars.push_back(env_str);
 
         return result;
@@ -846,8 +821,7 @@ namespace driver
 
         }
         
-        char *env_str = strdup_safe((std::string("zetMetricQueryPoolDestroy=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
-        putenv_safe(env_str);
+        char *env_str = context.setenv_var_with_driver_id("zetMetricQueryPoolDestroy", ZEL_NULL_DRIVER_ID);
         context.env_vars.push_back(env_str);
 
         return result;
@@ -877,8 +851,7 @@ namespace driver
 
         }
         
-        char *env_str = strdup_safe((std::string("zetMetricQueryCreate=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
-        putenv_safe(env_str);
+        char *env_str = context.setenv_var_with_driver_id("zetMetricQueryCreate", ZEL_NULL_DRIVER_ID);
         context.env_vars.push_back(env_str);
 
         return result;
@@ -905,8 +878,7 @@ namespace driver
 
         }
         
-        char *env_str = strdup_safe((std::string("zetMetricQueryDestroy=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
-        putenv_safe(env_str);
+        char *env_str = context.setenv_var_with_driver_id("zetMetricQueryDestroy", ZEL_NULL_DRIVER_ID);
         context.env_vars.push_back(env_str);
 
         return result;
@@ -932,8 +904,7 @@ namespace driver
             // generic implementation
         }
         
-        char *env_str = strdup_safe((std::string("zetMetricQueryReset=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
-        putenv_safe(env_str);
+        char *env_str = context.setenv_var_with_driver_id("zetMetricQueryReset", ZEL_NULL_DRIVER_ID);
         context.env_vars.push_back(env_str);
 
         return result;
@@ -960,8 +931,7 @@ namespace driver
             // generic implementation
         }
         
-        char *env_str = strdup_safe((std::string("zetCommandListAppendMetricQueryBegin=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
-        putenv_safe(env_str);
+        char *env_str = context.setenv_var_with_driver_id("zetCommandListAppendMetricQueryBegin", ZEL_NULL_DRIVER_ID);
         context.env_vars.push_back(env_str);
 
         return result;
@@ -991,8 +961,7 @@ namespace driver
             // generic implementation
         }
         
-        char *env_str = strdup_safe((std::string("zetCommandListAppendMetricQueryEnd=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
-        putenv_safe(env_str);
+        char *env_str = context.setenv_var_with_driver_id("zetCommandListAppendMetricQueryEnd", ZEL_NULL_DRIVER_ID);
         context.env_vars.push_back(env_str);
 
         return result;
@@ -1018,8 +987,7 @@ namespace driver
             // generic implementation
         }
         
-        char *env_str = strdup_safe((std::string("zetCommandListAppendMetricMemoryBarrier=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
-        putenv_safe(env_str);
+        char *env_str = context.setenv_var_with_driver_id("zetCommandListAppendMetricMemoryBarrier", ZEL_NULL_DRIVER_ID);
         context.env_vars.push_back(env_str);
 
         return result;
@@ -1054,8 +1022,7 @@ namespace driver
             // generic implementation
         }
         
-        char *env_str = strdup_safe((std::string("zetMetricQueryGetData=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
-        putenv_safe(env_str);
+        char *env_str = context.setenv_var_with_driver_id("zetMetricQueryGetData", ZEL_NULL_DRIVER_ID);
         context.env_vars.push_back(env_str);
 
         return result;
@@ -1082,8 +1049,7 @@ namespace driver
             // generic implementation
         }
         
-        char *env_str = strdup_safe((std::string("zetKernelGetProfileInfo=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
-        putenv_safe(env_str);
+        char *env_str = context.setenv_var_with_driver_id("zetKernelGetProfileInfo", ZEL_NULL_DRIVER_ID);
         context.env_vars.push_back(env_str);
 
         return result;
@@ -1113,8 +1079,7 @@ namespace driver
 
         }
         
-        char *env_str = strdup_safe((std::string("zetTracerExpCreate=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
-        putenv_safe(env_str);
+        char *env_str = context.setenv_var_with_driver_id("zetTracerExpCreate", ZEL_NULL_DRIVER_ID);
         context.env_vars.push_back(env_str);
 
         return result;
@@ -1141,8 +1106,7 @@ namespace driver
 
         }
         
-        char *env_str = strdup_safe((std::string("zetTracerExpDestroy=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
-        putenv_safe(env_str);
+        char *env_str = context.setenv_var_with_driver_id("zetTracerExpDestroy", ZEL_NULL_DRIVER_ID);
         context.env_vars.push_back(env_str);
 
         return result;
@@ -1169,8 +1133,7 @@ namespace driver
             // generic implementation
         }
         
-        char *env_str = strdup_safe((std::string("zetTracerExpSetPrologues=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
-        putenv_safe(env_str);
+        char *env_str = context.setenv_var_with_driver_id("zetTracerExpSetPrologues", ZEL_NULL_DRIVER_ID);
         context.env_vars.push_back(env_str);
 
         return result;
@@ -1197,8 +1160,7 @@ namespace driver
             // generic implementation
         }
         
-        char *env_str = strdup_safe((std::string("zetTracerExpSetEpilogues=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
-        putenv_safe(env_str);
+        char *env_str = context.setenv_var_with_driver_id("zetTracerExpSetEpilogues", ZEL_NULL_DRIVER_ID);
         context.env_vars.push_back(env_str);
 
         return result;
@@ -1225,8 +1187,7 @@ namespace driver
             // generic implementation
         }
         
-        char *env_str = strdup_safe((std::string("zetTracerExpSetEnabled=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
-        putenv_safe(env_str);
+        char *env_str = context.setenv_var_with_driver_id("zetTracerExpSetEnabled", ZEL_NULL_DRIVER_ID);
         context.env_vars.push_back(env_str);
 
         return result;
@@ -1260,8 +1221,7 @@ namespace driver
             // generic implementation
         }
         
-        char *env_str = strdup_safe((std::string("zetDeviceGetConcurrentMetricGroupsExp=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
-        putenv_safe(env_str);
+        char *env_str = context.setenv_var_with_driver_id("zetDeviceGetConcurrentMetricGroupsExp", ZEL_NULL_DRIVER_ID);
         context.env_vars.push_back(env_str);
 
         return result;
@@ -1298,8 +1258,7 @@ namespace driver
 
         }
         
-        char *env_str = strdup_safe((std::string("zetMetricTracerCreateExp=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
-        putenv_safe(env_str);
+        char *env_str = context.setenv_var_with_driver_id("zetMetricTracerCreateExp", ZEL_NULL_DRIVER_ID);
         context.env_vars.push_back(env_str);
 
         return result;
@@ -1325,8 +1284,7 @@ namespace driver
             // generic implementation
         }
         
-        char *env_str = strdup_safe((std::string("zetMetricTracerDestroyExp=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
-        putenv_safe(env_str);
+        char *env_str = context.setenv_var_with_driver_id("zetMetricTracerDestroyExp", ZEL_NULL_DRIVER_ID);
         context.env_vars.push_back(env_str);
 
         return result;
@@ -1357,8 +1315,7 @@ namespace driver
             // generic implementation
         }
         
-        char *env_str = strdup_safe((std::string("zetMetricTracerEnableExp=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
-        putenv_safe(env_str);
+        char *env_str = context.setenv_var_with_driver_id("zetMetricTracerEnableExp", ZEL_NULL_DRIVER_ID);
         context.env_vars.push_back(env_str);
 
         return result;
@@ -1390,8 +1347,7 @@ namespace driver
             // generic implementation
         }
         
-        char *env_str = strdup_safe((std::string("zetMetricTracerDisableExp=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
-        putenv_safe(env_str);
+        char *env_str = context.setenv_var_with_driver_id("zetMetricTracerDisableExp", ZEL_NULL_DRIVER_ID);
         context.env_vars.push_back(env_str);
 
         return result;
@@ -1426,8 +1382,7 @@ namespace driver
             // generic implementation
         }
         
-        char *env_str = strdup_safe((std::string("zetMetricTracerReadDataExp=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
-        putenv_safe(env_str);
+        char *env_str = context.setenv_var_with_driver_id("zetMetricTracerReadDataExp", ZEL_NULL_DRIVER_ID);
         context.env_vars.push_back(env_str);
 
         return result;
@@ -1456,8 +1411,7 @@ namespace driver
 
         }
         
-        char *env_str = strdup_safe((std::string("zetMetricDecoderCreateExp=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
-        putenv_safe(env_str);
+        char *env_str = context.setenv_var_with_driver_id("zetMetricDecoderCreateExp", ZEL_NULL_DRIVER_ID);
         context.env_vars.push_back(env_str);
 
         return result;
@@ -1483,8 +1437,7 @@ namespace driver
             // generic implementation
         }
         
-        char *env_str = strdup_safe((std::string("zetMetricDecoderDestroyExp=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
-        putenv_safe(env_str);
+        char *env_str = context.setenv_var_with_driver_id("zetMetricDecoderDestroyExp", ZEL_NULL_DRIVER_ID);
         context.env_vars.push_back(env_str);
 
         return result;
@@ -1524,8 +1477,7 @@ namespace driver
 
         }
         
-        char *env_str = strdup_safe((std::string("zetMetricDecoderGetDecodableMetricsExp=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
-        putenv_safe(env_str);
+        char *env_str = context.setenv_var_with_driver_id("zetMetricDecoderGetDecodableMetricsExp", ZEL_NULL_DRIVER_ID);
         context.env_vars.push_back(env_str);
 
         return result;
@@ -1590,8 +1542,7 @@ namespace driver
             // generic implementation
         }
         
-        char *env_str = strdup_safe((std::string("zetMetricTracerDecodeExp=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
-        putenv_safe(env_str);
+        char *env_str = context.setenv_var_with_driver_id("zetMetricTracerDecodeExp", ZEL_NULL_DRIVER_ID);
         context.env_vars.push_back(env_str);
 
         return result;
@@ -1621,8 +1572,7 @@ namespace driver
             // generic implementation
         }
         
-        char *env_str = strdup_safe((std::string("zetCommandListAppendMarkerExp=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
-        putenv_safe(env_str);
+        char *env_str = context.setenv_var_with_driver_id("zetCommandListAppendMarkerExp", ZEL_NULL_DRIVER_ID);
         context.env_vars.push_back(env_str);
 
         return result;
@@ -1648,8 +1598,7 @@ namespace driver
             // generic implementation
         }
         
-        char *env_str = strdup_safe((std::string("zetDeviceEnableMetricsExp=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
-        putenv_safe(env_str);
+        char *env_str = context.setenv_var_with_driver_id("zetDeviceEnableMetricsExp", ZEL_NULL_DRIVER_ID);
         context.env_vars.push_back(env_str);
 
         return result;
@@ -1675,8 +1624,7 @@ namespace driver
             // generic implementation
         }
         
-        char *env_str = strdup_safe((std::string("zetDeviceDisableMetricsExp=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
-        putenv_safe(env_str);
+        char *env_str = context.setenv_var_with_driver_id("zetDeviceDisableMetricsExp", ZEL_NULL_DRIVER_ID);
         context.env_vars.push_back(env_str);
 
         return result;
@@ -1724,8 +1672,7 @@ namespace driver
             // generic implementation
         }
         
-        char *env_str = strdup_safe((std::string("zetMetricGroupCalculateMultipleMetricValuesExp=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
-        putenv_safe(env_str);
+        char *env_str = context.setenv_var_with_driver_id("zetMetricGroupCalculateMultipleMetricValuesExp", ZEL_NULL_DRIVER_ID);
         context.env_vars.push_back(env_str);
 
         return result;
@@ -1754,8 +1701,7 @@ namespace driver
             // generic implementation
         }
         
-        char *env_str = strdup_safe((std::string("zetMetricGroupGetGlobalTimestampsExp=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
-        putenv_safe(env_str);
+        char *env_str = context.setenv_var_with_driver_id("zetMetricGroupGetGlobalTimestampsExp", ZEL_NULL_DRIVER_ID);
         context.env_vars.push_back(env_str);
 
         return result;
@@ -1789,8 +1735,7 @@ namespace driver
             // generic implementation
         }
         
-        char *env_str = strdup_safe((std::string("zetMetricGroupGetExportDataExp=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
-        putenv_safe(env_str);
+        char *env_str = context.setenv_var_with_driver_id("zetMetricGroupGetExportDataExp", ZEL_NULL_DRIVER_ID);
         context.env_vars.push_back(env_str);
 
         return result;
@@ -1839,8 +1784,7 @@ namespace driver
             // generic implementation
         }
         
-        char *env_str = strdup_safe((std::string("zetMetricGroupCalculateMetricExportDataExp=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
-        putenv_safe(env_str);
+        char *env_str = context.setenv_var_with_driver_id("zetMetricGroupCalculateMetricExportDataExp", ZEL_NULL_DRIVER_ID);
         context.env_vars.push_back(env_str);
 
         return result;
@@ -1878,8 +1822,7 @@ namespace driver
 
         }
         
-        char *env_str = strdup_safe((std::string("zetMetricProgrammableGetExp=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
-        putenv_safe(env_str);
+        char *env_str = context.setenv_var_with_driver_id("zetMetricProgrammableGetExp", ZEL_NULL_DRIVER_ID);
         context.env_vars.push_back(env_str);
 
         return result;
@@ -1906,8 +1849,7 @@ namespace driver
             // generic implementation
         }
         
-        char *env_str = strdup_safe((std::string("zetMetricProgrammableGetPropertiesExp=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
-        putenv_safe(env_str);
+        char *env_str = context.setenv_var_with_driver_id("zetMetricProgrammableGetPropertiesExp", ZEL_NULL_DRIVER_ID);
         context.env_vars.push_back(env_str);
 
         return result;
@@ -1941,8 +1883,7 @@ namespace driver
             // generic implementation
         }
         
-        char *env_str = strdup_safe((std::string("zetMetricProgrammableGetParamInfoExp=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
-        putenv_safe(env_str);
+        char *env_str = context.setenv_var_with_driver_id("zetMetricProgrammableGetParamInfoExp", ZEL_NULL_DRIVER_ID);
         context.env_vars.push_back(env_str);
 
         return result;
@@ -1977,8 +1918,7 @@ namespace driver
             // generic implementation
         }
         
-        char *env_str = strdup_safe((std::string("zetMetricProgrammableGetParamValueInfoExp=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
-        putenv_safe(env_str);
+        char *env_str = context.setenv_var_with_driver_id("zetMetricProgrammableGetParamValueInfoExp", ZEL_NULL_DRIVER_ID);
         context.env_vars.push_back(env_str);
 
         return result;
@@ -2023,8 +1963,7 @@ namespace driver
 
         }
         
-        char *env_str = strdup_safe((std::string("zetMetricCreateFromProgrammableExp2=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
-        putenv_safe(env_str);
+        char *env_str = context.setenv_var_with_driver_id("zetMetricCreateFromProgrammableExp2", ZEL_NULL_DRIVER_ID);
         context.env_vars.push_back(env_str);
 
         return result;
@@ -2069,8 +2008,7 @@ namespace driver
 
         }
         
-        char *env_str = strdup_safe((std::string("zetMetricCreateFromProgrammableExp=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
-        putenv_safe(env_str);
+        char *env_str = context.setenv_var_with_driver_id("zetMetricCreateFromProgrammableExp", ZEL_NULL_DRIVER_ID);
         context.env_vars.push_back(env_str);
 
         return result;
@@ -2118,8 +2056,7 @@ namespace driver
 
         }
         
-        char *env_str = strdup_safe((std::string("zetDeviceCreateMetricGroupsFromMetricsExp=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
-        putenv_safe(env_str);
+        char *env_str = context.setenv_var_with_driver_id("zetDeviceCreateMetricGroupsFromMetricsExp", ZEL_NULL_DRIVER_ID);
         context.env_vars.push_back(env_str);
 
         return result;
@@ -2154,8 +2091,7 @@ namespace driver
 
         }
         
-        char *env_str = strdup_safe((std::string("zetMetricGroupCreateExp=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
-        putenv_safe(env_str);
+        char *env_str = context.setenv_var_with_driver_id("zetMetricGroupCreateExp", ZEL_NULL_DRIVER_ID);
         context.env_vars.push_back(env_str);
 
         return result;
@@ -2189,8 +2125,7 @@ namespace driver
             // generic implementation
         }
         
-        char *env_str = strdup_safe((std::string("zetMetricGroupAddMetricExp=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
-        putenv_safe(env_str);
+        char *env_str = context.setenv_var_with_driver_id("zetMetricGroupAddMetricExp", ZEL_NULL_DRIVER_ID);
         context.env_vars.push_back(env_str);
 
         return result;
@@ -2217,8 +2152,7 @@ namespace driver
             // generic implementation
         }
         
-        char *env_str = strdup_safe((std::string("zetMetricGroupRemoveMetricExp=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
-        putenv_safe(env_str);
+        char *env_str = context.setenv_var_with_driver_id("zetMetricGroupRemoveMetricExp", ZEL_NULL_DRIVER_ID);
         context.env_vars.push_back(env_str);
 
         return result;
@@ -2244,8 +2178,7 @@ namespace driver
             // generic implementation
         }
         
-        char *env_str = strdup_safe((std::string("zetMetricGroupCloseExp=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
-        putenv_safe(env_str);
+        char *env_str = context.setenv_var_with_driver_id("zetMetricGroupCloseExp", ZEL_NULL_DRIVER_ID);
         context.env_vars.push_back(env_str);
 
         return result;
@@ -2271,8 +2204,7 @@ namespace driver
             // generic implementation
         }
         
-        char *env_str = strdup_safe((std::string("zetMetricGroupDestroyExp=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
-        putenv_safe(env_str);
+        char *env_str = context.setenv_var_with_driver_id("zetMetricGroupDestroyExp", ZEL_NULL_DRIVER_ID);
         context.env_vars.push_back(env_str);
 
         return result;
@@ -2298,8 +2230,7 @@ namespace driver
             // generic implementation
         }
         
-        char *env_str = strdup_safe((std::string("zetMetricDestroyExp=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
-        putenv_safe(env_str);
+        char *env_str = context.setenv_var_with_driver_id("zetMetricDestroyExp", ZEL_NULL_DRIVER_ID);
         context.env_vars.push_back(env_str);
 
         return result;
