@@ -639,7 +639,7 @@ namespace driver
 
         for (const auto &env_var : env_vars)
         {
-            delete env_var;
+            free(env_var);
         }
     }
 } // namespace driver
