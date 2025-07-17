@@ -18,6 +18,7 @@
     #include <io.h>
     #include <cstdio>
     #include <fcntl.h>
+    #include <windows.h>
     #define putenv_safe _putenv
 #else
     #include <cstdlib>
