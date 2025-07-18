@@ -150,6 +150,10 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = strdup_safe((std::string("zeDriverGetApiVersion=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -174,6 +178,10 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = strdup_safe((std::string("zeDriverGetProperties=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -198,6 +206,10 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = strdup_safe((std::string("zeDriverGetIpcProperties=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -231,6 +243,10 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = strdup_safe((std::string("zeDriverGetExtensionProperties=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -256,6 +272,10 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = strdup_safe((std::string("zeDriverGetExtensionFunctionAddress=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -281,6 +301,10 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = strdup_safe((std::string("zeDriverGetLastErrorDescription=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -315,6 +339,10 @@ namespace driver
                 phDevices[ i ] = reinterpret_cast<ze_device_handle_t>( context.get() );
 
         }
+        
+        char *env_str = strdup_safe((std::string("zeDeviceGet=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -341,6 +369,10 @@ namespace driver
             *phRootDevice = reinterpret_cast<ze_device_handle_t>( context.get() );
 
         }
+        
+        char *env_str = strdup_safe((std::string("zeDeviceGetRootDevice=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -375,6 +407,10 @@ namespace driver
                 phSubdevices[ i ] = reinterpret_cast<ze_device_handle_t>( context.get() );
 
         }
+        
+        char *env_str = strdup_safe((std::string("zeDeviceGetSubDevices=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -399,6 +435,10 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = strdup_safe((std::string("zeDeviceGetProperties=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -423,6 +463,10 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = strdup_safe((std::string("zeDeviceGetComputeProperties=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -447,6 +491,10 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = strdup_safe((std::string("zeDeviceGetModuleProperties=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -481,6 +529,10 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = strdup_safe((std::string("zeDeviceGetCommandQueueGroupProperties=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -514,6 +566,10 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = strdup_safe((std::string("zeDeviceGetMemoryProperties=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -538,6 +594,10 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = strdup_safe((std::string("zeDeviceGetMemoryAccessProperties=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -570,6 +630,10 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = strdup_safe((std::string("zeDeviceGetCacheProperties=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -594,6 +658,10 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = strdup_safe((std::string("zeDeviceGetImageProperties=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -618,6 +686,10 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = strdup_safe((std::string("zeDeviceGetExternalMemoryProperties=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -643,6 +715,10 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = strdup_safe((std::string("zeDeviceGetP2PProperties=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -668,6 +744,10 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = strdup_safe((std::string("zeDeviceCanAccessPeer=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -691,6 +771,10 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = strdup_safe((std::string("zeDeviceGetStatus=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -718,6 +802,10 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = strdup_safe((std::string("zeDeviceGetGlobalTimestamps=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -745,6 +833,10 @@ namespace driver
             *phContext = reinterpret_cast<ze_context_handle_t>( context.get() );
 
         }
+        
+        char *env_str = strdup_safe((std::string("zeContextCreate=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -782,6 +874,10 @@ namespace driver
             *phContext = reinterpret_cast<ze_context_handle_t>( context.get() );
 
         }
+        
+        char *env_str = strdup_safe((std::string("zeContextCreateEx=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -806,6 +902,10 @@ namespace driver
             // generic implementation
 
         }
+        
+        char *env_str = strdup_safe((std::string("zeContextDestroy=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -829,6 +929,10 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = strdup_safe((std::string("zeContextGetStatus=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -857,6 +961,10 @@ namespace driver
             *phCommandQueue = reinterpret_cast<ze_command_queue_handle_t>( context.get() );
 
         }
+        
+        char *env_str = strdup_safe((std::string("zeCommandQueueCreate=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -881,6 +989,10 @@ namespace driver
             // generic implementation
 
         }
+        
+        char *env_str = strdup_safe((std::string("zeCommandQueueDestroy=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -908,6 +1020,10 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = strdup_safe((std::string("zeCommandQueueExecuteCommandLists=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -938,6 +1054,10 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = strdup_safe((std::string("zeCommandQueueSynchronize=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -962,6 +1082,10 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = strdup_safe((std::string("zeCommandQueueGetOrdinal=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -986,6 +1110,10 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = strdup_safe((std::string("zeCommandQueueGetIndex=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -1014,6 +1142,10 @@ namespace driver
             *phCommandList = reinterpret_cast<ze_command_list_handle_t>( context.get() );
 
         }
+        
+        char *env_str = strdup_safe((std::string("zeCommandListCreate=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -1042,6 +1174,10 @@ namespace driver
             *phCommandList = reinterpret_cast<ze_command_list_handle_t>( context.get() );
 
         }
+        
+        char *env_str = strdup_safe((std::string("zeCommandListCreateImmediate=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -1066,6 +1202,10 @@ namespace driver
             // generic implementation
 
         }
+        
+        char *env_str = strdup_safe((std::string("zeCommandListDestroy=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -1089,6 +1229,10 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = strdup_safe((std::string("zeCommandListClose=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -1112,6 +1256,10 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = strdup_safe((std::string("zeCommandListReset=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -1142,6 +1290,10 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = strdup_safe((std::string("zeCommandListAppendWriteGlobalTimestamp=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -1172,6 +1324,10 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = strdup_safe((std::string("zeCommandListHostSynchronize=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -1198,6 +1354,10 @@ namespace driver
             *phDevice = reinterpret_cast<ze_device_handle_t>( context.get() );
 
         }
+        
+        char *env_str = strdup_safe((std::string("zeCommandListGetDeviceHandle=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -1224,6 +1384,10 @@ namespace driver
             *phContext = reinterpret_cast<ze_context_handle_t>( context.get() );
 
         }
+        
+        char *env_str = strdup_safe((std::string("zeCommandListGetContextHandle=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -1248,6 +1412,10 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = strdup_safe((std::string("zeCommandListGetOrdinal=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -1273,6 +1441,10 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = strdup_safe((std::string("zeCommandListImmediateGetIndex=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -1298,6 +1470,10 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = strdup_safe((std::string("zeCommandListIsImmediate=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -1326,6 +1502,10 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = strdup_safe((std::string("zeCommandListAppendBarrier=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -1357,6 +1537,10 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = strdup_safe((std::string("zeCommandListAppendMemoryRangesBarrier=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -1381,6 +1565,10 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = strdup_safe((std::string("zeContextSystemBarrier=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -1412,6 +1600,10 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = strdup_safe((std::string("zeCommandListAppendMemoryCopy=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -1444,6 +1636,10 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = strdup_safe((std::string("zeCommandListAppendMemoryFill=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -1484,6 +1680,10 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = strdup_safe((std::string("zeCommandListAppendMemoryCopyRegion=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -1516,6 +1716,10 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = strdup_safe((std::string("zeCommandListAppendMemoryCopyFromContext=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -1546,6 +1750,10 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = strdup_safe((std::string("zeCommandListAppendImageCopy=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -1578,6 +1786,10 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = strdup_safe((std::string("zeCommandListAppendImageCopyRegion=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -1609,6 +1821,10 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = strdup_safe((std::string("zeCommandListAppendImageCopyToMemory=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -1640,6 +1856,10 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = strdup_safe((std::string("zeCommandListAppendImageCopyFromMemory=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -1665,6 +1885,10 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = strdup_safe((std::string("zeCommandListAppendMemoryPrefetch=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -1692,6 +1916,10 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = strdup_safe((std::string("zeCommandListAppendMemAdvise=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -1725,6 +1953,10 @@ namespace driver
             *phEventPool = reinterpret_cast<ze_event_pool_handle_t>( context.get() );
 
         }
+        
+        char *env_str = strdup_safe((std::string("zeEventPoolCreate=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -1749,6 +1981,10 @@ namespace driver
             // generic implementation
 
         }
+        
+        char *env_str = strdup_safe((std::string("zeEventPoolDestroy=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -1776,6 +2012,10 @@ namespace driver
             *phEvent = reinterpret_cast<ze_event_handle_t>( context.get() );
 
         }
+        
+        char *env_str = strdup_safe((std::string("zeEventCreate=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -1800,6 +2040,10 @@ namespace driver
             // generic implementation
 
         }
+        
+        char *env_str = strdup_safe((std::string("zeEventDestroy=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -1824,6 +2068,10 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = strdup_safe((std::string("zeEventPoolGetIpcHandle=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -1849,6 +2097,10 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = strdup_safe((std::string("zeEventPoolPutIpcHandle=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -1877,6 +2129,10 @@ namespace driver
             *phEventPool = reinterpret_cast<ze_event_pool_handle_t>( context.get() );
 
         }
+        
+        char *env_str = strdup_safe((std::string("zeEventPoolOpenIpcHandle=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -1901,6 +2157,10 @@ namespace driver
             // generic implementation
 
         }
+        
+        char *env_str = strdup_safe((std::string("zeEventPoolCloseIpcHandle=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -1925,6 +2185,10 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = strdup_safe((std::string("zeCommandListAppendSignalEvent=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -1951,6 +2215,10 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = strdup_safe((std::string("zeCommandListAppendWaitOnEvents=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -1974,6 +2242,10 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = strdup_safe((std::string("zeEventHostSignal=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -2004,6 +2276,10 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = strdup_safe((std::string("zeEventHostSynchronize=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -2027,6 +2303,10 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = strdup_safe((std::string("zeEventQueryStatus=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -2051,6 +2331,10 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = strdup_safe((std::string("zeCommandListAppendEventReset=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -2074,6 +2358,10 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = strdup_safe((std::string("zeEventHostReset=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -2098,6 +2386,10 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = strdup_safe((std::string("zeEventQueryKernelTimestamp=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -2133,6 +2425,10 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = strdup_safe((std::string("zeCommandListAppendQueryKernelTimestamps=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -2159,6 +2455,10 @@ namespace driver
             *phEventPool = reinterpret_cast<ze_event_pool_handle_t>( context.get() );
 
         }
+        
+        char *env_str = strdup_safe((std::string("zeEventGetEventPool=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -2185,6 +2485,10 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = strdup_safe((std::string("zeEventGetSignalScope=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -2211,6 +2515,10 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = strdup_safe((std::string("zeEventGetWaitScope=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -2237,6 +2545,10 @@ namespace driver
             *phContext = reinterpret_cast<ze_context_handle_t>( context.get() );
 
         }
+        
+        char *env_str = strdup_safe((std::string("zeEventPoolGetContextHandle=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -2262,6 +2574,10 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = strdup_safe((std::string("zeEventPoolGetFlags=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -2289,6 +2605,10 @@ namespace driver
             *phFence = reinterpret_cast<ze_fence_handle_t>( context.get() );
 
         }
+        
+        char *env_str = strdup_safe((std::string("zeFenceCreate=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -2313,6 +2633,10 @@ namespace driver
             // generic implementation
 
         }
+        
+        char *env_str = strdup_safe((std::string("zeFenceDestroy=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -2343,6 +2667,10 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = strdup_safe((std::string("zeFenceHostSynchronize=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -2366,6 +2694,10 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = strdup_safe((std::string("zeFenceQueryStatus=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -2389,6 +2721,10 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = strdup_safe((std::string("zeFenceReset=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -2414,6 +2750,10 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = strdup_safe((std::string("zeImageGetProperties=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -2442,6 +2782,10 @@ namespace driver
             *phImage = reinterpret_cast<ze_image_handle_t>( context.get() );
 
         }
+        
+        char *env_str = strdup_safe((std::string("zeImageCreate=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -2466,6 +2810,10 @@ namespace driver
             // generic implementation
 
         }
+        
+        char *env_str = strdup_safe((std::string("zeImageDestroy=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -2497,6 +2845,10 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = strdup_safe((std::string("zeMemAllocShared=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -2527,6 +2879,10 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = strdup_safe((std::string("zeMemAllocDevice=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -2556,6 +2912,10 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = strdup_safe((std::string("zeMemAllocHost=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -2580,6 +2940,10 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = strdup_safe((std::string("zeMemFree=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -2608,6 +2972,10 @@ namespace driver
             if( nullptr != phDevice ) *phDevice = reinterpret_cast<ze_device_handle_t>( context.get() );
 
         }
+        
+        char *env_str = strdup_safe((std::string("zeMemGetAllocProperties=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -2634,6 +3002,10 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = strdup_safe((std::string("zeMemGetAddressRange=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -2659,6 +3031,10 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = strdup_safe((std::string("zeMemGetIpcHandle=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -2684,6 +3060,10 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = strdup_safe((std::string("zeMemGetIpcHandleFromFileDescriptorExp=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -2709,6 +3089,10 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = strdup_safe((std::string("zeMemGetFileDescriptorFromIpcHandleExp=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -2733,6 +3117,10 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = strdup_safe((std::string("zeMemPutIpcHandle=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -2761,6 +3149,10 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = strdup_safe((std::string("zeMemOpenIpcHandle=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -2785,6 +3177,10 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = strdup_safe((std::string("zeMemCloseIpcHandle=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -2813,6 +3209,10 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = strdup_safe((std::string("zeMemSetAtomicAccessAttributeExp=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -2840,6 +3240,10 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = strdup_safe((std::string("zeMemGetAtomicAccessAttributeExp=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -2871,6 +3275,10 @@ namespace driver
             if( nullptr != phBuildLog ) *phBuildLog = reinterpret_cast<ze_module_build_log_handle_t>( context.get() );
 
         }
+        
+        char *env_str = strdup_safe((std::string("zeModuleCreate=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -2895,6 +3303,10 @@ namespace driver
             // generic implementation
 
         }
+        
+        char *env_str = strdup_safe((std::string("zeModuleDestroy=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -2923,6 +3335,10 @@ namespace driver
             if( nullptr != phLinkLog ) *phLinkLog = reinterpret_cast<ze_module_build_log_handle_t>( context.get() );
 
         }
+        
+        char *env_str = strdup_safe((std::string("zeModuleDynamicLink=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -2947,6 +3363,10 @@ namespace driver
             // generic implementation
 
         }
+        
+        char *env_str = strdup_safe((std::string("zeModuleBuildLogDestroy=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -2972,6 +3392,10 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = strdup_safe((std::string("zeModuleBuildLogGetString=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -2997,6 +3421,10 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = strdup_safe((std::string("zeModuleGetNativeBinary=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -3023,6 +3451,10 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = strdup_safe((std::string("zeModuleGetGlobalPointer=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -3054,6 +3486,10 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = strdup_safe((std::string("zeModuleGetKernelNames=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -3078,6 +3514,10 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = strdup_safe((std::string("zeModuleGetProperties=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -3105,6 +3545,10 @@ namespace driver
             *phKernel = reinterpret_cast<ze_kernel_handle_t>( context.get() );
 
         }
+        
+        char *env_str = strdup_safe((std::string("zeKernelCreate=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -3129,6 +3573,10 @@ namespace driver
             // generic implementation
 
         }
+        
+        char *env_str = strdup_safe((std::string("zeKernelDestroy=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -3154,6 +3602,10 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = strdup_safe((std::string("zeModuleGetFunctionPointer=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -3180,6 +3632,10 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = strdup_safe((std::string("zeKernelSetGroupSize=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -3209,6 +3665,10 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = strdup_safe((std::string("zeKernelSuggestGroupSize=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -3233,6 +3693,10 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = strdup_safe((std::string("zeKernelSuggestMaxCooperativeGroupCount=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -3260,6 +3724,10 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = strdup_safe((std::string("zeKernelSetArgumentValue=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -3284,6 +3752,10 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = strdup_safe((std::string("zeKernelSetIndirectAccess=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -3308,6 +3780,10 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = strdup_safe((std::string("zeKernelGetIndirectAccess=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -3344,6 +3820,10 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = strdup_safe((std::string("zeKernelGetSourceAttributes=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -3369,6 +3849,10 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = strdup_safe((std::string("zeKernelSetCacheConfig=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -3393,6 +3877,10 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = strdup_safe((std::string("zeKernelGetProperties=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -3419,6 +3907,10 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = strdup_safe((std::string("zeKernelGetName=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -3449,6 +3941,10 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = strdup_safe((std::string("zeCommandListAppendLaunchKernel=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -3479,6 +3975,10 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = strdup_safe((std::string("zeCommandListAppendLaunchCooperativeKernel=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -3510,6 +4010,10 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = strdup_safe((std::string("zeCommandListAppendLaunchKernelIndirect=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -3545,6 +4049,10 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = strdup_safe((std::string("zeCommandListAppendLaunchMultipleKernelsIndirect=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -3571,6 +4079,10 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = strdup_safe((std::string("zeContextMakeMemoryResident=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -3597,6 +4109,10 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = strdup_safe((std::string("zeContextEvictMemory=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -3622,6 +4138,10 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = strdup_safe((std::string("zeContextMakeImageResident=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -3647,6 +4167,10 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = strdup_safe((std::string("zeContextEvictImage=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -3675,6 +4199,10 @@ namespace driver
             *phSampler = reinterpret_cast<ze_sampler_handle_t>( context.get() );
 
         }
+        
+        char *env_str = strdup_safe((std::string("zeSamplerCreate=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -3699,6 +4227,10 @@ namespace driver
             // generic implementation
 
         }
+        
+        char *env_str = strdup_safe((std::string("zeSamplerDestroy=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -3726,6 +4258,10 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = strdup_safe((std::string("zeVirtualMemReserve=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -3751,6 +4287,10 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = strdup_safe((std::string("zeVirtualMemFree=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -3778,6 +4318,10 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = strdup_safe((std::string("zeVirtualMemQueryPageSize=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -3807,6 +4351,10 @@ namespace driver
             *phPhysicalMemory = reinterpret_cast<ze_physical_mem_handle_t>( context.get() );
 
         }
+        
+        char *env_str = strdup_safe((std::string("zePhysicalMemCreate=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -3832,6 +4380,10 @@ namespace driver
             // generic implementation
 
         }
+        
+        char *env_str = strdup_safe((std::string("zePhysicalMemDestroy=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -3863,6 +4415,10 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = strdup_safe((std::string("zeVirtualMemMap=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -3888,6 +4444,10 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = strdup_safe((std::string("zeVirtualMemUnmap=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -3915,6 +4475,10 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = strdup_safe((std::string("zeVirtualMemSetAccessAttribute=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -3943,6 +4507,10 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = strdup_safe((std::string("zeVirtualMemGetAccessAttribute=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -3969,6 +4537,10 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = strdup_safe((std::string("zeKernelSetGlobalOffsetExp=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -3994,6 +4566,10 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = strdup_safe((std::string("zeKernelGetBinaryExp=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -4021,6 +4597,10 @@ namespace driver
             *phSemaphore = reinterpret_cast<ze_external_semaphore_ext_handle_t>( context.get() );
 
         }
+        
+        char *env_str = strdup_safe((std::string("zeDeviceImportExternalSemaphoreExt=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -4044,6 +4624,10 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = strdup_safe((std::string("zeDeviceReleaseExternalSemaphoreExt=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -4076,6 +4660,10 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = strdup_safe((std::string("zeCommandListAppendSignalExternalSemaphoreExt=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -4108,6 +4696,10 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = strdup_safe((std::string("zeCommandListAppendWaitExternalSemaphoreExt=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -4135,6 +4727,10 @@ namespace driver
             *phBuilder = reinterpret_cast<ze_rtas_builder_ext_handle_t>( context.get() );
 
         }
+        
+        char *env_str = strdup_safe((std::string("zeRTASBuilderCreateExt=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -4160,6 +4756,10 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = strdup_safe((std::string("zeRTASBuilderGetBuildPropertiesExt=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -4185,6 +4785,10 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = strdup_safe((std::string("zeDriverRTASFormatCompatibilityCheckExt=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -4220,6 +4824,10 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = strdup_safe((std::string("zeRTASBuilderBuildExt=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -4253,6 +4861,10 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = strdup_safe((std::string("zeRTASBuilderCommandListAppendCopyExt=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -4277,6 +4889,10 @@ namespace driver
             // generic implementation
 
         }
+        
+        char *env_str = strdup_safe((std::string("zeRTASBuilderDestroyExt=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -4303,6 +4919,10 @@ namespace driver
             *phParallelOperation = reinterpret_cast<ze_rtas_parallel_operation_ext_handle_t>( context.get() );
 
         }
+        
+        char *env_str = strdup_safe((std::string("zeRTASParallelOperationCreateExt=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -4327,6 +4947,10 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = strdup_safe((std::string("zeRTASParallelOperationGetPropertiesExt=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -4350,6 +4974,10 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = strdup_safe((std::string("zeRTASParallelOperationJoinExt=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -4374,6 +5002,10 @@ namespace driver
             // generic implementation
 
         }
+        
+        char *env_str = strdup_safe((std::string("zeRTASParallelOperationDestroyExt=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -4406,6 +5038,10 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = strdup_safe((std::string("zeDeviceGetVectorWidthPropertiesExt=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -4434,6 +5070,10 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = strdup_safe((std::string("zeDeviceReserveCacheExt=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -4460,6 +5100,10 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = strdup_safe((std::string("zeDeviceSetCacheAdviceExt=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -4492,6 +5136,10 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = strdup_safe((std::string("zeEventQueryTimestampsExp=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -4516,6 +5164,10 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = strdup_safe((std::string("zeImageGetMemoryPropertiesExp=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -4545,6 +5197,10 @@ namespace driver
             *phImageView = reinterpret_cast<ze_image_handle_t>( context.get() );
 
         }
+        
+        char *env_str = strdup_safe((std::string("zeImageViewCreateExt=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -4574,6 +5230,10 @@ namespace driver
             *phImageView = reinterpret_cast<ze_image_handle_t>( context.get() );
 
         }
+        
+        char *env_str = strdup_safe((std::string("zeImageViewCreateExp=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -4598,6 +5258,10 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = strdup_safe((std::string("zeKernelSchedulingHintExp=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -4622,6 +5286,10 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = strdup_safe((std::string("zeDevicePciGetPropertiesExt=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -4657,6 +5325,10 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = strdup_safe((std::string("zeCommandListAppendImageCopyToMemoryExt=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -4692,6 +5364,10 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = strdup_safe((std::string("zeCommandListAppendImageCopyFromMemoryExt=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -4717,6 +5393,10 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = strdup_safe((std::string("zeImageGetAllocPropertiesExt=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -4747,6 +5427,10 @@ namespace driver
             *phLog = reinterpret_cast<ze_module_build_log_handle_t>( context.get() );
 
         }
+        
+        char *env_str = strdup_safe((std::string("zeModuleInspectLinkageExt=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -4772,6 +5456,10 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = strdup_safe((std::string("zeMemFreeExt=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -4807,6 +5495,10 @@ namespace driver
                 phVertices[ i ] = reinterpret_cast<ze_fabric_vertex_handle_t>( context.get() );
 
         }
+        
+        char *env_str = strdup_safe((std::string("zeFabricVertexGetExp=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -4842,6 +5534,10 @@ namespace driver
                 phSubvertices[ i ] = reinterpret_cast<ze_fabric_vertex_handle_t>( context.get() );
 
         }
+        
+        char *env_str = strdup_safe((std::string("zeFabricVertexGetSubVerticesExp=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -4866,6 +5562,10 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = strdup_safe((std::string("zeFabricVertexGetPropertiesExp=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -4892,6 +5592,10 @@ namespace driver
             *phDevice = reinterpret_cast<ze_device_handle_t>( context.get() );
 
         }
+        
+        char *env_str = strdup_safe((std::string("zeFabricVertexGetDeviceExp=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -4918,6 +5622,10 @@ namespace driver
             *phVertex = reinterpret_cast<ze_fabric_vertex_handle_t>( context.get() );
 
         }
+        
+        char *env_str = strdup_safe((std::string("zeDeviceGetFabricVertexExp=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -4954,6 +5662,10 @@ namespace driver
                 phEdges[ i ] = reinterpret_cast<ze_fabric_edge_handle_t>( context.get() );
 
         }
+        
+        char *env_str = strdup_safe((std::string("zeFabricEdgeGetExp=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -4983,6 +5695,10 @@ namespace driver
             *phVertexB = reinterpret_cast<ze_fabric_vertex_handle_t>( context.get() );
 
         }
+        
+        char *env_str = strdup_safe((std::string("zeFabricEdgeGetVerticesExp=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -5007,6 +5723,10 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = strdup_safe((std::string("zeFabricEdgeGetPropertiesExp=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -5046,6 +5766,10 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = strdup_safe((std::string("zeEventQueryKernelTimestampsExt=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -5073,6 +5797,10 @@ namespace driver
             *phBuilder = reinterpret_cast<ze_rtas_builder_exp_handle_t>( context.get() );
 
         }
+        
+        char *env_str = strdup_safe((std::string("zeRTASBuilderCreateExp=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -5098,6 +5826,10 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = strdup_safe((std::string("zeRTASBuilderGetBuildPropertiesExp=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -5123,6 +5855,10 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = strdup_safe((std::string("zeDriverRTASFormatCompatibilityCheckExp=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -5158,6 +5894,10 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = strdup_safe((std::string("zeRTASBuilderBuildExp=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -5182,6 +5922,10 @@ namespace driver
             // generic implementation
 
         }
+        
+        char *env_str = strdup_safe((std::string("zeRTASBuilderDestroyExp=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -5208,6 +5952,10 @@ namespace driver
             *phParallelOperation = reinterpret_cast<ze_rtas_parallel_operation_exp_handle_t>( context.get() );
 
         }
+        
+        char *env_str = strdup_safe((std::string("zeRTASParallelOperationCreateExp=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -5232,6 +5980,10 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = strdup_safe((std::string("zeRTASParallelOperationGetPropertiesExp=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -5255,6 +6007,10 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = strdup_safe((std::string("zeRTASParallelOperationJoinExp=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -5279,6 +6035,10 @@ namespace driver
             // generic implementation
 
         }
+        
+        char *env_str = strdup_safe((std::string("zeRTASParallelOperationDestroyExp=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -5307,6 +6067,10 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = strdup_safe((std::string("zeMemGetPitchFor2dImage=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -5331,6 +6095,10 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = strdup_safe((std::string("zeImageGetDeviceOffsetExp=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -5357,6 +6125,10 @@ namespace driver
             *phClonedCommandList = reinterpret_cast<ze_command_list_handle_t>( context.get() );
 
         }
+        
+        char *env_str = strdup_safe((std::string("zeCommandListCreateCloneExp=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -5391,6 +6163,10 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = strdup_safe((std::string("zeCommandListImmediateAppendCommandListsExp=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -5416,6 +6192,10 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = strdup_safe((std::string("zeCommandListGetNextCommandIdExp=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -5445,6 +6225,10 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = strdup_safe((std::string("zeCommandListGetNextCommandIdWithKernelsExp=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -5470,6 +6254,10 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = strdup_safe((std::string("zeCommandListUpdateMutableCommandsExp=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -5495,6 +6283,10 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = strdup_safe((std::string("zeCommandListUpdateMutableCommandSignalEventExp=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -5522,6 +6314,10 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = strdup_safe((std::string("zeCommandListUpdateMutableCommandWaitEventsExp=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -5549,6 +6345,10 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = strdup_safe((std::string("zeCommandListUpdateMutableCommandKernelsExp=") + std::to_string(ZEL_NULL_DRIVER_ID)).c_str());
+        putenv_safe(env_str);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
