@@ -459,7 +459,9 @@ namespace loader
         loader::loaderZetDdiTable = new zet_dditable_t();
         loader::loaderZesDdiTable = new zes_dditable_t();
         debugTraceEnabled = getenv_tobool( "ZE_ENABLE_LOADER_DEBUG_TRACE" );
-        driverDDIPathDefault = getenv_tobool( "ZE_ENABLE_LOADER_DRIVER_DDI_PATH" );
+        // Set to true if the env is not set
+        std::string ddiPathConfig = getenv_string("ZE_ENABLE_LOADER_DRIVER_DDI_PATH");
+        driverDDIPathDefault = (ddiPathConfig.empty()) ? true : getenv_tobool("ZE_ENABLE_LOADER_DRIVER_DDI_PATH");
         auto discoveredDrivers = discoverEnabledDrivers();
         std::string loadLibraryErrorValue;
 

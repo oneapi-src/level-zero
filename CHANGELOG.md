@@ -1,4 +1,6 @@
 # Level zero loader changelog
+## v1.24.0
+* Enable DDI Driver Extension path by default.
 ## v1.23.1
 * Fix Sysman only DDI Init for zesDriver compatability
 ## v1.23.0
