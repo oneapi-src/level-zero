@@ -26,7 +26,7 @@ namespace validation_layer
             basic_leak_checker.zeValidation = zeChecker;
             basic_leak_checker.zetValidation = zetChecker;
             basic_leak_checker.zesValidation = zesChecker;
-            validation_layer::context.validationHandlers.push_back(&basic_leak_checker);
+            validation_layer::context.getInstance().validationHandlers.push_back(&basic_leak_checker);
         }
     }
 

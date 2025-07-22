@@ -25,7 +25,7 @@ eventsChecker::eventsChecker() {
         events_checker.zesValidation = zesChecker;
         events_checker.zetValidation = zetChecker;
 
-        validation_layer::context.validationHandlers.push_back(&events_checker);
+        validation_layer::context.getInstance().validationHandlers.push_back(&events_checker);
     }
 }
 
