@@ -103,7 +103,13 @@ zelLoaderTranslateHandleInternal(
     switch(handleType){
         case ZEL_HANDLE_DRIVER:
         {
-            bool legacy_ldr_intercept_enabled = (!loader::context->driverDDIPathDefault) ||
+            // Determine if legacy loader interception is enabled or 
+	    // loader object exists for that handle by checking two conditions:
+            // 1. DDI Ext is disabled in loader OR
+            // 2. The input handle's function pointer table matches the loader's dispatch table,
+            //    indicating this handle was created through the loader's intercept layer
+	    
+	    bool legacy_ldr_intercept_enabled = (!loader::context->driverDDIPathDefault) ||
                                                 (reinterpret_cast<ze_handle_t *>(handleIn)->pCore->Driver->pfnGet ==
                                                  loader::loaderDispatch->pCore->Driver->pfnGet);
             if (legacy_ldr_intercept_enabled && loader::context->ze_driver_factory.hasInstance(reinterpret_cast<loader::ze_driver_object_t *>(handleIn)->handle))
