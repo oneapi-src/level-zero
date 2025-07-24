@@ -38,7 +38,7 @@ certificationChecker::certificationChecker() {
     certification_checker.zeValidation = zeChecker;
     certification_checker.zetValidation = zetChecker;
     certification_checker.zesValidation = zesChecker;
-    validation_layer::context.validationHandlers.push_back(
+    validation_layer::context.getInstance().validationHandlers.push_back(
         &certification_checker);
   }
 }
