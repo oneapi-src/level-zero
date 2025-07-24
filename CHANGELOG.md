@@ -1,6 +1,9 @@
 # Level zero loader changelog
 ## v1.24.0
 * Enable DDI Driver Extension path by default.
+## v1.23.2
+* fix: Avoid invalid casting into loader objects when DDI extension is supported
+* Fix potential SIOF issue with checker layers
 ## v1.23.1
 * Fix Sysman only DDI Init for zesDriver compatability
 ## v1.23.0

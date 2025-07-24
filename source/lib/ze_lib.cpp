@@ -397,7 +397,7 @@ namespace ze_lib
                     debug_trace_message(message, to_string(register_teardown_result));
                 } else {
                     loaderTeardownRegistrationEnabled = true;
-                    std::string message = "ze_lib Context Init() zelRegisterTeardownCallback completed for the static loader with";
+                    std::string message = "ze_lib Context Init() zelRegisterTeardownCallback completed for the static loader with ";
                     debug_trace_message(message, to_string(register_teardown_result));
                 }
             }

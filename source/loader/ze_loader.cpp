@@ -459,9 +459,18 @@ namespace loader
         loader::loaderZetDdiTable = new zet_dditable_t();
         loader::loaderZesDdiTable = new zes_dditable_t();
         debugTraceEnabled = getenv_tobool( "ZE_ENABLE_LOADER_DEBUG_TRACE" );
-        // Set to true if the env is not set
+        // DDI Driver Extension Path is enabled by default.
+        // This can be overridden by the environment variable ZE_ENABLE_LOADER_DRIVER_DDI_PATH.
         std::string ddiPathConfig = getenv_string("ZE_ENABLE_LOADER_DRIVER_DDI_PATH");
-        driverDDIPathDefault = (ddiPathConfig.empty()) ? true : getenv_tobool("ZE_ENABLE_LOADER_DRIVER_DDI_PATH");
+        if (ddiPathConfig.empty()) {
+            driverDDIPathDefault = true;
+        } else if (strcmp(ddiPathConfig.c_str(), "1") == 0 || strcmp(ddiPathConfig.c_str(), "true") == 0) {
+            driverDDIPathDefault = true;
+        } else if (strcmp(ddiPathConfig.c_str(), "0") == 0 || strcmp(ddiPathConfig.c_str(), "false") == 0) {
+            driverDDIPathDefault = false;
+        } else {
+            driverDDIPathDefault = true; // fallback to the default for any other value
+        }
         auto discoveredDrivers = discoverEnabledDrivers();
         std::string loadLibraryErrorValue;
 
@@ -488,6 +497,10 @@ namespace loader
 #endif
         if (debugTraceEnabled)
             debug_trace_message("Using Loader Library Path: ", loaderLibraryPath);
+
+        if (debugTraceEnabled && driverDDIPathDefault) {
+            debug_trace_message("DDI Driver Extension Path is Enabled", "");
+        }
 
         // To allow for two different sets of drivers to be in use between sysman and core/tools, we use and store the drivers in two vectors.
         // alldrivers stores all the drivers for cleanup when the library exits.
