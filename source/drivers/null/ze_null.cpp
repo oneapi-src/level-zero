@@ -167,6 +167,17 @@ namespace driver
         };
 
         //////////////////////////////////////////////////////////////////////////
+        zeDdiTable.CommandList.pfnCreateImmediate = [](
+            ze_context_handle_t,
+            ze_device_handle_t,
+            const ze_command_queue_desc_t* desc,
+            ze_command_list_handle_t* phCommandListImmediate )
+        {
+            *phCommandListImmediate = reinterpret_cast<ze_command_list_handle_t>(context.get());
+            return ZE_RESULT_SUCCESS;
+        };
+
+        //////////////////////////////////////////////////////////////////////////
         zeDdiTable.CommandQueue.pfnCreate = [](
             ze_context_handle_t,
             ze_device_handle_t,
