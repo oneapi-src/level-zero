@@ -629,6 +629,27 @@ namespace driver
         pSysman.isValidFlag = 1;
         pSysman.version = ZE_API_VERSION_CURRENT;
     }
+
+    char *context_t::setenv_var_with_driver_id(const std::string &key, uint32_t driverId)
+    {
+        std::string env = key + "=" + std::to_string(driverId);
+        char *env_str = strdup_safe(env.c_str());
+        putenv_safe(env_str);
+        return env_str;
+    }
+
+    context_t::~context_t()
+    {
+        for (auto handle : globalBaseNullHandle)
+        {
+            delete handle;
+        }
+
+        for (const auto &env_var : env_vars)
+        {
+            free(env_var);
+        }
+    }
 } // namespace driver
 
 namespace instrumented

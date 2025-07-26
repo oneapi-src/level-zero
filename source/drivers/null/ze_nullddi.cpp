@@ -150,6 +150,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeDriverGetApiVersion", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -174,6 +177,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeDriverGetProperties", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -198,6 +204,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeDriverGetIpcProperties", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -231,6 +240,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeDriverGetExtensionProperties", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -256,6 +268,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeDriverGetExtensionFunctionAddress", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -281,6 +296,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeDriverGetLastErrorDescription", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -315,6 +333,9 @@ namespace driver
                 phDevices[ i ] = reinterpret_cast<ze_device_handle_t>( context.get() );
 
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeDeviceGet", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -341,6 +362,9 @@ namespace driver
             *phRootDevice = reinterpret_cast<ze_device_handle_t>( context.get() );
 
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeDeviceGetRootDevice", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -375,6 +399,9 @@ namespace driver
                 phSubdevices[ i ] = reinterpret_cast<ze_device_handle_t>( context.get() );
 
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeDeviceGetSubDevices", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -399,6 +426,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeDeviceGetProperties", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -423,6 +453,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeDeviceGetComputeProperties", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -447,6 +480,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeDeviceGetModuleProperties", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -481,6 +517,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeDeviceGetCommandQueueGroupProperties", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -514,6 +553,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeDeviceGetMemoryProperties", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -538,6 +580,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeDeviceGetMemoryAccessProperties", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -570,6 +615,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeDeviceGetCacheProperties", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -594,6 +642,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeDeviceGetImageProperties", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -618,6 +669,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeDeviceGetExternalMemoryProperties", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -643,6 +697,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeDeviceGetP2PProperties", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -668,6 +725,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeDeviceCanAccessPeer", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -691,6 +751,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeDeviceGetStatus", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -718,6 +781,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeDeviceGetGlobalTimestamps", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -745,6 +811,9 @@ namespace driver
             *phContext = reinterpret_cast<ze_context_handle_t>( context.get() );
 
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeContextCreate", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -782,6 +851,9 @@ namespace driver
             *phContext = reinterpret_cast<ze_context_handle_t>( context.get() );
 
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeContextCreateEx", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -806,6 +878,9 @@ namespace driver
             // generic implementation
 
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeContextDestroy", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -829,6 +904,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeContextGetStatus", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -857,6 +935,9 @@ namespace driver
             *phCommandQueue = reinterpret_cast<ze_command_queue_handle_t>( context.get() );
 
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeCommandQueueCreate", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -881,6 +962,9 @@ namespace driver
             // generic implementation
 
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeCommandQueueDestroy", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -908,6 +992,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeCommandQueueExecuteCommandLists", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -938,6 +1025,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeCommandQueueSynchronize", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -962,6 +1052,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeCommandQueueGetOrdinal", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -986,6 +1079,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeCommandQueueGetIndex", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -1014,6 +1110,9 @@ namespace driver
             *phCommandList = reinterpret_cast<ze_command_list_handle_t>( context.get() );
 
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeCommandListCreate", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -1042,6 +1141,9 @@ namespace driver
             *phCommandList = reinterpret_cast<ze_command_list_handle_t>( context.get() );
 
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeCommandListCreateImmediate", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -1066,6 +1168,9 @@ namespace driver
             // generic implementation
 
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeCommandListDestroy", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -1089,6 +1194,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeCommandListClose", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -1112,6 +1220,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeCommandListReset", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -1142,6 +1253,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeCommandListAppendWriteGlobalTimestamp", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -1172,6 +1286,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeCommandListHostSynchronize", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -1198,6 +1315,9 @@ namespace driver
             *phDevice = reinterpret_cast<ze_device_handle_t>( context.get() );
 
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeCommandListGetDeviceHandle", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -1224,6 +1344,9 @@ namespace driver
             *phContext = reinterpret_cast<ze_context_handle_t>( context.get() );
 
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeCommandListGetContextHandle", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -1248,6 +1371,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeCommandListGetOrdinal", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -1273,6 +1399,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeCommandListImmediateGetIndex", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -1298,6 +1427,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeCommandListIsImmediate", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -1326,6 +1458,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeCommandListAppendBarrier", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -1357,6 +1492,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeCommandListAppendMemoryRangesBarrier", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -1381,6 +1519,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeContextSystemBarrier", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -1412,6 +1553,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeCommandListAppendMemoryCopy", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -1444,6 +1588,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeCommandListAppendMemoryFill", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -1484,6 +1631,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeCommandListAppendMemoryCopyRegion", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -1516,6 +1666,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeCommandListAppendMemoryCopyFromContext", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -1546,6 +1699,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeCommandListAppendImageCopy", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -1578,6 +1734,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeCommandListAppendImageCopyRegion", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -1609,6 +1768,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeCommandListAppendImageCopyToMemory", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -1640,6 +1802,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeCommandListAppendImageCopyFromMemory", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -1665,6 +1830,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeCommandListAppendMemoryPrefetch", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -1692,6 +1860,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeCommandListAppendMemAdvise", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -1725,6 +1896,9 @@ namespace driver
             *phEventPool = reinterpret_cast<ze_event_pool_handle_t>( context.get() );
 
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeEventPoolCreate", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -1749,6 +1923,9 @@ namespace driver
             // generic implementation
 
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeEventPoolDestroy", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -1776,6 +1953,9 @@ namespace driver
             *phEvent = reinterpret_cast<ze_event_handle_t>( context.get() );
 
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeEventCreate", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -1800,6 +1980,9 @@ namespace driver
             // generic implementation
 
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeEventDestroy", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -1824,6 +2007,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeEventPoolGetIpcHandle", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -1849,6 +2035,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeEventPoolPutIpcHandle", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -1877,6 +2066,9 @@ namespace driver
             *phEventPool = reinterpret_cast<ze_event_pool_handle_t>( context.get() );
 
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeEventPoolOpenIpcHandle", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -1901,6 +2093,9 @@ namespace driver
             // generic implementation
 
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeEventPoolCloseIpcHandle", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -1925,6 +2120,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeCommandListAppendSignalEvent", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -1951,6 +2149,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeCommandListAppendWaitOnEvents", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -1974,6 +2175,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeEventHostSignal", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -2004,6 +2208,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeEventHostSynchronize", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -2027,6 +2234,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeEventQueryStatus", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -2051,6 +2261,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeCommandListAppendEventReset", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -2074,6 +2287,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeEventHostReset", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -2098,6 +2314,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeEventQueryKernelTimestamp", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -2133,6 +2352,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeCommandListAppendQueryKernelTimestamps", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -2159,6 +2381,9 @@ namespace driver
             *phEventPool = reinterpret_cast<ze_event_pool_handle_t>( context.get() );
 
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeEventGetEventPool", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -2185,6 +2410,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeEventGetSignalScope", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -2211,6 +2439,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeEventGetWaitScope", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -2237,6 +2468,9 @@ namespace driver
             *phContext = reinterpret_cast<ze_context_handle_t>( context.get() );
 
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeEventPoolGetContextHandle", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -2262,6 +2496,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeEventPoolGetFlags", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -2289,6 +2526,9 @@ namespace driver
             *phFence = reinterpret_cast<ze_fence_handle_t>( context.get() );
 
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeFenceCreate", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -2313,6 +2553,9 @@ namespace driver
             // generic implementation
 
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeFenceDestroy", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -2343,6 +2586,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeFenceHostSynchronize", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -2366,6 +2612,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeFenceQueryStatus", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -2389,6 +2638,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeFenceReset", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -2414,6 +2666,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeImageGetProperties", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -2442,6 +2697,9 @@ namespace driver
             *phImage = reinterpret_cast<ze_image_handle_t>( context.get() );
 
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeImageCreate", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -2466,6 +2724,9 @@ namespace driver
             // generic implementation
 
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeImageDestroy", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -2497,6 +2758,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeMemAllocShared", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -2527,6 +2791,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeMemAllocDevice", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -2556,6 +2823,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeMemAllocHost", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -2580,6 +2850,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeMemFree", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -2608,6 +2881,9 @@ namespace driver
             if( nullptr != phDevice ) *phDevice = reinterpret_cast<ze_device_handle_t>( context.get() );
 
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeMemGetAllocProperties", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -2634,6 +2910,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeMemGetAddressRange", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -2659,6 +2938,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeMemGetIpcHandle", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -2684,6 +2966,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeMemGetIpcHandleFromFileDescriptorExp", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -2709,6 +2994,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeMemGetFileDescriptorFromIpcHandleExp", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -2733,6 +3021,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeMemPutIpcHandle", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -2761,6 +3052,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeMemOpenIpcHandle", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -2785,6 +3079,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeMemCloseIpcHandle", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -2813,6 +3110,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeMemSetAtomicAccessAttributeExp", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -2840,6 +3140,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeMemGetAtomicAccessAttributeExp", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -2871,6 +3174,9 @@ namespace driver
             if( nullptr != phBuildLog ) *phBuildLog = reinterpret_cast<ze_module_build_log_handle_t>( context.get() );
 
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeModuleCreate", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -2895,6 +3201,9 @@ namespace driver
             // generic implementation
 
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeModuleDestroy", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -2923,6 +3232,9 @@ namespace driver
             if( nullptr != phLinkLog ) *phLinkLog = reinterpret_cast<ze_module_build_log_handle_t>( context.get() );
 
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeModuleDynamicLink", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -2947,6 +3259,9 @@ namespace driver
             // generic implementation
 
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeModuleBuildLogDestroy", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -2972,6 +3287,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeModuleBuildLogGetString", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -2997,6 +3315,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeModuleGetNativeBinary", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -3023,6 +3344,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeModuleGetGlobalPointer", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -3054,6 +3378,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeModuleGetKernelNames", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -3078,6 +3405,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeModuleGetProperties", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -3105,6 +3435,9 @@ namespace driver
             *phKernel = reinterpret_cast<ze_kernel_handle_t>( context.get() );
 
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeKernelCreate", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -3129,6 +3462,9 @@ namespace driver
             // generic implementation
 
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeKernelDestroy", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -3154,6 +3490,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeModuleGetFunctionPointer", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -3180,6 +3519,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeKernelSetGroupSize", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -3209,6 +3551,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeKernelSuggestGroupSize", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -3233,6 +3578,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeKernelSuggestMaxCooperativeGroupCount", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -3260,6 +3608,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeKernelSetArgumentValue", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -3284,6 +3635,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeKernelSetIndirectAccess", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -3308,6 +3662,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeKernelGetIndirectAccess", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -3344,6 +3701,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeKernelGetSourceAttributes", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -3369,6 +3729,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeKernelSetCacheConfig", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -3393,6 +3756,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeKernelGetProperties", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -3419,6 +3785,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeKernelGetName", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -3449,6 +3818,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeCommandListAppendLaunchKernel", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -3479,6 +3851,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeCommandListAppendLaunchCooperativeKernel", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -3510,6 +3885,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeCommandListAppendLaunchKernelIndirect", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -3545,6 +3923,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeCommandListAppendLaunchMultipleKernelsIndirect", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -3571,6 +3952,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeContextMakeMemoryResident", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -3597,6 +3981,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeContextEvictMemory", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -3622,6 +4009,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeContextMakeImageResident", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -3647,6 +4037,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeContextEvictImage", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -3675,6 +4068,9 @@ namespace driver
             *phSampler = reinterpret_cast<ze_sampler_handle_t>( context.get() );
 
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeSamplerCreate", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -3699,6 +4095,9 @@ namespace driver
             // generic implementation
 
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeSamplerDestroy", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -3726,6 +4125,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeVirtualMemReserve", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -3751,6 +4153,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeVirtualMemFree", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -3778,6 +4183,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeVirtualMemQueryPageSize", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -3807,6 +4215,9 @@ namespace driver
             *phPhysicalMemory = reinterpret_cast<ze_physical_mem_handle_t>( context.get() );
 
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zePhysicalMemCreate", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -3832,6 +4243,9 @@ namespace driver
             // generic implementation
 
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zePhysicalMemDestroy", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -3863,6 +4277,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeVirtualMemMap", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -3888,6 +4305,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeVirtualMemUnmap", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -3915,6 +4335,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeVirtualMemSetAccessAttribute", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -3943,6 +4366,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeVirtualMemGetAccessAttribute", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -3969,6 +4395,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeKernelSetGlobalOffsetExp", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -3994,6 +4423,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeKernelGetBinaryExp", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -4021,6 +4453,9 @@ namespace driver
             *phSemaphore = reinterpret_cast<ze_external_semaphore_ext_handle_t>( context.get() );
 
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeDeviceImportExternalSemaphoreExt", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -4044,6 +4479,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeDeviceReleaseExternalSemaphoreExt", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -4076,6 +4514,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeCommandListAppendSignalExternalSemaphoreExt", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -4108,6 +4549,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeCommandListAppendWaitExternalSemaphoreExt", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -4135,6 +4579,9 @@ namespace driver
             *phBuilder = reinterpret_cast<ze_rtas_builder_ext_handle_t>( context.get() );
 
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeRTASBuilderCreateExt", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -4160,6 +4607,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeRTASBuilderGetBuildPropertiesExt", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -4185,6 +4635,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeDriverRTASFormatCompatibilityCheckExt", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -4220,6 +4673,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeRTASBuilderBuildExt", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -4253,6 +4709,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeRTASBuilderCommandListAppendCopyExt", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -4277,6 +4736,9 @@ namespace driver
             // generic implementation
 
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeRTASBuilderDestroyExt", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -4303,6 +4765,9 @@ namespace driver
             *phParallelOperation = reinterpret_cast<ze_rtas_parallel_operation_ext_handle_t>( context.get() );
 
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeRTASParallelOperationCreateExt", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -4327,6 +4792,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeRTASParallelOperationGetPropertiesExt", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -4350,6 +4818,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeRTASParallelOperationJoinExt", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -4374,6 +4845,9 @@ namespace driver
             // generic implementation
 
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeRTASParallelOperationDestroyExt", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -4406,6 +4880,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeDeviceGetVectorWidthPropertiesExt", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -4434,6 +4911,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeDeviceReserveCacheExt", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -4460,6 +4940,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeDeviceSetCacheAdviceExt", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -4492,6 +4975,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeEventQueryTimestampsExp", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -4516,6 +5002,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeImageGetMemoryPropertiesExp", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -4545,6 +5034,9 @@ namespace driver
             *phImageView = reinterpret_cast<ze_image_handle_t>( context.get() );
 
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeImageViewCreateExt", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -4574,6 +5066,9 @@ namespace driver
             *phImageView = reinterpret_cast<ze_image_handle_t>( context.get() );
 
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeImageViewCreateExp", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -4598,6 +5093,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeKernelSchedulingHintExp", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -4622,6 +5120,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeDevicePciGetPropertiesExt", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -4657,6 +5158,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeCommandListAppendImageCopyToMemoryExt", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -4692,6 +5196,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeCommandListAppendImageCopyFromMemoryExt", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -4717,6 +5224,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeImageGetAllocPropertiesExt", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -4747,6 +5257,9 @@ namespace driver
             *phLog = reinterpret_cast<ze_module_build_log_handle_t>( context.get() );
 
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeModuleInspectLinkageExt", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -4772,6 +5285,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeMemFreeExt", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -4807,6 +5323,9 @@ namespace driver
                 phVertices[ i ] = reinterpret_cast<ze_fabric_vertex_handle_t>( context.get() );
 
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeFabricVertexGetExp", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -4842,6 +5361,9 @@ namespace driver
                 phSubvertices[ i ] = reinterpret_cast<ze_fabric_vertex_handle_t>( context.get() );
 
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeFabricVertexGetSubVerticesExp", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -4866,6 +5388,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeFabricVertexGetPropertiesExp", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -4892,6 +5417,9 @@ namespace driver
             *phDevice = reinterpret_cast<ze_device_handle_t>( context.get() );
 
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeFabricVertexGetDeviceExp", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -4918,6 +5446,9 @@ namespace driver
             *phVertex = reinterpret_cast<ze_fabric_vertex_handle_t>( context.get() );
 
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeDeviceGetFabricVertexExp", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -4954,6 +5485,9 @@ namespace driver
                 phEdges[ i ] = reinterpret_cast<ze_fabric_edge_handle_t>( context.get() );
 
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeFabricEdgeGetExp", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -4983,6 +5517,9 @@ namespace driver
             *phVertexB = reinterpret_cast<ze_fabric_vertex_handle_t>( context.get() );
 
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeFabricEdgeGetVerticesExp", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -5007,6 +5544,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeFabricEdgeGetPropertiesExp", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -5046,6 +5586,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeEventQueryKernelTimestampsExt", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -5073,6 +5616,9 @@ namespace driver
             *phBuilder = reinterpret_cast<ze_rtas_builder_exp_handle_t>( context.get() );
 
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeRTASBuilderCreateExp", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -5098,6 +5644,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeRTASBuilderGetBuildPropertiesExp", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -5123,6 +5672,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeDriverRTASFormatCompatibilityCheckExp", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -5158,6 +5710,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeRTASBuilderBuildExp", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -5182,6 +5737,9 @@ namespace driver
             // generic implementation
 
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeRTASBuilderDestroyExp", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -5208,6 +5766,9 @@ namespace driver
             *phParallelOperation = reinterpret_cast<ze_rtas_parallel_operation_exp_handle_t>( context.get() );
 
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeRTASParallelOperationCreateExp", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -5232,6 +5793,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeRTASParallelOperationGetPropertiesExp", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -5255,6 +5819,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeRTASParallelOperationJoinExp", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -5279,6 +5846,9 @@ namespace driver
             // generic implementation
 
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeRTASParallelOperationDestroyExp", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -5307,6 +5877,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeMemGetPitchFor2dImage", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -5331,6 +5904,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeImageGetDeviceOffsetExp", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -5357,6 +5933,9 @@ namespace driver
             *phClonedCommandList = reinterpret_cast<ze_command_list_handle_t>( context.get() );
 
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeCommandListCreateCloneExp", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -5391,6 +5970,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeCommandListImmediateAppendCommandListsExp", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -5416,6 +5998,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeCommandListGetNextCommandIdExp", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -5445,6 +6030,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeCommandListGetNextCommandIdWithKernelsExp", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -5470,6 +6058,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeCommandListUpdateMutableCommandsExp", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -5495,6 +6086,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeCommandListUpdateMutableCommandSignalEventExp", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -5522,6 +6116,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeCommandListUpdateMutableCommandWaitEventsExp", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -5549,6 +6146,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeCommandListUpdateMutableCommandKernelsExp", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }

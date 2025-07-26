@@ -92,6 +92,11 @@ namespace driver
 
             %endfor
         }
+        %if not fname.endswith("DriverGet") and not re.match("Init", obj['name']):
+        
+        char *env_str = context.setenv_var_with_driver_id("${fname}", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
+        %endif
 
         return result;
     }
