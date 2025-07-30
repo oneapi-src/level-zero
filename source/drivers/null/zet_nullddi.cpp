@@ -34,6 +34,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zetModuleGetDebugInfo", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -58,6 +61,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zetDeviceGetDebugProperties", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -85,6 +91,9 @@ namespace driver
             *phDebug = reinterpret_cast<zet_debug_session_handle_t>( context.get() );
 
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zetDebugAttach", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -109,6 +118,9 @@ namespace driver
             // generic implementation
 
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zetDebugDetach", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -140,6 +152,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zetDebugReadEvent", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -164,6 +179,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zetDebugAcknowledgeEvent", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -188,6 +206,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zetDebugInterrupt", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -212,6 +233,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zetDebugResume", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -239,6 +263,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zetDebugReadMemory", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -266,6 +293,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zetDebugWriteMemory", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -299,6 +329,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zetDebugGetRegisterSetProperties", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -333,6 +366,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zetDebugGetThreadRegisterSetProperties", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -365,6 +401,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zetDebugReadRegisters", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -397,6 +436,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zetDebugWriteRegisters", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -432,6 +474,9 @@ namespace driver
                 phMetricGroups[ i ] = reinterpret_cast<zet_metric_group_handle_t>( context.get() );
 
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zetMetricGroupGet", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -456,6 +501,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zetMetricGroupGetProperties", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -491,6 +539,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zetMetricGroupCalculateMetricValues", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -525,6 +576,9 @@ namespace driver
                 phMetrics[ i ] = reinterpret_cast<zet_metric_handle_t>( context.get() );
 
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zetMetricGet", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -549,6 +603,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zetMetricGetProperties", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -579,6 +636,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zetContextActivateMetricGroups", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -609,6 +669,9 @@ namespace driver
             *phMetricStreamer = reinterpret_cast<zet_metric_streamer_handle_t>( context.get() );
 
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zetMetricStreamerOpen", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -634,6 +697,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zetCommandListAppendMetricStreamerMarker", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -658,6 +724,9 @@ namespace driver
             // generic implementation
 
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zetMetricStreamerClose", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -692,6 +761,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zetMetricStreamerReadData", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -721,6 +793,9 @@ namespace driver
             *phMetricQueryPool = reinterpret_cast<zet_metric_query_pool_handle_t>( context.get() );
 
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zetMetricQueryPoolCreate", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -745,6 +820,9 @@ namespace driver
             // generic implementation
 
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zetMetricQueryPoolDestroy", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -772,6 +850,9 @@ namespace driver
             *phMetricQuery = reinterpret_cast<zet_metric_query_handle_t>( context.get() );
 
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zetMetricQueryCreate", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -796,6 +877,9 @@ namespace driver
             // generic implementation
 
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zetMetricQueryDestroy", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -819,6 +903,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zetMetricQueryReset", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -843,6 +930,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zetCommandListAppendMetricQueryBegin", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -870,6 +960,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zetCommandListAppendMetricQueryEnd", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -893,6 +986,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zetCommandListAppendMetricMemoryBarrier", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -925,6 +1021,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zetMetricQueryGetData", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -949,6 +1048,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zetKernelGetProfileInfo", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -976,6 +1078,9 @@ namespace driver
             *phTracer = reinterpret_cast<zet_tracer_exp_handle_t>( context.get() );
 
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zetTracerExpCreate", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -1000,6 +1105,9 @@ namespace driver
             // generic implementation
 
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zetTracerExpDestroy", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -1024,6 +1132,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zetTracerExpSetPrologues", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -1048,6 +1159,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zetTracerExpSetEpilogues", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -1072,6 +1186,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zetTracerExpSetEnabled", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -1103,6 +1220,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zetDeviceGetConcurrentMetricGroupsExp", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -1137,6 +1257,9 @@ namespace driver
             *phMetricTracer = reinterpret_cast<zet_metric_tracer_exp_handle_t>( context.get() );
 
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zetMetricTracerCreateExp", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -1160,6 +1283,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zetMetricTracerDestroyExp", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -1188,6 +1314,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zetMetricTracerEnableExp", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -1217,6 +1346,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zetMetricTracerDisableExp", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -1249,6 +1381,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zetMetricTracerReadDataExp", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -1275,6 +1410,9 @@ namespace driver
             *phMetricDecoder = reinterpret_cast<zet_metric_decoder_exp_handle_t>( context.get() );
 
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zetMetricDecoderCreateExp", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -1298,6 +1436,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zetMetricDecoderDestroyExp", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -1335,6 +1476,9 @@ namespace driver
                 phMetrics[ i ] = reinterpret_cast<zet_metric_handle_t>( context.get() );
 
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zetMetricDecoderGetDecodableMetricsExp", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -1397,6 +1541,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zetMetricTracerDecodeExp", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -1424,6 +1571,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zetCommandListAppendMarkerExp", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -1447,6 +1597,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zetDeviceEnableMetricsExp", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -1470,6 +1623,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zetDeviceDisableMetricsExp", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -1515,6 +1671,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zetMetricGroupCalculateMultipleMetricValuesExp", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -1541,6 +1700,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zetMetricGroupGetGlobalTimestampsExp", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -1572,6 +1734,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zetMetricGroupGetExportDataExp", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -1618,6 +1783,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zetMetricGroupCalculateMetricExportDataExp", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -1653,6 +1821,9 @@ namespace driver
                 phMetricProgrammables[ i ] = reinterpret_cast<zet_metric_programmable_exp_handle_t>( context.get() );
 
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zetMetricProgrammableGetExp", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -1677,6 +1848,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zetMetricProgrammableGetPropertiesExp", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -1708,6 +1882,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zetMetricProgrammableGetParamInfoExp", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -1740,6 +1917,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zetMetricProgrammableGetParamValueInfoExp", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -1782,6 +1962,9 @@ namespace driver
                 phMetricHandles[ i ] = reinterpret_cast<zet_metric_handle_t>( context.get() );
 
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zetMetricCreateFromProgrammableExp2", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -1824,6 +2007,9 @@ namespace driver
                 phMetricHandles[ i ] = reinterpret_cast<zet_metric_handle_t>( context.get() );
 
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zetMetricCreateFromProgrammableExp", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -1869,6 +2055,9 @@ namespace driver
                 phMetricGroup[ i ] = reinterpret_cast<zet_metric_group_handle_t>( context.get() );
 
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zetDeviceCreateMetricGroupsFromMetricsExp", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -1901,6 +2090,9 @@ namespace driver
             *phMetricGroup = reinterpret_cast<zet_metric_group_handle_t>( context.get() );
 
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zetMetricGroupCreateExp", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -1932,6 +2124,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zetMetricGroupAddMetricExp", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -1956,6 +2151,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zetMetricGroupRemoveMetricExp", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -1979,6 +2177,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zetMetricGroupCloseExp", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -2002,6 +2203,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zetMetricGroupDestroyExp", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -2025,6 +2229,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zetMetricDestroyExp", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }

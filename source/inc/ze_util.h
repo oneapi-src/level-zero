@@ -38,6 +38,8 @@ inline void getLastErrorString(std::string &errorValue) {
 #  define FREE_DRIVER_LIBRARY_FAILURE_CHECK(RESULT)  (RESULT) == 0 ? true : false
 #  define GET_FUNCTION_PTR(LIB, FUNC_NAME) reinterpret_cast<void *>(GetProcAddress(LIB, FUNC_NAME))
 #  define string_copy_s strncpy_s
+#  define putenv_safe _putenv
+#  define strdup_safe _strdup
 #else
 #  include <link.h>
 #  include <dlfcn.h>
@@ -50,6 +52,8 @@ inline void getLastErrorString(std::string &errorValue) {
 #  define FREE_DRIVER_LIBRARY_FAILURE_CHECK(RESULT)  (RESULT) != 0 ? true : false
 #  define GET_FUNCTION_PTR(LIB, FUNC_NAME) dlsym(LIB, FUNC_NAME)
 #  define string_copy_s strncpy
+#  define putenv_safe putenv
+#  define strdup_safe strdup
 #endif
 
 inline std::string create_library_path(const char *name, const char *path){

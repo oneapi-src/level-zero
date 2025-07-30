@@ -18,6 +18,7 @@
     #include <io.h>
     #include <cstdio>
     #include <fcntl.h>
+    #include <windows.h>
     #define putenv_safe _putenv
 #else
     #include <cstdlib>
@@ -30,6 +31,36 @@
 #endif
 
 namespace {
+
+  inline std::string getenv_string(const char *name)
+  {
+
+    const char *env = nullptr;
+#if defined(_WIN32)
+    char buffer[1024];
+    auto rc = GetEnvironmentVariable(name, buffer, 1024);
+    if (0 != rc && rc <= 1024)
+    {
+      env = buffer;
+    }
+#else
+    env = getenv(name);
+#endif
+
+    if ((nullptr == env))
+      return "";
+    return std::string(env);
+  }
+
+  bool compare_env(const char *api, std::string value)
+  {
+    auto val = getenv_string(api);
+    if (strcmp(val.c_str(), value.c_str()) == 0)
+    {
+      return true;
+    }
+    return false;
+  }
 
 TEST(
     LoaderAPI,
@@ -1579,4 +1610,56 @@ EXPECT_EQ(translatedHandle, devices[0]);
 
 }
 
+TEST(
+      SysManApiLoaderDriverInteraction,
+      GivenLevelZeroLoaderPresentWhenCallingSysManVfApisThenExpectNullDriverIsReachedSuccessfully)
+  {
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zesInit(0));
+    uint32_t driverCount = 0;
+    std::vector<zes_driver_handle_t> driverHandles{};
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zesDriverGet(&driverCount, nullptr));
+    EXPECT_GT(driverCount, 0);
+    driverHandles.resize(driverCount);
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zesDriverGet(&driverCount, driverHandles.data()));
+
+    for (std::size_t i = 0; i < driverHandles.size(); i++)
+    {
+      uint32_t deviceCount = 1;
+      zes_device_handle_t deviceHandle{};
+      uint32_t count = 1;
+      zes_vf_handle_t vfHandle{};
+      zes_vf_exp_properties_t vf_properties{};
+      zes_vf_util_mem_exp_t util_mem_exp{};
+      zes_vf_util_mem_exp2_t util_mem_exp2{};
+      zes_vf_util_engine_exp_t util_engine_exp{};
+      zes_vf_util_engine_exp2_t util_engine_exp2{};
+      zes_vf_exp_capabilities_t vf_exp_capabilities{};
+      zes_vf_exp2_capabilities_t vf_exp2_capabilities{};
+
+      EXPECT_EQ(ZE_RESULT_SUCCESS, zesDeviceGet(driverHandles[i], &deviceCount, &deviceHandle));
+      EXPECT_TRUE(compare_env("zesDeviceGet", std::to_string(i + 1)));
+      EXPECT_EQ(ZE_RESULT_SUCCESS, zesDeviceEnumActiveVFExp(deviceHandle, &count, &vfHandle));
+      EXPECT_TRUE(compare_env("zesDeviceEnumActiveVFExp", std::to_string(i + 1)));
+      EXPECT_EQ(ZE_RESULT_SUCCESS, zesVFManagementGetVFPropertiesExp(vfHandle, &vf_properties));
+      EXPECT_TRUE(compare_env("zesVFManagementGetVFPropertiesExp", std::to_string(i + 1)));
+      EXPECT_EQ(ZE_RESULT_SUCCESS, zesVFManagementGetVFMemoryUtilizationExp(vfHandle, &count, &util_mem_exp));
+      EXPECT_TRUE(compare_env("zesVFManagementGetVFMemoryUtilizationExp", std::to_string(i + 1)));
+      EXPECT_EQ(ZE_RESULT_SUCCESS, zesVFManagementGetVFEngineUtilizationExp(vfHandle, &count, &util_engine_exp));
+      EXPECT_TRUE(compare_env("zesVFManagementGetVFEngineUtilizationExp", std::to_string(i + 1)));
+      EXPECT_EQ(ZE_RESULT_SUCCESS, zesVFManagementSetVFTelemetryModeExp(vfHandle, 0, 0));
+      EXPECT_TRUE(compare_env("zesVFManagementSetVFTelemetryModeExp", std::to_string(i + 1)));
+      EXPECT_EQ(ZE_RESULT_SUCCESS, zesVFManagementSetVFTelemetrySamplingIntervalExp(vfHandle, 0, 0));
+      EXPECT_TRUE(compare_env("zesVFManagementSetVFTelemetrySamplingIntervalExp", std::to_string(i + 1)));
+      EXPECT_EQ(ZE_RESULT_SUCCESS, zesDeviceEnumEnabledVFExp(deviceHandle, &count, &vfHandle));
+      EXPECT_TRUE(compare_env("zesDeviceEnumEnabledVFExp", std::to_string(i + 1)));
+      EXPECT_EQ(ZE_RESULT_SUCCESS, zesVFManagementGetVFCapabilitiesExp(vfHandle, &vf_exp_capabilities));
+      EXPECT_TRUE(compare_env("zesVFManagementGetVFCapabilitiesExp", std::to_string(i + 1)));
+      EXPECT_EQ(ZE_RESULT_SUCCESS, zesVFManagementGetVFMemoryUtilizationExp2(vfHandle, &count, &util_mem_exp2));
+      EXPECT_TRUE(compare_env("zesVFManagementGetVFMemoryUtilizationExp2", std::to_string(i + 1)));
+      EXPECT_EQ(ZE_RESULT_SUCCESS, zesVFManagementGetVFEngineUtilizationExp2(vfHandle, &count, &util_engine_exp2));
+      EXPECT_TRUE(compare_env("zesVFManagementGetVFEngineUtilizationExp2", std::to_string(i + 1)));
+      EXPECT_EQ(ZE_RESULT_SUCCESS, zesVFManagementGetVFCapabilitiesExp2(vfHandle, &vf_exp2_capabilities));
+      EXPECT_TRUE(compare_env("zesVFManagementGetVFCapabilitiesExp2", std::to_string(i + 1)));
+    }
+  }
 } // namespace
