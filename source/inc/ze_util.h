@@ -44,8 +44,6 @@ inline void getLastErrorString(std::string &errorValue) {
 #  include <link.h>
 #  include <dlfcn.h>
 #  define HMODULE void*
-#  define MAKE_LIBRARY_NAME(NAME, VERSION)    "lib" NAME ".so." VERSION
-#  define MAKE_LAYER_NAME(NAME)    "lib" NAME ".so." L0_VALIDATION_LAYER_SUPPORTED_VERSION
 #  define LOAD_DRIVER_LIBRARY(NAME) dlopen(NAME, RTLD_LAZY|RTLD_LOCAL)
 #  define GET_LIBRARY_ERROR(ERROR_STRING) ERROR_STRING.assign(dlerror())
 #  define FREE_DRIVER_LIBRARY(LIB)  dlclose(LIB)
@@ -54,6 +52,14 @@ inline void getLastErrorString(std::string &errorValue) {
 #  define string_copy_s strncpy
 #  define putenv_safe putenv
 #  define strdup_safe strdup
+#endif
+
+#if defined(ANDROID)
+#  define MAKE_LIBRARY_NAME(NAME, VERSION)    "lib" NAME ".so"
+#  define MAKE_LAYER_NAME(NAME)    "lib" NAME ".so"
+#elif !defined(WIN32)
+#  define MAKE_LIBRARY_NAME(NAME, VERSION)    "lib" NAME ".so." VERSION
+#  define MAKE_LAYER_NAME(NAME)    "lib" NAME ".so." L0_VALIDATION_LAYER_SUPPORTED_VERSION
 #endif
 
 inline std::string create_library_path(const char *name, const char *path){
