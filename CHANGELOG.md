@@ -1,4 +1,6 @@
 # Level zero loader changelog
+## v1.24.1
+* Changes to get ze_loader loaded for Android
 ## v1.24.0
 * Enable DDI Driver Extension path by default.
 ## v1.23.2
