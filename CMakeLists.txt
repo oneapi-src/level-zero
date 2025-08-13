@@ -94,6 +94,7 @@ macro(mangle_name str output)
   string(TOUPPER "${strippedStr}" ${output})
 endmacro()
 
+include(CheckCXXCompilerFlag)
 function(add_cxx_flag_if_supported flag)
     mangle_name("${flag}" flagname)
     check_cxx_compiler_flag("${flag}" "CXX_SUPPORTS_${flagname}_FLAG")
