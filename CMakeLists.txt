@@ -53,6 +53,7 @@ endif()
 include(FetchContent)
 
 if(BUILD_L0_LOADER_TESTS)
+	set(INSTALL_GTEST OFF)
     FetchContent_Declare(
         googletest
         GIT_REPOSITORY https://github.com/google/googletest.git
