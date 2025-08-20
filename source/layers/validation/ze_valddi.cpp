@@ -2,7 +2,7 @@
  * ***THIS FILE IS GENERATED. ***
  * See valddi.cpp.mako for modifications
  *
- * Copyright (C) 2019-2023 Intel Corporation
+ * Copyright (C) 2019-2024 Intel Corporation
  *
  * SPDX-License-Identifier: MIT
  *
@@ -13,6 +13,13 @@
 
 namespace validation_layer
 {
+    static ze_result_t logAndPropagateResult(const char* fname, ze_result_t result) {
+        if (result != ZE_RESULT_SUCCESS) {
+            context.logger->log_trace("Error (" + loader::to_string(result) + ") in " + std::string(fname));
+        }
+        return result;
+    }
+
     ///////////////////////////////////////////////////////////////////////////////
     /// @brief Intercept function for zeInit
     __zedlllocal ze_result_t ZE_APICALL
@@ -21,15 +28,17 @@ namespace validation_layer
                                                         ///< must be 0 (default) or a combination of ::ze_init_flag_t.
         )
     {
+        context.logger->log_trace("zeInit(flags)");
+
         auto pfnInit = context.zeDdiTable.Global.pfnInit;
 
         if( nullptr == pfnInit )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeInit", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeInitPrologue( flags );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeInit", result);
         }
 
 
@@ -40,17 +49,17 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeInitPrologue( flags );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeInit", result);
         }
 
-        auto result = pfnInit( flags );
+        auto driver_result = pfnInit( flags );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeInitEpilogue( flags );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeInitEpilogue( flags ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeInit", result);
         }
 
-        return result;
+        return logAndPropagateResult("zeInit", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -67,15 +76,17 @@ namespace validation_layer
                                                         ///< shall only retrieve that number of drivers.
         )
     {
+        context.logger->log_trace("zeDriverGet(pCount, phDrivers)");
+
         auto pfnGet = context.zeDdiTable.Driver.pfnGet;
 
         if( nullptr == pfnGet )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeDriverGet", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeDriverGetPrologue( pCount, phDrivers );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeDriverGet", result);
         }
 
 
@@ -86,18 +97,18 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeDriverGetPrologue( pCount, phDrivers );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeDriverGet", result);
         }
 
-        auto result = pfnGet( pCount, phDrivers );
+        auto driver_result = pfnGet( pCount, phDrivers );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeDriverGetEpilogue( pCount, phDrivers );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeDriverGetEpilogue( pCount, phDrivers ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeDriverGet", result);
         }
 
 
-        if( result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
+        if( driver_result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
             
             for (size_t i = 0; ( nullptr != phDrivers) && (i < *pCount); ++i){
                 if (phDrivers[i]){
@@ -106,7 +117,57 @@ namespace validation_layer
                 }
             }
         }
-        return result;
+        return logAndPropagateResult("zeDriverGet", driver_result);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeInitDrivers
+    __zedlllocal ze_result_t ZE_APICALL
+    zeInitDrivers(
+        uint32_t* pCount,                               ///< [in,out] pointer to the number of driver instances.
+                                                        ///< if count is zero, then the loader shall update the value with the
+                                                        ///< total number of drivers available.
+                                                        ///< if count is greater than the number of drivers available, then the
+                                                        ///< loader shall update the value with the correct number of drivers available.
+        ze_driver_handle_t* phDrivers,                  ///< [in,out][optional][range(0, *pCount)] array of driver instance handles.
+                                                        ///< if count is less than the number of drivers available, then the loader
+                                                        ///< shall only retrieve that number of drivers.
+        ze_init_driver_type_desc_t* desc                ///< [in] descriptor containing the driver type initialization details
+                                                        ///< including ::ze_init_driver_type_flag_t combinations.
+        )
+    {
+        context.logger->log_trace("zeInitDrivers(pCount, phDrivers, desc)");
+
+        auto pfnInitDrivers = context.zeDdiTable.Global.pfnInitDrivers;
+
+        if( nullptr == pfnInitDrivers )
+            return logAndPropagateResult("zeInitDrivers", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeInitDriversPrologue( pCount, phDrivers, desc );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeInitDrivers", result);
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeInitDriversPrologue( pCount, phDrivers, desc );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeInitDrivers", result);
+        }
+
+        auto driver_result = pfnInitDrivers( pCount, phDrivers, desc );
+
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeInitDriversEpilogue( pCount, phDrivers, desc ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeInitDrivers", result);
+        }
+
+        return logAndPropagateResult("zeInitDrivers", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -117,15 +178,17 @@ namespace validation_layer
         ze_api_version_t* version                       ///< [out] api version
         )
     {
+        context.logger->log_trace("zeDriverGetApiVersion(hDriver, version)");
+
         auto pfnGetApiVersion = context.zeDdiTable.Driver.pfnGetApiVersion;
 
         if( nullptr == pfnGetApiVersion )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeDriverGetApiVersion", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeDriverGetApiVersionPrologue( hDriver, version );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeDriverGetApiVersion", result);
         }
 
 
@@ -136,17 +199,17 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeDriverGetApiVersionPrologue( hDriver, version );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeDriverGetApiVersion", result);
         }
 
-        auto result = pfnGetApiVersion( hDriver, version );
+        auto driver_result = pfnGetApiVersion( hDriver, version );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeDriverGetApiVersionEpilogue( hDriver, version );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeDriverGetApiVersionEpilogue( hDriver, version ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeDriverGetApiVersion", result);
         }
 
-        return result;
+        return logAndPropagateResult("zeDriverGetApiVersion", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -157,15 +220,17 @@ namespace validation_layer
         ze_driver_properties_t* pDriverProperties       ///< [in,out] query result for driver properties
         )
     {
+        context.logger->log_trace("zeDriverGetProperties(hDriver, pDriverProperties)");
+
         auto pfnGetProperties = context.zeDdiTable.Driver.pfnGetProperties;
 
         if( nullptr == pfnGetProperties )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeDriverGetProperties", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeDriverGetPropertiesPrologue( hDriver, pDriverProperties );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeDriverGetProperties", result);
         }
 
 
@@ -176,17 +241,17 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeDriverGetPropertiesPrologue( hDriver, pDriverProperties );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeDriverGetProperties", result);
         }
 
-        auto result = pfnGetProperties( hDriver, pDriverProperties );
+        auto driver_result = pfnGetProperties( hDriver, pDriverProperties );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeDriverGetPropertiesEpilogue( hDriver, pDriverProperties );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeDriverGetPropertiesEpilogue( hDriver, pDriverProperties ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeDriverGetProperties", result);
         }
 
-        return result;
+        return logAndPropagateResult("zeDriverGetProperties", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -197,15 +262,17 @@ namespace validation_layer
         ze_driver_ipc_properties_t* pIpcProperties      ///< [in,out] query result for IPC properties
         )
     {
+        context.logger->log_trace("zeDriverGetIpcProperties(hDriver, pIpcProperties)");
+
         auto pfnGetIpcProperties = context.zeDdiTable.Driver.pfnGetIpcProperties;
 
         if( nullptr == pfnGetIpcProperties )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeDriverGetIpcProperties", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeDriverGetIpcPropertiesPrologue( hDriver, pIpcProperties );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeDriverGetIpcProperties", result);
         }
 
 
@@ -216,17 +283,17 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeDriverGetIpcPropertiesPrologue( hDriver, pIpcProperties );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeDriverGetIpcProperties", result);
         }
 
-        auto result = pfnGetIpcProperties( hDriver, pIpcProperties );
+        auto driver_result = pfnGetIpcProperties( hDriver, pIpcProperties );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeDriverGetIpcPropertiesEpilogue( hDriver, pIpcProperties );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeDriverGetIpcPropertiesEpilogue( hDriver, pIpcProperties ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeDriverGetIpcProperties", result);
         }
 
-        return result;
+        return logAndPropagateResult("zeDriverGetIpcProperties", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -246,15 +313,17 @@ namespace validation_layer
                                                         ///< then driver shall only retrieve that number of extension properties.
         )
     {
+        context.logger->log_trace("zeDriverGetExtensionProperties(hDriver, pCount, pExtensionProperties)");
+
         auto pfnGetExtensionProperties = context.zeDdiTable.Driver.pfnGetExtensionProperties;
 
         if( nullptr == pfnGetExtensionProperties )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeDriverGetExtensionProperties", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeDriverGetExtensionPropertiesPrologue( hDriver, pCount, pExtensionProperties );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeDriverGetExtensionProperties", result);
         }
 
 
@@ -265,17 +334,17 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeDriverGetExtensionPropertiesPrologue( hDriver, pCount, pExtensionProperties );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeDriverGetExtensionProperties", result);
         }
 
-        auto result = pfnGetExtensionProperties( hDriver, pCount, pExtensionProperties );
+        auto driver_result = pfnGetExtensionProperties( hDriver, pCount, pExtensionProperties );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeDriverGetExtensionPropertiesEpilogue( hDriver, pCount, pExtensionProperties );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeDriverGetExtensionPropertiesEpilogue( hDriver, pCount, pExtensionProperties ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeDriverGetExtensionProperties", result);
         }
 
-        return result;
+        return logAndPropagateResult("zeDriverGetExtensionProperties", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -287,15 +356,17 @@ namespace validation_layer
         void** ppFunctionAddress                        ///< [out] pointer to function pointer
         )
     {
+        context.logger->log_trace("zeDriverGetExtensionFunctionAddress(hDriver, name, ppFunctionAddress)");
+
         auto pfnGetExtensionFunctionAddress = context.zeDdiTable.Driver.pfnGetExtensionFunctionAddress;
 
         if( nullptr == pfnGetExtensionFunctionAddress )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeDriverGetExtensionFunctionAddress", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeDriverGetExtensionFunctionAddressPrologue( hDriver, name, ppFunctionAddress );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeDriverGetExtensionFunctionAddress", result);
         }
 
 
@@ -306,17 +377,17 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeDriverGetExtensionFunctionAddressPrologue( hDriver, name, ppFunctionAddress );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeDriverGetExtensionFunctionAddress", result);
         }
 
-        auto result = pfnGetExtensionFunctionAddress( hDriver, name, ppFunctionAddress );
+        auto driver_result = pfnGetExtensionFunctionAddress( hDriver, name, ppFunctionAddress );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeDriverGetExtensionFunctionAddressEpilogue( hDriver, name, ppFunctionAddress );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeDriverGetExtensionFunctionAddressEpilogue( hDriver, name, ppFunctionAddress ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeDriverGetExtensionFunctionAddress", result);
         }
 
-        return result;
+        return logAndPropagateResult("zeDriverGetExtensionFunctionAddress", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -328,15 +399,17 @@ namespace validation_layer
                                                         ///< cause of error.
         )
     {
+        context.logger->log_trace("zeDriverGetLastErrorDescription(hDriver, ppString)");
+
         auto pfnGetLastErrorDescription = context.zeDdiTable.Driver.pfnGetLastErrorDescription;
 
         if( nullptr == pfnGetLastErrorDescription )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeDriverGetLastErrorDescription", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeDriverGetLastErrorDescriptionPrologue( hDriver, ppString );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeDriverGetLastErrorDescription", result);
         }
 
 
@@ -347,17 +420,17 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeDriverGetLastErrorDescriptionPrologue( hDriver, ppString );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeDriverGetLastErrorDescription", result);
         }
 
-        auto result = pfnGetLastErrorDescription( hDriver, ppString );
+        auto driver_result = pfnGetLastErrorDescription( hDriver, ppString );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeDriverGetLastErrorDescriptionEpilogue( hDriver, ppString );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeDriverGetLastErrorDescriptionEpilogue( hDriver, ppString ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeDriverGetLastErrorDescription", result);
         }
 
-        return result;
+        return logAndPropagateResult("zeDriverGetLastErrorDescription", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -375,15 +448,17 @@ namespace validation_layer
                                                         ///< shall only retrieve that number of devices.
         )
     {
+        context.logger->log_trace("zeDeviceGet(hDriver, pCount, phDevices)");
+
         auto pfnGet = context.zeDdiTable.Device.pfnGet;
 
         if( nullptr == pfnGet )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeDeviceGet", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeDeviceGetPrologue( hDriver, pCount, phDevices );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeDeviceGet", result);
         }
 
 
@@ -394,18 +469,18 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeDeviceGetPrologue( hDriver, pCount, phDevices );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeDeviceGet", result);
         }
 
-        auto result = pfnGet( hDriver, pCount, phDevices );
+        auto driver_result = pfnGet( hDriver, pCount, phDevices );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeDeviceGetEpilogue( hDriver, pCount, phDevices );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeDeviceGetEpilogue( hDriver, pCount, phDevices ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeDeviceGet", result);
         }
 
 
-        if( result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
+        if( driver_result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
             
             for (size_t i = 0; ( nullptr != phDevices) && (i < *pCount); ++i){
                 if (phDevices[i]){
@@ -414,7 +489,7 @@ namespace validation_layer
                 }
             }
         }
-        return result;
+        return logAndPropagateResult("zeDeviceGet", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -425,15 +500,17 @@ namespace validation_layer
         ze_device_handle_t* phRootDevice                ///< [in,out] parent root device.
         )
     {
+        context.logger->log_trace("zeDeviceGetRootDevice(hDevice, phRootDevice)");
+
         auto pfnGetRootDevice = context.zeDdiTable.Device.pfnGetRootDevice;
 
         if( nullptr == pfnGetRootDevice )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeDeviceGetRootDevice", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeDeviceGetRootDevicePrologue( hDevice, phRootDevice );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeDeviceGetRootDevice", result);
         }
 
 
@@ -444,17 +521,17 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeDeviceGetRootDevicePrologue( hDevice, phRootDevice );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeDeviceGetRootDevice", result);
         }
 
-        auto result = pfnGetRootDevice( hDevice, phRootDevice );
+        auto driver_result = pfnGetRootDevice( hDevice, phRootDevice );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeDeviceGetRootDeviceEpilogue( hDevice, phRootDevice );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeDeviceGetRootDeviceEpilogue( hDevice, phRootDevice ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeDeviceGetRootDevice", result);
         }
 
-        return result;
+        return logAndPropagateResult("zeDeviceGetRootDevice", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -472,15 +549,17 @@ namespace validation_layer
                                                         ///< shall only retrieve that number of sub-devices.
         )
     {
+        context.logger->log_trace("zeDeviceGetSubDevices(hDevice, pCount, phSubdevices)");
+
         auto pfnGetSubDevices = context.zeDdiTable.Device.pfnGetSubDevices;
 
         if( nullptr == pfnGetSubDevices )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeDeviceGetSubDevices", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeDeviceGetSubDevicesPrologue( hDevice, pCount, phSubdevices );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeDeviceGetSubDevices", result);
         }
 
 
@@ -491,18 +570,18 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeDeviceGetSubDevicesPrologue( hDevice, pCount, phSubdevices );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeDeviceGetSubDevices", result);
         }
 
-        auto result = pfnGetSubDevices( hDevice, pCount, phSubdevices );
+        auto driver_result = pfnGetSubDevices( hDevice, pCount, phSubdevices );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeDeviceGetSubDevicesEpilogue( hDevice, pCount, phSubdevices );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeDeviceGetSubDevicesEpilogue( hDevice, pCount, phSubdevices ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeDeviceGetSubDevices", result);
         }
 
 
-        if( result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
+        if( driver_result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
             
             for (size_t i = 0; ( nullptr != phSubdevices) && (i < *pCount); ++i){
                 if (phSubdevices[i]){
@@ -511,7 +590,7 @@ namespace validation_layer
                 }
             }
         }
-        return result;
+        return logAndPropagateResult("zeDeviceGetSubDevices", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -522,15 +601,17 @@ namespace validation_layer
         ze_device_properties_t* pDeviceProperties       ///< [in,out] query result for device properties
         )
     {
+        context.logger->log_trace("zeDeviceGetProperties(hDevice, pDeviceProperties)");
+
         auto pfnGetProperties = context.zeDdiTable.Device.pfnGetProperties;
 
         if( nullptr == pfnGetProperties )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeDeviceGetProperties", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeDeviceGetPropertiesPrologue( hDevice, pDeviceProperties );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeDeviceGetProperties", result);
         }
 
 
@@ -541,17 +622,17 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeDeviceGetPropertiesPrologue( hDevice, pDeviceProperties );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeDeviceGetProperties", result);
         }
 
-        auto result = pfnGetProperties( hDevice, pDeviceProperties );
+        auto driver_result = pfnGetProperties( hDevice, pDeviceProperties );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeDeviceGetPropertiesEpilogue( hDevice, pDeviceProperties );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeDeviceGetPropertiesEpilogue( hDevice, pDeviceProperties ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeDeviceGetProperties", result);
         }
 
-        return result;
+        return logAndPropagateResult("zeDeviceGetProperties", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -562,15 +643,17 @@ namespace validation_layer
         ze_device_compute_properties_t* pComputeProperties  ///< [in,out] query result for compute properties
         )
     {
+        context.logger->log_trace("zeDeviceGetComputeProperties(hDevice, pComputeProperties)");
+
         auto pfnGetComputeProperties = context.zeDdiTable.Device.pfnGetComputeProperties;
 
         if( nullptr == pfnGetComputeProperties )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeDeviceGetComputeProperties", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeDeviceGetComputePropertiesPrologue( hDevice, pComputeProperties );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeDeviceGetComputeProperties", result);
         }
 
 
@@ -581,17 +664,17 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeDeviceGetComputePropertiesPrologue( hDevice, pComputeProperties );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeDeviceGetComputeProperties", result);
         }
 
-        auto result = pfnGetComputeProperties( hDevice, pComputeProperties );
+        auto driver_result = pfnGetComputeProperties( hDevice, pComputeProperties );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeDeviceGetComputePropertiesEpilogue( hDevice, pComputeProperties );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeDeviceGetComputePropertiesEpilogue( hDevice, pComputeProperties ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeDeviceGetComputeProperties", result);
         }
 
-        return result;
+        return logAndPropagateResult("zeDeviceGetComputeProperties", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -602,15 +685,17 @@ namespace validation_layer
         ze_device_module_properties_t* pModuleProperties///< [in,out] query result for module properties
         )
     {
+        context.logger->log_trace("zeDeviceGetModuleProperties(hDevice, pModuleProperties)");
+
         auto pfnGetModuleProperties = context.zeDdiTable.Device.pfnGetModuleProperties;
 
         if( nullptr == pfnGetModuleProperties )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeDeviceGetModuleProperties", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeDeviceGetModulePropertiesPrologue( hDevice, pModuleProperties );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeDeviceGetModuleProperties", result);
         }
 
 
@@ -621,17 +706,17 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeDeviceGetModulePropertiesPrologue( hDevice, pModuleProperties );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeDeviceGetModuleProperties", result);
         }
 
-        auto result = pfnGetModuleProperties( hDevice, pModuleProperties );
+        auto driver_result = pfnGetModuleProperties( hDevice, pModuleProperties );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeDeviceGetModulePropertiesEpilogue( hDevice, pModuleProperties );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeDeviceGetModulePropertiesEpilogue( hDevice, pModuleProperties ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeDeviceGetModuleProperties", result);
         }
 
-        return result;
+        return logAndPropagateResult("zeDeviceGetModuleProperties", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -652,15 +737,17 @@ namespace validation_layer
                                                         ///< queue group properties.
         )
     {
+        context.logger->log_trace("zeDeviceGetCommandQueueGroupProperties(hDevice, pCount, pCommandQueueGroupProperties)");
+
         auto pfnGetCommandQueueGroupProperties = context.zeDdiTable.Device.pfnGetCommandQueueGroupProperties;
 
         if( nullptr == pfnGetCommandQueueGroupProperties )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeDeviceGetCommandQueueGroupProperties", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeDeviceGetCommandQueueGroupPropertiesPrologue( hDevice, pCount, pCommandQueueGroupProperties );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeDeviceGetCommandQueueGroupProperties", result);
         }
 
 
@@ -671,17 +758,17 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeDeviceGetCommandQueueGroupPropertiesPrologue( hDevice, pCount, pCommandQueueGroupProperties );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeDeviceGetCommandQueueGroupProperties", result);
         }
 
-        auto result = pfnGetCommandQueueGroupProperties( hDevice, pCount, pCommandQueueGroupProperties );
+        auto driver_result = pfnGetCommandQueueGroupProperties( hDevice, pCount, pCommandQueueGroupProperties );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeDeviceGetCommandQueueGroupPropertiesEpilogue( hDevice, pCount, pCommandQueueGroupProperties );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeDeviceGetCommandQueueGroupPropertiesEpilogue( hDevice, pCount, pCommandQueueGroupProperties ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeDeviceGetCommandQueueGroupProperties", result);
         }
 
-        return result;
+        return logAndPropagateResult("zeDeviceGetCommandQueueGroupProperties", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -701,15 +788,17 @@ namespace validation_layer
                                                         ///< driver shall only retrieve that number of memory properties.
         )
     {
+        context.logger->log_trace("zeDeviceGetMemoryProperties(hDevice, pCount, pMemProperties)");
+
         auto pfnGetMemoryProperties = context.zeDdiTable.Device.pfnGetMemoryProperties;
 
         if( nullptr == pfnGetMemoryProperties )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeDeviceGetMemoryProperties", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeDeviceGetMemoryPropertiesPrologue( hDevice, pCount, pMemProperties );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeDeviceGetMemoryProperties", result);
         }
 
 
@@ -720,17 +809,17 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeDeviceGetMemoryPropertiesPrologue( hDevice, pCount, pMemProperties );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeDeviceGetMemoryProperties", result);
         }
 
-        auto result = pfnGetMemoryProperties( hDevice, pCount, pMemProperties );
+        auto driver_result = pfnGetMemoryProperties( hDevice, pCount, pMemProperties );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeDeviceGetMemoryPropertiesEpilogue( hDevice, pCount, pMemProperties );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeDeviceGetMemoryPropertiesEpilogue( hDevice, pCount, pMemProperties ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeDeviceGetMemoryProperties", result);
         }
 
-        return result;
+        return logAndPropagateResult("zeDeviceGetMemoryProperties", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -741,15 +830,17 @@ namespace validation_layer
         ze_device_memory_access_properties_t* pMemAccessProperties  ///< [in,out] query result for memory access properties
         )
     {
+        context.logger->log_trace("zeDeviceGetMemoryAccessProperties(hDevice, pMemAccessProperties)");
+
         auto pfnGetMemoryAccessProperties = context.zeDdiTable.Device.pfnGetMemoryAccessProperties;
 
         if( nullptr == pfnGetMemoryAccessProperties )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeDeviceGetMemoryAccessProperties", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeDeviceGetMemoryAccessPropertiesPrologue( hDevice, pMemAccessProperties );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeDeviceGetMemoryAccessProperties", result);
         }
 
 
@@ -760,17 +851,17 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeDeviceGetMemoryAccessPropertiesPrologue( hDevice, pMemAccessProperties );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeDeviceGetMemoryAccessProperties", result);
         }
 
-        auto result = pfnGetMemoryAccessProperties( hDevice, pMemAccessProperties );
+        auto driver_result = pfnGetMemoryAccessProperties( hDevice, pMemAccessProperties );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeDeviceGetMemoryAccessPropertiesEpilogue( hDevice, pMemAccessProperties );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeDeviceGetMemoryAccessPropertiesEpilogue( hDevice, pMemAccessProperties ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeDeviceGetMemoryAccessProperties", result);
         }
 
-        return result;
+        return logAndPropagateResult("zeDeviceGetMemoryAccessProperties", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -789,15 +880,17 @@ namespace validation_layer
                                                         ///< driver shall only retrieve that number of cache properties.
         )
     {
+        context.logger->log_trace("zeDeviceGetCacheProperties(hDevice, pCount, pCacheProperties)");
+
         auto pfnGetCacheProperties = context.zeDdiTable.Device.pfnGetCacheProperties;
 
         if( nullptr == pfnGetCacheProperties )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeDeviceGetCacheProperties", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeDeviceGetCachePropertiesPrologue( hDevice, pCount, pCacheProperties );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeDeviceGetCacheProperties", result);
         }
 
 
@@ -808,17 +901,17 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeDeviceGetCachePropertiesPrologue( hDevice, pCount, pCacheProperties );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeDeviceGetCacheProperties", result);
         }
 
-        auto result = pfnGetCacheProperties( hDevice, pCount, pCacheProperties );
+        auto driver_result = pfnGetCacheProperties( hDevice, pCount, pCacheProperties );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeDeviceGetCachePropertiesEpilogue( hDevice, pCount, pCacheProperties );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeDeviceGetCachePropertiesEpilogue( hDevice, pCount, pCacheProperties ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeDeviceGetCacheProperties", result);
         }
 
-        return result;
+        return logAndPropagateResult("zeDeviceGetCacheProperties", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -829,15 +922,17 @@ namespace validation_layer
         ze_device_image_properties_t* pImageProperties  ///< [in,out] query result for image properties
         )
     {
+        context.logger->log_trace("zeDeviceGetImageProperties(hDevice, pImageProperties)");
+
         auto pfnGetImageProperties = context.zeDdiTable.Device.pfnGetImageProperties;
 
         if( nullptr == pfnGetImageProperties )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeDeviceGetImageProperties", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeDeviceGetImagePropertiesPrologue( hDevice, pImageProperties );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeDeviceGetImageProperties", result);
         }
 
 
@@ -848,17 +943,17 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeDeviceGetImagePropertiesPrologue( hDevice, pImageProperties );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeDeviceGetImageProperties", result);
         }
 
-        auto result = pfnGetImageProperties( hDevice, pImageProperties );
+        auto driver_result = pfnGetImageProperties( hDevice, pImageProperties );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeDeviceGetImagePropertiesEpilogue( hDevice, pImageProperties );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeDeviceGetImagePropertiesEpilogue( hDevice, pImageProperties ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeDeviceGetImageProperties", result);
         }
 
-        return result;
+        return logAndPropagateResult("zeDeviceGetImageProperties", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -869,15 +964,17 @@ namespace validation_layer
         ze_device_external_memory_properties_t* pExternalMemoryProperties   ///< [in,out] query result for external memory properties
         )
     {
+        context.logger->log_trace("zeDeviceGetExternalMemoryProperties(hDevice, pExternalMemoryProperties)");
+
         auto pfnGetExternalMemoryProperties = context.zeDdiTable.Device.pfnGetExternalMemoryProperties;
 
         if( nullptr == pfnGetExternalMemoryProperties )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeDeviceGetExternalMemoryProperties", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeDeviceGetExternalMemoryPropertiesPrologue( hDevice, pExternalMemoryProperties );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeDeviceGetExternalMemoryProperties", result);
         }
 
 
@@ -888,17 +985,17 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeDeviceGetExternalMemoryPropertiesPrologue( hDevice, pExternalMemoryProperties );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeDeviceGetExternalMemoryProperties", result);
         }
 
-        auto result = pfnGetExternalMemoryProperties( hDevice, pExternalMemoryProperties );
+        auto driver_result = pfnGetExternalMemoryProperties( hDevice, pExternalMemoryProperties );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeDeviceGetExternalMemoryPropertiesEpilogue( hDevice, pExternalMemoryProperties );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeDeviceGetExternalMemoryPropertiesEpilogue( hDevice, pExternalMemoryProperties ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeDeviceGetExternalMemoryProperties", result);
         }
 
-        return result;
+        return logAndPropagateResult("zeDeviceGetExternalMemoryProperties", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -910,15 +1007,17 @@ namespace validation_layer
         ze_device_p2p_properties_t* pP2PProperties      ///< [in,out] Peer-to-Peer properties between source and peer device
         )
     {
+        context.logger->log_trace("zeDeviceGetP2PProperties(hDevice, hPeerDevice, pP2PProperties)");
+
         auto pfnGetP2PProperties = context.zeDdiTable.Device.pfnGetP2PProperties;
 
         if( nullptr == pfnGetP2PProperties )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeDeviceGetP2PProperties", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeDeviceGetP2PPropertiesPrologue( hDevice, hPeerDevice, pP2PProperties );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeDeviceGetP2PProperties", result);
         }
 
 
@@ -929,17 +1028,17 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeDeviceGetP2PPropertiesPrologue( hDevice, hPeerDevice, pP2PProperties );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeDeviceGetP2PProperties", result);
         }
 
-        auto result = pfnGetP2PProperties( hDevice, hPeerDevice, pP2PProperties );
+        auto driver_result = pfnGetP2PProperties( hDevice, hPeerDevice, pP2PProperties );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeDeviceGetP2PPropertiesEpilogue( hDevice, hPeerDevice, pP2PProperties );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeDeviceGetP2PPropertiesEpilogue( hDevice, hPeerDevice, pP2PProperties ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeDeviceGetP2PProperties", result);
         }
 
-        return result;
+        return logAndPropagateResult("zeDeviceGetP2PProperties", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -951,15 +1050,17 @@ namespace validation_layer
         ze_bool_t* value                                ///< [out] returned access capability
         )
     {
+        context.logger->log_trace("zeDeviceCanAccessPeer(hDevice, hPeerDevice, value)");
+
         auto pfnCanAccessPeer = context.zeDdiTable.Device.pfnCanAccessPeer;
 
         if( nullptr == pfnCanAccessPeer )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeDeviceCanAccessPeer", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeDeviceCanAccessPeerPrologue( hDevice, hPeerDevice, value );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeDeviceCanAccessPeer", result);
         }
 
 
@@ -970,17 +1071,17 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeDeviceCanAccessPeerPrologue( hDevice, hPeerDevice, value );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeDeviceCanAccessPeer", result);
         }
 
-        auto result = pfnCanAccessPeer( hDevice, hPeerDevice, value );
+        auto driver_result = pfnCanAccessPeer( hDevice, hPeerDevice, value );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeDeviceCanAccessPeerEpilogue( hDevice, hPeerDevice, value );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeDeviceCanAccessPeerEpilogue( hDevice, hPeerDevice, value ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeDeviceCanAccessPeer", result);
         }
 
-        return result;
+        return logAndPropagateResult("zeDeviceCanAccessPeer", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -990,15 +1091,17 @@ namespace validation_layer
         ze_device_handle_t hDevice                      ///< [in] handle of the device
         )
     {
+        context.logger->log_trace("zeDeviceGetStatus(hDevice)");
+
         auto pfnGetStatus = context.zeDdiTable.Device.pfnGetStatus;
 
         if( nullptr == pfnGetStatus )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeDeviceGetStatus", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeDeviceGetStatusPrologue( hDevice );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeDeviceGetStatus", result);
         }
 
 
@@ -1009,17 +1112,17 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeDeviceGetStatusPrologue( hDevice );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeDeviceGetStatus", result);
         }
 
-        auto result = pfnGetStatus( hDevice );
+        auto driver_result = pfnGetStatus( hDevice );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeDeviceGetStatusEpilogue( hDevice );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeDeviceGetStatusEpilogue( hDevice ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeDeviceGetStatus", result);
         }
 
-        return result;
+        return logAndPropagateResult("zeDeviceGetStatus", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -1028,20 +1131,22 @@ namespace validation_layer
     zeDeviceGetGlobalTimestamps(
         ze_device_handle_t hDevice,                     ///< [in] handle of the device
         uint64_t* hostTimestamp,                        ///< [out] value of the Host's global timestamp that correlates with the
-                                                        ///< Device's global timestamp value
+                                                        ///< Device's global timestamp value.
         uint64_t* deviceTimestamp                       ///< [out] value of the Device's global timestamp that correlates with the
-                                                        ///< Host's global timestamp value
+                                                        ///< Host's global timestamp value.
         )
     {
+        context.logger->log_trace("zeDeviceGetGlobalTimestamps(hDevice, hostTimestamp, deviceTimestamp)");
+
         auto pfnGetGlobalTimestamps = context.zeDdiTable.Device.pfnGetGlobalTimestamps;
 
         if( nullptr == pfnGetGlobalTimestamps )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeDeviceGetGlobalTimestamps", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeDeviceGetGlobalTimestampsPrologue( hDevice, hostTimestamp, deviceTimestamp );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeDeviceGetGlobalTimestamps", result);
         }
 
 
@@ -1052,17 +1157,17 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeDeviceGetGlobalTimestampsPrologue( hDevice, hostTimestamp, deviceTimestamp );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeDeviceGetGlobalTimestamps", result);
         }
 
-        auto result = pfnGetGlobalTimestamps( hDevice, hostTimestamp, deviceTimestamp );
+        auto driver_result = pfnGetGlobalTimestamps( hDevice, hostTimestamp, deviceTimestamp );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeDeviceGetGlobalTimestampsEpilogue( hDevice, hostTimestamp, deviceTimestamp );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeDeviceGetGlobalTimestampsEpilogue( hDevice, hostTimestamp, deviceTimestamp ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeDeviceGetGlobalTimestamps", result);
         }
 
-        return result;
+        return logAndPropagateResult("zeDeviceGetGlobalTimestamps", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -1074,15 +1179,17 @@ namespace validation_layer
         ze_context_handle_t* phContext                  ///< [out] pointer to handle of context object created
         )
     {
+        context.logger->log_trace("zeContextCreate(hDriver, desc, phContext)");
+
         auto pfnCreate = context.zeDdiTable.Context.pfnCreate;
 
         if( nullptr == pfnCreate )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeContextCreate", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeContextCreatePrologue( hDriver, desc, phContext );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeContextCreate", result);
         }
 
 
@@ -1093,18 +1200,18 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeContextCreatePrologue( hDriver, desc, phContext );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeContextCreate", result);
         }
 
-        auto result = pfnCreate( hDriver, desc, phContext );
+        auto driver_result = pfnCreate( hDriver, desc, phContext );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeContextCreateEpilogue( hDriver, desc, phContext );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeContextCreateEpilogue( hDriver, desc, phContext ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeContextCreate", result);
         }
 
 
-        if( result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
+        if( driver_result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
             
             if (phContext){
                 context.handleLifetime->addHandle( *phContext );
@@ -1112,7 +1219,7 @@ namespace validation_layer
 
             }
         }
-        return result;
+        return logAndPropagateResult("zeContextCreate", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -1134,15 +1241,17 @@ namespace validation_layer
         ze_context_handle_t* phContext                  ///< [out] pointer to handle of context object created
         )
     {
+        context.logger->log_trace("zeContextCreateEx(hDriver, desc, numDevices, phDevicesLocal, phContext)");
+
         auto pfnCreateEx = context.zeDdiTable.Context.pfnCreateEx;
 
         if( nullptr == pfnCreateEx )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeContextCreateEx", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeContextCreateExPrologue( hDriver, desc, numDevices, phDevices, phContext );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeContextCreateEx", result);
         }
 
 
@@ -1153,18 +1262,18 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeContextCreateExPrologue( hDriver, desc, numDevices, phDevices, phContext );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeContextCreateEx", result);
         }
 
-        auto result = pfnCreateEx( hDriver, desc, numDevices, phDevices, phContext );
+        auto driver_result = pfnCreateEx( hDriver, desc, numDevices, phDevices, phContext );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeContextCreateExEpilogue( hDriver, desc, numDevices, phDevices, phContext );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeContextCreateExEpilogue( hDriver, desc, numDevices, phDevices, phContext ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeContextCreateEx", result);
         }
 
 
-        if( result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
+        if( driver_result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
             
             if (phContext){
                 context.handleLifetime->addHandle( *phContext );
@@ -1172,7 +1281,7 @@ namespace validation_layer
 
             }
         }
-        return result;
+        return logAndPropagateResult("zeContextCreateEx", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -1182,15 +1291,17 @@ namespace validation_layer
         ze_context_handle_t hContext                    ///< [in][release] handle of context object to destroy
         )
     {
+        context.logger->log_trace("zeContextDestroy(hContext)");
+
         auto pfnDestroy = context.zeDdiTable.Context.pfnDestroy;
 
         if( nullptr == pfnDestroy )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeContextDestroy", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeContextDestroyPrologue( hContext );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeContextDestroy", result);
         }
 
 
@@ -1201,17 +1312,17 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeContextDestroyPrologue( hContext );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeContextDestroy", result);
         }
 
-        auto result = pfnDestroy( hContext );
+        auto driver_result = pfnDestroy( hContext );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeContextDestroyEpilogue( hContext );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeContextDestroyEpilogue( hContext ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeContextDestroy", result);
         }
 
-        return result;
+        return logAndPropagateResult("zeContextDestroy", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -1221,15 +1332,17 @@ namespace validation_layer
         ze_context_handle_t hContext                    ///< [in] handle of context object
         )
     {
+        context.logger->log_trace("zeContextGetStatus(hContext)");
+
         auto pfnGetStatus = context.zeDdiTable.Context.pfnGetStatus;
 
         if( nullptr == pfnGetStatus )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeContextGetStatus", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeContextGetStatusPrologue( hContext );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeContextGetStatus", result);
         }
 
 
@@ -1240,17 +1353,17 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeContextGetStatusPrologue( hContext );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeContextGetStatus", result);
         }
 
-        auto result = pfnGetStatus( hContext );
+        auto driver_result = pfnGetStatus( hContext );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeContextGetStatusEpilogue( hContext );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeContextGetStatusEpilogue( hContext ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeContextGetStatus", result);
         }
 
-        return result;
+        return logAndPropagateResult("zeContextGetStatus", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -1263,15 +1376,17 @@ namespace validation_layer
         ze_command_queue_handle_t* phCommandQueue       ///< [out] pointer to handle of command queue object created
         )
     {
+        context.logger->log_trace("zeCommandQueueCreate(hContext, hDevice, desc, phCommandQueue)");
+
         auto pfnCreate = context.zeDdiTable.CommandQueue.pfnCreate;
 
         if( nullptr == pfnCreate )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeCommandQueueCreate", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeCommandQueueCreatePrologue( hContext, hDevice, desc, phCommandQueue );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeCommandQueueCreate", result);
         }
 
 
@@ -1282,18 +1397,18 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeCommandQueueCreatePrologue( hContext, hDevice, desc, phCommandQueue );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeCommandQueueCreate", result);
         }
 
-        auto result = pfnCreate( hContext, hDevice, desc, phCommandQueue );
+        auto driver_result = pfnCreate( hContext, hDevice, desc, phCommandQueue );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeCommandQueueCreateEpilogue( hContext, hDevice, desc, phCommandQueue );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandQueueCreateEpilogue( hContext, hDevice, desc, phCommandQueue ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeCommandQueueCreate", result);
         }
 
 
-        if( result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
+        if( driver_result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
             
             if (phCommandQueue){
                 context.handleLifetime->addHandle( *phCommandQueue );
@@ -1301,7 +1416,7 @@ namespace validation_layer
 
             }
         }
-        return result;
+        return logAndPropagateResult("zeCommandQueueCreate", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -1311,15 +1426,17 @@ namespace validation_layer
         ze_command_queue_handle_t hCommandQueue         ///< [in][release] handle of command queue object to destroy
         )
     {
+        context.logger->log_trace("zeCommandQueueDestroy(hCommandQueue)");
+
         auto pfnDestroy = context.zeDdiTable.CommandQueue.pfnDestroy;
 
         if( nullptr == pfnDestroy )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeCommandQueueDestroy", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeCommandQueueDestroyPrologue( hCommandQueue );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeCommandQueueDestroy", result);
         }
 
 
@@ -1330,17 +1447,17 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeCommandQueueDestroyPrologue( hCommandQueue );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeCommandQueueDestroy", result);
         }
 
-        auto result = pfnDestroy( hCommandQueue );
+        auto driver_result = pfnDestroy( hCommandQueue );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeCommandQueueDestroyEpilogue( hCommandQueue );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandQueueDestroyEpilogue( hCommandQueue ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeCommandQueueDestroy", result);
         }
 
-        return result;
+        return logAndPropagateResult("zeCommandQueueDestroy", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -1354,15 +1471,17 @@ namespace validation_layer
         ze_fence_handle_t hFence                        ///< [in][optional] handle of the fence to signal on completion
         )
     {
+        context.logger->log_trace("zeCommandQueueExecuteCommandLists(hCommandQueue, numCommandLists, phCommandListsLocal, hFence)");
+
         auto pfnExecuteCommandLists = context.zeDdiTable.CommandQueue.pfnExecuteCommandLists;
 
         if( nullptr == pfnExecuteCommandLists )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeCommandQueueExecuteCommandLists", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeCommandQueueExecuteCommandListsPrologue( hCommandQueue, numCommandLists, phCommandLists, hFence );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeCommandQueueExecuteCommandLists", result);
         }
 
 
@@ -1373,17 +1492,17 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeCommandQueueExecuteCommandListsPrologue( hCommandQueue, numCommandLists, phCommandLists, hFence );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeCommandQueueExecuteCommandLists", result);
         }
 
-        auto result = pfnExecuteCommandLists( hCommandQueue, numCommandLists, phCommandLists, hFence );
+        auto driver_result = pfnExecuteCommandLists( hCommandQueue, numCommandLists, phCommandLists, hFence );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeCommandQueueExecuteCommandListsEpilogue( hCommandQueue, numCommandLists, phCommandLists, hFence );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandQueueExecuteCommandListsEpilogue( hCommandQueue, numCommandLists, phCommandLists, hFence ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeCommandQueueExecuteCommandLists", result);
         }
 
-        return result;
+        return logAndPropagateResult("zeCommandQueueExecuteCommandLists", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -1400,15 +1519,17 @@ namespace validation_layer
                                                         ///< value allowed by the accuracy of those dependencies.
         )
     {
+        context.logger->log_trace("zeCommandQueueSynchronize(hCommandQueue, timeout)");
+
         auto pfnSynchronize = context.zeDdiTable.CommandQueue.pfnSynchronize;
 
         if( nullptr == pfnSynchronize )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeCommandQueueSynchronize", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeCommandQueueSynchronizePrologue( hCommandQueue, timeout );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeCommandQueueSynchronize", result);
         }
 
 
@@ -1419,17 +1540,17 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeCommandQueueSynchronizePrologue( hCommandQueue, timeout );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeCommandQueueSynchronize", result);
         }
 
-        auto result = pfnSynchronize( hCommandQueue, timeout );
+        auto driver_result = pfnSynchronize( hCommandQueue, timeout );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeCommandQueueSynchronizeEpilogue( hCommandQueue, timeout );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandQueueSynchronizeEpilogue( hCommandQueue, timeout ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeCommandQueueSynchronize", result);
         }
 
-        return result;
+        return logAndPropagateResult("zeCommandQueueSynchronize", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -1440,15 +1561,17 @@ namespace validation_layer
         uint32_t* pOrdinal                              ///< [out] command queue group ordinal
         )
     {
+        context.logger->log_trace("zeCommandQueueGetOrdinal(hCommandQueue, pOrdinal)");
+
         auto pfnGetOrdinal = context.zeDdiTable.CommandQueue.pfnGetOrdinal;
 
         if( nullptr == pfnGetOrdinal )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeCommandQueueGetOrdinal", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeCommandQueueGetOrdinalPrologue( hCommandQueue, pOrdinal );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeCommandQueueGetOrdinal", result);
         }
 
 
@@ -1459,17 +1582,17 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeCommandQueueGetOrdinalPrologue( hCommandQueue, pOrdinal );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeCommandQueueGetOrdinal", result);
         }
 
-        auto result = pfnGetOrdinal( hCommandQueue, pOrdinal );
+        auto driver_result = pfnGetOrdinal( hCommandQueue, pOrdinal );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeCommandQueueGetOrdinalEpilogue( hCommandQueue, pOrdinal );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandQueueGetOrdinalEpilogue( hCommandQueue, pOrdinal ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeCommandQueueGetOrdinal", result);
         }
 
-        return result;
+        return logAndPropagateResult("zeCommandQueueGetOrdinal", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -1480,15 +1603,17 @@ namespace validation_layer
         uint32_t* pIndex                                ///< [out] command queue index within the group
         )
     {
+        context.logger->log_trace("zeCommandQueueGetIndex(hCommandQueue, pIndex)");
+
         auto pfnGetIndex = context.zeDdiTable.CommandQueue.pfnGetIndex;
 
         if( nullptr == pfnGetIndex )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeCommandQueueGetIndex", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeCommandQueueGetIndexPrologue( hCommandQueue, pIndex );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeCommandQueueGetIndex", result);
         }
 
 
@@ -1499,17 +1624,17 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeCommandQueueGetIndexPrologue( hCommandQueue, pIndex );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeCommandQueueGetIndex", result);
         }
 
-        auto result = pfnGetIndex( hCommandQueue, pIndex );
+        auto driver_result = pfnGetIndex( hCommandQueue, pIndex );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeCommandQueueGetIndexEpilogue( hCommandQueue, pIndex );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandQueueGetIndexEpilogue( hCommandQueue, pIndex ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeCommandQueueGetIndex", result);
         }
 
-        return result;
+        return logAndPropagateResult("zeCommandQueueGetIndex", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -1522,15 +1647,17 @@ namespace validation_layer
         ze_command_list_handle_t* phCommandList         ///< [out] pointer to handle of command list object created
         )
     {
+        context.logger->log_trace("zeCommandListCreate(hContext, hDevice, desc, phCommandList)");
+
         auto pfnCreate = context.zeDdiTable.CommandList.pfnCreate;
 
         if( nullptr == pfnCreate )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeCommandListCreate", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeCommandListCreatePrologue( hContext, hDevice, desc, phCommandList );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeCommandListCreate", result);
         }
 
 
@@ -1541,18 +1668,18 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeCommandListCreatePrologue( hContext, hDevice, desc, phCommandList );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeCommandListCreate", result);
         }
 
-        auto result = pfnCreate( hContext, hDevice, desc, phCommandList );
+        auto driver_result = pfnCreate( hContext, hDevice, desc, phCommandList );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeCommandListCreateEpilogue( hContext, hDevice, desc, phCommandList );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListCreateEpilogue( hContext, hDevice, desc, phCommandList ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeCommandListCreate", result);
         }
 
 
-        if( result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
+        if( driver_result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
             
             if (phCommandList){
                 context.handleLifetime->addHandle( *phCommandList );
@@ -1560,7 +1687,7 @@ namespace validation_layer
 
             }
         }
-        return result;
+        return logAndPropagateResult("zeCommandListCreate", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -1573,15 +1700,17 @@ namespace validation_layer
         ze_command_list_handle_t* phCommandList         ///< [out] pointer to handle of command list object created
         )
     {
+        context.logger->log_trace("zeCommandListCreateImmediate(hContext, hDevice, altdesc, phCommandList)");
+
         auto pfnCreateImmediate = context.zeDdiTable.CommandList.pfnCreateImmediate;
 
         if( nullptr == pfnCreateImmediate )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeCommandListCreateImmediate", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeCommandListCreateImmediatePrologue( hContext, hDevice, altdesc, phCommandList );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeCommandListCreateImmediate", result);
         }
 
 
@@ -1592,24 +1721,24 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeCommandListCreateImmediatePrologue( hContext, hDevice, altdesc, phCommandList );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeCommandListCreateImmediate", result);
         }
 
-        auto result = pfnCreateImmediate( hContext, hDevice, altdesc, phCommandList );
+        auto driver_result = pfnCreateImmediate( hContext, hDevice, altdesc, phCommandList );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeCommandListCreateImmediateEpilogue( hContext, hDevice, altdesc, phCommandList );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListCreateImmediateEpilogue( hContext, hDevice, altdesc, phCommandList ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeCommandListCreateImmediate", result);
         }
 
 
-        if( result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
+        if( driver_result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
             
             if (phCommandList){
                 context.handleLifetime->addHandle( *phCommandList , false);
             }
         }
-        return result;
+        return logAndPropagateResult("zeCommandListCreateImmediate", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -1619,15 +1748,17 @@ namespace validation_layer
         ze_command_list_handle_t hCommandList           ///< [in][release] handle of command list object to destroy
         )
     {
+        context.logger->log_trace("zeCommandListDestroy(hCommandList)");
+
         auto pfnDestroy = context.zeDdiTable.CommandList.pfnDestroy;
 
         if( nullptr == pfnDestroy )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeCommandListDestroy", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeCommandListDestroyPrologue( hCommandList );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeCommandListDestroy", result);
         }
 
 
@@ -1638,17 +1769,17 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeCommandListDestroyPrologue( hCommandList );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeCommandListDestroy", result);
         }
 
-        auto result = pfnDestroy( hCommandList );
+        auto driver_result = pfnDestroy( hCommandList );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeCommandListDestroyEpilogue( hCommandList );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListDestroyEpilogue( hCommandList ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeCommandListDestroy", result);
         }
 
-        return result;
+        return logAndPropagateResult("zeCommandListDestroy", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -1658,15 +1789,17 @@ namespace validation_layer
         ze_command_list_handle_t hCommandList           ///< [in] handle of command list object to close
         )
     {
+        context.logger->log_trace("zeCommandListClose(hCommandList)");
+
         auto pfnClose = context.zeDdiTable.CommandList.pfnClose;
 
         if( nullptr == pfnClose )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeCommandListClose", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeCommandListClosePrologue( hCommandList );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeCommandListClose", result);
         }
 
 
@@ -1677,17 +1810,17 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeCommandListClosePrologue( hCommandList );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeCommandListClose", result);
         }
 
-        auto result = pfnClose( hCommandList );
+        auto driver_result = pfnClose( hCommandList );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeCommandListCloseEpilogue( hCommandList );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListCloseEpilogue( hCommandList ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeCommandListClose", result);
         }
 
-        return result;
+        return logAndPropagateResult("zeCommandListClose", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -1697,15 +1830,17 @@ namespace validation_layer
         ze_command_list_handle_t hCommandList           ///< [in] handle of command list object to reset
         )
     {
+        context.logger->log_trace("zeCommandListReset(hCommandList)");
+
         auto pfnReset = context.zeDdiTable.CommandList.pfnReset;
 
         if( nullptr == pfnReset )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeCommandListReset", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeCommandListResetPrologue( hCommandList );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeCommandListReset", result);
         }
 
 
@@ -1716,17 +1851,17 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeCommandListResetPrologue( hCommandList );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeCommandListReset", result);
         }
 
-        auto result = pfnReset( hCommandList );
+        auto driver_result = pfnReset( hCommandList );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeCommandListResetEpilogue( hCommandList );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListResetEpilogue( hCommandList ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeCommandListReset", result);
         }
 
-        return result;
+        return logAndPropagateResult("zeCommandListReset", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -1743,15 +1878,17 @@ namespace validation_layer
                                                         ///< on before executing query
         )
     {
+        context.logger->log_trace("zeCommandListAppendWriteGlobalTimestamp(hCommandList, dstptr, hSignalEvent, numWaitEvents, phWaitEventsLocal)");
+
         auto pfnAppendWriteGlobalTimestamp = context.zeDdiTable.CommandList.pfnAppendWriteGlobalTimestamp;
 
         if( nullptr == pfnAppendWriteGlobalTimestamp )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeCommandListAppendWriteGlobalTimestamp", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeCommandListAppendWriteGlobalTimestampPrologue( hCommandList, dstptr, hSignalEvent, numWaitEvents, phWaitEvents );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeCommandListAppendWriteGlobalTimestamp", result);
         }
 
 
@@ -1762,17 +1899,17 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeCommandListAppendWriteGlobalTimestampPrologue( hCommandList, dstptr, hSignalEvent, numWaitEvents, phWaitEvents );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeCommandListAppendWriteGlobalTimestamp", result);
         }
 
-        auto result = pfnAppendWriteGlobalTimestamp( hCommandList, dstptr, hSignalEvent, numWaitEvents, phWaitEvents );
+        auto driver_result = pfnAppendWriteGlobalTimestamp( hCommandList, dstptr, hSignalEvent, numWaitEvents, phWaitEvents );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeCommandListAppendWriteGlobalTimestampEpilogue( hCommandList, dstptr, hSignalEvent, numWaitEvents, phWaitEvents );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListAppendWriteGlobalTimestampEpilogue( hCommandList, dstptr, hSignalEvent, numWaitEvents, phWaitEvents ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeCommandListAppendWriteGlobalTimestamp", result);
         }
 
-        return result;
+        return logAndPropagateResult("zeCommandListAppendWriteGlobalTimestamp", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -1789,15 +1926,17 @@ namespace validation_layer
                                                         ///< value allowed by the accuracy of those dependencies.
         )
     {
+        context.logger->log_trace("zeCommandListHostSynchronize(hCommandList, timeout)");
+
         auto pfnHostSynchronize = context.zeDdiTable.CommandList.pfnHostSynchronize;
 
         if( nullptr == pfnHostSynchronize )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeCommandListHostSynchronize", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeCommandListHostSynchronizePrologue( hCommandList, timeout );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeCommandListHostSynchronize", result);
         }
 
 
@@ -1808,17 +1947,17 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeCommandListHostSynchronizePrologue( hCommandList, timeout );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeCommandListHostSynchronize", result);
         }
 
-        auto result = pfnHostSynchronize( hCommandList, timeout );
+        auto driver_result = pfnHostSynchronize( hCommandList, timeout );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeCommandListHostSynchronizeEpilogue( hCommandList, timeout );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListHostSynchronizeEpilogue( hCommandList, timeout ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeCommandListHostSynchronize", result);
         }
 
-        return result;
+        return logAndPropagateResult("zeCommandListHostSynchronize", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -1829,15 +1968,17 @@ namespace validation_layer
         ze_device_handle_t* phDevice                    ///< [out] handle of the device on which the command list was created
         )
     {
+        context.logger->log_trace("zeCommandListGetDeviceHandle(hCommandList, phDevice)");
+
         auto pfnGetDeviceHandle = context.zeDdiTable.CommandList.pfnGetDeviceHandle;
 
         if( nullptr == pfnGetDeviceHandle )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeCommandListGetDeviceHandle", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeCommandListGetDeviceHandlePrologue( hCommandList, phDevice );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeCommandListGetDeviceHandle", result);
         }
 
 
@@ -1848,17 +1989,17 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeCommandListGetDeviceHandlePrologue( hCommandList, phDevice );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeCommandListGetDeviceHandle", result);
         }
 
-        auto result = pfnGetDeviceHandle( hCommandList, phDevice );
+        auto driver_result = pfnGetDeviceHandle( hCommandList, phDevice );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeCommandListGetDeviceHandleEpilogue( hCommandList, phDevice );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListGetDeviceHandleEpilogue( hCommandList, phDevice ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeCommandListGetDeviceHandle", result);
         }
 
-        return result;
+        return logAndPropagateResult("zeCommandListGetDeviceHandle", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -1869,15 +2010,17 @@ namespace validation_layer
         ze_context_handle_t* phContext                  ///< [out] handle of the context on which the command list was created
         )
     {
+        context.logger->log_trace("zeCommandListGetContextHandle(hCommandList, phContext)");
+
         auto pfnGetContextHandle = context.zeDdiTable.CommandList.pfnGetContextHandle;
 
         if( nullptr == pfnGetContextHandle )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeCommandListGetContextHandle", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeCommandListGetContextHandlePrologue( hCommandList, phContext );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeCommandListGetContextHandle", result);
         }
 
 
@@ -1888,17 +2031,17 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeCommandListGetContextHandlePrologue( hCommandList, phContext );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeCommandListGetContextHandle", result);
         }
 
-        auto result = pfnGetContextHandle( hCommandList, phContext );
+        auto driver_result = pfnGetContextHandle( hCommandList, phContext );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeCommandListGetContextHandleEpilogue( hCommandList, phContext );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListGetContextHandleEpilogue( hCommandList, phContext ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeCommandListGetContextHandle", result);
         }
 
-        return result;
+        return logAndPropagateResult("zeCommandListGetContextHandle", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -1909,15 +2052,17 @@ namespace validation_layer
         uint32_t* pOrdinal                              ///< [out] command queue group ordinal to which command list is submitted
         )
     {
+        context.logger->log_trace("zeCommandListGetOrdinal(hCommandList, pOrdinal)");
+
         auto pfnGetOrdinal = context.zeDdiTable.CommandList.pfnGetOrdinal;
 
         if( nullptr == pfnGetOrdinal )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeCommandListGetOrdinal", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeCommandListGetOrdinalPrologue( hCommandList, pOrdinal );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeCommandListGetOrdinal", result);
         }
 
 
@@ -1928,17 +2073,17 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeCommandListGetOrdinalPrologue( hCommandList, pOrdinal );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeCommandListGetOrdinal", result);
         }
 
-        auto result = pfnGetOrdinal( hCommandList, pOrdinal );
+        auto driver_result = pfnGetOrdinal( hCommandList, pOrdinal );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeCommandListGetOrdinalEpilogue( hCommandList, pOrdinal );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListGetOrdinalEpilogue( hCommandList, pOrdinal ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeCommandListGetOrdinal", result);
         }
 
-        return result;
+        return logAndPropagateResult("zeCommandListGetOrdinal", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -1950,15 +2095,17 @@ namespace validation_layer
                                                         ///< command list is submitted
         )
     {
+        context.logger->log_trace("zeCommandListImmediateGetIndex(hCommandListImmediate, pIndex)");
+
         auto pfnImmediateGetIndex = context.zeDdiTable.CommandList.pfnImmediateGetIndex;
 
         if( nullptr == pfnImmediateGetIndex )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeCommandListImmediateGetIndex", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeCommandListImmediateGetIndexPrologue( hCommandListImmediate, pIndex );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeCommandListImmediateGetIndex", result);
         }
 
 
@@ -1969,17 +2116,17 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeCommandListImmediateGetIndexPrologue( hCommandListImmediate, pIndex );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeCommandListImmediateGetIndex", result);
         }
 
-        auto result = pfnImmediateGetIndex( hCommandListImmediate, pIndex );
+        auto driver_result = pfnImmediateGetIndex( hCommandListImmediate, pIndex );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeCommandListImmediateGetIndexEpilogue( hCommandListImmediate, pIndex );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListImmediateGetIndexEpilogue( hCommandListImmediate, pIndex ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeCommandListImmediateGetIndex", result);
         }
 
-        return result;
+        return logAndPropagateResult("zeCommandListImmediateGetIndex", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -1991,15 +2138,17 @@ namespace validation_layer
                                                         ///< command list (true) or not (false)
         )
     {
+        context.logger->log_trace("zeCommandListIsImmediate(hCommandList, pIsImmediate)");
+
         auto pfnIsImmediate = context.zeDdiTable.CommandList.pfnIsImmediate;
 
         if( nullptr == pfnIsImmediate )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeCommandListIsImmediate", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeCommandListIsImmediatePrologue( hCommandList, pIsImmediate );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeCommandListIsImmediate", result);
         }
 
 
@@ -2010,17 +2159,17 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeCommandListIsImmediatePrologue( hCommandList, pIsImmediate );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeCommandListIsImmediate", result);
         }
 
-        auto result = pfnIsImmediate( hCommandList, pIsImmediate );
+        auto driver_result = pfnIsImmediate( hCommandList, pIsImmediate );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeCommandListIsImmediateEpilogue( hCommandList, pIsImmediate );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListIsImmediateEpilogue( hCommandList, pIsImmediate ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeCommandListIsImmediate", result);
         }
 
-        return result;
+        return logAndPropagateResult("zeCommandListIsImmediate", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -2035,15 +2184,17 @@ namespace validation_layer
                                                         ///< on before executing barrier
         )
     {
+        context.logger->log_trace("zeCommandListAppendBarrier(hCommandList, hSignalEvent, numWaitEvents, phWaitEventsLocal)");
+
         auto pfnAppendBarrier = context.zeDdiTable.CommandList.pfnAppendBarrier;
 
         if( nullptr == pfnAppendBarrier )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeCommandListAppendBarrier", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeCommandListAppendBarrierPrologue( hCommandList, hSignalEvent, numWaitEvents, phWaitEvents );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeCommandListAppendBarrier", result);
         }
 
 
@@ -2054,17 +2205,17 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeCommandListAppendBarrierPrologue( hCommandList, hSignalEvent, numWaitEvents, phWaitEvents );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeCommandListAppendBarrier", result);
         }
 
-        auto result = pfnAppendBarrier( hCommandList, hSignalEvent, numWaitEvents, phWaitEvents );
+        auto driver_result = pfnAppendBarrier( hCommandList, hSignalEvent, numWaitEvents, phWaitEvents );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeCommandListAppendBarrierEpilogue( hCommandList, hSignalEvent, numWaitEvents, phWaitEvents );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListAppendBarrierEpilogue( hCommandList, hSignalEvent, numWaitEvents, phWaitEvents ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeCommandListAppendBarrier", result);
         }
 
-        return result;
+        return logAndPropagateResult("zeCommandListAppendBarrier", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -2082,15 +2233,17 @@ namespace validation_layer
                                                         ///< on before executing barrier
         )
     {
+        context.logger->log_trace("zeCommandListAppendMemoryRangesBarrier(hCommandList, numRanges, pRangeSizes, pRanges, hSignalEvent, numWaitEvents, phWaitEventsLocal)");
+
         auto pfnAppendMemoryRangesBarrier = context.zeDdiTable.CommandList.pfnAppendMemoryRangesBarrier;
 
         if( nullptr == pfnAppendMemoryRangesBarrier )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeCommandListAppendMemoryRangesBarrier", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeCommandListAppendMemoryRangesBarrierPrologue( hCommandList, numRanges, pRangeSizes, pRanges, hSignalEvent, numWaitEvents, phWaitEvents );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeCommandListAppendMemoryRangesBarrier", result);
         }
 
 
@@ -2101,17 +2254,17 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeCommandListAppendMemoryRangesBarrierPrologue( hCommandList, numRanges, pRangeSizes, pRanges, hSignalEvent, numWaitEvents, phWaitEvents );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeCommandListAppendMemoryRangesBarrier", result);
         }
 
-        auto result = pfnAppendMemoryRangesBarrier( hCommandList, numRanges, pRangeSizes, pRanges, hSignalEvent, numWaitEvents, phWaitEvents );
+        auto driver_result = pfnAppendMemoryRangesBarrier( hCommandList, numRanges, pRangeSizes, pRanges, hSignalEvent, numWaitEvents, phWaitEvents );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeCommandListAppendMemoryRangesBarrierEpilogue( hCommandList, numRanges, pRangeSizes, pRanges, hSignalEvent, numWaitEvents, phWaitEvents );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListAppendMemoryRangesBarrierEpilogue( hCommandList, numRanges, pRangeSizes, pRanges, hSignalEvent, numWaitEvents, phWaitEvents ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeCommandListAppendMemoryRangesBarrier", result);
         }
 
-        return result;
+        return logAndPropagateResult("zeCommandListAppendMemoryRangesBarrier", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -2122,15 +2275,17 @@ namespace validation_layer
         ze_device_handle_t hDevice                      ///< [in] handle of the device
         )
     {
+        context.logger->log_trace("zeContextSystemBarrier(hContext, hDevice)");
+
         auto pfnSystemBarrier = context.zeDdiTable.Context.pfnSystemBarrier;
 
         if( nullptr == pfnSystemBarrier )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeContextSystemBarrier", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeContextSystemBarrierPrologue( hContext, hDevice );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeContextSystemBarrier", result);
         }
 
 
@@ -2141,17 +2296,17 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeContextSystemBarrierPrologue( hContext, hDevice );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeContextSystemBarrier", result);
         }
 
-        auto result = pfnSystemBarrier( hContext, hDevice );
+        auto driver_result = pfnSystemBarrier( hContext, hDevice );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeContextSystemBarrierEpilogue( hContext, hDevice );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeContextSystemBarrierEpilogue( hContext, hDevice ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeContextSystemBarrier", result);
         }
 
-        return result;
+        return logAndPropagateResult("zeContextSystemBarrier", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -2169,15 +2324,17 @@ namespace validation_layer
                                                         ///< on before launching
         )
     {
+        context.logger->log_trace("zeCommandListAppendMemoryCopy(hCommandList, dstptr, srcptr, size, hSignalEvent, numWaitEvents, phWaitEventsLocal)");
+
         auto pfnAppendMemoryCopy = context.zeDdiTable.CommandList.pfnAppendMemoryCopy;
 
         if( nullptr == pfnAppendMemoryCopy )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeCommandListAppendMemoryCopy", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeCommandListAppendMemoryCopyPrologue( hCommandList, dstptr, srcptr, size, hSignalEvent, numWaitEvents, phWaitEvents );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeCommandListAppendMemoryCopy", result);
         }
 
 
@@ -2188,17 +2345,17 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeCommandListAppendMemoryCopyPrologue( hCommandList, dstptr, srcptr, size, hSignalEvent, numWaitEvents, phWaitEvents );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeCommandListAppendMemoryCopy", result);
         }
 
-        auto result = pfnAppendMemoryCopy( hCommandList, dstptr, srcptr, size, hSignalEvent, numWaitEvents, phWaitEvents );
+        auto driver_result = pfnAppendMemoryCopy( hCommandList, dstptr, srcptr, size, hSignalEvent, numWaitEvents, phWaitEvents );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeCommandListAppendMemoryCopyEpilogue( hCommandList, dstptr, srcptr, size, hSignalEvent, numWaitEvents, phWaitEvents );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListAppendMemoryCopyEpilogue( hCommandList, dstptr, srcptr, size, hSignalEvent, numWaitEvents, phWaitEvents ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeCommandListAppendMemoryCopy", result);
         }
 
-        return result;
+        return logAndPropagateResult("zeCommandListAppendMemoryCopy", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -2217,15 +2374,17 @@ namespace validation_layer
                                                         ///< on before launching
         )
     {
+        context.logger->log_trace("zeCommandListAppendMemoryFill(hCommandList, ptr, pattern, pattern_size, size, hSignalEvent, numWaitEvents, phWaitEventsLocal)");
+
         auto pfnAppendMemoryFill = context.zeDdiTable.CommandList.pfnAppendMemoryFill;
 
         if( nullptr == pfnAppendMemoryFill )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeCommandListAppendMemoryFill", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeCommandListAppendMemoryFillPrologue( hCommandList, ptr, pattern, pattern_size, size, hSignalEvent, numWaitEvents, phWaitEvents );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeCommandListAppendMemoryFill", result);
         }
 
 
@@ -2236,17 +2395,17 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeCommandListAppendMemoryFillPrologue( hCommandList, ptr, pattern, pattern_size, size, hSignalEvent, numWaitEvents, phWaitEvents );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeCommandListAppendMemoryFill", result);
         }
 
-        auto result = pfnAppendMemoryFill( hCommandList, ptr, pattern, pattern_size, size, hSignalEvent, numWaitEvents, phWaitEvents );
+        auto driver_result = pfnAppendMemoryFill( hCommandList, ptr, pattern, pattern_size, size, hSignalEvent, numWaitEvents, phWaitEvents );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeCommandListAppendMemoryFillEpilogue( hCommandList, ptr, pattern, pattern_size, size, hSignalEvent, numWaitEvents, phWaitEvents );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListAppendMemoryFillEpilogue( hCommandList, ptr, pattern, pattern_size, size, hSignalEvent, numWaitEvents, phWaitEvents ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeCommandListAppendMemoryFill", result);
         }
 
-        return result;
+        return logAndPropagateResult("zeCommandListAppendMemoryFill", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -2273,15 +2432,17 @@ namespace validation_layer
                                                         ///< on before launching
         )
     {
+        context.logger->log_trace("zeCommandListAppendMemoryCopyRegion(hCommandList, dstptr, dstRegion, dstPitch, dstSlicePitch, srcptr, srcRegion, srcPitch, srcSlicePitch, hSignalEvent, numWaitEvents, phWaitEventsLocal)");
+
         auto pfnAppendMemoryCopyRegion = context.zeDdiTable.CommandList.pfnAppendMemoryCopyRegion;
 
         if( nullptr == pfnAppendMemoryCopyRegion )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeCommandListAppendMemoryCopyRegion", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeCommandListAppendMemoryCopyRegionPrologue( hCommandList, dstptr, dstRegion, dstPitch, dstSlicePitch, srcptr, srcRegion, srcPitch, srcSlicePitch, hSignalEvent, numWaitEvents, phWaitEvents );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeCommandListAppendMemoryCopyRegion", result);
         }
 
 
@@ -2292,17 +2453,17 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeCommandListAppendMemoryCopyRegionPrologue( hCommandList, dstptr, dstRegion, dstPitch, dstSlicePitch, srcptr, srcRegion, srcPitch, srcSlicePitch, hSignalEvent, numWaitEvents, phWaitEvents );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeCommandListAppendMemoryCopyRegion", result);
         }
 
-        auto result = pfnAppendMemoryCopyRegion( hCommandList, dstptr, dstRegion, dstPitch, dstSlicePitch, srcptr, srcRegion, srcPitch, srcSlicePitch, hSignalEvent, numWaitEvents, phWaitEvents );
+        auto driver_result = pfnAppendMemoryCopyRegion( hCommandList, dstptr, dstRegion, dstPitch, dstSlicePitch, srcptr, srcRegion, srcPitch, srcSlicePitch, hSignalEvent, numWaitEvents, phWaitEvents );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeCommandListAppendMemoryCopyRegionEpilogue( hCommandList, dstptr, dstRegion, dstPitch, dstSlicePitch, srcptr, srcRegion, srcPitch, srcSlicePitch, hSignalEvent, numWaitEvents, phWaitEvents );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListAppendMemoryCopyRegionEpilogue( hCommandList, dstptr, dstRegion, dstPitch, dstSlicePitch, srcptr, srcRegion, srcPitch, srcSlicePitch, hSignalEvent, numWaitEvents, phWaitEvents ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeCommandListAppendMemoryCopyRegion", result);
         }
 
-        return result;
+        return logAndPropagateResult("zeCommandListAppendMemoryCopyRegion", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -2321,15 +2482,17 @@ namespace validation_layer
                                                         ///< on before launching
         )
     {
+        context.logger->log_trace("zeCommandListAppendMemoryCopyFromContext(hCommandList, dstptr, hContextSrc, srcptr, size, hSignalEvent, numWaitEvents, phWaitEventsLocal)");
+
         auto pfnAppendMemoryCopyFromContext = context.zeDdiTable.CommandList.pfnAppendMemoryCopyFromContext;
 
         if( nullptr == pfnAppendMemoryCopyFromContext )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeCommandListAppendMemoryCopyFromContext", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeCommandListAppendMemoryCopyFromContextPrologue( hCommandList, dstptr, hContextSrc, srcptr, size, hSignalEvent, numWaitEvents, phWaitEvents );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeCommandListAppendMemoryCopyFromContext", result);
         }
 
 
@@ -2340,17 +2503,17 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeCommandListAppendMemoryCopyFromContextPrologue( hCommandList, dstptr, hContextSrc, srcptr, size, hSignalEvent, numWaitEvents, phWaitEvents );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeCommandListAppendMemoryCopyFromContext", result);
         }
 
-        auto result = pfnAppendMemoryCopyFromContext( hCommandList, dstptr, hContextSrc, srcptr, size, hSignalEvent, numWaitEvents, phWaitEvents );
+        auto driver_result = pfnAppendMemoryCopyFromContext( hCommandList, dstptr, hContextSrc, srcptr, size, hSignalEvent, numWaitEvents, phWaitEvents );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeCommandListAppendMemoryCopyFromContextEpilogue( hCommandList, dstptr, hContextSrc, srcptr, size, hSignalEvent, numWaitEvents, phWaitEvents );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListAppendMemoryCopyFromContextEpilogue( hCommandList, dstptr, hContextSrc, srcptr, size, hSignalEvent, numWaitEvents, phWaitEvents ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeCommandListAppendMemoryCopyFromContext", result);
         }
 
-        return result;
+        return logAndPropagateResult("zeCommandListAppendMemoryCopyFromContext", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -2367,15 +2530,17 @@ namespace validation_layer
                                                         ///< on before launching
         )
     {
+        context.logger->log_trace("zeCommandListAppendImageCopy(hCommandList, hDstImage, hSrcImage, hSignalEvent, numWaitEvents, phWaitEventsLocal)");
+
         auto pfnAppendImageCopy = context.zeDdiTable.CommandList.pfnAppendImageCopy;
 
         if( nullptr == pfnAppendImageCopy )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeCommandListAppendImageCopy", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeCommandListAppendImageCopyPrologue( hCommandList, hDstImage, hSrcImage, hSignalEvent, numWaitEvents, phWaitEvents );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeCommandListAppendImageCopy", result);
         }
 
 
@@ -2386,17 +2551,17 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeCommandListAppendImageCopyPrologue( hCommandList, hDstImage, hSrcImage, hSignalEvent, numWaitEvents, phWaitEvents );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeCommandListAppendImageCopy", result);
         }
 
-        auto result = pfnAppendImageCopy( hCommandList, hDstImage, hSrcImage, hSignalEvent, numWaitEvents, phWaitEvents );
+        auto driver_result = pfnAppendImageCopy( hCommandList, hDstImage, hSrcImage, hSignalEvent, numWaitEvents, phWaitEvents );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeCommandListAppendImageCopyEpilogue( hCommandList, hDstImage, hSrcImage, hSignalEvent, numWaitEvents, phWaitEvents );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListAppendImageCopyEpilogue( hCommandList, hDstImage, hSrcImage, hSignalEvent, numWaitEvents, phWaitEvents ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeCommandListAppendImageCopy", result);
         }
 
-        return result;
+        return logAndPropagateResult("zeCommandListAppendImageCopy", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -2415,15 +2580,17 @@ namespace validation_layer
                                                         ///< on before launching
         )
     {
+        context.logger->log_trace("zeCommandListAppendImageCopyRegion(hCommandList, hDstImage, hSrcImage, pDstRegion, pSrcRegion, hSignalEvent, numWaitEvents, phWaitEventsLocal)");
+
         auto pfnAppendImageCopyRegion = context.zeDdiTable.CommandList.pfnAppendImageCopyRegion;
 
         if( nullptr == pfnAppendImageCopyRegion )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeCommandListAppendImageCopyRegion", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeCommandListAppendImageCopyRegionPrologue( hCommandList, hDstImage, hSrcImage, pDstRegion, pSrcRegion, hSignalEvent, numWaitEvents, phWaitEvents );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeCommandListAppendImageCopyRegion", result);
         }
 
 
@@ -2434,17 +2601,17 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeCommandListAppendImageCopyRegionPrologue( hCommandList, hDstImage, hSrcImage, pDstRegion, pSrcRegion, hSignalEvent, numWaitEvents, phWaitEvents );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeCommandListAppendImageCopyRegion", result);
         }
 
-        auto result = pfnAppendImageCopyRegion( hCommandList, hDstImage, hSrcImage, pDstRegion, pSrcRegion, hSignalEvent, numWaitEvents, phWaitEvents );
+        auto driver_result = pfnAppendImageCopyRegion( hCommandList, hDstImage, hSrcImage, pDstRegion, pSrcRegion, hSignalEvent, numWaitEvents, phWaitEvents );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeCommandListAppendImageCopyRegionEpilogue( hCommandList, hDstImage, hSrcImage, pDstRegion, pSrcRegion, hSignalEvent, numWaitEvents, phWaitEvents );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListAppendImageCopyRegionEpilogue( hCommandList, hDstImage, hSrcImage, pDstRegion, pSrcRegion, hSignalEvent, numWaitEvents, phWaitEvents ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeCommandListAppendImageCopyRegion", result);
         }
 
-        return result;
+        return logAndPropagateResult("zeCommandListAppendImageCopyRegion", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -2462,15 +2629,17 @@ namespace validation_layer
                                                         ///< on before launching
         )
     {
+        context.logger->log_trace("zeCommandListAppendImageCopyToMemory(hCommandList, dstptr, hSrcImage, pSrcRegion, hSignalEvent, numWaitEvents, phWaitEventsLocal)");
+
         auto pfnAppendImageCopyToMemory = context.zeDdiTable.CommandList.pfnAppendImageCopyToMemory;
 
         if( nullptr == pfnAppendImageCopyToMemory )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeCommandListAppendImageCopyToMemory", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeCommandListAppendImageCopyToMemoryPrologue( hCommandList, dstptr, hSrcImage, pSrcRegion, hSignalEvent, numWaitEvents, phWaitEvents );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeCommandListAppendImageCopyToMemory", result);
         }
 
 
@@ -2481,17 +2650,17 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeCommandListAppendImageCopyToMemoryPrologue( hCommandList, dstptr, hSrcImage, pSrcRegion, hSignalEvent, numWaitEvents, phWaitEvents );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeCommandListAppendImageCopyToMemory", result);
         }
 
-        auto result = pfnAppendImageCopyToMemory( hCommandList, dstptr, hSrcImage, pSrcRegion, hSignalEvent, numWaitEvents, phWaitEvents );
+        auto driver_result = pfnAppendImageCopyToMemory( hCommandList, dstptr, hSrcImage, pSrcRegion, hSignalEvent, numWaitEvents, phWaitEvents );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeCommandListAppendImageCopyToMemoryEpilogue( hCommandList, dstptr, hSrcImage, pSrcRegion, hSignalEvent, numWaitEvents, phWaitEvents );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListAppendImageCopyToMemoryEpilogue( hCommandList, dstptr, hSrcImage, pSrcRegion, hSignalEvent, numWaitEvents, phWaitEvents ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeCommandListAppendImageCopyToMemory", result);
         }
 
-        return result;
+        return logAndPropagateResult("zeCommandListAppendImageCopyToMemory", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -2509,15 +2678,17 @@ namespace validation_layer
                                                         ///< on before launching
         )
     {
+        context.logger->log_trace("zeCommandListAppendImageCopyFromMemory(hCommandList, hDstImage, srcptr, pDstRegion, hSignalEvent, numWaitEvents, phWaitEventsLocal)");
+
         auto pfnAppendImageCopyFromMemory = context.zeDdiTable.CommandList.pfnAppendImageCopyFromMemory;
 
         if( nullptr == pfnAppendImageCopyFromMemory )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeCommandListAppendImageCopyFromMemory", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeCommandListAppendImageCopyFromMemoryPrologue( hCommandList, hDstImage, srcptr, pDstRegion, hSignalEvent, numWaitEvents, phWaitEvents );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeCommandListAppendImageCopyFromMemory", result);
         }
 
 
@@ -2528,17 +2699,17 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeCommandListAppendImageCopyFromMemoryPrologue( hCommandList, hDstImage, srcptr, pDstRegion, hSignalEvent, numWaitEvents, phWaitEvents );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeCommandListAppendImageCopyFromMemory", result);
         }
 
-        auto result = pfnAppendImageCopyFromMemory( hCommandList, hDstImage, srcptr, pDstRegion, hSignalEvent, numWaitEvents, phWaitEvents );
+        auto driver_result = pfnAppendImageCopyFromMemory( hCommandList, hDstImage, srcptr, pDstRegion, hSignalEvent, numWaitEvents, phWaitEvents );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeCommandListAppendImageCopyFromMemoryEpilogue( hCommandList, hDstImage, srcptr, pDstRegion, hSignalEvent, numWaitEvents, phWaitEvents );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListAppendImageCopyFromMemoryEpilogue( hCommandList, hDstImage, srcptr, pDstRegion, hSignalEvent, numWaitEvents, phWaitEvents ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeCommandListAppendImageCopyFromMemory", result);
         }
 
-        return result;
+        return logAndPropagateResult("zeCommandListAppendImageCopyFromMemory", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -2550,15 +2721,17 @@ namespace validation_layer
         size_t size                                     ///< [in] size in bytes of the memory range to prefetch
         )
     {
+        context.logger->log_trace("zeCommandListAppendMemoryPrefetch(hCommandList, ptr, size)");
+
         auto pfnAppendMemoryPrefetch = context.zeDdiTable.CommandList.pfnAppendMemoryPrefetch;
 
         if( nullptr == pfnAppendMemoryPrefetch )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeCommandListAppendMemoryPrefetch", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeCommandListAppendMemoryPrefetchPrologue( hCommandList, ptr, size );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeCommandListAppendMemoryPrefetch", result);
         }
 
 
@@ -2569,17 +2742,17 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeCommandListAppendMemoryPrefetchPrologue( hCommandList, ptr, size );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeCommandListAppendMemoryPrefetch", result);
         }
 
-        auto result = pfnAppendMemoryPrefetch( hCommandList, ptr, size );
+        auto driver_result = pfnAppendMemoryPrefetch( hCommandList, ptr, size );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeCommandListAppendMemoryPrefetchEpilogue( hCommandList, ptr, size );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListAppendMemoryPrefetchEpilogue( hCommandList, ptr, size ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeCommandListAppendMemoryPrefetch", result);
         }
 
-        return result;
+        return logAndPropagateResult("zeCommandListAppendMemoryPrefetch", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -2593,15 +2766,17 @@ namespace validation_layer
         ze_memory_advice_t advice                       ///< [in] Memory advice for the memory range
         )
     {
+        context.logger->log_trace("zeCommandListAppendMemAdvise(hCommandList, hDevice, ptr, size, advice)");
+
         auto pfnAppendMemAdvise = context.zeDdiTable.CommandList.pfnAppendMemAdvise;
 
         if( nullptr == pfnAppendMemAdvise )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeCommandListAppendMemAdvise", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeCommandListAppendMemAdvisePrologue( hCommandList, hDevice, ptr, size, advice );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeCommandListAppendMemAdvise", result);
         }
 
 
@@ -2612,17 +2787,17 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeCommandListAppendMemAdvisePrologue( hCommandList, hDevice, ptr, size, advice );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeCommandListAppendMemAdvise", result);
         }
 
-        auto result = pfnAppendMemAdvise( hCommandList, hDevice, ptr, size, advice );
+        auto driver_result = pfnAppendMemAdvise( hCommandList, hDevice, ptr, size, advice );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeCommandListAppendMemAdviseEpilogue( hCommandList, hDevice, ptr, size, advice );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListAppendMemAdviseEpilogue( hCommandList, hDevice, ptr, size, advice ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeCommandListAppendMemAdvise", result);
         }
 
-        return result;
+        return logAndPropagateResult("zeCommandListAppendMemAdvise", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -2640,15 +2815,17 @@ namespace validation_layer
         ze_event_pool_handle_t* phEventPool             ///< [out] pointer handle of event pool object created
         )
     {
+        context.logger->log_trace("zeEventPoolCreate(hContext, desc, numDevices, phDevicesLocal, phEventPool)");
+
         auto pfnCreate = context.zeDdiTable.EventPool.pfnCreate;
 
         if( nullptr == pfnCreate )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeEventPoolCreate", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeEventPoolCreatePrologue( hContext, desc, numDevices, phDevices, phEventPool );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeEventPoolCreate", result);
         }
 
 
@@ -2659,18 +2836,18 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeEventPoolCreatePrologue( hContext, desc, numDevices, phDevices, phEventPool );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeEventPoolCreate", result);
         }
 
-        auto result = pfnCreate( hContext, desc, numDevices, phDevices, phEventPool );
+        auto driver_result = pfnCreate( hContext, desc, numDevices, phDevices, phEventPool );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeEventPoolCreateEpilogue( hContext, desc, numDevices, phDevices, phEventPool );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeEventPoolCreateEpilogue( hContext, desc, numDevices, phDevices, phEventPool ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeEventPoolCreate", result);
         }
 
 
-        if( result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
+        if( driver_result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
             
             if (phEventPool){
                 context.handleLifetime->addHandle( *phEventPool );
@@ -2678,7 +2855,7 @@ namespace validation_layer
 
             }
         }
-        return result;
+        return logAndPropagateResult("zeEventPoolCreate", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -2688,15 +2865,17 @@ namespace validation_layer
         ze_event_pool_handle_t hEventPool               ///< [in][release] handle of event pool object to destroy
         )
     {
+        context.logger->log_trace("zeEventPoolDestroy(hEventPool)");
+
         auto pfnDestroy = context.zeDdiTable.EventPool.pfnDestroy;
 
         if( nullptr == pfnDestroy )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeEventPoolDestroy", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeEventPoolDestroyPrologue( hEventPool );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeEventPoolDestroy", result);
         }
 
 
@@ -2707,17 +2886,17 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeEventPoolDestroyPrologue( hEventPool );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeEventPoolDestroy", result);
         }
 
-        auto result = pfnDestroy( hEventPool );
+        auto driver_result = pfnDestroy( hEventPool );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeEventPoolDestroyEpilogue( hEventPool );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeEventPoolDestroyEpilogue( hEventPool ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeEventPoolDestroy", result);
         }
 
-        return result;
+        return logAndPropagateResult("zeEventPoolDestroy", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -2729,15 +2908,17 @@ namespace validation_layer
         ze_event_handle_t* phEvent                      ///< [out] pointer to handle of event object created
         )
     {
+        context.logger->log_trace("zeEventCreate(hEventPool, desc, phEvent)");
+
         auto pfnCreate = context.zeDdiTable.Event.pfnCreate;
 
         if( nullptr == pfnCreate )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeEventCreate", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeEventCreatePrologue( hEventPool, desc, phEvent );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeEventCreate", result);
         }
 
 
@@ -2748,18 +2929,18 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeEventCreatePrologue( hEventPool, desc, phEvent );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeEventCreate", result);
         }
 
-        auto result = pfnCreate( hEventPool, desc, phEvent );
+        auto driver_result = pfnCreate( hEventPool, desc, phEvent );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeEventCreateEpilogue( hEventPool, desc, phEvent );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeEventCreateEpilogue( hEventPool, desc, phEvent ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeEventCreate", result);
         }
 
 
-        if( result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
+        if( driver_result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
             
             if (phEvent){
                 context.handleLifetime->addHandle( *phEvent );
@@ -2767,7 +2948,7 @@ namespace validation_layer
 
             }
         }
-        return result;
+        return logAndPropagateResult("zeEventCreate", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -2777,15 +2958,17 @@ namespace validation_layer
         ze_event_handle_t hEvent                        ///< [in][release] handle of event object to destroy
         )
     {
+        context.logger->log_trace("zeEventDestroy(hEvent)");
+
         auto pfnDestroy = context.zeDdiTable.Event.pfnDestroy;
 
         if( nullptr == pfnDestroy )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeEventDestroy", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeEventDestroyPrologue( hEvent );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeEventDestroy", result);
         }
 
 
@@ -2796,17 +2979,17 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeEventDestroyPrologue( hEvent );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeEventDestroy", result);
         }
 
-        auto result = pfnDestroy( hEvent );
+        auto driver_result = pfnDestroy( hEvent );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeEventDestroyEpilogue( hEvent );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeEventDestroyEpilogue( hEvent ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeEventDestroy", result);
         }
 
-        return result;
+        return logAndPropagateResult("zeEventDestroy", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -2817,15 +3000,17 @@ namespace validation_layer
         ze_ipc_event_pool_handle_t* phIpc               ///< [out] Returned IPC event handle
         )
     {
+        context.logger->log_trace("zeEventPoolGetIpcHandle(hEventPool, phIpc)");
+
         auto pfnGetIpcHandle = context.zeDdiTable.EventPool.pfnGetIpcHandle;
 
         if( nullptr == pfnGetIpcHandle )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeEventPoolGetIpcHandle", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeEventPoolGetIpcHandlePrologue( hEventPool, phIpc );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeEventPoolGetIpcHandle", result);
         }
 
 
@@ -2836,21 +3021,21 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeEventPoolGetIpcHandlePrologue( hEventPool, phIpc );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeEventPoolGetIpcHandle", result);
         }
 
-        auto result = pfnGetIpcHandle( hEventPool, phIpc );
+        auto driver_result = pfnGetIpcHandle( hEventPool, phIpc );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeEventPoolGetIpcHandleEpilogue( hEventPool, phIpc );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeEventPoolGetIpcHandleEpilogue( hEventPool, phIpc ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeEventPoolGetIpcHandle", result);
         }
 
 
-        if( result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
+        if( driver_result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
             
         }
-        return result;
+        return logAndPropagateResult("zeEventPoolGetIpcHandle", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -2862,15 +3047,17 @@ namespace validation_layer
         ze_ipc_event_pool_handle_t hIpc                 ///< [in] IPC event pool handle
         )
     {
+        context.logger->log_trace("zeEventPoolPutIpcHandle(hContext, hIpc)");
+
         auto pfnPutIpcHandle = context.zeDdiTable.EventPool.pfnPutIpcHandle;
 
         if( nullptr == pfnPutIpcHandle )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeEventPoolPutIpcHandle", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeEventPoolPutIpcHandlePrologue( hContext, hIpc );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeEventPoolPutIpcHandle", result);
         }
 
 
@@ -2881,17 +3068,17 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeEventPoolPutIpcHandlePrologue( hContext, hIpc );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeEventPoolPutIpcHandle", result);
         }
 
-        auto result = pfnPutIpcHandle( hContext, hIpc );
+        auto driver_result = pfnPutIpcHandle( hContext, hIpc );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeEventPoolPutIpcHandleEpilogue( hContext, hIpc );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeEventPoolPutIpcHandleEpilogue( hContext, hIpc ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeEventPoolPutIpcHandle", result);
         }
 
-        return result;
+        return logAndPropagateResult("zeEventPoolPutIpcHandle", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -2904,15 +3091,17 @@ namespace validation_layer
         ze_event_pool_handle_t* phEventPool             ///< [out] pointer handle of event pool object created
         )
     {
+        context.logger->log_trace("zeEventPoolOpenIpcHandle(hContext, hIpc, phEventPool)");
+
         auto pfnOpenIpcHandle = context.zeDdiTable.EventPool.pfnOpenIpcHandle;
 
         if( nullptr == pfnOpenIpcHandle )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeEventPoolOpenIpcHandle", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeEventPoolOpenIpcHandlePrologue( hContext, hIpc, phEventPool );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeEventPoolOpenIpcHandle", result);
         }
 
 
@@ -2923,17 +3112,17 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeEventPoolOpenIpcHandlePrologue( hContext, hIpc, phEventPool );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeEventPoolOpenIpcHandle", result);
         }
 
-        auto result = pfnOpenIpcHandle( hContext, hIpc, phEventPool );
+        auto driver_result = pfnOpenIpcHandle( hContext, hIpc, phEventPool );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeEventPoolOpenIpcHandleEpilogue( hContext, hIpc, phEventPool );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeEventPoolOpenIpcHandleEpilogue( hContext, hIpc, phEventPool ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeEventPoolOpenIpcHandle", result);
         }
 
-        return result;
+        return logAndPropagateResult("zeEventPoolOpenIpcHandle", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -2943,15 +3132,17 @@ namespace validation_layer
         ze_event_pool_handle_t hEventPool               ///< [in][release] handle of event pool object
         )
     {
+        context.logger->log_trace("zeEventPoolCloseIpcHandle(hEventPool)");
+
         auto pfnCloseIpcHandle = context.zeDdiTable.EventPool.pfnCloseIpcHandle;
 
         if( nullptr == pfnCloseIpcHandle )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeEventPoolCloseIpcHandle", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeEventPoolCloseIpcHandlePrologue( hEventPool );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeEventPoolCloseIpcHandle", result);
         }
 
 
@@ -2962,17 +3153,17 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeEventPoolCloseIpcHandlePrologue( hEventPool );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeEventPoolCloseIpcHandle", result);
         }
 
-        auto result = pfnCloseIpcHandle( hEventPool );
+        auto driver_result = pfnCloseIpcHandle( hEventPool );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeEventPoolCloseIpcHandleEpilogue( hEventPool );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeEventPoolCloseIpcHandleEpilogue( hEventPool ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeEventPoolCloseIpcHandle", result);
         }
 
-        return result;
+        return logAndPropagateResult("zeEventPoolCloseIpcHandle", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -2983,15 +3174,17 @@ namespace validation_layer
         ze_event_handle_t hEvent                        ///< [in] handle of the event
         )
     {
+        context.logger->log_trace("zeCommandListAppendSignalEvent(hCommandList, hEvent)");
+
         auto pfnAppendSignalEvent = context.zeDdiTable.CommandList.pfnAppendSignalEvent;
 
         if( nullptr == pfnAppendSignalEvent )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeCommandListAppendSignalEvent", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeCommandListAppendSignalEventPrologue( hCommandList, hEvent );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeCommandListAppendSignalEvent", result);
         }
 
 
@@ -3002,17 +3195,17 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeCommandListAppendSignalEventPrologue( hCommandList, hEvent );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeCommandListAppendSignalEvent", result);
         }
 
-        auto result = pfnAppendSignalEvent( hCommandList, hEvent );
+        auto driver_result = pfnAppendSignalEvent( hCommandList, hEvent );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeCommandListAppendSignalEventEpilogue( hCommandList, hEvent );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListAppendSignalEventEpilogue( hCommandList, hEvent ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeCommandListAppendSignalEvent", result);
         }
 
-        return result;
+        return logAndPropagateResult("zeCommandListAppendSignalEvent", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -3025,15 +3218,17 @@ namespace validation_layer
                                                         ///< continuing
         )
     {
+        context.logger->log_trace("zeCommandListAppendWaitOnEvents(hCommandList, numEvents, phEventsLocal)");
+
         auto pfnAppendWaitOnEvents = context.zeDdiTable.CommandList.pfnAppendWaitOnEvents;
 
         if( nullptr == pfnAppendWaitOnEvents )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeCommandListAppendWaitOnEvents", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeCommandListAppendWaitOnEventsPrologue( hCommandList, numEvents, phEvents );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeCommandListAppendWaitOnEvents", result);
         }
 
 
@@ -3044,17 +3239,17 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeCommandListAppendWaitOnEventsPrologue( hCommandList, numEvents, phEvents );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeCommandListAppendWaitOnEvents", result);
         }
 
-        auto result = pfnAppendWaitOnEvents( hCommandList, numEvents, phEvents );
+        auto driver_result = pfnAppendWaitOnEvents( hCommandList, numEvents, phEvents );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeCommandListAppendWaitOnEventsEpilogue( hCommandList, numEvents, phEvents );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListAppendWaitOnEventsEpilogue( hCommandList, numEvents, phEvents ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeCommandListAppendWaitOnEvents", result);
         }
 
-        return result;
+        return logAndPropagateResult("zeCommandListAppendWaitOnEvents", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -3064,15 +3259,17 @@ namespace validation_layer
         ze_event_handle_t hEvent                        ///< [in] handle of the event
         )
     {
+        context.logger->log_trace("zeEventHostSignal(hEvent)");
+
         auto pfnHostSignal = context.zeDdiTable.Event.pfnHostSignal;
 
         if( nullptr == pfnHostSignal )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeEventHostSignal", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeEventHostSignalPrologue( hEvent );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeEventHostSignal", result);
         }
 
 
@@ -3083,17 +3280,17 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeEventHostSignalPrologue( hEvent );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeEventHostSignal", result);
         }
 
-        auto result = pfnHostSignal( hEvent );
+        auto driver_result = pfnHostSignal( hEvent );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeEventHostSignalEpilogue( hEvent );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeEventHostSignalEpilogue( hEvent ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeEventHostSignal", result);
         }
 
-        return result;
+        return logAndPropagateResult("zeEventHostSignal", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -3110,15 +3307,17 @@ namespace validation_layer
                                                         ///< value allowed by the accuracy of those dependencies.
         )
     {
+        context.logger->log_trace("zeEventHostSynchronize(hEvent, timeout)");
+
         auto pfnHostSynchronize = context.zeDdiTable.Event.pfnHostSynchronize;
 
         if( nullptr == pfnHostSynchronize )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeEventHostSynchronize", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeEventHostSynchronizePrologue( hEvent, timeout );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeEventHostSynchronize", result);
         }
 
 
@@ -3129,17 +3328,17 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeEventHostSynchronizePrologue( hEvent, timeout );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeEventHostSynchronize", result);
         }
 
-        auto result = pfnHostSynchronize( hEvent, timeout );
+        auto driver_result = pfnHostSynchronize( hEvent, timeout );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeEventHostSynchronizeEpilogue( hEvent, timeout );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeEventHostSynchronizeEpilogue( hEvent, timeout ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeEventHostSynchronize", result);
         }
 
-        return result;
+        return logAndPropagateResult("zeEventHostSynchronize", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -3149,15 +3348,17 @@ namespace validation_layer
         ze_event_handle_t hEvent                        ///< [in] handle of the event
         )
     {
+        context.logger->log_trace("zeEventQueryStatus(hEvent)");
+
         auto pfnQueryStatus = context.zeDdiTable.Event.pfnQueryStatus;
 
         if( nullptr == pfnQueryStatus )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeEventQueryStatus", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeEventQueryStatusPrologue( hEvent );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeEventQueryStatus", result);
         }
 
 
@@ -3168,17 +3369,17 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeEventQueryStatusPrologue( hEvent );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeEventQueryStatus", result);
         }
 
-        auto result = pfnQueryStatus( hEvent );
+        auto driver_result = pfnQueryStatus( hEvent );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeEventQueryStatusEpilogue( hEvent );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeEventQueryStatusEpilogue( hEvent ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeEventQueryStatus", result);
         }
 
-        return result;
+        return logAndPropagateResult("zeEventQueryStatus", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -3189,15 +3390,17 @@ namespace validation_layer
         ze_event_handle_t hEvent                        ///< [in] handle of the event
         )
     {
+        context.logger->log_trace("zeCommandListAppendEventReset(hCommandList, hEvent)");
+
         auto pfnAppendEventReset = context.zeDdiTable.CommandList.pfnAppendEventReset;
 
         if( nullptr == pfnAppendEventReset )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeCommandListAppendEventReset", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeCommandListAppendEventResetPrologue( hCommandList, hEvent );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeCommandListAppendEventReset", result);
         }
 
 
@@ -3208,17 +3411,17 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeCommandListAppendEventResetPrologue( hCommandList, hEvent );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeCommandListAppendEventReset", result);
         }
 
-        auto result = pfnAppendEventReset( hCommandList, hEvent );
+        auto driver_result = pfnAppendEventReset( hCommandList, hEvent );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeCommandListAppendEventResetEpilogue( hCommandList, hEvent );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListAppendEventResetEpilogue( hCommandList, hEvent ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeCommandListAppendEventReset", result);
         }
 
-        return result;
+        return logAndPropagateResult("zeCommandListAppendEventReset", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -3228,15 +3431,17 @@ namespace validation_layer
         ze_event_handle_t hEvent                        ///< [in] handle of the event
         )
     {
+        context.logger->log_trace("zeEventHostReset(hEvent)");
+
         auto pfnHostReset = context.zeDdiTable.Event.pfnHostReset;
 
         if( nullptr == pfnHostReset )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeEventHostReset", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeEventHostResetPrologue( hEvent );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeEventHostReset", result);
         }
 
 
@@ -3247,17 +3452,17 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeEventHostResetPrologue( hEvent );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeEventHostReset", result);
         }
 
-        auto result = pfnHostReset( hEvent );
+        auto driver_result = pfnHostReset( hEvent );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeEventHostResetEpilogue( hEvent );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeEventHostResetEpilogue( hEvent ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeEventHostReset", result);
         }
 
-        return result;
+        return logAndPropagateResult("zeEventHostReset", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -3268,15 +3473,17 @@ namespace validation_layer
         ze_kernel_timestamp_result_t* dstptr            ///< [in,out] pointer to memory for where timestamp result will be written.
         )
     {
+        context.logger->log_trace("zeEventQueryKernelTimestamp(hEvent, dstptr)");
+
         auto pfnQueryKernelTimestamp = context.zeDdiTable.Event.pfnQueryKernelTimestamp;
 
         if( nullptr == pfnQueryKernelTimestamp )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeEventQueryKernelTimestamp", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeEventQueryKernelTimestampPrologue( hEvent, dstptr );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeEventQueryKernelTimestamp", result);
         }
 
 
@@ -3287,17 +3494,17 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeEventQueryKernelTimestampPrologue( hEvent, dstptr );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeEventQueryKernelTimestamp", result);
         }
 
-        auto result = pfnQueryKernelTimestamp( hEvent, dstptr );
+        auto driver_result = pfnQueryKernelTimestamp( hEvent, dstptr );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeEventQueryKernelTimestampEpilogue( hEvent, dstptr );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeEventQueryKernelTimestampEpilogue( hEvent, dstptr ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeEventQueryKernelTimestamp", result);
         }
 
-        return result;
+        return logAndPropagateResult("zeEventQueryKernelTimestamp", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -3319,15 +3526,17 @@ namespace validation_layer
                                                         ///< on before executing query
         )
     {
+        context.logger->log_trace("zeCommandListAppendQueryKernelTimestamps(hCommandList, numEvents, phEventsLocal, dstptr, pOffsets, hSignalEvent, numWaitEvents, phWaitEventsLocal)");
+
         auto pfnAppendQueryKernelTimestamps = context.zeDdiTable.CommandList.pfnAppendQueryKernelTimestamps;
 
         if( nullptr == pfnAppendQueryKernelTimestamps )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeCommandListAppendQueryKernelTimestamps", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeCommandListAppendQueryKernelTimestampsPrologue( hCommandList, numEvents, phEvents, dstptr, pOffsets, hSignalEvent, numWaitEvents, phWaitEvents );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeCommandListAppendQueryKernelTimestamps", result);
         }
 
 
@@ -3338,17 +3547,17 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeCommandListAppendQueryKernelTimestampsPrologue( hCommandList, numEvents, phEvents, dstptr, pOffsets, hSignalEvent, numWaitEvents, phWaitEvents );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeCommandListAppendQueryKernelTimestamps", result);
         }
 
-        auto result = pfnAppendQueryKernelTimestamps( hCommandList, numEvents, phEvents, dstptr, pOffsets, hSignalEvent, numWaitEvents, phWaitEvents );
+        auto driver_result = pfnAppendQueryKernelTimestamps( hCommandList, numEvents, phEvents, dstptr, pOffsets, hSignalEvent, numWaitEvents, phWaitEvents );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeCommandListAppendQueryKernelTimestampsEpilogue( hCommandList, numEvents, phEvents, dstptr, pOffsets, hSignalEvent, numWaitEvents, phWaitEvents );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListAppendQueryKernelTimestampsEpilogue( hCommandList, numEvents, phEvents, dstptr, pOffsets, hSignalEvent, numWaitEvents, phWaitEvents ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeCommandListAppendQueryKernelTimestamps", result);
         }
 
-        return result;
+        return logAndPropagateResult("zeCommandListAppendQueryKernelTimestamps", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -3359,15 +3568,17 @@ namespace validation_layer
         ze_event_pool_handle_t* phEventPool             ///< [out] handle of the event pool for the event
         )
     {
+        context.logger->log_trace("zeEventGetEventPool(hEvent, phEventPool)");
+
         auto pfnGetEventPool = context.zeDdiTable.Event.pfnGetEventPool;
 
         if( nullptr == pfnGetEventPool )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeEventGetEventPool", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeEventGetEventPoolPrologue( hEvent, phEventPool );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeEventGetEventPool", result);
         }
 
 
@@ -3378,17 +3589,17 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeEventGetEventPoolPrologue( hEvent, phEventPool );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeEventGetEventPool", result);
         }
 
-        auto result = pfnGetEventPool( hEvent, phEventPool );
+        auto driver_result = pfnGetEventPool( hEvent, phEventPool );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeEventGetEventPoolEpilogue( hEvent, phEventPool );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeEventGetEventPoolEpilogue( hEvent, phEventPool ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeEventGetEventPool", result);
         }
 
-        return result;
+        return logAndPropagateResult("zeEventGetEventPool", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -3401,15 +3612,17 @@ namespace validation_layer
                                                         ///< triggered. May be 0 or a valid combination of ::ze_event_scope_flag_t.
         )
     {
+        context.logger->log_trace("zeEventGetSignalScope(hEvent, pSignalScope)");
+
         auto pfnGetSignalScope = context.zeDdiTable.Event.pfnGetSignalScope;
 
         if( nullptr == pfnGetSignalScope )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeEventGetSignalScope", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeEventGetSignalScopePrologue( hEvent, pSignalScope );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeEventGetSignalScope", result);
         }
 
 
@@ -3420,17 +3633,17 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeEventGetSignalScopePrologue( hEvent, pSignalScope );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeEventGetSignalScope", result);
         }
 
-        auto result = pfnGetSignalScope( hEvent, pSignalScope );
+        auto driver_result = pfnGetSignalScope( hEvent, pSignalScope );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeEventGetSignalScopeEpilogue( hEvent, pSignalScope );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeEventGetSignalScopeEpilogue( hEvent, pSignalScope ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeEventGetSignalScope", result);
         }
 
-        return result;
+        return logAndPropagateResult("zeEventGetSignalScope", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -3443,15 +3656,17 @@ namespace validation_layer
                                                         ///< May be 0 or a valid combination of ::ze_event_scope_flag_t.
         )
     {
+        context.logger->log_trace("zeEventGetWaitScope(hEvent, pWaitScope)");
+
         auto pfnGetWaitScope = context.zeDdiTable.Event.pfnGetWaitScope;
 
         if( nullptr == pfnGetWaitScope )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeEventGetWaitScope", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeEventGetWaitScopePrologue( hEvent, pWaitScope );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeEventGetWaitScope", result);
         }
 
 
@@ -3462,17 +3677,17 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeEventGetWaitScopePrologue( hEvent, pWaitScope );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeEventGetWaitScope", result);
         }
 
-        auto result = pfnGetWaitScope( hEvent, pWaitScope );
+        auto driver_result = pfnGetWaitScope( hEvent, pWaitScope );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeEventGetWaitScopeEpilogue( hEvent, pWaitScope );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeEventGetWaitScopeEpilogue( hEvent, pWaitScope ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeEventGetWaitScope", result);
         }
 
-        return result;
+        return logAndPropagateResult("zeEventGetWaitScope", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -3483,15 +3698,17 @@ namespace validation_layer
         ze_context_handle_t* phContext                  ///< [out] handle of the context on which the event pool was created
         )
     {
+        context.logger->log_trace("zeEventPoolGetContextHandle(hEventPool, phContext)");
+
         auto pfnGetContextHandle = context.zeDdiTable.EventPool.pfnGetContextHandle;
 
         if( nullptr == pfnGetContextHandle )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeEventPoolGetContextHandle", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeEventPoolGetContextHandlePrologue( hEventPool, phContext );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeEventPoolGetContextHandle", result);
         }
 
 
@@ -3502,17 +3719,17 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeEventPoolGetContextHandlePrologue( hEventPool, phContext );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeEventPoolGetContextHandle", result);
         }
 
-        auto result = pfnGetContextHandle( hEventPool, phContext );
+        auto driver_result = pfnGetContextHandle( hEventPool, phContext );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeEventPoolGetContextHandleEpilogue( hEventPool, phContext );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeEventPoolGetContextHandleEpilogue( hEventPool, phContext ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeEventPoolGetContextHandle", result);
         }
 
-        return result;
+        return logAndPropagateResult("zeEventPoolGetContextHandle", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -3524,15 +3741,17 @@ namespace validation_layer
                                                         ///< valid combination of ::ze_event_pool_flag_t
         )
     {
+        context.logger->log_trace("zeEventPoolGetFlags(hEventPool, pFlags)");
+
         auto pfnGetFlags = context.zeDdiTable.EventPool.pfnGetFlags;
 
         if( nullptr == pfnGetFlags )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeEventPoolGetFlags", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeEventPoolGetFlagsPrologue( hEventPool, pFlags );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeEventPoolGetFlags", result);
         }
 
 
@@ -3543,17 +3762,17 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeEventPoolGetFlagsPrologue( hEventPool, pFlags );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeEventPoolGetFlags", result);
         }
 
-        auto result = pfnGetFlags( hEventPool, pFlags );
+        auto driver_result = pfnGetFlags( hEventPool, pFlags );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeEventPoolGetFlagsEpilogue( hEventPool, pFlags );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeEventPoolGetFlagsEpilogue( hEventPool, pFlags ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeEventPoolGetFlags", result);
         }
 
-        return result;
+        return logAndPropagateResult("zeEventPoolGetFlags", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -3565,15 +3784,17 @@ namespace validation_layer
         ze_fence_handle_t* phFence                      ///< [out] pointer to handle of fence object created
         )
     {
+        context.logger->log_trace("zeFenceCreate(hCommandQueue, desc, phFence)");
+
         auto pfnCreate = context.zeDdiTable.Fence.pfnCreate;
 
         if( nullptr == pfnCreate )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeFenceCreate", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeFenceCreatePrologue( hCommandQueue, desc, phFence );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeFenceCreate", result);
         }
 
 
@@ -3584,18 +3805,18 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeFenceCreatePrologue( hCommandQueue, desc, phFence );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeFenceCreate", result);
         }
 
-        auto result = pfnCreate( hCommandQueue, desc, phFence );
+        auto driver_result = pfnCreate( hCommandQueue, desc, phFence );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeFenceCreateEpilogue( hCommandQueue, desc, phFence );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeFenceCreateEpilogue( hCommandQueue, desc, phFence ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeFenceCreate", result);
         }
 
 
-        if( result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
+        if( driver_result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
             
             if (phFence){
                 context.handleLifetime->addHandle( *phFence );
@@ -3603,7 +3824,7 @@ namespace validation_layer
 
             }
         }
-        return result;
+        return logAndPropagateResult("zeFenceCreate", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -3613,15 +3834,17 @@ namespace validation_layer
         ze_fence_handle_t hFence                        ///< [in][release] handle of fence object to destroy
         )
     {
+        context.logger->log_trace("zeFenceDestroy(hFence)");
+
         auto pfnDestroy = context.zeDdiTable.Fence.pfnDestroy;
 
         if( nullptr == pfnDestroy )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeFenceDestroy", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeFenceDestroyPrologue( hFence );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeFenceDestroy", result);
         }
 
 
@@ -3632,17 +3855,17 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeFenceDestroyPrologue( hFence );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeFenceDestroy", result);
         }
 
-        auto result = pfnDestroy( hFence );
+        auto driver_result = pfnDestroy( hFence );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeFenceDestroyEpilogue( hFence );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeFenceDestroyEpilogue( hFence ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeFenceDestroy", result);
         }
 
-        return result;
+        return logAndPropagateResult("zeFenceDestroy", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -3659,15 +3882,17 @@ namespace validation_layer
                                                         ///< value allowed by the accuracy of those dependencies.
         )
     {
+        context.logger->log_trace("zeFenceHostSynchronize(hFence, timeout)");
+
         auto pfnHostSynchronize = context.zeDdiTable.Fence.pfnHostSynchronize;
 
         if( nullptr == pfnHostSynchronize )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeFenceHostSynchronize", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeFenceHostSynchronizePrologue( hFence, timeout );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeFenceHostSynchronize", result);
         }
 
 
@@ -3678,17 +3903,17 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeFenceHostSynchronizePrologue( hFence, timeout );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeFenceHostSynchronize", result);
         }
 
-        auto result = pfnHostSynchronize( hFence, timeout );
+        auto driver_result = pfnHostSynchronize( hFence, timeout );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeFenceHostSynchronizeEpilogue( hFence, timeout );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeFenceHostSynchronizeEpilogue( hFence, timeout ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeFenceHostSynchronize", result);
         }
 
-        return result;
+        return logAndPropagateResult("zeFenceHostSynchronize", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -3698,15 +3923,17 @@ namespace validation_layer
         ze_fence_handle_t hFence                        ///< [in] handle of the fence
         )
     {
+        context.logger->log_trace("zeFenceQueryStatus(hFence)");
+
         auto pfnQueryStatus = context.zeDdiTable.Fence.pfnQueryStatus;
 
         if( nullptr == pfnQueryStatus )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeFenceQueryStatus", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeFenceQueryStatusPrologue( hFence );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeFenceQueryStatus", result);
         }
 
 
@@ -3717,17 +3944,17 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeFenceQueryStatusPrologue( hFence );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeFenceQueryStatus", result);
         }
 
-        auto result = pfnQueryStatus( hFence );
+        auto driver_result = pfnQueryStatus( hFence );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeFenceQueryStatusEpilogue( hFence );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeFenceQueryStatusEpilogue( hFence ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeFenceQueryStatus", result);
         }
 
-        return result;
+        return logAndPropagateResult("zeFenceQueryStatus", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -3737,15 +3964,17 @@ namespace validation_layer
         ze_fence_handle_t hFence                        ///< [in] handle of the fence
         )
     {
+        context.logger->log_trace("zeFenceReset(hFence)");
+
         auto pfnReset = context.zeDdiTable.Fence.pfnReset;
 
         if( nullptr == pfnReset )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeFenceReset", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeFenceResetPrologue( hFence );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeFenceReset", result);
         }
 
 
@@ -3756,17 +3985,17 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeFenceResetPrologue( hFence );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeFenceReset", result);
         }
 
-        auto result = pfnReset( hFence );
+        auto driver_result = pfnReset( hFence );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeFenceResetEpilogue( hFence );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeFenceResetEpilogue( hFence ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeFenceReset", result);
         }
 
-        return result;
+        return logAndPropagateResult("zeFenceReset", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -3778,15 +4007,17 @@ namespace validation_layer
         ze_image_properties_t* pImageProperties         ///< [out] pointer to image properties
         )
     {
+        context.logger->log_trace("zeImageGetProperties(hDevice, desc, pImageProperties)");
+
         auto pfnGetProperties = context.zeDdiTable.Image.pfnGetProperties;
 
         if( nullptr == pfnGetProperties )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeImageGetProperties", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeImageGetPropertiesPrologue( hDevice, desc, pImageProperties );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeImageGetProperties", result);
         }
 
 
@@ -3797,17 +4028,17 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeImageGetPropertiesPrologue( hDevice, desc, pImageProperties );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeImageGetProperties", result);
         }
 
-        auto result = pfnGetProperties( hDevice, desc, pImageProperties );
+        auto driver_result = pfnGetProperties( hDevice, desc, pImageProperties );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeImageGetPropertiesEpilogue( hDevice, desc, pImageProperties );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeImageGetPropertiesEpilogue( hDevice, desc, pImageProperties ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeImageGetProperties", result);
         }
 
-        return result;
+        return logAndPropagateResult("zeImageGetProperties", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -3820,15 +4051,17 @@ namespace validation_layer
         ze_image_handle_t* phImage                      ///< [out] pointer to handle of image object created
         )
     {
+        context.logger->log_trace("zeImageCreate(hContext, hDevice, desc, phImage)");
+
         auto pfnCreate = context.zeDdiTable.Image.pfnCreate;
 
         if( nullptr == pfnCreate )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeImageCreate", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeImageCreatePrologue( hContext, hDevice, desc, phImage );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeImageCreate", result);
         }
 
 
@@ -3839,18 +4072,18 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeImageCreatePrologue( hContext, hDevice, desc, phImage );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeImageCreate", result);
         }
 
-        auto result = pfnCreate( hContext, hDevice, desc, phImage );
+        auto driver_result = pfnCreate( hContext, hDevice, desc, phImage );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeImageCreateEpilogue( hContext, hDevice, desc, phImage );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeImageCreateEpilogue( hContext, hDevice, desc, phImage ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeImageCreate", result);
         }
 
 
-        if( result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
+        if( driver_result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
             
             if (phImage){
                 context.handleLifetime->addHandle( *phImage );
@@ -3858,7 +4091,7 @@ namespace validation_layer
 
             }
         }
-        return result;
+        return logAndPropagateResult("zeImageCreate", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -3868,15 +4101,17 @@ namespace validation_layer
         ze_image_handle_t hImage                        ///< [in][release] handle of image object to destroy
         )
     {
+        context.logger->log_trace("zeImageDestroy(hImage)");
+
         auto pfnDestroy = context.zeDdiTable.Image.pfnDestroy;
 
         if( nullptr == pfnDestroy )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeImageDestroy", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeImageDestroyPrologue( hImage );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeImageDestroy", result);
         }
 
 
@@ -3887,17 +4122,17 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeImageDestroyPrologue( hImage );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeImageDestroy", result);
         }
 
-        auto result = pfnDestroy( hImage );
+        auto driver_result = pfnDestroy( hImage );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeImageDestroyEpilogue( hImage );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeImageDestroyEpilogue( hImage ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeImageDestroy", result);
         }
 
-        return result;
+        return logAndPropagateResult("zeImageDestroy", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -3915,15 +4150,17 @@ namespace validation_layer
         void** pptr                                     ///< [out] pointer to shared allocation
         )
     {
+        context.logger->log_trace("zeMemAllocShared(hContext, device_desc, host_desc, size, alignment, hDevice, pptr)");
+
         auto pfnAllocShared = context.zeDdiTable.Mem.pfnAllocShared;
 
         if( nullptr == pfnAllocShared )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeMemAllocShared", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeMemAllocSharedPrologue( hContext, device_desc, host_desc, size, alignment, hDevice, pptr );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeMemAllocShared", result);
         }
 
 
@@ -3934,17 +4171,17 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeMemAllocSharedPrologue( hContext, device_desc, host_desc, size, alignment, hDevice, pptr );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeMemAllocShared", result);
         }
 
-        auto result = pfnAllocShared( hContext, device_desc, host_desc, size, alignment, hDevice, pptr );
+        auto driver_result = pfnAllocShared( hContext, device_desc, host_desc, size, alignment, hDevice, pptr );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeMemAllocSharedEpilogue( hContext, device_desc, host_desc, size, alignment, hDevice, pptr );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeMemAllocSharedEpilogue( hContext, device_desc, host_desc, size, alignment, hDevice, pptr ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeMemAllocShared", result);
         }
 
-        return result;
+        return logAndPropagateResult("zeMemAllocShared", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -3961,15 +4198,17 @@ namespace validation_layer
         void** pptr                                     ///< [out] pointer to device allocation
         )
     {
+        context.logger->log_trace("zeMemAllocDevice(hContext, device_desc, size, alignment, hDevice, pptr)");
+
         auto pfnAllocDevice = context.zeDdiTable.Mem.pfnAllocDevice;
 
         if( nullptr == pfnAllocDevice )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeMemAllocDevice", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeMemAllocDevicePrologue( hContext, device_desc, size, alignment, hDevice, pptr );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeMemAllocDevice", result);
         }
 
 
@@ -3980,17 +4219,17 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeMemAllocDevicePrologue( hContext, device_desc, size, alignment, hDevice, pptr );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeMemAllocDevice", result);
         }
 
-        auto result = pfnAllocDevice( hContext, device_desc, size, alignment, hDevice, pptr );
+        auto driver_result = pfnAllocDevice( hContext, device_desc, size, alignment, hDevice, pptr );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeMemAllocDeviceEpilogue( hContext, device_desc, size, alignment, hDevice, pptr );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeMemAllocDeviceEpilogue( hContext, device_desc, size, alignment, hDevice, pptr ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeMemAllocDevice", result);
         }
 
-        return result;
+        return logAndPropagateResult("zeMemAllocDevice", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -4006,15 +4245,17 @@ namespace validation_layer
         void** pptr                                     ///< [out] pointer to host allocation
         )
     {
+        context.logger->log_trace("zeMemAllocHost(hContext, host_desc, size, alignment, pptr)");
+
         auto pfnAllocHost = context.zeDdiTable.Mem.pfnAllocHost;
 
         if( nullptr == pfnAllocHost )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeMemAllocHost", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeMemAllocHostPrologue( hContext, host_desc, size, alignment, pptr );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeMemAllocHost", result);
         }
 
 
@@ -4025,17 +4266,17 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeMemAllocHostPrologue( hContext, host_desc, size, alignment, pptr );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeMemAllocHost", result);
         }
 
-        auto result = pfnAllocHost( hContext, host_desc, size, alignment, pptr );
+        auto driver_result = pfnAllocHost( hContext, host_desc, size, alignment, pptr );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeMemAllocHostEpilogue( hContext, host_desc, size, alignment, pptr );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeMemAllocHostEpilogue( hContext, host_desc, size, alignment, pptr ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeMemAllocHost", result);
         }
 
-        return result;
+        return logAndPropagateResult("zeMemAllocHost", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -4046,15 +4287,17 @@ namespace validation_layer
         void* ptr                                       ///< [in][release] pointer to memory to free
         )
     {
+        context.logger->log_trace("zeMemFree(hContext, ptr)");
+
         auto pfnFree = context.zeDdiTable.Mem.pfnFree;
 
         if( nullptr == pfnFree )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeMemFree", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeMemFreePrologue( hContext, ptr );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeMemFree", result);
         }
 
 
@@ -4065,17 +4308,17 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeMemFreePrologue( hContext, ptr );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeMemFree", result);
         }
 
-        auto result = pfnFree( hContext, ptr );
+        auto driver_result = pfnFree( hContext, ptr );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeMemFreeEpilogue( hContext, ptr );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeMemFreeEpilogue( hContext, ptr ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeMemFree", result);
         }
 
-        return result;
+        return logAndPropagateResult("zeMemFree", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -4088,15 +4331,17 @@ namespace validation_layer
         ze_device_handle_t* phDevice                    ///< [out][optional] device associated with this allocation
         )
     {
+        context.logger->log_trace("zeMemGetAllocProperties(hContext, ptr, pMemAllocProperties, phDevice)");
+
         auto pfnGetAllocProperties = context.zeDdiTable.Mem.pfnGetAllocProperties;
 
         if( nullptr == pfnGetAllocProperties )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeMemGetAllocProperties", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeMemGetAllocPropertiesPrologue( hContext, ptr, pMemAllocProperties, phDevice );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeMemGetAllocProperties", result);
         }
 
 
@@ -4107,17 +4352,17 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeMemGetAllocPropertiesPrologue( hContext, ptr, pMemAllocProperties, phDevice );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeMemGetAllocProperties", result);
         }
 
-        auto result = pfnGetAllocProperties( hContext, ptr, pMemAllocProperties, phDevice );
+        auto driver_result = pfnGetAllocProperties( hContext, ptr, pMemAllocProperties, phDevice );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeMemGetAllocPropertiesEpilogue( hContext, ptr, pMemAllocProperties, phDevice );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeMemGetAllocPropertiesEpilogue( hContext, ptr, pMemAllocProperties, phDevice ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeMemGetAllocProperties", result);
         }
 
-        return result;
+        return logAndPropagateResult("zeMemGetAllocProperties", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -4130,15 +4375,17 @@ namespace validation_layer
         size_t* pSize                                   ///< [in,out][optional] size of the allocation
         )
     {
+        context.logger->log_trace("zeMemGetAddressRange(hContext, ptr, pBase, pSize)");
+
         auto pfnGetAddressRange = context.zeDdiTable.Mem.pfnGetAddressRange;
 
         if( nullptr == pfnGetAddressRange )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeMemGetAddressRange", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeMemGetAddressRangePrologue( hContext, ptr, pBase, pSize );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeMemGetAddressRange", result);
         }
 
 
@@ -4149,17 +4396,17 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeMemGetAddressRangePrologue( hContext, ptr, pBase, pSize );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeMemGetAddressRange", result);
         }
 
-        auto result = pfnGetAddressRange( hContext, ptr, pBase, pSize );
+        auto driver_result = pfnGetAddressRange( hContext, ptr, pBase, pSize );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeMemGetAddressRangeEpilogue( hContext, ptr, pBase, pSize );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeMemGetAddressRangeEpilogue( hContext, ptr, pBase, pSize ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeMemGetAddressRange", result);
         }
 
-        return result;
+        return logAndPropagateResult("zeMemGetAddressRange", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -4171,15 +4418,17 @@ namespace validation_layer
         ze_ipc_mem_handle_t* pIpcHandle                 ///< [out] Returned IPC memory handle
         )
     {
+        context.logger->log_trace("zeMemGetIpcHandle(hContext, ptr, pIpcHandle)");
+
         auto pfnGetIpcHandle = context.zeDdiTable.Mem.pfnGetIpcHandle;
 
         if( nullptr == pfnGetIpcHandle )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeMemGetIpcHandle", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeMemGetIpcHandlePrologue( hContext, ptr, pIpcHandle );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeMemGetIpcHandle", result);
         }
 
 
@@ -4190,21 +4439,21 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeMemGetIpcHandlePrologue( hContext, ptr, pIpcHandle );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeMemGetIpcHandle", result);
         }
 
-        auto result = pfnGetIpcHandle( hContext, ptr, pIpcHandle );
+        auto driver_result = pfnGetIpcHandle( hContext, ptr, pIpcHandle );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeMemGetIpcHandleEpilogue( hContext, ptr, pIpcHandle );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeMemGetIpcHandleEpilogue( hContext, ptr, pIpcHandle ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeMemGetIpcHandle", result);
         }
 
 
-        if( result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
+        if( driver_result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
             
         }
-        return result;
+        return logAndPropagateResult("zeMemGetIpcHandle", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -4216,15 +4465,17 @@ namespace validation_layer
         ze_ipc_mem_handle_t* pIpcHandle                 ///< [out] Returned IPC memory handle
         )
     {
+        context.logger->log_trace("zeMemGetIpcHandleFromFileDescriptorExp(hContext, handle, pIpcHandle)");
+
         auto pfnGetIpcHandleFromFileDescriptorExp = context.zeDdiTable.MemExp.pfnGetIpcHandleFromFileDescriptorExp;
 
         if( nullptr == pfnGetIpcHandleFromFileDescriptorExp )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeMemGetIpcHandleFromFileDescriptorExp", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeMemGetIpcHandleFromFileDescriptorExpPrologue( hContext, handle, pIpcHandle );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeMemGetIpcHandleFromFileDescriptorExp", result);
         }
 
 
@@ -4235,21 +4486,21 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeMemGetIpcHandleFromFileDescriptorExpPrologue( hContext, handle, pIpcHandle );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeMemGetIpcHandleFromFileDescriptorExp", result);
         }
 
-        auto result = pfnGetIpcHandleFromFileDescriptorExp( hContext, handle, pIpcHandle );
+        auto driver_result = pfnGetIpcHandleFromFileDescriptorExp( hContext, handle, pIpcHandle );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeMemGetIpcHandleFromFileDescriptorExpEpilogue( hContext, handle, pIpcHandle );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeMemGetIpcHandleFromFileDescriptorExpEpilogue( hContext, handle, pIpcHandle ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeMemGetIpcHandleFromFileDescriptorExp", result);
         }
 
 
-        if( result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
+        if( driver_result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
             
         }
-        return result;
+        return logAndPropagateResult("zeMemGetIpcHandleFromFileDescriptorExp", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -4261,15 +4512,17 @@ namespace validation_layer
         uint64_t* pHandle                               ///< [out] Returned file descriptor
         )
     {
+        context.logger->log_trace("zeMemGetFileDescriptorFromIpcHandleExp(hContext, ipcHandle, pHandle)");
+
         auto pfnGetFileDescriptorFromIpcHandleExp = context.zeDdiTable.MemExp.pfnGetFileDescriptorFromIpcHandleExp;
 
         if( nullptr == pfnGetFileDescriptorFromIpcHandleExp )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeMemGetFileDescriptorFromIpcHandleExp", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeMemGetFileDescriptorFromIpcHandleExpPrologue( hContext, ipcHandle, pHandle );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeMemGetFileDescriptorFromIpcHandleExp", result);
         }
 
 
@@ -4280,21 +4533,21 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeMemGetFileDescriptorFromIpcHandleExpPrologue( hContext, ipcHandle, pHandle );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeMemGetFileDescriptorFromIpcHandleExp", result);
         }
 
-        auto result = pfnGetFileDescriptorFromIpcHandleExp( hContext, ipcHandle, pHandle );
+        auto driver_result = pfnGetFileDescriptorFromIpcHandleExp( hContext, ipcHandle, pHandle );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeMemGetFileDescriptorFromIpcHandleExpEpilogue( hContext, ipcHandle, pHandle );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeMemGetFileDescriptorFromIpcHandleExpEpilogue( hContext, ipcHandle, pHandle ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeMemGetFileDescriptorFromIpcHandleExp", result);
         }
 
 
-        if( result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
+        if( driver_result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
             
         }
-        return result;
+        return logAndPropagateResult("zeMemGetFileDescriptorFromIpcHandleExp", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -4305,15 +4558,17 @@ namespace validation_layer
         ze_ipc_mem_handle_t handle                      ///< [in] IPC memory handle
         )
     {
+        context.logger->log_trace("zeMemPutIpcHandle(hContext, handle)");
+
         auto pfnPutIpcHandle = context.zeDdiTable.Mem.pfnPutIpcHandle;
 
         if( nullptr == pfnPutIpcHandle )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeMemPutIpcHandle", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeMemPutIpcHandlePrologue( hContext, handle );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeMemPutIpcHandle", result);
         }
 
 
@@ -4324,17 +4579,17 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeMemPutIpcHandlePrologue( hContext, handle );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeMemPutIpcHandle", result);
         }
 
-        auto result = pfnPutIpcHandle( hContext, handle );
+        auto driver_result = pfnPutIpcHandle( hContext, handle );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeMemPutIpcHandleEpilogue( hContext, handle );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeMemPutIpcHandleEpilogue( hContext, handle ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeMemPutIpcHandle", result);
         }
 
-        return result;
+        return logAndPropagateResult("zeMemPutIpcHandle", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -4349,15 +4604,17 @@ namespace validation_layer
         void** pptr                                     ///< [out] pointer to device allocation in this process
         )
     {
+        context.logger->log_trace("zeMemOpenIpcHandle(hContext, hDevice, handle, flags, pptr)");
+
         auto pfnOpenIpcHandle = context.zeDdiTable.Mem.pfnOpenIpcHandle;
 
         if( nullptr == pfnOpenIpcHandle )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeMemOpenIpcHandle", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeMemOpenIpcHandlePrologue( hContext, hDevice, handle, flags, pptr );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeMemOpenIpcHandle", result);
         }
 
 
@@ -4368,17 +4625,17 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeMemOpenIpcHandlePrologue( hContext, hDevice, handle, flags, pptr );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeMemOpenIpcHandle", result);
         }
 
-        auto result = pfnOpenIpcHandle( hContext, hDevice, handle, flags, pptr );
+        auto driver_result = pfnOpenIpcHandle( hContext, hDevice, handle, flags, pptr );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeMemOpenIpcHandleEpilogue( hContext, hDevice, handle, flags, pptr );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeMemOpenIpcHandleEpilogue( hContext, hDevice, handle, flags, pptr ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeMemOpenIpcHandle", result);
         }
 
-        return result;
+        return logAndPropagateResult("zeMemOpenIpcHandle", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -4389,15 +4646,17 @@ namespace validation_layer
         const void* ptr                                 ///< [in][release] pointer to device allocation in this process
         )
     {
+        context.logger->log_trace("zeMemCloseIpcHandle(hContext, ptr)");
+
         auto pfnCloseIpcHandle = context.zeDdiTable.Mem.pfnCloseIpcHandle;
 
         if( nullptr == pfnCloseIpcHandle )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeMemCloseIpcHandle", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeMemCloseIpcHandlePrologue( hContext, ptr );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeMemCloseIpcHandle", result);
         }
 
 
@@ -4408,17 +4667,17 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeMemCloseIpcHandlePrologue( hContext, ptr );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeMemCloseIpcHandle", result);
         }
 
-        auto result = pfnCloseIpcHandle( hContext, ptr );
+        auto driver_result = pfnCloseIpcHandle( hContext, ptr );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeMemCloseIpcHandleEpilogue( hContext, ptr );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeMemCloseIpcHandleEpilogue( hContext, ptr ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeMemCloseIpcHandle", result);
         }
 
-        return result;
+        return logAndPropagateResult("zeMemCloseIpcHandle", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -4433,15 +4692,17 @@ namespace validation_layer
                                                         ///< Must be 0 (default) or a valid combination of ::ze_memory_atomic_attr_exp_flag_t.
         )
     {
+        context.logger->log_trace("zeMemSetAtomicAccessAttributeExp(hContext, hDevice, ptr, size, attr)");
+
         auto pfnSetAtomicAccessAttributeExp = context.zeDdiTable.MemExp.pfnSetAtomicAccessAttributeExp;
 
         if( nullptr == pfnSetAtomicAccessAttributeExp )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeMemSetAtomicAccessAttributeExp", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeMemSetAtomicAccessAttributeExpPrologue( hContext, hDevice, ptr, size, attr );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeMemSetAtomicAccessAttributeExp", result);
         }
 
 
@@ -4452,17 +4713,17 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeMemSetAtomicAccessAttributeExpPrologue( hContext, hDevice, ptr, size, attr );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeMemSetAtomicAccessAttributeExp", result);
         }
 
-        auto result = pfnSetAtomicAccessAttributeExp( hContext, hDevice, ptr, size, attr );
+        auto driver_result = pfnSetAtomicAccessAttributeExp( hContext, hDevice, ptr, size, attr );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeMemSetAtomicAccessAttributeExpEpilogue( hContext, hDevice, ptr, size, attr );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeMemSetAtomicAccessAttributeExpEpilogue( hContext, hDevice, ptr, size, attr ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeMemSetAtomicAccessAttributeExp", result);
         }
 
-        return result;
+        return logAndPropagateResult("zeMemSetAtomicAccessAttributeExp", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -4476,15 +4737,17 @@ namespace validation_layer
         ze_memory_atomic_attr_exp_flags_t* pAttr        ///< [out] Atomic access attributes for the specified range
         )
     {
+        context.logger->log_trace("zeMemGetAtomicAccessAttributeExp(hContext, hDevice, ptr, size, pAttr)");
+
         auto pfnGetAtomicAccessAttributeExp = context.zeDdiTable.MemExp.pfnGetAtomicAccessAttributeExp;
 
         if( nullptr == pfnGetAtomicAccessAttributeExp )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeMemGetAtomicAccessAttributeExp", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeMemGetAtomicAccessAttributeExpPrologue( hContext, hDevice, ptr, size, pAttr );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeMemGetAtomicAccessAttributeExp", result);
         }
 
 
@@ -4495,21 +4758,21 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeMemGetAtomicAccessAttributeExpPrologue( hContext, hDevice, ptr, size, pAttr );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeMemGetAtomicAccessAttributeExp", result);
         }
 
-        auto result = pfnGetAtomicAccessAttributeExp( hContext, hDevice, ptr, size, pAttr );
+        auto driver_result = pfnGetAtomicAccessAttributeExp( hContext, hDevice, ptr, size, pAttr );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeMemGetAtomicAccessAttributeExpEpilogue( hContext, hDevice, ptr, size, pAttr );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeMemGetAtomicAccessAttributeExpEpilogue( hContext, hDevice, ptr, size, pAttr ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeMemGetAtomicAccessAttributeExp", result);
         }
 
 
-        if( result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
+        if( driver_result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
             
         }
-        return result;
+        return logAndPropagateResult("zeMemGetAtomicAccessAttributeExp", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -4523,15 +4786,17 @@ namespace validation_layer
         ze_module_build_log_handle_t* phBuildLog        ///< [out][optional] pointer to handle of module's build log.
         )
     {
+        context.logger->log_trace("zeModuleCreate(hContext, hDevice, desc, phModule, phBuildLog)");
+
         auto pfnCreate = context.zeDdiTable.Module.pfnCreate;
 
         if( nullptr == pfnCreate )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeModuleCreate", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeModuleCreatePrologue( hContext, hDevice, desc, phModule, phBuildLog );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeModuleCreate", result);
         }
 
 
@@ -4542,18 +4807,18 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeModuleCreatePrologue( hContext, hDevice, desc, phModule, phBuildLog );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeModuleCreate", result);
         }
 
-        auto result = pfnCreate( hContext, hDevice, desc, phModule, phBuildLog );
+        auto driver_result = pfnCreate( hContext, hDevice, desc, phModule, phBuildLog );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeModuleCreateEpilogue( hContext, hDevice, desc, phModule, phBuildLog );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeModuleCreateEpilogue( hContext, hDevice, desc, phModule, phBuildLog ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeModuleCreate", result);
         }
 
 
-        if( result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
+        if( driver_result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
             
             if (phModule){
                 context.handleLifetime->addHandle( *phModule );
@@ -4566,7 +4831,7 @@ namespace validation_layer
 
             }
         }
-        return result;
+        return logAndPropagateResult("zeModuleCreate", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -4576,15 +4841,17 @@ namespace validation_layer
         ze_module_handle_t hModule                      ///< [in][release] handle of the module
         )
     {
+        context.logger->log_trace("zeModuleDestroy(hModule)");
+
         auto pfnDestroy = context.zeDdiTable.Module.pfnDestroy;
 
         if( nullptr == pfnDestroy )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeModuleDestroy", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeModuleDestroyPrologue( hModule );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeModuleDestroy", result);
         }
 
 
@@ -4595,17 +4862,17 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeModuleDestroyPrologue( hModule );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeModuleDestroy", result);
         }
 
-        auto result = pfnDestroy( hModule );
+        auto driver_result = pfnDestroy( hModule );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeModuleDestroyEpilogue( hModule );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeModuleDestroyEpilogue( hModule ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeModuleDestroy", result);
         }
 
-        return result;
+        return logAndPropagateResult("zeModuleDestroy", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -4618,15 +4885,17 @@ namespace validation_layer
         ze_module_build_log_handle_t* phLinkLog         ///< [out][optional] pointer to handle of dynamic link log.
         )
     {
+        context.logger->log_trace("zeModuleDynamicLink(numModules, phModulesLocal, phLinkLog)");
+
         auto pfnDynamicLink = context.zeDdiTable.Module.pfnDynamicLink;
 
         if( nullptr == pfnDynamicLink )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeModuleDynamicLink", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeModuleDynamicLinkPrologue( numModules, phModules, phLinkLog );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeModuleDynamicLink", result);
         }
 
 
@@ -4637,17 +4906,17 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeModuleDynamicLinkPrologue( numModules, phModules, phLinkLog );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeModuleDynamicLink", result);
         }
 
-        auto result = pfnDynamicLink( numModules, phModules, phLinkLog );
+        auto driver_result = pfnDynamicLink( numModules, phModules, phLinkLog );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeModuleDynamicLinkEpilogue( numModules, phModules, phLinkLog );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeModuleDynamicLinkEpilogue( numModules, phModules, phLinkLog ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeModuleDynamicLink", result);
         }
 
-        return result;
+        return logAndPropagateResult("zeModuleDynamicLink", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -4657,15 +4926,17 @@ namespace validation_layer
         ze_module_build_log_handle_t hModuleBuildLog    ///< [in][release] handle of the module build log object.
         )
     {
+        context.logger->log_trace("zeModuleBuildLogDestroy(hModuleBuildLog)");
+
         auto pfnDestroy = context.zeDdiTable.ModuleBuildLog.pfnDestroy;
 
         if( nullptr == pfnDestroy )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeModuleBuildLogDestroy", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeModuleBuildLogDestroyPrologue( hModuleBuildLog );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeModuleBuildLogDestroy", result);
         }
 
 
@@ -4676,17 +4947,17 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeModuleBuildLogDestroyPrologue( hModuleBuildLog );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeModuleBuildLogDestroy", result);
         }
 
-        auto result = pfnDestroy( hModuleBuildLog );
+        auto driver_result = pfnDestroy( hModuleBuildLog );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeModuleBuildLogDestroyEpilogue( hModuleBuildLog );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeModuleBuildLogDestroyEpilogue( hModuleBuildLog ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeModuleBuildLogDestroy", result);
         }
 
-        return result;
+        return logAndPropagateResult("zeModuleBuildLogDestroy", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -4698,15 +4969,17 @@ namespace validation_layer
         char* pBuildLog                                 ///< [in,out][optional] pointer to null-terminated string of the log.
         )
     {
+        context.logger->log_trace("zeModuleBuildLogGetString(hModuleBuildLog, pSize, pBuildLog)");
+
         auto pfnGetString = context.zeDdiTable.ModuleBuildLog.pfnGetString;
 
         if( nullptr == pfnGetString )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeModuleBuildLogGetString", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeModuleBuildLogGetStringPrologue( hModuleBuildLog, pSize, pBuildLog );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeModuleBuildLogGetString", result);
         }
 
 
@@ -4717,17 +4990,17 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeModuleBuildLogGetStringPrologue( hModuleBuildLog, pSize, pBuildLog );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeModuleBuildLogGetString", result);
         }
 
-        auto result = pfnGetString( hModuleBuildLog, pSize, pBuildLog );
+        auto driver_result = pfnGetString( hModuleBuildLog, pSize, pBuildLog );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeModuleBuildLogGetStringEpilogue( hModuleBuildLog, pSize, pBuildLog );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeModuleBuildLogGetStringEpilogue( hModuleBuildLog, pSize, pBuildLog ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeModuleBuildLogGetString", result);
         }
 
-        return result;
+        return logAndPropagateResult("zeModuleBuildLogGetString", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -4739,15 +5012,17 @@ namespace validation_layer
         uint8_t* pModuleNativeBinary                    ///< [in,out][optional] byte pointer to native binary
         )
     {
+        context.logger->log_trace("zeModuleGetNativeBinary(hModule, pSize, pModuleNativeBinary)");
+
         auto pfnGetNativeBinary = context.zeDdiTable.Module.pfnGetNativeBinary;
 
         if( nullptr == pfnGetNativeBinary )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeModuleGetNativeBinary", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeModuleGetNativeBinaryPrologue( hModule, pSize, pModuleNativeBinary );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeModuleGetNativeBinary", result);
         }
 
 
@@ -4758,17 +5033,17 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeModuleGetNativeBinaryPrologue( hModule, pSize, pModuleNativeBinary );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeModuleGetNativeBinary", result);
         }
 
-        auto result = pfnGetNativeBinary( hModule, pSize, pModuleNativeBinary );
+        auto driver_result = pfnGetNativeBinary( hModule, pSize, pModuleNativeBinary );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeModuleGetNativeBinaryEpilogue( hModule, pSize, pModuleNativeBinary );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeModuleGetNativeBinaryEpilogue( hModule, pSize, pModuleNativeBinary ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeModuleGetNativeBinary", result);
         }
 
-        return result;
+        return logAndPropagateResult("zeModuleGetNativeBinary", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -4781,15 +5056,17 @@ namespace validation_layer
         void** pptr                                     ///< [in,out][optional] device visible pointer
         )
     {
+        context.logger->log_trace("zeModuleGetGlobalPointer(hModule, pGlobalName, pSize, pptr)");
+
         auto pfnGetGlobalPointer = context.zeDdiTable.Module.pfnGetGlobalPointer;
 
         if( nullptr == pfnGetGlobalPointer )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeModuleGetGlobalPointer", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeModuleGetGlobalPointerPrologue( hModule, pGlobalName, pSize, pptr );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeModuleGetGlobalPointer", result);
         }
 
 
@@ -4800,17 +5077,17 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeModuleGetGlobalPointerPrologue( hModule, pGlobalName, pSize, pptr );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeModuleGetGlobalPointer", result);
         }
 
-        auto result = pfnGetGlobalPointer( hModule, pGlobalName, pSize, pptr );
+        auto driver_result = pfnGetGlobalPointer( hModule, pGlobalName, pSize, pptr );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeModuleGetGlobalPointerEpilogue( hModule, pGlobalName, pSize, pptr );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeModuleGetGlobalPointerEpilogue( hModule, pGlobalName, pSize, pptr ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeModuleGetGlobalPointer", result);
         }
 
-        return result;
+        return logAndPropagateResult("zeModuleGetGlobalPointer", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -4828,15 +5105,17 @@ namespace validation_layer
                                                         ///< only retrieve that number of names.
         )
     {
+        context.logger->log_trace("zeModuleGetKernelNames(hModule, pCount, pNames)");
+
         auto pfnGetKernelNames = context.zeDdiTable.Module.pfnGetKernelNames;
 
         if( nullptr == pfnGetKernelNames )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeModuleGetKernelNames", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeModuleGetKernelNamesPrologue( hModule, pCount, pNames );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeModuleGetKernelNames", result);
         }
 
 
@@ -4847,17 +5126,17 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeModuleGetKernelNamesPrologue( hModule, pCount, pNames );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeModuleGetKernelNames", result);
         }
 
-        auto result = pfnGetKernelNames( hModule, pCount, pNames );
+        auto driver_result = pfnGetKernelNames( hModule, pCount, pNames );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeModuleGetKernelNamesEpilogue( hModule, pCount, pNames );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeModuleGetKernelNamesEpilogue( hModule, pCount, pNames ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeModuleGetKernelNames", result);
         }
 
-        return result;
+        return logAndPropagateResult("zeModuleGetKernelNames", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -4868,15 +5147,17 @@ namespace validation_layer
         ze_module_properties_t* pModuleProperties       ///< [in,out] query result for module properties.
         )
     {
+        context.logger->log_trace("zeModuleGetProperties(hModule, pModuleProperties)");
+
         auto pfnGetProperties = context.zeDdiTable.Module.pfnGetProperties;
 
         if( nullptr == pfnGetProperties )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeModuleGetProperties", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeModuleGetPropertiesPrologue( hModule, pModuleProperties );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeModuleGetProperties", result);
         }
 
 
@@ -4887,17 +5168,17 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeModuleGetPropertiesPrologue( hModule, pModuleProperties );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeModuleGetProperties", result);
         }
 
-        auto result = pfnGetProperties( hModule, pModuleProperties );
+        auto driver_result = pfnGetProperties( hModule, pModuleProperties );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeModuleGetPropertiesEpilogue( hModule, pModuleProperties );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeModuleGetPropertiesEpilogue( hModule, pModuleProperties ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeModuleGetProperties", result);
         }
 
-        return result;
+        return logAndPropagateResult("zeModuleGetProperties", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -4909,15 +5190,17 @@ namespace validation_layer
         ze_kernel_handle_t* phKernel                    ///< [out] handle of the Function object
         )
     {
+        context.logger->log_trace("zeKernelCreate(hModule, desc, phKernel)");
+
         auto pfnCreate = context.zeDdiTable.Kernel.pfnCreate;
 
         if( nullptr == pfnCreate )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeKernelCreate", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeKernelCreatePrologue( hModule, desc, phKernel );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeKernelCreate", result);
         }
 
 
@@ -4928,18 +5211,18 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeKernelCreatePrologue( hModule, desc, phKernel );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeKernelCreate", result);
         }
 
-        auto result = pfnCreate( hModule, desc, phKernel );
+        auto driver_result = pfnCreate( hModule, desc, phKernel );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeKernelCreateEpilogue( hModule, desc, phKernel );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeKernelCreateEpilogue( hModule, desc, phKernel ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeKernelCreate", result);
         }
 
 
-        if( result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
+        if( driver_result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
             
             if (phKernel){
                 context.handleLifetime->addHandle( *phKernel );
@@ -4947,7 +5230,7 @@ namespace validation_layer
 
             }
         }
-        return result;
+        return logAndPropagateResult("zeKernelCreate", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -4957,15 +5240,17 @@ namespace validation_layer
         ze_kernel_handle_t hKernel                      ///< [in][release] handle of the kernel object
         )
     {
+        context.logger->log_trace("zeKernelDestroy(hKernel)");
+
         auto pfnDestroy = context.zeDdiTable.Kernel.pfnDestroy;
 
         if( nullptr == pfnDestroy )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeKernelDestroy", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeKernelDestroyPrologue( hKernel );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeKernelDestroy", result);
         }
 
 
@@ -4976,17 +5261,17 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeKernelDestroyPrologue( hKernel );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeKernelDestroy", result);
         }
 
-        auto result = pfnDestroy( hKernel );
+        auto driver_result = pfnDestroy( hKernel );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeKernelDestroyEpilogue( hKernel );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeKernelDestroyEpilogue( hKernel ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeKernelDestroy", result);
         }
 
-        return result;
+        return logAndPropagateResult("zeKernelDestroy", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -4998,15 +5283,17 @@ namespace validation_layer
         void** pfnFunction                              ///< [out] pointer to function.
         )
     {
+        context.logger->log_trace("zeModuleGetFunctionPointer(hModule, pFunctionName, pfnFunction)");
+
         auto pfnGetFunctionPointer = context.zeDdiTable.Module.pfnGetFunctionPointer;
 
         if( nullptr == pfnGetFunctionPointer )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeModuleGetFunctionPointer", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeModuleGetFunctionPointerPrologue( hModule, pFunctionName, pfnFunction );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeModuleGetFunctionPointer", result);
         }
 
 
@@ -5017,17 +5304,17 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeModuleGetFunctionPointerPrologue( hModule, pFunctionName, pfnFunction );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeModuleGetFunctionPointer", result);
         }
 
-        auto result = pfnGetFunctionPointer( hModule, pFunctionName, pfnFunction );
+        auto driver_result = pfnGetFunctionPointer( hModule, pFunctionName, pfnFunction );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeModuleGetFunctionPointerEpilogue( hModule, pFunctionName, pfnFunction );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeModuleGetFunctionPointerEpilogue( hModule, pFunctionName, pfnFunction ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeModuleGetFunctionPointer", result);
         }
 
-        return result;
+        return logAndPropagateResult("zeModuleGetFunctionPointer", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -5040,15 +5327,17 @@ namespace validation_layer
         uint32_t groupSizeZ                             ///< [in] group size for Z dimension to use for this kernel
         )
     {
+        context.logger->log_trace("zeKernelSetGroupSize(hKernel, groupSizeX, groupSizeY, groupSizeZ)");
+
         auto pfnSetGroupSize = context.zeDdiTable.Kernel.pfnSetGroupSize;
 
         if( nullptr == pfnSetGroupSize )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeKernelSetGroupSize", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeKernelSetGroupSizePrologue( hKernel, groupSizeX, groupSizeY, groupSizeZ );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeKernelSetGroupSize", result);
         }
 
 
@@ -5059,17 +5348,17 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeKernelSetGroupSizePrologue( hKernel, groupSizeX, groupSizeY, groupSizeZ );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeKernelSetGroupSize", result);
         }
 
-        auto result = pfnSetGroupSize( hKernel, groupSizeX, groupSizeY, groupSizeZ );
+        auto driver_result = pfnSetGroupSize( hKernel, groupSizeX, groupSizeY, groupSizeZ );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeKernelSetGroupSizeEpilogue( hKernel, groupSizeX, groupSizeY, groupSizeZ );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeKernelSetGroupSizeEpilogue( hKernel, groupSizeX, groupSizeY, groupSizeZ ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeKernelSetGroupSize", result);
         }
 
-        return result;
+        return logAndPropagateResult("zeKernelSetGroupSize", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -5085,15 +5374,17 @@ namespace validation_layer
         uint32_t* groupSizeZ                            ///< [out] recommended size of group for Z dimension
         )
     {
+        context.logger->log_trace("zeKernelSuggestGroupSize(hKernel, globalSizeX, globalSizeY, globalSizeZ, groupSizeX, groupSizeY, groupSizeZ)");
+
         auto pfnSuggestGroupSize = context.zeDdiTable.Kernel.pfnSuggestGroupSize;
 
         if( nullptr == pfnSuggestGroupSize )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeKernelSuggestGroupSize", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeKernelSuggestGroupSizePrologue( hKernel, globalSizeX, globalSizeY, globalSizeZ, groupSizeX, groupSizeY, groupSizeZ );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeKernelSuggestGroupSize", result);
         }
 
 
@@ -5104,17 +5395,17 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeKernelSuggestGroupSizePrologue( hKernel, globalSizeX, globalSizeY, globalSizeZ, groupSizeX, groupSizeY, groupSizeZ );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeKernelSuggestGroupSize", result);
         }
 
-        auto result = pfnSuggestGroupSize( hKernel, globalSizeX, globalSizeY, globalSizeZ, groupSizeX, groupSizeY, groupSizeZ );
+        auto driver_result = pfnSuggestGroupSize( hKernel, globalSizeX, globalSizeY, globalSizeZ, groupSizeX, groupSizeY, groupSizeZ );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeKernelSuggestGroupSizeEpilogue( hKernel, globalSizeX, globalSizeY, globalSizeZ, groupSizeX, groupSizeY, groupSizeZ );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeKernelSuggestGroupSizeEpilogue( hKernel, globalSizeX, globalSizeY, globalSizeZ, groupSizeX, groupSizeY, groupSizeZ ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeKernelSuggestGroupSize", result);
         }
 
-        return result;
+        return logAndPropagateResult("zeKernelSuggestGroupSize", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -5125,15 +5416,17 @@ namespace validation_layer
         uint32_t* totalGroupCount                       ///< [out] recommended total group count.
         )
     {
+        context.logger->log_trace("zeKernelSuggestMaxCooperativeGroupCount(hKernel, totalGroupCount)");
+
         auto pfnSuggestMaxCooperativeGroupCount = context.zeDdiTable.Kernel.pfnSuggestMaxCooperativeGroupCount;
 
         if( nullptr == pfnSuggestMaxCooperativeGroupCount )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeKernelSuggestMaxCooperativeGroupCount", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeKernelSuggestMaxCooperativeGroupCountPrologue( hKernel, totalGroupCount );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeKernelSuggestMaxCooperativeGroupCount", result);
         }
 
 
@@ -5144,17 +5437,17 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeKernelSuggestMaxCooperativeGroupCountPrologue( hKernel, totalGroupCount );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeKernelSuggestMaxCooperativeGroupCount", result);
         }
 
-        auto result = pfnSuggestMaxCooperativeGroupCount( hKernel, totalGroupCount );
+        auto driver_result = pfnSuggestMaxCooperativeGroupCount( hKernel, totalGroupCount );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeKernelSuggestMaxCooperativeGroupCountEpilogue( hKernel, totalGroupCount );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeKernelSuggestMaxCooperativeGroupCountEpilogue( hKernel, totalGroupCount ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeKernelSuggestMaxCooperativeGroupCount", result);
         }
 
-        return result;
+        return logAndPropagateResult("zeKernelSuggestMaxCooperativeGroupCount", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -5168,15 +5461,17 @@ namespace validation_layer
                                                         ///< null then argument value is considered null.
         )
     {
+        context.logger->log_trace("zeKernelSetArgumentValue(hKernel, argIndex, argSize, pArgValue)");
+
         auto pfnSetArgumentValue = context.zeDdiTable.Kernel.pfnSetArgumentValue;
 
         if( nullptr == pfnSetArgumentValue )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeKernelSetArgumentValue", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeKernelSetArgumentValuePrologue( hKernel, argIndex, argSize, pArgValue );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeKernelSetArgumentValue", result);
         }
 
 
@@ -5187,17 +5482,17 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeKernelSetArgumentValuePrologue( hKernel, argIndex, argSize, pArgValue );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeKernelSetArgumentValue", result);
         }
 
-        auto result = pfnSetArgumentValue( hKernel, argIndex, argSize, pArgValue );
+        auto driver_result = pfnSetArgumentValue( hKernel, argIndex, argSize, pArgValue );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeKernelSetArgumentValueEpilogue( hKernel, argIndex, argSize, pArgValue );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeKernelSetArgumentValueEpilogue( hKernel, argIndex, argSize, pArgValue ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeKernelSetArgumentValue", result);
         }
 
-        return result;
+        return logAndPropagateResult("zeKernelSetArgumentValue", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -5208,15 +5503,17 @@ namespace validation_layer
         ze_kernel_indirect_access_flags_t flags         ///< [in] kernel indirect access flags
         )
     {
+        context.logger->log_trace("zeKernelSetIndirectAccess(hKernel, flags)");
+
         auto pfnSetIndirectAccess = context.zeDdiTable.Kernel.pfnSetIndirectAccess;
 
         if( nullptr == pfnSetIndirectAccess )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeKernelSetIndirectAccess", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeKernelSetIndirectAccessPrologue( hKernel, flags );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeKernelSetIndirectAccess", result);
         }
 
 
@@ -5227,17 +5524,17 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeKernelSetIndirectAccessPrologue( hKernel, flags );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeKernelSetIndirectAccess", result);
         }
 
-        auto result = pfnSetIndirectAccess( hKernel, flags );
+        auto driver_result = pfnSetIndirectAccess( hKernel, flags );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeKernelSetIndirectAccessEpilogue( hKernel, flags );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeKernelSetIndirectAccessEpilogue( hKernel, flags ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeKernelSetIndirectAccess", result);
         }
 
-        return result;
+        return logAndPropagateResult("zeKernelSetIndirectAccess", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -5248,15 +5545,17 @@ namespace validation_layer
         ze_kernel_indirect_access_flags_t* pFlags       ///< [out] query result for kernel indirect access flags.
         )
     {
+        context.logger->log_trace("zeKernelGetIndirectAccess(hKernel, pFlags)");
+
         auto pfnGetIndirectAccess = context.zeDdiTable.Kernel.pfnGetIndirectAccess;
 
         if( nullptr == pfnGetIndirectAccess )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeKernelGetIndirectAccess", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeKernelGetIndirectAccessPrologue( hKernel, pFlags );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeKernelGetIndirectAccess", result);
         }
 
 
@@ -5267,17 +5566,17 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeKernelGetIndirectAccessPrologue( hKernel, pFlags );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeKernelGetIndirectAccess", result);
         }
 
-        auto result = pfnGetIndirectAccess( hKernel, pFlags );
+        auto driver_result = pfnGetIndirectAccess( hKernel, pFlags );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeKernelGetIndirectAccessEpilogue( hKernel, pFlags );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeKernelGetIndirectAccessEpilogue( hKernel, pFlags ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeKernelGetIndirectAccess", result);
         }
 
-        return result;
+        return logAndPropagateResult("zeKernelGetIndirectAccess", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -5290,21 +5589,27 @@ namespace validation_layer
         char** pString                                  ///< [in,out][optional] pointer to application-managed character array
                                                         ///< (string data).
                                                         ///< If NULL, the string length of the kernel source attributes, including
-                                                        ///< a null-terminating character, is returned in pSize.
-                                                        ///< Otherwise, pString must point to valid application memory that is
-                                                        ///< greater than or equal to *pSize bytes in length, and on return the
-                                                        ///< pointed-to string will contain a space-separated list of kernel source attributes.
+                                                        ///< a null-terminating character, is returned in pSize. Otherwise, pString
+                                                        ///< must point to valid application memory that is greater than or equal
+                                                        ///< to *pSize bytes in length, and on return the pointed-to string will
+                                                        ///< contain a space-separated list of kernel source attributes. Note: This
+                                                        ///< API was originally intended to ship with a char *pString, however this
+                                                        ///< typo was introduced. Thus the API has to stay this way for backwards
+                                                        ///< compatible reasons. It can be corrected in v2.0. Suggestion is to
+                                                        ///< create your own char *pString and then pass to this API with &pString.
         )
     {
+        context.logger->log_trace("zeKernelGetSourceAttributes(hKernel, pSize, pString)");
+
         auto pfnGetSourceAttributes = context.zeDdiTable.Kernel.pfnGetSourceAttributes;
 
         if( nullptr == pfnGetSourceAttributes )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeKernelGetSourceAttributes", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeKernelGetSourceAttributesPrologue( hKernel, pSize, pString );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeKernelGetSourceAttributes", result);
         }
 
 
@@ -5315,17 +5620,17 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeKernelGetSourceAttributesPrologue( hKernel, pSize, pString );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeKernelGetSourceAttributes", result);
         }
 
-        auto result = pfnGetSourceAttributes( hKernel, pSize, pString );
+        auto driver_result = pfnGetSourceAttributes( hKernel, pSize, pString );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeKernelGetSourceAttributesEpilogue( hKernel, pSize, pString );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeKernelGetSourceAttributesEpilogue( hKernel, pSize, pString ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeKernelGetSourceAttributes", result);
         }
 
-        return result;
+        return logAndPropagateResult("zeKernelGetSourceAttributes", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -5337,15 +5642,17 @@ namespace validation_layer
                                                         ///< must be 0 (default configuration) or a valid combination of ::ze_cache_config_flag_t.
         )
     {
+        context.logger->log_trace("zeKernelSetCacheConfig(hKernel, flags)");
+
         auto pfnSetCacheConfig = context.zeDdiTable.Kernel.pfnSetCacheConfig;
 
         if( nullptr == pfnSetCacheConfig )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeKernelSetCacheConfig", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeKernelSetCacheConfigPrologue( hKernel, flags );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeKernelSetCacheConfig", result);
         }
 
 
@@ -5356,17 +5663,17 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeKernelSetCacheConfigPrologue( hKernel, flags );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeKernelSetCacheConfig", result);
         }
 
-        auto result = pfnSetCacheConfig( hKernel, flags );
+        auto driver_result = pfnSetCacheConfig( hKernel, flags );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeKernelSetCacheConfigEpilogue( hKernel, flags );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeKernelSetCacheConfigEpilogue( hKernel, flags ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeKernelSetCacheConfig", result);
         }
 
-        return result;
+        return logAndPropagateResult("zeKernelSetCacheConfig", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -5377,15 +5684,17 @@ namespace validation_layer
         ze_kernel_properties_t* pKernelProperties       ///< [in,out] query result for kernel properties.
         )
     {
+        context.logger->log_trace("zeKernelGetProperties(hKernel, pKernelProperties)");
+
         auto pfnGetProperties = context.zeDdiTable.Kernel.pfnGetProperties;
 
         if( nullptr == pfnGetProperties )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeKernelGetProperties", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeKernelGetPropertiesPrologue( hKernel, pKernelProperties );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeKernelGetProperties", result);
         }
 
 
@@ -5396,17 +5705,17 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeKernelGetPropertiesPrologue( hKernel, pKernelProperties );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeKernelGetProperties", result);
         }
 
-        auto result = pfnGetProperties( hKernel, pKernelProperties );
+        auto driver_result = pfnGetProperties( hKernel, pKernelProperties );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeKernelGetPropertiesEpilogue( hKernel, pKernelProperties );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeKernelGetPropertiesEpilogue( hKernel, pKernelProperties ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeKernelGetProperties", result);
         }
 
-        return result;
+        return logAndPropagateResult("zeKernelGetProperties", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -5419,15 +5728,17 @@ namespace validation_layer
         char* pName                                     ///< [in,out][optional] char pointer to kernel name.
         )
     {
+        context.logger->log_trace("zeKernelGetName(hKernel, pSize, pName)");
+
         auto pfnGetName = context.zeDdiTable.Kernel.pfnGetName;
 
         if( nullptr == pfnGetName )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeKernelGetName", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeKernelGetNamePrologue( hKernel, pSize, pName );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeKernelGetName", result);
         }
 
 
@@ -5438,17 +5749,17 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeKernelGetNamePrologue( hKernel, pSize, pName );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeKernelGetName", result);
         }
 
-        auto result = pfnGetName( hKernel, pSize, pName );
+        auto driver_result = pfnGetName( hKernel, pSize, pName );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeKernelGetNameEpilogue( hKernel, pSize, pName );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeKernelGetNameEpilogue( hKernel, pSize, pName ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeKernelGetName", result);
         }
 
-        return result;
+        return logAndPropagateResult("zeKernelGetName", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -5465,15 +5776,17 @@ namespace validation_layer
                                                         ///< on before launching
         )
     {
+        context.logger->log_trace("zeCommandListAppendLaunchKernel(hCommandList, hKernel, pLaunchFuncArgs, hSignalEvent, numWaitEvents, phWaitEventsLocal)");
+
         auto pfnAppendLaunchKernel = context.zeDdiTable.CommandList.pfnAppendLaunchKernel;
 
         if( nullptr == pfnAppendLaunchKernel )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeCommandListAppendLaunchKernel", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeCommandListAppendLaunchKernelPrologue( hCommandList, hKernel, pLaunchFuncArgs, hSignalEvent, numWaitEvents, phWaitEvents );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeCommandListAppendLaunchKernel", result);
         }
 
 
@@ -5484,17 +5797,17 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeCommandListAppendLaunchKernelPrologue( hCommandList, hKernel, pLaunchFuncArgs, hSignalEvent, numWaitEvents, phWaitEvents );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeCommandListAppendLaunchKernel", result);
         }
 
-        auto result = pfnAppendLaunchKernel( hCommandList, hKernel, pLaunchFuncArgs, hSignalEvent, numWaitEvents, phWaitEvents );
+        auto driver_result = pfnAppendLaunchKernel( hCommandList, hKernel, pLaunchFuncArgs, hSignalEvent, numWaitEvents, phWaitEvents );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeCommandListAppendLaunchKernelEpilogue( hCommandList, hKernel, pLaunchFuncArgs, hSignalEvent, numWaitEvents, phWaitEvents );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListAppendLaunchKernelEpilogue( hCommandList, hKernel, pLaunchFuncArgs, hSignalEvent, numWaitEvents, phWaitEvents ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeCommandListAppendLaunchKernel", result);
         }
 
-        return result;
+        return logAndPropagateResult("zeCommandListAppendLaunchKernel", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -5511,15 +5824,17 @@ namespace validation_layer
                                                         ///< on before launching
         )
     {
+        context.logger->log_trace("zeCommandListAppendLaunchCooperativeKernel(hCommandList, hKernel, pLaunchFuncArgs, hSignalEvent, numWaitEvents, phWaitEventsLocal)");
+
         auto pfnAppendLaunchCooperativeKernel = context.zeDdiTable.CommandList.pfnAppendLaunchCooperativeKernel;
 
         if( nullptr == pfnAppendLaunchCooperativeKernel )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeCommandListAppendLaunchCooperativeKernel", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeCommandListAppendLaunchCooperativeKernelPrologue( hCommandList, hKernel, pLaunchFuncArgs, hSignalEvent, numWaitEvents, phWaitEvents );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeCommandListAppendLaunchCooperativeKernel", result);
         }
 
 
@@ -5530,17 +5845,17 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeCommandListAppendLaunchCooperativeKernelPrologue( hCommandList, hKernel, pLaunchFuncArgs, hSignalEvent, numWaitEvents, phWaitEvents );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeCommandListAppendLaunchCooperativeKernel", result);
         }
 
-        auto result = pfnAppendLaunchCooperativeKernel( hCommandList, hKernel, pLaunchFuncArgs, hSignalEvent, numWaitEvents, phWaitEvents );
+        auto driver_result = pfnAppendLaunchCooperativeKernel( hCommandList, hKernel, pLaunchFuncArgs, hSignalEvent, numWaitEvents, phWaitEvents );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeCommandListAppendLaunchCooperativeKernelEpilogue( hCommandList, hKernel, pLaunchFuncArgs, hSignalEvent, numWaitEvents, phWaitEvents );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListAppendLaunchCooperativeKernelEpilogue( hCommandList, hKernel, pLaunchFuncArgs, hSignalEvent, numWaitEvents, phWaitEvents ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeCommandListAppendLaunchCooperativeKernel", result);
         }
 
-        return result;
+        return logAndPropagateResult("zeCommandListAppendLaunchCooperativeKernel", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -5558,15 +5873,17 @@ namespace validation_layer
                                                         ///< on before launching
         )
     {
+        context.logger->log_trace("zeCommandListAppendLaunchKernelIndirect(hCommandList, hKernel, pLaunchArgumentsBuffer, hSignalEvent, numWaitEvents, phWaitEventsLocal)");
+
         auto pfnAppendLaunchKernelIndirect = context.zeDdiTable.CommandList.pfnAppendLaunchKernelIndirect;
 
         if( nullptr == pfnAppendLaunchKernelIndirect )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeCommandListAppendLaunchKernelIndirect", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeCommandListAppendLaunchKernelIndirectPrologue( hCommandList, hKernel, pLaunchArgumentsBuffer, hSignalEvent, numWaitEvents, phWaitEvents );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeCommandListAppendLaunchKernelIndirect", result);
         }
 
 
@@ -5577,17 +5894,17 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeCommandListAppendLaunchKernelIndirectPrologue( hCommandList, hKernel, pLaunchArgumentsBuffer, hSignalEvent, numWaitEvents, phWaitEvents );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeCommandListAppendLaunchKernelIndirect", result);
         }
 
-        auto result = pfnAppendLaunchKernelIndirect( hCommandList, hKernel, pLaunchArgumentsBuffer, hSignalEvent, numWaitEvents, phWaitEvents );
+        auto driver_result = pfnAppendLaunchKernelIndirect( hCommandList, hKernel, pLaunchArgumentsBuffer, hSignalEvent, numWaitEvents, phWaitEvents );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeCommandListAppendLaunchKernelIndirectEpilogue( hCommandList, hKernel, pLaunchArgumentsBuffer, hSignalEvent, numWaitEvents, phWaitEvents );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListAppendLaunchKernelIndirectEpilogue( hCommandList, hKernel, pLaunchArgumentsBuffer, hSignalEvent, numWaitEvents, phWaitEvents ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeCommandListAppendLaunchKernelIndirect", result);
         }
 
-        return result;
+        return logAndPropagateResult("zeCommandListAppendLaunchKernelIndirect", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -5609,15 +5926,17 @@ namespace validation_layer
                                                         ///< on before launching
         )
     {
+        context.logger->log_trace("zeCommandListAppendLaunchMultipleKernelsIndirect(hCommandList, numKernels, phKernelsLocal, pCountBuffer, pLaunchArgumentsBuffer, hSignalEvent, numWaitEvents, phWaitEventsLocal)");
+
         auto pfnAppendLaunchMultipleKernelsIndirect = context.zeDdiTable.CommandList.pfnAppendLaunchMultipleKernelsIndirect;
 
         if( nullptr == pfnAppendLaunchMultipleKernelsIndirect )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeCommandListAppendLaunchMultipleKernelsIndirect", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeCommandListAppendLaunchMultipleKernelsIndirectPrologue( hCommandList, numKernels, phKernels, pCountBuffer, pLaunchArgumentsBuffer, hSignalEvent, numWaitEvents, phWaitEvents );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeCommandListAppendLaunchMultipleKernelsIndirect", result);
         }
 
 
@@ -5628,17 +5947,17 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeCommandListAppendLaunchMultipleKernelsIndirectPrologue( hCommandList, numKernels, phKernels, pCountBuffer, pLaunchArgumentsBuffer, hSignalEvent, numWaitEvents, phWaitEvents );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeCommandListAppendLaunchMultipleKernelsIndirect", result);
         }
 
-        auto result = pfnAppendLaunchMultipleKernelsIndirect( hCommandList, numKernels, phKernels, pCountBuffer, pLaunchArgumentsBuffer, hSignalEvent, numWaitEvents, phWaitEvents );
+        auto driver_result = pfnAppendLaunchMultipleKernelsIndirect( hCommandList, numKernels, phKernels, pCountBuffer, pLaunchArgumentsBuffer, hSignalEvent, numWaitEvents, phWaitEvents );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeCommandListAppendLaunchMultipleKernelsIndirectEpilogue( hCommandList, numKernels, phKernels, pCountBuffer, pLaunchArgumentsBuffer, hSignalEvent, numWaitEvents, phWaitEvents );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListAppendLaunchMultipleKernelsIndirectEpilogue( hCommandList, numKernels, phKernels, pCountBuffer, pLaunchArgumentsBuffer, hSignalEvent, numWaitEvents, phWaitEvents ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeCommandListAppendLaunchMultipleKernelsIndirect", result);
         }
 
-        return result;
+        return logAndPropagateResult("zeCommandListAppendLaunchMultipleKernelsIndirect", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -5651,15 +5970,17 @@ namespace validation_layer
         size_t size                                     ///< [in] size in bytes to make resident
         )
     {
+        context.logger->log_trace("zeContextMakeMemoryResident(hContext, hDevice, ptr, size)");
+
         auto pfnMakeMemoryResident = context.zeDdiTable.Context.pfnMakeMemoryResident;
 
         if( nullptr == pfnMakeMemoryResident )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeContextMakeMemoryResident", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeContextMakeMemoryResidentPrologue( hContext, hDevice, ptr, size );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeContextMakeMemoryResident", result);
         }
 
 
@@ -5670,17 +5991,17 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeContextMakeMemoryResidentPrologue( hContext, hDevice, ptr, size );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeContextMakeMemoryResident", result);
         }
 
-        auto result = pfnMakeMemoryResident( hContext, hDevice, ptr, size );
+        auto driver_result = pfnMakeMemoryResident( hContext, hDevice, ptr, size );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeContextMakeMemoryResidentEpilogue( hContext, hDevice, ptr, size );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeContextMakeMemoryResidentEpilogue( hContext, hDevice, ptr, size ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeContextMakeMemoryResident", result);
         }
 
-        return result;
+        return logAndPropagateResult("zeContextMakeMemoryResident", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -5693,15 +6014,17 @@ namespace validation_layer
         size_t size                                     ///< [in] size in bytes to evict
         )
     {
+        context.logger->log_trace("zeContextEvictMemory(hContext, hDevice, ptr, size)");
+
         auto pfnEvictMemory = context.zeDdiTable.Context.pfnEvictMemory;
 
         if( nullptr == pfnEvictMemory )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeContextEvictMemory", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeContextEvictMemoryPrologue( hContext, hDevice, ptr, size );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeContextEvictMemory", result);
         }
 
 
@@ -5712,17 +6035,17 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeContextEvictMemoryPrologue( hContext, hDevice, ptr, size );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeContextEvictMemory", result);
         }
 
-        auto result = pfnEvictMemory( hContext, hDevice, ptr, size );
+        auto driver_result = pfnEvictMemory( hContext, hDevice, ptr, size );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeContextEvictMemoryEpilogue( hContext, hDevice, ptr, size );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeContextEvictMemoryEpilogue( hContext, hDevice, ptr, size ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeContextEvictMemory", result);
         }
 
-        return result;
+        return logAndPropagateResult("zeContextEvictMemory", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -5734,15 +6057,17 @@ namespace validation_layer
         ze_image_handle_t hImage                        ///< [in] handle of image to make resident
         )
     {
+        context.logger->log_trace("zeContextMakeImageResident(hContext, hDevice, hImage)");
+
         auto pfnMakeImageResident = context.zeDdiTable.Context.pfnMakeImageResident;
 
         if( nullptr == pfnMakeImageResident )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeContextMakeImageResident", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeContextMakeImageResidentPrologue( hContext, hDevice, hImage );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeContextMakeImageResident", result);
         }
 
 
@@ -5753,17 +6078,17 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeContextMakeImageResidentPrologue( hContext, hDevice, hImage );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeContextMakeImageResident", result);
         }
 
-        auto result = pfnMakeImageResident( hContext, hDevice, hImage );
+        auto driver_result = pfnMakeImageResident( hContext, hDevice, hImage );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeContextMakeImageResidentEpilogue( hContext, hDevice, hImage );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeContextMakeImageResidentEpilogue( hContext, hDevice, hImage ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeContextMakeImageResident", result);
         }
 
-        return result;
+        return logAndPropagateResult("zeContextMakeImageResident", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -5775,15 +6100,17 @@ namespace validation_layer
         ze_image_handle_t hImage                        ///< [in] handle of image to make evict
         )
     {
+        context.logger->log_trace("zeContextEvictImage(hContext, hDevice, hImage)");
+
         auto pfnEvictImage = context.zeDdiTable.Context.pfnEvictImage;
 
         if( nullptr == pfnEvictImage )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeContextEvictImage", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeContextEvictImagePrologue( hContext, hDevice, hImage );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeContextEvictImage", result);
         }
 
 
@@ -5794,17 +6121,17 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeContextEvictImagePrologue( hContext, hDevice, hImage );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeContextEvictImage", result);
         }
 
-        auto result = pfnEvictImage( hContext, hDevice, hImage );
+        auto driver_result = pfnEvictImage( hContext, hDevice, hImage );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeContextEvictImageEpilogue( hContext, hDevice, hImage );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeContextEvictImageEpilogue( hContext, hDevice, hImage ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeContextEvictImage", result);
         }
 
-        return result;
+        return logAndPropagateResult("zeContextEvictImage", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -5817,15 +6144,17 @@ namespace validation_layer
         ze_sampler_handle_t* phSampler                  ///< [out] handle of the sampler
         )
     {
+        context.logger->log_trace("zeSamplerCreate(hContext, hDevice, desc, phSampler)");
+
         auto pfnCreate = context.zeDdiTable.Sampler.pfnCreate;
 
         if( nullptr == pfnCreate )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeSamplerCreate", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeSamplerCreatePrologue( hContext, hDevice, desc, phSampler );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeSamplerCreate", result);
         }
 
 
@@ -5836,18 +6165,18 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeSamplerCreatePrologue( hContext, hDevice, desc, phSampler );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeSamplerCreate", result);
         }
 
-        auto result = pfnCreate( hContext, hDevice, desc, phSampler );
+        auto driver_result = pfnCreate( hContext, hDevice, desc, phSampler );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeSamplerCreateEpilogue( hContext, hDevice, desc, phSampler );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeSamplerCreateEpilogue( hContext, hDevice, desc, phSampler ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeSamplerCreate", result);
         }
 
 
-        if( result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
+        if( driver_result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
             
             if (phSampler){
                 context.handleLifetime->addHandle( *phSampler );
@@ -5855,7 +6184,7 @@ namespace validation_layer
 
             }
         }
-        return result;
+        return logAndPropagateResult("zeSamplerCreate", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -5865,15 +6194,17 @@ namespace validation_layer
         ze_sampler_handle_t hSampler                    ///< [in][release] handle of the sampler
         )
     {
+        context.logger->log_trace("zeSamplerDestroy(hSampler)");
+
         auto pfnDestroy = context.zeDdiTable.Sampler.pfnDestroy;
 
         if( nullptr == pfnDestroy )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeSamplerDestroy", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeSamplerDestroyPrologue( hSampler );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeSamplerDestroy", result);
         }
 
 
@@ -5884,17 +6215,17 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeSamplerDestroyPrologue( hSampler );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeSamplerDestroy", result);
         }
 
-        auto result = pfnDestroy( hSampler );
+        auto driver_result = pfnDestroy( hSampler );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeSamplerDestroyEpilogue( hSampler );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeSamplerDestroyEpilogue( hSampler ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeSamplerDestroy", result);
         }
 
-        return result;
+        return logAndPropagateResult("zeSamplerDestroy", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -5908,15 +6239,17 @@ namespace validation_layer
         void** pptr                                     ///< [out] pointer to virtual reservation.
         )
     {
+        context.logger->log_trace("zeVirtualMemReserve(hContext, pStart, size, pptr)");
+
         auto pfnReserve = context.zeDdiTable.VirtualMem.pfnReserve;
 
         if( nullptr == pfnReserve )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeVirtualMemReserve", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeVirtualMemReservePrologue( hContext, pStart, size, pptr );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeVirtualMemReserve", result);
         }
 
 
@@ -5927,17 +6260,17 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeVirtualMemReservePrologue( hContext, pStart, size, pptr );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeVirtualMemReserve", result);
         }
 
-        auto result = pfnReserve( hContext, pStart, size, pptr );
+        auto driver_result = pfnReserve( hContext, pStart, size, pptr );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeVirtualMemReserveEpilogue( hContext, pStart, size, pptr );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeVirtualMemReserveEpilogue( hContext, pStart, size, pptr ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeVirtualMemReserve", result);
         }
 
-        return result;
+        return logAndPropagateResult("zeVirtualMemReserve", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -5949,15 +6282,17 @@ namespace validation_layer
         size_t size                                     ///< [in] size in bytes to free; must be page aligned.
         )
     {
+        context.logger->log_trace("zeVirtualMemFree(hContext, ptr, size)");
+
         auto pfnFree = context.zeDdiTable.VirtualMem.pfnFree;
 
         if( nullptr == pfnFree )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeVirtualMemFree", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeVirtualMemFreePrologue( hContext, ptr, size );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeVirtualMemFree", result);
         }
 
 
@@ -5968,17 +6303,17 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeVirtualMemFreePrologue( hContext, ptr, size );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeVirtualMemFree", result);
         }
 
-        auto result = pfnFree( hContext, ptr, size );
+        auto driver_result = pfnFree( hContext, ptr, size );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeVirtualMemFreeEpilogue( hContext, ptr, size );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeVirtualMemFreeEpilogue( hContext, ptr, size ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeVirtualMemFree", result);
         }
 
-        return result;
+        return logAndPropagateResult("zeVirtualMemFree", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -5992,15 +6327,17 @@ namespace validation_layer
                                                         ///< alignments.
         )
     {
+        context.logger->log_trace("zeVirtualMemQueryPageSize(hContext, hDevice, size, pagesize)");
+
         auto pfnQueryPageSize = context.zeDdiTable.VirtualMem.pfnQueryPageSize;
 
         if( nullptr == pfnQueryPageSize )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeVirtualMemQueryPageSize", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeVirtualMemQueryPageSizePrologue( hContext, hDevice, size, pagesize );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeVirtualMemQueryPageSize", result);
         }
 
 
@@ -6011,17 +6348,17 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeVirtualMemQueryPageSizePrologue( hContext, hDevice, size, pagesize );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeVirtualMemQueryPageSize", result);
         }
 
-        auto result = pfnQueryPageSize( hContext, hDevice, size, pagesize );
+        auto driver_result = pfnQueryPageSize( hContext, hDevice, size, pagesize );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeVirtualMemQueryPageSizeEpilogue( hContext, hDevice, size, pagesize );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeVirtualMemQueryPageSizeEpilogue( hContext, hDevice, size, pagesize ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeVirtualMemQueryPageSize", result);
         }
 
-        return result;
+        return logAndPropagateResult("zeVirtualMemQueryPageSize", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -6029,20 +6366,23 @@ namespace validation_layer
     __zedlllocal ze_result_t ZE_APICALL
     zePhysicalMemCreate(
         ze_context_handle_t hContext,                   ///< [in] handle of the context object
-        ze_device_handle_t hDevice,                     ///< [in] handle of the device object
+        ze_device_handle_t hDevice,                     ///< [in] handle of the device object, can be `nullptr` if creating
+                                                        ///< physical host memory.
         ze_physical_mem_desc_t* desc,                   ///< [in] pointer to physical memory descriptor.
         ze_physical_mem_handle_t* phPhysicalMemory      ///< [out] pointer to handle of physical memory object created
         )
     {
+        context.logger->log_trace("zePhysicalMemCreate(hContext, hDevice, desc, phPhysicalMemory)");
+
         auto pfnCreate = context.zeDdiTable.PhysicalMem.pfnCreate;
 
         if( nullptr == pfnCreate )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zePhysicalMemCreate", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zePhysicalMemCreatePrologue( hContext, hDevice, desc, phPhysicalMemory );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zePhysicalMemCreate", result);
         }
 
 
@@ -6053,18 +6393,18 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zePhysicalMemCreatePrologue( hContext, hDevice, desc, phPhysicalMemory );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zePhysicalMemCreate", result);
         }
 
-        auto result = pfnCreate( hContext, hDevice, desc, phPhysicalMemory );
+        auto driver_result = pfnCreate( hContext, hDevice, desc, phPhysicalMemory );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zePhysicalMemCreateEpilogue( hContext, hDevice, desc, phPhysicalMemory );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zePhysicalMemCreateEpilogue( hContext, hDevice, desc, phPhysicalMemory ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zePhysicalMemCreate", result);
         }
 
 
-        if( result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
+        if( driver_result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
             
             if (phPhysicalMemory){
                 context.handleLifetime->addHandle( *phPhysicalMemory );
@@ -6072,7 +6412,7 @@ namespace validation_layer
 
             }
         }
-        return result;
+        return logAndPropagateResult("zePhysicalMemCreate", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -6083,15 +6423,17 @@ namespace validation_layer
         ze_physical_mem_handle_t hPhysicalMemory        ///< [in][release] handle of physical memory object to destroy
         )
     {
+        context.logger->log_trace("zePhysicalMemDestroy(hContext, hPhysicalMemory)");
+
         auto pfnDestroy = context.zeDdiTable.PhysicalMem.pfnDestroy;
 
         if( nullptr == pfnDestroy )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zePhysicalMemDestroy", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zePhysicalMemDestroyPrologue( hContext, hPhysicalMemory );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zePhysicalMemDestroy", result);
         }
 
 
@@ -6102,17 +6444,17 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zePhysicalMemDestroyPrologue( hContext, hPhysicalMemory );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zePhysicalMemDestroy", result);
         }
 
-        auto result = pfnDestroy( hContext, hPhysicalMemory );
+        auto driver_result = pfnDestroy( hContext, hPhysicalMemory );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zePhysicalMemDestroyEpilogue( hContext, hPhysicalMemory );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zePhysicalMemDestroyEpilogue( hContext, hPhysicalMemory ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zePhysicalMemDestroy", result);
         }
 
-        return result;
+        return logAndPropagateResult("zePhysicalMemDestroy", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -6130,15 +6472,17 @@ namespace validation_layer
                                                         ///< range.
         )
     {
+        context.logger->log_trace("zeVirtualMemMap(hContext, ptr, size, hPhysicalMemory, offset, access)");
+
         auto pfnMap = context.zeDdiTable.VirtualMem.pfnMap;
 
         if( nullptr == pfnMap )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeVirtualMemMap", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeVirtualMemMapPrologue( hContext, ptr, size, hPhysicalMemory, offset, access );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeVirtualMemMap", result);
         }
 
 
@@ -6149,17 +6493,17 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeVirtualMemMapPrologue( hContext, ptr, size, hPhysicalMemory, offset, access );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeVirtualMemMap", result);
         }
 
-        auto result = pfnMap( hContext, ptr, size, hPhysicalMemory, offset, access );
+        auto driver_result = pfnMap( hContext, ptr, size, hPhysicalMemory, offset, access );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeVirtualMemMapEpilogue( hContext, ptr, size, hPhysicalMemory, offset, access );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeVirtualMemMapEpilogue( hContext, ptr, size, hPhysicalMemory, offset, access ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeVirtualMemMap", result);
         }
 
-        return result;
+        return logAndPropagateResult("zeVirtualMemMap", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -6171,15 +6515,17 @@ namespace validation_layer
         size_t size                                     ///< [in] size in bytes to unmap; must be page aligned.
         )
     {
+        context.logger->log_trace("zeVirtualMemUnmap(hContext, ptr, size)");
+
         auto pfnUnmap = context.zeDdiTable.VirtualMem.pfnUnmap;
 
         if( nullptr == pfnUnmap )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeVirtualMemUnmap", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeVirtualMemUnmapPrologue( hContext, ptr, size );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeVirtualMemUnmap", result);
         }
 
 
@@ -6190,17 +6536,17 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeVirtualMemUnmapPrologue( hContext, ptr, size );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeVirtualMemUnmap", result);
         }
 
-        auto result = pfnUnmap( hContext, ptr, size );
+        auto driver_result = pfnUnmap( hContext, ptr, size );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeVirtualMemUnmapEpilogue( hContext, ptr, size );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeVirtualMemUnmapEpilogue( hContext, ptr, size ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeVirtualMemUnmap", result);
         }
 
-        return result;
+        return logAndPropagateResult("zeVirtualMemUnmap", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -6214,15 +6560,17 @@ namespace validation_layer
                                                         ///< range.
         )
     {
+        context.logger->log_trace("zeVirtualMemSetAccessAttribute(hContext, ptr, size, access)");
+
         auto pfnSetAccessAttribute = context.zeDdiTable.VirtualMem.pfnSetAccessAttribute;
 
         if( nullptr == pfnSetAccessAttribute )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeVirtualMemSetAccessAttribute", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeVirtualMemSetAccessAttributePrologue( hContext, ptr, size, access );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeVirtualMemSetAccessAttribute", result);
         }
 
 
@@ -6233,17 +6581,17 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeVirtualMemSetAccessAttributePrologue( hContext, ptr, size, access );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeVirtualMemSetAccessAttribute", result);
         }
 
-        auto result = pfnSetAccessAttribute( hContext, ptr, size, access );
+        auto driver_result = pfnSetAccessAttribute( hContext, ptr, size, access );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeVirtualMemSetAccessAttributeEpilogue( hContext, ptr, size, access );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeVirtualMemSetAccessAttributeEpilogue( hContext, ptr, size, access ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeVirtualMemSetAccessAttribute", result);
         }
 
-        return result;
+        return logAndPropagateResult("zeVirtualMemSetAccessAttribute", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -6258,15 +6606,17 @@ namespace validation_layer
                                                         ///< that shares same access attribute.
         )
     {
+        context.logger->log_trace("zeVirtualMemGetAccessAttribute(hContext, ptr, size, access, outSize)");
+
         auto pfnGetAccessAttribute = context.zeDdiTable.VirtualMem.pfnGetAccessAttribute;
 
         if( nullptr == pfnGetAccessAttribute )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeVirtualMemGetAccessAttribute", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeVirtualMemGetAccessAttributePrologue( hContext, ptr, size, access, outSize );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeVirtualMemGetAccessAttribute", result);
         }
 
 
@@ -6277,17 +6627,17 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeVirtualMemGetAccessAttributePrologue( hContext, ptr, size, access, outSize );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeVirtualMemGetAccessAttribute", result);
         }
 
-        auto result = pfnGetAccessAttribute( hContext, ptr, size, access, outSize );
+        auto driver_result = pfnGetAccessAttribute( hContext, ptr, size, access, outSize );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeVirtualMemGetAccessAttributeEpilogue( hContext, ptr, size, access, outSize );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeVirtualMemGetAccessAttributeEpilogue( hContext, ptr, size, access, outSize ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeVirtualMemGetAccessAttribute", result);
         }
 
-        return result;
+        return logAndPropagateResult("zeVirtualMemGetAccessAttribute", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -6300,15 +6650,17 @@ namespace validation_layer
         uint32_t offsetZ                                ///< [in] global offset for Z dimension to use for this kernel
         )
     {
+        context.logger->log_trace("zeKernelSetGlobalOffsetExp(hKernel, offsetX, offsetY, offsetZ)");
+
         auto pfnSetGlobalOffsetExp = context.zeDdiTable.KernelExp.pfnSetGlobalOffsetExp;
 
         if( nullptr == pfnSetGlobalOffsetExp )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeKernelSetGlobalOffsetExp", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeKernelSetGlobalOffsetExpPrologue( hKernel, offsetX, offsetY, offsetZ );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeKernelSetGlobalOffsetExp", result);
         }
 
 
@@ -6319,17 +6671,756 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeKernelSetGlobalOffsetExpPrologue( hKernel, offsetX, offsetY, offsetZ );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeKernelSetGlobalOffsetExp", result);
         }
 
-        auto result = pfnSetGlobalOffsetExp( hKernel, offsetX, offsetY, offsetZ );
+        auto driver_result = pfnSetGlobalOffsetExp( hKernel, offsetX, offsetY, offsetZ );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeKernelSetGlobalOffsetExpEpilogue( hKernel, offsetX, offsetY, offsetZ );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeKernelSetGlobalOffsetExpEpilogue( hKernel, offsetX, offsetY, offsetZ ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeKernelSetGlobalOffsetExp", result);
         }
 
-        return result;
+        return logAndPropagateResult("zeKernelSetGlobalOffsetExp", driver_result);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeKernelGetBinaryExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zeKernelGetBinaryExp(
+        ze_kernel_handle_t hKernel,                     ///< [in] Kernel handle.
+        size_t* pSize,                                  ///< [in,out] pointer to variable with size of GEN ISA binary.
+        uint8_t* pKernelBinary                          ///< [in,out] pointer to storage area for GEN ISA binary function.
+        )
+    {
+        context.logger->log_trace("zeKernelGetBinaryExp(hKernel, pSize, pKernelBinary)");
+
+        auto pfnGetBinaryExp = context.zeDdiTable.KernelExp.pfnGetBinaryExp;
+
+        if( nullptr == pfnGetBinaryExp )
+            return logAndPropagateResult("zeKernelGetBinaryExp", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeKernelGetBinaryExpPrologue( hKernel, pSize, pKernelBinary );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeKernelGetBinaryExp", result);
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeKernelGetBinaryExpPrologue( hKernel, pSize, pKernelBinary );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeKernelGetBinaryExp", result);
+        }
+
+        auto driver_result = pfnGetBinaryExp( hKernel, pSize, pKernelBinary );
+
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeKernelGetBinaryExpEpilogue( hKernel, pSize, pKernelBinary ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeKernelGetBinaryExp", result);
+        }
+
+
+        if( driver_result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
+            
+        }
+        return logAndPropagateResult("zeKernelGetBinaryExp", driver_result);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeDeviceImportExternalSemaphoreExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeDeviceImportExternalSemaphoreExt(
+        ze_device_handle_t hDevice,                     ///< [in] The device handle.
+        const ze_external_semaphore_ext_desc_t* desc,   ///< [in] The pointer to external semaphore descriptor.
+        ze_external_semaphore_ext_handle_t* phSemaphore ///< [out] The handle of the external semaphore imported.
+        )
+    {
+        context.logger->log_trace("zeDeviceImportExternalSemaphoreExt(hDevice, desc, phSemaphore)");
+
+        auto pfnImportExternalSemaphoreExt = context.zeDdiTable.Device.pfnImportExternalSemaphoreExt;
+
+        if( nullptr == pfnImportExternalSemaphoreExt )
+            return logAndPropagateResult("zeDeviceImportExternalSemaphoreExt", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeDeviceImportExternalSemaphoreExtPrologue( hDevice, desc, phSemaphore );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeDeviceImportExternalSemaphoreExt", result);
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeDeviceImportExternalSemaphoreExtPrologue( hDevice, desc, phSemaphore );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeDeviceImportExternalSemaphoreExt", result);
+        }
+
+        auto driver_result = pfnImportExternalSemaphoreExt( hDevice, desc, phSemaphore );
+
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeDeviceImportExternalSemaphoreExtEpilogue( hDevice, desc, phSemaphore ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeDeviceImportExternalSemaphoreExt", result);
+        }
+
+        return logAndPropagateResult("zeDeviceImportExternalSemaphoreExt", driver_result);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeDeviceReleaseExternalSemaphoreExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeDeviceReleaseExternalSemaphoreExt(
+        ze_external_semaphore_ext_handle_t hSemaphore   ///< [in] The handle of the external semaphore.
+        )
+    {
+        context.logger->log_trace("zeDeviceReleaseExternalSemaphoreExt(hSemaphore)");
+
+        auto pfnReleaseExternalSemaphoreExt = context.zeDdiTable.Device.pfnReleaseExternalSemaphoreExt;
+
+        if( nullptr == pfnReleaseExternalSemaphoreExt )
+            return logAndPropagateResult("zeDeviceReleaseExternalSemaphoreExt", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeDeviceReleaseExternalSemaphoreExtPrologue( hSemaphore );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeDeviceReleaseExternalSemaphoreExt", result);
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeDeviceReleaseExternalSemaphoreExtPrologue( hSemaphore );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeDeviceReleaseExternalSemaphoreExt", result);
+        }
+
+        auto driver_result = pfnReleaseExternalSemaphoreExt( hSemaphore );
+
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeDeviceReleaseExternalSemaphoreExtEpilogue( hSemaphore ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeDeviceReleaseExternalSemaphoreExt", result);
+        }
+
+        return logAndPropagateResult("zeDeviceReleaseExternalSemaphoreExt", driver_result);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeCommandListAppendSignalExternalSemaphoreExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeCommandListAppendSignalExternalSemaphoreExt(
+        ze_command_list_handle_t hCommandList,          ///< [in] The command list handle.
+        uint32_t numSemaphores,                         ///< [in] The number of external semaphores.
+        ze_external_semaphore_ext_handle_t* phSemaphores,   ///< [in][range(0, numSemaphores)] The vector of external semaphore handles
+                                                        ///< to be appended into command list.
+        ze_external_semaphore_signal_params_ext_t* signalParams,///< [in] Signal parameters.
+        ze_event_handle_t hSignalEvent,                 ///< [in][optional] handle of the event to signal on completion
+        uint32_t numWaitEvents,                         ///< [in][optional] number of events to wait on before launching; must be 0
+                                                        ///< if `nullptr == phWaitEvents`
+        ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
+                                                        ///< on before launching
+        )
+    {
+        context.logger->log_trace("zeCommandListAppendSignalExternalSemaphoreExt(hCommandList, numSemaphores, phSemaphoresLocal, signalParams, hSignalEvent, numWaitEvents, phWaitEventsLocal)");
+
+        auto pfnAppendSignalExternalSemaphoreExt = context.zeDdiTable.CommandList.pfnAppendSignalExternalSemaphoreExt;
+
+        if( nullptr == pfnAppendSignalExternalSemaphoreExt )
+            return logAndPropagateResult("zeCommandListAppendSignalExternalSemaphoreExt", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListAppendSignalExternalSemaphoreExtPrologue( hCommandList, numSemaphores, phSemaphores, signalParams, hSignalEvent, numWaitEvents, phWaitEvents );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeCommandListAppendSignalExternalSemaphoreExt", result);
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeCommandListAppendSignalExternalSemaphoreExtPrologue( hCommandList, numSemaphores, phSemaphores, signalParams, hSignalEvent, numWaitEvents, phWaitEvents );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeCommandListAppendSignalExternalSemaphoreExt", result);
+        }
+
+        auto driver_result = pfnAppendSignalExternalSemaphoreExt( hCommandList, numSemaphores, phSemaphores, signalParams, hSignalEvent, numWaitEvents, phWaitEvents );
+
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListAppendSignalExternalSemaphoreExtEpilogue( hCommandList, numSemaphores, phSemaphores, signalParams, hSignalEvent, numWaitEvents, phWaitEvents ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeCommandListAppendSignalExternalSemaphoreExt", result);
+        }
+
+        return logAndPropagateResult("zeCommandListAppendSignalExternalSemaphoreExt", driver_result);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeCommandListAppendWaitExternalSemaphoreExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeCommandListAppendWaitExternalSemaphoreExt(
+        ze_command_list_handle_t hCommandList,          ///< [in] The command list handle.
+        uint32_t numSemaphores,                         ///< [in] The number of external semaphores.
+        ze_external_semaphore_ext_handle_t* phSemaphores,   ///< [in] [range(0,numSemaphores)] The vector of external semaphore handles
+                                                        ///< to append into command list.
+        ze_external_semaphore_wait_params_ext_t* waitParams,///< [in] Wait parameters.
+        ze_event_handle_t hSignalEvent,                 ///< [in][optional] handle of the event to signal on completion
+        uint32_t numWaitEvents,                         ///< [in][optional] number of events to wait on before launching; must be 0
+                                                        ///< if `nullptr == phWaitEvents`
+        ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
+                                                        ///< on before launching
+        )
+    {
+        context.logger->log_trace("zeCommandListAppendWaitExternalSemaphoreExt(hCommandList, numSemaphores, phSemaphoresLocal, waitParams, hSignalEvent, numWaitEvents, phWaitEventsLocal)");
+
+        auto pfnAppendWaitExternalSemaphoreExt = context.zeDdiTable.CommandList.pfnAppendWaitExternalSemaphoreExt;
+
+        if( nullptr == pfnAppendWaitExternalSemaphoreExt )
+            return logAndPropagateResult("zeCommandListAppendWaitExternalSemaphoreExt", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListAppendWaitExternalSemaphoreExtPrologue( hCommandList, numSemaphores, phSemaphores, waitParams, hSignalEvent, numWaitEvents, phWaitEvents );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeCommandListAppendWaitExternalSemaphoreExt", result);
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeCommandListAppendWaitExternalSemaphoreExtPrologue( hCommandList, numSemaphores, phSemaphores, waitParams, hSignalEvent, numWaitEvents, phWaitEvents );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeCommandListAppendWaitExternalSemaphoreExt", result);
+        }
+
+        auto driver_result = pfnAppendWaitExternalSemaphoreExt( hCommandList, numSemaphores, phSemaphores, waitParams, hSignalEvent, numWaitEvents, phWaitEvents );
+
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListAppendWaitExternalSemaphoreExtEpilogue( hCommandList, numSemaphores, phSemaphores, waitParams, hSignalEvent, numWaitEvents, phWaitEvents ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeCommandListAppendWaitExternalSemaphoreExt", result);
+        }
+
+        return logAndPropagateResult("zeCommandListAppendWaitExternalSemaphoreExt", driver_result);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeRTASBuilderCreateExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeRTASBuilderCreateExt(
+        ze_driver_handle_t hDriver,                     ///< [in] handle of driver object
+        const ze_rtas_builder_ext_desc_t* pDescriptor,  ///< [in] pointer to builder descriptor
+        ze_rtas_builder_ext_handle_t* phBuilder         ///< [out] handle of builder object
+        )
+    {
+        context.logger->log_trace("zeRTASBuilderCreateExt(hDriver, pDescriptor, phBuilder)");
+
+        auto pfnCreateExt = context.zeDdiTable.RTASBuilder.pfnCreateExt;
+
+        if( nullptr == pfnCreateExt )
+            return logAndPropagateResult("zeRTASBuilderCreateExt", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeRTASBuilderCreateExtPrologue( hDriver, pDescriptor, phBuilder );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeRTASBuilderCreateExt", result);
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeRTASBuilderCreateExtPrologue( hDriver, pDescriptor, phBuilder );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeRTASBuilderCreateExt", result);
+        }
+
+        auto driver_result = pfnCreateExt( hDriver, pDescriptor, phBuilder );
+
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeRTASBuilderCreateExtEpilogue( hDriver, pDescriptor, phBuilder ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeRTASBuilderCreateExt", result);
+        }
+
+
+        if( driver_result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
+            
+            if (phBuilder){
+                context.handleLifetime->addHandle( *phBuilder );
+                context.handleLifetime->addDependent( hDriver, *phBuilder );
+
+            }
+        }
+        return logAndPropagateResult("zeRTASBuilderCreateExt", driver_result);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeRTASBuilderGetBuildPropertiesExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeRTASBuilderGetBuildPropertiesExt(
+        ze_rtas_builder_ext_handle_t hBuilder,          ///< [in] handle of builder object
+        const ze_rtas_builder_build_op_ext_desc_t* pBuildOpDescriptor,  ///< [in] pointer to build operation descriptor
+        ze_rtas_builder_ext_properties_t* pProperties   ///< [in,out] query result for builder properties
+        )
+    {
+        context.logger->log_trace("zeRTASBuilderGetBuildPropertiesExt(hBuilder, pBuildOpDescriptor, pProperties)");
+
+        auto pfnGetBuildPropertiesExt = context.zeDdiTable.RTASBuilder.pfnGetBuildPropertiesExt;
+
+        if( nullptr == pfnGetBuildPropertiesExt )
+            return logAndPropagateResult("zeRTASBuilderGetBuildPropertiesExt", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeRTASBuilderGetBuildPropertiesExtPrologue( hBuilder, pBuildOpDescriptor, pProperties );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeRTASBuilderGetBuildPropertiesExt", result);
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeRTASBuilderGetBuildPropertiesExtPrologue( hBuilder, pBuildOpDescriptor, pProperties );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeRTASBuilderGetBuildPropertiesExt", result);
+        }
+
+        auto driver_result = pfnGetBuildPropertiesExt( hBuilder, pBuildOpDescriptor, pProperties );
+
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeRTASBuilderGetBuildPropertiesExtEpilogue( hBuilder, pBuildOpDescriptor, pProperties ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeRTASBuilderGetBuildPropertiesExt", result);
+        }
+
+        return logAndPropagateResult("zeRTASBuilderGetBuildPropertiesExt", driver_result);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeDriverRTASFormatCompatibilityCheckExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeDriverRTASFormatCompatibilityCheckExt(
+        ze_driver_handle_t hDriver,                     ///< [in] handle of driver object
+        ze_rtas_format_ext_t rtasFormatA,               ///< [in] operand A
+        ze_rtas_format_ext_t rtasFormatB                ///< [in] operand B
+        )
+    {
+        context.logger->log_trace("zeDriverRTASFormatCompatibilityCheckExt(hDriver, rtasFormatA, rtasFormatB)");
+
+        auto pfnRTASFormatCompatibilityCheckExt = context.zeDdiTable.Driver.pfnRTASFormatCompatibilityCheckExt;
+
+        if( nullptr == pfnRTASFormatCompatibilityCheckExt )
+            return logAndPropagateResult("zeDriverRTASFormatCompatibilityCheckExt", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeDriverRTASFormatCompatibilityCheckExtPrologue( hDriver, rtasFormatA, rtasFormatB );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeDriverRTASFormatCompatibilityCheckExt", result);
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeDriverRTASFormatCompatibilityCheckExtPrologue( hDriver, rtasFormatA, rtasFormatB );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeDriverRTASFormatCompatibilityCheckExt", result);
+        }
+
+        auto driver_result = pfnRTASFormatCompatibilityCheckExt( hDriver, rtasFormatA, rtasFormatB );
+
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeDriverRTASFormatCompatibilityCheckExtEpilogue( hDriver, rtasFormatA, rtasFormatB ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeDriverRTASFormatCompatibilityCheckExt", result);
+        }
+
+        return logAndPropagateResult("zeDriverRTASFormatCompatibilityCheckExt", driver_result);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeRTASBuilderBuildExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeRTASBuilderBuildExt(
+        ze_rtas_builder_ext_handle_t hBuilder,          ///< [in] handle of builder object
+        const ze_rtas_builder_build_op_ext_desc_t* pBuildOpDescriptor,  ///< [in] pointer to build operation descriptor
+        void* pScratchBuffer,                           ///< [in][range(0, `scratchBufferSizeBytes`)] scratch buffer to be used
+                                                        ///< during acceleration structure construction
+        size_t scratchBufferSizeBytes,                  ///< [in] size of scratch buffer, in bytes
+        void* pRtasBuffer,                              ///< [in] pointer to destination buffer
+        size_t rtasBufferSizeBytes,                     ///< [in] destination buffer size, in bytes
+        ze_rtas_parallel_operation_ext_handle_t hParallelOperation, ///< [in][optional] handle to parallel operation object
+        void* pBuildUserPtr,                            ///< [in][optional] pointer passed to callbacks
+        ze_rtas_aabb_ext_t* pBounds,                    ///< [in,out][optional] pointer to destination address for acceleration
+                                                        ///< structure bounds
+        size_t* pRtasBufferSizeBytes                    ///< [out][optional] updated acceleration structure size requirement, in
+                                                        ///< bytes
+        )
+    {
+        context.logger->log_trace("zeRTASBuilderBuildExt(hBuilder, pBuildOpDescriptor, pScratchBuffer, scratchBufferSizeBytes, pRtasBuffer, rtasBufferSizeBytes, hParallelOperation, pBuildUserPtr, pBounds, pRtasBufferSizeBytes)");
+
+        auto pfnBuildExt = context.zeDdiTable.RTASBuilder.pfnBuildExt;
+
+        if( nullptr == pfnBuildExt )
+            return logAndPropagateResult("zeRTASBuilderBuildExt", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeRTASBuilderBuildExtPrologue( hBuilder, pBuildOpDescriptor, pScratchBuffer, scratchBufferSizeBytes, pRtasBuffer, rtasBufferSizeBytes, hParallelOperation, pBuildUserPtr, pBounds, pRtasBufferSizeBytes );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeRTASBuilderBuildExt", result);
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeRTASBuilderBuildExtPrologue( hBuilder, pBuildOpDescriptor, pScratchBuffer, scratchBufferSizeBytes, pRtasBuffer, rtasBufferSizeBytes, hParallelOperation, pBuildUserPtr, pBounds, pRtasBufferSizeBytes );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeRTASBuilderBuildExt", result);
+        }
+
+        auto driver_result = pfnBuildExt( hBuilder, pBuildOpDescriptor, pScratchBuffer, scratchBufferSizeBytes, pRtasBuffer, rtasBufferSizeBytes, hParallelOperation, pBuildUserPtr, pBounds, pRtasBufferSizeBytes );
+
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeRTASBuilderBuildExtEpilogue( hBuilder, pBuildOpDescriptor, pScratchBuffer, scratchBufferSizeBytes, pRtasBuffer, rtasBufferSizeBytes, hParallelOperation, pBuildUserPtr, pBounds, pRtasBufferSizeBytes ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeRTASBuilderBuildExt", result);
+        }
+
+        return logAndPropagateResult("zeRTASBuilderBuildExt", driver_result);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeRTASBuilderCommandListAppendCopyExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeRTASBuilderCommandListAppendCopyExt(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of command list
+        void* dstptr,                                   ///< [in] pointer to destination in device memory to copy the ray tracing
+                                                        ///< acceleration structure to
+        const void* srcptr,                             ///< [in] pointer to a valid source ray tracing acceleration structure in
+                                                        ///< host memory to copy from
+        size_t size,                                    ///< [in] size in bytes to copy
+        ze_event_handle_t hSignalEvent,                 ///< [in][optional] handle of the event to signal on completion
+        uint32_t numWaitEvents,                         ///< [in][optional] number of events to wait on before launching; must be 0
+                                                        ///< if `nullptr == phWaitEvents`
+        ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
+                                                        ///< on before launching
+        )
+    {
+        context.logger->log_trace("zeRTASBuilderCommandListAppendCopyExt(hCommandList, dstptr, srcptr, size, hSignalEvent, numWaitEvents, phWaitEventsLocal)");
+
+        auto pfnCommandListAppendCopyExt = context.zeDdiTable.RTASBuilder.pfnCommandListAppendCopyExt;
+
+        if( nullptr == pfnCommandListAppendCopyExt )
+            return logAndPropagateResult("zeRTASBuilderCommandListAppendCopyExt", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeRTASBuilderCommandListAppendCopyExtPrologue( hCommandList, dstptr, srcptr, size, hSignalEvent, numWaitEvents, phWaitEvents );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeRTASBuilderCommandListAppendCopyExt", result);
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeRTASBuilderCommandListAppendCopyExtPrologue( hCommandList, dstptr, srcptr, size, hSignalEvent, numWaitEvents, phWaitEvents );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeRTASBuilderCommandListAppendCopyExt", result);
+        }
+
+        auto driver_result = pfnCommandListAppendCopyExt( hCommandList, dstptr, srcptr, size, hSignalEvent, numWaitEvents, phWaitEvents );
+
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeRTASBuilderCommandListAppendCopyExtEpilogue( hCommandList, dstptr, srcptr, size, hSignalEvent, numWaitEvents, phWaitEvents ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeRTASBuilderCommandListAppendCopyExt", result);
+        }
+
+        return logAndPropagateResult("zeRTASBuilderCommandListAppendCopyExt", driver_result);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeRTASBuilderDestroyExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeRTASBuilderDestroyExt(
+        ze_rtas_builder_ext_handle_t hBuilder           ///< [in][release] handle of builder object to destroy
+        )
+    {
+        context.logger->log_trace("zeRTASBuilderDestroyExt(hBuilder)");
+
+        auto pfnDestroyExt = context.zeDdiTable.RTASBuilder.pfnDestroyExt;
+
+        if( nullptr == pfnDestroyExt )
+            return logAndPropagateResult("zeRTASBuilderDestroyExt", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeRTASBuilderDestroyExtPrologue( hBuilder );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeRTASBuilderDestroyExt", result);
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeRTASBuilderDestroyExtPrologue( hBuilder );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeRTASBuilderDestroyExt", result);
+        }
+
+        auto driver_result = pfnDestroyExt( hBuilder );
+
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeRTASBuilderDestroyExtEpilogue( hBuilder ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeRTASBuilderDestroyExt", result);
+        }
+
+        return logAndPropagateResult("zeRTASBuilderDestroyExt", driver_result);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeRTASParallelOperationCreateExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeRTASParallelOperationCreateExt(
+        ze_driver_handle_t hDriver,                     ///< [in] handle of driver object
+        ze_rtas_parallel_operation_ext_handle_t* phParallelOperation///< [out] handle of parallel operation object
+        )
+    {
+        context.logger->log_trace("zeRTASParallelOperationCreateExt(hDriver, phParallelOperation)");
+
+        auto pfnCreateExt = context.zeDdiTable.RTASParallelOperation.pfnCreateExt;
+
+        if( nullptr == pfnCreateExt )
+            return logAndPropagateResult("zeRTASParallelOperationCreateExt", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeRTASParallelOperationCreateExtPrologue( hDriver, phParallelOperation );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeRTASParallelOperationCreateExt", result);
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeRTASParallelOperationCreateExtPrologue( hDriver, phParallelOperation );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeRTASParallelOperationCreateExt", result);
+        }
+
+        auto driver_result = pfnCreateExt( hDriver, phParallelOperation );
+
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeRTASParallelOperationCreateExtEpilogue( hDriver, phParallelOperation ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeRTASParallelOperationCreateExt", result);
+        }
+
+
+        if( driver_result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
+            
+            if (phParallelOperation){
+                context.handleLifetime->addHandle( *phParallelOperation );
+                context.handleLifetime->addDependent( hDriver, *phParallelOperation );
+
+            }
+        }
+        return logAndPropagateResult("zeRTASParallelOperationCreateExt", driver_result);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeRTASParallelOperationGetPropertiesExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeRTASParallelOperationGetPropertiesExt(
+        ze_rtas_parallel_operation_ext_handle_t hParallelOperation, ///< [in] handle of parallel operation object
+        ze_rtas_parallel_operation_ext_properties_t* pProperties///< [in,out] query result for parallel operation properties
+        )
+    {
+        context.logger->log_trace("zeRTASParallelOperationGetPropertiesExt(hParallelOperation, pProperties)");
+
+        auto pfnGetPropertiesExt = context.zeDdiTable.RTASParallelOperation.pfnGetPropertiesExt;
+
+        if( nullptr == pfnGetPropertiesExt )
+            return logAndPropagateResult("zeRTASParallelOperationGetPropertiesExt", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeRTASParallelOperationGetPropertiesExtPrologue( hParallelOperation, pProperties );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeRTASParallelOperationGetPropertiesExt", result);
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeRTASParallelOperationGetPropertiesExtPrologue( hParallelOperation, pProperties );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeRTASParallelOperationGetPropertiesExt", result);
+        }
+
+        auto driver_result = pfnGetPropertiesExt( hParallelOperation, pProperties );
+
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeRTASParallelOperationGetPropertiesExtEpilogue( hParallelOperation, pProperties ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeRTASParallelOperationGetPropertiesExt", result);
+        }
+
+        return logAndPropagateResult("zeRTASParallelOperationGetPropertiesExt", driver_result);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeRTASParallelOperationJoinExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeRTASParallelOperationJoinExt(
+        ze_rtas_parallel_operation_ext_handle_t hParallelOperation  ///< [in] handle of parallel operation object
+        )
+    {
+        context.logger->log_trace("zeRTASParallelOperationJoinExt(hParallelOperation)");
+
+        auto pfnJoinExt = context.zeDdiTable.RTASParallelOperation.pfnJoinExt;
+
+        if( nullptr == pfnJoinExt )
+            return logAndPropagateResult("zeRTASParallelOperationJoinExt", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeRTASParallelOperationJoinExtPrologue( hParallelOperation );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeRTASParallelOperationJoinExt", result);
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeRTASParallelOperationJoinExtPrologue( hParallelOperation );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeRTASParallelOperationJoinExt", result);
+        }
+
+        auto driver_result = pfnJoinExt( hParallelOperation );
+
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeRTASParallelOperationJoinExtEpilogue( hParallelOperation ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeRTASParallelOperationJoinExt", result);
+        }
+
+        return logAndPropagateResult("zeRTASParallelOperationJoinExt", driver_result);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeRTASParallelOperationDestroyExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeRTASParallelOperationDestroyExt(
+        ze_rtas_parallel_operation_ext_handle_t hParallelOperation  ///< [in][release] handle of parallel operation object to destroy
+        )
+    {
+        context.logger->log_trace("zeRTASParallelOperationDestroyExt(hParallelOperation)");
+
+        auto pfnDestroyExt = context.zeDdiTable.RTASParallelOperation.pfnDestroyExt;
+
+        if( nullptr == pfnDestroyExt )
+            return logAndPropagateResult("zeRTASParallelOperationDestroyExt", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeRTASParallelOperationDestroyExtPrologue( hParallelOperation );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeRTASParallelOperationDestroyExt", result);
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeRTASParallelOperationDestroyExtPrologue( hParallelOperation );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeRTASParallelOperationDestroyExt", result);
+        }
+
+        auto driver_result = pfnDestroyExt( hParallelOperation );
+
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeRTASParallelOperationDestroyExtEpilogue( hParallelOperation ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeRTASParallelOperationDestroyExt", result);
+        }
+
+        return logAndPropagateResult("zeRTASParallelOperationDestroyExt", driver_result);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeDeviceGetVectorWidthPropertiesExt
+    __zedlllocal ze_result_t ZE_APICALL
+    zeDeviceGetVectorWidthPropertiesExt(
+        ze_device_handle_t hDevice,                     ///< [in] handle of the device
+        uint32_t* pCount,                               ///< [in,out] pointer to the number of vector width properties.
+                                                        ///< if count is zero, then the driver shall update the value with the
+                                                        ///< total number of vector width properties available.
+                                                        ///< if count is greater than the number of vector width properties
+                                                        ///< available, then the driver shall update the value with the correct
+                                                        ///< number of vector width properties available.
+        ze_device_vector_width_properties_ext_t* pVectorWidthProperties ///< [in,out][optional][range(0, *pCount)] array of vector width properties.
+                                                        ///< if count is less than the number of properties available, then the
+                                                        ///< driver will return only the number requested.
+        )
+    {
+        context.logger->log_trace("zeDeviceGetVectorWidthPropertiesExt(hDevice, pCount, pVectorWidthProperties)");
+
+        auto pfnGetVectorWidthPropertiesExt = context.zeDdiTable.Device.pfnGetVectorWidthPropertiesExt;
+
+        if( nullptr == pfnGetVectorWidthPropertiesExt )
+            return logAndPropagateResult("zeDeviceGetVectorWidthPropertiesExt", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeDeviceGetVectorWidthPropertiesExtPrologue( hDevice, pCount, pVectorWidthProperties );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeDeviceGetVectorWidthPropertiesExt", result);
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeDeviceGetVectorWidthPropertiesExtPrologue( hDevice, pCount, pVectorWidthProperties );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeDeviceGetVectorWidthPropertiesExt", result);
+        }
+
+        auto driver_result = pfnGetVectorWidthPropertiesExt( hDevice, pCount, pVectorWidthProperties );
+
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeDeviceGetVectorWidthPropertiesExtEpilogue( hDevice, pCount, pVectorWidthProperties ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeDeviceGetVectorWidthPropertiesExt", result);
+        }
+
+        return logAndPropagateResult("zeDeviceGetVectorWidthPropertiesExt", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -6344,15 +7435,17 @@ namespace validation_layer
                                                         ///< shall remove prior reservation
         )
     {
+        context.logger->log_trace("zeDeviceReserveCacheExt(hDevice, cacheLevel, cacheReservationSize)");
+
         auto pfnReserveCacheExt = context.zeDdiTable.Device.pfnReserveCacheExt;
 
         if( nullptr == pfnReserveCacheExt )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeDeviceReserveCacheExt", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeDeviceReserveCacheExtPrologue( hDevice, cacheLevel, cacheReservationSize );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeDeviceReserveCacheExt", result);
         }
 
 
@@ -6363,17 +7456,17 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeDeviceReserveCacheExtPrologue( hDevice, cacheLevel, cacheReservationSize );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeDeviceReserveCacheExt", result);
         }
 
-        auto result = pfnReserveCacheExt( hDevice, cacheLevel, cacheReservationSize );
+        auto driver_result = pfnReserveCacheExt( hDevice, cacheLevel, cacheReservationSize );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeDeviceReserveCacheExtEpilogue( hDevice, cacheLevel, cacheReservationSize );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeDeviceReserveCacheExtEpilogue( hDevice, cacheLevel, cacheReservationSize ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeDeviceReserveCacheExt", result);
         }
 
-        return result;
+        return logAndPropagateResult("zeDeviceReserveCacheExt", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -6386,15 +7479,17 @@ namespace validation_layer
         ze_cache_ext_region_t cacheRegion               ///< [in] reservation region
         )
     {
+        context.logger->log_trace("zeDeviceSetCacheAdviceExt(hDevice, ptr, regionSize, cacheRegion)");
+
         auto pfnSetCacheAdviceExt = context.zeDdiTable.Device.pfnSetCacheAdviceExt;
 
         if( nullptr == pfnSetCacheAdviceExt )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeDeviceSetCacheAdviceExt", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeDeviceSetCacheAdviceExtPrologue( hDevice, ptr, regionSize, cacheRegion );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeDeviceSetCacheAdviceExt", result);
         }
 
 
@@ -6405,17 +7500,17 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeDeviceSetCacheAdviceExtPrologue( hDevice, ptr, regionSize, cacheRegion );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeDeviceSetCacheAdviceExt", result);
         }
 
-        auto result = pfnSetCacheAdviceExt( hDevice, ptr, regionSize, cacheRegion );
+        auto driver_result = pfnSetCacheAdviceExt( hDevice, ptr, regionSize, cacheRegion );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeDeviceSetCacheAdviceExtEpilogue( hDevice, ptr, regionSize, cacheRegion );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeDeviceSetCacheAdviceExtEpilogue( hDevice, ptr, regionSize, cacheRegion ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeDeviceSetCacheAdviceExt", result);
         }
 
-        return result;
+        return logAndPropagateResult("zeDeviceSetCacheAdviceExt", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -6434,15 +7529,17 @@ namespace validation_layer
                                                         ///< shall only retrieve that number of timestamps.
         )
     {
+        context.logger->log_trace("zeEventQueryTimestampsExp(hEvent, hDevice, pCount, pTimestamps)");
+
         auto pfnQueryTimestampsExp = context.zeDdiTable.EventExp.pfnQueryTimestampsExp;
 
         if( nullptr == pfnQueryTimestampsExp )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeEventQueryTimestampsExp", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeEventQueryTimestampsExpPrologue( hEvent, hDevice, pCount, pTimestamps );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeEventQueryTimestampsExp", result);
         }
 
 
@@ -6453,17 +7550,17 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeEventQueryTimestampsExpPrologue( hEvent, hDevice, pCount, pTimestamps );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeEventQueryTimestampsExp", result);
         }
 
-        auto result = pfnQueryTimestampsExp( hEvent, hDevice, pCount, pTimestamps );
+        auto driver_result = pfnQueryTimestampsExp( hEvent, hDevice, pCount, pTimestamps );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeEventQueryTimestampsExpEpilogue( hEvent, hDevice, pCount, pTimestamps );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeEventQueryTimestampsExpEpilogue( hEvent, hDevice, pCount, pTimestamps ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeEventQueryTimestampsExp", result);
         }
 
-        return result;
+        return logAndPropagateResult("zeEventQueryTimestampsExp", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -6474,15 +7571,17 @@ namespace validation_layer
         ze_image_memory_properties_exp_t* pMemoryProperties ///< [in,out] query result for image memory properties.
         )
     {
+        context.logger->log_trace("zeImageGetMemoryPropertiesExp(hImage, pMemoryProperties)");
+
         auto pfnGetMemoryPropertiesExp = context.zeDdiTable.ImageExp.pfnGetMemoryPropertiesExp;
 
         if( nullptr == pfnGetMemoryPropertiesExp )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeImageGetMemoryPropertiesExp", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeImageGetMemoryPropertiesExpPrologue( hImage, pMemoryProperties );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeImageGetMemoryPropertiesExp", result);
         }
 
 
@@ -6493,21 +7592,21 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeImageGetMemoryPropertiesExpPrologue( hImage, pMemoryProperties );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeImageGetMemoryPropertiesExp", result);
         }
 
-        auto result = pfnGetMemoryPropertiesExp( hImage, pMemoryProperties );
+        auto driver_result = pfnGetMemoryPropertiesExp( hImage, pMemoryProperties );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeImageGetMemoryPropertiesExpEpilogue( hImage, pMemoryProperties );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeImageGetMemoryPropertiesExpEpilogue( hImage, pMemoryProperties ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeImageGetMemoryPropertiesExp", result);
         }
 
 
-        if( result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
+        if( driver_result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
             
         }
-        return result;
+        return logAndPropagateResult("zeImageGetMemoryPropertiesExp", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -6521,15 +7620,17 @@ namespace validation_layer
         ze_image_handle_t* phImageView                  ///< [out] pointer to handle of image object created for view
         )
     {
+        context.logger->log_trace("zeImageViewCreateExt(hContext, hDevice, desc, hImage, phImageView)");
+
         auto pfnViewCreateExt = context.zeDdiTable.Image.pfnViewCreateExt;
 
         if( nullptr == pfnViewCreateExt )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeImageViewCreateExt", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeImageViewCreateExtPrologue( hContext, hDevice, desc, hImage, phImageView );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeImageViewCreateExt", result);
         }
 
 
@@ -6540,18 +7641,18 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeImageViewCreateExtPrologue( hContext, hDevice, desc, hImage, phImageView );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeImageViewCreateExt", result);
         }
 
-        auto result = pfnViewCreateExt( hContext, hDevice, desc, hImage, phImageView );
+        auto driver_result = pfnViewCreateExt( hContext, hDevice, desc, hImage, phImageView );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeImageViewCreateExtEpilogue( hContext, hDevice, desc, hImage, phImageView );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeImageViewCreateExtEpilogue( hContext, hDevice, desc, hImage, phImageView ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeImageViewCreateExt", result);
         }
 
 
-        if( result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
+        if( driver_result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
             
             if (phImageView){
                 context.handleLifetime->addHandle( *phImageView );
@@ -6559,7 +7660,7 @@ namespace validation_layer
 
             }
         }
-        return result;
+        return logAndPropagateResult("zeImageViewCreateExt", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -6573,15 +7674,17 @@ namespace validation_layer
         ze_image_handle_t* phImageView                  ///< [out] pointer to handle of image object created for view
         )
     {
+        context.logger->log_trace("zeImageViewCreateExp(hContext, hDevice, desc, hImage, phImageView)");
+
         auto pfnViewCreateExp = context.zeDdiTable.ImageExp.pfnViewCreateExp;
 
         if( nullptr == pfnViewCreateExp )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeImageViewCreateExp", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeImageViewCreateExpPrologue( hContext, hDevice, desc, hImage, phImageView );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeImageViewCreateExp", result);
         }
 
 
@@ -6592,18 +7695,18 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeImageViewCreateExpPrologue( hContext, hDevice, desc, hImage, phImageView );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeImageViewCreateExp", result);
         }
 
-        auto result = pfnViewCreateExp( hContext, hDevice, desc, hImage, phImageView );
+        auto driver_result = pfnViewCreateExp( hContext, hDevice, desc, hImage, phImageView );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeImageViewCreateExpEpilogue( hContext, hDevice, desc, hImage, phImageView );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeImageViewCreateExpEpilogue( hContext, hDevice, desc, hImage, phImageView ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeImageViewCreateExp", result);
         }
 
 
-        if( result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
+        if( driver_result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
             
             if (phImageView){
                 context.handleLifetime->addHandle( *phImageView );
@@ -6611,7 +7714,7 @@ namespace validation_layer
 
             }
         }
-        return result;
+        return logAndPropagateResult("zeImageViewCreateExp", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -6622,15 +7725,17 @@ namespace validation_layer
         ze_scheduling_hint_exp_desc_t* pHint            ///< [in] pointer to kernel scheduling hint descriptor
         )
     {
+        context.logger->log_trace("zeKernelSchedulingHintExp(hKernel, pHint)");
+
         auto pfnSchedulingHintExp = context.zeDdiTable.KernelExp.pfnSchedulingHintExp;
 
         if( nullptr == pfnSchedulingHintExp )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeKernelSchedulingHintExp", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeKernelSchedulingHintExpPrologue( hKernel, pHint );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeKernelSchedulingHintExp", result);
         }
 
 
@@ -6641,17 +7746,17 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeKernelSchedulingHintExpPrologue( hKernel, pHint );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeKernelSchedulingHintExp", result);
         }
 
-        auto result = pfnSchedulingHintExp( hKernel, pHint );
+        auto driver_result = pfnSchedulingHintExp( hKernel, pHint );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeKernelSchedulingHintExpEpilogue( hKernel, pHint );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeKernelSchedulingHintExpEpilogue( hKernel, pHint ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeKernelSchedulingHintExp", result);
         }
 
-        return result;
+        return logAndPropagateResult("zeKernelSchedulingHintExp", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -6662,15 +7767,17 @@ namespace validation_layer
         ze_pci_ext_properties_t* pPciProperties         ///< [in,out] returns the PCI properties of the device.
         )
     {
+        context.logger->log_trace("zeDevicePciGetPropertiesExt(hDevice, pPciProperties)");
+
         auto pfnPciGetPropertiesExt = context.zeDdiTable.Device.pfnPciGetPropertiesExt;
 
         if( nullptr == pfnPciGetPropertiesExt )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeDevicePciGetPropertiesExt", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeDevicePciGetPropertiesExtPrologue( hDevice, pPciProperties );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeDevicePciGetPropertiesExt", result);
         }
 
 
@@ -6681,17 +7788,17 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeDevicePciGetPropertiesExtPrologue( hDevice, pPciProperties );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeDevicePciGetPropertiesExt", result);
         }
 
-        auto result = pfnPciGetPropertiesExt( hDevice, pPciProperties );
+        auto driver_result = pfnPciGetPropertiesExt( hDevice, pPciProperties );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeDevicePciGetPropertiesExtEpilogue( hDevice, pPciProperties );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeDevicePciGetPropertiesExtEpilogue( hDevice, pPciProperties ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeDevicePciGetPropertiesExt", result);
         }
 
-        return result;
+        return logAndPropagateResult("zeDevicePciGetPropertiesExt", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -6713,15 +7820,17 @@ namespace validation_layer
                                                         ///< on before launching
         )
     {
+        context.logger->log_trace("zeCommandListAppendImageCopyToMemoryExt(hCommandList, dstptr, hSrcImage, pSrcRegion, destRowPitch, destSlicePitch, hSignalEvent, numWaitEvents, phWaitEventsLocal)");
+
         auto pfnAppendImageCopyToMemoryExt = context.zeDdiTable.CommandList.pfnAppendImageCopyToMemoryExt;
 
         if( nullptr == pfnAppendImageCopyToMemoryExt )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeCommandListAppendImageCopyToMemoryExt", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeCommandListAppendImageCopyToMemoryExtPrologue( hCommandList, dstptr, hSrcImage, pSrcRegion, destRowPitch, destSlicePitch, hSignalEvent, numWaitEvents, phWaitEvents );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeCommandListAppendImageCopyToMemoryExt", result);
         }
 
 
@@ -6732,17 +7841,17 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeCommandListAppendImageCopyToMemoryExtPrologue( hCommandList, dstptr, hSrcImage, pSrcRegion, destRowPitch, destSlicePitch, hSignalEvent, numWaitEvents, phWaitEvents );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeCommandListAppendImageCopyToMemoryExt", result);
         }
 
-        auto result = pfnAppendImageCopyToMemoryExt( hCommandList, dstptr, hSrcImage, pSrcRegion, destRowPitch, destSlicePitch, hSignalEvent, numWaitEvents, phWaitEvents );
+        auto driver_result = pfnAppendImageCopyToMemoryExt( hCommandList, dstptr, hSrcImage, pSrcRegion, destRowPitch, destSlicePitch, hSignalEvent, numWaitEvents, phWaitEvents );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeCommandListAppendImageCopyToMemoryExtEpilogue( hCommandList, dstptr, hSrcImage, pSrcRegion, destRowPitch, destSlicePitch, hSignalEvent, numWaitEvents, phWaitEvents );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListAppendImageCopyToMemoryExtEpilogue( hCommandList, dstptr, hSrcImage, pSrcRegion, destRowPitch, destSlicePitch, hSignalEvent, numWaitEvents, phWaitEvents ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeCommandListAppendImageCopyToMemoryExt", result);
         }
 
-        return result;
+        return logAndPropagateResult("zeCommandListAppendImageCopyToMemoryExt", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -6764,15 +7873,17 @@ namespace validation_layer
                                                         ///< on before launching
         )
     {
+        context.logger->log_trace("zeCommandListAppendImageCopyFromMemoryExt(hCommandList, hDstImage, srcptr, pDstRegion, srcRowPitch, srcSlicePitch, hSignalEvent, numWaitEvents, phWaitEventsLocal)");
+
         auto pfnAppendImageCopyFromMemoryExt = context.zeDdiTable.CommandList.pfnAppendImageCopyFromMemoryExt;
 
         if( nullptr == pfnAppendImageCopyFromMemoryExt )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeCommandListAppendImageCopyFromMemoryExt", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeCommandListAppendImageCopyFromMemoryExtPrologue( hCommandList, hDstImage, srcptr, pDstRegion, srcRowPitch, srcSlicePitch, hSignalEvent, numWaitEvents, phWaitEvents );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeCommandListAppendImageCopyFromMemoryExt", result);
         }
 
 
@@ -6783,17 +7894,17 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeCommandListAppendImageCopyFromMemoryExtPrologue( hCommandList, hDstImage, srcptr, pDstRegion, srcRowPitch, srcSlicePitch, hSignalEvent, numWaitEvents, phWaitEvents );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeCommandListAppendImageCopyFromMemoryExt", result);
         }
 
-        auto result = pfnAppendImageCopyFromMemoryExt( hCommandList, hDstImage, srcptr, pDstRegion, srcRowPitch, srcSlicePitch, hSignalEvent, numWaitEvents, phWaitEvents );
+        auto driver_result = pfnAppendImageCopyFromMemoryExt( hCommandList, hDstImage, srcptr, pDstRegion, srcRowPitch, srcSlicePitch, hSignalEvent, numWaitEvents, phWaitEvents );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeCommandListAppendImageCopyFromMemoryExtEpilogue( hCommandList, hDstImage, srcptr, pDstRegion, srcRowPitch, srcSlicePitch, hSignalEvent, numWaitEvents, phWaitEvents );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListAppendImageCopyFromMemoryExtEpilogue( hCommandList, hDstImage, srcptr, pDstRegion, srcRowPitch, srcSlicePitch, hSignalEvent, numWaitEvents, phWaitEvents ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeCommandListAppendImageCopyFromMemoryExt", result);
         }
 
-        return result;
+        return logAndPropagateResult("zeCommandListAppendImageCopyFromMemoryExt", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -6805,15 +7916,17 @@ namespace validation_layer
         ze_image_allocation_ext_properties_t* pImageAllocProperties ///< [in,out] query result for image allocation properties
         )
     {
+        context.logger->log_trace("zeImageGetAllocPropertiesExt(hContext, hImage, pImageAllocProperties)");
+
         auto pfnGetAllocPropertiesExt = context.zeDdiTable.Image.pfnGetAllocPropertiesExt;
 
         if( nullptr == pfnGetAllocPropertiesExt )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeImageGetAllocPropertiesExt", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeImageGetAllocPropertiesExtPrologue( hContext, hImage, pImageAllocProperties );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeImageGetAllocPropertiesExt", result);
         }
 
 
@@ -6824,17 +7937,17 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeImageGetAllocPropertiesExtPrologue( hContext, hImage, pImageAllocProperties );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeImageGetAllocPropertiesExt", result);
         }
 
-        auto result = pfnGetAllocPropertiesExt( hContext, hImage, pImageAllocProperties );
+        auto driver_result = pfnGetAllocPropertiesExt( hContext, hImage, pImageAllocProperties );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeImageGetAllocPropertiesExtEpilogue( hContext, hImage, pImageAllocProperties );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeImageGetAllocPropertiesExtEpilogue( hContext, hImage, pImageAllocProperties ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeImageGetAllocPropertiesExt", result);
         }
 
-        return result;
+        return logAndPropagateResult("zeImageGetAllocPropertiesExt", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -6849,15 +7962,17 @@ namespace validation_layer
                                                         ///< contain separate lists of imports, un-resolvable imports, and exports.
         )
     {
+        context.logger->log_trace("zeModuleInspectLinkageExt(pInspectDesc, numModules, phModulesLocal, phLog)");
+
         auto pfnInspectLinkageExt = context.zeDdiTable.Module.pfnInspectLinkageExt;
 
         if( nullptr == pfnInspectLinkageExt )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeModuleInspectLinkageExt", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeModuleInspectLinkageExtPrologue( pInspectDesc, numModules, phModules, phLog );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeModuleInspectLinkageExt", result);
         }
 
 
@@ -6868,17 +7983,17 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeModuleInspectLinkageExtPrologue( pInspectDesc, numModules, phModules, phLog );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeModuleInspectLinkageExt", result);
         }
 
-        auto result = pfnInspectLinkageExt( pInspectDesc, numModules, phModules, phLog );
+        auto driver_result = pfnInspectLinkageExt( pInspectDesc, numModules, phModules, phLog );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeModuleInspectLinkageExtEpilogue( pInspectDesc, numModules, phModules, phLog );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeModuleInspectLinkageExtEpilogue( pInspectDesc, numModules, phModules, phLog ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeModuleInspectLinkageExt", result);
         }
 
-        return result;
+        return logAndPropagateResult("zeModuleInspectLinkageExt", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -6890,15 +8005,17 @@ namespace validation_layer
         void* ptr                                       ///< [in][release] pointer to memory to free
         )
     {
+        context.logger->log_trace("zeMemFreeExt(hContext, pMemFreeDesc, ptr)");
+
         auto pfnFreeExt = context.zeDdiTable.Mem.pfnFreeExt;
 
         if( nullptr == pfnFreeExt )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeMemFreeExt", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeMemFreeExtPrologue( hContext, pMemFreeDesc, ptr );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeMemFreeExt", result);
         }
 
 
@@ -6909,17 +8026,17 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeMemFreeExtPrologue( hContext, pMemFreeDesc, ptr );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeMemFreeExt", result);
         }
 
-        auto result = pfnFreeExt( hContext, pMemFreeDesc, ptr );
+        auto driver_result = pfnFreeExt( hContext, pMemFreeDesc, ptr );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeMemFreeExtEpilogue( hContext, pMemFreeDesc, ptr );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeMemFreeExtEpilogue( hContext, pMemFreeDesc, ptr ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeMemFreeExt", result);
         }
 
-        return result;
+        return logAndPropagateResult("zeMemFreeExt", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -6938,15 +8055,17 @@ namespace validation_layer
                                                         ///< driver shall only retrieve that number of fabric vertices.
         )
     {
+        context.logger->log_trace("zeFabricVertexGetExp(hDriver, pCount, phVertices)");
+
         auto pfnGetExp = context.zeDdiTable.FabricVertexExp.pfnGetExp;
 
         if( nullptr == pfnGetExp )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeFabricVertexGetExp", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeFabricVertexGetExpPrologue( hDriver, pCount, phVertices );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeFabricVertexGetExp", result);
         }
 
 
@@ -6957,18 +8076,18 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeFabricVertexGetExpPrologue( hDriver, pCount, phVertices );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeFabricVertexGetExp", result);
         }
 
-        auto result = pfnGetExp( hDriver, pCount, phVertices );
+        auto driver_result = pfnGetExp( hDriver, pCount, phVertices );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeFabricVertexGetExpEpilogue( hDriver, pCount, phVertices );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeFabricVertexGetExpEpilogue( hDriver, pCount, phVertices ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeFabricVertexGetExp", result);
         }
 
 
-        if( result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
+        if( driver_result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
             
             for (size_t i = 0; ( nullptr != phVertices) && (i < *pCount); ++i){
                 if (phVertices[i]){
@@ -6977,7 +8096,7 @@ namespace validation_layer
                 }
             }
         }
-        return result;
+        return logAndPropagateResult("zeFabricVertexGetExp", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -6996,15 +8115,17 @@ namespace validation_layer
                                                         ///< driver shall only retrieve that number of sub-vertices.
         )
     {
+        context.logger->log_trace("zeFabricVertexGetSubVerticesExp(hVertex, pCount, phSubvertices)");
+
         auto pfnGetSubVerticesExp = context.zeDdiTable.FabricVertexExp.pfnGetSubVerticesExp;
 
         if( nullptr == pfnGetSubVerticesExp )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeFabricVertexGetSubVerticesExp", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeFabricVertexGetSubVerticesExpPrologue( hVertex, pCount, phSubvertices );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeFabricVertexGetSubVerticesExp", result);
         }
 
 
@@ -7015,18 +8136,18 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeFabricVertexGetSubVerticesExpPrologue( hVertex, pCount, phSubvertices );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeFabricVertexGetSubVerticesExp", result);
         }
 
-        auto result = pfnGetSubVerticesExp( hVertex, pCount, phSubvertices );
+        auto driver_result = pfnGetSubVerticesExp( hVertex, pCount, phSubvertices );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeFabricVertexGetSubVerticesExpEpilogue( hVertex, pCount, phSubvertices );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeFabricVertexGetSubVerticesExpEpilogue( hVertex, pCount, phSubvertices ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeFabricVertexGetSubVerticesExp", result);
         }
 
 
-        if( result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
+        if( driver_result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
             
             for (size_t i = 0; ( nullptr != phSubvertices) && (i < *pCount); ++i){
                 if (phSubvertices[i]){
@@ -7035,7 +8156,7 @@ namespace validation_layer
                 }
             }
         }
-        return result;
+        return logAndPropagateResult("zeFabricVertexGetSubVerticesExp", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -7046,15 +8167,17 @@ namespace validation_layer
         ze_fabric_vertex_exp_properties_t* pVertexProperties///< [in,out] query result for fabric vertex properties
         )
     {
+        context.logger->log_trace("zeFabricVertexGetPropertiesExp(hVertex, pVertexProperties)");
+
         auto pfnGetPropertiesExp = context.zeDdiTable.FabricVertexExp.pfnGetPropertiesExp;
 
         if( nullptr == pfnGetPropertiesExp )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeFabricVertexGetPropertiesExp", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeFabricVertexGetPropertiesExpPrologue( hVertex, pVertexProperties );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeFabricVertexGetPropertiesExp", result);
         }
 
 
@@ -7065,21 +8188,21 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeFabricVertexGetPropertiesExpPrologue( hVertex, pVertexProperties );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeFabricVertexGetPropertiesExp", result);
         }
 
-        auto result = pfnGetPropertiesExp( hVertex, pVertexProperties );
+        auto driver_result = pfnGetPropertiesExp( hVertex, pVertexProperties );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeFabricVertexGetPropertiesExpEpilogue( hVertex, pVertexProperties );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeFabricVertexGetPropertiesExpEpilogue( hVertex, pVertexProperties ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeFabricVertexGetPropertiesExp", result);
         }
 
 
-        if( result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
+        if( driver_result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
             
         }
-        return result;
+        return logAndPropagateResult("zeFabricVertexGetPropertiesExp", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -7090,15 +8213,17 @@ namespace validation_layer
         ze_device_handle_t* phDevice                    ///< [out] device handle corresponding to fabric vertex
         )
     {
+        context.logger->log_trace("zeFabricVertexGetDeviceExp(hVertex, phDevice)");
+
         auto pfnGetDeviceExp = context.zeDdiTable.FabricVertexExp.pfnGetDeviceExp;
 
         if( nullptr == pfnGetDeviceExp )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeFabricVertexGetDeviceExp", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeFabricVertexGetDeviceExpPrologue( hVertex, phDevice );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeFabricVertexGetDeviceExp", result);
         }
 
 
@@ -7109,18 +8234,18 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeFabricVertexGetDeviceExpPrologue( hVertex, phDevice );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeFabricVertexGetDeviceExp", result);
         }
 
-        auto result = pfnGetDeviceExp( hVertex, phDevice );
+        auto driver_result = pfnGetDeviceExp( hVertex, phDevice );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeFabricVertexGetDeviceExpEpilogue( hVertex, phDevice );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeFabricVertexGetDeviceExpEpilogue( hVertex, phDevice ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeFabricVertexGetDeviceExp", result);
         }
 
 
-        if( result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
+        if( driver_result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
             
             if (phDevice){
                 context.handleLifetime->addHandle( *phDevice );
@@ -7128,7 +8253,7 @@ namespace validation_layer
 
             }
         }
-        return result;
+        return logAndPropagateResult("zeFabricVertexGetDeviceExp", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -7139,15 +8264,17 @@ namespace validation_layer
         ze_fabric_vertex_handle_t* phVertex             ///< [out] fabric vertex handle corresponding to device
         )
     {
+        context.logger->log_trace("zeDeviceGetFabricVertexExp(hDevice, phVertex)");
+
         auto pfnGetFabricVertexExp = context.zeDdiTable.DeviceExp.pfnGetFabricVertexExp;
 
         if( nullptr == pfnGetFabricVertexExp )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeDeviceGetFabricVertexExp", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeDeviceGetFabricVertexExpPrologue( hDevice, phVertex );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeDeviceGetFabricVertexExp", result);
         }
 
 
@@ -7158,18 +8285,18 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeDeviceGetFabricVertexExpPrologue( hDevice, phVertex );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeDeviceGetFabricVertexExp", result);
         }
 
-        auto result = pfnGetFabricVertexExp( hDevice, phVertex );
+        auto driver_result = pfnGetFabricVertexExp( hDevice, phVertex );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeDeviceGetFabricVertexExpEpilogue( hDevice, phVertex );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeDeviceGetFabricVertexExpEpilogue( hDevice, phVertex ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeDeviceGetFabricVertexExp", result);
         }
 
 
-        if( result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
+        if( driver_result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
             
             if (phVertex){
                 context.handleLifetime->addHandle( *phVertex );
@@ -7177,7 +8304,7 @@ namespace validation_layer
 
             }
         }
-        return result;
+        return logAndPropagateResult("zeDeviceGetFabricVertexExp", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -7197,15 +8324,17 @@ namespace validation_layer
                                                         ///< driver shall only retrieve that number of fabric edges.
         )
     {
+        context.logger->log_trace("zeFabricEdgeGetExp(hVertexA, hVertexB, pCount, phEdges)");
+
         auto pfnGetExp = context.zeDdiTable.FabricEdgeExp.pfnGetExp;
 
         if( nullptr == pfnGetExp )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeFabricEdgeGetExp", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeFabricEdgeGetExpPrologue( hVertexA, hVertexB, pCount, phEdges );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeFabricEdgeGetExp", result);
         }
 
 
@@ -7216,18 +8345,18 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeFabricEdgeGetExpPrologue( hVertexA, hVertexB, pCount, phEdges );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeFabricEdgeGetExp", result);
         }
 
-        auto result = pfnGetExp( hVertexA, hVertexB, pCount, phEdges );
+        auto driver_result = pfnGetExp( hVertexA, hVertexB, pCount, phEdges );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeFabricEdgeGetExpEpilogue( hVertexA, hVertexB, pCount, phEdges );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeFabricEdgeGetExpEpilogue( hVertexA, hVertexB, pCount, phEdges ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeFabricEdgeGetExp", result);
         }
 
 
-        if( result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
+        if( driver_result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
             
             for (size_t i = 0; ( nullptr != phEdges) && (i < *pCount); ++i){
                 if (phEdges[i]){
@@ -7236,7 +8365,7 @@ namespace validation_layer
                 }
             }
         }
-        return result;
+        return logAndPropagateResult("zeFabricEdgeGetExp", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -7248,15 +8377,17 @@ namespace validation_layer
         ze_fabric_vertex_handle_t* phVertexB            ///< [out] fabric vertex connected to other end of the given fabric edge.
         )
     {
+        context.logger->log_trace("zeFabricEdgeGetVerticesExp(hEdge, phVertexA, phVertexB)");
+
         auto pfnGetVerticesExp = context.zeDdiTable.FabricEdgeExp.pfnGetVerticesExp;
 
         if( nullptr == pfnGetVerticesExp )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeFabricEdgeGetVerticesExp", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeFabricEdgeGetVerticesExpPrologue( hEdge, phVertexA, phVertexB );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeFabricEdgeGetVerticesExp", result);
         }
 
 
@@ -7267,18 +8398,18 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeFabricEdgeGetVerticesExpPrologue( hEdge, phVertexA, phVertexB );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeFabricEdgeGetVerticesExp", result);
         }
 
-        auto result = pfnGetVerticesExp( hEdge, phVertexA, phVertexB );
+        auto driver_result = pfnGetVerticesExp( hEdge, phVertexA, phVertexB );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeFabricEdgeGetVerticesExpEpilogue( hEdge, phVertexA, phVertexB );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeFabricEdgeGetVerticesExpEpilogue( hEdge, phVertexA, phVertexB ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeFabricEdgeGetVerticesExp", result);
         }
 
 
-        if( result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
+        if( driver_result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
             
             if (phVertexA){
                 context.handleLifetime->addHandle( *phVertexA );
@@ -7291,7 +8422,7 @@ namespace validation_layer
 
             }
         }
-        return result;
+        return logAndPropagateResult("zeFabricEdgeGetVerticesExp", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -7302,15 +8433,17 @@ namespace validation_layer
         ze_fabric_edge_exp_properties_t* pEdgeProperties///< [in,out] query result for fabric edge properties
         )
     {
+        context.logger->log_trace("zeFabricEdgeGetPropertiesExp(hEdge, pEdgeProperties)");
+
         auto pfnGetPropertiesExp = context.zeDdiTable.FabricEdgeExp.pfnGetPropertiesExp;
 
         if( nullptr == pfnGetPropertiesExp )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeFabricEdgeGetPropertiesExp", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeFabricEdgeGetPropertiesExpPrologue( hEdge, pEdgeProperties );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeFabricEdgeGetPropertiesExp", result);
         }
 
 
@@ -7321,21 +8454,21 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeFabricEdgeGetPropertiesExpPrologue( hEdge, pEdgeProperties );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeFabricEdgeGetPropertiesExp", result);
         }
 
-        auto result = pfnGetPropertiesExp( hEdge, pEdgeProperties );
+        auto driver_result = pfnGetPropertiesExp( hEdge, pEdgeProperties );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeFabricEdgeGetPropertiesExpEpilogue( hEdge, pEdgeProperties );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeFabricEdgeGetPropertiesExpEpilogue( hEdge, pEdgeProperties ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeFabricEdgeGetPropertiesExp", result);
         }
 
 
-        if( result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
+        if( driver_result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
             
         }
-        return result;
+        return logAndPropagateResult("zeFabricEdgeGetPropertiesExp", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -7361,15 +8494,17 @@ namespace validation_layer
                                                         ///< available, the driver may only update the valid elements.
         )
     {
+        context.logger->log_trace("zeEventQueryKernelTimestampsExt(hEvent, hDevice, pCount, pResults)");
+
         auto pfnQueryKernelTimestampsExt = context.zeDdiTable.Event.pfnQueryKernelTimestampsExt;
 
         if( nullptr == pfnQueryKernelTimestampsExt )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeEventQueryKernelTimestampsExt", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeEventQueryKernelTimestampsExtPrologue( hEvent, hDevice, pCount, pResults );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeEventQueryKernelTimestampsExt", result);
         }
 
 
@@ -7380,17 +8515,17 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeEventQueryKernelTimestampsExtPrologue( hEvent, hDevice, pCount, pResults );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeEventQueryKernelTimestampsExt", result);
         }
 
-        auto result = pfnQueryKernelTimestampsExt( hEvent, hDevice, pCount, pResults );
+        auto driver_result = pfnQueryKernelTimestampsExt( hEvent, hDevice, pCount, pResults );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeEventQueryKernelTimestampsExtEpilogue( hEvent, hDevice, pCount, pResults );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeEventQueryKernelTimestampsExtEpilogue( hEvent, hDevice, pCount, pResults ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeEventQueryKernelTimestampsExt", result);
         }
 
-        return result;
+        return logAndPropagateResult("zeEventQueryKernelTimestampsExt", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -7402,15 +8537,17 @@ namespace validation_layer
         ze_rtas_builder_exp_handle_t* phBuilder         ///< [out] handle of builder object
         )
     {
+        context.logger->log_trace("zeRTASBuilderCreateExp(hDriver, pDescriptor, phBuilder)");
+
         auto pfnCreateExp = context.zeDdiTable.RTASBuilderExp.pfnCreateExp;
 
         if( nullptr == pfnCreateExp )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeRTASBuilderCreateExp", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeRTASBuilderCreateExpPrologue( hDriver, pDescriptor, phBuilder );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeRTASBuilderCreateExp", result);
         }
 
 
@@ -7421,18 +8558,18 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeRTASBuilderCreateExpPrologue( hDriver, pDescriptor, phBuilder );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeRTASBuilderCreateExp", result);
         }
 
-        auto result = pfnCreateExp( hDriver, pDescriptor, phBuilder );
+        auto driver_result = pfnCreateExp( hDriver, pDescriptor, phBuilder );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeRTASBuilderCreateExpEpilogue( hDriver, pDescriptor, phBuilder );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeRTASBuilderCreateExpEpilogue( hDriver, pDescriptor, phBuilder ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeRTASBuilderCreateExp", result);
         }
 
 
-        if( result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
+        if( driver_result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
             
             if (phBuilder){
                 context.handleLifetime->addHandle( *phBuilder );
@@ -7440,7 +8577,7 @@ namespace validation_layer
 
             }
         }
-        return result;
+        return logAndPropagateResult("zeRTASBuilderCreateExp", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -7452,15 +8589,17 @@ namespace validation_layer
         ze_rtas_builder_exp_properties_t* pProperties   ///< [in,out] query result for builder properties
         )
     {
+        context.logger->log_trace("zeRTASBuilderGetBuildPropertiesExp(hBuilder, pBuildOpDescriptor, pProperties)");
+
         auto pfnGetBuildPropertiesExp = context.zeDdiTable.RTASBuilderExp.pfnGetBuildPropertiesExp;
 
         if( nullptr == pfnGetBuildPropertiesExp )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeRTASBuilderGetBuildPropertiesExp", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeRTASBuilderGetBuildPropertiesExpPrologue( hBuilder, pBuildOpDescriptor, pProperties );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeRTASBuilderGetBuildPropertiesExp", result);
         }
 
 
@@ -7471,21 +8610,21 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeRTASBuilderGetBuildPropertiesExpPrologue( hBuilder, pBuildOpDescriptor, pProperties );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeRTASBuilderGetBuildPropertiesExp", result);
         }
 
-        auto result = pfnGetBuildPropertiesExp( hBuilder, pBuildOpDescriptor, pProperties );
+        auto driver_result = pfnGetBuildPropertiesExp( hBuilder, pBuildOpDescriptor, pProperties );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeRTASBuilderGetBuildPropertiesExpEpilogue( hBuilder, pBuildOpDescriptor, pProperties );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeRTASBuilderGetBuildPropertiesExpEpilogue( hBuilder, pBuildOpDescriptor, pProperties ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeRTASBuilderGetBuildPropertiesExp", result);
         }
 
 
-        if( result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
+        if( driver_result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
             
         }
-        return result;
+        return logAndPropagateResult("zeRTASBuilderGetBuildPropertiesExp", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -7497,15 +8636,17 @@ namespace validation_layer
         ze_rtas_format_exp_t rtasFormatB                ///< [in] operand B
         )
     {
+        context.logger->log_trace("zeDriverRTASFormatCompatibilityCheckExp(hDriver, rtasFormatA, rtasFormatB)");
+
         auto pfnRTASFormatCompatibilityCheckExp = context.zeDdiTable.DriverExp.pfnRTASFormatCompatibilityCheckExp;
 
         if( nullptr == pfnRTASFormatCompatibilityCheckExp )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeDriverRTASFormatCompatibilityCheckExp", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeDriverRTASFormatCompatibilityCheckExpPrologue( hDriver, rtasFormatA, rtasFormatB );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeDriverRTASFormatCompatibilityCheckExp", result);
         }
 
 
@@ -7516,17 +8657,17 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeDriverRTASFormatCompatibilityCheckExpPrologue( hDriver, rtasFormatA, rtasFormatB );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeDriverRTASFormatCompatibilityCheckExp", result);
         }
 
-        auto result = pfnRTASFormatCompatibilityCheckExp( hDriver, rtasFormatA, rtasFormatB );
+        auto driver_result = pfnRTASFormatCompatibilityCheckExp( hDriver, rtasFormatA, rtasFormatB );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeDriverRTASFormatCompatibilityCheckExpEpilogue( hDriver, rtasFormatA, rtasFormatB );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeDriverRTASFormatCompatibilityCheckExpEpilogue( hDriver, rtasFormatA, rtasFormatB ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeDriverRTASFormatCompatibilityCheckExp", result);
         }
 
-        return result;
+        return logAndPropagateResult("zeDriverRTASFormatCompatibilityCheckExp", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -7548,15 +8689,17 @@ namespace validation_layer
                                                         ///< bytes
         )
     {
+        context.logger->log_trace("zeRTASBuilderBuildExp(hBuilder, pBuildOpDescriptor, pScratchBuffer, scratchBufferSizeBytes, pRtasBuffer, rtasBufferSizeBytes, hParallelOperation, pBuildUserPtr, pBounds, pRtasBufferSizeBytes)");
+
         auto pfnBuildExp = context.zeDdiTable.RTASBuilderExp.pfnBuildExp;
 
         if( nullptr == pfnBuildExp )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeRTASBuilderBuildExp", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeRTASBuilderBuildExpPrologue( hBuilder, pBuildOpDescriptor, pScratchBuffer, scratchBufferSizeBytes, pRtasBuffer, rtasBufferSizeBytes, hParallelOperation, pBuildUserPtr, pBounds, pRtasBufferSizeBytes );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeRTASBuilderBuildExp", result);
         }
 
 
@@ -7567,17 +8710,17 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeRTASBuilderBuildExpPrologue( hBuilder, pBuildOpDescriptor, pScratchBuffer, scratchBufferSizeBytes, pRtasBuffer, rtasBufferSizeBytes, hParallelOperation, pBuildUserPtr, pBounds, pRtasBufferSizeBytes );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeRTASBuilderBuildExp", result);
         }
 
-        auto result = pfnBuildExp( hBuilder, pBuildOpDescriptor, pScratchBuffer, scratchBufferSizeBytes, pRtasBuffer, rtasBufferSizeBytes, hParallelOperation, pBuildUserPtr, pBounds, pRtasBufferSizeBytes );
+        auto driver_result = pfnBuildExp( hBuilder, pBuildOpDescriptor, pScratchBuffer, scratchBufferSizeBytes, pRtasBuffer, rtasBufferSizeBytes, hParallelOperation, pBuildUserPtr, pBounds, pRtasBufferSizeBytes );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeRTASBuilderBuildExpEpilogue( hBuilder, pBuildOpDescriptor, pScratchBuffer, scratchBufferSizeBytes, pRtasBuffer, rtasBufferSizeBytes, hParallelOperation, pBuildUserPtr, pBounds, pRtasBufferSizeBytes );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeRTASBuilderBuildExpEpilogue( hBuilder, pBuildOpDescriptor, pScratchBuffer, scratchBufferSizeBytes, pRtasBuffer, rtasBufferSizeBytes, hParallelOperation, pBuildUserPtr, pBounds, pRtasBufferSizeBytes ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeRTASBuilderBuildExp", result);
         }
 
-        return result;
+        return logAndPropagateResult("zeRTASBuilderBuildExp", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -7587,15 +8730,17 @@ namespace validation_layer
         ze_rtas_builder_exp_handle_t hBuilder           ///< [in][release] handle of builder object to destroy
         )
     {
+        context.logger->log_trace("zeRTASBuilderDestroyExp(hBuilder)");
+
         auto pfnDestroyExp = context.zeDdiTable.RTASBuilderExp.pfnDestroyExp;
 
         if( nullptr == pfnDestroyExp )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeRTASBuilderDestroyExp", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeRTASBuilderDestroyExpPrologue( hBuilder );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeRTASBuilderDestroyExp", result);
         }
 
 
@@ -7606,17 +8751,17 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeRTASBuilderDestroyExpPrologue( hBuilder );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeRTASBuilderDestroyExp", result);
         }
 
-        auto result = pfnDestroyExp( hBuilder );
+        auto driver_result = pfnDestroyExp( hBuilder );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeRTASBuilderDestroyExpEpilogue( hBuilder );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeRTASBuilderDestroyExpEpilogue( hBuilder ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeRTASBuilderDestroyExp", result);
         }
 
-        return result;
+        return logAndPropagateResult("zeRTASBuilderDestroyExp", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -7627,15 +8772,17 @@ namespace validation_layer
         ze_rtas_parallel_operation_exp_handle_t* phParallelOperation///< [out] handle of parallel operation object
         )
     {
+        context.logger->log_trace("zeRTASParallelOperationCreateExp(hDriver, phParallelOperation)");
+
         auto pfnCreateExp = context.zeDdiTable.RTASParallelOperationExp.pfnCreateExp;
 
         if( nullptr == pfnCreateExp )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeRTASParallelOperationCreateExp", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeRTASParallelOperationCreateExpPrologue( hDriver, phParallelOperation );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeRTASParallelOperationCreateExp", result);
         }
 
 
@@ -7646,18 +8793,18 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeRTASParallelOperationCreateExpPrologue( hDriver, phParallelOperation );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeRTASParallelOperationCreateExp", result);
         }
 
-        auto result = pfnCreateExp( hDriver, phParallelOperation );
+        auto driver_result = pfnCreateExp( hDriver, phParallelOperation );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeRTASParallelOperationCreateExpEpilogue( hDriver, phParallelOperation );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeRTASParallelOperationCreateExpEpilogue( hDriver, phParallelOperation ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeRTASParallelOperationCreateExp", result);
         }
 
 
-        if( result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
+        if( driver_result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
             
             if (phParallelOperation){
                 context.handleLifetime->addHandle( *phParallelOperation );
@@ -7665,7 +8812,7 @@ namespace validation_layer
 
             }
         }
-        return result;
+        return logAndPropagateResult("zeRTASParallelOperationCreateExp", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -7676,15 +8823,17 @@ namespace validation_layer
         ze_rtas_parallel_operation_exp_properties_t* pProperties///< [in,out] query result for parallel operation properties
         )
     {
+        context.logger->log_trace("zeRTASParallelOperationGetPropertiesExp(hParallelOperation, pProperties)");
+
         auto pfnGetPropertiesExp = context.zeDdiTable.RTASParallelOperationExp.pfnGetPropertiesExp;
 
         if( nullptr == pfnGetPropertiesExp )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeRTASParallelOperationGetPropertiesExp", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeRTASParallelOperationGetPropertiesExpPrologue( hParallelOperation, pProperties );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeRTASParallelOperationGetPropertiesExp", result);
         }
 
 
@@ -7695,21 +8844,21 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeRTASParallelOperationGetPropertiesExpPrologue( hParallelOperation, pProperties );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeRTASParallelOperationGetPropertiesExp", result);
         }
 
-        auto result = pfnGetPropertiesExp( hParallelOperation, pProperties );
+        auto driver_result = pfnGetPropertiesExp( hParallelOperation, pProperties );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeRTASParallelOperationGetPropertiesExpEpilogue( hParallelOperation, pProperties );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeRTASParallelOperationGetPropertiesExpEpilogue( hParallelOperation, pProperties ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeRTASParallelOperationGetPropertiesExp", result);
         }
 
 
-        if( result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
+        if( driver_result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
             
         }
-        return result;
+        return logAndPropagateResult("zeRTASParallelOperationGetPropertiesExp", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -7719,15 +8868,17 @@ namespace validation_layer
         ze_rtas_parallel_operation_exp_handle_t hParallelOperation  ///< [in] handle of parallel operation object
         )
     {
+        context.logger->log_trace("zeRTASParallelOperationJoinExp(hParallelOperation)");
+
         auto pfnJoinExp = context.zeDdiTable.RTASParallelOperationExp.pfnJoinExp;
 
         if( nullptr == pfnJoinExp )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeRTASParallelOperationJoinExp", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeRTASParallelOperationJoinExpPrologue( hParallelOperation );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeRTASParallelOperationJoinExp", result);
         }
 
 
@@ -7738,17 +8889,17 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeRTASParallelOperationJoinExpPrologue( hParallelOperation );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeRTASParallelOperationJoinExp", result);
         }
 
-        auto result = pfnJoinExp( hParallelOperation );
+        auto driver_result = pfnJoinExp( hParallelOperation );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeRTASParallelOperationJoinExpEpilogue( hParallelOperation );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeRTASParallelOperationJoinExpEpilogue( hParallelOperation ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeRTASParallelOperationJoinExp", result);
         }
 
-        return result;
+        return logAndPropagateResult("zeRTASParallelOperationJoinExp", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -7758,15 +8909,17 @@ namespace validation_layer
         ze_rtas_parallel_operation_exp_handle_t hParallelOperation  ///< [in][release] handle of parallel operation object to destroy
         )
     {
+        context.logger->log_trace("zeRTASParallelOperationDestroyExp(hParallelOperation)");
+
         auto pfnDestroyExp = context.zeDdiTable.RTASParallelOperationExp.pfnDestroyExp;
 
         if( nullptr == pfnDestroyExp )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeRTASParallelOperationDestroyExp", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeRTASParallelOperationDestroyExpPrologue( hParallelOperation );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeRTASParallelOperationDestroyExp", result);
         }
 
 
@@ -7777,17 +8930,17 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeRTASParallelOperationDestroyExpPrologue( hParallelOperation );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeRTASParallelOperationDestroyExp", result);
         }
 
-        auto result = pfnDestroyExp( hParallelOperation );
+        auto driver_result = pfnDestroyExp( hParallelOperation );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeRTASParallelOperationDestroyExpEpilogue( hParallelOperation );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeRTASParallelOperationDestroyExpEpilogue( hParallelOperation ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeRTASParallelOperationDestroyExp", result);
         }
 
-        return result;
+        return logAndPropagateResult("zeRTASParallelOperationDestroyExp", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -7802,15 +8955,17 @@ namespace validation_layer
         size_t * rowPitch                               ///< [out] rowPitch
         )
     {
+        context.logger->log_trace("zeMemGetPitchFor2dImage(hContext, hDevice, imageWidth, imageHeight, elementSizeInBytes, rowPitch)");
+
         auto pfnGetPitchFor2dImage = context.zeDdiTable.Mem.pfnGetPitchFor2dImage;
 
         if( nullptr == pfnGetPitchFor2dImage )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeMemGetPitchFor2dImage", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeMemGetPitchFor2dImagePrologue( hContext, hDevice, imageWidth, imageHeight, elementSizeInBytes, rowPitch );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeMemGetPitchFor2dImage", result);
         }
 
 
@@ -7821,17 +8976,17 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeMemGetPitchFor2dImagePrologue( hContext, hDevice, imageWidth, imageHeight, elementSizeInBytes, rowPitch );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeMemGetPitchFor2dImage", result);
         }
 
-        auto result = pfnGetPitchFor2dImage( hContext, hDevice, imageWidth, imageHeight, elementSizeInBytes, rowPitch );
+        auto driver_result = pfnGetPitchFor2dImage( hContext, hDevice, imageWidth, imageHeight, elementSizeInBytes, rowPitch );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeMemGetPitchFor2dImageEpilogue( hContext, hDevice, imageWidth, imageHeight, elementSizeInBytes, rowPitch );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeMemGetPitchFor2dImageEpilogue( hContext, hDevice, imageWidth, imageHeight, elementSizeInBytes, rowPitch ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeMemGetPitchFor2dImage", result);
         }
 
-        return result;
+        return logAndPropagateResult("zeMemGetPitchFor2dImage", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -7842,15 +8997,17 @@ namespace validation_layer
         uint64_t* pDeviceOffset                         ///< [out] bindless device offset for image
         )
     {
+        context.logger->log_trace("zeImageGetDeviceOffsetExp(hImage, pDeviceOffset)");
+
         auto pfnGetDeviceOffsetExp = context.zeDdiTable.ImageExp.pfnGetDeviceOffsetExp;
 
         if( nullptr == pfnGetDeviceOffsetExp )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeImageGetDeviceOffsetExp", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeImageGetDeviceOffsetExpPrologue( hImage, pDeviceOffset );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeImageGetDeviceOffsetExp", result);
         }
 
 
@@ -7861,21 +9018,21 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeImageGetDeviceOffsetExpPrologue( hImage, pDeviceOffset );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeImageGetDeviceOffsetExp", result);
         }
 
-        auto result = pfnGetDeviceOffsetExp( hImage, pDeviceOffset );
+        auto driver_result = pfnGetDeviceOffsetExp( hImage, pDeviceOffset );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeImageGetDeviceOffsetExpEpilogue( hImage, pDeviceOffset );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeImageGetDeviceOffsetExpEpilogue( hImage, pDeviceOffset ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeImageGetDeviceOffsetExp", result);
         }
 
 
-        if( result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
+        if( driver_result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
             
         }
-        return result;
+        return logAndPropagateResult("zeImageGetDeviceOffsetExp", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -7886,15 +9043,17 @@ namespace validation_layer
         ze_command_list_handle_t* phClonedCommandList   ///< [out] pointer to handle of the cloned command list
         )
     {
+        context.logger->log_trace("zeCommandListCreateCloneExp(hCommandList, phClonedCommandList)");
+
         auto pfnCreateCloneExp = context.zeDdiTable.CommandListExp.pfnCreateCloneExp;
 
         if( nullptr == pfnCreateCloneExp )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeCommandListCreateCloneExp", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeCommandListCreateCloneExpPrologue( hCommandList, phClonedCommandList );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeCommandListCreateCloneExp", result);
         }
 
 
@@ -7905,18 +9064,18 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeCommandListCreateCloneExpPrologue( hCommandList, phClonedCommandList );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeCommandListCreateCloneExp", result);
         }
 
-        auto result = pfnCreateCloneExp( hCommandList, phClonedCommandList );
+        auto driver_result = pfnCreateCloneExp( hCommandList, phClonedCommandList );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeCommandListCreateCloneExpEpilogue( hCommandList, phClonedCommandList );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListCreateCloneExpEpilogue( hCommandList, phClonedCommandList ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeCommandListCreateCloneExp", result);
         }
 
 
-        if( result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
+        if( driver_result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
             
             if (phClonedCommandList){
                 context.handleLifetime->addHandle( *phClonedCommandList );
@@ -7924,7 +9083,7 @@ namespace validation_layer
 
             }
         }
-        return result;
+        return logAndPropagateResult("zeCommandListCreateCloneExp", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -7945,15 +9104,17 @@ namespace validation_layer
                                                         ///< of any appended command list(s)
         )
     {
+        context.logger->log_trace("zeCommandListImmediateAppendCommandListsExp(hCommandListImmediate, numCommandLists, phCommandListsLocal, hSignalEvent, numWaitEvents, phWaitEventsLocal)");
+
         auto pfnImmediateAppendCommandListsExp = context.zeDdiTable.CommandListExp.pfnImmediateAppendCommandListsExp;
 
         if( nullptr == pfnImmediateAppendCommandListsExp )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeCommandListImmediateAppendCommandListsExp", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeCommandListImmediateAppendCommandListsExpPrologue( hCommandListImmediate, numCommandLists, phCommandLists, hSignalEvent, numWaitEvents, phWaitEvents );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeCommandListImmediateAppendCommandListsExp", result);
         }
 
 
@@ -7964,17 +9125,17 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeCommandListImmediateAppendCommandListsExpPrologue( hCommandListImmediate, numCommandLists, phCommandLists, hSignalEvent, numWaitEvents, phWaitEvents );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeCommandListImmediateAppendCommandListsExp", result);
         }
 
-        auto result = pfnImmediateAppendCommandListsExp( hCommandListImmediate, numCommandLists, phCommandLists, hSignalEvent, numWaitEvents, phWaitEvents );
+        auto driver_result = pfnImmediateAppendCommandListsExp( hCommandListImmediate, numCommandLists, phCommandLists, hSignalEvent, numWaitEvents, phWaitEvents );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeCommandListImmediateAppendCommandListsExpEpilogue( hCommandListImmediate, numCommandLists, phCommandLists, hSignalEvent, numWaitEvents, phWaitEvents );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListImmediateAppendCommandListsExpEpilogue( hCommandListImmediate, numCommandLists, phCommandLists, hSignalEvent, numWaitEvents, phWaitEvents ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeCommandListImmediateAppendCommandListsExp", result);
         }
 
-        return result;
+        return logAndPropagateResult("zeCommandListImmediateAppendCommandListsExp", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -7986,15 +9147,17 @@ namespace validation_layer
         uint64_t* pCommandId                            ///< [out] pointer to mutable command identifier to be written
         )
     {
+        context.logger->log_trace("zeCommandListGetNextCommandIdExp(hCommandList, desc, pCommandId)");
+
         auto pfnGetNextCommandIdExp = context.zeDdiTable.CommandListExp.pfnGetNextCommandIdExp;
 
         if( nullptr == pfnGetNextCommandIdExp )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeCommandListGetNextCommandIdExp", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeCommandListGetNextCommandIdExpPrologue( hCommandList, desc, pCommandId );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeCommandListGetNextCommandIdExp", result);
         }
 
 
@@ -8005,21 +9168,72 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeCommandListGetNextCommandIdExpPrologue( hCommandList, desc, pCommandId );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeCommandListGetNextCommandIdExp", result);
         }
 
-        auto result = pfnGetNextCommandIdExp( hCommandList, desc, pCommandId );
+        auto driver_result = pfnGetNextCommandIdExp( hCommandList, desc, pCommandId );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeCommandListGetNextCommandIdExpEpilogue( hCommandList, desc, pCommandId );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListGetNextCommandIdExpEpilogue( hCommandList, desc, pCommandId ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeCommandListGetNextCommandIdExp", result);
         }
 
 
-        if( result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
+        if( driver_result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
             
         }
-        return result;
+        return logAndPropagateResult("zeCommandListGetNextCommandIdExp", driver_result);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeCommandListGetNextCommandIdWithKernelsExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zeCommandListGetNextCommandIdWithKernelsExp(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
+        const ze_mutable_command_id_exp_desc_t* desc,   ///< [in][out] pointer to mutable command identifier descriptor
+        uint32_t numKernels,                            ///< [in][optional] number of entries on phKernels list
+        ze_kernel_handle_t* phKernels,                  ///< [in][optional][range(0, numKernels)] list of kernels that user can
+                                                        ///< switch between using ::zeCommandListUpdateMutableCommandKernelsExp
+                                                        ///< call
+        uint64_t* pCommandId                            ///< [out] pointer to mutable command identifier to be written
+        )
+    {
+        context.logger->log_trace("zeCommandListGetNextCommandIdWithKernelsExp(hCommandList, desc, numKernels, phKernelsLocal, pCommandId)");
+
+        auto pfnGetNextCommandIdWithKernelsExp = context.zeDdiTable.CommandListExp.pfnGetNextCommandIdWithKernelsExp;
+
+        if( nullptr == pfnGetNextCommandIdWithKernelsExp )
+            return logAndPropagateResult("zeCommandListGetNextCommandIdWithKernelsExp", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListGetNextCommandIdWithKernelsExpPrologue( hCommandList, desc, numKernels, phKernels, pCommandId );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeCommandListGetNextCommandIdWithKernelsExp", result);
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeCommandListGetNextCommandIdWithKernelsExpPrologue( hCommandList, desc, numKernels, phKernels, pCommandId );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeCommandListGetNextCommandIdWithKernelsExp", result);
+        }
+
+        auto driver_result = pfnGetNextCommandIdWithKernelsExp( hCommandList, desc, numKernels, phKernels, pCommandId );
+
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListGetNextCommandIdWithKernelsExpEpilogue( hCommandList, desc, numKernels, phKernels, pCommandId ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeCommandListGetNextCommandIdWithKernelsExp", result);
+        }
+
+
+        if( driver_result == ZE_RESULT_SUCCESS && context.enableHandleLifetime ){
+            
+        }
+        return logAndPropagateResult("zeCommandListGetNextCommandIdWithKernelsExp", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -8031,15 +9245,17 @@ namespace validation_layer
                                                         ///< be chained via `pNext` member
         )
     {
+        context.logger->log_trace("zeCommandListUpdateMutableCommandsExp(hCommandList, desc)");
+
         auto pfnUpdateMutableCommandsExp = context.zeDdiTable.CommandListExp.pfnUpdateMutableCommandsExp;
 
         if( nullptr == pfnUpdateMutableCommandsExp )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeCommandListUpdateMutableCommandsExp", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeCommandListUpdateMutableCommandsExpPrologue( hCommandList, desc );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeCommandListUpdateMutableCommandsExp", result);
         }
 
 
@@ -8050,17 +9266,17 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeCommandListUpdateMutableCommandsExpPrologue( hCommandList, desc );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeCommandListUpdateMutableCommandsExp", result);
         }
 
-        auto result = pfnUpdateMutableCommandsExp( hCommandList, desc );
+        auto driver_result = pfnUpdateMutableCommandsExp( hCommandList, desc );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeCommandListUpdateMutableCommandsExpEpilogue( hCommandList, desc );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListUpdateMutableCommandsExpEpilogue( hCommandList, desc ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeCommandListUpdateMutableCommandsExp", result);
         }
 
-        return result;
+        return logAndPropagateResult("zeCommandListUpdateMutableCommandsExp", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -8072,15 +9288,17 @@ namespace validation_layer
         ze_event_handle_t hSignalEvent                  ///< [in][optional] handle of the event to signal on completion
         )
     {
+        context.logger->log_trace("zeCommandListUpdateMutableCommandSignalEventExp(hCommandList, commandId, hSignalEvent)");
+
         auto pfnUpdateMutableCommandSignalEventExp = context.zeDdiTable.CommandListExp.pfnUpdateMutableCommandSignalEventExp;
 
         if( nullptr == pfnUpdateMutableCommandSignalEventExp )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeCommandListUpdateMutableCommandSignalEventExp", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeCommandListUpdateMutableCommandSignalEventExpPrologue( hCommandList, commandId, hSignalEvent );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeCommandListUpdateMutableCommandSignalEventExp", result);
         }
 
 
@@ -8091,17 +9309,17 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeCommandListUpdateMutableCommandSignalEventExpPrologue( hCommandList, commandId, hSignalEvent );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeCommandListUpdateMutableCommandSignalEventExp", result);
         }
 
-        auto result = pfnUpdateMutableCommandSignalEventExp( hCommandList, commandId, hSignalEvent );
+        auto driver_result = pfnUpdateMutableCommandSignalEventExp( hCommandList, commandId, hSignalEvent );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeCommandListUpdateMutableCommandSignalEventExpEpilogue( hCommandList, commandId, hSignalEvent );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListUpdateMutableCommandSignalEventExpEpilogue( hCommandList, commandId, hSignalEvent ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeCommandListUpdateMutableCommandSignalEventExp", result);
         }
 
-        return result;
+        return logAndPropagateResult("zeCommandListUpdateMutableCommandSignalEventExp", driver_result);
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -8115,15 +9333,17 @@ namespace validation_layer
                                                         ///< on before launching
         )
     {
+        context.logger->log_trace("zeCommandListUpdateMutableCommandWaitEventsExp(hCommandList, commandId, numWaitEvents, phWaitEventsLocal)");
+
         auto pfnUpdateMutableCommandWaitEventsExp = context.zeDdiTable.CommandListExp.pfnUpdateMutableCommandWaitEventsExp;
 
         if( nullptr == pfnUpdateMutableCommandWaitEventsExp )
-            return ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("zeCommandListUpdateMutableCommandWaitEventsExp", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->zeValidation->zeCommandListUpdateMutableCommandWaitEventsExpPrologue( hCommandList, commandId, numWaitEvents, phWaitEvents );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeCommandListUpdateMutableCommandWaitEventsExp", result);
         }
 
 
@@ -8134,17 +9354,62 @@ namespace validation_layer
         
         if(context.enableHandleLifetime ){
             auto result = context.handleLifetime->zeHandleLifetime.zeCommandListUpdateMutableCommandWaitEventsExpPrologue( hCommandList, commandId, numWaitEvents, phWaitEvents );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeCommandListUpdateMutableCommandWaitEventsExp", result);
         }
 
-        auto result = pfnUpdateMutableCommandWaitEventsExp( hCommandList, commandId, numWaitEvents, phWaitEvents );
+        auto driver_result = pfnUpdateMutableCommandWaitEventsExp( hCommandList, commandId, numWaitEvents, phWaitEvents );
 
         for (size_t i = 0; i < numValHandlers; i++) {
-            auto result = context.validationHandlers[i]->zeValidation->zeCommandListUpdateMutableCommandWaitEventsExpEpilogue( hCommandList, commandId, numWaitEvents, phWaitEvents );
-            if(result!=ZE_RESULT_SUCCESS) return result;
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListUpdateMutableCommandWaitEventsExpEpilogue( hCommandList, commandId, numWaitEvents, phWaitEvents ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeCommandListUpdateMutableCommandWaitEventsExp", result);
         }
 
-        return result;
+        return logAndPropagateResult("zeCommandListUpdateMutableCommandWaitEventsExp", driver_result);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeCommandListUpdateMutableCommandKernelsExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zeCommandListUpdateMutableCommandKernelsExp(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
+        uint32_t numKernels,                            ///< [in] the number of kernels to update
+        uint64_t* pCommandId,                           ///< [in][range(0, numKernels)] command identifier
+        ze_kernel_handle_t* phKernels                   ///< [in][range(0, numKernels)] handle of the kernel for a command
+                                                        ///< identifier to switch to
+        )
+    {
+        context.logger->log_trace("zeCommandListUpdateMutableCommandKernelsExp(hCommandList, numKernels, pCommandId, phKernelsLocal)");
+
+        auto pfnUpdateMutableCommandKernelsExp = context.zeDdiTable.CommandListExp.pfnUpdateMutableCommandKernelsExp;
+
+        if( nullptr == pfnUpdateMutableCommandKernelsExp )
+            return logAndPropagateResult("zeCommandListUpdateMutableCommandKernelsExp", ZE_RESULT_ERROR_UNSUPPORTED_FEATURE);
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListUpdateMutableCommandKernelsExpPrologue( hCommandList, numKernels, pCommandId, phKernels );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeCommandListUpdateMutableCommandKernelsExp", result);
+        }
+
+
+        if( context.enableThreadingValidation ){ 
+            //Unimplemented
+        }
+
+        
+        if(context.enableHandleLifetime ){
+            auto result = context.handleLifetime->zeHandleLifetime.zeCommandListUpdateMutableCommandKernelsExpPrologue( hCommandList, numKernels, pCommandId, phKernels );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeCommandListUpdateMutableCommandKernelsExp", result);
+        }
+
+        auto driver_result = pfnUpdateMutableCommandKernelsExp( hCommandList, numKernels, pCommandId, phKernels );
+
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zeCommandListUpdateMutableCommandKernelsExpEpilogue( hCommandList, numKernels, pCommandId, phKernels ,driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zeCommandListUpdateMutableCommandKernelsExp", result);
+        }
+
+        return logAndPropagateResult("zeCommandListUpdateMutableCommandKernelsExp", driver_result);
     }
 
 } // namespace validation_layer
@@ -8172,15 +9437,66 @@ zeGetGlobalProcAddrTable(
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if (ZE_MAJOR_VERSION(validation_layer::context.version) != ZE_MAJOR_VERSION(version) ||
-        ZE_MINOR_VERSION(validation_layer::context.version) > ZE_MINOR_VERSION(version))
+    if (validation_layer::context.version < version)
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
-    dditable.pfnInit                                     = pDdiTable->pfnInit;
-    pDdiTable->pfnInit                                   = validation_layer::zeInit;
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnInit                                     = pDdiTable->pfnInit;
+        pDdiTable->pfnInit                                   = validation_layer::zeInit;
+    }
+    if (version >= ZE_API_VERSION_1_10) {
+        dditable.pfnInitDrivers                              = pDdiTable->pfnInitDrivers;
+        pDdiTable->pfnInitDrivers                            = validation_layer::zeInitDrivers;
+    }
+    return result;
+}
 
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Exported function for filling application's RTASBuilder table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+ZE_DLLEXPORT ze_result_t ZE_APICALL
+zeGetRTASBuilderProcAddrTable(
+    ze_api_version_t version,                       ///< [in] API version requested
+    ze_rtas_builder_dditable_t* pDdiTable           ///< [in,out] pointer to table of DDI function pointers
+    )
+{
+    auto& dditable = validation_layer::context.zeDdiTable.RTASBuilder;
+
+    if( nullptr == pDdiTable )
+        return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+    if (validation_layer::context.version < version)
+        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+
+    ze_result_t result = ZE_RESULT_SUCCESS;
+
+    if (version >= ZE_API_VERSION_1_13) {
+        dditable.pfnCreateExt                                = pDdiTable->pfnCreateExt;
+        pDdiTable->pfnCreateExt                              = validation_layer::zeRTASBuilderCreateExt;
+    }
+    if (version >= ZE_API_VERSION_1_13) {
+        dditable.pfnGetBuildPropertiesExt                    = pDdiTable->pfnGetBuildPropertiesExt;
+        pDdiTable->pfnGetBuildPropertiesExt                  = validation_layer::zeRTASBuilderGetBuildPropertiesExt;
+    }
+    if (version >= ZE_API_VERSION_1_13) {
+        dditable.pfnBuildExt                                 = pDdiTable->pfnBuildExt;
+        pDdiTable->pfnBuildExt                               = validation_layer::zeRTASBuilderBuildExt;
+    }
+    if (version >= ZE_API_VERSION_1_13) {
+        dditable.pfnCommandListAppendCopyExt                 = pDdiTable->pfnCommandListAppendCopyExt;
+        pDdiTable->pfnCommandListAppendCopyExt               = validation_layer::zeRTASBuilderCommandListAppendCopyExt;
+    }
+    if (version >= ZE_API_VERSION_1_13) {
+        dditable.pfnDestroyExt                               = pDdiTable->pfnDestroyExt;
+        pDdiTable->pfnDestroyExt                             = validation_layer::zeRTASBuilderDestroyExt;
+    }
     return result;
 }
 
@@ -8203,24 +9519,70 @@ zeGetRTASBuilderExpProcAddrTable(
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if (ZE_MAJOR_VERSION(validation_layer::context.version) != ZE_MAJOR_VERSION(version) ||
-        ZE_MINOR_VERSION(validation_layer::context.version) > ZE_MINOR_VERSION(version))
+    if (validation_layer::context.version < version)
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
-    dditable.pfnCreateExp                                = pDdiTable->pfnCreateExp;
-    pDdiTable->pfnCreateExp                              = validation_layer::zeRTASBuilderCreateExp;
+    if (version >= ZE_API_VERSION_1_7) {
+        dditable.pfnCreateExp                                = pDdiTable->pfnCreateExp;
+        pDdiTable->pfnCreateExp                              = validation_layer::zeRTASBuilderCreateExp;
+    }
+    if (version >= ZE_API_VERSION_1_7) {
+        dditable.pfnGetBuildPropertiesExp                    = pDdiTable->pfnGetBuildPropertiesExp;
+        pDdiTable->pfnGetBuildPropertiesExp                  = validation_layer::zeRTASBuilderGetBuildPropertiesExp;
+    }
+    if (version >= ZE_API_VERSION_1_7) {
+        dditable.pfnBuildExp                                 = pDdiTable->pfnBuildExp;
+        pDdiTable->pfnBuildExp                               = validation_layer::zeRTASBuilderBuildExp;
+    }
+    if (version >= ZE_API_VERSION_1_7) {
+        dditable.pfnDestroyExp                               = pDdiTable->pfnDestroyExp;
+        pDdiTable->pfnDestroyExp                             = validation_layer::zeRTASBuilderDestroyExp;
+    }
+    return result;
+}
 
-    dditable.pfnGetBuildPropertiesExp                    = pDdiTable->pfnGetBuildPropertiesExp;
-    pDdiTable->pfnGetBuildPropertiesExp                  = validation_layer::zeRTASBuilderGetBuildPropertiesExp;
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Exported function for filling application's RTASParallelOperation table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+ZE_DLLEXPORT ze_result_t ZE_APICALL
+zeGetRTASParallelOperationProcAddrTable(
+    ze_api_version_t version,                       ///< [in] API version requested
+    ze_rtas_parallel_operation_dditable_t* pDdiTable///< [in,out] pointer to table of DDI function pointers
+    )
+{
+    auto& dditable = validation_layer::context.zeDdiTable.RTASParallelOperation;
 
-    dditable.pfnBuildExp                                 = pDdiTable->pfnBuildExp;
-    pDdiTable->pfnBuildExp                               = validation_layer::zeRTASBuilderBuildExp;
+    if( nullptr == pDdiTable )
+        return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    dditable.pfnDestroyExp                               = pDdiTable->pfnDestroyExp;
-    pDdiTable->pfnDestroyExp                             = validation_layer::zeRTASBuilderDestroyExp;
+    if (validation_layer::context.version < version)
+        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
+    ze_result_t result = ZE_RESULT_SUCCESS;
+
+    if (version >= ZE_API_VERSION_1_13) {
+        dditable.pfnCreateExt                                = pDdiTable->pfnCreateExt;
+        pDdiTable->pfnCreateExt                              = validation_layer::zeRTASParallelOperationCreateExt;
+    }
+    if (version >= ZE_API_VERSION_1_13) {
+        dditable.pfnGetPropertiesExt                         = pDdiTable->pfnGetPropertiesExt;
+        pDdiTable->pfnGetPropertiesExt                       = validation_layer::zeRTASParallelOperationGetPropertiesExt;
+    }
+    if (version >= ZE_API_VERSION_1_13) {
+        dditable.pfnJoinExt                                  = pDdiTable->pfnJoinExt;
+        pDdiTable->pfnJoinExt                                = validation_layer::zeRTASParallelOperationJoinExt;
+    }
+    if (version >= ZE_API_VERSION_1_13) {
+        dditable.pfnDestroyExt                               = pDdiTable->pfnDestroyExt;
+        pDdiTable->pfnDestroyExt                             = validation_layer::zeRTASParallelOperationDestroyExt;
+    }
     return result;
 }
 
@@ -8243,24 +9605,27 @@ zeGetRTASParallelOperationExpProcAddrTable(
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if (ZE_MAJOR_VERSION(validation_layer::context.version) != ZE_MAJOR_VERSION(version) ||
-        ZE_MINOR_VERSION(validation_layer::context.version) > ZE_MINOR_VERSION(version))
+    if (validation_layer::context.version < version)
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
-    dditable.pfnCreateExp                                = pDdiTable->pfnCreateExp;
-    pDdiTable->pfnCreateExp                              = validation_layer::zeRTASParallelOperationCreateExp;
-
-    dditable.pfnGetPropertiesExp                         = pDdiTable->pfnGetPropertiesExp;
-    pDdiTable->pfnGetPropertiesExp                       = validation_layer::zeRTASParallelOperationGetPropertiesExp;
-
-    dditable.pfnJoinExp                                  = pDdiTable->pfnJoinExp;
-    pDdiTable->pfnJoinExp                                = validation_layer::zeRTASParallelOperationJoinExp;
-
-    dditable.pfnDestroyExp                               = pDdiTable->pfnDestroyExp;
-    pDdiTable->pfnDestroyExp                             = validation_layer::zeRTASParallelOperationDestroyExp;
-
+    if (version >= ZE_API_VERSION_1_7) {
+        dditable.pfnCreateExp                                = pDdiTable->pfnCreateExp;
+        pDdiTable->pfnCreateExp                              = validation_layer::zeRTASParallelOperationCreateExp;
+    }
+    if (version >= ZE_API_VERSION_1_7) {
+        dditable.pfnGetPropertiesExp                         = pDdiTable->pfnGetPropertiesExp;
+        pDdiTable->pfnGetPropertiesExp                       = validation_layer::zeRTASParallelOperationGetPropertiesExp;
+    }
+    if (version >= ZE_API_VERSION_1_7) {
+        dditable.pfnJoinExp                                  = pDdiTable->pfnJoinExp;
+        pDdiTable->pfnJoinExp                                = validation_layer::zeRTASParallelOperationJoinExp;
+    }
+    if (version >= ZE_API_VERSION_1_7) {
+        dditable.pfnDestroyExp                               = pDdiTable->pfnDestroyExp;
+        pDdiTable->pfnDestroyExp                             = validation_layer::zeRTASParallelOperationDestroyExp;
+    }
     return result;
 }
 
@@ -8283,33 +9648,43 @@ zeGetDriverProcAddrTable(
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if (ZE_MAJOR_VERSION(validation_layer::context.version) != ZE_MAJOR_VERSION(version) ||
-        ZE_MINOR_VERSION(validation_layer::context.version) > ZE_MINOR_VERSION(version))
+    if (validation_layer::context.version < version)
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
-    dditable.pfnGet                                      = pDdiTable->pfnGet;
-    pDdiTable->pfnGet                                    = validation_layer::zeDriverGet;
-
-    dditable.pfnGetApiVersion                            = pDdiTable->pfnGetApiVersion;
-    pDdiTable->pfnGetApiVersion                          = validation_layer::zeDriverGetApiVersion;
-
-    dditable.pfnGetProperties                            = pDdiTable->pfnGetProperties;
-    pDdiTable->pfnGetProperties                          = validation_layer::zeDriverGetProperties;
-
-    dditable.pfnGetIpcProperties                         = pDdiTable->pfnGetIpcProperties;
-    pDdiTable->pfnGetIpcProperties                       = validation_layer::zeDriverGetIpcProperties;
-
-    dditable.pfnGetExtensionProperties                   = pDdiTable->pfnGetExtensionProperties;
-    pDdiTable->pfnGetExtensionProperties                 = validation_layer::zeDriverGetExtensionProperties;
-
-    dditable.pfnGetExtensionFunctionAddress              = pDdiTable->pfnGetExtensionFunctionAddress;
-    pDdiTable->pfnGetExtensionFunctionAddress            = validation_layer::zeDriverGetExtensionFunctionAddress;
-
-    dditable.pfnGetLastErrorDescription                  = pDdiTable->pfnGetLastErrorDescription;
-    pDdiTable->pfnGetLastErrorDescription                = validation_layer::zeDriverGetLastErrorDescription;
-
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnGet                                      = pDdiTable->pfnGet;
+        pDdiTable->pfnGet                                    = validation_layer::zeDriverGet;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnGetApiVersion                            = pDdiTable->pfnGetApiVersion;
+        pDdiTable->pfnGetApiVersion                          = validation_layer::zeDriverGetApiVersion;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnGetProperties                            = pDdiTable->pfnGetProperties;
+        pDdiTable->pfnGetProperties                          = validation_layer::zeDriverGetProperties;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnGetIpcProperties                         = pDdiTable->pfnGetIpcProperties;
+        pDdiTable->pfnGetIpcProperties                       = validation_layer::zeDriverGetIpcProperties;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnGetExtensionProperties                   = pDdiTable->pfnGetExtensionProperties;
+        pDdiTable->pfnGetExtensionProperties                 = validation_layer::zeDriverGetExtensionProperties;
+    }
+    if (version >= ZE_API_VERSION_1_1) {
+        dditable.pfnGetExtensionFunctionAddress              = pDdiTable->pfnGetExtensionFunctionAddress;
+        pDdiTable->pfnGetExtensionFunctionAddress            = validation_layer::zeDriverGetExtensionFunctionAddress;
+    }
+    if (version >= ZE_API_VERSION_1_13) {
+        dditable.pfnRTASFormatCompatibilityCheckExt          = pDdiTable->pfnRTASFormatCompatibilityCheckExt;
+        pDdiTable->pfnRTASFormatCompatibilityCheckExt        = validation_layer::zeDriverRTASFormatCompatibilityCheckExt;
+    }
+    if (version >= ZE_API_VERSION_1_6) {
+        dditable.pfnGetLastErrorDescription                  = pDdiTable->pfnGetLastErrorDescription;
+        pDdiTable->pfnGetLastErrorDescription                = validation_layer::zeDriverGetLastErrorDescription;
+    }
     return result;
 }
 
@@ -8332,15 +9707,15 @@ zeGetDriverExpProcAddrTable(
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if (ZE_MAJOR_VERSION(validation_layer::context.version) != ZE_MAJOR_VERSION(version) ||
-        ZE_MINOR_VERSION(validation_layer::context.version) > ZE_MINOR_VERSION(version))
+    if (validation_layer::context.version < version)
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
-    dditable.pfnRTASFormatCompatibilityCheckExp          = pDdiTable->pfnRTASFormatCompatibilityCheckExp;
-    pDdiTable->pfnRTASFormatCompatibilityCheckExp        = validation_layer::zeDriverRTASFormatCompatibilityCheckExp;
-
+    if (version >= ZE_API_VERSION_1_7) {
+        dditable.pfnRTASFormatCompatibilityCheckExp          = pDdiTable->pfnRTASFormatCompatibilityCheckExp;
+        pDdiTable->pfnRTASFormatCompatibilityCheckExp        = validation_layer::zeDriverRTASFormatCompatibilityCheckExp;
+    }
     return result;
 }
 
@@ -8363,69 +9738,99 @@ zeGetDeviceProcAddrTable(
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if (ZE_MAJOR_VERSION(validation_layer::context.version) != ZE_MAJOR_VERSION(version) ||
-        ZE_MINOR_VERSION(validation_layer::context.version) > ZE_MINOR_VERSION(version))
+    if (validation_layer::context.version < version)
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
-    dditable.pfnGet                                      = pDdiTable->pfnGet;
-    pDdiTable->pfnGet                                    = validation_layer::zeDeviceGet;
-
-    dditable.pfnGetSubDevices                            = pDdiTable->pfnGetSubDevices;
-    pDdiTable->pfnGetSubDevices                          = validation_layer::zeDeviceGetSubDevices;
-
-    dditable.pfnGetProperties                            = pDdiTable->pfnGetProperties;
-    pDdiTable->pfnGetProperties                          = validation_layer::zeDeviceGetProperties;
-
-    dditable.pfnGetComputeProperties                     = pDdiTable->pfnGetComputeProperties;
-    pDdiTable->pfnGetComputeProperties                   = validation_layer::zeDeviceGetComputeProperties;
-
-    dditable.pfnGetModuleProperties                      = pDdiTable->pfnGetModuleProperties;
-    pDdiTable->pfnGetModuleProperties                    = validation_layer::zeDeviceGetModuleProperties;
-
-    dditable.pfnGetCommandQueueGroupProperties           = pDdiTable->pfnGetCommandQueueGroupProperties;
-    pDdiTable->pfnGetCommandQueueGroupProperties         = validation_layer::zeDeviceGetCommandQueueGroupProperties;
-
-    dditable.pfnGetMemoryProperties                      = pDdiTable->pfnGetMemoryProperties;
-    pDdiTable->pfnGetMemoryProperties                    = validation_layer::zeDeviceGetMemoryProperties;
-
-    dditable.pfnGetMemoryAccessProperties                = pDdiTable->pfnGetMemoryAccessProperties;
-    pDdiTable->pfnGetMemoryAccessProperties              = validation_layer::zeDeviceGetMemoryAccessProperties;
-
-    dditable.pfnGetCacheProperties                       = pDdiTable->pfnGetCacheProperties;
-    pDdiTable->pfnGetCacheProperties                     = validation_layer::zeDeviceGetCacheProperties;
-
-    dditable.pfnGetImageProperties                       = pDdiTable->pfnGetImageProperties;
-    pDdiTable->pfnGetImageProperties                     = validation_layer::zeDeviceGetImageProperties;
-
-    dditable.pfnGetExternalMemoryProperties              = pDdiTable->pfnGetExternalMemoryProperties;
-    pDdiTable->pfnGetExternalMemoryProperties            = validation_layer::zeDeviceGetExternalMemoryProperties;
-
-    dditable.pfnGetP2PProperties                         = pDdiTable->pfnGetP2PProperties;
-    pDdiTable->pfnGetP2PProperties                       = validation_layer::zeDeviceGetP2PProperties;
-
-    dditable.pfnCanAccessPeer                            = pDdiTable->pfnCanAccessPeer;
-    pDdiTable->pfnCanAccessPeer                          = validation_layer::zeDeviceCanAccessPeer;
-
-    dditable.pfnGetStatus                                = pDdiTable->pfnGetStatus;
-    pDdiTable->pfnGetStatus                              = validation_layer::zeDeviceGetStatus;
-
-    dditable.pfnGetGlobalTimestamps                      = pDdiTable->pfnGetGlobalTimestamps;
-    pDdiTable->pfnGetGlobalTimestamps                    = validation_layer::zeDeviceGetGlobalTimestamps;
-
-    dditable.pfnReserveCacheExt                          = pDdiTable->pfnReserveCacheExt;
-    pDdiTable->pfnReserveCacheExt                        = validation_layer::zeDeviceReserveCacheExt;
-
-    dditable.pfnSetCacheAdviceExt                        = pDdiTable->pfnSetCacheAdviceExt;
-    pDdiTable->pfnSetCacheAdviceExt                      = validation_layer::zeDeviceSetCacheAdviceExt;
-
-    dditable.pfnPciGetPropertiesExt                      = pDdiTable->pfnPciGetPropertiesExt;
-    pDdiTable->pfnPciGetPropertiesExt                    = validation_layer::zeDevicePciGetPropertiesExt;
-
-    dditable.pfnGetRootDevice                            = pDdiTable->pfnGetRootDevice;
-    pDdiTable->pfnGetRootDevice                          = validation_layer::zeDeviceGetRootDevice;
-
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnGet                                      = pDdiTable->pfnGet;
+        pDdiTable->pfnGet                                    = validation_layer::zeDeviceGet;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnGetSubDevices                            = pDdiTable->pfnGetSubDevices;
+        pDdiTable->pfnGetSubDevices                          = validation_layer::zeDeviceGetSubDevices;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnGetProperties                            = pDdiTable->pfnGetProperties;
+        pDdiTable->pfnGetProperties                          = validation_layer::zeDeviceGetProperties;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnGetComputeProperties                     = pDdiTable->pfnGetComputeProperties;
+        pDdiTable->pfnGetComputeProperties                   = validation_layer::zeDeviceGetComputeProperties;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnGetModuleProperties                      = pDdiTable->pfnGetModuleProperties;
+        pDdiTable->pfnGetModuleProperties                    = validation_layer::zeDeviceGetModuleProperties;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnGetCommandQueueGroupProperties           = pDdiTable->pfnGetCommandQueueGroupProperties;
+        pDdiTable->pfnGetCommandQueueGroupProperties         = validation_layer::zeDeviceGetCommandQueueGroupProperties;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnGetMemoryProperties                      = pDdiTable->pfnGetMemoryProperties;
+        pDdiTable->pfnGetMemoryProperties                    = validation_layer::zeDeviceGetMemoryProperties;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnGetMemoryAccessProperties                = pDdiTable->pfnGetMemoryAccessProperties;
+        pDdiTable->pfnGetMemoryAccessProperties              = validation_layer::zeDeviceGetMemoryAccessProperties;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnGetCacheProperties                       = pDdiTable->pfnGetCacheProperties;
+        pDdiTable->pfnGetCacheProperties                     = validation_layer::zeDeviceGetCacheProperties;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnGetImageProperties                       = pDdiTable->pfnGetImageProperties;
+        pDdiTable->pfnGetImageProperties                     = validation_layer::zeDeviceGetImageProperties;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnGetExternalMemoryProperties              = pDdiTable->pfnGetExternalMemoryProperties;
+        pDdiTable->pfnGetExternalMemoryProperties            = validation_layer::zeDeviceGetExternalMemoryProperties;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnGetP2PProperties                         = pDdiTable->pfnGetP2PProperties;
+        pDdiTable->pfnGetP2PProperties                       = validation_layer::zeDeviceGetP2PProperties;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnCanAccessPeer                            = pDdiTable->pfnCanAccessPeer;
+        pDdiTable->pfnCanAccessPeer                          = validation_layer::zeDeviceCanAccessPeer;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnGetStatus                                = pDdiTable->pfnGetStatus;
+        pDdiTable->pfnGetStatus                              = validation_layer::zeDeviceGetStatus;
+    }
+    if (version >= ZE_API_VERSION_1_1) {
+        dditable.pfnGetGlobalTimestamps                      = pDdiTable->pfnGetGlobalTimestamps;
+        pDdiTable->pfnGetGlobalTimestamps                    = validation_layer::zeDeviceGetGlobalTimestamps;
+    }
+    if (version >= ZE_API_VERSION_1_12) {
+        dditable.pfnImportExternalSemaphoreExt               = pDdiTable->pfnImportExternalSemaphoreExt;
+        pDdiTable->pfnImportExternalSemaphoreExt             = validation_layer::zeDeviceImportExternalSemaphoreExt;
+    }
+    if (version >= ZE_API_VERSION_1_12) {
+        dditable.pfnReleaseExternalSemaphoreExt              = pDdiTable->pfnReleaseExternalSemaphoreExt;
+        pDdiTable->pfnReleaseExternalSemaphoreExt            = validation_layer::zeDeviceReleaseExternalSemaphoreExt;
+    }
+    if (version >= ZE_API_VERSION_1_13) {
+        dditable.pfnGetVectorWidthPropertiesExt              = pDdiTable->pfnGetVectorWidthPropertiesExt;
+        pDdiTable->pfnGetVectorWidthPropertiesExt            = validation_layer::zeDeviceGetVectorWidthPropertiesExt;
+    }
+    if (version >= ZE_API_VERSION_1_2) {
+        dditable.pfnReserveCacheExt                          = pDdiTable->pfnReserveCacheExt;
+        pDdiTable->pfnReserveCacheExt                        = validation_layer::zeDeviceReserveCacheExt;
+    }
+    if (version >= ZE_API_VERSION_1_2) {
+        dditable.pfnSetCacheAdviceExt                        = pDdiTable->pfnSetCacheAdviceExt;
+        pDdiTable->pfnSetCacheAdviceExt                      = validation_layer::zeDeviceSetCacheAdviceExt;
+    }
+    if (version >= ZE_API_VERSION_1_3) {
+        dditable.pfnPciGetPropertiesExt                      = pDdiTable->pfnPciGetPropertiesExt;
+        pDdiTable->pfnPciGetPropertiesExt                    = validation_layer::zeDevicePciGetPropertiesExt;
+    }
+    if (version >= ZE_API_VERSION_1_7) {
+        dditable.pfnGetRootDevice                            = pDdiTable->pfnGetRootDevice;
+        pDdiTable->pfnGetRootDevice                          = validation_layer::zeDeviceGetRootDevice;
+    }
     return result;
 }
 
@@ -8448,15 +9853,15 @@ zeGetDeviceExpProcAddrTable(
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if (ZE_MAJOR_VERSION(validation_layer::context.version) != ZE_MAJOR_VERSION(version) ||
-        ZE_MINOR_VERSION(validation_layer::context.version) > ZE_MINOR_VERSION(version))
+    if (validation_layer::context.version < version)
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
-    dditable.pfnGetFabricVertexExp                       = pDdiTable->pfnGetFabricVertexExp;
-    pDdiTable->pfnGetFabricVertexExp                     = validation_layer::zeDeviceGetFabricVertexExp;
-
+    if (version >= ZE_API_VERSION_1_4) {
+        dditable.pfnGetFabricVertexExp                       = pDdiTable->pfnGetFabricVertexExp;
+        pDdiTable->pfnGetFabricVertexExp                     = validation_layer::zeDeviceGetFabricVertexExp;
+    }
     return result;
 }
 
@@ -8479,39 +9884,47 @@ zeGetContextProcAddrTable(
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if (ZE_MAJOR_VERSION(validation_layer::context.version) != ZE_MAJOR_VERSION(version) ||
-        ZE_MINOR_VERSION(validation_layer::context.version) > ZE_MINOR_VERSION(version))
+    if (validation_layer::context.version < version)
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
-    dditable.pfnCreate                                   = pDdiTable->pfnCreate;
-    pDdiTable->pfnCreate                                 = validation_layer::zeContextCreate;
-
-    dditable.pfnDestroy                                  = pDdiTable->pfnDestroy;
-    pDdiTable->pfnDestroy                                = validation_layer::zeContextDestroy;
-
-    dditable.pfnGetStatus                                = pDdiTable->pfnGetStatus;
-    pDdiTable->pfnGetStatus                              = validation_layer::zeContextGetStatus;
-
-    dditable.pfnSystemBarrier                            = pDdiTable->pfnSystemBarrier;
-    pDdiTable->pfnSystemBarrier                          = validation_layer::zeContextSystemBarrier;
-
-    dditable.pfnMakeMemoryResident                       = pDdiTable->pfnMakeMemoryResident;
-    pDdiTable->pfnMakeMemoryResident                     = validation_layer::zeContextMakeMemoryResident;
-
-    dditable.pfnEvictMemory                              = pDdiTable->pfnEvictMemory;
-    pDdiTable->pfnEvictMemory                            = validation_layer::zeContextEvictMemory;
-
-    dditable.pfnMakeImageResident                        = pDdiTable->pfnMakeImageResident;
-    pDdiTable->pfnMakeImageResident                      = validation_layer::zeContextMakeImageResident;
-
-    dditable.pfnEvictImage                               = pDdiTable->pfnEvictImage;
-    pDdiTable->pfnEvictImage                             = validation_layer::zeContextEvictImage;
-
-    dditable.pfnCreateEx                                 = pDdiTable->pfnCreateEx;
-    pDdiTable->pfnCreateEx                               = validation_layer::zeContextCreateEx;
-
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnCreate                                   = pDdiTable->pfnCreate;
+        pDdiTable->pfnCreate                                 = validation_layer::zeContextCreate;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnDestroy                                  = pDdiTable->pfnDestroy;
+        pDdiTable->pfnDestroy                                = validation_layer::zeContextDestroy;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnGetStatus                                = pDdiTable->pfnGetStatus;
+        pDdiTable->pfnGetStatus                              = validation_layer::zeContextGetStatus;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnSystemBarrier                            = pDdiTable->pfnSystemBarrier;
+        pDdiTable->pfnSystemBarrier                          = validation_layer::zeContextSystemBarrier;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnMakeMemoryResident                       = pDdiTable->pfnMakeMemoryResident;
+        pDdiTable->pfnMakeMemoryResident                     = validation_layer::zeContextMakeMemoryResident;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnEvictMemory                              = pDdiTable->pfnEvictMemory;
+        pDdiTable->pfnEvictMemory                            = validation_layer::zeContextEvictMemory;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnMakeImageResident                        = pDdiTable->pfnMakeImageResident;
+        pDdiTable->pfnMakeImageResident                      = validation_layer::zeContextMakeImageResident;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnEvictImage                               = pDdiTable->pfnEvictImage;
+        pDdiTable->pfnEvictImage                             = validation_layer::zeContextEvictImage;
+    }
+    if (version >= ZE_API_VERSION_1_1) {
+        dditable.pfnCreateEx                                 = pDdiTable->pfnCreateEx;
+        pDdiTable->pfnCreateEx                               = validation_layer::zeContextCreateEx;
+    }
     return result;
 }
 
@@ -8534,30 +9947,35 @@ zeGetCommandQueueProcAddrTable(
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if (ZE_MAJOR_VERSION(validation_layer::context.version) != ZE_MAJOR_VERSION(version) ||
-        ZE_MINOR_VERSION(validation_layer::context.version) > ZE_MINOR_VERSION(version))
+    if (validation_layer::context.version < version)
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
-    dditable.pfnCreate                                   = pDdiTable->pfnCreate;
-    pDdiTable->pfnCreate                                 = validation_layer::zeCommandQueueCreate;
-
-    dditable.pfnDestroy                                  = pDdiTable->pfnDestroy;
-    pDdiTable->pfnDestroy                                = validation_layer::zeCommandQueueDestroy;
-
-    dditable.pfnExecuteCommandLists                      = pDdiTable->pfnExecuteCommandLists;
-    pDdiTable->pfnExecuteCommandLists                    = validation_layer::zeCommandQueueExecuteCommandLists;
-
-    dditable.pfnSynchronize                              = pDdiTable->pfnSynchronize;
-    pDdiTable->pfnSynchronize                            = validation_layer::zeCommandQueueSynchronize;
-
-    dditable.pfnGetOrdinal                               = pDdiTable->pfnGetOrdinal;
-    pDdiTable->pfnGetOrdinal                             = validation_layer::zeCommandQueueGetOrdinal;
-
-    dditable.pfnGetIndex                                 = pDdiTable->pfnGetIndex;
-    pDdiTable->pfnGetIndex                               = validation_layer::zeCommandQueueGetIndex;
-
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnCreate                                   = pDdiTable->pfnCreate;
+        pDdiTable->pfnCreate                                 = validation_layer::zeCommandQueueCreate;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnDestroy                                  = pDdiTable->pfnDestroy;
+        pDdiTable->pfnDestroy                                = validation_layer::zeCommandQueueDestroy;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnExecuteCommandLists                      = pDdiTable->pfnExecuteCommandLists;
+        pDdiTable->pfnExecuteCommandLists                    = validation_layer::zeCommandQueueExecuteCommandLists;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnSynchronize                              = pDdiTable->pfnSynchronize;
+        pDdiTable->pfnSynchronize                            = validation_layer::zeCommandQueueSynchronize;
+    }
+    if (version >= ZE_API_VERSION_1_9) {
+        dditable.pfnGetOrdinal                               = pDdiTable->pfnGetOrdinal;
+        pDdiTable->pfnGetOrdinal                             = validation_layer::zeCommandQueueGetOrdinal;
+    }
+    if (version >= ZE_API_VERSION_1_9) {
+        dditable.pfnGetIndex                                 = pDdiTable->pfnGetIndex;
+        pDdiTable->pfnGetIndex                               = validation_layer::zeCommandQueueGetIndex;
+    }
     return result;
 }
 
@@ -8580,114 +9998,155 @@ zeGetCommandListProcAddrTable(
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if (ZE_MAJOR_VERSION(validation_layer::context.version) != ZE_MAJOR_VERSION(version) ||
-        ZE_MINOR_VERSION(validation_layer::context.version) > ZE_MINOR_VERSION(version))
+    if (validation_layer::context.version < version)
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
-    dditable.pfnCreate                                   = pDdiTable->pfnCreate;
-    pDdiTable->pfnCreate                                 = validation_layer::zeCommandListCreate;
-
-    dditable.pfnCreateImmediate                          = pDdiTable->pfnCreateImmediate;
-    pDdiTable->pfnCreateImmediate                        = validation_layer::zeCommandListCreateImmediate;
-
-    dditable.pfnDestroy                                  = pDdiTable->pfnDestroy;
-    pDdiTable->pfnDestroy                                = validation_layer::zeCommandListDestroy;
-
-    dditable.pfnClose                                    = pDdiTable->pfnClose;
-    pDdiTable->pfnClose                                  = validation_layer::zeCommandListClose;
-
-    dditable.pfnReset                                    = pDdiTable->pfnReset;
-    pDdiTable->pfnReset                                  = validation_layer::zeCommandListReset;
-
-    dditable.pfnAppendWriteGlobalTimestamp               = pDdiTable->pfnAppendWriteGlobalTimestamp;
-    pDdiTable->pfnAppendWriteGlobalTimestamp             = validation_layer::zeCommandListAppendWriteGlobalTimestamp;
-
-    dditable.pfnAppendBarrier                            = pDdiTable->pfnAppendBarrier;
-    pDdiTable->pfnAppendBarrier                          = validation_layer::zeCommandListAppendBarrier;
-
-    dditable.pfnAppendMemoryRangesBarrier                = pDdiTable->pfnAppendMemoryRangesBarrier;
-    pDdiTable->pfnAppendMemoryRangesBarrier              = validation_layer::zeCommandListAppendMemoryRangesBarrier;
-
-    dditable.pfnAppendMemoryCopy                         = pDdiTable->pfnAppendMemoryCopy;
-    pDdiTable->pfnAppendMemoryCopy                       = validation_layer::zeCommandListAppendMemoryCopy;
-
-    dditable.pfnAppendMemoryFill                         = pDdiTable->pfnAppendMemoryFill;
-    pDdiTable->pfnAppendMemoryFill                       = validation_layer::zeCommandListAppendMemoryFill;
-
-    dditable.pfnAppendMemoryCopyRegion                   = pDdiTable->pfnAppendMemoryCopyRegion;
-    pDdiTable->pfnAppendMemoryCopyRegion                 = validation_layer::zeCommandListAppendMemoryCopyRegion;
-
-    dditable.pfnAppendMemoryCopyFromContext              = pDdiTable->pfnAppendMemoryCopyFromContext;
-    pDdiTable->pfnAppendMemoryCopyFromContext            = validation_layer::zeCommandListAppendMemoryCopyFromContext;
-
-    dditable.pfnAppendImageCopy                          = pDdiTable->pfnAppendImageCopy;
-    pDdiTable->pfnAppendImageCopy                        = validation_layer::zeCommandListAppendImageCopy;
-
-    dditable.pfnAppendImageCopyRegion                    = pDdiTable->pfnAppendImageCopyRegion;
-    pDdiTable->pfnAppendImageCopyRegion                  = validation_layer::zeCommandListAppendImageCopyRegion;
-
-    dditable.pfnAppendImageCopyToMemory                  = pDdiTable->pfnAppendImageCopyToMemory;
-    pDdiTable->pfnAppendImageCopyToMemory                = validation_layer::zeCommandListAppendImageCopyToMemory;
-
-    dditable.pfnAppendImageCopyFromMemory                = pDdiTable->pfnAppendImageCopyFromMemory;
-    pDdiTable->pfnAppendImageCopyFromMemory              = validation_layer::zeCommandListAppendImageCopyFromMemory;
-
-    dditable.pfnAppendMemoryPrefetch                     = pDdiTable->pfnAppendMemoryPrefetch;
-    pDdiTable->pfnAppendMemoryPrefetch                   = validation_layer::zeCommandListAppendMemoryPrefetch;
-
-    dditable.pfnAppendMemAdvise                          = pDdiTable->pfnAppendMemAdvise;
-    pDdiTable->pfnAppendMemAdvise                        = validation_layer::zeCommandListAppendMemAdvise;
-
-    dditable.pfnAppendSignalEvent                        = pDdiTable->pfnAppendSignalEvent;
-    pDdiTable->pfnAppendSignalEvent                      = validation_layer::zeCommandListAppendSignalEvent;
-
-    dditable.pfnAppendWaitOnEvents                       = pDdiTable->pfnAppendWaitOnEvents;
-    pDdiTable->pfnAppendWaitOnEvents                     = validation_layer::zeCommandListAppendWaitOnEvents;
-
-    dditable.pfnAppendEventReset                         = pDdiTable->pfnAppendEventReset;
-    pDdiTable->pfnAppendEventReset                       = validation_layer::zeCommandListAppendEventReset;
-
-    dditable.pfnAppendQueryKernelTimestamps              = pDdiTable->pfnAppendQueryKernelTimestamps;
-    pDdiTable->pfnAppendQueryKernelTimestamps            = validation_layer::zeCommandListAppendQueryKernelTimestamps;
-
-    dditable.pfnAppendLaunchKernel                       = pDdiTable->pfnAppendLaunchKernel;
-    pDdiTable->pfnAppendLaunchKernel                     = validation_layer::zeCommandListAppendLaunchKernel;
-
-    dditable.pfnAppendLaunchCooperativeKernel            = pDdiTable->pfnAppendLaunchCooperativeKernel;
-    pDdiTable->pfnAppendLaunchCooperativeKernel          = validation_layer::zeCommandListAppendLaunchCooperativeKernel;
-
-    dditable.pfnAppendLaunchKernelIndirect               = pDdiTable->pfnAppendLaunchKernelIndirect;
-    pDdiTable->pfnAppendLaunchKernelIndirect             = validation_layer::zeCommandListAppendLaunchKernelIndirect;
-
-    dditable.pfnAppendLaunchMultipleKernelsIndirect      = pDdiTable->pfnAppendLaunchMultipleKernelsIndirect;
-    pDdiTable->pfnAppendLaunchMultipleKernelsIndirect    = validation_layer::zeCommandListAppendLaunchMultipleKernelsIndirect;
-
-    dditable.pfnAppendImageCopyToMemoryExt               = pDdiTable->pfnAppendImageCopyToMemoryExt;
-    pDdiTable->pfnAppendImageCopyToMemoryExt             = validation_layer::zeCommandListAppendImageCopyToMemoryExt;
-
-    dditable.pfnAppendImageCopyFromMemoryExt             = pDdiTable->pfnAppendImageCopyFromMemoryExt;
-    pDdiTable->pfnAppendImageCopyFromMemoryExt           = validation_layer::zeCommandListAppendImageCopyFromMemoryExt;
-
-    dditable.pfnHostSynchronize                          = pDdiTable->pfnHostSynchronize;
-    pDdiTable->pfnHostSynchronize                        = validation_layer::zeCommandListHostSynchronize;
-
-    dditable.pfnGetDeviceHandle                          = pDdiTable->pfnGetDeviceHandle;
-    pDdiTable->pfnGetDeviceHandle                        = validation_layer::zeCommandListGetDeviceHandle;
-
-    dditable.pfnGetContextHandle                         = pDdiTable->pfnGetContextHandle;
-    pDdiTable->pfnGetContextHandle                       = validation_layer::zeCommandListGetContextHandle;
-
-    dditable.pfnGetOrdinal                               = pDdiTable->pfnGetOrdinal;
-    pDdiTable->pfnGetOrdinal                             = validation_layer::zeCommandListGetOrdinal;
-
-    dditable.pfnImmediateGetIndex                        = pDdiTable->pfnImmediateGetIndex;
-    pDdiTable->pfnImmediateGetIndex                      = validation_layer::zeCommandListImmediateGetIndex;
-
-    dditable.pfnIsImmediate                              = pDdiTable->pfnIsImmediate;
-    pDdiTable->pfnIsImmediate                            = validation_layer::zeCommandListIsImmediate;
-
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnCreate                                   = pDdiTable->pfnCreate;
+        pDdiTable->pfnCreate                                 = validation_layer::zeCommandListCreate;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnCreateImmediate                          = pDdiTable->pfnCreateImmediate;
+        pDdiTable->pfnCreateImmediate                        = validation_layer::zeCommandListCreateImmediate;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnDestroy                                  = pDdiTable->pfnDestroy;
+        pDdiTable->pfnDestroy                                = validation_layer::zeCommandListDestroy;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnClose                                    = pDdiTable->pfnClose;
+        pDdiTable->pfnClose                                  = validation_layer::zeCommandListClose;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnReset                                    = pDdiTable->pfnReset;
+        pDdiTable->pfnReset                                  = validation_layer::zeCommandListReset;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnAppendWriteGlobalTimestamp               = pDdiTable->pfnAppendWriteGlobalTimestamp;
+        pDdiTable->pfnAppendWriteGlobalTimestamp             = validation_layer::zeCommandListAppendWriteGlobalTimestamp;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnAppendBarrier                            = pDdiTable->pfnAppendBarrier;
+        pDdiTable->pfnAppendBarrier                          = validation_layer::zeCommandListAppendBarrier;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnAppendMemoryRangesBarrier                = pDdiTable->pfnAppendMemoryRangesBarrier;
+        pDdiTable->pfnAppendMemoryRangesBarrier              = validation_layer::zeCommandListAppendMemoryRangesBarrier;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnAppendMemoryCopy                         = pDdiTable->pfnAppendMemoryCopy;
+        pDdiTable->pfnAppendMemoryCopy                       = validation_layer::zeCommandListAppendMemoryCopy;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnAppendMemoryFill                         = pDdiTable->pfnAppendMemoryFill;
+        pDdiTable->pfnAppendMemoryFill                       = validation_layer::zeCommandListAppendMemoryFill;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnAppendMemoryCopyRegion                   = pDdiTable->pfnAppendMemoryCopyRegion;
+        pDdiTable->pfnAppendMemoryCopyRegion                 = validation_layer::zeCommandListAppendMemoryCopyRegion;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnAppendMemoryCopyFromContext              = pDdiTable->pfnAppendMemoryCopyFromContext;
+        pDdiTable->pfnAppendMemoryCopyFromContext            = validation_layer::zeCommandListAppendMemoryCopyFromContext;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnAppendImageCopy                          = pDdiTable->pfnAppendImageCopy;
+        pDdiTable->pfnAppendImageCopy                        = validation_layer::zeCommandListAppendImageCopy;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnAppendImageCopyRegion                    = pDdiTable->pfnAppendImageCopyRegion;
+        pDdiTable->pfnAppendImageCopyRegion                  = validation_layer::zeCommandListAppendImageCopyRegion;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnAppendImageCopyToMemory                  = pDdiTable->pfnAppendImageCopyToMemory;
+        pDdiTable->pfnAppendImageCopyToMemory                = validation_layer::zeCommandListAppendImageCopyToMemory;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnAppendImageCopyFromMemory                = pDdiTable->pfnAppendImageCopyFromMemory;
+        pDdiTable->pfnAppendImageCopyFromMemory              = validation_layer::zeCommandListAppendImageCopyFromMemory;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnAppendMemoryPrefetch                     = pDdiTable->pfnAppendMemoryPrefetch;
+        pDdiTable->pfnAppendMemoryPrefetch                   = validation_layer::zeCommandListAppendMemoryPrefetch;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnAppendMemAdvise                          = pDdiTable->pfnAppendMemAdvise;
+        pDdiTable->pfnAppendMemAdvise                        = validation_layer::zeCommandListAppendMemAdvise;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnAppendSignalEvent                        = pDdiTable->pfnAppendSignalEvent;
+        pDdiTable->pfnAppendSignalEvent                      = validation_layer::zeCommandListAppendSignalEvent;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnAppendWaitOnEvents                       = pDdiTable->pfnAppendWaitOnEvents;
+        pDdiTable->pfnAppendWaitOnEvents                     = validation_layer::zeCommandListAppendWaitOnEvents;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnAppendEventReset                         = pDdiTable->pfnAppendEventReset;
+        pDdiTable->pfnAppendEventReset                       = validation_layer::zeCommandListAppendEventReset;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnAppendQueryKernelTimestamps              = pDdiTable->pfnAppendQueryKernelTimestamps;
+        pDdiTable->pfnAppendQueryKernelTimestamps            = validation_layer::zeCommandListAppendQueryKernelTimestamps;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnAppendLaunchKernel                       = pDdiTable->pfnAppendLaunchKernel;
+        pDdiTable->pfnAppendLaunchKernel                     = validation_layer::zeCommandListAppendLaunchKernel;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnAppendLaunchCooperativeKernel            = pDdiTable->pfnAppendLaunchCooperativeKernel;
+        pDdiTable->pfnAppendLaunchCooperativeKernel          = validation_layer::zeCommandListAppendLaunchCooperativeKernel;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnAppendLaunchKernelIndirect               = pDdiTable->pfnAppendLaunchKernelIndirect;
+        pDdiTable->pfnAppendLaunchKernelIndirect             = validation_layer::zeCommandListAppendLaunchKernelIndirect;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnAppendLaunchMultipleKernelsIndirect      = pDdiTable->pfnAppendLaunchMultipleKernelsIndirect;
+        pDdiTable->pfnAppendLaunchMultipleKernelsIndirect    = validation_layer::zeCommandListAppendLaunchMultipleKernelsIndirect;
+    }
+    if (version >= ZE_API_VERSION_1_12) {
+        dditable.pfnAppendSignalExternalSemaphoreExt         = pDdiTable->pfnAppendSignalExternalSemaphoreExt;
+        pDdiTable->pfnAppendSignalExternalSemaphoreExt       = validation_layer::zeCommandListAppendSignalExternalSemaphoreExt;
+    }
+    if (version >= ZE_API_VERSION_1_12) {
+        dditable.pfnAppendWaitExternalSemaphoreExt           = pDdiTable->pfnAppendWaitExternalSemaphoreExt;
+        pDdiTable->pfnAppendWaitExternalSemaphoreExt         = validation_layer::zeCommandListAppendWaitExternalSemaphoreExt;
+    }
+    if (version >= ZE_API_VERSION_1_3) {
+        dditable.pfnAppendImageCopyToMemoryExt               = pDdiTable->pfnAppendImageCopyToMemoryExt;
+        pDdiTable->pfnAppendImageCopyToMemoryExt             = validation_layer::zeCommandListAppendImageCopyToMemoryExt;
+    }
+    if (version >= ZE_API_VERSION_1_3) {
+        dditable.pfnAppendImageCopyFromMemoryExt             = pDdiTable->pfnAppendImageCopyFromMemoryExt;
+        pDdiTable->pfnAppendImageCopyFromMemoryExt           = validation_layer::zeCommandListAppendImageCopyFromMemoryExt;
+    }
+    if (version >= ZE_API_VERSION_1_6) {
+        dditable.pfnHostSynchronize                          = pDdiTable->pfnHostSynchronize;
+        pDdiTable->pfnHostSynchronize                        = validation_layer::zeCommandListHostSynchronize;
+    }
+    if (version >= ZE_API_VERSION_1_9) {
+        dditable.pfnGetDeviceHandle                          = pDdiTable->pfnGetDeviceHandle;
+        pDdiTable->pfnGetDeviceHandle                        = validation_layer::zeCommandListGetDeviceHandle;
+    }
+    if (version >= ZE_API_VERSION_1_9) {
+        dditable.pfnGetContextHandle                         = pDdiTable->pfnGetContextHandle;
+        pDdiTable->pfnGetContextHandle                       = validation_layer::zeCommandListGetContextHandle;
+    }
+    if (version >= ZE_API_VERSION_1_9) {
+        dditable.pfnGetOrdinal                               = pDdiTable->pfnGetOrdinal;
+        pDdiTable->pfnGetOrdinal                             = validation_layer::zeCommandListGetOrdinal;
+    }
+    if (version >= ZE_API_VERSION_1_9) {
+        dditable.pfnImmediateGetIndex                        = pDdiTable->pfnImmediateGetIndex;
+        pDdiTable->pfnImmediateGetIndex                      = validation_layer::zeCommandListImmediateGetIndex;
+    }
+    if (version >= ZE_API_VERSION_1_9) {
+        dditable.pfnIsImmediate                              = pDdiTable->pfnIsImmediate;
+        pDdiTable->pfnIsImmediate                            = validation_layer::zeCommandListIsImmediate;
+    }
     return result;
 }
 
@@ -8710,30 +10169,43 @@ zeGetCommandListExpProcAddrTable(
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if (ZE_MAJOR_VERSION(validation_layer::context.version) != ZE_MAJOR_VERSION(version) ||
-        ZE_MINOR_VERSION(validation_layer::context.version) > ZE_MINOR_VERSION(version))
+    if (validation_layer::context.version < version)
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
-    dditable.pfnCreateCloneExp                           = pDdiTable->pfnCreateCloneExp;
-    pDdiTable->pfnCreateCloneExp                         = validation_layer::zeCommandListCreateCloneExp;
-
-    dditable.pfnImmediateAppendCommandListsExp           = pDdiTable->pfnImmediateAppendCommandListsExp;
-    pDdiTable->pfnImmediateAppendCommandListsExp         = validation_layer::zeCommandListImmediateAppendCommandListsExp;
-
-    dditable.pfnGetNextCommandIdExp                      = pDdiTable->pfnGetNextCommandIdExp;
-    pDdiTable->pfnGetNextCommandIdExp                    = validation_layer::zeCommandListGetNextCommandIdExp;
-
-    dditable.pfnUpdateMutableCommandsExp                 = pDdiTable->pfnUpdateMutableCommandsExp;
-    pDdiTable->pfnUpdateMutableCommandsExp               = validation_layer::zeCommandListUpdateMutableCommandsExp;
-
-    dditable.pfnUpdateMutableCommandSignalEventExp       = pDdiTable->pfnUpdateMutableCommandSignalEventExp;
-    pDdiTable->pfnUpdateMutableCommandSignalEventExp     = validation_layer::zeCommandListUpdateMutableCommandSignalEventExp;
-
-    dditable.pfnUpdateMutableCommandWaitEventsExp        = pDdiTable->pfnUpdateMutableCommandWaitEventsExp;
-    pDdiTable->pfnUpdateMutableCommandWaitEventsExp      = validation_layer::zeCommandListUpdateMutableCommandWaitEventsExp;
-
+    if (version >= ZE_API_VERSION_1_10) {
+        dditable.pfnGetNextCommandIdWithKernelsExp           = pDdiTable->pfnGetNextCommandIdWithKernelsExp;
+        pDdiTable->pfnGetNextCommandIdWithKernelsExp         = validation_layer::zeCommandListGetNextCommandIdWithKernelsExp;
+    }
+    if (version >= ZE_API_VERSION_1_10) {
+        dditable.pfnUpdateMutableCommandKernelsExp           = pDdiTable->pfnUpdateMutableCommandKernelsExp;
+        pDdiTable->pfnUpdateMutableCommandKernelsExp         = validation_layer::zeCommandListUpdateMutableCommandKernelsExp;
+    }
+    if (version >= ZE_API_VERSION_1_9) {
+        dditable.pfnCreateCloneExp                           = pDdiTable->pfnCreateCloneExp;
+        pDdiTable->pfnCreateCloneExp                         = validation_layer::zeCommandListCreateCloneExp;
+    }
+    if (version >= ZE_API_VERSION_1_9) {
+        dditable.pfnImmediateAppendCommandListsExp           = pDdiTable->pfnImmediateAppendCommandListsExp;
+        pDdiTable->pfnImmediateAppendCommandListsExp         = validation_layer::zeCommandListImmediateAppendCommandListsExp;
+    }
+    if (version >= ZE_API_VERSION_1_9) {
+        dditable.pfnGetNextCommandIdExp                      = pDdiTable->pfnGetNextCommandIdExp;
+        pDdiTable->pfnGetNextCommandIdExp                    = validation_layer::zeCommandListGetNextCommandIdExp;
+    }
+    if (version >= ZE_API_VERSION_1_9) {
+        dditable.pfnUpdateMutableCommandsExp                 = pDdiTable->pfnUpdateMutableCommandsExp;
+        pDdiTable->pfnUpdateMutableCommandsExp               = validation_layer::zeCommandListUpdateMutableCommandsExp;
+    }
+    if (version >= ZE_API_VERSION_1_9) {
+        dditable.pfnUpdateMutableCommandSignalEventExp       = pDdiTable->pfnUpdateMutableCommandSignalEventExp;
+        pDdiTable->pfnUpdateMutableCommandSignalEventExp     = validation_layer::zeCommandListUpdateMutableCommandSignalEventExp;
+    }
+    if (version >= ZE_API_VERSION_1_9) {
+        dditable.pfnUpdateMutableCommandWaitEventsExp        = pDdiTable->pfnUpdateMutableCommandWaitEventsExp;
+        pDdiTable->pfnUpdateMutableCommandWaitEventsExp      = validation_layer::zeCommandListUpdateMutableCommandWaitEventsExp;
+    }
     return result;
 }
 
@@ -8756,45 +10228,55 @@ zeGetEventProcAddrTable(
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if (ZE_MAJOR_VERSION(validation_layer::context.version) != ZE_MAJOR_VERSION(version) ||
-        ZE_MINOR_VERSION(validation_layer::context.version) > ZE_MINOR_VERSION(version))
+    if (validation_layer::context.version < version)
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
-    dditable.pfnCreate                                   = pDdiTable->pfnCreate;
-    pDdiTable->pfnCreate                                 = validation_layer::zeEventCreate;
-
-    dditable.pfnDestroy                                  = pDdiTable->pfnDestroy;
-    pDdiTable->pfnDestroy                                = validation_layer::zeEventDestroy;
-
-    dditable.pfnHostSignal                               = pDdiTable->pfnHostSignal;
-    pDdiTable->pfnHostSignal                             = validation_layer::zeEventHostSignal;
-
-    dditable.pfnHostSynchronize                          = pDdiTable->pfnHostSynchronize;
-    pDdiTable->pfnHostSynchronize                        = validation_layer::zeEventHostSynchronize;
-
-    dditable.pfnQueryStatus                              = pDdiTable->pfnQueryStatus;
-    pDdiTable->pfnQueryStatus                            = validation_layer::zeEventQueryStatus;
-
-    dditable.pfnHostReset                                = pDdiTable->pfnHostReset;
-    pDdiTable->pfnHostReset                              = validation_layer::zeEventHostReset;
-
-    dditable.pfnQueryKernelTimestamp                     = pDdiTable->pfnQueryKernelTimestamp;
-    pDdiTable->pfnQueryKernelTimestamp                   = validation_layer::zeEventQueryKernelTimestamp;
-
-    dditable.pfnQueryKernelTimestampsExt                 = pDdiTable->pfnQueryKernelTimestampsExt;
-    pDdiTable->pfnQueryKernelTimestampsExt               = validation_layer::zeEventQueryKernelTimestampsExt;
-
-    dditable.pfnGetEventPool                             = pDdiTable->pfnGetEventPool;
-    pDdiTable->pfnGetEventPool                           = validation_layer::zeEventGetEventPool;
-
-    dditable.pfnGetSignalScope                           = pDdiTable->pfnGetSignalScope;
-    pDdiTable->pfnGetSignalScope                         = validation_layer::zeEventGetSignalScope;
-
-    dditable.pfnGetWaitScope                             = pDdiTable->pfnGetWaitScope;
-    pDdiTable->pfnGetWaitScope                           = validation_layer::zeEventGetWaitScope;
-
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnCreate                                   = pDdiTable->pfnCreate;
+        pDdiTable->pfnCreate                                 = validation_layer::zeEventCreate;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnDestroy                                  = pDdiTable->pfnDestroy;
+        pDdiTable->pfnDestroy                                = validation_layer::zeEventDestroy;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnHostSignal                               = pDdiTable->pfnHostSignal;
+        pDdiTable->pfnHostSignal                             = validation_layer::zeEventHostSignal;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnHostSynchronize                          = pDdiTable->pfnHostSynchronize;
+        pDdiTable->pfnHostSynchronize                        = validation_layer::zeEventHostSynchronize;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnQueryStatus                              = pDdiTable->pfnQueryStatus;
+        pDdiTable->pfnQueryStatus                            = validation_layer::zeEventQueryStatus;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnHostReset                                = pDdiTable->pfnHostReset;
+        pDdiTable->pfnHostReset                              = validation_layer::zeEventHostReset;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnQueryKernelTimestamp                     = pDdiTable->pfnQueryKernelTimestamp;
+        pDdiTable->pfnQueryKernelTimestamp                   = validation_layer::zeEventQueryKernelTimestamp;
+    }
+    if (version >= ZE_API_VERSION_1_6) {
+        dditable.pfnQueryKernelTimestampsExt                 = pDdiTable->pfnQueryKernelTimestampsExt;
+        pDdiTable->pfnQueryKernelTimestampsExt               = validation_layer::zeEventQueryKernelTimestampsExt;
+    }
+    if (version >= ZE_API_VERSION_1_9) {
+        dditable.pfnGetEventPool                             = pDdiTable->pfnGetEventPool;
+        pDdiTable->pfnGetEventPool                           = validation_layer::zeEventGetEventPool;
+    }
+    if (version >= ZE_API_VERSION_1_9) {
+        dditable.pfnGetSignalScope                           = pDdiTable->pfnGetSignalScope;
+        pDdiTable->pfnGetSignalScope                         = validation_layer::zeEventGetSignalScope;
+    }
+    if (version >= ZE_API_VERSION_1_9) {
+        dditable.pfnGetWaitScope                             = pDdiTable->pfnGetWaitScope;
+        pDdiTable->pfnGetWaitScope                           = validation_layer::zeEventGetWaitScope;
+    }
     return result;
 }
 
@@ -8817,15 +10299,15 @@ zeGetEventExpProcAddrTable(
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if (ZE_MAJOR_VERSION(validation_layer::context.version) != ZE_MAJOR_VERSION(version) ||
-        ZE_MINOR_VERSION(validation_layer::context.version) > ZE_MINOR_VERSION(version))
+    if (validation_layer::context.version < version)
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
-    dditable.pfnQueryTimestampsExp                       = pDdiTable->pfnQueryTimestampsExp;
-    pDdiTable->pfnQueryTimestampsExp                     = validation_layer::zeEventQueryTimestampsExp;
-
+    if (version >= ZE_API_VERSION_1_2) {
+        dditable.pfnQueryTimestampsExp                       = pDdiTable->pfnQueryTimestampsExp;
+        pDdiTable->pfnQueryTimestampsExp                     = validation_layer::zeEventQueryTimestampsExp;
+    }
     return result;
 }
 
@@ -8848,36 +10330,43 @@ zeGetEventPoolProcAddrTable(
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if (ZE_MAJOR_VERSION(validation_layer::context.version) != ZE_MAJOR_VERSION(version) ||
-        ZE_MINOR_VERSION(validation_layer::context.version) > ZE_MINOR_VERSION(version))
+    if (validation_layer::context.version < version)
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
-    dditable.pfnCreate                                   = pDdiTable->pfnCreate;
-    pDdiTable->pfnCreate                                 = validation_layer::zeEventPoolCreate;
-
-    dditable.pfnDestroy                                  = pDdiTable->pfnDestroy;
-    pDdiTable->pfnDestroy                                = validation_layer::zeEventPoolDestroy;
-
-    dditable.pfnGetIpcHandle                             = pDdiTable->pfnGetIpcHandle;
-    pDdiTable->pfnGetIpcHandle                           = validation_layer::zeEventPoolGetIpcHandle;
-
-    dditable.pfnOpenIpcHandle                            = pDdiTable->pfnOpenIpcHandle;
-    pDdiTable->pfnOpenIpcHandle                          = validation_layer::zeEventPoolOpenIpcHandle;
-
-    dditable.pfnCloseIpcHandle                           = pDdiTable->pfnCloseIpcHandle;
-    pDdiTable->pfnCloseIpcHandle                         = validation_layer::zeEventPoolCloseIpcHandle;
-
-    dditable.pfnPutIpcHandle                             = pDdiTable->pfnPutIpcHandle;
-    pDdiTable->pfnPutIpcHandle                           = validation_layer::zeEventPoolPutIpcHandle;
-
-    dditable.pfnGetContextHandle                         = pDdiTable->pfnGetContextHandle;
-    pDdiTable->pfnGetContextHandle                       = validation_layer::zeEventPoolGetContextHandle;
-
-    dditable.pfnGetFlags                                 = pDdiTable->pfnGetFlags;
-    pDdiTable->pfnGetFlags                               = validation_layer::zeEventPoolGetFlags;
-
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnCreate                                   = pDdiTable->pfnCreate;
+        pDdiTable->pfnCreate                                 = validation_layer::zeEventPoolCreate;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnDestroy                                  = pDdiTable->pfnDestroy;
+        pDdiTable->pfnDestroy                                = validation_layer::zeEventPoolDestroy;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnGetIpcHandle                             = pDdiTable->pfnGetIpcHandle;
+        pDdiTable->pfnGetIpcHandle                           = validation_layer::zeEventPoolGetIpcHandle;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnOpenIpcHandle                            = pDdiTable->pfnOpenIpcHandle;
+        pDdiTable->pfnOpenIpcHandle                          = validation_layer::zeEventPoolOpenIpcHandle;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnCloseIpcHandle                           = pDdiTable->pfnCloseIpcHandle;
+        pDdiTable->pfnCloseIpcHandle                         = validation_layer::zeEventPoolCloseIpcHandle;
+    }
+    if (version >= ZE_API_VERSION_1_6) {
+        dditable.pfnPutIpcHandle                             = pDdiTable->pfnPutIpcHandle;
+        pDdiTable->pfnPutIpcHandle                           = validation_layer::zeEventPoolPutIpcHandle;
+    }
+    if (version >= ZE_API_VERSION_1_9) {
+        dditable.pfnGetContextHandle                         = pDdiTable->pfnGetContextHandle;
+        pDdiTable->pfnGetContextHandle                       = validation_layer::zeEventPoolGetContextHandle;
+    }
+    if (version >= ZE_API_VERSION_1_9) {
+        dditable.pfnGetFlags                                 = pDdiTable->pfnGetFlags;
+        pDdiTable->pfnGetFlags                               = validation_layer::zeEventPoolGetFlags;
+    }
     return result;
 }
 
@@ -8900,27 +10389,31 @@ zeGetFenceProcAddrTable(
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if (ZE_MAJOR_VERSION(validation_layer::context.version) != ZE_MAJOR_VERSION(version) ||
-        ZE_MINOR_VERSION(validation_layer::context.version) > ZE_MINOR_VERSION(version))
+    if (validation_layer::context.version < version)
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
-    dditable.pfnCreate                                   = pDdiTable->pfnCreate;
-    pDdiTable->pfnCreate                                 = validation_layer::zeFenceCreate;
-
-    dditable.pfnDestroy                                  = pDdiTable->pfnDestroy;
-    pDdiTable->pfnDestroy                                = validation_layer::zeFenceDestroy;
-
-    dditable.pfnHostSynchronize                          = pDdiTable->pfnHostSynchronize;
-    pDdiTable->pfnHostSynchronize                        = validation_layer::zeFenceHostSynchronize;
-
-    dditable.pfnQueryStatus                              = pDdiTable->pfnQueryStatus;
-    pDdiTable->pfnQueryStatus                            = validation_layer::zeFenceQueryStatus;
-
-    dditable.pfnReset                                    = pDdiTable->pfnReset;
-    pDdiTable->pfnReset                                  = validation_layer::zeFenceReset;
-
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnCreate                                   = pDdiTable->pfnCreate;
+        pDdiTable->pfnCreate                                 = validation_layer::zeFenceCreate;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnDestroy                                  = pDdiTable->pfnDestroy;
+        pDdiTable->pfnDestroy                                = validation_layer::zeFenceDestroy;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnHostSynchronize                          = pDdiTable->pfnHostSynchronize;
+        pDdiTable->pfnHostSynchronize                        = validation_layer::zeFenceHostSynchronize;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnQueryStatus                              = pDdiTable->pfnQueryStatus;
+        pDdiTable->pfnQueryStatus                            = validation_layer::zeFenceQueryStatus;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnReset                                    = pDdiTable->pfnReset;
+        pDdiTable->pfnReset                                  = validation_layer::zeFenceReset;
+    }
     return result;
 }
 
@@ -8943,27 +10436,31 @@ zeGetImageProcAddrTable(
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if (ZE_MAJOR_VERSION(validation_layer::context.version) != ZE_MAJOR_VERSION(version) ||
-        ZE_MINOR_VERSION(validation_layer::context.version) > ZE_MINOR_VERSION(version))
+    if (validation_layer::context.version < version)
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
-    dditable.pfnGetProperties                            = pDdiTable->pfnGetProperties;
-    pDdiTable->pfnGetProperties                          = validation_layer::zeImageGetProperties;
-
-    dditable.pfnCreate                                   = pDdiTable->pfnCreate;
-    pDdiTable->pfnCreate                                 = validation_layer::zeImageCreate;
-
-    dditable.pfnDestroy                                  = pDdiTable->pfnDestroy;
-    pDdiTable->pfnDestroy                                = validation_layer::zeImageDestroy;
-
-    dditable.pfnGetAllocPropertiesExt                    = pDdiTable->pfnGetAllocPropertiesExt;
-    pDdiTable->pfnGetAllocPropertiesExt                  = validation_layer::zeImageGetAllocPropertiesExt;
-
-    dditable.pfnViewCreateExt                            = pDdiTable->pfnViewCreateExt;
-    pDdiTable->pfnViewCreateExt                          = validation_layer::zeImageViewCreateExt;
-
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnGetProperties                            = pDdiTable->pfnGetProperties;
+        pDdiTable->pfnGetProperties                          = validation_layer::zeImageGetProperties;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnCreate                                   = pDdiTable->pfnCreate;
+        pDdiTable->pfnCreate                                 = validation_layer::zeImageCreate;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnDestroy                                  = pDdiTable->pfnDestroy;
+        pDdiTable->pfnDestroy                                = validation_layer::zeImageDestroy;
+    }
+    if (version >= ZE_API_VERSION_1_3) {
+        dditable.pfnGetAllocPropertiesExt                    = pDdiTable->pfnGetAllocPropertiesExt;
+        pDdiTable->pfnGetAllocPropertiesExt                  = validation_layer::zeImageGetAllocPropertiesExt;
+    }
+    if (version >= ZE_API_VERSION_1_5) {
+        dditable.pfnViewCreateExt                            = pDdiTable->pfnViewCreateExt;
+        pDdiTable->pfnViewCreateExt                          = validation_layer::zeImageViewCreateExt;
+    }
     return result;
 }
 
@@ -8986,21 +10483,23 @@ zeGetImageExpProcAddrTable(
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if (ZE_MAJOR_VERSION(validation_layer::context.version) != ZE_MAJOR_VERSION(version) ||
-        ZE_MINOR_VERSION(validation_layer::context.version) > ZE_MINOR_VERSION(version))
+    if (validation_layer::context.version < version)
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
-    dditable.pfnGetMemoryPropertiesExp                   = pDdiTable->pfnGetMemoryPropertiesExp;
-    pDdiTable->pfnGetMemoryPropertiesExp                 = validation_layer::zeImageGetMemoryPropertiesExp;
-
-    dditable.pfnViewCreateExp                            = pDdiTable->pfnViewCreateExp;
-    pDdiTable->pfnViewCreateExp                          = validation_layer::zeImageViewCreateExp;
-
-    dditable.pfnGetDeviceOffsetExp                       = pDdiTable->pfnGetDeviceOffsetExp;
-    pDdiTable->pfnGetDeviceOffsetExp                     = validation_layer::zeImageGetDeviceOffsetExp;
-
+    if (version >= ZE_API_VERSION_1_2) {
+        dditable.pfnGetMemoryPropertiesExp                   = pDdiTable->pfnGetMemoryPropertiesExp;
+        pDdiTable->pfnGetMemoryPropertiesExp                 = validation_layer::zeImageGetMemoryPropertiesExp;
+    }
+    if (version >= ZE_API_VERSION_1_2) {
+        dditable.pfnViewCreateExp                            = pDdiTable->pfnViewCreateExp;
+        pDdiTable->pfnViewCreateExp                          = validation_layer::zeImageViewCreateExp;
+    }
+    if (version >= ZE_API_VERSION_1_9) {
+        dditable.pfnGetDeviceOffsetExp                       = pDdiTable->pfnGetDeviceOffsetExp;
+        pDdiTable->pfnGetDeviceOffsetExp                     = validation_layer::zeImageGetDeviceOffsetExp;
+    }
     return result;
 }
 
@@ -9023,48 +10522,59 @@ zeGetKernelProcAddrTable(
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if (ZE_MAJOR_VERSION(validation_layer::context.version) != ZE_MAJOR_VERSION(version) ||
-        ZE_MINOR_VERSION(validation_layer::context.version) > ZE_MINOR_VERSION(version))
+    if (validation_layer::context.version < version)
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
-    dditable.pfnCreate                                   = pDdiTable->pfnCreate;
-    pDdiTable->pfnCreate                                 = validation_layer::zeKernelCreate;
-
-    dditable.pfnDestroy                                  = pDdiTable->pfnDestroy;
-    pDdiTable->pfnDestroy                                = validation_layer::zeKernelDestroy;
-
-    dditable.pfnSetCacheConfig                           = pDdiTable->pfnSetCacheConfig;
-    pDdiTable->pfnSetCacheConfig                         = validation_layer::zeKernelSetCacheConfig;
-
-    dditable.pfnSetGroupSize                             = pDdiTable->pfnSetGroupSize;
-    pDdiTable->pfnSetGroupSize                           = validation_layer::zeKernelSetGroupSize;
-
-    dditable.pfnSuggestGroupSize                         = pDdiTable->pfnSuggestGroupSize;
-    pDdiTable->pfnSuggestGroupSize                       = validation_layer::zeKernelSuggestGroupSize;
-
-    dditable.pfnSuggestMaxCooperativeGroupCount          = pDdiTable->pfnSuggestMaxCooperativeGroupCount;
-    pDdiTable->pfnSuggestMaxCooperativeGroupCount        = validation_layer::zeKernelSuggestMaxCooperativeGroupCount;
-
-    dditable.pfnSetArgumentValue                         = pDdiTable->pfnSetArgumentValue;
-    pDdiTable->pfnSetArgumentValue                       = validation_layer::zeKernelSetArgumentValue;
-
-    dditable.pfnSetIndirectAccess                        = pDdiTable->pfnSetIndirectAccess;
-    pDdiTable->pfnSetIndirectAccess                      = validation_layer::zeKernelSetIndirectAccess;
-
-    dditable.pfnGetIndirectAccess                        = pDdiTable->pfnGetIndirectAccess;
-    pDdiTable->pfnGetIndirectAccess                      = validation_layer::zeKernelGetIndirectAccess;
-
-    dditable.pfnGetSourceAttributes                      = pDdiTable->pfnGetSourceAttributes;
-    pDdiTable->pfnGetSourceAttributes                    = validation_layer::zeKernelGetSourceAttributes;
-
-    dditable.pfnGetProperties                            = pDdiTable->pfnGetProperties;
-    pDdiTable->pfnGetProperties                          = validation_layer::zeKernelGetProperties;
-
-    dditable.pfnGetName                                  = pDdiTable->pfnGetName;
-    pDdiTable->pfnGetName                                = validation_layer::zeKernelGetName;
-
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnCreate                                   = pDdiTable->pfnCreate;
+        pDdiTable->pfnCreate                                 = validation_layer::zeKernelCreate;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnDestroy                                  = pDdiTable->pfnDestroy;
+        pDdiTable->pfnDestroy                                = validation_layer::zeKernelDestroy;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnSetCacheConfig                           = pDdiTable->pfnSetCacheConfig;
+        pDdiTable->pfnSetCacheConfig                         = validation_layer::zeKernelSetCacheConfig;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnSetGroupSize                             = pDdiTable->pfnSetGroupSize;
+        pDdiTable->pfnSetGroupSize                           = validation_layer::zeKernelSetGroupSize;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnSuggestGroupSize                         = pDdiTable->pfnSuggestGroupSize;
+        pDdiTable->pfnSuggestGroupSize                       = validation_layer::zeKernelSuggestGroupSize;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnSuggestMaxCooperativeGroupCount          = pDdiTable->pfnSuggestMaxCooperativeGroupCount;
+        pDdiTable->pfnSuggestMaxCooperativeGroupCount        = validation_layer::zeKernelSuggestMaxCooperativeGroupCount;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnSetArgumentValue                         = pDdiTable->pfnSetArgumentValue;
+        pDdiTable->pfnSetArgumentValue                       = validation_layer::zeKernelSetArgumentValue;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnSetIndirectAccess                        = pDdiTable->pfnSetIndirectAccess;
+        pDdiTable->pfnSetIndirectAccess                      = validation_layer::zeKernelSetIndirectAccess;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnGetIndirectAccess                        = pDdiTable->pfnGetIndirectAccess;
+        pDdiTable->pfnGetIndirectAccess                      = validation_layer::zeKernelGetIndirectAccess;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnGetSourceAttributes                      = pDdiTable->pfnGetSourceAttributes;
+        pDdiTable->pfnGetSourceAttributes                    = validation_layer::zeKernelGetSourceAttributes;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnGetProperties                            = pDdiTable->pfnGetProperties;
+        pDdiTable->pfnGetProperties                          = validation_layer::zeKernelGetProperties;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnGetName                                  = pDdiTable->pfnGetName;
+        pDdiTable->pfnGetName                                = validation_layer::zeKernelGetName;
+    }
     return result;
 }
 
@@ -9087,18 +10597,23 @@ zeGetKernelExpProcAddrTable(
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if (ZE_MAJOR_VERSION(validation_layer::context.version) != ZE_MAJOR_VERSION(version) ||
-        ZE_MINOR_VERSION(validation_layer::context.version) > ZE_MINOR_VERSION(version))
+    if (validation_layer::context.version < version)
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
-    dditable.pfnSetGlobalOffsetExp                       = pDdiTable->pfnSetGlobalOffsetExp;
-    pDdiTable->pfnSetGlobalOffsetExp                     = validation_layer::zeKernelSetGlobalOffsetExp;
-
-    dditable.pfnSchedulingHintExp                        = pDdiTable->pfnSchedulingHintExp;
-    pDdiTable->pfnSchedulingHintExp                      = validation_layer::zeKernelSchedulingHintExp;
-
+    if (version >= ZE_API_VERSION_1_1) {
+        dditable.pfnSetGlobalOffsetExp                       = pDdiTable->pfnSetGlobalOffsetExp;
+        pDdiTable->pfnSetGlobalOffsetExp                     = validation_layer::zeKernelSetGlobalOffsetExp;
+    }
+    if (version >= ZE_API_VERSION_1_11) {
+        dditable.pfnGetBinaryExp                             = pDdiTable->pfnGetBinaryExp;
+        pDdiTable->pfnGetBinaryExp                           = validation_layer::zeKernelGetBinaryExp;
+    }
+    if (version >= ZE_API_VERSION_1_2) {
+        dditable.pfnSchedulingHintExp                        = pDdiTable->pfnSchedulingHintExp;
+        pDdiTable->pfnSchedulingHintExp                      = validation_layer::zeKernelSchedulingHintExp;
+    }
     return result;
 }
 
@@ -9121,48 +10636,59 @@ zeGetMemProcAddrTable(
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if (ZE_MAJOR_VERSION(validation_layer::context.version) != ZE_MAJOR_VERSION(version) ||
-        ZE_MINOR_VERSION(validation_layer::context.version) > ZE_MINOR_VERSION(version))
+    if (validation_layer::context.version < version)
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
-    dditable.pfnAllocShared                              = pDdiTable->pfnAllocShared;
-    pDdiTable->pfnAllocShared                            = validation_layer::zeMemAllocShared;
-
-    dditable.pfnAllocDevice                              = pDdiTable->pfnAllocDevice;
-    pDdiTable->pfnAllocDevice                            = validation_layer::zeMemAllocDevice;
-
-    dditable.pfnAllocHost                                = pDdiTable->pfnAllocHost;
-    pDdiTable->pfnAllocHost                              = validation_layer::zeMemAllocHost;
-
-    dditable.pfnFree                                     = pDdiTable->pfnFree;
-    pDdiTable->pfnFree                                   = validation_layer::zeMemFree;
-
-    dditable.pfnGetAllocProperties                       = pDdiTable->pfnGetAllocProperties;
-    pDdiTable->pfnGetAllocProperties                     = validation_layer::zeMemGetAllocProperties;
-
-    dditable.pfnGetAddressRange                          = pDdiTable->pfnGetAddressRange;
-    pDdiTable->pfnGetAddressRange                        = validation_layer::zeMemGetAddressRange;
-
-    dditable.pfnGetIpcHandle                             = pDdiTable->pfnGetIpcHandle;
-    pDdiTable->pfnGetIpcHandle                           = validation_layer::zeMemGetIpcHandle;
-
-    dditable.pfnOpenIpcHandle                            = pDdiTable->pfnOpenIpcHandle;
-    pDdiTable->pfnOpenIpcHandle                          = validation_layer::zeMemOpenIpcHandle;
-
-    dditable.pfnCloseIpcHandle                           = pDdiTable->pfnCloseIpcHandle;
-    pDdiTable->pfnCloseIpcHandle                         = validation_layer::zeMemCloseIpcHandle;
-
-    dditable.pfnFreeExt                                  = pDdiTable->pfnFreeExt;
-    pDdiTable->pfnFreeExt                                = validation_layer::zeMemFreeExt;
-
-    dditable.pfnPutIpcHandle                             = pDdiTable->pfnPutIpcHandle;
-    pDdiTable->pfnPutIpcHandle                           = validation_layer::zeMemPutIpcHandle;
-
-    dditable.pfnGetPitchFor2dImage                       = pDdiTable->pfnGetPitchFor2dImage;
-    pDdiTable->pfnGetPitchFor2dImage                     = validation_layer::zeMemGetPitchFor2dImage;
-
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnAllocShared                              = pDdiTable->pfnAllocShared;
+        pDdiTable->pfnAllocShared                            = validation_layer::zeMemAllocShared;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnAllocDevice                              = pDdiTable->pfnAllocDevice;
+        pDdiTable->pfnAllocDevice                            = validation_layer::zeMemAllocDevice;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnAllocHost                                = pDdiTable->pfnAllocHost;
+        pDdiTable->pfnAllocHost                              = validation_layer::zeMemAllocHost;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnFree                                     = pDdiTable->pfnFree;
+        pDdiTable->pfnFree                                   = validation_layer::zeMemFree;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnGetAllocProperties                       = pDdiTable->pfnGetAllocProperties;
+        pDdiTable->pfnGetAllocProperties                     = validation_layer::zeMemGetAllocProperties;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnGetAddressRange                          = pDdiTable->pfnGetAddressRange;
+        pDdiTable->pfnGetAddressRange                        = validation_layer::zeMemGetAddressRange;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnGetIpcHandle                             = pDdiTable->pfnGetIpcHandle;
+        pDdiTable->pfnGetIpcHandle                           = validation_layer::zeMemGetIpcHandle;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnOpenIpcHandle                            = pDdiTable->pfnOpenIpcHandle;
+        pDdiTable->pfnOpenIpcHandle                          = validation_layer::zeMemOpenIpcHandle;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnCloseIpcHandle                           = pDdiTable->pfnCloseIpcHandle;
+        pDdiTable->pfnCloseIpcHandle                         = validation_layer::zeMemCloseIpcHandle;
+    }
+    if (version >= ZE_API_VERSION_1_3) {
+        dditable.pfnFreeExt                                  = pDdiTable->pfnFreeExt;
+        pDdiTable->pfnFreeExt                                = validation_layer::zeMemFreeExt;
+    }
+    if (version >= ZE_API_VERSION_1_6) {
+        dditable.pfnPutIpcHandle                             = pDdiTable->pfnPutIpcHandle;
+        pDdiTable->pfnPutIpcHandle                           = validation_layer::zeMemPutIpcHandle;
+    }
+    if (version >= ZE_API_VERSION_1_9) {
+        dditable.pfnGetPitchFor2dImage                       = pDdiTable->pfnGetPitchFor2dImage;
+        pDdiTable->pfnGetPitchFor2dImage                     = validation_layer::zeMemGetPitchFor2dImage;
+    }
     return result;
 }
 
@@ -9185,24 +10711,27 @@ zeGetMemExpProcAddrTable(
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if (ZE_MAJOR_VERSION(validation_layer::context.version) != ZE_MAJOR_VERSION(version) ||
-        ZE_MINOR_VERSION(validation_layer::context.version) > ZE_MINOR_VERSION(version))
+    if (validation_layer::context.version < version)
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
-    dditable.pfnGetIpcHandleFromFileDescriptorExp        = pDdiTable->pfnGetIpcHandleFromFileDescriptorExp;
-    pDdiTable->pfnGetIpcHandleFromFileDescriptorExp      = validation_layer::zeMemGetIpcHandleFromFileDescriptorExp;
-
-    dditable.pfnGetFileDescriptorFromIpcHandleExp        = pDdiTable->pfnGetFileDescriptorFromIpcHandleExp;
-    pDdiTable->pfnGetFileDescriptorFromIpcHandleExp      = validation_layer::zeMemGetFileDescriptorFromIpcHandleExp;
-
-    dditable.pfnSetAtomicAccessAttributeExp              = pDdiTable->pfnSetAtomicAccessAttributeExp;
-    pDdiTable->pfnSetAtomicAccessAttributeExp            = validation_layer::zeMemSetAtomicAccessAttributeExp;
-
-    dditable.pfnGetAtomicAccessAttributeExp              = pDdiTable->pfnGetAtomicAccessAttributeExp;
-    pDdiTable->pfnGetAtomicAccessAttributeExp            = validation_layer::zeMemGetAtomicAccessAttributeExp;
-
+    if (version >= ZE_API_VERSION_1_6) {
+        dditable.pfnGetIpcHandleFromFileDescriptorExp        = pDdiTable->pfnGetIpcHandleFromFileDescriptorExp;
+        pDdiTable->pfnGetIpcHandleFromFileDescriptorExp      = validation_layer::zeMemGetIpcHandleFromFileDescriptorExp;
+    }
+    if (version >= ZE_API_VERSION_1_6) {
+        dditable.pfnGetFileDescriptorFromIpcHandleExp        = pDdiTable->pfnGetFileDescriptorFromIpcHandleExp;
+        pDdiTable->pfnGetFileDescriptorFromIpcHandleExp      = validation_layer::zeMemGetFileDescriptorFromIpcHandleExp;
+    }
+    if (version >= ZE_API_VERSION_1_7) {
+        dditable.pfnSetAtomicAccessAttributeExp              = pDdiTable->pfnSetAtomicAccessAttributeExp;
+        pDdiTable->pfnSetAtomicAccessAttributeExp            = validation_layer::zeMemSetAtomicAccessAttributeExp;
+    }
+    if (version >= ZE_API_VERSION_1_7) {
+        dditable.pfnGetAtomicAccessAttributeExp              = pDdiTable->pfnGetAtomicAccessAttributeExp;
+        pDdiTable->pfnGetAtomicAccessAttributeExp            = validation_layer::zeMemGetAtomicAccessAttributeExp;
+    }
     return result;
 }
 
@@ -9225,39 +10754,47 @@ zeGetModuleProcAddrTable(
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if (ZE_MAJOR_VERSION(validation_layer::context.version) != ZE_MAJOR_VERSION(version) ||
-        ZE_MINOR_VERSION(validation_layer::context.version) > ZE_MINOR_VERSION(version))
+    if (validation_layer::context.version < version)
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
-    dditable.pfnCreate                                   = pDdiTable->pfnCreate;
-    pDdiTable->pfnCreate                                 = validation_layer::zeModuleCreate;
-
-    dditable.pfnDestroy                                  = pDdiTable->pfnDestroy;
-    pDdiTable->pfnDestroy                                = validation_layer::zeModuleDestroy;
-
-    dditable.pfnDynamicLink                              = pDdiTable->pfnDynamicLink;
-    pDdiTable->pfnDynamicLink                            = validation_layer::zeModuleDynamicLink;
-
-    dditable.pfnGetNativeBinary                          = pDdiTable->pfnGetNativeBinary;
-    pDdiTable->pfnGetNativeBinary                        = validation_layer::zeModuleGetNativeBinary;
-
-    dditable.pfnGetGlobalPointer                         = pDdiTable->pfnGetGlobalPointer;
-    pDdiTable->pfnGetGlobalPointer                       = validation_layer::zeModuleGetGlobalPointer;
-
-    dditable.pfnGetKernelNames                           = pDdiTable->pfnGetKernelNames;
-    pDdiTable->pfnGetKernelNames                         = validation_layer::zeModuleGetKernelNames;
-
-    dditable.pfnGetProperties                            = pDdiTable->pfnGetProperties;
-    pDdiTable->pfnGetProperties                          = validation_layer::zeModuleGetProperties;
-
-    dditable.pfnGetFunctionPointer                       = pDdiTable->pfnGetFunctionPointer;
-    pDdiTable->pfnGetFunctionPointer                     = validation_layer::zeModuleGetFunctionPointer;
-
-    dditable.pfnInspectLinkageExt                        = pDdiTable->pfnInspectLinkageExt;
-    pDdiTable->pfnInspectLinkageExt                      = validation_layer::zeModuleInspectLinkageExt;
-
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnCreate                                   = pDdiTable->pfnCreate;
+        pDdiTable->pfnCreate                                 = validation_layer::zeModuleCreate;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnDestroy                                  = pDdiTable->pfnDestroy;
+        pDdiTable->pfnDestroy                                = validation_layer::zeModuleDestroy;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnDynamicLink                              = pDdiTable->pfnDynamicLink;
+        pDdiTable->pfnDynamicLink                            = validation_layer::zeModuleDynamicLink;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnGetNativeBinary                          = pDdiTable->pfnGetNativeBinary;
+        pDdiTable->pfnGetNativeBinary                        = validation_layer::zeModuleGetNativeBinary;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnGetGlobalPointer                         = pDdiTable->pfnGetGlobalPointer;
+        pDdiTable->pfnGetGlobalPointer                       = validation_layer::zeModuleGetGlobalPointer;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnGetKernelNames                           = pDdiTable->pfnGetKernelNames;
+        pDdiTable->pfnGetKernelNames                         = validation_layer::zeModuleGetKernelNames;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnGetProperties                            = pDdiTable->pfnGetProperties;
+        pDdiTable->pfnGetProperties                          = validation_layer::zeModuleGetProperties;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnGetFunctionPointer                       = pDdiTable->pfnGetFunctionPointer;
+        pDdiTable->pfnGetFunctionPointer                     = validation_layer::zeModuleGetFunctionPointer;
+    }
+    if (version >= ZE_API_VERSION_1_3) {
+        dditable.pfnInspectLinkageExt                        = pDdiTable->pfnInspectLinkageExt;
+        pDdiTable->pfnInspectLinkageExt                      = validation_layer::zeModuleInspectLinkageExt;
+    }
     return result;
 }
 
@@ -9280,18 +10817,19 @@ zeGetModuleBuildLogProcAddrTable(
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if (ZE_MAJOR_VERSION(validation_layer::context.version) != ZE_MAJOR_VERSION(version) ||
-        ZE_MINOR_VERSION(validation_layer::context.version) > ZE_MINOR_VERSION(version))
+    if (validation_layer::context.version < version)
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
-    dditable.pfnDestroy                                  = pDdiTable->pfnDestroy;
-    pDdiTable->pfnDestroy                                = validation_layer::zeModuleBuildLogDestroy;
-
-    dditable.pfnGetString                                = pDdiTable->pfnGetString;
-    pDdiTable->pfnGetString                              = validation_layer::zeModuleBuildLogGetString;
-
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnDestroy                                  = pDdiTable->pfnDestroy;
+        pDdiTable->pfnDestroy                                = validation_layer::zeModuleBuildLogDestroy;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnGetString                                = pDdiTable->pfnGetString;
+        pDdiTable->pfnGetString                              = validation_layer::zeModuleBuildLogGetString;
+    }
     return result;
 }
 
@@ -9314,18 +10852,19 @@ zeGetPhysicalMemProcAddrTable(
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if (ZE_MAJOR_VERSION(validation_layer::context.version) != ZE_MAJOR_VERSION(version) ||
-        ZE_MINOR_VERSION(validation_layer::context.version) > ZE_MINOR_VERSION(version))
+    if (validation_layer::context.version < version)
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
-    dditable.pfnCreate                                   = pDdiTable->pfnCreate;
-    pDdiTable->pfnCreate                                 = validation_layer::zePhysicalMemCreate;
-
-    dditable.pfnDestroy                                  = pDdiTable->pfnDestroy;
-    pDdiTable->pfnDestroy                                = validation_layer::zePhysicalMemDestroy;
-
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnCreate                                   = pDdiTable->pfnCreate;
+        pDdiTable->pfnCreate                                 = validation_layer::zePhysicalMemCreate;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnDestroy                                  = pDdiTable->pfnDestroy;
+        pDdiTable->pfnDestroy                                = validation_layer::zePhysicalMemDestroy;
+    }
     return result;
 }
 
@@ -9348,18 +10887,19 @@ zeGetSamplerProcAddrTable(
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if (ZE_MAJOR_VERSION(validation_layer::context.version) != ZE_MAJOR_VERSION(version) ||
-        ZE_MINOR_VERSION(validation_layer::context.version) > ZE_MINOR_VERSION(version))
+    if (validation_layer::context.version < version)
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
-    dditable.pfnCreate                                   = pDdiTable->pfnCreate;
-    pDdiTable->pfnCreate                                 = validation_layer::zeSamplerCreate;
-
-    dditable.pfnDestroy                                  = pDdiTable->pfnDestroy;
-    pDdiTable->pfnDestroy                                = validation_layer::zeSamplerDestroy;
-
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnCreate                                   = pDdiTable->pfnCreate;
+        pDdiTable->pfnCreate                                 = validation_layer::zeSamplerCreate;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnDestroy                                  = pDdiTable->pfnDestroy;
+        pDdiTable->pfnDestroy                                = validation_layer::zeSamplerDestroy;
+    }
     return result;
 }
 
@@ -9382,33 +10922,39 @@ zeGetVirtualMemProcAddrTable(
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if (ZE_MAJOR_VERSION(validation_layer::context.version) != ZE_MAJOR_VERSION(version) ||
-        ZE_MINOR_VERSION(validation_layer::context.version) > ZE_MINOR_VERSION(version))
+    if (validation_layer::context.version < version)
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
-    dditable.pfnReserve                                  = pDdiTable->pfnReserve;
-    pDdiTable->pfnReserve                                = validation_layer::zeVirtualMemReserve;
-
-    dditable.pfnFree                                     = pDdiTable->pfnFree;
-    pDdiTable->pfnFree                                   = validation_layer::zeVirtualMemFree;
-
-    dditable.pfnQueryPageSize                            = pDdiTable->pfnQueryPageSize;
-    pDdiTable->pfnQueryPageSize                          = validation_layer::zeVirtualMemQueryPageSize;
-
-    dditable.pfnMap                                      = pDdiTable->pfnMap;
-    pDdiTable->pfnMap                                    = validation_layer::zeVirtualMemMap;
-
-    dditable.pfnUnmap                                    = pDdiTable->pfnUnmap;
-    pDdiTable->pfnUnmap                                  = validation_layer::zeVirtualMemUnmap;
-
-    dditable.pfnSetAccessAttribute                       = pDdiTable->pfnSetAccessAttribute;
-    pDdiTable->pfnSetAccessAttribute                     = validation_layer::zeVirtualMemSetAccessAttribute;
-
-    dditable.pfnGetAccessAttribute                       = pDdiTable->pfnGetAccessAttribute;
-    pDdiTable->pfnGetAccessAttribute                     = validation_layer::zeVirtualMemGetAccessAttribute;
-
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnReserve                                  = pDdiTable->pfnReserve;
+        pDdiTable->pfnReserve                                = validation_layer::zeVirtualMemReserve;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnFree                                     = pDdiTable->pfnFree;
+        pDdiTable->pfnFree                                   = validation_layer::zeVirtualMemFree;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnQueryPageSize                            = pDdiTable->pfnQueryPageSize;
+        pDdiTable->pfnQueryPageSize                          = validation_layer::zeVirtualMemQueryPageSize;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnMap                                      = pDdiTable->pfnMap;
+        pDdiTable->pfnMap                                    = validation_layer::zeVirtualMemMap;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnUnmap                                    = pDdiTable->pfnUnmap;
+        pDdiTable->pfnUnmap                                  = validation_layer::zeVirtualMemUnmap;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnSetAccessAttribute                       = pDdiTable->pfnSetAccessAttribute;
+        pDdiTable->pfnSetAccessAttribute                     = validation_layer::zeVirtualMemSetAccessAttribute;
+    }
+    if (version >= ZE_API_VERSION_1_0) {
+        dditable.pfnGetAccessAttribute                       = pDdiTable->pfnGetAccessAttribute;
+        pDdiTable->pfnGetAccessAttribute                     = validation_layer::zeVirtualMemGetAccessAttribute;
+    }
     return result;
 }
 
@@ -9431,21 +10977,23 @@ zeGetFabricEdgeExpProcAddrTable(
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if (ZE_MAJOR_VERSION(validation_layer::context.version) != ZE_MAJOR_VERSION(version) ||
-        ZE_MINOR_VERSION(validation_layer::context.version) > ZE_MINOR_VERSION(version))
+    if (validation_layer::context.version < version)
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
-    dditable.pfnGetExp                                   = pDdiTable->pfnGetExp;
-    pDdiTable->pfnGetExp                                 = validation_layer::zeFabricEdgeGetExp;
-
-    dditable.pfnGetVerticesExp                           = pDdiTable->pfnGetVerticesExp;
-    pDdiTable->pfnGetVerticesExp                         = validation_layer::zeFabricEdgeGetVerticesExp;
-
-    dditable.pfnGetPropertiesExp                         = pDdiTable->pfnGetPropertiesExp;
-    pDdiTable->pfnGetPropertiesExp                       = validation_layer::zeFabricEdgeGetPropertiesExp;
-
+    if (version >= ZE_API_VERSION_1_4) {
+        dditable.pfnGetExp                                   = pDdiTable->pfnGetExp;
+        pDdiTable->pfnGetExp                                 = validation_layer::zeFabricEdgeGetExp;
+    }
+    if (version >= ZE_API_VERSION_1_4) {
+        dditable.pfnGetVerticesExp                           = pDdiTable->pfnGetVerticesExp;
+        pDdiTable->pfnGetVerticesExp                         = validation_layer::zeFabricEdgeGetVerticesExp;
+    }
+    if (version >= ZE_API_VERSION_1_4) {
+        dditable.pfnGetPropertiesExp                         = pDdiTable->pfnGetPropertiesExp;
+        pDdiTable->pfnGetPropertiesExp                       = validation_layer::zeFabricEdgeGetPropertiesExp;
+    }
     return result;
 }
 
@@ -9468,24 +11016,27 @@ zeGetFabricVertexExpProcAddrTable(
     if( nullptr == pDdiTable )
         return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if (ZE_MAJOR_VERSION(validation_layer::context.version) != ZE_MAJOR_VERSION(version) ||
-        ZE_MINOR_VERSION(validation_layer::context.version) > ZE_MINOR_VERSION(version))
+    if (validation_layer::context.version < version)
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
 
-    dditable.pfnGetExp                                   = pDdiTable->pfnGetExp;
-    pDdiTable->pfnGetExp                                 = validation_layer::zeFabricVertexGetExp;
-
-    dditable.pfnGetSubVerticesExp                        = pDdiTable->pfnGetSubVerticesExp;
-    pDdiTable->pfnGetSubVerticesExp                      = validation_layer::zeFabricVertexGetSubVerticesExp;
-
-    dditable.pfnGetPropertiesExp                         = pDdiTable->pfnGetPropertiesExp;
-    pDdiTable->pfnGetPropertiesExp                       = validation_layer::zeFabricVertexGetPropertiesExp;
-
-    dditable.pfnGetDeviceExp                             = pDdiTable->pfnGetDeviceExp;
-    pDdiTable->pfnGetDeviceExp                           = validation_layer::zeFabricVertexGetDeviceExp;
-
+    if (version >= ZE_API_VERSION_1_4) {
+        dditable.pfnGetExp                                   = pDdiTable->pfnGetExp;
+        pDdiTable->pfnGetExp                                 = validation_layer::zeFabricVertexGetExp;
+    }
+    if (version >= ZE_API_VERSION_1_4) {
+        dditable.pfnGetSubVerticesExp                        = pDdiTable->pfnGetSubVerticesExp;
+        pDdiTable->pfnGetSubVerticesExp                      = validation_layer::zeFabricVertexGetSubVerticesExp;
+    }
+    if (version >= ZE_API_VERSION_1_4) {
+        dditable.pfnGetPropertiesExp                         = pDdiTable->pfnGetPropertiesExp;
+        pDdiTable->pfnGetPropertiesExp                       = validation_layer::zeFabricVertexGetPropertiesExp;
+    }
+    if (version >= ZE_API_VERSION_1_4) {
+        dditable.pfnGetDeviceExp                             = pDdiTable->pfnGetDeviceExp;
+        pDdiTable->pfnGetDeviceExp                           = validation_layer::zeFabricVertexGetDeviceExp;
+    }
     return result;
 }
 

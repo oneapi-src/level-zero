@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (C) 2020-2021 Intel Corporation
+ * Copyright (C) 2020-2025 Intel Corporation
  *
  * SPDX-License-Identifier: MIT
  *
@@ -33,9 +33,9 @@ zeLoaderInit()
 ///     - ::ZE_RESULT_SUCCESS
 ///     - ::ZE_RESULT_ERROR_UNINITIALIZED
 ZE_DLLEXPORT ze_result_t ZE_APICALL
-zelLoaderDriverCheck(ze_init_flags_t flags, ze_global_dditable_t *globalInitStored, zes_global_dditable_t *sysmanGlobalInitStored, bool *requireDdiReinit, bool sysmanOnly)
+zelLoaderDriverCheck(ze_init_flags_t flags, ze_init_driver_type_desc_t* desc, ze_global_dditable_t *globalInitStored, zes_global_dditable_t *sysmanGlobalInitStored, bool *requireDdiReinit, bool sysmanOnly)
 {
-    return loader::context->check_drivers(flags, globalInitStored, sysmanGlobalInitStored, requireDdiReinit, sysmanOnly);
+    return loader::context->check_drivers(flags, desc, globalInitStored, sysmanGlobalInitStored, requireDdiReinit, sysmanOnly);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -47,6 +47,16 @@ ZE_DLLEXPORT HMODULE ZE_APICALL
 zeLoaderGetTracingHandle()
 {
     return loader::context->tracingLayer;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Get pointer to Loader Context
+///
+/// @returns
+///     - ::Pointer to the Loader's Context
+ZE_DLLEXPORT loader::context_t *ZE_APICALL
+zelLoaderGetContext() {
+    return loader::context;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -77,62 +87,186 @@ zelLoaderGetVersionsInternal(
 ZE_DLLEXPORT ze_result_t ZE_APICALL
 zelLoaderTranslateHandleInternal(
    zel_handle_type_t handleType,
-   void *handleIn,                       
+   void *handleIn,
    void **handleOut)
 {
+    if (!handleIn || !handleOut) {
+        return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+    }
 
     if(!loader::context->intercept_enabled) {
         *handleOut = handleIn;
         return ZE_RESULT_SUCCESS;
     }
 
+    *handleOut = handleIn;
     switch(handleType){
-        case ZEL_HANDLE_DRIVER: 
-            *handleOut = reinterpret_cast<loader::ze_driver_object_t*>( handleIn )->handle;
+        case ZEL_HANDLE_DRIVER:
+        {
+            // Determine if legacy loader intercept is enabled 
+	    // i.e., loader object exists for that handle by checking two conditions:
+            // 1. DDI Ext is disabled in loader by default OR
+            // 2. The input handle's function pointer matches the loader's dispatch table pointer,
+            //    indicating that the handle was created through the legacy loader intercept layer
+	    
+	    bool legacy_ldr_intercept_enabled = (!loader::context->driverDDIPathDefault) ||
+                                                (reinterpret_cast<ze_handle_t *>(handleIn)->pCore->Driver->pfnGet ==
+                                                 loader::loaderDispatch->pCore->Driver->pfnGet);
+            if (legacy_ldr_intercept_enabled && loader::context->ze_driver_factory.hasInstance(reinterpret_cast<loader::ze_driver_object_t *>(handleIn)->handle))
+            {
+                *handleOut = reinterpret_cast<loader::ze_driver_object_t *>(handleIn)->handle;
+            }
             break;
-        case ZEL_HANDLE_DEVICE: 
-            *handleOut = reinterpret_cast<loader::ze_device_object_t*>( handleIn )->handle;
+        }
+        case ZEL_HANDLE_DEVICE:
+        {
+            bool legacy_ldr_intercept_enabled = (!loader::context->driverDDIPathDefault) ||
+                                                (reinterpret_cast<ze_handle_t *>(handleIn)->pCore->Device->pfnGet ==
+                                                 loader::loaderDispatch->pCore->Device->pfnGet);
+            if (legacy_ldr_intercept_enabled && loader::context->ze_device_factory.hasInstance(reinterpret_cast<loader::ze_device_object_t *>(handleIn)->handle))
+            {
+                *handleOut = reinterpret_cast<loader::ze_device_object_t *>(handleIn)->handle;
+            }
             break;
-        case ZEL_HANDLE_CONTEXT: 
-            *handleOut = reinterpret_cast<loader::ze_context_object_t*>( handleIn )->handle;
-            break;            
-        case ZEL_HANDLE_COMMAND_QUEUE: 
-            *handleOut = reinterpret_cast<loader::ze_command_queue_object_t*>( handleIn )->handle;
+        }
+        case ZEL_HANDLE_CONTEXT:
+        {
+            bool legacy_ldr_intercept_enabled = (!loader::context->driverDDIPathDefault) ||
+                                                (reinterpret_cast<ze_handle_t *>(handleIn)->pCore->Context->pfnCreate ==
+                                                 loader::loaderDispatch->pCore->Context->pfnCreate);
+            if (legacy_ldr_intercept_enabled &&
+                loader::context->ze_context_factory.hasInstance(reinterpret_cast<loader::ze_context_object_t *>(handleIn)->handle))
+            {
+                *handleOut = reinterpret_cast<loader::ze_context_object_t *>(handleIn)->handle;
+            }
             break;
-        case ZEL_HANDLE_COMMAND_LIST: 
-            *handleOut = reinterpret_cast<loader::ze_command_list_object_t*>( handleIn )->handle;
+        }
+        case ZEL_HANDLE_COMMAND_QUEUE:
+        {
+            bool legacy_ldr_intercept_enabled = (!loader::context->driverDDIPathDefault) ||
+                                                (reinterpret_cast<ze_handle_t *>(handleIn)->pCore->CommandQueue->pfnCreate ==
+                                                 loader::loaderDispatch->pCore->CommandQueue->pfnCreate);
+            if (legacy_ldr_intercept_enabled && loader::context->ze_command_queue_factory.hasInstance(reinterpret_cast<loader::ze_command_queue_object_t *>(handleIn)->handle))
+            {
+                *handleOut = reinterpret_cast<loader::ze_command_queue_object_t *>(handleIn)->handle;
+            }
             break;
-        case ZEL_HANDLE_FENCE: 
-            *handleOut = reinterpret_cast<loader::ze_fence_object_t*>( handleIn )->handle;
+        }
+        case ZEL_HANDLE_COMMAND_LIST:
+        {
+            bool legacy_ldr_intercept_enabled = (!loader::context->driverDDIPathDefault) ||
+                                                (reinterpret_cast<ze_handle_t *>(handleIn)->pCore->CommandList->pfnCreate ==
+                                                 loader::loaderDispatch->pCore->CommandList->pfnCreate);
+            if (legacy_ldr_intercept_enabled && loader::context->ze_command_list_factory.hasInstance(reinterpret_cast<loader::ze_command_list_object_t *>(handleIn)->handle))
+            {
+                *handleOut = reinterpret_cast<loader::ze_command_list_object_t *>(handleIn)->handle;
+            }
             break;
-        case ZEL_HANDLE_EVENT_POOL: 
-            *handleOut = reinterpret_cast<loader::ze_event_pool_object_t*>( handleIn )->handle;
+        }
+        case ZEL_HANDLE_FENCE:
+        {
+            bool legacy_ldr_intercept_enabled = (!loader::context->driverDDIPathDefault) ||
+                                                (reinterpret_cast<ze_handle_t *>(handleIn)->pCore->Fence->pfnCreate ==
+                                                 loader::loaderDispatch->pCore->Fence->pfnCreate);
+            if (legacy_ldr_intercept_enabled && loader::context->ze_fence_factory.hasInstance(reinterpret_cast<loader::ze_fence_object_t *>(handleIn)->handle))
+            {
+                *handleOut = reinterpret_cast<loader::ze_fence_object_t *>(handleIn)->handle;
+            }
             break;
-        case ZEL_HANDLE_EVENT: 
-            *handleOut = reinterpret_cast<loader::ze_event_object_t*>( handleIn )->handle;
+        }
+        case ZEL_HANDLE_EVENT_POOL:
+        {
+            bool legacy_ldr_intercept_enabled = (!loader::context->driverDDIPathDefault) ||
+                                                (reinterpret_cast<ze_handle_t *>(handleIn)->pCore->EventPool->pfnCreate ==
+                                                 loader::loaderDispatch->pCore->EventPool->pfnCreate);
+            if (legacy_ldr_intercept_enabled && loader::context->ze_event_pool_factory.hasInstance(reinterpret_cast<loader::ze_event_pool_object_t *>(handleIn)->handle))
+            {
+                *handleOut = reinterpret_cast<loader::ze_event_pool_object_t *>(handleIn)->handle;
+            }
             break;
-        case ZEL_HANDLE_IMAGE: 
-            *handleOut = reinterpret_cast<loader::ze_image_object_t*>( handleIn )->handle;
+        }
+        case ZEL_HANDLE_EVENT:
+        {
+            bool legacy_ldr_intercept_enabled = (!loader::context->driverDDIPathDefault) ||
+                                                (reinterpret_cast<ze_handle_t *>(handleIn)->pCore->Event->pfnCreate ==
+                                                 loader::loaderDispatch->pCore->Event->pfnCreate);
+            if (legacy_ldr_intercept_enabled && loader::context->ze_event_factory.hasInstance(reinterpret_cast<loader::ze_event_object_t *>(handleIn)->handle))
+            {
+                *handleOut = reinterpret_cast<loader::ze_event_object_t *>(handleIn)->handle;
+            }
             break;
-        case ZEL_HANDLE_MODULE: 
-            *handleOut = reinterpret_cast<loader::ze_module_object_t*>( handleIn )->handle;
+        }
+        case ZEL_HANDLE_IMAGE:
+        {
+            bool legacy_ldr_intercept_enabled = (!loader::context->driverDDIPathDefault) ||
+                                                (reinterpret_cast<ze_handle_t *>(handleIn)->pCore->Image->pfnCreate ==
+                                                 loader::loaderDispatch->pCore->Image->pfnCreate);
+            if (legacy_ldr_intercept_enabled && loader::context->ze_image_factory.hasInstance(reinterpret_cast<loader::ze_image_object_t *>(handleIn)->handle))
+            {
+                *handleOut = reinterpret_cast<loader::ze_image_object_t *>(handleIn)->handle;
+            }
             break;
-        case ZEL_HANDLE_MODULE_BUILD_LOG: 
-            *handleOut = reinterpret_cast<loader::ze_module_build_log_object_t*>( handleIn )->handle;
+        }
+        case ZEL_HANDLE_MODULE:
+        {
+            bool legacy_ldr_intercept_enabled = (!loader::context->driverDDIPathDefault) ||
+                                                (reinterpret_cast<ze_handle_t *>(handleIn)->pCore->Module->pfnCreate ==
+                                                 loader::loaderDispatch->pCore->Module->pfnCreate);
+            if (legacy_ldr_intercept_enabled && loader::context->ze_module_factory.hasInstance(reinterpret_cast<loader::ze_module_object_t *>(handleIn)->handle))
+            {
+                *handleOut = reinterpret_cast<loader::ze_module_object_t *>(handleIn)->handle;
+            }
             break;
-        case ZEL_HANDLE_KERNEL: 
-            *handleOut = reinterpret_cast<loader::ze_kernel_object_t*>( handleIn )->handle;
+        }
+        case ZEL_HANDLE_MODULE_BUILD_LOG:
+        {
+            bool legacy_ldr_intercept_enabled = (!loader::context->driverDDIPathDefault) ||
+                                                (reinterpret_cast<ze_handle_t *>(handleIn)->pCore->ModuleBuildLog->pfnGetString ==
+                                                 loader::loaderDispatch->pCore->ModuleBuildLog->pfnGetString);
+            if (legacy_ldr_intercept_enabled && loader::context->ze_module_build_log_factory.hasInstance(reinterpret_cast<loader::ze_module_build_log_object_t *>(handleIn)->handle))
+            {
+                *handleOut = reinterpret_cast<loader::ze_module_build_log_object_t *>(handleIn)->handle;
+            }
             break;
-        case ZEL_HANDLE_SAMPLER: 
-            *handleOut = reinterpret_cast<loader::ze_sampler_object_t*>( handleIn )->handle;
+        }
+        case ZEL_HANDLE_KERNEL:
+        {
+            bool legacy_ldr_intercept_enabled = (!loader::context->driverDDIPathDefault) ||
+                                                (reinterpret_cast<ze_handle_t *>(handleIn)->pCore->Kernel->pfnCreate ==
+                                                 loader::loaderDispatch->pCore->Kernel->pfnCreate);
+            if (legacy_ldr_intercept_enabled && loader::context->ze_kernel_factory.hasInstance(reinterpret_cast<loader::ze_kernel_object_t *>(handleIn)->handle))
+            {
+                *handleOut = reinterpret_cast<loader::ze_kernel_object_t *>(handleIn)->handle;
+            }
             break;
-        case ZEL_HANDLE_PHYSICAL_MEM: 
-            *handleOut = reinterpret_cast<loader::ze_physical_mem_object_t*>( handleIn )->handle;
+        }
+        case ZEL_HANDLE_SAMPLER:
+        {
+            bool legacy_ldr_intercept_enabled = (!loader::context->driverDDIPathDefault) ||
+                                                (reinterpret_cast<ze_handle_t *>(handleIn)->pCore->Sampler->pfnCreate ==
+                                                 loader::loaderDispatch->pCore->Sampler->pfnCreate);
+            if (legacy_ldr_intercept_enabled && loader::context->ze_sampler_factory.hasInstance(reinterpret_cast<loader::ze_sampler_object_t *>(handleIn)->handle))
+            {
+                *handleOut = reinterpret_cast<loader::ze_sampler_object_t *>(handleIn)->handle;
+            }
             break;
+        }
+        case ZEL_HANDLE_PHYSICAL_MEM:
+        {
+            bool legacy_ldr_intercept_enabled = (!loader::context->driverDDIPathDefault) ||
+                                                (reinterpret_cast<ze_handle_t *>(handleIn)->pCore->PhysicalMem->pfnCreate ==
+                                                 loader::loaderDispatch->pCore->PhysicalMem->pfnCreate);
+            if (legacy_ldr_intercept_enabled && loader::context->ze_physical_mem_factory.hasInstance(reinterpret_cast<loader::ze_physical_mem_object_t *>(handleIn)->handle))
+            {
+                *handleOut = reinterpret_cast<loader::ze_physical_mem_object_t *>(handleIn)->handle;
+            }
+            break;
+        }
         default:
             return ZE_RESULT_ERROR_INVALID_ENUMERATION;
-    }
-        
+        }
+	    
+	    
     return ZE_RESULT_SUCCESS;
 }
 

@@ -36,19 +36,30 @@ inline void getLastErrorString(std::string &errorValue) {
 #  define GET_LIBRARY_ERROR(ERROR_STRING) getLastErrorString(ERROR_STRING)
 #  define FREE_DRIVER_LIBRARY(LIB)  FreeLibrary(LIB)
 #  define FREE_DRIVER_LIBRARY_FAILURE_CHECK(RESULT)  (RESULT) == 0 ? true : false
-#  define GET_FUNCTION_PTR(LIB, FUNC_NAME) GetProcAddress(LIB, FUNC_NAME)
+#  define GET_FUNCTION_PTR(LIB, FUNC_NAME) reinterpret_cast<void *>(GetProcAddress(LIB, FUNC_NAME))
 #  define string_copy_s strncpy_s
+#  define putenv_safe _putenv
+#  define strdup_safe _strdup
 #else
+#  include <link.h>
 #  include <dlfcn.h>
 #  define HMODULE void*
-#  define MAKE_LIBRARY_NAME(NAME, VERSION)    "lib" NAME ".so." VERSION
-#  define MAKE_LAYER_NAME(NAME)    "lib" NAME ".so." L0_VALIDATION_LAYER_SUPPORTED_VERSION
 #  define LOAD_DRIVER_LIBRARY(NAME) dlopen(NAME, RTLD_LAZY|RTLD_LOCAL)
 #  define GET_LIBRARY_ERROR(ERROR_STRING) ERROR_STRING.assign(dlerror())
 #  define FREE_DRIVER_LIBRARY(LIB)  dlclose(LIB)
 #  define FREE_DRIVER_LIBRARY_FAILURE_CHECK(RESULT)  (RESULT) != 0 ? true : false
 #  define GET_FUNCTION_PTR(LIB, FUNC_NAME) dlsym(LIB, FUNC_NAME)
 #  define string_copy_s strncpy
+#  define putenv_safe putenv
+#  define strdup_safe strdup
+#endif
+
+#if defined(ANDROID)
+#  define MAKE_LIBRARY_NAME(NAME, VERSION)    "lib" NAME ".so"
+#  define MAKE_LAYER_NAME(NAME)    "lib" NAME ".so"
+#elif !defined(WIN32)
+#  define MAKE_LIBRARY_NAME(NAME, VERSION)    "lib" NAME ".so." VERSION
+#  define MAKE_LAYER_NAME(NAME)    "lib" NAME ".so." L0_VALIDATION_LAYER_SUPPORTED_VERSION
 #endif
 
 inline std::string create_library_path(const char *name, const char *path){

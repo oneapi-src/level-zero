@@ -36,7 +36,7 @@ zelTracerCreate(
     zel_tracer_handle_t* phTracer               ///< [out] pointer to handle of tracer object created
     )
 {
-    if(ze_lib::context->inTeardown)
+    if(ze_lib::destruction)
         return ZE_RESULT_ERROR_UNINITIALIZED;
     auto pfnCreate = ze_lib::context->zelTracingDdiTable.Tracer.pfnCreate;
     if( nullptr == pfnCreate )
@@ -68,7 +68,7 @@ zelTracerDestroy(
     zel_tracer_handle_t hTracer                 ///< [in][release] handle of tracer object to destroy
     )
 {
-    if(ze_lib::context->inTeardown)
+    if(ze_lib::destruction)
         return ZE_RESULT_ERROR_UNINITIALIZED;
     auto pfnDestroy = ze_lib::context->zelTracingDdiTable.Tracer.pfnDestroy;
     if( nullptr == pfnDestroy )
@@ -103,7 +103,7 @@ zelTracerSetPrologues(
     zel_core_callbacks_t* pCoreCbs              ///< [in] pointer to table of 'core' callback function pointers
     )
 {
-    if(ze_lib::context->inTeardown)
+    if(ze_lib::destruction)
         return ZE_RESULT_ERROR_UNINITIALIZED;
     auto pfnSetPrologues = ze_lib::context->zelTracingDdiTable.Tracer.pfnSetPrologues;
     if( nullptr == pfnSetPrologues )
@@ -138,7 +138,7 @@ zelTracerSetEpilogues(
     zel_core_callbacks_t* pCoreCbs              ///< [in] pointer to table of 'core' callback function pointers
     )
 {
-    if(ze_lib::context->inTeardown)
+    if(ze_lib::destruction)
         return ZE_RESULT_ERROR_UNINITIALIZED;
     auto pfnSetEpilogues = ze_lib::context->zelTracingDdiTable.Tracer.pfnSetEpilogues;
     if( nullptr == pfnSetEpilogues )
@@ -166,7 +166,7 @@ zelTracerSetEnabled(
     ze_bool_t enable                            ///< [in] enable the tracer if true; disable if false
     )
 {
-    if(ze_lib::context->inTeardown)
+    if(ze_lib::destruction)
         return ZE_RESULT_ERROR_UNINITIALIZED;
     auto pfnSetEnabled = ze_lib::context->zelTracingDdiTable.Tracer.pfnSetEnabled;
     if( nullptr == pfnSetEnabled )

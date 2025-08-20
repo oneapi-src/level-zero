@@ -11,7 +11,7 @@ from templates import helper as th
  * ***THIS FILE IS GENERATED. ***
  * See valddi.cpp.mako for modifications
  *
- * Copyright (C) 2019-2023 Intel Corporation
+ * Copyright (C) 2019-2024 Intel Corporation
  *
  * SPDX-License-Identifier: MIT
  *
@@ -22,6 +22,13 @@ from templates import helper as th
 
 namespace validation_layer
 {
+    static ze_result_t logAndPropagateResult(const char* fname, ze_result_t result) {
+        if (result != ${X}_RESULT_SUCCESS) {
+            context.logger->log_trace("Error (" + loader::to_string(result) + ") in " + std::string(fname));
+        }
+        return result;
+    }
+
     %for obj in th.extract_objs(specs, r"function"):
     ///////////////////////////////////////////////////////////////////////////////
     /// @brief Intercept function for ${th.make_func_name(n, tags, obj)}
@@ -35,10 +42,12 @@ namespace validation_layer
         %endfor
         )
     {
+        context.logger->log_trace("${th.make_func_name(n, tags, obj)}(${", ".join(th.make_param_lines(n, tags, obj, format=["name", "local"]))})");
+
         auto ${th.make_pfn_name(n, tags, obj)} = context.${n}DdiTable.${th.get_table_name(n, tags, obj)}.${th.make_pfn_name(n, tags, obj)};
 
         if( nullptr == ${th.make_pfn_name(n, tags, obj)} )
-            return ${X}_RESULT_ERROR_UNSUPPORTED_FEATURE;
+            return logAndPropagateResult("${th.make_func_name(n, tags, obj)}", ${X}_RESULT_ERROR_UNSUPPORTED_FEATURE);
 
         auto numValHandlers = context.validationHandlers.size();
         for (size_t i = 0; i < numValHandlers; i++) {
@@ -47,7 +56,7 @@ namespace validation_layer
 ${line} \
 %endfor
 );
-            if(result!=${X}_RESULT_SUCCESS) return result;
+            if(result!=${X}_RESULT_SUCCESS) return logAndPropagateResult("${th.make_func_name(n, tags, obj)}", result);
         }
 
 
@@ -65,23 +74,23 @@ ${line} \
 ${line} \
 %endfor
 );
-            if(result!=${X}_RESULT_SUCCESS) return result;
+            if(result!=${X}_RESULT_SUCCESS) return logAndPropagateResult("${th.make_func_name(n, tags, obj)}", result);
         }
 
-        auto result = ${th.make_pfn_name(n, tags, obj)}( ${", ".join(th.make_param_lines(n, tags, obj, format=["name"]))} );
+        auto driver_result = ${th.make_pfn_name(n, tags, obj)}( ${", ".join(th.make_param_lines(n, tags, obj, format=["name"]))} );
 
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->${n}Validation->${th.make_func_name(n, tags, obj)}Epilogue( \
 % for line in th.make_param_lines(n, tags, obj, format=['name','delim']):
 ${line} \
 %endfor
-);
-            if(result!=${X}_RESULT_SUCCESS) return result;
+,driver_result);
+            if(result!=${X}_RESULT_SUCCESS) return logAndPropagateResult("${th.make_func_name(n, tags, obj)}", result);
         }
 
         %if generate_post_call:
 
-        if( result == ${X}_RESULT_SUCCESS && context.enableHandleLifetime ){
+        if( driver_result == ${X}_RESULT_SUCCESS && context.enableHandleLifetime ){
             ## Add 'Created' handles/objects to dependent maps
             <% lines = th.make_param_lines(n, tags, obj, format=['name','delim'])
             %>
@@ -111,7 +120,7 @@ ${line} \
             %endfor
         }
         %endif
-        return result;
+        return logAndPropagateResult("${th.make_func_name(n, tags, obj)}", driver_result);
     }
     %if 'condition' in obj:
     #endif // ${th.subt(n, tags, obj['condition'])}
@@ -145,25 +154,25 @@ ${tbl['export']['name']}(
     if( nullptr == pDdiTable )
         return ${X}_RESULT_ERROR_INVALID_NULL_POINTER;
 
-    if (ZE_MAJOR_VERSION(validation_layer::context.version) != ZE_MAJOR_VERSION(version) ||
-        ZE_MINOR_VERSION(validation_layer::context.version) > ZE_MINOR_VERSION(version))
+    if (validation_layer::context.version < version)
         return ${X}_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ${x}_result_t result = ${X}_RESULT_SUCCESS;
 
     %for obj in tbl['functions']:
+    if (version >= ${th.get_version(obj)}) {
     %if 'condition' in obj:
 #if ${th.subt(n, tags, obj['condition'])}
     %endif
-    dditable.${th.append_ws(th.make_pfn_name(n, tags, obj), 43)} = pDdiTable->${th.make_pfn_name(n, tags, obj)};
-    pDdiTable->${th.append_ws(th.make_pfn_name(n, tags, obj), 41)} = validation_layer::${th.make_func_name(n, tags, obj)};
+        dditable.${th.append_ws(th.make_pfn_name(n, tags, obj), 43)} = pDdiTable->${th.make_pfn_name(n, tags, obj)};
+        pDdiTable->${th.append_ws(th.make_pfn_name(n, tags, obj), 41)} = validation_layer::${th.make_func_name(n, tags, obj)};
     %if 'condition' in obj:
 #else
-    dditable.${th.append_ws(th.make_pfn_name(n, tags, obj), 43)} = nullptr;
-    pDdiTable->${th.append_ws(th.make_pfn_name(n, tags, obj), 41)} = nullptr;
+        dditable.${th.append_ws(th.make_pfn_name(n, tags, obj), 43)} = nullptr;
+        pDdiTable->${th.append_ws(th.make_pfn_name(n, tags, obj), 41)} = nullptr;
 #endif
     %endif
-
+    }
     %endfor
     return result;
 }

@@ -1,6 +1,6 @@
-includedir=@CMAKE_INSTALL_FULL_INCLUDEDIR@
-libdir=@CMAKE_INSTALL_FULL_LIBDIR@
-
+prefix=${pcfiledir}/@pkgconfig_prefix@
+includedir=${prefix}/@pkgconfig_include_dir@
+libdir=${prefix}/@pkgconfig_lib_dir@
 
 Name: Level Zero
 Description: Level Zero

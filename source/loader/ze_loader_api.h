@@ -33,7 +33,7 @@ zeLoaderInit();
 ///     - ::ZE_RESULT_SUCCESS
 ///     - ::ZE_RESULT_ERROR_UNINITIALIZED
 ZE_DLLEXPORT ze_result_t ZE_APICALL
-zelLoaderDriverCheck(ze_init_flags_t flags, ze_global_dditable_t *globalInitStored, zes_global_dditable_t *sysmanGlobalInitStored, bool *requireDdiReinit, bool sysmanOnly);
+zelLoaderDriverCheck(ze_init_flags_t flags, ze_init_driver_type_desc_t* desc, ze_global_dditable_t *globalInitStored, zes_global_dditable_t *sysmanGlobalInitStored, bool *requireDdiReinit, bool sysmanOnly);
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -50,6 +50,14 @@ zelLoaderTracingLayerInit(std::atomic<ze_dditable_t *> &zeDdiTable);
 ///     - ::handle to tracing library
 ZE_DLLEXPORT HMODULE ZE_APICALL
 zeLoaderGetTracingHandle();
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Get pointer to Loader Context
+///
+/// @returns
+///     - ::handle to tracing library
+ZE_DLLEXPORT loader::context_t *ZE_APICALL
+zelLoaderGetContext();
 
 
 ///////////////////////////////////////////////////////////////////////////////

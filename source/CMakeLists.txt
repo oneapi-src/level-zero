@@ -12,69 +12,77 @@ configure_file(
     @ONLY)
 
 include(GNUInstallDirs)
-add_library(${TARGET_LOADER_NAME}
-    SHARED
-    ""
-    ${CMAKE_CURRENT_BINARY_DIR}/ZeLoaderVersion.rc
-)
+if (BUILD_STATIC)
+    message(STATUS "Building loader as static library")
+    add_library(${TARGET_LOADER_NAME}
+        STATIC
+        ""
+        ${CMAKE_CURRENT_BINARY_DIR}/ZeLoaderVersion.rc
+    )
+    add_definitions(-DL0_STATIC_LOADER_BUILD="1")
+else()
+    message(STATUS "Building loader as dynamic library")
+    add_library(${TARGET_LOADER_NAME}
+        SHARED
+        ""
+        ${CMAKE_CURRENT_BINARY_DIR}/ZeLoaderVersion.rc
+    )
+endif()
+
+if(MSVC AND L0_DLL_INTEGRITY_CHECKS)
+    set_target_properties(ze_loader PROPERTIES LINK_FLAGS "${CMAKE_CXX_LINKER_WRAPPER_FLAG}/INTEGRITYCHECK")
+endif()
 
 add_subdirectory(lib)
-add_subdirectory(loader)
-add_subdirectory(layers)
+if (NOT BUILD_STATIC)
+    add_subdirectory(loader)
+    add_subdirectory(layers)
+endif()
 add_subdirectory(drivers)
 add_subdirectory(utils)
-target_include_directories(${TARGET_LOADER_NAME} PRIVATE utils)
 
 set_target_properties(${TARGET_LOADER_NAME} PROPERTIES
     VERSION "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH}"
     SOVERSION "${PROJECT_VERSION_MAJOR}"
 )
 
-target_link_libraries(${TARGET_LOADER_NAME}
-    ${CMAKE_DL_LIBS}
-)
+target_link_libraries(${TARGET_LOADER_NAME} PRIVATE ${CMAKE_DL_LIBS} level_zero_utils)
 
 if (UNIX)
     set(CMAKE_THREAD_PREFER_PTHREAD TRUE)
     set(THREADS_PREFER_PTHREAD_FLAG TRUE)
     find_package(Threads REQUIRED)
-    target_link_libraries (${TARGET_LOADER_NAME} Threads::Threads)
+    target_link_libraries (${TARGET_LOADER_NAME} PRIVATE Threads::Threads)
 endif()
 
 if(WIN32)
-    target_link_libraries (${TARGET_LOADER_NAME} cfgmgr32.lib)
+    target_link_libraries (${TARGET_LOADER_NAME} PRIVATE cfgmgr32.lib)
 endif()
 
-# Link against utility sublibrary
-target_link_libraries(${TARGET_LOADER_NAME} utils)
+set(SDK_COMPONENT_STRING "level-zero-devel")
+set(LIB_COMPONENT_STRING "level-zero")
+
+if(BUILD_INSTALLER)
+    set(SDK_COMPONENT_STRING "SDK")
+    set(LIB_COMPONENT_STRING "Loader")
+endif()
 
 install(TARGETS ze_loader
-    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
-    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-    LIBRARY
-        DESTINATION ${CMAKE_INSTALL_LIBDIR}
-        COMPONENT level-zero
-        NAMELINK_SKIP
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR} COMPONENT ${SDK_COMPONENT_STRING}
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR} COMPONENT ${LIB_COMPONENT_STRING}
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR} COMPONENT ${LIB_COMPONENT_STRING}
+    NAMELINK_COMPONENT ${SDK_COMPONENT_STRING}
 )
 
-install(TARGETS ze_loader
-    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
-    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-    LIBRARY
-        DESTINATION ${CMAKE_INSTALL_LIBDIR}
-        COMPONENT level-zero-devel
-        NAMELINK_ONLY
-)
+if(NOT BUILD_INSTALLER)
+file(RELATIVE_PATH pkgconfig_prefix "${CMAKE_INSTALL_FULL_LIBDIR}/pkgconfig" "${CMAKE_INSTALL_PREFIX}")
+file(RELATIVE_PATH pkgconfig_include_dir "${CMAKE_INSTALL_PREFIX}" "${CMAKE_INSTALL_FULL_INCLUDEDIR}")
+file(RELATIVE_PATH pkgconfig_lib_dir "${CMAKE_INSTALL_PREFIX}" "${CMAKE_INSTALL_FULL_LIBDIR}")
 
-if(UNIX)
-    configure_file(
-        ${CMAKE_CURRENT_SOURCE_DIR}/libze_loader.pc.in
-        ${CMAKE_CURRENT_BINARY_DIR}/libze_loader.pc
-        @ONLY)
-    install(FILES "${CMAKE_CURRENT_BINARY_DIR}/libze_loader.pc" DESTINATION "${CMAKE_INSTALL_FULL_LIBDIR}/pkgconfig" COMPONENT level-zero-devel)
-    configure_file(
-        ${CMAKE_CURRENT_SOURCE_DIR}/level-zero.pc.in
-        ${CMAKE_CURRENT_BINARY_DIR}/level-zero.pc
-        @ONLY)
-    install(FILES "${CMAKE_CURRENT_BINARY_DIR}/level-zero.pc" DESTINATION "${CMAKE_INSTALL_FULL_LIBDIR}/pkgconfig" COMPONENT level-zero-devel)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/libze_loader.pc.in ${CMAKE_CURRENT_BINARY_DIR}/libze_loader.pc @ONLY)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/level-zero.pc.in ${CMAKE_CURRENT_BINARY_DIR}/level-zero.pc @ONLY)
+
+install(FILES "${CMAKE_CURRENT_BINARY_DIR}/libze_loader.pc"
+              "${CMAKE_CURRENT_BINARY_DIR}/level-zero.pc"
+        DESTINATION "${CMAKE_INSTALL_FULL_LIBDIR}/pkgconfig" COMPONENT ${SDK_COMPONENT_STRING})
 endif()

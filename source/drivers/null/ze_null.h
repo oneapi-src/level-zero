@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (C) 2019-2021 Intel Corporation
+ * Copyright (C) 2019-2025 Intel Corporation
  *
  * SPDX-License-Identifier: MIT
  *
@@ -14,9 +14,24 @@
 #include "zet_ddi.h"
 #include "zes_ddi.h"
 #include "ze_util.h"
+#include "ze_ddi_common.h"
+
+#ifndef ZEL_NULL_DRIVER_ID
+#define ZEL_NULL_DRIVER_ID 1
+#endif
 
 namespace driver
 {
+    extern ze_dditable_driver_t pCore;
+    extern zet_dditable_driver_t pTools;
+    extern zes_dditable_driver_t pSysman;
+    struct __zedlllocal BaseNullHandle : ze_handle_t {
+        BaseNullHandle() {
+            pCore = &driver::pCore;
+            pTools = &driver::pTools;
+            pSysman = &driver::pSysman;
+        }
+    };
     ///////////////////////////////////////////////////////////////////////////////
     class __zedlllocal context_t
     {
@@ -26,14 +41,24 @@ namespace driver
         ze_dditable_t   zeDdiTable = {};
         zet_dditable_t  zetDdiTable = {};
         zes_dditable_t  zesDdiTable = {};
+        std::vector<BaseNullHandle*> globalBaseNullHandle;
+	bool ddiExtensionRequested = false;
+	std::vector<char *> env_vars{};
         context_t();
-        ~context_t() = default;
+        ~context_t();
 
         void* get( void )
         {
-            static uint64_t count = 0x80800000;
-            return reinterpret_cast<void*>( ++count );
+            static uint64_t count = 0x80800000 >> ZEL_NULL_DRIVER_ID;
+            if (ddiExtensionRequested) {
+                globalBaseNullHandle.push_back(new BaseNullHandle());
+                return reinterpret_cast<void*>(globalBaseNullHandle.back());
+            } else {
+                return reinterpret_cast<void*>( ++count );
+            }
         }
+
+	char *setenv_var_with_driver_id(const std::string &key, uint32_t driverId);
     };
 
     extern context_t context;

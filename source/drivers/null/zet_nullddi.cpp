@@ -8,6 +8,7 @@
  *
  */
 #include "ze_null.h"
+#include <cstring>
 
 namespace driver
 {
@@ -33,6 +34,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zetModuleGetDebugInfo", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -57,6 +61,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zetDeviceGetDebugProperties", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -84,6 +91,9 @@ namespace driver
             *phDebug = reinterpret_cast<zet_debug_session_handle_t>( context.get() );
 
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zetDebugAttach", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -108,6 +118,9 @@ namespace driver
             // generic implementation
 
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zetDebugDetach", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -139,6 +152,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zetDebugReadEvent", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -163,6 +179,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zetDebugAcknowledgeEvent", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -187,6 +206,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zetDebugInterrupt", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -211,6 +233,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zetDebugResume", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -238,6 +263,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zetDebugReadMemory", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -265,6 +293,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zetDebugWriteMemory", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -298,6 +329,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zetDebugGetRegisterSetProperties", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -332,6 +366,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zetDebugGetThreadRegisterSetProperties", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -347,8 +384,8 @@ namespace driver
                                                         ///< than the `count` member of ::zet_debug_regset_properties_t for the
                                                         ///< type
         uint32_t count,                                 ///< [in] the number of registers to read; start+count must be less than or
-                                                        ///< equal to the `count` member of ::zet_debug_register_group_properties_t
-                                                        ///< for the type
+                                                        ///< equal to the `count` member of ::zet_debug_regset_properties_t for the
+                                                        ///< type
         void* pRegisterValues                           ///< [in,out][optional][range(0, count)] buffer of register values
         )
     {
@@ -364,6 +401,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zetDebugReadRegisters", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -379,8 +419,8 @@ namespace driver
                                                         ///< than the `count` member of ::zet_debug_regset_properties_t for the
                                                         ///< type
         uint32_t count,                                 ///< [in] the number of registers to write; start+count must be less than
-                                                        ///< or equal to the `count` member of
-                                                        ///< ::zet_debug_register_group_properties_t for the type
+                                                        ///< or equal to the `count` member of ::zet_debug_regset_properties_t for
+                                                        ///< the type
         void* pRegisterValues                           ///< [in,out][optional][range(0, count)] buffer of register values
         )
     {
@@ -396,6 +436,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zetDebugWriteRegisters", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -431,6 +474,9 @@ namespace driver
                 phMetricGroups[ i ] = reinterpret_cast<zet_metric_group_handle_t>( context.get() );
 
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zetMetricGroupGet", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -455,6 +501,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zetMetricGroupGetProperties", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -490,6 +539,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zetMetricGroupCalculateMetricValues", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -524,6 +576,9 @@ namespace driver
                 phMetrics[ i ] = reinterpret_cast<zet_metric_handle_t>( context.get() );
 
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zetMetricGet", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -548,6 +603,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zetMetricGetProperties", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -578,6 +636,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zetContextActivateMetricGroups", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -608,6 +669,9 @@ namespace driver
             *phMetricStreamer = reinterpret_cast<zet_metric_streamer_handle_t>( context.get() );
 
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zetMetricStreamerOpen", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -633,6 +697,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zetCommandListAppendMetricStreamerMarker", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -657,6 +724,9 @@ namespace driver
             // generic implementation
 
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zetMetricStreamerClose", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -691,6 +761,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zetMetricStreamerReadData", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -720,6 +793,9 @@ namespace driver
             *phMetricQueryPool = reinterpret_cast<zet_metric_query_pool_handle_t>( context.get() );
 
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zetMetricQueryPoolCreate", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -744,6 +820,9 @@ namespace driver
             // generic implementation
 
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zetMetricQueryPoolDestroy", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -771,6 +850,9 @@ namespace driver
             *phMetricQuery = reinterpret_cast<zet_metric_query_handle_t>( context.get() );
 
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zetMetricQueryCreate", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -795,6 +877,9 @@ namespace driver
             // generic implementation
 
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zetMetricQueryDestroy", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -818,6 +903,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zetMetricQueryReset", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -842,6 +930,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zetCommandListAppendMetricQueryBegin", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -869,6 +960,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zetCommandListAppendMetricQueryEnd", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -892,6 +986,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zetCommandListAppendMetricMemoryBarrier", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -924,6 +1021,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zetMetricQueryGetData", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -948,6 +1048,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zetKernelGetProfileInfo", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -975,6 +1078,9 @@ namespace driver
             *phTracer = reinterpret_cast<zet_tracer_exp_handle_t>( context.get() );
 
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zetTracerExpCreate", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -999,6 +1105,9 @@ namespace driver
             // generic implementation
 
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zetTracerExpDestroy", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -1023,6 +1132,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zetTracerExpSetPrologues", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -1047,6 +1159,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zetTracerExpSetEpilogues", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -1071,6 +1186,446 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zetTracerExpSetEnabled", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zetDeviceGetConcurrentMetricGroupsExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zetDeviceGetConcurrentMetricGroupsExp(
+        zet_device_handle_t hDevice,                    ///< [in] handle of the device
+        uint32_t metricGroupCount,                      ///< [in] metric group count
+        zet_metric_group_handle_t * phMetricGroups,     ///< [in,out] metrics groups to be re-arranged to be sets of concurrent
+                                                        ///< groups
+        uint32_t * pMetricGroupsCountPerConcurrentGroup,///< [in,out][optional][*pConcurrentGroupCount] count of metric groups per
+                                                        ///< concurrent group.
+        uint32_t * pConcurrentGroupCount                ///< [out] number of concurrent groups.
+                                                        ///< The value of this parameter could be used to determine the number of
+                                                        ///< replays necessary.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnGetConcurrentMetricGroupsExp = context.zetDdiTable.DeviceExp.pfnGetConcurrentMetricGroupsExp;
+        if( nullptr != pfnGetConcurrentMetricGroupsExp )
+        {
+            result = pfnGetConcurrentMetricGroupsExp( hDevice, metricGroupCount, phMetricGroups, pMetricGroupsCountPerConcurrentGroup, pConcurrentGroupCount );
+        }
+        else
+        {
+            // generic implementation
+        }
+        
+        char *env_str = context.setenv_var_with_driver_id("zetDeviceGetConcurrentMetricGroupsExp", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zetMetricTracerCreateExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zetMetricTracerCreateExp(
+        zet_context_handle_t hContext,                  ///< [in] handle of the context object
+        zet_device_handle_t hDevice,                    ///< [in] handle of the device
+        uint32_t metricGroupCount,                      ///< [in] metric group count
+        zet_metric_group_handle_t* phMetricGroups,      ///< [in][range(0, metricGroupCount )] handles of the metric groups to
+                                                        ///< trace
+        zet_metric_tracer_exp_desc_t* desc,             ///< [in,out] metric tracer descriptor
+        ze_event_handle_t hNotificationEvent,           ///< [in][optional] event used for report availability notification. Note:
+                                                        ///< If buffer is not drained when the event it flagged, there is a risk of
+                                                        ///< HW event buffer being overrun
+        zet_metric_tracer_exp_handle_t* phMetricTracer  ///< [out] handle of the metric tracer
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnCreateExp = context.zetDdiTable.MetricTracerExp.pfnCreateExp;
+        if( nullptr != pfnCreateExp )
+        {
+            result = pfnCreateExp( hContext, hDevice, metricGroupCount, phMetricGroups, desc, hNotificationEvent, phMetricTracer );
+        }
+        else
+        {
+            // generic implementation
+            *phMetricTracer = reinterpret_cast<zet_metric_tracer_exp_handle_t>( context.get() );
+
+        }
+        
+        char *env_str = context.setenv_var_with_driver_id("zetMetricTracerCreateExp", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zetMetricTracerDestroyExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zetMetricTracerDestroyExp(
+        zet_metric_tracer_exp_handle_t hMetricTracer    ///< [in] handle of the metric tracer
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnDestroyExp = context.zetDdiTable.MetricTracerExp.pfnDestroyExp;
+        if( nullptr != pfnDestroyExp )
+        {
+            result = pfnDestroyExp( hMetricTracer );
+        }
+        else
+        {
+            // generic implementation
+        }
+        
+        char *env_str = context.setenv_var_with_driver_id("zetMetricTracerDestroyExp", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zetMetricTracerEnableExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zetMetricTracerEnableExp(
+        zet_metric_tracer_exp_handle_t hMetricTracer,   ///< [in] handle of the metric tracer
+        ze_bool_t synchronous                           ///< [in] request synchronous behavior. Confirmation of successful
+                                                        ///< asynchronous operation is done by calling ::zetMetricTracerReadDataExp()
+                                                        ///< and checking the return status: ::ZE_RESULT_NOT_READY will be returned
+                                                        ///< when the tracer is inactive. ::ZE_RESULT_SUCCESS will be returned 
+                                                        ///< when the tracer is active.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnEnableExp = context.zetDdiTable.MetricTracerExp.pfnEnableExp;
+        if( nullptr != pfnEnableExp )
+        {
+            result = pfnEnableExp( hMetricTracer, synchronous );
+        }
+        else
+        {
+            // generic implementation
+        }
+        
+        char *env_str = context.setenv_var_with_driver_id("zetMetricTracerEnableExp", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zetMetricTracerDisableExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zetMetricTracerDisableExp(
+        zet_metric_tracer_exp_handle_t hMetricTracer,   ///< [in] handle of the metric tracer
+        ze_bool_t synchronous                           ///< [in] request synchronous behavior. Confirmation of successful
+                                                        ///< asynchronous operation is done by calling ::zetMetricTracerReadDataExp()
+                                                        ///< and checking the return status: ::ZE_RESULT_SUCCESS will be returned
+                                                        ///< when the tracer is active or when it is inactive but still has data. 
+                                                        ///< ::ZE_RESULT_NOT_READY will be returned when the tracer is inactive and
+                                                        ///< has no more data to be retrieved.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnDisableExp = context.zetDdiTable.MetricTracerExp.pfnDisableExp;
+        if( nullptr != pfnDisableExp )
+        {
+            result = pfnDisableExp( hMetricTracer, synchronous );
+        }
+        else
+        {
+            // generic implementation
+        }
+        
+        char *env_str = context.setenv_var_with_driver_id("zetMetricTracerDisableExp", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zetMetricTracerReadDataExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zetMetricTracerReadDataExp(
+        zet_metric_tracer_exp_handle_t hMetricTracer,   ///< [in] handle of the metric tracer
+        size_t* pRawDataSize,                           ///< [in,out] pointer to size in bytes of raw data requested to read.
+                                                        ///< if size is zero, then the driver will update the value with the total
+                                                        ///< size in bytes needed for all data available.
+                                                        ///< if size is non-zero, then driver will only retrieve that amount of
+                                                        ///< data. 
+                                                        ///< if size is larger than size needed for all data, then driver will
+                                                        ///< update the value with the actual size needed.
+        uint8_t* pRawData                               ///< [in,out][optional][range(0, *pRawDataSize)] buffer containing tracer
+                                                        ///< data in raw format
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnReadDataExp = context.zetDdiTable.MetricTracerExp.pfnReadDataExp;
+        if( nullptr != pfnReadDataExp )
+        {
+            result = pfnReadDataExp( hMetricTracer, pRawDataSize, pRawData );
+        }
+        else
+        {
+            // generic implementation
+        }
+        
+        char *env_str = context.setenv_var_with_driver_id("zetMetricTracerReadDataExp", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zetMetricDecoderCreateExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zetMetricDecoderCreateExp(
+        zet_metric_tracer_exp_handle_t hMetricTracer,   ///< [in] handle of the metric tracer
+        zet_metric_decoder_exp_handle_t* phMetricDecoder///< [out] handle of the metric decoder object
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnCreateExp = context.zetDdiTable.MetricDecoderExp.pfnCreateExp;
+        if( nullptr != pfnCreateExp )
+        {
+            result = pfnCreateExp( hMetricTracer, phMetricDecoder );
+        }
+        else
+        {
+            // generic implementation
+            *phMetricDecoder = reinterpret_cast<zet_metric_decoder_exp_handle_t>( context.get() );
+
+        }
+        
+        char *env_str = context.setenv_var_with_driver_id("zetMetricDecoderCreateExp", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zetMetricDecoderDestroyExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zetMetricDecoderDestroyExp(
+        zet_metric_decoder_exp_handle_t phMetricDecoder ///< [in] handle of the metric decoder object
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnDestroyExp = context.zetDdiTable.MetricDecoderExp.pfnDestroyExp;
+        if( nullptr != pfnDestroyExp )
+        {
+            result = pfnDestroyExp( phMetricDecoder );
+        }
+        else
+        {
+            // generic implementation
+        }
+        
+        char *env_str = context.setenv_var_with_driver_id("zetMetricDecoderDestroyExp", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zetMetricDecoderGetDecodableMetricsExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zetMetricDecoderGetDecodableMetricsExp(
+        zet_metric_decoder_exp_handle_t hMetricDecoder, ///< [in] handle of the metric decoder object
+        uint32_t* pCount,                               ///< [in,out] pointer to number of decodable metric in the hMetricDecoder
+                                                        ///< handle. If count is zero, then the driver shall 
+                                                        ///< update the value with the total number of decodable metrics available
+                                                        ///< in the decoder. if count is greater than zero 
+                                                        ///< but less than the total number of decodable metrics available in the
+                                                        ///< decoder, then only that number will be returned. 
+                                                        ///< if count is greater than the number of decodable metrics available in
+                                                        ///< the decoder, then the driver shall update the 
+                                                        ///< value with the actual number of decodable metrics available. 
+        zet_metric_handle_t* phMetrics                  ///< [in,out] [range(0, *pCount)] array of handles of decodable metrics in
+                                                        ///< the hMetricDecoder handle provided.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnGetDecodableMetricsExp = context.zetDdiTable.MetricDecoderExp.pfnGetDecodableMetricsExp;
+        if( nullptr != pfnGetDecodableMetricsExp )
+        {
+            result = pfnGetDecodableMetricsExp( hMetricDecoder, pCount, phMetrics );
+        }
+        else
+        {
+            // generic implementation
+            for( size_t i = 0; ( nullptr != phMetrics ) && ( i < *pCount ); ++i )
+                phMetrics[ i ] = reinterpret_cast<zet_metric_handle_t>( context.get() );
+
+        }
+        
+        char *env_str = context.setenv_var_with_driver_id("zetMetricDecoderGetDecodableMetricsExp", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zetMetricTracerDecodeExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zetMetricTracerDecodeExp(
+        zet_metric_decoder_exp_handle_t phMetricDecoder,///< [in] handle of the metric decoder object
+        size_t* pRawDataSize,                           ///< [in,out] size in bytes of raw data buffer. If pMetricEntriesCount is
+                                                        ///< greater than zero but less than total number of 
+                                                        ///< decodable metrics available in the raw data buffer, then driver shall
+                                                        ///< update this value with actual number of raw 
+                                                        ///< data bytes processed.
+        uint8_t* pRawData,                              ///< [in,out][optional][range(0, *pRawDataSize)] buffer containing tracer
+                                                        ///< data in raw format
+        uint32_t metricsCount,                          ///< [in] number of decodable metrics in the tracer for which the
+                                                        ///< hMetricDecoder handle was provided. See 
+                                                        ///< ::zetMetricDecoderGetDecodableMetricsExp(). If metricCount is greater
+                                                        ///< than zero but less than the number decodable 
+                                                        ///< metrics available in the raw data buffer, then driver shall only
+                                                        ///< decode those.
+        zet_metric_handle_t* phMetrics,                 ///< [in] [range(0, metricsCount)] array of handles of decodable metrics in
+                                                        ///< the decoder for which the hMetricDecoder handle was 
+                                                        ///< provided. Metrics handles are expected to be for decodable metrics,
+                                                        ///< see ::zetMetricDecoderGetDecodableMetricsExp() 
+        uint32_t* pSetCount,                            ///< [in,out] pointer to number of metric sets. If count is zero, then the
+                                                        ///< driver shall update the value with the total
+                                                        ///< number of metric sets to be decoded. If count is greater than the
+                                                        ///< number available in the raw data buffer, then the
+                                                        ///< driver shall update the value with the actual number of metric sets to
+                                                        ///< be decoded. There is a 1:1 relation between
+                                                        ///< the number of sets and sub-devices returned in the decoded entries.
+        uint32_t* pMetricEntriesCountPerSet,            ///< [in,out][optional][range(0, *pSetCount)] buffer of metric entries
+                                                        ///< counts per metric set, one value per set.
+        uint32_t* pMetricEntriesCount,                  ///< [in,out]  pointer to the total number of metric entries decoded, for
+                                                        ///< all metric sets. If count is zero, then the
+                                                        ///< driver shall update the value with the total number of metric entries
+                                                        ///< to be decoded. If count is greater than zero
+                                                        ///< but less than the total number of metric entries available in the raw
+                                                        ///< data, then user provided number will be decoded.
+                                                        ///< If count is greater than the number available in the raw data buffer,
+                                                        ///< then the driver shall update the value with
+                                                        ///< the actual number of decodable metric entries decoded. If set to null,
+                                                        ///< then driver will only update the value of
+                                                        ///< pSetCount.
+        zet_metric_entry_exp_t* pMetricEntries          ///< [in,out][optional][range(0, *pMetricEntriesCount)] buffer containing
+                                                        ///< decoded metric entries
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnDecodeExp = context.zetDdiTable.MetricTracerExp.pfnDecodeExp;
+        if( nullptr != pfnDecodeExp )
+        {
+            result = pfnDecodeExp( phMetricDecoder, pRawDataSize, pRawData, metricsCount, phMetrics, pSetCount, pMetricEntriesCountPerSet, pMetricEntriesCount, pMetricEntries );
+        }
+        else
+        {
+            // generic implementation
+        }
+        
+        char *env_str = context.setenv_var_with_driver_id("zetMetricTracerDecodeExp", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zetCommandListAppendMarkerExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zetCommandListAppendMarkerExp(
+        zet_command_list_handle_t hCommandList,         ///< [in] handle to the command list
+        zet_metric_group_handle_t hMetricGroup,         ///< [in] handle to the marker metric group.
+                                                        ///< ::zet_metric_group_type_exp_flags_t could be used to check whether
+                                                        ///< marker is supoported by the metric group.
+        uint32_t value                                  ///< [in] marker value
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnAppendMarkerExp = context.zetDdiTable.CommandListExp.pfnAppendMarkerExp;
+        if( nullptr != pfnAppendMarkerExp )
+        {
+            result = pfnAppendMarkerExp( hCommandList, hMetricGroup, value );
+        }
+        else
+        {
+            // generic implementation
+        }
+        
+        char *env_str = context.setenv_var_with_driver_id("zetCommandListAppendMarkerExp", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zetDeviceEnableMetricsExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zetDeviceEnableMetricsExp(
+        zet_device_handle_t hDevice                     ///< [in] handle of the device where metrics collection has to be enabled.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnEnableMetricsExp = context.zetDdiTable.DeviceExp.pfnEnableMetricsExp;
+        if( nullptr != pfnEnableMetricsExp )
+        {
+            result = pfnEnableMetricsExp( hDevice );
+        }
+        else
+        {
+            // generic implementation
+        }
+        
+        char *env_str = context.setenv_var_with_driver_id("zetDeviceEnableMetricsExp", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zetDeviceDisableMetricsExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zetDeviceDisableMetricsExp(
+        zet_device_handle_t hDevice                     ///< [in] handle of the device where metrics collection has to be disabled
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnDisableMetricsExp = context.zetDdiTable.DeviceExp.pfnDisableMetricsExp;
+        if( nullptr != pfnDisableMetricsExp )
+        {
+            result = pfnDisableMetricsExp( hDevice );
+        }
+        else
+        {
+            // generic implementation
+        }
+        
+        char *env_str = context.setenv_var_with_driver_id("zetDeviceDisableMetricsExp", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -1116,6 +1671,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zetMetricGroupCalculateMultipleMetricValuesExp", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -1142,6 +1700,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zetMetricGroupGetGlobalTimestampsExp", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -1173,6 +1734,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zetMetricGroupGetExportDataExp", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -1219,6 +1783,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zetMetricGroupCalculateMetricExportDataExp", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -1254,6 +1821,9 @@ namespace driver
                 phMetricProgrammables[ i ] = reinterpret_cast<zet_metric_programmable_exp_handle_t>( context.get() );
 
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zetMetricProgrammableGetExp", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -1278,6 +1848,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zetMetricProgrammableGetPropertiesExp", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -1309,6 +1882,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zetMetricProgrammableGetParamInfoExp", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -1341,6 +1917,54 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zetMetricProgrammableGetParamValueInfoExp", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zetMetricCreateFromProgrammableExp2
+    __zedlllocal ze_result_t ZE_APICALL
+    zetMetricCreateFromProgrammableExp2(
+        zet_metric_programmable_exp_handle_t hMetricProgrammable,   ///< [in] handle of the metric programmable
+        uint32_t parameterCount,                        ///< [in] Count of parameters to set.
+        zet_metric_programmable_param_value_exp_t* pParameterValues,///< [in] list of parameter values to be set.
+        const char* pName,                              ///< [in] pointer to metric name to be used. Must point to a
+                                                        ///< null-terminated character array no longer than ::ZET_MAX_METRIC_NAME.
+        const char* pDescription,                       ///< [in] pointer to metric description to be used. Must point to a
+                                                        ///< null-terminated character array no longer than
+                                                        ///< ::ZET_MAX_METRIC_DESCRIPTION.
+        uint32_t* pMetricHandleCount,                   ///< [in,out] Pointer to the number of metric handles.
+                                                        ///< if count is zero, then the driver shall update the value with the
+                                                        ///< number of metric handles available for this programmable.
+                                                        ///< if count is greater than the number of metric handles available, then
+                                                        ///< the driver shall update the value with the correct number of metric
+                                                        ///< handles available.
+        zet_metric_handle_t* phMetricHandles            ///< [in,out][optional][range(0,*pMetricHandleCount)] array of handle of metrics.
+                                                        ///< if count is less than the number of metrics available, then driver
+                                                        ///< shall only retrieve that number of metric handles.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnCreateFromProgrammableExp2 = context.zetDdiTable.MetricExp.pfnCreateFromProgrammableExp2;
+        if( nullptr != pfnCreateFromProgrammableExp2 )
+        {
+            result = pfnCreateFromProgrammableExp2( hMetricProgrammable, parameterCount, pParameterValues, pName, pDescription, pMetricHandleCount, phMetricHandles );
+        }
+        else
+        {
+            // generic implementation
+            for( size_t i = 0; ( nullptr != phMetricHandles ) && ( i < *pMetricHandleCount ); ++i )
+                phMetricHandles[ i ] = reinterpret_cast<zet_metric_handle_t>( context.get() );
+
+        }
+        
+        char *env_str = context.setenv_var_with_driver_id("zetMetricCreateFromProgrammableExp2", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -1383,6 +2007,57 @@ namespace driver
                 phMetricHandles[ i ] = reinterpret_cast<zet_metric_handle_t>( context.get() );
 
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zetMetricCreateFromProgrammableExp", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zetDeviceCreateMetricGroupsFromMetricsExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zetDeviceCreateMetricGroupsFromMetricsExp(
+        zet_device_handle_t hDevice,                    ///< [in] handle of the device.
+        uint32_t metricCount,                           ///< [in] number of metric handles.
+        zet_metric_handle_t * phMetrics,                ///< [in] metric handles to be added to the metric groups.
+        const char * pMetricGroupNamePrefix,            ///< [in] prefix to the name created for the metric groups. Must point to a
+                                                        ///< null-terminated character array no longer than
+                                                        ///< ::ZET_MAX_METRIC_GROUP_NAME_PREFIX_EXP.
+        const char * pDescription,                      ///< [in] pointer to description of the metric groups. Must point to a
+                                                        ///< null-terminated character array no longer than
+                                                        ///< ::ZET_MAX_METRIC_GROUP_DESCRIPTION.
+        uint32_t * pMetricGroupCount,                   ///< [in,out] pointer to the number of metric group handles to be created.
+                                                        ///< if pMetricGroupCount is zero, then the driver shall update the value
+                                                        ///< with the maximum possible number of metric group handles that could be created.
+                                                        ///< if pMetricGroupCount is greater than the number of metric group
+                                                        ///< handles that could be created, then the driver shall update the value
+                                                        ///< with the correct number of metric group handles generated.
+                                                        ///< if pMetricGroupCount is lesser than the number of metric group handles
+                                                        ///< that could be created, then ::ZE_RESULT_ERROR_INVALID_ARGUMENT is returned.
+        zet_metric_group_handle_t* phMetricGroup        ///< [in,out][optional][range(0, *pMetricGroupCount)] array of handle of
+                                                        ///< metric group handles.
+                                                        ///< Created Metric group handles.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnCreateMetricGroupsFromMetricsExp = context.zetDdiTable.DeviceExp.pfnCreateMetricGroupsFromMetricsExp;
+        if( nullptr != pfnCreateMetricGroupsFromMetricsExp )
+        {
+            result = pfnCreateMetricGroupsFromMetricsExp( hDevice, metricCount, phMetrics, pMetricGroupNamePrefix, pDescription, pMetricGroupCount, phMetricGroup );
+        }
+        else
+        {
+            // generic implementation
+            for( size_t i = 0; ( nullptr != phMetricGroup ) && ( i < *pMetricGroupCount ); ++i )
+                phMetricGroup[ i ] = reinterpret_cast<zet_metric_group_handle_t>( context.get() );
+
+        }
+        
+        char *env_str = context.setenv_var_with_driver_id("zetDeviceCreateMetricGroupsFromMetricsExp", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -1415,6 +2090,9 @@ namespace driver
             *phMetricGroup = reinterpret_cast<zet_metric_group_handle_t>( context.get() );
 
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zetMetricGroupCreateExp", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -1446,6 +2124,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zetMetricGroupAddMetricExp", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -1470,6 +2151,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zetMetricGroupRemoveMetricExp", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -1493,6 +2177,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zetMetricGroupCloseExp", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -1516,6 +2203,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zetMetricGroupDestroyExp", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -1539,6 +2229,9 @@ namespace driver
         {
             // generic implementation
         }
+        
+        char *env_str = context.setenv_var_with_driver_id("zetMetricDestroyExp", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
 
         return result;
     }
@@ -1548,6 +2241,37 @@ namespace driver
 #if defined(__cplusplus)
 extern "C" {
 #endif
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Exported function for filling application's MetricDecoderExp table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+ZE_DLLEXPORT ze_result_t ZE_APICALL
+zetGetMetricDecoderExpProcAddrTable(
+    ze_api_version_t version,                       ///< [in] API version requested
+    zet_metric_decoder_exp_dditable_t* pDdiTable    ///< [in,out] pointer to table of DDI function pointers
+    )
+{
+    if( nullptr == pDdiTable )
+        return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+    if( driver::context.version < version )
+        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+
+    ze_result_t result = ZE_RESULT_SUCCESS;
+
+    pDdiTable->pfnCreateExp                              = driver::zetMetricDecoderCreateExp;
+
+    pDdiTable->pfnDestroyExp                             = driver::zetMetricDecoderDestroyExp;
+
+    pDdiTable->pfnGetDecodableMetricsExp                 = driver::zetMetricDecoderGetDecodableMetricsExp;
+
+    return result;
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief Exported function for filling application's MetricProgrammableExp table
@@ -1583,6 +2307,43 @@ zetGetMetricProgrammableExpProcAddrTable(
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+/// @brief Exported function for filling application's MetricTracerExp table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+ZE_DLLEXPORT ze_result_t ZE_APICALL
+zetGetMetricTracerExpProcAddrTable(
+    ze_api_version_t version,                       ///< [in] API version requested
+    zet_metric_tracer_exp_dditable_t* pDdiTable     ///< [in,out] pointer to table of DDI function pointers
+    )
+{
+    if( nullptr == pDdiTable )
+        return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+    if( driver::context.version < version )
+        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+
+    ze_result_t result = ZE_RESULT_SUCCESS;
+
+    pDdiTable->pfnCreateExp                              = driver::zetMetricTracerCreateExp;
+
+    pDdiTable->pfnDestroyExp                             = driver::zetMetricTracerDestroyExp;
+
+    pDdiTable->pfnEnableExp                              = driver::zetMetricTracerEnableExp;
+
+    pDdiTable->pfnDisableExp                             = driver::zetMetricTracerDisableExp;
+
+    pDdiTable->pfnReadDataExp                            = driver::zetMetricTracerReadDataExp;
+
+    pDdiTable->pfnDecodeExp                              = driver::zetMetricTracerDecodeExp;
+
+    return result;
+}
+
+///////////////////////////////////////////////////////////////////////////////
 /// @brief Exported function for filling application's Device table
 ///        with current process' addresses
 ///
@@ -1605,6 +2366,39 @@ zetGetDeviceProcAddrTable(
     ze_result_t result = ZE_RESULT_SUCCESS;
 
     pDdiTable->pfnGetDebugProperties                     = driver::zetDeviceGetDebugProperties;
+
+    return result;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Exported function for filling application's DeviceExp table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+ZE_DLLEXPORT ze_result_t ZE_APICALL
+zetGetDeviceExpProcAddrTable(
+    ze_api_version_t version,                       ///< [in] API version requested
+    zet_device_exp_dditable_t* pDdiTable            ///< [in,out] pointer to table of DDI function pointers
+    )
+{
+    if( nullptr == pDdiTable )
+        return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+    if( driver::context.version < version )
+        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+
+    ze_result_t result = ZE_RESULT_SUCCESS;
+
+    pDdiTable->pfnGetConcurrentMetricGroupsExp           = driver::zetDeviceGetConcurrentMetricGroupsExp;
+
+    pDdiTable->pfnCreateMetricGroupsFromMetricsExp       = driver::zetDeviceCreateMetricGroupsFromMetricsExp;
+
+    pDdiTable->pfnEnableMetricsExp                       = driver::zetDeviceEnableMetricsExp;
+
+    pDdiTable->pfnDisableMetricsExp                      = driver::zetDeviceDisableMetricsExp;
 
     return result;
 }
@@ -1665,6 +2459,33 @@ zetGetCommandListProcAddrTable(
     pDdiTable->pfnAppendMetricQueryEnd                   = driver::zetCommandListAppendMetricQueryEnd;
 
     pDdiTable->pfnAppendMetricMemoryBarrier              = driver::zetCommandListAppendMetricMemoryBarrier;
+
+    return result;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Exported function for filling application's CommandListExp table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+ZE_DLLEXPORT ze_result_t ZE_APICALL
+zetGetCommandListExpProcAddrTable(
+    ze_api_version_t version,                       ///< [in] API version requested
+    zet_command_list_exp_dditable_t* pDdiTable      ///< [in,out] pointer to table of DDI function pointers
+    )
+{
+    if( nullptr == pDdiTable )
+        return ZE_RESULT_ERROR_INVALID_NULL_POINTER;
+
+    if( driver::context.version < version )
+        return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+
+    ze_result_t result = ZE_RESULT_SUCCESS;
+
+    pDdiTable->pfnAppendMarkerExp                        = driver::zetCommandListAppendMarkerExp;
 
     return result;
 }
@@ -1822,6 +2643,8 @@ zetGetMetricExpProcAddrTable(
         return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
 
     ze_result_t result = ZE_RESULT_SUCCESS;
+
+    pDdiTable->pfnCreateFromProgrammableExp2             = driver::zetMetricCreateFromProgrammableExp2;
 
     pDdiTable->pfnCreateFromProgrammableExp              = driver::zetMetricCreateFromProgrammableExp;
 

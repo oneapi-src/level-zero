@@ -4,7 +4,7 @@ We encourage anyone who wants to contribute to submit
 [Issues](https://github.com/oneapi-src/level-zero/issues) and
 [Pull Requests](https://github.com/oneapi-src/level-zero/pulls). We will help
 review these for proper alignment with the
-[Level Zero Specification](https://spec.oneapi.com/level-zero/latest/index.html).
+[Level Zero Specification](https://oneapi-src.github.io/level-zero-spec/level-zero/latest/index.html).
 
 ## C++ Coding Standards
 
@@ -20,7 +20,7 @@ review these for proper alignment with the
 
 * The functionality in the Level Zero Loader and layers which follow the Level Zero spec must follow these naming conventions:
 
-  * https://spec.oneapi.io/level-zero/latest/core/INTRO.html#naming-convention
+  * https://oneapi-src.github.io/level-zero-spec/level-zero/latest/core/INTRO.html#naming-convention
 
 * If the contributions are adding new functionality unique to the Level Zero Loader (ie not Level Zero Spec related):
   * Level Zero Loader specific APIs must have the prefix: `zel`
@@ -36,12 +36,14 @@ To generate the code from the scripts, run the following commands:
 * Clone the specification repo: `git clone https://github.com/oneapi-src/level-zero-spec.git level-zero-spec`
 * Checkout the specification version in the specification repo, for example:
   * `cd level-zero-spec`
-  * `git checkout v1.5`
-* Generate the specification JSON file:
-  * `cd ./scripts`
-  * `python3 ./run.py --debug '--!html' '--!rst' '--!build' --ver 1.5`
+  * `git checkout v1.12.15`
+* Generate the specification JSON file and Headers:
+  * `cd level-zero-spec/scripts`
+  * `python3 ./run.py --debug '--!html' '--!rst' '--!build' --ver 1.12`
+* Copy the Headers From Spec to Loader repo
+  * `cp level-zero-spec/include/* level-zero/include/`
 * Execute the json2src script in the level-zero repo with the input.json in the specification repo with the corresponding spec version, for example:
-  * `./scripts/json2src.py --ver 1.5 --api-json <path to level-zero-spec checkout>/scripts/input.json .`
+  * `./level-zero/scripts/json2src.py --ver 1.12 --api-json level-zero-spec/scripts/input.json .`
 
 These scripts update the code with what would be generated in the next specification update.
 
@@ -56,7 +58,7 @@ When performing a code review please refer to this checklist to guide your comme
 
 * Does the code follow C++ Coding Standards? [C++ Coding Standards](#c-coding-standards).
 * Does the code follow the Level Zero naming conventions? [Naming Conventions](#naming-conventions).
-* Does the code follow the Level Zero specification? See here for the latest spec: https://spec.oneapi.io/level-zero/latest/index.html.
+* Does the code follow the Level Zero specification? See here for the latest spec: https://oneapi-src.github.io/level-zero-spec/level-zero/latest/index.html.
 * Is the code for the Validation Layer? Please review the following: [Validation Layer README](source/layers/validation/README.md).
 * Is the code for the Tracing Layer? Please review the following: [Tracing Layer README](source/layers/tracing/README.md).
 * Is the code "Vendor & Platform agnostic"? ie Are the changes in the loader or in the layers ignorant of the implementation in the L0 drivers?

@@ -645,8 +645,8 @@ std::string to_string(const ze_result_t result) {
   } else if (result == ZE_RESULT_ERROR_UNKNOWN) {
     return "ZE_RESULT_ERROR_UNKNOWN";
   } else {
-    throw std::runtime_error("Unknown ze_result_t value: " +
-                             std::to_string(static_cast<int>(result)));
+    return "Unknown ze_result_t value: " +
+      std::to_string(static_cast<int>(result));
   }
 }
 

@@ -9,6 +9,9 @@
  */
 #include <type_traits>
 
+// High threshold for experimental driver extension values
+#define ZEX_EXPERIMENTAL_DRIVER_EXTENSION_MAX 0x00100000
+
 template <typename S, typename B>
 inline ze_result_t validateStructureTypes(const void *descriptorPtr,
                                    std::vector<S> &baseTypesVector,
@@ -50,16 +53,20 @@ inline ze_result_t validateStructureTypes(const void *descriptorPtr,
                     break;
                 }
             }
-            if (!validExtensionTypeFound) {
+            // If the value is greater than the
+            // experimental driver max extension value, then return error.
+            if (!validExtensionTypeFound && pBase->stype >= ZEX_EXPERIMENTAL_DRIVER_EXTENSION_MAX) {
                 return ZE_RESULT_ERROR_INVALID_ARGUMENT;
             }
             pBase = reinterpret_cast<const B*>(pBase->pNext);
         }
-     }
+    }
 
-     if (pBase) {
+    // Check for invalid stype values, if the value is greater than the
+    // experimental driver max extension value, then return error.
+    if (pBase && pBase->stype >= ZEX_EXPERIMENTAL_DRIVER_EXTENSION_MAX) {
         return ZE_RESULT_ERROR_INVALID_ARGUMENT;
-     }
+    }
 
      return ZE_RESULT_SUCCESS;
 }
@@ -67,7 +74,7 @@ inline ze_result_t validateStructureTypes(const void *descriptorPtr,
 /* Begin ze_api cases */
 
 template <>
-inline ze_result_t ParameterValidation::validateExtensions(ze_device_p2p_properties_t *descriptor) {
+inline ze_result_t ParameterValidation::validateExtensions(const ze_device_p2p_properties_t *descriptor) {
 
     std::vector<ze_structure_type_t> baseTypes = {ZE_STRUCTURE_TYPE_DEVICE_P2P_PROPERTIES};
     std::vector<ze_structure_type_t> types = {ZE_STRUCTURE_TYPE_DEVICE_P2P_BANDWIDTH_EXP_PROPERTIES};
@@ -76,7 +83,7 @@ inline ze_result_t ParameterValidation::validateExtensions(ze_device_p2p_propert
 }
 
 template <>
-inline ze_result_t ParameterValidation::validateExtensions(ze_pci_ext_properties_t *descriptor) {
+inline ze_result_t ParameterValidation::validateExtensions(const ze_pci_ext_properties_t *descriptor) {
 
     std::vector<ze_structure_type_t> baseTypes = {ZE_STRUCTURE_TYPE_PCI_EXT_PROPERTIES};
     std::vector<ze_structure_type_t> types = {};
@@ -85,7 +92,7 @@ inline ze_result_t ParameterValidation::validateExtensions(ze_pci_ext_properties
 }
 
 template <>
-inline ze_result_t ParameterValidation::validateExtensions(ze_device_memory_properties_t *descriptor) {
+inline ze_result_t ParameterValidation::validateExtensions(const ze_device_memory_properties_t *descriptor) {
 
      if (descriptor == nullptr) {
        return ZE_RESULT_SUCCESS;
@@ -98,7 +105,7 @@ inline ze_result_t ParameterValidation::validateExtensions(ze_device_memory_prop
 }
 
 template <>
-inline ze_result_t ParameterValidation::validateExtensions(ze_device_memory_access_properties_t *descriptor) {
+inline ze_result_t ParameterValidation::validateExtensions(const ze_device_memory_access_properties_t *descriptor) {
 
     std::vector<ze_structure_type_t> baseTypes = {ZE_STRUCTURE_TYPE_DEVICE_MEMORY_ACCESS_PROPERTIES};
     std::vector<ze_structure_type_t> types = {};
@@ -107,7 +114,7 @@ inline ze_result_t ParameterValidation::validateExtensions(ze_device_memory_acce
 }
 
 template <>
-inline ze_result_t ParameterValidation::validateExtensions(ze_kernel_properties_t *descriptor) {
+inline ze_result_t ParameterValidation::validateExtensions(const ze_kernel_properties_t *descriptor) {
 
     std::vector<ze_structure_type_t> baseTypes = {ZE_STRUCTURE_TYPE_KERNEL_PROPERTIES};
     std::vector<ze_structure_type_t> types = {ZE_STRUCTURE_TYPE_FLOAT_ATOMIC_EXT_PROPERTIES,
@@ -119,7 +126,7 @@ inline ze_result_t ParameterValidation::validateExtensions(ze_kernel_properties_
 }
 
 template <>
-inline ze_result_t ParameterValidation::validateExtensions(ze_device_properties_t *descriptor) {
+inline ze_result_t ParameterValidation::validateExtensions(const ze_device_properties_t *descriptor) {
 
     std::vector<ze_structure_type_t> baseTypes = {ZE_STRUCTURE_TYPE_DEVICE_PROPERTIES,
                                                   ZE_STRUCTURE_TYPE_DEVICE_PROPERTIES_1_2};
@@ -132,20 +139,20 @@ inline ze_result_t ParameterValidation::validateExtensions(ze_device_properties_
 }
 
 template <>
-inline ze_result_t ParameterValidation::validateExtensions(ze_device_cache_properties_t *descriptor) {
+inline ze_result_t ParameterValidation::validateExtensions(const ze_device_cache_properties_t *descriptor) {
 
     if (descriptor == nullptr) {
         return ZE_RESULT_SUCCESS;
     }
 
     std::vector<ze_structure_type_t> baseTypes = {ZE_STRUCTURE_TYPE_DEVICE_CACHE_PROPERTIES};
-    std::vector<ze_structure_type_t> types = {ZE_STRUCTURE_TYPE_CACHE_RESERVATION_EXT_DESC};
+    std::vector<ze_structure_type_t> types = {ZE_STRUCTURE_TYPE_CACHE_RESERVATION_EXT_DESC,ZE_STRUCTURE_TYPE_DEVICE_CACHELINE_SIZE_EXT};
 
     return validateStructureTypes<ze_structure_type_t, ze_base_properties_t>(descriptor, baseTypes, types);
 }
 
 template <>
-inline ze_result_t ParameterValidation::validateExtensions(ze_device_image_properties_t *descriptor) {
+inline ze_result_t ParameterValidation::validateExtensions(const ze_device_image_properties_t *descriptor) {
     
     std::vector<ze_structure_type_t> baseTypes = {ZE_STRUCTURE_TYPE_DEVICE_IMAGE_PROPERTIES};
     std::vector<ze_structure_type_t> types = {};
@@ -154,7 +161,7 @@ inline ze_result_t ParameterValidation::validateExtensions(ze_device_image_prope
 }
 
 template <>
-inline ze_result_t ParameterValidation::validateExtensions(ze_device_compute_properties_t *descriptor) {
+inline ze_result_t ParameterValidation::validateExtensions(const ze_device_compute_properties_t *descriptor) {
     
     std::vector<ze_structure_type_t> baseTypes = {ZE_STRUCTURE_TYPE_DEVICE_COMPUTE_PROPERTIES};
     std::vector<ze_structure_type_t> types = {};
@@ -163,7 +170,7 @@ inline ze_result_t ParameterValidation::validateExtensions(ze_device_compute_pro
 }
 
 template <>
-inline ze_result_t ParameterValidation::validateExtensions(ze_device_module_properties_t *descriptor) {
+inline ze_result_t ParameterValidation::validateExtensions(const ze_device_module_properties_t *descriptor) {
     
     std::vector<ze_structure_type_t> baseTypes = {ZE_STRUCTURE_TYPE_DEVICE_MODULE_PROPERTIES};
     std::vector<ze_structure_type_t> types = {
@@ -175,7 +182,7 @@ inline ze_result_t ParameterValidation::validateExtensions(ze_device_module_prop
 }
 
 template <>
-inline ze_result_t ParameterValidation::validateExtensions(ze_command_queue_group_properties_t *descriptor) {
+inline ze_result_t ParameterValidation::validateExtensions(const ze_command_queue_group_properties_t *descriptor) {
 
      if (descriptor == nullptr) {
        return ZE_RESULT_SUCCESS;
@@ -189,7 +196,7 @@ inline ze_result_t ParameterValidation::validateExtensions(ze_command_queue_grou
 }
 
 template <>
-inline ze_result_t ParameterValidation::validateExtensions(ze_device_external_memory_properties_t *descriptor) {
+inline ze_result_t ParameterValidation::validateExtensions(const ze_device_external_memory_properties_t *descriptor) {
     
     std::vector<ze_structure_type_t> baseTypes = {ZE_STRUCTURE_TYPE_DEVICE_EXTERNAL_MEMORY_PROPERTIES};
     std::vector<ze_structure_type_t> types = {};
@@ -198,7 +205,7 @@ inline ze_result_t ParameterValidation::validateExtensions(ze_device_external_me
 }
 
 template <>
-inline ze_result_t ParameterValidation::validateExtensions(ze_driver_properties_t *descriptor) {
+inline ze_result_t ParameterValidation::validateExtensions(const ze_driver_properties_t *descriptor) {
 
     std::vector<ze_structure_type_t> baseTypes = {ZE_STRUCTURE_TYPE_DRIVER_PROPERTIES};
     std::vector<ze_structure_type_t> types = {ZE_STRUCTURE_TYPE_DRIVER_MEMORY_FREE_EXT_PROPERTIES};
@@ -207,7 +214,7 @@ inline ze_result_t ParameterValidation::validateExtensions(ze_driver_properties_
 }
 
 template <>
-inline ze_result_t ParameterValidation::validateExtensions(ze_driver_ipc_properties_t *descriptor) {
+inline ze_result_t ParameterValidation::validateExtensions(const ze_driver_ipc_properties_t *descriptor) {
 
     std::vector<ze_structure_type_t> baseTypes = {ZE_STRUCTURE_TYPE_DRIVER_IPC_PROPERTIES};
     std::vector<ze_structure_type_t> types = {};
@@ -216,7 +223,7 @@ inline ze_result_t ParameterValidation::validateExtensions(ze_driver_ipc_propert
 }
 
 template <>
-inline ze_result_t ParameterValidation::validateExtensions(ze_image_properties_t *descriptor) {
+inline ze_result_t ParameterValidation::validateExtensions(const ze_image_properties_t *descriptor) {
 
     std::vector<ze_structure_type_t> baseTypes = {ZE_STRUCTURE_TYPE_IMAGE_PROPERTIES};
     std::vector<ze_structure_type_t> types = {};
@@ -225,7 +232,7 @@ inline ze_result_t ParameterValidation::validateExtensions(ze_image_properties_t
 }
 
 template <>
-inline ze_result_t ParameterValidation::validateExtensions(ze_memory_allocation_properties_t *descriptor) {
+inline ze_result_t ParameterValidation::validateExtensions(const ze_memory_allocation_properties_t *descriptor) {
 
     std::vector<ze_structure_type_t> baseTypes = {ZE_STRUCTURE_TYPE_MEMORY_ALLOCATION_PROPERTIES};
     std::vector<ze_structure_type_t> types = {ZE_STRUCTURE_TYPE_EXTERNAL_MEMORY_EXPORT_FD,
@@ -236,7 +243,7 @@ inline ze_result_t ParameterValidation::validateExtensions(ze_memory_allocation_
 }
 
 template <>
-inline ze_result_t ParameterValidation::validateExtensions(ze_image_allocation_ext_properties_t *descriptor) {
+inline ze_result_t ParameterValidation::validateExtensions(const ze_image_allocation_ext_properties_t *descriptor) {
 
     std::vector<ze_structure_type_t> baseTypes = {ZE_STRUCTURE_TYPE_IMAGE_ALLOCATION_EXT_PROPERTIES};
     std::vector<ze_structure_type_t> types = {ZE_STRUCTURE_TYPE_EXTERNAL_MEMORY_EXPORT_FD,
@@ -246,7 +253,7 @@ inline ze_result_t ParameterValidation::validateExtensions(ze_image_allocation_e
 }
 
 template <>
-inline ze_result_t ParameterValidation::validateExtensions(ze_module_properties_t *descriptor) {
+inline ze_result_t ParameterValidation::validateExtensions(const ze_module_properties_t *descriptor) {
 
     std::vector<ze_structure_type_t> baseTypes = {ZE_STRUCTURE_TYPE_MODULE_PROPERTIES};
     std::vector<ze_structure_type_t> types = {};
@@ -255,7 +262,7 @@ inline ze_result_t ParameterValidation::validateExtensions(ze_module_properties_
 }
 
 template <>
-inline ze_result_t ParameterValidation::validateExtensions(ze_fabric_vertex_exp_properties_t *descriptor) {
+inline ze_result_t ParameterValidation::validateExtensions(const ze_fabric_vertex_exp_properties_t *descriptor) {
 
     std::vector<ze_structure_type_t> baseTypes = {ZE_STRUCTURE_TYPE_FABRIC_VERTEX_EXP_PROPERTIES};
     std::vector<ze_structure_type_t> types = {};
@@ -264,7 +271,7 @@ inline ze_result_t ParameterValidation::validateExtensions(ze_fabric_vertex_exp_
 }
 
 template <>
-inline ze_result_t ParameterValidation::validateExtensions(ze_fabric_edge_exp_properties_t *descriptor) {
+inline ze_result_t ParameterValidation::validateExtensions(const ze_fabric_edge_exp_properties_t *descriptor) {
 
     std::vector<ze_structure_type_t> baseTypes = {ZE_STRUCTURE_TYPE_FABRIC_EDGE_EXP_PROPERTIES};
     std::vector<ze_structure_type_t> types = {};
@@ -273,7 +280,7 @@ inline ze_result_t ParameterValidation::validateExtensions(ze_fabric_edge_exp_pr
 }
 
 template <>
-inline ze_result_t ParameterValidation::validateExtensions(ze_context_desc_t *descriptor) {
+inline ze_result_t ParameterValidation::validateExtensions(const ze_context_desc_t *descriptor) {
 
     std::vector<ze_structure_type_t> baseTypes = {ZE_STRUCTURE_TYPE_CONTEXT_DESC};
     std::vector<ze_structure_type_t> types = {ZE_STRUCTURE_TYPE_POWER_SAVING_HINT_EXP_DESC};
@@ -282,7 +289,7 @@ inline ze_result_t ParameterValidation::validateExtensions(ze_context_desc_t *de
 }
 
 template <>
-inline ze_result_t ParameterValidation::validateExtensions(ze_command_queue_desc_t *descriptor) {
+inline ze_result_t ParameterValidation::validateExtensions(const ze_command_queue_desc_t *descriptor) {
 
     std::vector<ze_structure_type_t> baseTypes = {ZE_STRUCTURE_TYPE_COMMAND_QUEUE_DESC};
     std::vector<ze_structure_type_t> types = {};
@@ -291,7 +298,7 @@ inline ze_result_t ParameterValidation::validateExtensions(ze_command_queue_desc
 }
 
 template <>
-inline ze_result_t ParameterValidation::validateExtensions(ze_command_list_desc_t *descriptor) {
+inline ze_result_t ParameterValidation::validateExtensions(const ze_command_list_desc_t *descriptor) {
 
     std::vector<ze_structure_type_t> baseTypes = {ZE_STRUCTURE_TYPE_COMMAND_LIST_DESC};
 //    std::vector<ze_structure_type_t> types = {ZEX_STRUCTURE_TYPE_MUTABLE_COMMAND_LIST_DESCRIPTOR};
@@ -301,16 +308,16 @@ inline ze_result_t ParameterValidation::validateExtensions(ze_command_list_desc_
 }
 
 template <>
-inline ze_result_t ParameterValidation::validateExtensions(ze_event_pool_desc_t *descriptor) {
+inline ze_result_t ParameterValidation::validateExtensions(const ze_event_pool_desc_t *descriptor) {
 
     std::vector<ze_structure_type_t> baseTypes = {ZE_STRUCTURE_TYPE_EVENT_POOL_DESC};
-    std::vector<ze_structure_type_t> types = {};
+    std::vector<ze_structure_type_t> types = {ZE_STRUCTURE_TYPE_COUNTER_BASED_EVENT_POOL_EXP_DESC};
 
     return validateStructureTypes<ze_structure_type_t, ze_base_properties_t>(descriptor, baseTypes, types);
 }
 
 template <>
-inline ze_result_t ParameterValidation::validateExtensions(ze_event_desc_t *descriptor) {
+inline ze_result_t ParameterValidation::validateExtensions(const ze_event_desc_t *descriptor) {
 
     std::vector<ze_structure_type_t> baseTypes = {ZE_STRUCTURE_TYPE_EVENT_DESC};
     std::vector<ze_structure_type_t> types = {};
@@ -319,7 +326,7 @@ inline ze_result_t ParameterValidation::validateExtensions(ze_event_desc_t *desc
 }
 
 template <>
-inline ze_result_t ParameterValidation::validateExtensions(ze_fence_desc_t *descriptor) {
+inline ze_result_t ParameterValidation::validateExtensions(const ze_fence_desc_t *descriptor) {
 
     std::vector<ze_structure_type_t> baseTypes = {ZE_STRUCTURE_TYPE_FENCE_DESC};
     std::vector<ze_structure_type_t> types = {};
@@ -328,7 +335,7 @@ inline ze_result_t ParameterValidation::validateExtensions(ze_fence_desc_t *desc
 }
 
 template <>
-inline ze_result_t ParameterValidation::validateExtensions(ze_image_desc_t *descriptor) {
+inline ze_result_t ParameterValidation::validateExtensions(const ze_image_desc_t *descriptor) {
 
     std::vector<ze_structure_type_t> baseTypes = {ZE_STRUCTURE_TYPE_IMAGE_DESC};
     std::vector<ze_structure_type_t> types = {ZE_STRUCTURE_TYPE_EXTERNAL_MEMORY_IMPORT_FD,
@@ -339,7 +346,7 @@ inline ze_result_t ParameterValidation::validateExtensions(ze_image_desc_t *desc
 }
 
 template <>
-inline ze_result_t ParameterValidation::validateExtensions(ze_device_mem_alloc_desc_t *descriptor) {
+inline ze_result_t ParameterValidation::validateExtensions(const ze_device_mem_alloc_desc_t *descriptor) {
 
     std::vector<ze_structure_type_t> baseTypes = {ZE_STRUCTURE_TYPE_DEVICE_MEM_ALLOC_DESC};
     std::vector<ze_structure_type_t> types = {ZE_STRUCTURE_TYPE_RELAXED_ALLOCATION_LIMITS_EXP_DESC,
@@ -353,7 +360,7 @@ inline ze_result_t ParameterValidation::validateExtensions(ze_device_mem_alloc_d
 }
 
 template <>
-inline ze_result_t ParameterValidation::validateExtensions(ze_host_mem_alloc_desc_t *descriptor) {
+inline ze_result_t ParameterValidation::validateExtensions(const ze_host_mem_alloc_desc_t *descriptor) {
 
     std::vector<ze_structure_type_t> baseTypes = {ZE_STRUCTURE_TYPE_HOST_MEM_ALLOC_DESC};
     std::vector<ze_structure_type_t> types = {ZE_STRUCTURE_TYPE_RELAXED_ALLOCATION_LIMITS_EXP_DESC,
@@ -375,7 +382,7 @@ inline ze_result_t ParameterValidation::validateExtensions(const ze_module_desc_
 }
 
 template <>
-inline ze_result_t ParameterValidation::validateExtensions(ze_kernel_desc_t *descriptor) {
+inline ze_result_t ParameterValidation::validateExtensions(const ze_kernel_desc_t *descriptor) {
 
     std::vector<ze_structure_type_t> baseTypes = {ZE_STRUCTURE_TYPE_KERNEL_DESC};
     std::vector<ze_structure_type_t> types = {};
@@ -384,7 +391,7 @@ inline ze_result_t ParameterValidation::validateExtensions(ze_kernel_desc_t *des
 }
 
 template <>
-inline ze_result_t ParameterValidation::validateExtensions(ze_sampler_desc_t *descriptor) {
+inline ze_result_t ParameterValidation::validateExtensions(const ze_sampler_desc_t *descriptor) {
 
     std::vector<ze_structure_type_t> baseTypes = {ZE_STRUCTURE_TYPE_SAMPLER_DESC};
     std::vector<ze_structure_type_t> types = {};
@@ -393,7 +400,7 @@ inline ze_result_t ParameterValidation::validateExtensions(ze_sampler_desc_t *de
 }
 
 template <>
-inline ze_result_t ParameterValidation::validateExtensions(ze_physical_mem_desc_t *descriptor) {
+inline ze_result_t ParameterValidation::validateExtensions(const ze_physical_mem_desc_t *descriptor) {
 
     std::vector<ze_structure_type_t> baseTypes = {ZE_STRUCTURE_TYPE_PHYSICAL_MEM_DESC};
     std::vector<ze_structure_type_t> types = {};
@@ -402,7 +409,7 @@ inline ze_result_t ParameterValidation::validateExtensions(ze_physical_mem_desc_
 }
 
 template <>
-inline ze_result_t ParameterValidation::validateExtensions(ze_scheduling_hint_exp_desc_t *descriptor) {
+inline ze_result_t ParameterValidation::validateExtensions(const ze_scheduling_hint_exp_desc_t *descriptor) {
 
     std::vector<ze_structure_type_t> baseTypes = {ZE_STRUCTURE_TYPE_SCHEDULING_HINT_EXP_DESC};
     std::vector<ze_structure_type_t> types = {};
@@ -412,7 +419,7 @@ inline ze_result_t ParameterValidation::validateExtensions(ze_scheduling_hint_ex
 
 // couldn't find implementation
 template <>
-inline ze_result_t ParameterValidation::validateExtensions(ze_linkage_inspection_ext_desc_t *descriptor) {
+inline ze_result_t ParameterValidation::validateExtensions(const ze_linkage_inspection_ext_desc_t *descriptor) {
 
     std::vector<ze_structure_type_t> baseTypes = {ZE_STRUCTURE_TYPE_LINKAGE_INSPECTION_EXT_DESC};
     std::vector<ze_structure_type_t> types = {};
@@ -421,7 +428,7 @@ inline ze_result_t ParameterValidation::validateExtensions(ze_linkage_inspection
 }
 
 template <>
-inline ze_result_t ParameterValidation::validateExtensions(ze_memory_free_ext_desc_t *descriptor) {
+inline ze_result_t ParameterValidation::validateExtensions(const ze_memory_free_ext_desc_t *descriptor) {
 
     std::vector<ze_structure_type_t> baseTypes = {ZE_STRUCTURE_TYPE_MEMORY_FREE_EXT_DESC};
     std::vector<ze_structure_type_t> types = {};
@@ -430,7 +437,7 @@ inline ze_result_t ParameterValidation::validateExtensions(ze_memory_free_ext_de
 }
 
 template <>
-inline ze_result_t ParameterValidation::validateExtensions(ze_image_memory_properties_exp_t *descriptor) {
+inline ze_result_t ParameterValidation::validateExtensions(const ze_image_memory_properties_exp_t *descriptor) {
 
     std::vector<ze_structure_type_t> baseTypes = {ZE_STRUCTURE_TYPE_IMAGE_MEMORY_EXP_PROPERTIES};
     std::vector<ze_structure_type_t> types = {};
@@ -440,14 +447,14 @@ inline ze_result_t ParameterValidation::validateExtensions(ze_image_memory_prope
 
 // ze_driver_extension_properties_t is an [out] only structure, without stype, pNext
 template <>
-inline ze_result_t ParameterValidation::validateExtensions(ze_driver_extension_properties_t  *descriptor) {
+inline ze_result_t ParameterValidation::validateExtensions(const ze_driver_extension_properties_t  *descriptor) {
 
     return ZE_RESULT_SUCCESS;
 }
 
 // THIS ONE IS PROBABLY NOT A VALID TEST
 template <>
-inline ze_result_t ParameterValidation::validateExtensions(ze_image_view_planar_ext_desc_t *descriptor) {
+inline ze_result_t ParameterValidation::validateExtensions(const ze_image_view_planar_ext_desc_t *descriptor) {
 
     std::vector<ze_structure_type_t> baseTypes = {ZE_STRUCTURE_TYPE_IMAGE_VIEW_PLANAR_EXT_DESC};
     std::vector<ze_structure_type_t> types = {};
@@ -457,7 +464,7 @@ inline ze_result_t ParameterValidation::validateExtensions(ze_image_view_planar_
 
 // THIS ONE IS PROBABLY NOT A VALID TEST
 template <>
-inline ze_result_t ParameterValidation::validateExtensions(ze_image_view_planar_exp_desc_t *descriptor) {
+inline ze_result_t ParameterValidation::validateExtensions(const ze_image_view_planar_exp_desc_t *descriptor) {
 
     std::vector<ze_structure_type_t> baseTypes = {ZE_STRUCTURE_TYPE_IMAGE_VIEW_PLANAR_EXP_DESC};
     std::vector<ze_structure_type_t> types = {};
@@ -468,7 +475,7 @@ inline ze_result_t ParameterValidation::validateExtensions(ze_image_view_planar_
 /* Begin zet_api entries */
 
 template <>
-inline ze_result_t ParameterValidation::validateExtensions(zet_metric_group_properties_t *descriptor) {
+inline ze_result_t ParameterValidation::validateExtensions(const zet_metric_group_properties_t *descriptor) {
 
     std::vector<zet_structure_type_t> baseTypes = {ZET_STRUCTURE_TYPE_METRIC_GROUP_PROPERTIES};
     std::vector<zet_structure_type_t> types = {ZET_STRUCTURE_TYPE_GLOBAL_METRICS_TIMESTAMPS_EXP_PROPERTIES};
@@ -477,7 +484,7 @@ inline ze_result_t ParameterValidation::validateExtensions(zet_metric_group_prop
 }
 
 template <>
-inline ze_result_t ParameterValidation::validateExtensions(zet_metric_properties_t *descriptor) {
+inline ze_result_t ParameterValidation::validateExtensions(const zet_metric_properties_t *descriptor) {
 
     std::vector<zet_structure_type_t> baseTypes = {ZET_STRUCTURE_TYPE_METRIC_PROPERTIES};
     std::vector<zet_structure_type_t> types = {};
@@ -486,7 +493,7 @@ inline ze_result_t ParameterValidation::validateExtensions(zet_metric_properties
 }
 
 template <>
-inline ze_result_t ParameterValidation::validateExtensions(zet_metric_streamer_desc_t *descriptor) {
+inline ze_result_t ParameterValidation::validateExtensions(const zet_metric_streamer_desc_t *descriptor) {
 
     std::vector<zet_structure_type_t> baseTypes = {ZET_STRUCTURE_TYPE_METRIC_STREAMER_DESC};
     std::vector<zet_structure_type_t> types = {};
@@ -495,7 +502,7 @@ inline ze_result_t ParameterValidation::validateExtensions(zet_metric_streamer_d
 }
 
 template <>
-inline ze_result_t ParameterValidation::validateExtensions(zet_metric_query_pool_desc_t *descriptor) {
+inline ze_result_t ParameterValidation::validateExtensions(const zet_metric_query_pool_desc_t *descriptor) {
 
     std::vector<zet_structure_type_t> baseTypes = {ZET_STRUCTURE_TYPE_METRIC_QUERY_POOL_DESC};
     std::vector<zet_structure_type_t> types = {};
@@ -504,7 +511,7 @@ inline ze_result_t ParameterValidation::validateExtensions(zet_metric_query_pool
 }
 
 template <>
-inline ze_result_t ParameterValidation::validateExtensions(zet_profile_properties_t *descriptor) {
+inline ze_result_t ParameterValidation::validateExtensions(const zet_profile_properties_t *descriptor) {
 
     std::vector<zet_structure_type_t> baseTypes = {ZET_STRUCTURE_TYPE_PROFILE_PROPERTIES};
     std::vector<zet_structure_type_t> types = {};
@@ -513,7 +520,7 @@ inline ze_result_t ParameterValidation::validateExtensions(zet_profile_propertie
 }
 
 template <>
-inline ze_result_t ParameterValidation::validateExtensions(zet_device_debug_properties_t *descriptor) {
+inline ze_result_t ParameterValidation::validateExtensions(const zet_device_debug_properties_t *descriptor) {
 
     std::vector<zet_structure_type_t> baseTypes = {ZET_STRUCTURE_TYPE_DEVICE_DEBUG_PROPERTIES};
     std::vector<zet_structure_type_t> types = {};
@@ -522,7 +529,7 @@ inline ze_result_t ParameterValidation::validateExtensions(zet_device_debug_prop
 }
 
 template <>
-inline ze_result_t ParameterValidation::validateExtensions(zet_debug_memory_space_desc_t *descriptor) {
+inline ze_result_t ParameterValidation::validateExtensions(const zet_debug_memory_space_desc_t *descriptor) {
 
     std::vector<zet_structure_type_t> baseTypes = {ZET_STRUCTURE_TYPE_DEBUG_MEMORY_SPACE_DESC};
     std::vector<zet_structure_type_t> types = {};
@@ -531,7 +538,7 @@ inline ze_result_t ParameterValidation::validateExtensions(zet_debug_memory_spac
 }
 
 template <>
-inline ze_result_t ParameterValidation::validateExtensions(zet_debug_regset_properties_t *descriptor) {
+inline ze_result_t ParameterValidation::validateExtensions(const zet_debug_regset_properties_t *descriptor) {
 
      if (descriptor == nullptr) {
        return ZE_RESULT_SUCCESS;
@@ -544,7 +551,7 @@ inline ze_result_t ParameterValidation::validateExtensions(zet_debug_regset_prop
 }
 
 template <>
-inline ze_result_t ParameterValidation::validateExtensions(zet_tracer_exp_desc_t *descriptor) {
+inline ze_result_t ParameterValidation::validateExtensions(const zet_tracer_exp_desc_t *descriptor) {
 
     std::vector<zet_structure_type_t> baseTypes = {ZET_STRUCTURE_TYPE_TRACER_EXP_DESC};
     std::vector<zet_structure_type_t> types = {};
@@ -555,7 +562,7 @@ inline ze_result_t ParameterValidation::validateExtensions(zet_tracer_exp_desc_t
 /* Begin zes_api entries */
 
 template <>
-inline ze_result_t ParameterValidation::validateExtensions(zes_device_properties_t *descriptor) {
+inline ze_result_t ParameterValidation::validateExtensions(const zes_device_properties_t *descriptor) {
 
     std::vector<zes_structure_type_t> baseTypes = {ZES_STRUCTURE_TYPE_DEVICE_PROPERTIES};
     std::vector<zes_structure_type_t> types = {};
@@ -564,7 +571,7 @@ inline ze_result_t ParameterValidation::validateExtensions(zes_device_properties
 }
 
 template <>
-inline ze_result_t ParameterValidation::validateExtensions(zes_pci_properties_t *descriptor) {
+inline ze_result_t ParameterValidation::validateExtensions(const zes_pci_properties_t *descriptor) {
 
     std::vector<zes_structure_type_t> baseTypes = {ZES_STRUCTURE_TYPE_PCI_PROPERTIES};
     std::vector<zes_structure_type_t> types = {};
@@ -573,7 +580,7 @@ inline ze_result_t ParameterValidation::validateExtensions(zes_pci_properties_t 
 }
 
 template <>
-inline ze_result_t ParameterValidation::validateExtensions(zes_pci_bar_properties_t *descriptor) {
+inline ze_result_t ParameterValidation::validateExtensions(const zes_pci_bar_properties_t *descriptor) {
 
      if (descriptor == nullptr) {
        return ZE_RESULT_SUCCESS;
@@ -586,7 +593,7 @@ inline ze_result_t ParameterValidation::validateExtensions(zes_pci_bar_propertie
 }
 
 template <>
-inline ze_result_t ParameterValidation::validateExtensions(zes_diag_properties_t *descriptor) {
+inline ze_result_t ParameterValidation::validateExtensions(const zes_diag_properties_t *descriptor) {
 
     std::vector<zes_structure_type_t> baseTypes = {ZES_STRUCTURE_TYPE_DIAG_PROPERTIES};
     std::vector<zes_structure_type_t> types = {};
@@ -595,7 +602,7 @@ inline ze_result_t ParameterValidation::validateExtensions(zes_diag_properties_t
 }
 
 template <>
-inline ze_result_t ParameterValidation::validateExtensions(zes_engine_properties_t *descriptor) {
+inline ze_result_t ParameterValidation::validateExtensions(const zes_engine_properties_t *descriptor) {
 
     std::vector<zes_structure_type_t> baseTypes = {ZES_STRUCTURE_TYPE_ENGINE_PROPERTIES};
     std::vector<zes_structure_type_t> types = {};
@@ -604,7 +611,7 @@ inline ze_result_t ParameterValidation::validateExtensions(zes_engine_properties
 }
 
 template <>
-inline ze_result_t ParameterValidation::validateExtensions(zes_fabric_port_properties_t *descriptor) {
+inline ze_result_t ParameterValidation::validateExtensions(const zes_fabric_port_properties_t *descriptor) {
 
     std::vector<zes_structure_type_t> baseTypes = {ZES_STRUCTURE_TYPE_FABRIC_PORT_PROPERTIES};
     std::vector<zes_structure_type_t> types = {};
@@ -613,7 +620,7 @@ inline ze_result_t ParameterValidation::validateExtensions(zes_fabric_port_prope
 }
 
 template <>
-inline ze_result_t ParameterValidation::validateExtensions(zes_fan_properties_t *descriptor) {
+inline ze_result_t ParameterValidation::validateExtensions(const zes_fan_properties_t *descriptor) {
 
     std::vector<zes_structure_type_t> baseTypes = {ZES_STRUCTURE_TYPE_FAN_PROPERTIES};
     std::vector<zes_structure_type_t> types = {};
@@ -622,7 +629,7 @@ inline ze_result_t ParameterValidation::validateExtensions(zes_fan_properties_t 
 }
 
 template <>
-inline ze_result_t ParameterValidation::validateExtensions(zes_firmware_properties_t *descriptor) {
+inline ze_result_t ParameterValidation::validateExtensions(const zes_firmware_properties_t *descriptor) {
 
     std::vector<zes_structure_type_t> baseTypes = {ZES_STRUCTURE_TYPE_FIRMWARE_PROPERTIES};
     std::vector<zes_structure_type_t> types = {};
@@ -631,7 +638,7 @@ inline ze_result_t ParameterValidation::validateExtensions(zes_firmware_properti
 }
 
 template <>
-inline ze_result_t ParameterValidation::validateExtensions(zes_freq_properties_t *descriptor) {
+inline ze_result_t ParameterValidation::validateExtensions(const zes_freq_properties_t *descriptor) {
 
     std::vector<zes_structure_type_t> baseTypes = {ZES_STRUCTURE_TYPE_FREQ_PROPERTIES};
     std::vector<zes_structure_type_t> types = {};
@@ -640,7 +647,7 @@ inline ze_result_t ParameterValidation::validateExtensions(zes_freq_properties_t
 }
 
 template <>
-inline ze_result_t ParameterValidation::validateExtensions(zes_led_properties_t *descriptor) {
+inline ze_result_t ParameterValidation::validateExtensions(const zes_led_properties_t *descriptor) {
 
     std::vector<zes_structure_type_t> baseTypes = {ZES_STRUCTURE_TYPE_LED_PROPERTIES};
     std::vector<zes_structure_type_t> types = {};
@@ -649,7 +656,7 @@ inline ze_result_t ParameterValidation::validateExtensions(zes_led_properties_t 
 }
 
 template <>
-inline ze_result_t ParameterValidation::validateExtensions(zes_mem_properties_t *descriptor) {
+inline ze_result_t ParameterValidation::validateExtensions(const zes_mem_properties_t *descriptor) {
 
     std::vector<zes_structure_type_t> baseTypes = {ZES_STRUCTURE_TYPE_MEM_PROPERTIES};
     std::vector<zes_structure_type_t> types = {};
@@ -658,7 +665,7 @@ inline ze_result_t ParameterValidation::validateExtensions(zes_mem_properties_t 
 }
 
 template <>
-inline ze_result_t ParameterValidation::validateExtensions(zes_perf_properties_t *descriptor) {
+inline ze_result_t ParameterValidation::validateExtensions(const zes_perf_properties_t *descriptor) {
 
     std::vector<zes_structure_type_t> baseTypes = {ZES_STRUCTURE_TYPE_PERF_PROPERTIES};
     std::vector<zes_structure_type_t> types = {};
@@ -667,7 +674,7 @@ inline ze_result_t ParameterValidation::validateExtensions(zes_perf_properties_t
 }
 
 template <>
-inline ze_result_t ParameterValidation::validateExtensions(zes_power_properties_t *descriptor) {
+inline ze_result_t ParameterValidation::validateExtensions(const zes_power_properties_t *descriptor) {
 
     std::vector<zes_structure_type_t> baseTypes = {ZES_STRUCTURE_TYPE_POWER_PROPERTIES};
     std::vector<zes_structure_type_t> types = {ZES_STRUCTURE_TYPE_POWER_LIMIT_EXT_DESC,
@@ -677,7 +684,7 @@ inline ze_result_t ParameterValidation::validateExtensions(zes_power_properties_
 }
 
 template <>
-inline ze_result_t ParameterValidation::validateExtensions(zes_psu_properties_t *descriptor) {
+inline ze_result_t ParameterValidation::validateExtensions(const zes_psu_properties_t *descriptor) {
 
     std::vector<zes_structure_type_t> baseTypes = {ZES_STRUCTURE_TYPE_PSU_PROPERTIES};
     std::vector<zes_structure_type_t> types = {};
@@ -686,7 +693,7 @@ inline ze_result_t ParameterValidation::validateExtensions(zes_psu_properties_t 
 }
 
 template <>
-inline ze_result_t ParameterValidation::validateExtensions(zes_ras_properties_t *descriptor) {
+inline ze_result_t ParameterValidation::validateExtensions(const zes_ras_properties_t *descriptor) {
 
     std::vector<zes_structure_type_t> baseTypes = {ZES_STRUCTURE_TYPE_RAS_PROPERTIES};
     std::vector<zes_structure_type_t> types = {};
@@ -695,7 +702,7 @@ inline ze_result_t ParameterValidation::validateExtensions(zes_ras_properties_t 
 }
 
 template <>
-inline ze_result_t ParameterValidation::validateExtensions(zes_sched_properties_t *descriptor) {
+inline ze_result_t ParameterValidation::validateExtensions(const zes_sched_properties_t *descriptor) {
 
     std::vector<zes_structure_type_t> baseTypes = {ZES_STRUCTURE_TYPE_SCHED_PROPERTIES};
     std::vector<zes_structure_type_t> types = {};
@@ -704,7 +711,7 @@ inline ze_result_t ParameterValidation::validateExtensions(zes_sched_properties_
 }
 
 template <>
-inline ze_result_t ParameterValidation::validateExtensions(zes_sched_timeout_properties_t *descriptor) {
+inline ze_result_t ParameterValidation::validateExtensions(const zes_sched_timeout_properties_t *descriptor) {
 
     std::vector<zes_structure_type_t> baseTypes = {ZES_STRUCTURE_TYPE_SCHED_TIMEOUT_PROPERTIES};
     std::vector<zes_structure_type_t> types = {};
@@ -713,7 +720,7 @@ inline ze_result_t ParameterValidation::validateExtensions(zes_sched_timeout_pro
 }
 
 template <>
-inline ze_result_t ParameterValidation::validateExtensions(zes_sched_timeslice_properties_t *descriptor) {
+inline ze_result_t ParameterValidation::validateExtensions(const zes_sched_timeslice_properties_t *descriptor) {
 
     std::vector<zes_structure_type_t> baseTypes = {ZES_STRUCTURE_TYPE_SCHED_TIMESLICE_PROPERTIES};
     std::vector<zes_structure_type_t> types = {};
@@ -722,7 +729,7 @@ inline ze_result_t ParameterValidation::validateExtensions(zes_sched_timeslice_p
 }
 
 template <>
-inline ze_result_t ParameterValidation::validateExtensions(zes_standby_properties_t *descriptor) {
+inline ze_result_t ParameterValidation::validateExtensions(const zes_standby_properties_t *descriptor) {
 
     std::vector<zes_structure_type_t> baseTypes = {ZES_STRUCTURE_TYPE_STANDBY_PROPERTIES};
     std::vector<zes_structure_type_t> types = {};
@@ -731,7 +738,7 @@ inline ze_result_t ParameterValidation::validateExtensions(zes_standby_propertie
 }
 
 template <>
-inline ze_result_t ParameterValidation::validateExtensions(zes_temp_properties_t *descriptor) {
+inline ze_result_t ParameterValidation::validateExtensions(const zes_temp_properties_t *descriptor) {
 
     std::vector<zes_structure_type_t> baseTypes = {ZES_STRUCTURE_TYPE_TEMP_PROPERTIES};
     std::vector<zes_structure_type_t> types = {};
@@ -740,7 +747,7 @@ inline ze_result_t ParameterValidation::validateExtensions(zes_temp_properties_t
 }
 
 template <>
-inline ze_result_t ParameterValidation::validateExtensions(zes_device_state_t *descriptor) {
+inline ze_result_t ParameterValidation::validateExtensions(const zes_device_state_t *descriptor) {
 
     std::vector<zes_structure_type_t> baseTypes = {ZES_STRUCTURE_TYPE_DEVICE_STATE};
     std::vector<zes_structure_type_t> types = {};
@@ -749,7 +756,7 @@ inline ze_result_t ParameterValidation::validateExtensions(zes_device_state_t *d
 }
 
 template <>
-inline ze_result_t ParameterValidation::validateExtensions(zes_process_state_t *descriptor) {
+inline ze_result_t ParameterValidation::validateExtensions(const zes_process_state_t *descriptor) {
 
      if (descriptor == nullptr) {
        return ZE_RESULT_SUCCESS;
@@ -762,7 +769,7 @@ inline ze_result_t ParameterValidation::validateExtensions(zes_process_state_t *
 }
 
 template <>
-inline ze_result_t ParameterValidation::validateExtensions(zes_pci_state_t *descriptor) {
+inline ze_result_t ParameterValidation::validateExtensions(const zes_pci_state_t *descriptor) {
 
     std::vector<zes_structure_type_t> baseTypes = {ZES_STRUCTURE_TYPE_PCI_STATE};
     std::vector<zes_structure_type_t> types = {};
@@ -771,7 +778,7 @@ inline ze_result_t ParameterValidation::validateExtensions(zes_pci_state_t *desc
 }
 
 template <>
-inline ze_result_t ParameterValidation::validateExtensions(zes_fabric_port_config_t *descriptor) {
+inline ze_result_t ParameterValidation::validateExtensions(const zes_fabric_port_config_t *descriptor) {
 
     std::vector<zes_structure_type_t> baseTypes = {ZES_STRUCTURE_TYPE_FABRIC_PORT_CONFIG};
     std::vector<zes_structure_type_t> types = {};
@@ -780,7 +787,7 @@ inline ze_result_t ParameterValidation::validateExtensions(zes_fabric_port_confi
 }
 
 template <>
-inline ze_result_t ParameterValidation::validateExtensions(zes_fabric_port_state_t *descriptor) {
+inline ze_result_t ParameterValidation::validateExtensions(const zes_fabric_port_state_t *descriptor) {
 
     std::vector<zes_structure_type_t> baseTypes = {ZES_STRUCTURE_TYPE_FABRIC_PORT_STATE};
     std::vector<zes_structure_type_t> types = {};
@@ -789,7 +796,7 @@ inline ze_result_t ParameterValidation::validateExtensions(zes_fabric_port_state
 }
 
 template <>
-inline ze_result_t ParameterValidation::validateExtensions(zes_fan_config_t *descriptor) {
+inline ze_result_t ParameterValidation::validateExtensions(const zes_fan_config_t *descriptor) {
 
     std::vector<zes_structure_type_t> baseTypes = {ZES_STRUCTURE_TYPE_FAN_CONFIG};
     std::vector<zes_structure_type_t> types = {};
@@ -798,7 +805,7 @@ inline ze_result_t ParameterValidation::validateExtensions(zes_fan_config_t *des
 }
 
 template <>
-inline ze_result_t ParameterValidation::validateExtensions(zes_freq_state_t *descriptor) {
+inline ze_result_t ParameterValidation::validateExtensions(const zes_freq_state_t *descriptor) {
 
     std::vector<zes_structure_type_t> baseTypes = {ZES_STRUCTURE_TYPE_FREQ_STATE};
     std::vector<zes_structure_type_t> types = {};
@@ -807,7 +814,7 @@ inline ze_result_t ParameterValidation::validateExtensions(zes_freq_state_t *des
 }
 
 template <>
-inline ze_result_t ParameterValidation::validateExtensions(zes_oc_capabilities_t *descriptor) {
+inline ze_result_t ParameterValidation::validateExtensions(const zes_oc_capabilities_t *descriptor) {
 
     std::vector<zes_structure_type_t> baseTypes = {ZES_STRUCTURE_TYPE_OC_CAPABILITIES};
     std::vector<zes_structure_type_t> types = {};
@@ -816,7 +823,7 @@ inline ze_result_t ParameterValidation::validateExtensions(zes_oc_capabilities_t
 }
 
 template <>
-inline ze_result_t ParameterValidation::validateExtensions(zes_led_state_t *descriptor) {
+inline ze_result_t ParameterValidation::validateExtensions(const zes_led_state_t *descriptor) {
 
     std::vector<zes_structure_type_t> baseTypes = {ZES_STRUCTURE_TYPE_LED_STATE};
     std::vector<zes_structure_type_t> types = {};
@@ -825,7 +832,7 @@ inline ze_result_t ParameterValidation::validateExtensions(zes_led_state_t *desc
 }
 
 template <>
-inline ze_result_t ParameterValidation::validateExtensions(zes_mem_state_t *descriptor) {
+inline ze_result_t ParameterValidation::validateExtensions(const zes_mem_state_t *descriptor) {
 
     std::vector<zes_structure_type_t> baseTypes = {ZES_STRUCTURE_TYPE_MEM_STATE};
     std::vector<zes_structure_type_t> types = {};
@@ -834,7 +841,7 @@ inline ze_result_t ParameterValidation::validateExtensions(zes_mem_state_t *desc
 }
 
 template <>
-inline ze_result_t ParameterValidation::validateExtensions(zes_psu_state_t *descriptor) {
+inline ze_result_t ParameterValidation::validateExtensions(const zes_psu_state_t *descriptor) {
 
     std::vector<zes_structure_type_t> baseTypes = {ZES_STRUCTURE_TYPE_PSU_STATE};
     std::vector<zes_structure_type_t> types = {};
@@ -844,7 +851,7 @@ inline ze_result_t ParameterValidation::validateExtensions(zes_psu_state_t *desc
 
 // This one is odd.  I don't find any actual uses of this one.
 template <>
-inline ze_result_t ParameterValidation::validateExtensions(zes_base_state_t *descriptor) {
+inline ze_result_t ParameterValidation::validateExtensions(const zes_base_state_t *descriptor) {
 
     std::vector<zes_structure_type_t> baseTypes = {ZES_STRUCTURE_TYPE_BASE_STATE};
     std::vector<zes_structure_type_t> types = {};
@@ -853,7 +860,7 @@ inline ze_result_t ParameterValidation::validateExtensions(zes_base_state_t *des
 }
 
 template <>
-inline ze_result_t ParameterValidation::validateExtensions(zes_ras_config_t *descriptor) {
+inline ze_result_t ParameterValidation::validateExtensions(const zes_ras_config_t *descriptor) {
 
     std::vector<zes_structure_type_t> baseTypes = {ZES_STRUCTURE_TYPE_RAS_CONFIG};
     std::vector<zes_structure_type_t> types = {};
@@ -862,7 +869,7 @@ inline ze_result_t ParameterValidation::validateExtensions(zes_ras_config_t *des
 }
 
 template <>
-inline ze_result_t ParameterValidation::validateExtensions(zes_ras_state_t *descriptor) {
+inline ze_result_t ParameterValidation::validateExtensions(const zes_ras_state_t *descriptor) {
 
     std::vector<zes_structure_type_t> baseTypes = {ZES_STRUCTURE_TYPE_RAS_STATE};
     std::vector<zes_structure_type_t> types = {};
@@ -871,7 +878,7 @@ inline ze_result_t ParameterValidation::validateExtensions(zes_ras_state_t *desc
 }
 
 template <>
-inline ze_result_t ParameterValidation::validateExtensions(zes_temp_config_t *descriptor) {
+inline ze_result_t ParameterValidation::validateExtensions(const zes_temp_config_t *descriptor) {
 
     std::vector<zes_structure_type_t> baseTypes = {ZES_STRUCTURE_TYPE_TEMP_CONFIG};
     std::vector<zes_structure_type_t> types = {};
@@ -880,7 +887,7 @@ inline ze_result_t ParameterValidation::validateExtensions(zes_temp_config_t *de
 }
 
 template <>
-inline ze_result_t ParameterValidation::validateExtensions(zes_device_ecc_desc_t *descriptor) {
+inline ze_result_t ParameterValidation::validateExtensions(const zes_device_ecc_desc_t *descriptor) {
 
     std::vector<zes_structure_type_t> baseTypes = {ZES_STRUCTURE_TYPE_DEVICE_ECC_DESC};
     std::vector<zes_structure_type_t> types = {};
@@ -889,7 +896,7 @@ inline ze_result_t ParameterValidation::validateExtensions(zes_device_ecc_desc_t
 }
 
 template <>
-inline ze_result_t ParameterValidation::validateExtensions(zes_device_ecc_properties_t *descriptor) {
+inline ze_result_t ParameterValidation::validateExtensions(const zes_device_ecc_properties_t *descriptor) {
 
     std::vector<zes_structure_type_t> baseTypes = {ZES_STRUCTURE_TYPE_DEVICE_ECC_PROPERTIES};
     std::vector<zes_structure_type_t> types = {};
@@ -898,7 +905,7 @@ inline ze_result_t ParameterValidation::validateExtensions(zes_device_ecc_proper
 }
 
 template <>
-inline ze_result_t ParameterValidation::validateExtensions(zes_power_limit_ext_desc_t *descriptor) {
+inline ze_result_t ParameterValidation::validateExtensions(const zes_power_limit_ext_desc_t *descriptor) {
 
      if (descriptor == nullptr) {
        return ZE_RESULT_SUCCESS;
@@ -911,7 +918,7 @@ inline ze_result_t ParameterValidation::validateExtensions(zes_power_limit_ext_d
 }
 
 template <>
-inline ze_result_t ParameterValidation::validateExtensions(zes_overclock_properties_t *descriptor) {
+inline ze_result_t ParameterValidation::validateExtensions(const zes_overclock_properties_t *descriptor) {
 
     std::vector<zes_structure_type_t> baseTypes = {ZES_STRUCTURE_TYPE_OVERCLOCK_PROPERTIES};
     std::vector<zes_structure_type_t> types = {};

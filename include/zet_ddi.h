@@ -5,7 +5,7 @@
  * SPDX-License-Identifier: MIT
  *
  * @file zet_ddi.h
- * @version v1.9-r1.9.3
+ * @version v1.13-r1.13.1
  *
  */
 #ifndef _ZET_DDI_H
@@ -84,6 +84,146 @@ typedef ze_result_t (ZE_APICALL *zet_pfnGetMetricProgrammableExpProcAddrTable_t)
     );
 
 ///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zetMetricTracerCreateExp 
+typedef ze_result_t (ZE_APICALL *zet_pfnMetricTracerCreateExp_t)(
+    zet_context_handle_t,
+    zet_device_handle_t,
+    uint32_t,
+    zet_metric_group_handle_t*,
+    zet_metric_tracer_exp_desc_t*,
+    ze_event_handle_t,
+    zet_metric_tracer_exp_handle_t*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zetMetricTracerDestroyExp 
+typedef ze_result_t (ZE_APICALL *zet_pfnMetricTracerDestroyExp_t)(
+    zet_metric_tracer_exp_handle_t
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zetMetricTracerEnableExp 
+typedef ze_result_t (ZE_APICALL *zet_pfnMetricTracerEnableExp_t)(
+    zet_metric_tracer_exp_handle_t,
+    ze_bool_t
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zetMetricTracerDisableExp 
+typedef ze_result_t (ZE_APICALL *zet_pfnMetricTracerDisableExp_t)(
+    zet_metric_tracer_exp_handle_t,
+    ze_bool_t
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zetMetricTracerReadDataExp 
+typedef ze_result_t (ZE_APICALL *zet_pfnMetricTracerReadDataExp_t)(
+    zet_metric_tracer_exp_handle_t,
+    size_t*,
+    uint8_t*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zetMetricTracerDecodeExp 
+typedef ze_result_t (ZE_APICALL *zet_pfnMetricTracerDecodeExp_t)(
+    zet_metric_decoder_exp_handle_t,
+    size_t*,
+    uint8_t*,
+    uint32_t,
+    zet_metric_handle_t*,
+    uint32_t*,
+    uint32_t*,
+    uint32_t*,
+    zet_metric_entry_exp_t*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Table of MetricTracerExp functions pointers
+typedef struct _zet_metric_tracer_exp_dditable_t
+{
+    zet_pfnMetricTracerCreateExp_t                              pfnCreateExp;
+    zet_pfnMetricTracerDestroyExp_t                             pfnDestroyExp;
+    zet_pfnMetricTracerEnableExp_t                              pfnEnableExp;
+    zet_pfnMetricTracerDisableExp_t                             pfnDisableExp;
+    zet_pfnMetricTracerReadDataExp_t                            pfnReadDataExp;
+    zet_pfnMetricTracerDecodeExp_t                              pfnDecodeExp;
+} zet_metric_tracer_exp_dditable_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Exported function for filling application's MetricTracerExp table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+ZE_DLLEXPORT ze_result_t ZE_APICALL
+zetGetMetricTracerExpProcAddrTable(
+    ze_api_version_t version,                                               ///< [in] API version requested
+    zet_metric_tracer_exp_dditable_t* pDdiTable                             ///< [in,out] pointer to table of DDI function pointers
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zetGetMetricTracerExpProcAddrTable
+typedef ze_result_t (ZE_APICALL *zet_pfnGetMetricTracerExpProcAddrTable_t)(
+    ze_api_version_t,
+    zet_metric_tracer_exp_dditable_t*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zetMetricDecoderCreateExp 
+typedef ze_result_t (ZE_APICALL *zet_pfnMetricDecoderCreateExp_t)(
+    zet_metric_tracer_exp_handle_t,
+    zet_metric_decoder_exp_handle_t*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zetMetricDecoderDestroyExp 
+typedef ze_result_t (ZE_APICALL *zet_pfnMetricDecoderDestroyExp_t)(
+    zet_metric_decoder_exp_handle_t
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zetMetricDecoderGetDecodableMetricsExp 
+typedef ze_result_t (ZE_APICALL *zet_pfnMetricDecoderGetDecodableMetricsExp_t)(
+    zet_metric_decoder_exp_handle_t,
+    uint32_t*,
+    zet_metric_handle_t*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Table of MetricDecoderExp functions pointers
+typedef struct _zet_metric_decoder_exp_dditable_t
+{
+    zet_pfnMetricDecoderCreateExp_t                             pfnCreateExp;
+    zet_pfnMetricDecoderDestroyExp_t                            pfnDestroyExp;
+    zet_pfnMetricDecoderGetDecodableMetricsExp_t                pfnGetDecodableMetricsExp;
+} zet_metric_decoder_exp_dditable_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Exported function for filling application's MetricDecoderExp table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+ZE_DLLEXPORT ze_result_t ZE_APICALL
+zetGetMetricDecoderExpProcAddrTable(
+    ze_api_version_t version,                                               ///< [in] API version requested
+    zet_metric_decoder_exp_dditable_t* pDdiTable                            ///< [in,out] pointer to table of DDI function pointers
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zetGetMetricDecoderExpProcAddrTable
+typedef ze_result_t (ZE_APICALL *zet_pfnGetMetricDecoderExpProcAddrTable_t)(
+    ze_api_version_t,
+    zet_metric_decoder_exp_dditable_t*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
 /// @brief Function-pointer for zetDeviceGetDebugProperties 
 typedef ze_result_t (ZE_APICALL *zet_pfnDeviceGetDebugProperties_t)(
     zet_device_handle_t,
@@ -117,6 +257,72 @@ zetGetDeviceProcAddrTable(
 typedef ze_result_t (ZE_APICALL *zet_pfnGetDeviceProcAddrTable_t)(
     ze_api_version_t,
     zet_device_dditable_t*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zetDeviceGetConcurrentMetricGroupsExp 
+typedef ze_result_t (ZE_APICALL *zet_pfnDeviceGetConcurrentMetricGroupsExp_t)(
+    zet_device_handle_t,
+    uint32_t,
+    zet_metric_group_handle_t *,
+    uint32_t *,
+    uint32_t *
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zetDeviceCreateMetricGroupsFromMetricsExp 
+typedef ze_result_t (ZE_APICALL *zet_pfnDeviceCreateMetricGroupsFromMetricsExp_t)(
+    zet_device_handle_t,
+    uint32_t,
+    zet_metric_handle_t *,
+    const char *,
+    const char *,
+    uint32_t *,
+    zet_metric_group_handle_t*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zetDeviceEnableMetricsExp 
+typedef ze_result_t (ZE_APICALL *zet_pfnDeviceEnableMetricsExp_t)(
+    zet_device_handle_t
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zetDeviceDisableMetricsExp 
+typedef ze_result_t (ZE_APICALL *zet_pfnDeviceDisableMetricsExp_t)(
+    zet_device_handle_t
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Table of DeviceExp functions pointers
+typedef struct _zet_device_exp_dditable_t
+{
+    zet_pfnDeviceGetConcurrentMetricGroupsExp_t                 pfnGetConcurrentMetricGroupsExp;
+    zet_pfnDeviceCreateMetricGroupsFromMetricsExp_t             pfnCreateMetricGroupsFromMetricsExp;
+    zet_pfnDeviceEnableMetricsExp_t                             pfnEnableMetricsExp;
+    zet_pfnDeviceDisableMetricsExp_t                            pfnDisableMetricsExp;
+} zet_device_exp_dditable_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Exported function for filling application's DeviceExp table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+ZE_DLLEXPORT ze_result_t ZE_APICALL
+zetGetDeviceExpProcAddrTable(
+    ze_api_version_t version,                                               ///< [in] API version requested
+    zet_device_exp_dditable_t* pDdiTable                                    ///< [in,out] pointer to table of DDI function pointers
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zetGetDeviceExpProcAddrTable
+typedef ze_result_t (ZE_APICALL *zet_pfnGetDeviceExpProcAddrTable_t)(
+    ze_api_version_t,
+    zet_device_exp_dditable_t*
     );
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -218,6 +424,43 @@ zetGetCommandListProcAddrTable(
 typedef ze_result_t (ZE_APICALL *zet_pfnGetCommandListProcAddrTable_t)(
     ze_api_version_t,
     zet_command_list_dditable_t*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zetCommandListAppendMarkerExp 
+typedef ze_result_t (ZE_APICALL *zet_pfnCommandListAppendMarkerExp_t)(
+    zet_command_list_handle_t,
+    zet_metric_group_handle_t,
+    uint32_t
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Table of CommandListExp functions pointers
+typedef struct _zet_command_list_exp_dditable_t
+{
+    zet_pfnCommandListAppendMarkerExp_t                         pfnAppendMarkerExp;
+} zet_command_list_exp_dditable_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Exported function for filling application's CommandListExp table
+///        with current process' addresses
+///
+/// @returns
+///     - ::ZE_RESULT_SUCCESS
+///     - ::ZE_RESULT_ERROR_UNINITIALIZED
+///     - ::ZE_RESULT_ERROR_INVALID_NULL_POINTER
+///     - ::ZE_RESULT_ERROR_UNSUPPORTED_VERSION
+ZE_DLLEXPORT ze_result_t ZE_APICALL
+zetGetCommandListExpProcAddrTable(
+    ze_api_version_t version,                                               ///< [in] API version requested
+    zet_command_list_exp_dditable_t* pDdiTable                              ///< [in,out] pointer to table of DDI function pointers
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zetGetCommandListExpProcAddrTable
+typedef ze_result_t (ZE_APICALL *zet_pfnGetCommandListExpProcAddrTable_t)(
+    ze_api_version_t,
+    zet_command_list_exp_dditable_t*
     );
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -358,11 +601,24 @@ typedef ze_result_t (ZE_APICALL *zet_pfnMetricDestroyExp_t)(
     );
 
 ///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zetMetricCreateFromProgrammableExp2 
+typedef ze_result_t (ZE_APICALL *zet_pfnMetricCreateFromProgrammableExp2_t)(
+    zet_metric_programmable_exp_handle_t,
+    uint32_t,
+    zet_metric_programmable_param_value_exp_t*,
+    const char*,
+    const char*,
+    uint32_t*,
+    zet_metric_handle_t*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
 /// @brief Table of MetricExp functions pointers
 typedef struct _zet_metric_exp_dditable_t
 {
     zet_pfnMetricCreateFromProgrammableExp_t                    pfnCreateFromProgrammableExp;
     zet_pfnMetricDestroyExp_t                                   pfnDestroyExp;
+    zet_pfnMetricCreateFromProgrammableExp2_t                   pfnCreateFromProgrammableExp2;
 } zet_metric_exp_dditable_t;
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -943,9 +1199,13 @@ typedef ze_result_t (ZE_APICALL *zet_pfnGetDebugProcAddrTable_t)(
 typedef struct _zet_dditable_t
 {
     zet_metric_programmable_exp_dditable_t  MetricProgrammableExp;
+    zet_metric_tracer_exp_dditable_t    MetricTracerExp;
+    zet_metric_decoder_exp_dditable_t   MetricDecoderExp;
     zet_device_dditable_t               Device;
+    zet_device_exp_dditable_t           DeviceExp;
     zet_context_dditable_t              Context;
     zet_command_list_dditable_t         CommandList;
+    zet_command_list_exp_dditable_t     CommandListExp;
     zet_module_dditable_t               Module;
     zet_kernel_dditable_t               Kernel;
     zet_metric_dditable_t               Metric;
@@ -958,6 +1218,31 @@ typedef struct _zet_dditable_t
     zet_tracer_exp_dditable_t           TracerExp;
     zet_debug_dditable_t                Debug;
 } zet_dditable_t;
+/// @brief Container for all DDI tables with version and tables set by the Driver
+typedef struct _zet_dditable_driver_t
+{
+    ze_api_version_t    version;
+    uint8_t             isValidFlag;
+    zet_metric_programmable_exp_dditable_t *    MetricProgrammableExp;
+    zet_metric_tracer_exp_dditable_t *  MetricTracerExp;
+    zet_metric_decoder_exp_dditable_t * MetricDecoderExp;
+    zet_device_dditable_t *             Device;
+    zet_device_exp_dditable_t *         DeviceExp;
+    zet_context_dditable_t *            Context;
+    zet_command_list_dditable_t *       CommandList;
+    zet_command_list_exp_dditable_t *   CommandListExp;
+    zet_module_dditable_t *             Module;
+    zet_kernel_dditable_t *             Kernel;
+    zet_metric_dditable_t *             Metric;
+    zet_metric_exp_dditable_t *         MetricExp;
+    zet_metric_group_dditable_t *       MetricGroup;
+    zet_metric_group_exp_dditable_t *   MetricGroupExp;
+    zet_metric_streamer_dditable_t *    MetricStreamer;
+    zet_metric_query_pool_dditable_t *  MetricQueryPool;
+    zet_metric_query_dditable_t *       MetricQuery;
+    zet_tracer_exp_dditable_t *         TracerExp;
+    zet_debug_dditable_t *              Debug;
+} zet_dditable_driver_t;
 
 #if defined(__cplusplus)
 } // extern "C"

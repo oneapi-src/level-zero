@@ -9,7 +9,7 @@ from templates import helper as th
     X=x.upper()
 %>/*
  *
- * Copyright (C) 2019-2024 Intel Corporation
+ * Copyright (C) 2019-2025 Intel Corporation
  *
  * SPDX-License-Identifier: MIT
  *
@@ -17,6 +17,8 @@ from templates import helper as th
  *
  */
 #include "${x}_loader_internal.h"
+
+using namespace loader_driver_ddi;
 
 namespace loader
 {
@@ -38,7 +40,7 @@ namespace loader
         arrays_to_delete = []
     %>
 
-        %if re.match(r"Init", obj['name']):
+        %if re.match(r"Init", obj['name']) and not re.match(r"\w+InitDrivers$", th.make_func_name(n, tags, obj)):
         bool atLeastOneDriverValid = false;
         %if namespace != "zes":
         for( auto& drv : loader::context->zeDrivers )
@@ -46,18 +48,60 @@ namespace loader
         for( auto& drv : *loader::context->sysmanInstanceDrivers )
         %endif
         {
+            %if re.match(r"Init", obj['name']) and namespace == "zes":
+            if(drv.initStatus != ZE_RESULT_SUCCESS || drv.initSysManStatus != ZE_RESULT_SUCCESS)
+                continue;
+            %else:
             if(drv.initStatus != ZE_RESULT_SUCCESS)
                 continue;
+            %endif
+        %if re.match(r"Init", obj['name']) and namespace == "zes":
+            if (!drv.dditable.${n}.${th.get_table_name(n, tags, obj)}.${th.make_pfn_name(n, tags, obj)}) {
+                drv.initSysManStatus = ZE_RESULT_ERROR_UNINITIALIZED;
+                continue;
+            }
+        %endif
+            %if re.match(r"Init", obj['name']) and namespace == "zes":
+            drv.initSysManStatus = drv.dditable.${n}.${th.get_table_name(n, tags, obj)}.${th.make_pfn_name(n, tags, obj)}( ${", ".join(th.make_param_lines(n, tags, obj, format=["name"]))} );
+            if(drv.initSysManStatus == ZE_RESULT_SUCCESS)
+                atLeastOneDriverValid = true;
+            %else:
             drv.initStatus = drv.dditable.${n}.${th.get_table_name(n, tags, obj)}.${th.make_pfn_name(n, tags, obj)}( ${", ".join(th.make_param_lines(n, tags, obj, format=["name"]))} );
             if(drv.initStatus == ZE_RESULT_SUCCESS)
                 atLeastOneDriverValid = true;
+            %if re.match(r"Init", obj['name']) and namespace == "ze":
+            drv.legacyInitAttempted = true;
+            %endif
+            %endif
         }
 
         if(!atLeastOneDriverValid)
             result=ZE_RESULT_ERROR_UNINITIALIZED;
 
-        %elif re.match(r"\w+DriverGet$", th.make_func_name(n, tags, obj)):
+        %elif re.match(r"\w+DriverGet$", th.make_func_name(n, tags, obj)) or re.match(r"\w+InitDrivers$", th.make_func_name(n, tags, obj)):
         uint32_t total_driver_handle_count = 0;
+
+        {
+            std::lock_guard<std::mutex> lock(loader::context->sortMutex);
+            if (!loader::context->sortingInProgress.exchange(true) && !loader::context->instrumentationEnabled) {
+                %if namespace != "zes":
+                %if not re.match(r"\w+InitDrivers$", th.make_func_name(n, tags, obj)):
+                std::call_once(loader::context->coreDriverSortOnce, []() {
+                    loader::context->driverSorting(&loader::context->zeDrivers, nullptr, false);
+                });
+                %else:
+                std::call_once(loader::context->coreDriverSortOnce, [desc]() {
+                    loader::context->driverSorting(&loader::context->zeDrivers, desc, false);
+                });
+                %endif
+                %else:
+                std::call_once(loader::context->sysmanDriverSortOnce, []() {
+                    loader::context->driverSorting(loader::context->sysmanInstanceDrivers, nullptr, true);
+                });
+                %endif
+                loader::context->sortingInProgress.store(false);
+            }
+        }
 
         %if namespace != "zes":
         for( auto& drv : loader::context->zeDrivers )
@@ -65,19 +109,41 @@ namespace loader
         for( auto& drv : *loader::context->sysmanInstanceDrivers )
         %endif
         {
+            %if not (re.match(r"\w+InitDrivers$", th.make_func_name(n, tags, obj))) and namespace != "zes":
             if(drv.initStatus != ZE_RESULT_SUCCESS)
                 continue;
+            %elif namespace == "zes":
+            if(drv.initStatus != ZE_RESULT_SUCCESS || drv.initSysManStatus != ZE_RESULT_SUCCESS)
+                continue;
+            %else:
+            if (!drv.dditable.${n}.${th.get_table_name(n, tags, obj)}.${th.make_pfn_name(n, tags, obj)}) {
+                %if re.match(r"\w+InitDrivers$", th.make_func_name(n, tags, obj)):
+                drv.initDriversStatus = ${X}_RESULT_ERROR_UNINITIALIZED;
+                %else:
+                drv.initStatus = ${X}_RESULT_ERROR_UNINITIALIZED;
+                %endif
+                continue;
+            }
+            %endif
 
             if( ( 0 < *${obj['params'][0]['name']} ) && ( *${obj['params'][0]['name']} == total_driver_handle_count))
                 break;
 
             uint32_t library_driver_handle_count = 0;
 
+            %if re.match(r"\w+InitDrivers$", th.make_func_name(n, tags, obj)):
+            result = drv.dditable.${n}.${th.get_table_name(n, tags, obj)}.${th.make_pfn_name(n, tags, obj)}( &library_driver_handle_count, nullptr, desc );
+            %else:
             result = drv.dditable.${n}.${th.get_table_name(n, tags, obj)}.${th.make_pfn_name(n, tags, obj)}( &library_driver_handle_count, nullptr );
+            %endif
             if( ${X}_RESULT_SUCCESS != result ) {
                 // If Get Drivers fails with Uninitialized, then update the driver init status to prevent reporting this driver in the next get call.
                 if (${X}_RESULT_ERROR_UNINITIALIZED == result) {
+                    %if re.match(r"\w+InitDrivers$", th.make_func_name(n, tags, obj)):
+                    drv.initDriversStatus = result;
+                    %else:
                     drv.initStatus = result;
+                    %endif
                 }
                 continue;
             }
@@ -87,15 +153,55 @@ namespace loader
                 if( total_driver_handle_count + library_driver_handle_count > *${obj['params'][0]['name']}) {
                     library_driver_handle_count = *${obj['params'][0]['name']} - total_driver_handle_count;
                 }
+                %if re.match(r"\w+InitDrivers$", th.make_func_name(n, tags, obj)):
+                result = drv.dditable.${n}.${th.get_table_name(n, tags, obj)}.${th.make_pfn_name(n, tags, obj)}( &library_driver_handle_count, &${obj['params'][1]['name']}[ total_driver_handle_count ], desc );
+                %else:
                 result = drv.dditable.${n}.${th.get_table_name(n, tags, obj)}.${th.make_pfn_name(n, tags, obj)}( &library_driver_handle_count, &${obj['params'][1]['name']}[ total_driver_handle_count ] );
+                %endif
                 if( ${X}_RESULT_SUCCESS != result ) break;
+
+                drv.driverInuse = true;
 
                 try
                 {
                     for( uint32_t i = 0; i < library_driver_handle_count; ++i ) {
                         uint32_t driver_index = total_driver_handle_count + i;
+                        %if namespace != "zes":
+                        if (drv.driverDDIHandleSupportQueried == false) {
+                            drv.properties = {};
+                            drv.properties.stype = ZE_STRUCTURE_TYPE_DRIVER_DDI_HANDLES_EXT_PROPERTIES;
+                            drv.properties.pNext = nullptr;
+                            ze_driver_properties_t driverProperties = {};
+                            driverProperties.stype = ZE_STRUCTURE_TYPE_DRIVER_PROPERTIES;
+                            driverProperties.pNext = nullptr;
+                            driverProperties.pNext = &drv.properties;
+                            ze_result_t res = drv.dditable.ze.Driver.pfnGetProperties(${obj['params'][1]['name']}[ driver_index ], &driverProperties);
+                            if (res != ZE_RESULT_SUCCESS) {
+                                if (loader::context->debugTraceEnabled) {
+                                    std::string message = drv.name + " failed zeDriverGetProperties query, returned ";
+                                    loader::context->debug_trace_message(message, loader::to_string(res));
+                                }
+                                return res;
+                            }
+                            drv.driverDDIHandleSupportQueried = true;
+                        }
+                        if (!(drv.properties.flags & ZE_DRIVER_DDI_HANDLE_EXT_FLAG_DDI_HANDLE_EXT_SUPPORTED) || !loader::context->driverDDIPathDefault) {
+                            if (loader::context->debugTraceEnabled) {
+                                std::string message = "Driver DDI Handles Not Supported for " + drv.name;
+                                loader::context->debug_trace_message(message, "");
+                            }
+                            ${obj['params'][1]['name']}[ driver_index ] = reinterpret_cast<${n}_driver_handle_t>(
+                                context->${n}_driver_factory.getInstance( ${obj['params'][1]['name']}[ driver_index ], &drv.dditable ) );
+                        } else if (drv.properties.flags & ZE_DRIVER_DDI_HANDLE_EXT_FLAG_DDI_HANDLE_EXT_SUPPORTED) {
+                            if (loader::context->debugTraceEnabled) {
+                                std::string message = "Driver DDI Handles Supported for " + drv.name;
+                                loader::context->debug_trace_message(message, "");
+                            }
+                        }
+                        %else:
                         ${obj['params'][1]['name']}[ driver_index ] = reinterpret_cast<${n}_driver_handle_t>(
                             context->${n}_driver_factory.getInstance( ${obj['params'][1]['name']}[ driver_index ], &drv.dditable ) );
+                        %endif
                     }
                 }
                 catch( std::bad_alloc& )
@@ -286,6 +392,40 @@ extern "C" {
 
 %for tbl in th.get_pfntables(specs, meta, n, tags):
 ///////////////////////////////////////////////////////////////////////////////
+/// @brief function for filling the legacy api pointers for ${tbl['name']} table
+__${x}dlllocal void ${X}_APICALL
+${tbl['export']['name']}Legacy()
+{
+    // return pointers to the Loader's Functions.
+    %for obj in tbl['functions']:
+    %if 'condition' in obj:
+#if ${th.subt(n, tags, obj['condition'])}
+    %endif
+    %if namespace == "ze":
+    loader::loaderDispatch->pCore->${tbl['name']}->${th.append_ws(th.make_pfn_name(n, tags, obj), 43)} = loader::${th.make_func_name(n, tags, obj)};
+    %elif namespace == "zet":
+    loader::loaderDispatch->pTools->${tbl['name']}->${th.append_ws(th.make_pfn_name(n, tags, obj), 43)} = loader::${th.make_func_name(n, tags, obj)};
+    %elif namespace == "zes":
+    loader::loaderDispatch->pSysman->${tbl['name']}->${th.append_ws(th.make_pfn_name(n, tags, obj), 43)} = loader::${th.make_func_name(n, tags, obj)};
+    %endif
+    %if 'condition' in obj:
+#else
+    %if namespace == "ze":
+    loader::loaderDispatch->pCore->${tbl['name']}->${th.append_ws(th.make_pfn_name(n, tags, obj), 43)} = nullptr;
+    %elif namespace == "zet":
+    loader::loaderDispatch->pTools->${tbl['name']}->${th.append_ws(th.make_pfn_name(n, tags, obj), 43)} = nullptr;
+    %elif namespace == "zes":
+    loader::loaderDispatch->pSysman->${tbl['name']}->${th.append_ws(th.make_pfn_name(n, tags, obj), 43)} = nullptr;
+    %endif
+#endif
+    %endif
+    %endfor
+}
+
+%endfor
+
+%for tbl in th.get_pfntables(specs, meta, n, tags):
+///////////////////////////////////////////////////////////////////////////////
 /// @brief Exported function for filling application's ${tbl['name']} table
 ///        with current process' addresses
 ///
@@ -302,12 +442,12 @@ ${tbl['export']['name']}(
     )
 {
     %if namespace != "zes":
-    if( loader::context->zeDrivers.size() < 1 )
+    if( loader::context->zeDrivers.size() < 1 ) {
     %else:
-    if( loader::context->sysmanInstanceDrivers->size() < 1 )
+    if( loader::context->sysmanInstanceDrivers->size() < 1 ) {
     %endif
-
         return ${X}_RESULT_ERROR_UNINITIALIZED;
+    }
 
     if( nullptr == pDdiTable )
         return ${X}_RESULT_ERROR_INVALID_NULL_POINTER;
@@ -343,10 +483,18 @@ ${tbl['export']['name']}(
         %endif
         %if tbl['experimental'] is False: #//Experimental Tables may not be implemented in driver
         auto getTableResult = getTable( version, &drv.dditable.${n}.${tbl['name']});
-        if(getTableResult == ZE_RESULT_SUCCESS) 
+        if(getTableResult == ZE_RESULT_SUCCESS) {
             atLeastOneDriverValid = true;
-        else
+            loader::context->configured_version = version;
+        } else
             drv.initStatus = getTableResult;
+        %if namespace != "zes":
+        %if tbl['name'] == "Global":
+        if (drv.dditable.ze.Global.pfnInitDrivers) {
+            loader::context->initDriversSupport = true;
+        }
+        %endif
+        %endif
         %else:
         result = getTable( version, &drv.dditable.${n}.${tbl['name']});
         %endif
@@ -368,17 +516,35 @@ ${tbl['export']['name']}(
         %endif
         {
             // return pointers to loader's DDIs
+            %if namespace == "ze":
+            loader::loaderDispatch->pCore->${tbl['name']} = new ${tbl['type']};
+            %elif namespace == "zet":
+            loader::loaderDispatch->pTools->${tbl['name']} = new ${tbl['type']};
+            %elif namespace == "zes":
+            loader::loaderDispatch->pSysman->${tbl['name']} = new ${tbl['type']};
+            %endif
             %for obj in tbl['functions']:
+            if (version >= ${th.get_version(obj)}) {
             %if 'condition' in obj:
         #if ${th.subt(n, tags, obj['condition'])}
             %endif
+            %if not (re.match(r"Init", obj['name']) or re.match(r"\w+InitDrivers$", th.make_func_name(n, tags, obj)) or re.match(r"\w+DriverGet$", th.make_func_name(n, tags, obj))):
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->${th.append_ws(th.make_pfn_name(n, tags, obj), 43)} = loader_driver_ddi::${th.make_func_name(n, tags, obj)};
+            } else {
+                pDdiTable->${th.append_ws(th.make_pfn_name(n, tags, obj), 43)} = loader::${th.make_func_name(n, tags, obj)};
+            }
+            %else:
             pDdiTable->${th.append_ws(th.make_pfn_name(n, tags, obj), 43)} = loader::${th.make_func_name(n, tags, obj)};
+            %endif
             %if 'condition' in obj:
         #else
-            pDdiTable->${th.append_ws(th.make_pfn_name(n, tags, obj), 43)} = nullptr;
+                pDdiTable->${th.append_ws(th.make_pfn_name(n, tags, obj), 43)} = nullptr;
         #endif
             %endif
+            }
             %endfor
+            ${tbl['export']['name']}Legacy();
         }
         else
         {

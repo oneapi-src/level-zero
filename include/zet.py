@@ -4,7 +4,7 @@
  SPDX-License-Identifier: MIT
 
  @file zet.py
- @version v1.9-r1.9.3
+ @version v1.13-r1.13.1
 
  """
 import platform
@@ -100,6 +100,9 @@ class zet_structure_type_v(IntEnum):
     METRIC_PROGRAMMABLE_EXP_PROPERTIES = 0x00010003                         ## ::zet_metric_programmable_exp_properties_t
     METRIC_PROGRAMMABLE_PARAM_INFO_EXP = 0x00010004                         ## ::zet_metric_programmable_param_info_exp_t
     METRIC_PROGRAMMABLE_PARAM_VALUE_INFO_EXP = 0x00010005                   ## ::zet_metric_programmable_param_value_info_exp_t
+    METRIC_GROUP_TYPE_EXP = 0x00010006                                      ## ::zet_metric_group_type_exp_t
+    EXPORT_DMA_EXP_PROPERTIES = 0x00010007                                  ## ::zet_export_dma_buf_exp_properties_t
+    METRIC_TRACER_EXP_DESC = 0x00010008                                     ## ::zet_metric_tracer_exp_desc_t
 
 class zet_structure_type_t(c_int):
     def __str__(self):
@@ -321,6 +324,7 @@ class zet_debug_event_t(Structure):
 class zet_debug_memory_space_type_v(IntEnum):
     DEFAULT = 0                                                             ## default memory space (attribute may be omitted)
     SLM = 1                                                                 ## shared local memory space (GPU-only)
+    ELF = 2                                                                 ## ELF file memory space
 
 class zet_debug_memory_space_type_t(c_int):
     def __str__(self):
@@ -379,6 +383,7 @@ ZET_MAX_METRIC_GROUP_DESCRIPTION = 256
 class zet_metric_group_sampling_type_flags_v(IntEnum):
     EVENT_BASED = ZE_BIT(0)                                                 ## Event based sampling
     TIME_BASED = ZE_BIT(1)                                                  ## Time based sampling
+    EXP_TRACER_BASED = ZE_BIT(2)                                            ## Experimental Tracer based sampling
 
 class zet_metric_group_sampling_type_flags_t(c_int):
     def __str__(self):
@@ -412,6 +417,13 @@ class zet_metric_type_v(IntEnum):
     FLAG = 5                                                                ## Metric type: flag
     RATIO = 6                                                               ## Metric type: ratio
     RAW = 7                                                                 ## Metric type: raw
+    EVENT_EXP_TIMESTAMP = 0x7ffffff9                                        ## Metric type: event with only timestamp and value has no meaning
+    EVENT_EXP_START = 0x7ffffffa                                            ## Metric type: the first event of a start/end event pair
+    EVENT_EXP_END = 0x7ffffffb                                              ## Metric type: the second event of a start/end event pair
+    EVENT_EXP_MONOTONIC_WRAPS_VALUE = 0x7ffffffc                            ## Metric type: value of the event is a monotonically increasing value
+                                                                            ## that can wrap around
+    EXP_EXPORT_DMA_BUF = 0x7ffffffd                                         ## Metric which exports linux dma_buf, which could be imported/mapped to
+                                                                            ## the host process
     IP_EXP = 0x7ffffffe                                                     ## Metric type: instruction pointer. Deprecated, use
                                                                             ## ::ZET_METRIC_TYPE_IP.
     IP = 0x7ffffffe                                                         ## Metric type: instruction pointer
@@ -589,6 +601,155 @@ class zet_tracer_exp_desc_t(Structure):
     ]
 
 ###############################################################################
+## @brief Concurrent Metric Groups Experimental Extension Name
+ZET_CONCURRENT_METRIC_GROUPS_EXP_NAME = "ZET_experimental_concurrent_metric_groups"
+
+###############################################################################
+## @brief Concurrent Metric Groups Experimental Extension Version(s)
+class zet_concurrent_metric_groups_exp_version_v(IntEnum):
+    _1_0 = ZE_MAKE_VERSION( 1, 0 )                                          ## version 1.0
+    CURRENT = ZE_MAKE_VERSION( 1, 0 )                                       ## latest known version
+
+class zet_concurrent_metric_groups_exp_version_t(c_int):
+    def __str__(self):
+        return str(zet_concurrent_metric_groups_exp_version_v(self.value))
+
+
+###############################################################################
+## @brief Metric Tracer Experimental Extension Name
+ZET_METRICS_TRACER_EXP_NAME = "ZET_experimental_metric_tracer"
+
+###############################################################################
+## @brief Metric Tracer Experimental Extension Version(s)
+class zet_metric_tracer_exp_version_v(IntEnum):
+    _1_0 = ZE_MAKE_VERSION( 1, 0 )                                          ## version 1.0
+    CURRENT = ZE_MAKE_VERSION( 1, 0 )                                       ## latest known version
+
+class zet_metric_tracer_exp_version_t(c_int):
+    def __str__(self):
+        return str(zet_metric_tracer_exp_version_v(self.value))
+
+
+###############################################################################
+## @brief Handle of metric tracer's object
+class zet_metric_tracer_exp_handle_t(c_void_p):
+    pass
+
+###############################################################################
+## @brief Handle of metric decoder's object
+class zet_metric_decoder_exp_handle_t(c_void_p):
+    pass
+
+###############################################################################
+## @brief Metric tracer descriptor
+class zet_metric_tracer_exp_desc_t(Structure):
+    _fields_ = [
+        ("stype", zet_structure_type_t),                                ## [in] type of this structure
+        ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains stype and pNext).
+        ("notifyEveryNBytes", c_ulong)                                  ## [in,out] number of collected bytes after which notification event will
+                                                                        ## be signaled. If the requested value is not supported exactly, then the
+                                                                        ## driver may use a value that is the closest supported approximation and
+                                                                        ## shall update this member during ::zetMetricTracerCreateExp.
+    ]
+
+###############################################################################
+## @brief Decoded metric entry
+class zet_metric_entry_exp_t(Structure):
+    _fields_ = [
+        ("value", zet_value_t),                                         ## [out] value of the decodable metric entry or event. Number is
+                                                                        ## meaningful based on the metric type.
+        ("timeStamp", c_ulonglong),                                     ## [out] timestamp at which the event happened.
+        ("metricIndex", c_ulong),                                       ## [out] index to the decodable metric handle in the input array
+                                                                        ## (phMetric) in ::zetMetricTracerDecodeExp().
+        ("onSubdevice", ze_bool_t),                                     ## [out] True if the event occurred on a sub-device; false means the
+                                                                        ## device on which the metric tracer was opened does not have
+                                                                        ## sub-devices.
+        ("subdeviceId", c_ulong)                                        ## [out] If onSubdevice is true, this gives the ID of the sub-device.
+    ]
+
+###############################################################################
+## @brief Metric group type
+class zet_metric_group_type_exp_flags_v(IntEnum):
+    EXPORT_DMA_BUF = ZE_BIT(0)                                              ## Metric group and metrics exports memory using linux dma-buf, which
+                                                                            ## could be imported/mapped to the host process. Properties of the
+                                                                            ## dma_buf could be queried using ::zet_export_dma_buf_exp_properties_t.
+    USER_CREATED = ZE_BIT(1)                                                ## Metric group created using ::zetDeviceCreateMetricGroupsFromMetricsExp
+    OTHER = ZE_BIT(2)                                                       ## Metric group which has a collection of metrics
+    MARKER = ZE_BIT(3)                                                      ## Metric group is capable of generating Marker metric
+
+class zet_metric_group_type_exp_flags_t(c_int):
+    def __str__(self):
+        return hex(self.value)
+
+
+###############################################################################
+## @brief Query the metric group type using `pNext` of
+##        ::zet_metric_group_properties_t
+class zet_metric_group_type_exp_t(Structure):
+    _fields_ = [
+        ("stype", zet_structure_type_t),                                ## [in] type of this structure
+        ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains stype and pNext).
+        ("type", zet_metric_group_type_exp_flags_t)                     ## [out] metric group type.
+                                                                        ## returns a combination of ::zet_metric_group_type_exp_flags_t.
+    ]
+
+###############################################################################
+## @brief Exported dma_buf properties queried using `pNext` of
+##        ::zet_metric_group_properties_t or ::zet_metric_properties_t
+class zet_export_dma_buf_exp_properties_t(Structure):
+    _fields_ = [
+        ("stype", zet_structure_type_t),                                ## [in] type of this structure
+        ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains stype and pNext).
+        ("fd", c_int),                                                  ## [out] the file descriptor handle that could be used to import the
+                                                                        ## memory by the host process.
+        ("size", c_size_t)                                              ## [out] size in bytes of the dma_buf
+    ]
+
+###############################################################################
+## @brief Marker Support Using MetricGroup Experimental Extension Name
+ZET_METRIC_GROUP_MARKER_EXP_NAME = "ZET_experimental_metric_group_marker"
+
+###############################################################################
+## @brief Marker Support Using MetricGroup Experimental Extension Version(s)
+class zet_metric_group_marker_exp_version_v(IntEnum):
+    _1_0 = ZE_MAKE_VERSION( 1, 0 )                                          ## version 1.0
+    CURRENT = ZE_MAKE_VERSION( 1, 0 )                                       ## latest known version
+
+class zet_metric_group_marker_exp_version_t(c_int):
+    def __str__(self):
+        return str(zet_metric_group_marker_exp_version_v(self.value))
+
+
+###############################################################################
+## @brief Query the metric source unique identifier using `pNext` of
+##        ::zet_metric_group_properties_t
+class zet_metric_source_id_exp_t(Structure):
+    _fields_ = [
+        ("stype", zet_structure_type_t),                                ## [in] type of this structure
+        ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains stype and pNext).
+        ("sourceId", c_ulong)                                           ## [out] unique number representing the Metric Source.
+    ]
+
+###############################################################################
+## @brief Runtime Enabling and Disabling Metrics Extension Name
+ZET_METRICS_RUNTIME_ENABLE_DISABLE_EXP_NAME = "ZET_experimental_metrics_runtime_enable_disable"
+
+###############################################################################
+## @brief Runtime Enabling and Disabling Metrics Extension Version(s)
+class zet_metrics_runtime_enable_disable_exp_version_v(IntEnum):
+    _1_0 = ZE_MAKE_VERSION( 1, 0 )                                          ## version 1.0
+    CURRENT = ZE_MAKE_VERSION( 1, 0 )                                       ## latest known version
+
+class zet_metrics_runtime_enable_disable_exp_version_t(c_int):
+    def __str__(self):
+        return str(zet_metrics_runtime_enable_disable_exp_version_v(self.value))
+
+
+###############################################################################
 ## @brief Calculating Multiple Metrics Experimental Extension Name
 ZET_MULTI_METRICS_EXP_NAME = "ZET_experimental_calculate_multiple_metrics"
 
@@ -675,8 +836,8 @@ ZET_PROGRAMMABLE_METRICS_EXP_NAME = "ZET_experimental_programmable_metrics"
 ###############################################################################
 ## @brief Programmable Metrics Experimental Extension Version(s)
 class zet_metric_programmable_exp_version_v(IntEnum):
-    _1_0 = ZE_MAKE_VERSION( 1, 0 )                                          ## version 1.0
-    CURRENT = ZE_MAKE_VERSION( 1, 0 )                                       ## latest known version
+    _1_1 = ZE_MAKE_VERSION( 1, 1 )                                          ## version 1.1
+    CURRENT = ZE_MAKE_VERSION( 1, 1 )                                       ## latest known version
 
 class zet_metric_programmable_exp_version_t(c_int):
     def __str__(self):
@@ -690,6 +851,10 @@ ZET_MAX_PROGRAMMABLE_METRICS_ELEMENT_NAME_EXP = 256
 ###############################################################################
 ## @brief Maximum export data element description string size
 ZET_MAX_PROGRAMMABLE_METRICS_ELEMENT_DESCRIPTION_EXP = 256
+
+###############################################################################
+## @brief Maximum count of characters in metric group name prefix
+ZET_MAX_METRIC_GROUP_NAME_PREFIX_EXP = 64
 
 ###############################################################################
 ## @brief Maximum metric programmable name string size
@@ -708,8 +873,12 @@ ZET_MAX_METRIC_PROGRAMMABLE_COMPONENT_EXP = 128
 ZET_MAX_METRIC_PROGRAMMABLE_PARAMETER_NAME_EXP = 128
 
 ###############################################################################
-## @brief Maximum value information string size
-ZET_MAX_VALUE_INFO_CSTRING_EXP = 128
+## @brief Maximum value for programmable value description
+ZET_MAX_METRIC_PROGRAMMABLE_VALUE_DESCRIPTION_EXP = 128
+
+###############################################################################
+## @brief Maximum value metric group name prefix
+ZE_MAX_METRIC_GROUP_NAME_PREFIX = 64
 
 ###############################################################################
 ## @brief Handle of metric programmable's object
@@ -745,6 +914,8 @@ class zet_metric_programmable_param_type_exp_v(IntEnum):
                                                                             ## instance_count.
     NORMALIZATION_AVERAGE = 3                                               ## Produces normalization using raw_metric / HW instance_count.
     NORMALIZATION_RATE = 4                                                  ## Produces normalization average using raw_metric / timestamp.
+    NORMALIZATION_BYTES = 5                                                 ## Produces normalization average using raw_metric * n bytes.
+    GENERIC = 6                                                             ## Generic Parameter type. Please refer the parameter's description.
 
 class zet_metric_programmable_param_type_exp_t(c_int):
     def __str__(self):
@@ -759,10 +930,10 @@ class zet_value_info_type_exp_v(IntEnum):
     FLOAT32 = 2                                                             ## 32-bit floating-point
     FLOAT64 = 3                                                             ## 64-bit floating-point
     BOOL8 = 4                                                               ## 8-bit boolean
-    CSTRING = 5                                                             ## C string
-    UINT8 = 6                                                               ## 8-bit unsigned-integer
-    UINT16 = 7                                                              ## 16-bit unsigned-integer
-    UINT64_RANGE = 8                                                        ## 64-bit unsigned-integer range (minimum and maximum)
+    UINT8 = 5                                                               ## 8-bit unsigned-integer
+    UINT16 = 6                                                              ## 16-bit unsigned-integer
+    UINT64_RANGE = 7                                                        ## 64-bit unsigned-integer range (minimum and maximum)
+    FLOAT64_RANGE = 8                                                       ## 64-bit floating point range (minimum and maximum)
 
 class zet_value_info_type_exp_t(c_int):
     def __str__(self):
@@ -774,7 +945,15 @@ class zet_value_info_type_exp_t(c_int):
 class zet_value_uint64_range_exp_t(Structure):
     _fields_ = [
         ("ui64Min", c_ulonglong),                                       ## [out] minimum value of the range
-        ("ui64Max", c_ulonglong)                                        ## [out] max value of the range
+        ("ui64Max", c_ulonglong)                                        ## [out] maximum value of the range
+    ]
+
+###############################################################################
+## @brief Value info of type float64 range
+class zet_value_fp64_range_exp_t(Structure):
+    _fields_ = [
+        ("fp64Min", c_double),                                          ## [out] minimum value of the range
+        ("fp64Max", c_double)                                           ## [out] maximum value of the range
     ]
 
 ###############################################################################
@@ -788,8 +967,8 @@ class zet_value_info_exp_t(Structure):
         ("b8", ze_bool_t),                                              ## [out] 8-bit boolean
         ("ui8", c_ubyte),                                               ## [out] 8-bit unsigned integer
         ("ui16", c_ushort),                                             ## [out] 16-bit unsigned integer
-        ("cString", c_char * ZET_MAX_VALUE_INFO_CSTRING_EXP),           ## [out] cString
-        ("ui64Range", zet_value_uint64_range_exp_t)                     ## [out] minimum and maximum value of the range
+        ("ui64Range", zet_value_uint64_range_exp_t),                    ## [out] minimum and maximum value of the range
+        ("fp64Range", zet_value_fp64_range_exp_t)                       ## [out] minimum and maximum value of the range
     ]
 
 ###############################################################################
@@ -797,7 +976,7 @@ class zet_value_info_exp_t(Structure):
 class zet_metric_programmable_param_info_exp_t(Structure):
     _fields_ = [
         ("stype", zet_structure_type_t),                                ## [in] type of this structure
-        ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
+        ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
                                                                         ## structure (i.e. contains stype and pNext).
         ("type", zet_metric_programmable_param_type_exp_t),             ## [out] programmable parameter type
         ("name", c_char * ZET_MAX_METRIC_PROGRAMMABLE_PARAMETER_NAME_EXP),  ## [out] metric programmable parameter name
@@ -811,9 +990,10 @@ class zet_metric_programmable_param_info_exp_t(Structure):
 class zet_metric_programmable_param_value_info_exp_t(Structure):
     _fields_ = [
         ("stype", zet_structure_type_t),                                ## [in] type of this structure
-        ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
+        ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
                                                                         ## structure (i.e. contains stype and pNext).
-        ("valueInfo", zet_value_info_exp_t)                             ## [out] information about the parameter value
+        ("valueInfo", zet_value_info_exp_t),                            ## [out] information about the parameter value
+        ("description", c_char * ZET_MAX_METRIC_PROGRAMMABLE_VALUE_DESCRIPTION_EXP) ## [out] description about the value
     ]
 
 ###############################################################################
@@ -866,6 +1046,92 @@ class _zet_metric_programmable_exp_dditable_t(Structure):
     ]
 
 ###############################################################################
+## @brief Function-pointer for zetMetricTracerCreateExp
+if __use_win_types:
+    _zetMetricTracerCreateExp_t = WINFUNCTYPE( ze_result_t, zet_context_handle_t, zet_device_handle_t, c_ulong, POINTER(zet_metric_group_handle_t), POINTER(zet_metric_tracer_exp_desc_t), ze_event_handle_t, POINTER(zet_metric_tracer_exp_handle_t) )
+else:
+    _zetMetricTracerCreateExp_t = CFUNCTYPE( ze_result_t, zet_context_handle_t, zet_device_handle_t, c_ulong, POINTER(zet_metric_group_handle_t), POINTER(zet_metric_tracer_exp_desc_t), ze_event_handle_t, POINTER(zet_metric_tracer_exp_handle_t) )
+
+###############################################################################
+## @brief Function-pointer for zetMetricTracerDestroyExp
+if __use_win_types:
+    _zetMetricTracerDestroyExp_t = WINFUNCTYPE( ze_result_t, zet_metric_tracer_exp_handle_t )
+else:
+    _zetMetricTracerDestroyExp_t = CFUNCTYPE( ze_result_t, zet_metric_tracer_exp_handle_t )
+
+###############################################################################
+## @brief Function-pointer for zetMetricTracerEnableExp
+if __use_win_types:
+    _zetMetricTracerEnableExp_t = WINFUNCTYPE( ze_result_t, zet_metric_tracer_exp_handle_t, ze_bool_t )
+else:
+    _zetMetricTracerEnableExp_t = CFUNCTYPE( ze_result_t, zet_metric_tracer_exp_handle_t, ze_bool_t )
+
+###############################################################################
+## @brief Function-pointer for zetMetricTracerDisableExp
+if __use_win_types:
+    _zetMetricTracerDisableExp_t = WINFUNCTYPE( ze_result_t, zet_metric_tracer_exp_handle_t, ze_bool_t )
+else:
+    _zetMetricTracerDisableExp_t = CFUNCTYPE( ze_result_t, zet_metric_tracer_exp_handle_t, ze_bool_t )
+
+###############################################################################
+## @brief Function-pointer for zetMetricTracerReadDataExp
+if __use_win_types:
+    _zetMetricTracerReadDataExp_t = WINFUNCTYPE( ze_result_t, zet_metric_tracer_exp_handle_t, POINTER(c_size_t), POINTER(c_ubyte) )
+else:
+    _zetMetricTracerReadDataExp_t = CFUNCTYPE( ze_result_t, zet_metric_tracer_exp_handle_t, POINTER(c_size_t), POINTER(c_ubyte) )
+
+###############################################################################
+## @brief Function-pointer for zetMetricTracerDecodeExp
+if __use_win_types:
+    _zetMetricTracerDecodeExp_t = WINFUNCTYPE( ze_result_t, zet_metric_decoder_exp_handle_t, POINTER(c_size_t), POINTER(c_ubyte), c_ulong, POINTER(zet_metric_handle_t), POINTER(c_ulong), POINTER(c_ulong), POINTER(c_ulong), POINTER(zet_metric_entry_exp_t) )
+else:
+    _zetMetricTracerDecodeExp_t = CFUNCTYPE( ze_result_t, zet_metric_decoder_exp_handle_t, POINTER(c_size_t), POINTER(c_ubyte), c_ulong, POINTER(zet_metric_handle_t), POINTER(c_ulong), POINTER(c_ulong), POINTER(c_ulong), POINTER(zet_metric_entry_exp_t) )
+
+
+###############################################################################
+## @brief Table of MetricTracerExp functions pointers
+class _zet_metric_tracer_exp_dditable_t(Structure):
+    _fields_ = [
+        ("pfnCreateExp", c_void_p),                                     ## _zetMetricTracerCreateExp_t
+        ("pfnDestroyExp", c_void_p),                                    ## _zetMetricTracerDestroyExp_t
+        ("pfnEnableExp", c_void_p),                                     ## _zetMetricTracerEnableExp_t
+        ("pfnDisableExp", c_void_p),                                    ## _zetMetricTracerDisableExp_t
+        ("pfnReadDataExp", c_void_p),                                   ## _zetMetricTracerReadDataExp_t
+        ("pfnDecodeExp", c_void_p)                                      ## _zetMetricTracerDecodeExp_t
+    ]
+
+###############################################################################
+## @brief Function-pointer for zetMetricDecoderCreateExp
+if __use_win_types:
+    _zetMetricDecoderCreateExp_t = WINFUNCTYPE( ze_result_t, zet_metric_tracer_exp_handle_t, POINTER(zet_metric_decoder_exp_handle_t) )
+else:
+    _zetMetricDecoderCreateExp_t = CFUNCTYPE( ze_result_t, zet_metric_tracer_exp_handle_t, POINTER(zet_metric_decoder_exp_handle_t) )
+
+###############################################################################
+## @brief Function-pointer for zetMetricDecoderDestroyExp
+if __use_win_types:
+    _zetMetricDecoderDestroyExp_t = WINFUNCTYPE( ze_result_t, zet_metric_decoder_exp_handle_t )
+else:
+    _zetMetricDecoderDestroyExp_t = CFUNCTYPE( ze_result_t, zet_metric_decoder_exp_handle_t )
+
+###############################################################################
+## @brief Function-pointer for zetMetricDecoderGetDecodableMetricsExp
+if __use_win_types:
+    _zetMetricDecoderGetDecodableMetricsExp_t = WINFUNCTYPE( ze_result_t, zet_metric_decoder_exp_handle_t, POINTER(c_ulong), POINTER(zet_metric_handle_t) )
+else:
+    _zetMetricDecoderGetDecodableMetricsExp_t = CFUNCTYPE( ze_result_t, zet_metric_decoder_exp_handle_t, POINTER(c_ulong), POINTER(zet_metric_handle_t) )
+
+
+###############################################################################
+## @brief Table of MetricDecoderExp functions pointers
+class _zet_metric_decoder_exp_dditable_t(Structure):
+    _fields_ = [
+        ("pfnCreateExp", c_void_p),                                     ## _zetMetricDecoderCreateExp_t
+        ("pfnDestroyExp", c_void_p),                                    ## _zetMetricDecoderDestroyExp_t
+        ("pfnGetDecodableMetricsExp", c_void_p)                         ## _zetMetricDecoderGetDecodableMetricsExp_t
+    ]
+
+###############################################################################
 ## @brief Function-pointer for zetDeviceGetDebugProperties
 if __use_win_types:
     _zetDeviceGetDebugProperties_t = WINFUNCTYPE( ze_result_t, zet_device_handle_t, POINTER(zet_device_debug_properties_t) )
@@ -878,6 +1144,45 @@ else:
 class _zet_device_dditable_t(Structure):
     _fields_ = [
         ("pfnGetDebugProperties", c_void_p)                             ## _zetDeviceGetDebugProperties_t
+    ]
+
+###############################################################################
+## @brief Function-pointer for zetDeviceGetConcurrentMetricGroupsExp
+if __use_win_types:
+    _zetDeviceGetConcurrentMetricGroupsExp_t = WINFUNCTYPE( ze_result_t, zet_device_handle_t, c_ulong, *, *, * )
+else:
+    _zetDeviceGetConcurrentMetricGroupsExp_t = CFUNCTYPE( ze_result_t, zet_device_handle_t, c_ulong, *, *, * )
+
+###############################################################################
+## @brief Function-pointer for zetDeviceCreateMetricGroupsFromMetricsExp
+if __use_win_types:
+    _zetDeviceCreateMetricGroupsFromMetricsExp_t = WINFUNCTYPE( ze_result_t, zet_device_handle_t, c_ulong, *, *, *, *, POINTER(zet_metric_group_handle_t) )
+else:
+    _zetDeviceCreateMetricGroupsFromMetricsExp_t = CFUNCTYPE( ze_result_t, zet_device_handle_t, c_ulong, *, *, *, *, POINTER(zet_metric_group_handle_t) )
+
+###############################################################################
+## @brief Function-pointer for zetDeviceEnableMetricsExp
+if __use_win_types:
+    _zetDeviceEnableMetricsExp_t = WINFUNCTYPE( ze_result_t, zet_device_handle_t )
+else:
+    _zetDeviceEnableMetricsExp_t = CFUNCTYPE( ze_result_t, zet_device_handle_t )
+
+###############################################################################
+## @brief Function-pointer for zetDeviceDisableMetricsExp
+if __use_win_types:
+    _zetDeviceDisableMetricsExp_t = WINFUNCTYPE( ze_result_t, zet_device_handle_t )
+else:
+    _zetDeviceDisableMetricsExp_t = CFUNCTYPE( ze_result_t, zet_device_handle_t )
+
+
+###############################################################################
+## @brief Table of DeviceExp functions pointers
+class _zet_device_exp_dditable_t(Structure):
+    _fields_ = [
+        ("pfnGetConcurrentMetricGroupsExp", c_void_p),                  ## _zetDeviceGetConcurrentMetricGroupsExp_t
+        ("pfnCreateMetricGroupsFromMetricsExp", c_void_p),              ## _zetDeviceCreateMetricGroupsFromMetricsExp_t
+        ("pfnEnableMetricsExp", c_void_p),                              ## _zetDeviceEnableMetricsExp_t
+        ("pfnDisableMetricsExp", c_void_p)                              ## _zetDeviceDisableMetricsExp_t
     ]
 
 ###############################################################################
@@ -932,6 +1237,21 @@ class _zet_command_list_dditable_t(Structure):
         ("pfnAppendMetricQueryBegin", c_void_p),                        ## _zetCommandListAppendMetricQueryBegin_t
         ("pfnAppendMetricQueryEnd", c_void_p),                          ## _zetCommandListAppendMetricQueryEnd_t
         ("pfnAppendMetricMemoryBarrier", c_void_p)                      ## _zetCommandListAppendMetricMemoryBarrier_t
+    ]
+
+###############################################################################
+## @brief Function-pointer for zetCommandListAppendMarkerExp
+if __use_win_types:
+    _zetCommandListAppendMarkerExp_t = WINFUNCTYPE( ze_result_t, zet_command_list_handle_t, zet_metric_group_handle_t, c_ulong )
+else:
+    _zetCommandListAppendMarkerExp_t = CFUNCTYPE( ze_result_t, zet_command_list_handle_t, zet_metric_group_handle_t, c_ulong )
+
+
+###############################################################################
+## @brief Table of CommandListExp functions pointers
+class _zet_command_list_exp_dditable_t(Structure):
+    _fields_ = [
+        ("pfnAppendMarkerExp", c_void_p)                                ## _zetCommandListAppendMarkerExp_t
     ]
 
 ###############################################################################
@@ -1001,13 +1321,21 @@ if __use_win_types:
 else:
     _zetMetricDestroyExp_t = CFUNCTYPE( ze_result_t, zet_metric_handle_t )
 
+###############################################################################
+## @brief Function-pointer for zetMetricCreateFromProgrammableExp2
+if __use_win_types:
+    _zetMetricCreateFromProgrammableExp2_t = WINFUNCTYPE( ze_result_t, zet_metric_programmable_exp_handle_t, c_ulong, POINTER(zet_metric_programmable_param_value_exp_t), c_char_p, c_char_p, POINTER(c_ulong), POINTER(zet_metric_handle_t) )
+else:
+    _zetMetricCreateFromProgrammableExp2_t = CFUNCTYPE( ze_result_t, zet_metric_programmable_exp_handle_t, c_ulong, POINTER(zet_metric_programmable_param_value_exp_t), c_char_p, c_char_p, POINTER(c_ulong), POINTER(zet_metric_handle_t) )
+
 
 ###############################################################################
 ## @brief Table of MetricExp functions pointers
 class _zet_metric_exp_dditable_t(Structure):
     _fields_ = [
         ("pfnCreateFromProgrammableExp", c_void_p),                     ## _zetMetricCreateFromProgrammableExp_t
-        ("pfnDestroyExp", c_void_p)                                     ## _zetMetricDestroyExp_t
+        ("pfnDestroyExp", c_void_p),                                    ## _zetMetricDestroyExp_t
+        ("pfnCreateFromProgrammableExp2", c_void_p)                     ## _zetMetricCreateFromProgrammableExp2_t
     ]
 
 ###############################################################################
@@ -1367,9 +1695,13 @@ class _zet_debug_dditable_t(Structure):
 class _zet_dditable_t(Structure):
     _fields_ = [
         ("MetricProgrammableExp", _zet_metric_programmable_exp_dditable_t),
+        ("MetricTracerExp", _zet_metric_tracer_exp_dditable_t),
+        ("MetricDecoderExp", _zet_metric_decoder_exp_dditable_t),
         ("Device", _zet_device_dditable_t),
+        ("DeviceExp", _zet_device_exp_dditable_t),
         ("Context", _zet_context_dditable_t),
         ("CommandList", _zet_command_list_dditable_t),
+        ("CommandListExp", _zet_command_list_exp_dditable_t),
         ("Module", _zet_module_dditable_t),
         ("Kernel", _zet_kernel_dditable_t),
         ("Metric", _zet_metric_dditable_t),
@@ -1410,6 +1742,33 @@ class ZET_DDI:
         self.zetMetricProgrammableGetParamValueInfoExp = _zetMetricProgrammableGetParamValueInfoExp_t(self.__dditable.MetricProgrammableExp.pfnGetParamValueInfoExp)
 
         # call driver to get function pointers
+        _MetricTracerExp = _zet_metric_tracer_exp_dditable_t()
+        r = ze_result_v(self.__dll.zetGetMetricTracerExpProcAddrTable(version, byref(_MetricTracerExp)))
+        if r != ze_result_v.SUCCESS:
+            raise Exception(r)
+        self.__dditable.MetricTracerExp = _MetricTracerExp
+
+        # attach function interface to function address
+        self.zetMetricTracerCreateExp = _zetMetricTracerCreateExp_t(self.__dditable.MetricTracerExp.pfnCreateExp)
+        self.zetMetricTracerDestroyExp = _zetMetricTracerDestroyExp_t(self.__dditable.MetricTracerExp.pfnDestroyExp)
+        self.zetMetricTracerEnableExp = _zetMetricTracerEnableExp_t(self.__dditable.MetricTracerExp.pfnEnableExp)
+        self.zetMetricTracerDisableExp = _zetMetricTracerDisableExp_t(self.__dditable.MetricTracerExp.pfnDisableExp)
+        self.zetMetricTracerReadDataExp = _zetMetricTracerReadDataExp_t(self.__dditable.MetricTracerExp.pfnReadDataExp)
+        self.zetMetricTracerDecodeExp = _zetMetricTracerDecodeExp_t(self.__dditable.MetricTracerExp.pfnDecodeExp)
+
+        # call driver to get function pointers
+        _MetricDecoderExp = _zet_metric_decoder_exp_dditable_t()
+        r = ze_result_v(self.__dll.zetGetMetricDecoderExpProcAddrTable(version, byref(_MetricDecoderExp)))
+        if r != ze_result_v.SUCCESS:
+            raise Exception(r)
+        self.__dditable.MetricDecoderExp = _MetricDecoderExp
+
+        # attach function interface to function address
+        self.zetMetricDecoderCreateExp = _zetMetricDecoderCreateExp_t(self.__dditable.MetricDecoderExp.pfnCreateExp)
+        self.zetMetricDecoderDestroyExp = _zetMetricDecoderDestroyExp_t(self.__dditable.MetricDecoderExp.pfnDestroyExp)
+        self.zetMetricDecoderGetDecodableMetricsExp = _zetMetricDecoderGetDecodableMetricsExp_t(self.__dditable.MetricDecoderExp.pfnGetDecodableMetricsExp)
+
+        # call driver to get function pointers
         _Device = _zet_device_dditable_t()
         r = ze_result_v(self.__dll.zetGetDeviceProcAddrTable(version, byref(_Device)))
         if r != ze_result_v.SUCCESS:
@@ -1418,6 +1777,19 @@ class ZET_DDI:
 
         # attach function interface to function address
         self.zetDeviceGetDebugProperties = _zetDeviceGetDebugProperties_t(self.__dditable.Device.pfnGetDebugProperties)
+
+        # call driver to get function pointers
+        _DeviceExp = _zet_device_exp_dditable_t()
+        r = ze_result_v(self.__dll.zetGetDeviceExpProcAddrTable(version, byref(_DeviceExp)))
+        if r != ze_result_v.SUCCESS:
+            raise Exception(r)
+        self.__dditable.DeviceExp = _DeviceExp
+
+        # attach function interface to function address
+        self.zetDeviceGetConcurrentMetricGroupsExp = _zetDeviceGetConcurrentMetricGroupsExp_t(self.__dditable.DeviceExp.pfnGetConcurrentMetricGroupsExp)
+        self.zetDeviceCreateMetricGroupsFromMetricsExp = _zetDeviceCreateMetricGroupsFromMetricsExp_t(self.__dditable.DeviceExp.pfnCreateMetricGroupsFromMetricsExp)
+        self.zetDeviceEnableMetricsExp = _zetDeviceEnableMetricsExp_t(self.__dditable.DeviceExp.pfnEnableMetricsExp)
+        self.zetDeviceDisableMetricsExp = _zetDeviceDisableMetricsExp_t(self.__dditable.DeviceExp.pfnDisableMetricsExp)
 
         # call driver to get function pointers
         _Context = _zet_context_dditable_t()
@@ -1441,6 +1813,16 @@ class ZET_DDI:
         self.zetCommandListAppendMetricQueryBegin = _zetCommandListAppendMetricQueryBegin_t(self.__dditable.CommandList.pfnAppendMetricQueryBegin)
         self.zetCommandListAppendMetricQueryEnd = _zetCommandListAppendMetricQueryEnd_t(self.__dditable.CommandList.pfnAppendMetricQueryEnd)
         self.zetCommandListAppendMetricMemoryBarrier = _zetCommandListAppendMetricMemoryBarrier_t(self.__dditable.CommandList.pfnAppendMetricMemoryBarrier)
+
+        # call driver to get function pointers
+        _CommandListExp = _zet_command_list_exp_dditable_t()
+        r = ze_result_v(self.__dll.zetGetCommandListExpProcAddrTable(version, byref(_CommandListExp)))
+        if r != ze_result_v.SUCCESS:
+            raise Exception(r)
+        self.__dditable.CommandListExp = _CommandListExp
+
+        # attach function interface to function address
+        self.zetCommandListAppendMarkerExp = _zetCommandListAppendMarkerExp_t(self.__dditable.CommandListExp.pfnAppendMarkerExp)
 
         # call driver to get function pointers
         _Module = _zet_module_dditable_t()
@@ -1483,6 +1865,7 @@ class ZET_DDI:
         # attach function interface to function address
         self.zetMetricCreateFromProgrammableExp = _zetMetricCreateFromProgrammableExp_t(self.__dditable.MetricExp.pfnCreateFromProgrammableExp)
         self.zetMetricDestroyExp = _zetMetricDestroyExp_t(self.__dditable.MetricExp.pfnDestroyExp)
+        self.zetMetricCreateFromProgrammableExp2 = _zetMetricCreateFromProgrammableExp2_t(self.__dditable.MetricExp.pfnCreateFromProgrammableExp2)
 
         # call driver to get function pointers
         _MetricGroup = _zet_metric_group_dditable_t()

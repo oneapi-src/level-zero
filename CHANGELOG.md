@@ -1,5 +1,142 @@
 # Level zero loader changelog
-
+## v1.24.1
+* Changes to get ze_loader loaded for Android
+## v1.24.0
+* Enable DDI Driver Extension path by default.
+## v1.23.2
+* fix: Avoid invalid casting into loader objects when DDI extension is supported
+* Fix potential SIOF issue with checker layers
+## v1.23.1
+* Fix Sysman only DDI Init for zesDriver compatability
+## v1.23.0
+* fix build for certification checker
+* Fix missing code gen and add check in sysman device get for context
+* Fix gtest build to work for windows static or dynamic
+* DDI extension support
+## v1.22.5
+* cmake/msvc: unify CRT model and add VTune-safe flags for RelWithDebInfo
+* Init certification checker in the Validation Layer
+* Fix CI to run on release branches
+## v1.22.4
+* Block all calls to get until after init has completed to avoid race during sorting.
+## v1.22.3
+* Fix sysman-only initialization to block loader context retrieval when versions are incompatible
+* Add ability to register a TeardownCallback to notify release of L0 resources
+## v1.22.2
+* Fix zesInit to init the correct requested api version
+## v1.22.1
+* fix ddi compatibility to avoid assigning values which don't exist
+* Fix static loader to request current version as the latest APIs
+* Update to support v1.13.1 of the Level Zero Spec
+* Add testing stdout from zeInitDrivers in CI
+* Only Enable Teardown thread on windows and remove debug on success
+## v1.21.9
+* Fix init checks when sorting legacy drivers
+* Fix MSVC Link optimization flags
+* Fix GUID handling when sub project
+* Fix dynamic tracing support with static loader
+* Always check and update the GUID when version changes
+* Added zelCheckIsLoaderInTearDown function to check if the loader is in teardown
+## v1.21.8
+* Add flags for windows optimization during linkage.
+## v1.21.7
+* Fix handling of sysman init failure given nullptr
+* Fix driver sorting given zesInit only
+* Update default SDK install path to include Program Files
+## v1.21.6
+* Fix to pkgconfig during non build installer cmake install
+## v1.21.5
+* Check zesInit pfnInit before attempting call
+* Added build flag L0_DLL_INTEGRITY_CHECKS to enable integrity check of DLLs
+## v1.21.3
+* Fix sorting drivers missing function pointers and add multi driver ults
+* Add support for SDK installer on windows
+## v1.21.2
+* Fix driver sorting given driver failures and instrumentation
+## v1.21.1
+* Fix stype assignment in zello_world
+* Given static Loader, allocate lib context_t always as dynamic and enable delayed destroy of context
+## v1.21.0
+* Add Support for building the L0 Loader statically
+## v1.20.6
+* Add in missing header for ze_handle_t definition for DDI extension
+## v1.20.5
+* Add option to enable logging each API call
+* basic_leak_checker: add support for zeMemFreeExt
+* Fix to teardown check to avoid context use after destroy
+## v1.20.4
+* Fix stype init for property query during init
+* Fix Init error checking to check the validation layer checks
+* Extension validation fixed in the parameter validation checker
+## v1.20.3
+* Implemented basic leak checker in validation layer
+* Support for Sorting Drivers based on the devices provided
+## v1.20.2
+* Fix to Validation Layer Param checking of Extensions for new desc types
+## v1.20.1
+* Update to spec 1.12.15
+* Update Docs for spec links and corrections
+## v1.20.0
+* Update to spec 1.12
+* Allow pkg-config files on Windows as well
+* Fix GET_FUNCTION_PTR warnings on windows
+* Fix libddi table query code generation
+* Fixed pkg-config files generation
+* fixed potential memory leaks in events checker
+## v1.19.2
+* Remove static result in InitDrivers given first init fails
+## v1.19.1
+* Fix to Use relative paths for events deadlock detection third party headers 
+## v1.19.0
+* logging full path of loaded library in traces
+* Fix utils build
+* feature: events deadlock detection in validation layer
+* Add Passing in the Result to Validation Checkers at Epilogue
+* Disconnect zeInitDrivers and zeDriverGet
+* Fix backwards compatibility usage of Get*ProcAddrTable
+* Fix to add missing zeKernelGetExp API and header updates
+* Fix zeInit Compatibility when zeInitDrivers is undefined
+## v1.18.5
+* Fix metric types for new experimental types
+* Fix/Regenerate the Loader files incorrectly reordered by the scripts.
+* Fix ABI checker build/tests
+* Update workflows to ABI check with last released tag
+## v1.18.4
+* Fix Backwards compatibility in ddi structs for EXP features
+## v1.18.3
+* Update loader headers to spec 1.11 with fixed ddi ordering
+* Remove preload of all drivers given zeInitDrivers and update unit tests
+## v1.18.2
+* Fix code generation of EXP tables and EXP functions to remove invalid new ddi tables and apis.
+## v1.18.1
+* Fix check for new ddi table in 1.11 and fix space in driver count check.
+## v1.18.0
+* v1.11 Spec Changes for the L0 Loader
+* Wrap linker flags on Windows for IntelLLVM
+* Ensure validation_layer::context has init before usage
+* Replace exception with error string return in zello_log.h
+## v1.17.45
+* windows: do not exclude DN_NEED_RESTART drivers if LevelZeroStagedDriverPath is set
+## v1.17.44
+* Add missing guard around debug message
+## v1.17.43
+* Switch to monotonically increasing patch numbers
+* Fix warning by updating min cmake version to 3.5
+* Add missing guards around debug messages
+## v1.17.42
+* Fix SysMan driver pointers given no sysman env and no zesInit (#193)
+* Prevent reinit when zes/ze handles have already been retrieved (#192)
+## v1.17.39
+* Add Ubuntu 24.04 and 24.10 builds
+* Proper installation rules
+* Enable testing with ctest
+* Fix reading updated state of the driver_t for checking initStatus (#188)
+* Avoid DDI table reinit if ZE_ENABLE_LOADER_INTERCEPT=1 (#187)
+* Update spdlog headers (#186)
+* Fix handle translation when ddi table fallback (#185)
+* Split Ze and Zes Drivers and only release drivers at close (#184)
+* Fix issues with intercept layer and zesInit/zeInit given fallback to passthrough (#183)
+* Fix global teardown of loader handles and check driver status in init_driver (#182)
 ## v1.17.28
 * Add GPU-legacy1 driver to list of known names on Linux
 * Fix first zeinit to allow for layer checks

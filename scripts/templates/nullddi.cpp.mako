@@ -17,6 +17,7 @@ from templates import helper as th
  *
  */
 #include "${x}_null.h"
+#include <cstring>
 
 namespace driver
 {
@@ -46,6 +47,37 @@ namespace driver
         else
         {
             // generic implementation
+            %if re.match("Init", obj['name']):
+            %if re.match("InitDrivers", obj['name']):
+            auto driver_type = getenv_string( "ZEL_TEST_NULL_DRIVER_TYPE" );
+            if (std::strcmp(driver_type.c_str(), "GPU") == 0) {
+                if (!(desc->flags & ZE_INIT_DRIVER_TYPE_FLAG_GPU)) {
+                    return ${X}_RESULT_ERROR_UNINITIALIZED;
+                }
+            }
+            if (std::strcmp(driver_type.c_str(), "NPU") == 0) {
+                if (!(desc->flags & ZE_INIT_DRIVER_TYPE_FLAG_NPU)) {
+                    return ${X}_RESULT_ERROR_UNINITIALIZED;
+                }
+            }
+
+            if (phDrivers == nullptr) {
+                *pCount = 1;
+            }
+            %else:
+            auto driver_type = getenv_string( "ZEL_TEST_NULL_DRIVER_TYPE" );
+            if (std::strcmp(driver_type.c_str(), "GPU") == 0) {
+                if (!(flags & ZE_INIT_FLAG_GPU_ONLY)) {
+                    return ${X}_RESULT_ERROR_UNINITIALIZED;
+                }
+            }
+            if (std::strcmp(driver_type.c_str(), "NPU") == 0) {
+                if (!(flags & ZE_INIT_FLAG_VPU_ONLY)) {
+                    return ${X}_RESULT_ERROR_UNINITIALIZED;
+                }
+            }
+            %endif
+            %endif
             %for item in th.get_loader_epilogue(n, tags, obj, meta):
             %if 'range' in item:
             for( size_t i = ${item['range'][0]}; ( nullptr != ${item['name']} ) && ( i < ${item['range'][1]} ); ++i )
@@ -60,6 +92,11 @@ namespace driver
 
             %endfor
         }
+        %if not fname.endswith("DriverGet") and not re.match("Init", obj['name']):
+        
+        char *env_str = context.setenv_var_with_driver_id("${fname}", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
+        %endif
 
         return result;
     }
@@ -98,6 +135,20 @@ ${tbl['export']['name']}(
 
     ${x}_result_t result = ${X}_RESULT_SUCCESS;
 
+% if tbl['name'] == 'Global' and n == 'ze':
+    pDdiTable->pfnInit                                   = driver::zeInit;
+
+    auto missing_api = getenv_string( "ZEL_TEST_MISSING_API" );
+    auto missing_api_driver_id = getenv_string( "ZEL_TEST_MISSING_API_DRIVER_ID" );
+    std::string zeInitDriversWithNullDriverId = "zeInitDrivers:" + std::to_string(ZEL_NULL_DRIVER_ID);
+    if (std::strcmp(missing_api_driver_id.c_str(), zeInitDriversWithNullDriverId.c_str()) == 0) {
+        pDdiTable->pfnInitDrivers                            = nullptr;
+    } else if (std::strcmp(missing_api.c_str(), "zeInitDrivers") == 0) {
+        pDdiTable->pfnInitDrivers                            = nullptr;
+    } else {
+        pDdiTable->pfnInitDrivers                            = driver::zeInitDrivers;
+    }
+%else:
     %for obj in tbl['functions']:
     %if 'condition' in obj:
 #if ${th.subt(n, tags, obj['condition'])}
@@ -110,6 +161,7 @@ ${tbl['export']['name']}(
     %endif
 
     %endfor
+%endif
     return result;
 }
 

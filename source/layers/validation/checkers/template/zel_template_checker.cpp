@@ -21,7 +21,7 @@ namespace validation_layer
             templateChecker.zeValidation = zeChecker;
             templateChecker.zetValidation = zetChecker;
             templateChecker.zesValidation = zesChecker;
-            validation_layer::context.validationHandlers.push_back(&templateChecker);
+            validation_layer::context.getInstance().validationHandlers.push_back(&templateChecker);
         }
     }
 

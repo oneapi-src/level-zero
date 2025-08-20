@@ -10,12 +10,27 @@ ARG VMIN
 SHELL ["/bin/bash", "-e", "-c"]
 
 RUN <<EOF
-sed -i 's/^deb/deb [arch=amd64]/' /etc/apt/sources.list
 source /etc/lsb-release
-echo "deb [arch=arm64] http://ports.ubuntu.com/ubuntu-ports/ ${DISTRIB_CODENAME} main restricted universe multiverse" >> /etc/apt/sources.list
-echo "deb [arch=arm64] http://ports.ubuntu.com/ubuntu-ports/ ${DISTRIB_CODENAME}-updates main restricted universe multiverse" >> /etc/apt/sources.list
-echo "deb [arch=arm64] http://ports.ubuntu.com/ubuntu-ports/ ${DISTRIB_CODENAME}-security main restricted universe multiverse" >> /etc/apt/sources.list
-echo "deb [arch=arm64] http://ports.ubuntu.com/ubuntu-ports/ ${DISTRIB_CODENAME}-backports main restricted universe multiverse" >> /etc/apt/sources.list
+if ((VMAJ < 24)); then
+    sed -i 's/^deb/deb [arch=amd64]/' /etc/apt/sources.list
+    cat >> /etc/apt/sources.list <<EOF2
+deb [arch=arm64] http://ports.ubuntu.com/ubuntu-ports/ ${DISTRIB_CODENAME} main restricted universe multiverse
+deb [arch=arm64] http://ports.ubuntu.com/ubuntu-ports/ ${DISTRIB_CODENAME}-updates main restricted universe multiverse
+deb [arch=arm64] http://ports.ubuntu.com/ubuntu-ports/ ${DISTRIB_CODENAME}-security main restricted universe multiverse
+deb [arch=arm64] http://ports.ubuntu.com/ubuntu-ports/ ${DISTRIB_CODENAME}-backports main restricted universe multiverse
+EOF2
+else
+    sed -i '/^Components:/a Architectures: amd64' /etc/apt/sources.list.d/ubuntu.sources
+    cat >> /etc/apt/sources.list.d/ubuntu.sources <<EOF2
+
+types: deb
+URIs: http://ports.ubuntu.com/ubuntu-ports/
+Suites: ${DISTRIB_CODENAME} ${DISTRIB_CODENAME}-updates ${DISTRIB_CODENAME}-security ${DISTRIB_CODENAME}-backports
+Components: main universe restricted multiverse
+Architectures: arm64
+Signed-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg
+EOF2
+fi
 dpkg --add-architecture arm64
 EOF
 
@@ -32,27 +47,11 @@ apt-get install -y \
   curl \
   elfutils \
   file \
-  $(if [[ "${VMAJ}.${VMIN}" != "19.10" ]]; then echo \
   gcc-aarch64-linux-gnu \
   g++-aarch64-linux-gnu \
-  $(if ((VMAJ >= 20)); then echo \
-  gcc-10-aarch64-linux-gnu \
-  g++-10-aarch64-linux-gnu; fi) \
   libc6:arm64 \
-  libstdc++6:arm64; fi) \
+  libstdc++6:arm64 \
   git \
   ninja-build
 rm -rf /var/lib/apt/lists/*
-EOF
-
-# Make newest version of aarch64 toolchain the default and enable switching.
-RUN <<EOF
-shopt -s extglob
-for tool in $(ls /usr/bin/aarch64-linux-gnu-*([a-z\-+])); do
-    for v in $(ls /usr/bin/aarch64-linux-gnu-* | grep -o [0-9]*$ | sort | uniq); do
-        if [[ -f ${tool}-${v} ]]; then
-            update-alternatives --install ${tool} $(basename ${tool}) ${tool}-${v} ${v}
-        fi
-    done
-done
 EOF

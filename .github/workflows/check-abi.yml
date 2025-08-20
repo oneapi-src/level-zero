@@ -8,14 +8,89 @@ jobs:
   # Use https://lvc.github.io/abi-compliance-checker/ to compare builds
   # of pull requests against master. Compares checkouts of github.base_ref and
   # github.head_ref.
-  check-abi:
+  check-abi-last-release:
     runs-on: ubuntu-latest
     if: github.repository_owner == 'oneapi-src'
     steps:
     - name: Install dependencies
       run: |
         sudo apt update
-        sudo apt install -y elfutils universal-ctags
+        sudo apt install -y elfutils universal-ctags vtable-dumper
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: 0 # Required due to the way Git works, without it this action won't be able to find any or the correct tags
+    - uses: actions-ecosystem/action-get-latest-tag@v1
+      id: get-latest-tag
+      with:
+        semver_only: true
+    - name: Checkout base
+      uses: actions/checkout@v3
+      with:
+        ref: ${{ steps.get-latest-tag.outputs.tag }}
+        clean: true
+        path: base
+    - name: Checkout head
+      uses: actions/checkout@v3
+      with:
+        clean: true
+        path: head
+        ref: ${{ github.event.pull_request.head.sha }}
+    - name: Build debug base
+      run: |
+        mkdir base/build
+        cd base/build
+        cmake -E env CXXFLAGS="-Og -g" cmake -DCMAKE_BUILD_TYPE=Debug ..
+        make -j$(nproc)
+    - name: Build debug head
+      run: |
+        mkdir head/build
+        cd head/build
+        cmake -E env CXXFLAGS="-Og -g" cmake -DCMAKE_BUILD_TYPE=Debug ..
+        make -j$(nproc)
+    - name: Download and setup abi-dumper
+      run: |
+        git clone https://github.com/lvc/abi-dumper.git abi-dumper
+        cp abi-dumper/abi-dumper.pl .
+        chmod +x abi-dumper.pl
+    - name: Generate dump for base
+      run: |
+        ./abi-dumper.pl \
+          ./base/build/lib/libze_loader.so \
+          -lver $(cat ./base/build/VERSION) \
+          -public-headers ./base/include \
+          -o ./base.dump
+    - name: Generate dump for head
+      run: |
+        ./abi-dumper.pl \
+          ./head/build/lib/libze_loader.so \
+          -lver $(cat ./head/build/VERSION)-1 \
+          -public-headers ./head/include \
+          -o ./head.dump
+    - name: Download and setup abi-compliance-checker
+      run: |
+        wget https://github.com/lvc/abi-compliance-checker/tarball/master -O abi-compliance-checker.tar.gz
+        tar -xzf abi-compliance-checker.tar.gz
+        chmod +x lvc-abi-compliance-checker-*/abi-compliance-checker.pl
+    - name: Compare dumps
+      run: |
+        lvc-abi-compliance-checker-*/abi-compliance-checker.pl \
+          -l libze_loader \
+          -old base.dump \
+          -new head.dump \
+          -report-path release_report.html
+    - uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: abi-report-last-release
+        path: release_report.html
+  check-abi-master:
+    runs-on: ubuntu-latest
+    if: github.repository_owner == 'oneapi-src'
+    steps:
+    - name: Install dependencies
+      run: |
+        sudo apt update
+        sudo apt install -y elfutils universal-ctags vtable-dumper
     - name: Checkout base
       uses: actions/checkout@v3
       with:
@@ -32,19 +107,18 @@ jobs:
       run: |
         mkdir base/build
         cd base/build
-        cmake -DCMAKE_BUILD_TYPE=Debug ..
+        cmake -E env CXXFLAGS="-Og -g" cmake -DCMAKE_BUILD_TYPE=Debug ..
         make -j$(nproc)
     - name: Build debug head
       run: |
         mkdir head/build
         cd head/build
-        cmake -DCMAKE_BUILD_TYPE=Debug ..
+        cmake -E env CXXFLAGS="-Og -g" cmake -DCMAKE_BUILD_TYPE=Debug ..
         make -j$(nproc)
     - name: Download and setup abi-dumper
       run: |
-        wget https://github.com/lvc/abi-dumper/archive/refs/tags/1.2.tar.gz -O abi-dumper.tar.gz
-        tar -xzf abi-dumper.tar.gz
-        cp abi-dumper-*/abi-dumper.pl .
+        git clone https://github.com/lvc/abi-dumper.git abi-dumper
+        cp abi-dumper/abi-dumper.pl .
         chmod +x abi-dumper.pl
     - name: Generate dump for base
       run: |
@@ -57,7 +131,7 @@ jobs:
       run: |
         ./abi-dumper.pl \
           ./head/build/lib/libze_loader.so \
-          -lver $(cat ./head/build/VERSION) \
+          -lver $(cat ./head/build/VERSION)-1 \
           -public-headers ./head/include \
           -o ./head.dump
     - name: Download and setup abi-compliance-checker
@@ -71,9 +145,9 @@ jobs:
           -l libze_loader \
           -old base.dump \
           -new head.dump \
-          -report-path report.html
-    - uses: actions/upload-artifact@v3
+          -report-path master_report.html
+    - uses: actions/upload-artifact@v4
       if: always()
       with:
-        name: abi-report
-        path: report.html
+        name: abi-report-master
+        path: master_report.html

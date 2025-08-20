@@ -24,7 +24,10 @@ target_include_directories(${TARGET_NAME}
         ${CMAKE_CURRENT_SOURCE_DIR}/handle_lifetime_tracking
         ${CMAKE_CURRENT_SOURCE_DIR}/checkers/parameter_validation
         ${CMAKE_CURRENT_SOURCE_DIR}/checkers/template
+        ${CMAKE_CURRENT_SOURCE_DIR}/../../utils
 )
+
+target_link_libraries(${TARGET_NAME} PRIVATE level_zero_utils)
 
 if(UNIX)
     set(GCC_COVERAGE_COMPILE_FLAGS "-fvisibility=hidden -fvisibility-inlines-hidden")
@@ -36,22 +39,23 @@ set_target_properties(${TARGET_NAME} PROPERTIES
     SOVERSION  "${PROJECT_VERSION_MAJOR}"
 )
 
-install(TARGETS ze_validation_layer
-    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
-    RUNTIME DESTINATION ${CMAKE_INSTALL_LIBDIR}
-    LIBRARY
-        DESTINATION ${CMAKE_INSTALL_LIBDIR}
-        COMPONENT level-zero
-        NAMELINK_SKIP
-)
+set(SDK_COMPONENT_STRING "level-zero-devel")
+set(LIB_COMPONENT_STRING "level-zero")
+
+if(BUILD_INSTALLER)
+    set(SDK_COMPONENT_STRING "SDK")
+    set(LIB_COMPONENT_STRING "Loader")
+endif()
+
+if(MSVC AND L0_DLL_INTEGRITY_CHECKS)
+    set_target_properties(ze_validation_layer PROPERTIES LINK_FLAGS "${CMAKE_CXX_LINKER_WRAPPER_FLAG}/INTEGRITYCHECK")
+endif()
 
 install(TARGETS ze_validation_layer
-    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
-    RUNTIME DESTINATION ${CMAKE_INSTALL_LIBDIR}
-    LIBRARY
-        DESTINATION ${CMAKE_INSTALL_LIBDIR}
-        COMPONENT level-zero-devel
-        NAMELINK_ONLY
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR} COMPONENT ${SDK_COMPONENT_STRING}
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR} COMPONENT ${LIB_COMPONENT_STRING}
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR} COMPONENT ${LIB_COMPONENT_STRING}
+    NAMELINK_COMPONENT ${SDK_COMPONENT_STRING}
 )
 
 add_subdirectory(handle_lifetime_tracking)

@@ -35,7 +35,7 @@ namespace validation_layer
             parameterChecker.zeValidation = zeChecker;
             parameterChecker.zetValidation = zetChecker;
             parameterChecker.zesValidation = zesChecker;
-            validation_layer::context.validationHandlers.push_back(&parameterChecker);
+            validation_layer::context.getInstance().validationHandlers.push_back(&parameterChecker);
         }
     }
 

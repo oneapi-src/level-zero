@@ -12,6 +12,7 @@
 #include "ze_api.h"
 #include "zet_api.h"
 #include "loader/ze_loader.h"
+#include "include/layers/zel_tracing_api.h"
 #include "zello_log.h"
 
 //////////////////////////////////////////////////////////////////////////
@@ -29,11 +30,15 @@ inline bool argparse( int argc, char *argv[],
 }
 
 //////////////////////////////////////////////////////////////////////////
-inline bool init_ze( void )
+inline bool init_ze( bool legacy_init , uint32_t &driverCount, ze_init_driver_type_desc_t &driverTypeDesc)
 {
     ze_result_t result;
         // Initialize the driver
-    result = zeInit(0);
+    if (legacy_init) {
+        result = zeInit(0);
+    } else {
+        result = zeInitDrivers(&driverCount, nullptr, &driverTypeDesc);
+    }
     if(result != ZE_RESULT_SUCCESS) {
         std::cout << "Driver not initialized: " << to_string(result) << std::endl;
         return false;
