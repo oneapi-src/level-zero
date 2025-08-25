@@ -1,10 +1,10 @@
 """
- Copyright (C) 2019-2021 Intel Corporation
+ Copyright (C) 2019-2025 Intel Corporation
 
  SPDX-License-Identifier: MIT
 
  @file ze.py
- @version v1.13-r1.13.1
+ @version v1.14-r1.14.33
 
  """
 import platform
@@ -226,6 +226,7 @@ class ze_result_v(IntEnum):
                                                                             ## deferred to parallel operation join
     EXT_ERROR_OPERANDS_INCOMPATIBLE = 0x7800001f                            ## [Core, Extension] operands of comparison are not compatible
     ERROR_SURVIVABILITY_MODE_DETECTED = 0x78000020                          ## [Sysman] device is in survivability mode, firmware update needed
+    ERROR_ADDRESS_NOT_FOUND = 0x78000021                                    ## [Core] address not found within specified or current context
     ERROR_UNKNOWN = 0x7ffffffe                                              ## [Core] unknown or internal error
 
 class ze_result_t(c_int):
@@ -337,6 +338,10 @@ class ze_structure_type_v(IntEnum):
     RTAS_PARALLEL_OPERATION_EXT_PROPERTIES = 0x00020033                     ## ::ze_rtas_parallel_operation_ext_properties_t
     RTAS_DEVICE_EXT_PROPERTIES = 0x00020034                                 ## ::ze_rtas_device_ext_properties_t
     RTAS_GEOMETRY_AABBS_EXT_CB_PARAMS = 0x00020035                          ## ::ze_rtas_geometry_aabbs_ext_cb_params_t
+    COMMAND_LIST_APPEND_PARAM_COOPERATIVE_DESC = 0x00020036                 ## ::ze_command_list_append_launch_kernel_param_cooperative_desc_t
+    EXTERNAL_MEMMAP_SYSMEM_EXT_DESC = 0x00020037                            ## ::ze_external_memmap_sysmem_ext_desc_t
+    PITCHED_ALLOC_2DIMAGE_LINEAR_PITCH_EXP_INFO = 0x00020038                ## ::ze_pitched_alloc_2dimage_linear_pitch_exp_info_t
+    KERNEL_ALLOCATION_PROPERTIES = 0x00020039                               ## ::ze_kernel_allocation_exp_properties_t
 
 class ze_structure_type_t(c_int):
     def __str__(self):
@@ -440,6 +445,9 @@ class ze_base_desc_t(Structure):
 ##        implementation
 
 ###############################################################################
+## @brief Defines/Refines ordering of drivers reported to user
+
+###############################################################################
 ## @brief Supported initialization flags
 class ze_init_flags_v(IntEnum):
     GPU_ONLY = ZE_BIT(0)                                                    ## only initialize GPU drivers
@@ -508,7 +516,8 @@ class ze_api_version_v(IntEnum):
     _1_11 = ZE_MAKE_VERSION( 1, 11 )                                        ## version 1.11
     _1_12 = ZE_MAKE_VERSION( 1, 12 )                                        ## version 1.12
     _1_13 = ZE_MAKE_VERSION( 1, 13 )                                        ## version 1.13
-    CURRENT = ZE_MAKE_VERSION( 1, 13 )                                      ## latest known version
+    _1_14 = ZE_MAKE_VERSION( 1, 14 )                                        ## version 1.14
+    CURRENT = ZE_MAKE_VERSION( 1, 14 )                                      ## latest known version
 
 class ze_api_version_t(c_int):
     def __str__(self):
@@ -517,7 +526,7 @@ class ze_api_version_t(c_int):
 
 ###############################################################################
 ## @brief Current API version as a macro
-ZE_API_VERSION_CURRENT_M = ZE_MAKE_VERSION( 1, 13 )
+ZE_API_VERSION_CURRENT_M = ZE_MAKE_VERSION( 1, 14 )
 
 ###############################################################################
 ## @brief Maximum driver universal unique id (UUID) size in bytes
@@ -988,6 +997,10 @@ class ze_command_queue_flags_v(IntEnum):
                                                                             ## the next to define an in-order list, and application is allowed to
                                                                             ## pass signal and wait events
                                                                             ## to each appended command to implement more complex dependency graphs.
+    COPY_OFFLOAD_HINT = ZE_BIT(2)                                           ## Try to offload copy operations to different engines. Applicable only
+                                                                            ## for compute queues.
+                                                                            ## This is only a hint. Driver may ignore it per append call, based on
+                                                                            ## platform capabilities or internal heuristics.
 
 class ze_command_queue_flags_t(c_int):
     def __str__(self):
@@ -1487,6 +1500,8 @@ class ze_memory_type_v(IntEnum):
     HOST = 1                                                                ## the memory pointed to is a host allocation
     DEVICE = 2                                                              ## the memory pointed to is a device allocation
     SHARED = 3                                                              ## the memory pointed to is a shared ownership allocation
+    HOST_IMPORTED = 4                                                       ## the memory pointed to is a host allocation created from external
+                                                                            ## system memory
 
 class ze_memory_type_t(c_int):
     def __str__(self):
@@ -1707,6 +1722,16 @@ class ze_module_desc_t(Structure):
     ]
 
 ###############################################################################
+## @brief Append launch kernel with parameters cooperative descriptor
+class ze_command_list_append_launch_kernel_param_cooperative_desc_t(Structure):
+    _fields_ = [
+        ("stype", ze_structure_type_t),                                 ## [in] type of this structure
+        ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains stype and pNext).
+        ("isCooperative", ze_bool_t)                                    ## [in] When true, kernel is treated as cooperative.
+    ]
+
+###############################################################################
 ## @brief Supported module property flags
 class ze_module_property_flags_v(IntEnum):
     IMPORTS = ZE_BIT(0)                                                     ## Module has imports (i.e. imported global variables and/or kernels).
@@ -1839,6 +1864,15 @@ class ze_group_count_t(Structure):
         ("groupCountX", c_ulong),                                       ## [in] number of thread groups in X dimension
         ("groupCountY", c_ulong),                                       ## [in] number of thread groups in Y dimension
         ("groupCountZ", c_ulong)                                        ## [in] number of thread groups in Z dimension
+    ]
+
+###############################################################################
+## @brief Kernel dispatch group sizes.
+class ze_group_size_t(Structure):
+    _fields_ = [
+        ("groupSizeX", c_ulong),                                        ## [in] size of thread group in X dimension
+        ("groupSizeY", c_ulong),                                        ## [in] size of thread group in Y dimension
+        ("groupSizeZ", c_ulong)                                         ## [in] size of thread group in Z dimension
     ]
 
 ###############################################################################
@@ -2160,7 +2194,8 @@ ZE_DRIVER_DDI_HANDLES_EXT_NAME = "ZE_extension_driver_ddi_handles"
 ## @brief Driver Direct Device Interface (DDI) Handles Extension Version(s)
 class ze_driver_ddi_handles_ext_version_v(IntEnum):
     _1_0 = ZE_MAKE_VERSION( 1, 0 )                                          ## version 1.0
-    CURRENT = ZE_MAKE_VERSION( 1, 0 )                                       ## latest known version
+    _1_1 = ZE_MAKE_VERSION( 1, 1 )                                          ## version 1.1
+    CURRENT = ZE_MAKE_VERSION( 1, 1 )                                       ## latest known version
 
 class ze_driver_ddi_handles_ext_version_t(c_int):
     def __str__(self):
@@ -2926,6 +2961,68 @@ class ze_device_vector_width_properties_ext_t(Structure):
     ]
 
 ###############################################################################
+## @brief External Memory Mapping Extension Name
+ZE_EXTERNAL_MEMORY_MAPPING_EXT_NAME = "ZE_extension_external_memmap_sysmem"
+
+###############################################################################
+## @brief External Memory Mapping Extension Version(s)
+class ze_external_memmap_sysmem_ext_version_v(IntEnum):
+    _1_0 = ZE_MAKE_VERSION( 1, 0 )                                          ## version 1.0
+    CURRENT = ZE_MAKE_VERSION( 1, 0 )                                       ## latest known version
+
+class ze_external_memmap_sysmem_ext_version_t(c_int):
+    def __str__(self):
+        return str(ze_external_memmap_sysmem_ext_version_v(self.value))
+
+
+###############################################################################
+## @brief Maps external system memory for an allocation
+## 
+## @details
+##     - This structure may be passed to ::zeMemAllocHost, via the `pNext`
+##       member of ::ze_host_mem_alloc_desc_t to map system memory for a host
+##       allocation.
+##     - The system memory pointer and size being mapped must be page aligned
+##       based on the supported page sizes on the device.
+class ze_external_memmap_sysmem_ext_desc_t(Structure):
+    _fields_ = [
+        ("stype", ze_structure_type_t),                                 ## [in] type of this structure
+        ("pNext", c_void_p),                                            ## [in][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains stype and pNext).
+        ("pSystemMemory", c_void_p),                                    ## [in] system memory pointer to map; must be page-aligned.
+        ("size", c_ulonglong)                                           ## [in] size of the system memory to map; must be page-aligned.
+    ]
+
+###############################################################################
+## @brief Get Kernel Allocation Properties Extension Name
+ZE_GET_KERNEL_ALLOCATION_PROPERTIES_EXP_NAME = "ZE_experimental_kernel_allocation_properties"
+
+###############################################################################
+## @brief Get Kernel Allocation Properties Extension Version(s)
+class ze_kernel_get_allocation_properties_exp_version_v(IntEnum):
+    _1_0 = ZE_MAKE_VERSION( 1, 0 )                                          ## version 1.0
+    CURRENT = ZE_MAKE_VERSION( 1, 0 )                                       ## latest known version
+
+class ze_kernel_get_allocation_properties_exp_version_t(c_int):
+    def __str__(self):
+        return str(ze_kernel_get_allocation_properties_exp_version_v(self.value))
+
+
+###############################################################################
+## @brief Kernel allocation properties
+class ze_kernel_allocation_exp_properties_t(Structure):
+    _fields_ = [
+        ("stype", ze_structure_type_t),                                 ## [in] type of this structure
+        ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains stype and pNext).
+        ("base", c_ulonglong),                                          ## [out] base address of the allocation
+        ("size", c_size_t),                                             ## [out] size of allocation
+        ("type", ze_memory_type_t),                                     ## [out] type of allocation
+        ("argIndex", c_ulong)                                           ## [out] kernel argument index for current allocation, -1 for driver
+                                                                        ## internal (not kernel argument) allocations
+    ]
+
+###############################################################################
 ## @brief Cache_Reservation Extension Name
 ZE_CACHE_RESERVATION_EXT_NAME = "ZE_extension_cache_reservation"
 
@@ -3533,6 +3630,17 @@ class ze_memory_free_ext_desc_t(Structure):
 ZE_BANDWIDTH_PROPERTIES_EXP_NAME = "ZE_experimental_bandwidth_properties"
 
 ###############################################################################
+## @brief Bandwidth Extension Version(s)
+class ze_bandwidth_properties_exp_version_v(IntEnum):
+    _1_0 = ZE_MAKE_VERSION( 1, 0 )                                          ## version 1.0
+    CURRENT = ZE_MAKE_VERSION( 1, 0 )                                       ## latest known version
+
+class ze_bandwidth_properties_exp_version_t(c_int):
+    def __str__(self):
+        return str(ze_bandwidth_properties_exp_version_v(self.value))
+
+
+###############################################################################
 ## @brief P2P Bandwidth Properties
 ## 
 ## @details
@@ -3562,6 +3670,7 @@ class ze_device_p2p_bandwidth_exp_properties_t(Structure):
 ##     - This structure may be passed to
 ##       ::zeDeviceGetCommandQueueGroupProperties by having the pNext member of
 ##       ::ze_command_queue_group_properties_t point at this struct.
+##     - [DEPRECATED]
 class ze_copy_bandwidth_exp_properties_t(Structure):
     _fields_ = [
         ("stype", ze_structure_type_t),                                 ## [in] type of this structure
@@ -3627,6 +3736,17 @@ class ze_device_luid_ext_properties_t(Structure):
 ###############################################################################
 ## @brief Fabric Topology Discovery Extension Name
 ZE_FABRIC_EXP_NAME = "ZE_experimental_fabric"
+
+###############################################################################
+## @brief Fabric Topology Discovery Extension Version(s)
+class ze_fabric_exp_version_v(IntEnum):
+    _1_0 = ZE_MAKE_VERSION( 1, 0 )                                          ## version 1.0
+    CURRENT = ZE_MAKE_VERSION( 1, 0 )                                       ## latest known version
+
+class ze_fabric_exp_version_t(c_int):
+    def __str__(self):
+        return str(ze_fabric_exp_version_v(self.value))
+
 
 ###############################################################################
 ## @brief Maximum fabric edge model string size
@@ -3747,6 +3867,10 @@ class ze_device_memory_ext_type_v(IntEnum):
     GDDR6 = 19                                                              ## GDDR6 memory
     GDDR6X = 20                                                             ## GDDR6X memory
     GDDR7 = 21                                                              ## GDDR7 memory
+    HBM2E = 22                                                              ## HBM2E memory
+    HBM3 = 23                                                               ## HBM3 memory
+    HBM3E = 24                                                              ## HBM3E memory
+    HBM4 = 25                                                               ## HBM4 memory
 
 class ze_device_memory_ext_type_t(c_int):
     def __str__(self):
@@ -4653,6 +4777,21 @@ class ze_device_pitched_alloc_exp_properties_t(Structure):
     ]
 
 ###############################################################################
+## @brief Pitch information for 2-dimensional linear pitched allocations
+## 
+## @details
+##     - This structure may be passed to ::zeDeviceGetImageProperties via the
+##       pNext member of x_device_pitched_alloc_exp_properties_t.
+class ze_pitched_alloc_2dimage_linear_pitch_exp_info_t(Structure):
+    _fields_ = [
+        ("stype", ze_structure_type_t),                                 ## [in] type of this structure
+        ("pNext", c_void_p),                                            ## [in,out][optional] must be null or a pointer to an extension-specific
+                                                                        ## structure (i.e. contains stype and pNext).
+        ("pitchAlign", c_size_t),                                       ## [out] Required pitch Aligment.
+        ("maxSupportedPitch", c_size_t)                                 ## [out] Maximum allowed pitch.
+    ]
+
+###############################################################################
 ## @brief Command List Clone Extension Name
 ZE_COMMAND_LIST_CLONE_EXP_NAME = "ZE_experimental_command_list_clone"
 
@@ -5079,6 +5218,13 @@ if __use_win_types:
 else:
     _zeDriverRTASFormatCompatibilityCheckExt_t = CFUNCTYPE( ze_result_t, ze_driver_handle_t, ze_rtas_format_ext_t, ze_rtas_format_ext_t )
 
+###############################################################################
+## @brief Function-pointer for zeDriverGetDefaultContext
+if __use_win_types:
+    _zeDriverGetDefaultContext_t = WINFUNCTYPE( ze_context_handle_t, ze_driver_handle_t )
+else:
+    _zeDriverGetDefaultContext_t = CFUNCTYPE( ze_context_handle_t, ze_driver_handle_t )
+
 
 ###############################################################################
 ## @brief Table of Driver functions pointers
@@ -5091,7 +5237,8 @@ class _ze_driver_dditable_t(Structure):
         ("pfnGetExtensionProperties", c_void_p),                        ## _zeDriverGetExtensionProperties_t
         ("pfnGetExtensionFunctionAddress", c_void_p),                   ## _zeDriverGetExtensionFunctionAddress_t
         ("pfnGetLastErrorDescription", c_void_p),                       ## _zeDriverGetLastErrorDescription_t
-        ("pfnRTASFormatCompatibilityCheckExt", c_void_p)                ## _zeDriverRTASFormatCompatibilityCheckExt_t
+        ("pfnRTASFormatCompatibilityCheckExt", c_void_p),               ## _zeDriverRTASFormatCompatibilityCheckExt_t
+        ("pfnGetDefaultContext", c_void_p)                              ## _zeDriverGetDefaultContext_t
     ]
 
 ###############################################################################
@@ -5263,6 +5410,13 @@ if __use_win_types:
 else:
     _zeDeviceGetVectorWidthPropertiesExt_t = CFUNCTYPE( ze_result_t, ze_device_handle_t, POINTER(c_ulong), POINTER(ze_device_vector_width_properties_ext_t) )
 
+###############################################################################
+## @brief Function-pointer for zeDeviceSynchronize
+if __use_win_types:
+    _zeDeviceSynchronize_t = WINFUNCTYPE( ze_result_t, ze_device_handle_t )
+else:
+    _zeDeviceSynchronize_t = CFUNCTYPE( ze_result_t, ze_device_handle_t )
+
 
 ###############################################################################
 ## @brief Table of Device functions pointers
@@ -5289,7 +5443,8 @@ class _ze_device_dditable_t(Structure):
         ("pfnGetRootDevice", c_void_p),                                 ## _zeDeviceGetRootDevice_t
         ("pfnImportExternalSemaphoreExt", c_void_p),                    ## _zeDeviceImportExternalSemaphoreExt_t
         ("pfnReleaseExternalSemaphoreExt", c_void_p),                   ## _zeDeviceReleaseExternalSemaphoreExt_t
-        ("pfnGetVectorWidthPropertiesExt", c_void_p)                    ## _zeDeviceGetVectorWidthPropertiesExt_t
+        ("pfnGetVectorWidthPropertiesExt", c_void_p),                   ## _zeDeviceGetVectorWidthPropertiesExt_t
+        ("pfnSynchronize", c_void_p)                                    ## _zeDeviceSynchronize_t
     ]
 
 ###############################################################################
@@ -5693,6 +5848,20 @@ if __use_win_types:
 else:
     _zeCommandListAppendWaitExternalSemaphoreExt_t = CFUNCTYPE( ze_result_t, ze_command_list_handle_t, c_ulong, POINTER(ze_external_semaphore_ext_handle_t), POINTER(ze_external_semaphore_wait_params_ext_t), ze_event_handle_t, c_ulong, POINTER(ze_event_handle_t) )
 
+###############################################################################
+## @brief Function-pointer for zeCommandListAppendLaunchKernelWithParameters
+if __use_win_types:
+    _zeCommandListAppendLaunchKernelWithParameters_t = WINFUNCTYPE( ze_result_t, ze_command_list_handle_t, ze_kernel_handle_t, POINTER(ze_group_count_t), *, ze_event_handle_t, c_ulong, POINTER(ze_event_handle_t) )
+else:
+    _zeCommandListAppendLaunchKernelWithParameters_t = CFUNCTYPE( ze_result_t, ze_command_list_handle_t, ze_kernel_handle_t, POINTER(ze_group_count_t), *, ze_event_handle_t, c_ulong, POINTER(ze_event_handle_t) )
+
+###############################################################################
+## @brief Function-pointer for zeCommandListAppendLaunchKernelWithArguments
+if __use_win_types:
+    _zeCommandListAppendLaunchKernelWithArguments_t = WINFUNCTYPE( ze_result_t, ze_command_list_handle_t, ze_kernel_handle_t, ze_group_count_t, ze_group_c_size_t, **, *, ze_event_handle_t, c_ulong, POINTER(ze_event_handle_t) )
+else:
+    _zeCommandListAppendLaunchKernelWithArguments_t = CFUNCTYPE( ze_result_t, ze_command_list_handle_t, ze_kernel_handle_t, ze_group_count_t, ze_group_c_size_t, **, *, ze_event_handle_t, c_ulong, POINTER(ze_event_handle_t) )
+
 
 ###############################################################################
 ## @brief Table of CommandList functions pointers
@@ -5733,7 +5902,9 @@ class _ze_command_list_dditable_t(Structure):
         ("pfnImmediateGetIndex", c_void_p),                             ## _zeCommandListImmediateGetIndex_t
         ("pfnIsImmediate", c_void_p),                                   ## _zeCommandListIsImmediate_t
         ("pfnAppendSignalExternalSemaphoreExt", c_void_p),              ## _zeCommandListAppendSignalExternalSemaphoreExt_t
-        ("pfnAppendWaitExternalSemaphoreExt", c_void_p)                 ## _zeCommandListAppendWaitExternalSemaphoreExt_t
+        ("pfnAppendWaitExternalSemaphoreExt", c_void_p),                ## _zeCommandListAppendWaitExternalSemaphoreExt_t
+        ("pfnAppendLaunchKernelWithParameters", c_void_p),              ## _zeCommandListAppendLaunchKernelWithParameters_t
+        ("pfnAppendLaunchKernelWithArguments", c_void_p)                ## _zeCommandListAppendLaunchKernelWithArguments_t
     ]
 
 ###############################################################################
@@ -6481,6 +6652,13 @@ if __use_win_types:
 else:
     _zeKernelGetBinaryExp_t = CFUNCTYPE( ze_result_t, ze_kernel_handle_t, POINTER(c_size_t), POINTER(c_ubyte) )
 
+###############################################################################
+## @brief Function-pointer for zeKernelGetAllocationPropertiesExp
+if __use_win_types:
+    _zeKernelGetAllocationPropertiesExp_t = WINFUNCTYPE( ze_result_t, ze_kernel_handle_t, POINTER(c_ulong), POINTER(ze_kernel_allocation_exp_properties_t) )
+else:
+    _zeKernelGetAllocationPropertiesExp_t = CFUNCTYPE( ze_result_t, ze_kernel_handle_t, POINTER(c_ulong), POINTER(ze_kernel_allocation_exp_properties_t) )
+
 
 ###############################################################################
 ## @brief Table of KernelExp functions pointers
@@ -6488,7 +6666,8 @@ class _ze_kernel_exp_dditable_t(Structure):
     _fields_ = [
         ("pfnSetGlobalOffsetExp", c_void_p),                            ## _zeKernelSetGlobalOffsetExp_t
         ("pfnSchedulingHintExp", c_void_p),                             ## _zeKernelSchedulingHintExp_t
-        ("pfnGetBinaryExp", c_void_p)                                   ## _zeKernelGetBinaryExp_t
+        ("pfnGetBinaryExp", c_void_p),                                  ## _zeKernelGetBinaryExp_t
+        ("pfnGetAllocationPropertiesExp", c_void_p)                     ## _zeKernelGetAllocationPropertiesExp_t
     ]
 
 ###############################################################################
@@ -6798,6 +6977,7 @@ class ZE_DDI:
         self.zeDriverGetExtensionFunctionAddress = _zeDriverGetExtensionFunctionAddress_t(self.__dditable.Driver.pfnGetExtensionFunctionAddress)
         self.zeDriverGetLastErrorDescription = _zeDriverGetLastErrorDescription_t(self.__dditable.Driver.pfnGetLastErrorDescription)
         self.zeDriverRTASFormatCompatibilityCheckExt = _zeDriverRTASFormatCompatibilityCheckExt_t(self.__dditable.Driver.pfnRTASFormatCompatibilityCheckExt)
+        self.zeDriverGetDefaultContext = _zeDriverGetDefaultContext_t(self.__dditable.Driver.pfnGetDefaultContext)
 
         # call driver to get function pointers
         _DriverExp = _ze_driver_exp_dditable_t()
@@ -6839,6 +7019,7 @@ class ZE_DDI:
         self.zeDeviceImportExternalSemaphoreExt = _zeDeviceImportExternalSemaphoreExt_t(self.__dditable.Device.pfnImportExternalSemaphoreExt)
         self.zeDeviceReleaseExternalSemaphoreExt = _zeDeviceReleaseExternalSemaphoreExt_t(self.__dditable.Device.pfnReleaseExternalSemaphoreExt)
         self.zeDeviceGetVectorWidthPropertiesExt = _zeDeviceGetVectorWidthPropertiesExt_t(self.__dditable.Device.pfnGetVectorWidthPropertiesExt)
+        self.zeDeviceSynchronize = _zeDeviceSynchronize_t(self.__dditable.Device.pfnSynchronize)
 
         # call driver to get function pointers
         _DeviceExp = _ze_device_exp_dditable_t()
@@ -6927,6 +7108,8 @@ class ZE_DDI:
         self.zeCommandListIsImmediate = _zeCommandListIsImmediate_t(self.__dditable.CommandList.pfnIsImmediate)
         self.zeCommandListAppendSignalExternalSemaphoreExt = _zeCommandListAppendSignalExternalSemaphoreExt_t(self.__dditable.CommandList.pfnAppendSignalExternalSemaphoreExt)
         self.zeCommandListAppendWaitExternalSemaphoreExt = _zeCommandListAppendWaitExternalSemaphoreExt_t(self.__dditable.CommandList.pfnAppendWaitExternalSemaphoreExt)
+        self.zeCommandListAppendLaunchKernelWithParameters = _zeCommandListAppendLaunchKernelWithParameters_t(self.__dditable.CommandList.pfnAppendLaunchKernelWithParameters)
+        self.zeCommandListAppendLaunchKernelWithArguments = _zeCommandListAppendLaunchKernelWithArguments_t(self.__dditable.CommandList.pfnAppendLaunchKernelWithArguments)
 
         # call driver to get function pointers
         _CommandListExp = _ze_command_list_exp_dditable_t()
@@ -7127,6 +7310,7 @@ class ZE_DDI:
         self.zeKernelSetGlobalOffsetExp = _zeKernelSetGlobalOffsetExp_t(self.__dditable.KernelExp.pfnSetGlobalOffsetExp)
         self.zeKernelSchedulingHintExp = _zeKernelSchedulingHintExp_t(self.__dditable.KernelExp.pfnSchedulingHintExp)
         self.zeKernelGetBinaryExp = _zeKernelGetBinaryExp_t(self.__dditable.KernelExp.pfnGetBinaryExp)
+        self.zeKernelGetAllocationPropertiesExp = _zeKernelGetAllocationPropertiesExp_t(self.__dditable.KernelExp.pfnGetAllocationPropertiesExp)
 
         # call driver to get function pointers
         _Sampler = _ze_sampler_dditable_t()

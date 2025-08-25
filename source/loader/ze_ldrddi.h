@@ -122,6 +122,10 @@ namespace loader_driver_ddi
         const char** ppString                           ///< [in,out] pointer to a null-terminated array of characters describing
                                                         ///< cause of error.
         );
+    __zedlllocal ze_context_handle_t ZE_APICALL
+    zeDriverGetDefaultContext(
+        ze_driver_handle_t hDriver                      ///< [in] handle of the driver instance
+        );
     __zedlllocal ze_result_t ZE_APICALL
     zeDeviceGet(
         ze_driver_handle_t hDriver,                     ///< [in] handle of the driver instance
@@ -246,6 +250,10 @@ namespace loader_driver_ddi
                                                         ///< Device's global timestamp value.
         uint64_t* deviceTimestamp                       ///< [out] value of the Device's global timestamp that correlates with the
                                                         ///< Host's global timestamp value.
+        );
+    __zedlllocal ze_result_t ZE_APICALL
+    zeDeviceSynchronize(
+        ze_device_handle_t hDevice                      ///< [in] handle of the device
         );
     __zedlllocal ze_result_t ZE_APICALL
     zeContextCreate(
@@ -992,6 +1000,32 @@ namespace loader_driver_ddi
                                                         ///< on before launching
         );
     __zedlllocal ze_result_t ZE_APICALL
+    zeCommandListAppendLaunchKernelWithParameters(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
+        ze_kernel_handle_t hKernel,                     ///< [in] handle of the kernel object
+        const ze_group_count_t* pGroupCounts,           ///< [in] thread group launch arguments
+        const void * pNext,                             ///< [in][optional] additional parameters passed to the function
+        ze_event_handle_t hSignalEvent,                 ///< [in][optional] handle of the event to signal on completion
+        uint32_t numWaitEvents,                         ///< [in][optional] number of events to wait on before launching; must be 0
+                                                        ///< if `nullptr == phWaitEvents`
+        ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
+                                                        ///< on before launching
+        );
+    __zedlllocal ze_result_t ZE_APICALL
+    zeCommandListAppendLaunchKernelWithArguments(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
+        ze_kernel_handle_t hKernel,                     ///< [in] handle of the kernel object
+        const ze_group_count_t groupCounts,             ///< [in] thread group counts
+        const ze_group_size_t groupSizes,               ///< [in] thread group sizes
+        void ** pArguments,                             ///< [in]pointer to an array of pointers
+        const void * pNext,                             ///< [in][optional] additional extensions passed to the function
+        ze_event_handle_t hSignalEvent,                 ///< [in][optional] handle of the event to signal on completion
+        uint32_t numWaitEvents,                         ///< [in][optional] number of events to wait on before launching; must be 0
+                                                        ///< if `nullptr == phWaitEvents`
+        ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
+                                                        ///< on before launching
+        );
+    __zedlllocal ze_result_t ZE_APICALL
     zeCommandListAppendLaunchCooperativeKernel(
         ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
         ze_kernel_handle_t hKernel,                     ///< [in] handle of the kernel object
@@ -1268,6 +1302,20 @@ namespace loader_driver_ddi
         ze_device_vector_width_properties_ext_t* pVectorWidthProperties ///< [in,out][optional][range(0, *pCount)] array of vector width properties.
                                                         ///< if count is less than the number of properties available, then the
                                                         ///< driver will return only the number requested.
+        );
+    __zedlllocal ze_result_t ZE_APICALL
+    zeKernelGetAllocationPropertiesExp(
+        ze_kernel_handle_t hKernel,                     ///< [in] Kernel handle.
+        uint32_t* pCount,                               ///< [in,out] pointer to the number of kernel allocation properties.
+                                                        ///< if count is zero, then the driver shall update the value with the
+                                                        ///< total number of kernel allocation properties available.
+                                                        ///< if count is greater than the number of kernel allocation properties
+                                                        ///< available, then the driver shall update the value with the correct
+                                                        ///< number of kernel allocation properties.
+        ze_kernel_allocation_exp_properties_t* pAllocationProperties///< [in,out][optional][range(0, *pCount)] array of kernel allocation properties.
+                                                        ///< if count is less than the number of kernel allocation properties
+                                                        ///< available, then driver shall only retrieve that number of kernel
+                                                        ///< allocation properties.
         );
     __zedlllocal ze_result_t ZE_APICALL
     zeDeviceReserveCacheExt(

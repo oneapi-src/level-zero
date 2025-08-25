@@ -25,11 +25,13 @@ namespace driver
     extern ze_dditable_driver_t pCore;
     extern zet_dditable_driver_t pTools;
     extern zes_dditable_driver_t pSysman;
+    extern zer_dditable_driver_t pRuntime;
     struct __zedlllocal BaseNullHandle : ze_handle_t {
         BaseNullHandle() {
             pCore = &driver::pCore;
             pTools = &driver::pTools;
             pSysman = &driver::pSysman;
+            pRuntime = &driver::pRuntime;
         }
     };
     ///////////////////////////////////////////////////////////////////////////////
@@ -41,6 +43,7 @@ namespace driver
         ze_dditable_t   zeDdiTable = {};
         zet_dditable_t  zetDdiTable = {};
         zes_dditable_t  zesDdiTable = {};
+        zer_dditable_t  zerDdiTable = {};
         std::vector<BaseNullHandle*> globalBaseNullHandle;
 	bool ddiExtensionRequested = false;
 	std::vector<char *> env_vars{};

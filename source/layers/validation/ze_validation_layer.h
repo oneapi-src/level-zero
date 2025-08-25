@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (C) 2019-2021 Intel Corporation
+ * Copyright (C) 2019-2025 Intel Corporation
  *
  * SPDX-License-Identifier: MIT
  *
@@ -11,12 +11,14 @@
 #include "ze_ddi.h"
 #include "zet_ddi.h"
 #include "zes_ddi.h"
+#include "zer_ddi.h"
 #include "ze_util.h"
 #include "loader/ze_loader.h"
 #include "handle_lifetime.h"
 #include "ze_entry_points.h"
 #include "zet_entry_points.h"
 #include "zes_entry_points.h"
+#include "zer_entry_points.h"
 #include "logging.h"
 #include <memory>
 #include <vector>
@@ -32,6 +34,7 @@ namespace validation_layer
         ZEValidationEntryPoints *zeValidation;
         ZESValidationEntryPoints *zesValidation;
         ZETValidationEntryPoints *zetValidation;
+        ZERValidationEntryPoints *zerValidation;
     };
     class __zedlllocal context_t
     {
@@ -44,6 +47,7 @@ namespace validation_layer
         ze_dditable_t   zeDdiTable = {};
         zet_dditable_t  zetDdiTable = {};
         zes_dditable_t  zesDdiTable = {};
+        zer_dditable_t  zerDdiTable = {};
 
         std::vector<validationChecker *> validationHandlers;
         std::unique_ptr<HandleLifetimeValidation> handleLifetime;

@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (C) 2024 Intel Corporation
+ * Copyright (C) 2024-2025 Intel Corporation
  *
  * SPDX-License-Identifier: MIT
  *
@@ -89,6 +89,7 @@ namespace validation_layer
 
             class ZESbasic_leakChecker : public ZESValidationEntryPoints {};
             class ZETbasic_leakChecker : public ZETValidationEntryPoints {};
+            class ZERbasic_leakChecker : public ZERValidationEntryPoints {};
             bool enablebasic_leak = false;
     };
     extern class basic_leakChecker basic_leak_checker;

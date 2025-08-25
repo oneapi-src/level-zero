@@ -7,6 +7,7 @@ add_library(${TARGET_NAME}
         ${CMAKE_CURRENT_SOURCE_DIR}/ze_nullddi.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/zet_nullddi.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/zes_nullddi.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/zer_nullddi.cpp
 )
 
 set_target_properties(${TARGET_NAME} PROPERTIES
@@ -35,6 +36,7 @@ add_library(ze_null_test1 SHARED
     ${CMAKE_CURRENT_SOURCE_DIR}/ze_nullddi.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/zet_nullddi.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/zes_nullddi.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/zer_nullddi.cpp
 )
 
 add_library(ze_null_test2 SHARED
@@ -43,6 +45,7 @@ add_library(ze_null_test2 SHARED
     ${CMAKE_CURRENT_SOURCE_DIR}/ze_nullddi.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/zet_nullddi.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/zes_nullddi.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/zer_nullddi.cpp
 )
 
 set_target_properties(ze_null_test1 PROPERTIES

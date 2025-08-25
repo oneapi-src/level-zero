@@ -1,11 +1,11 @@
 /*
  *
- * Copyright (C) 2019-2021 Intel Corporation
+ * Copyright (C) 2019-2025 Intel Corporation
  *
  * SPDX-License-Identifier: MIT
  *
  * @file ze_ddi.h
- * @version v1.13-r1.13.1
+ * @version v1.14-r1.14.33
  *
  */
 #ifndef _ZE_DDI_H
@@ -390,6 +390,12 @@ typedef ze_result_t (ZE_APICALL *ze_pfnDriverRTASFormatCompatibilityCheckExt_t)(
     );
 
 ///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zeDriverGetDefaultContext 
+typedef ze_context_handle_t (ZE_APICALL *ze_pfnDriverGetDefaultContext_t)(
+    ze_driver_handle_t
+    );
+
+///////////////////////////////////////////////////////////////////////////////
 /// @brief Table of Driver functions pointers
 typedef struct _ze_driver_dditable_t
 {
@@ -401,6 +407,7 @@ typedef struct _ze_driver_dditable_t
     ze_pfnDriverGetExtensionFunctionAddress_t                   pfnGetExtensionFunctionAddress;
     ze_pfnDriverGetLastErrorDescription_t                       pfnGetLastErrorDescription;
     ze_pfnDriverRTASFormatCompatibilityCheckExt_t               pfnRTASFormatCompatibilityCheckExt;
+    ze_pfnDriverGetDefaultContext_t                             pfnGetDefaultContext;
 } ze_driver_dditable_t;
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -628,6 +635,12 @@ typedef ze_result_t (ZE_APICALL *ze_pfnDeviceGetVectorWidthPropertiesExt_t)(
     );
 
 ///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zeDeviceSynchronize 
+typedef ze_result_t (ZE_APICALL *ze_pfnDeviceSynchronize_t)(
+    ze_device_handle_t
+    );
+
+///////////////////////////////////////////////////////////////////////////////
 /// @brief Table of Device functions pointers
 typedef struct _ze_device_dditable_t
 {
@@ -653,6 +666,7 @@ typedef struct _ze_device_dditable_t
     ze_pfnDeviceImportExternalSemaphoreExt_t                    pfnImportExternalSemaphoreExt;
     ze_pfnDeviceReleaseExternalSemaphoreExt_t                   pfnReleaseExternalSemaphoreExt;
     ze_pfnDeviceGetVectorWidthPropertiesExt_t                   pfnGetVectorWidthPropertiesExt;
+    ze_pfnDeviceSynchronize_t                                   pfnSynchronize;
 } ze_device_dditable_t;
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1264,6 +1278,32 @@ typedef ze_result_t (ZE_APICALL *ze_pfnCommandListAppendWaitExternalSemaphoreExt
     );
 
 ///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zeCommandListAppendLaunchKernelWithParameters 
+typedef ze_result_t (ZE_APICALL *ze_pfnCommandListAppendLaunchKernelWithParameters_t)(
+    ze_command_list_handle_t,
+    ze_kernel_handle_t,
+    const ze_group_count_t*,
+    const void *,
+    ze_event_handle_t,
+    uint32_t,
+    ze_event_handle_t*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zeCommandListAppendLaunchKernelWithArguments 
+typedef ze_result_t (ZE_APICALL *ze_pfnCommandListAppendLaunchKernelWithArguments_t)(
+    ze_command_list_handle_t,
+    ze_kernel_handle_t,
+    const ze_group_count_t,
+    const ze_group_size_t,
+    void **,
+    const void *,
+    ze_event_handle_t,
+    uint32_t,
+    ze_event_handle_t*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
 /// @brief Table of CommandList functions pointers
 typedef struct _ze_command_list_dditable_t
 {
@@ -1303,6 +1343,8 @@ typedef struct _ze_command_list_dditable_t
     ze_pfnCommandListIsImmediate_t                              pfnIsImmediate;
     ze_pfnCommandListAppendSignalExternalSemaphoreExt_t         pfnAppendSignalExternalSemaphoreExt;
     ze_pfnCommandListAppendWaitExternalSemaphoreExt_t           pfnAppendWaitExternalSemaphoreExt;
+    ze_pfnCommandListAppendLaunchKernelWithParameters_t         pfnAppendLaunchKernelWithParameters;
+    ze_pfnCommandListAppendLaunchKernelWithArguments_t          pfnAppendLaunchKernelWithArguments;
 } ze_command_list_dditable_t;
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -2405,12 +2447,21 @@ typedef ze_result_t (ZE_APICALL *ze_pfnKernelGetBinaryExp_t)(
     );
 
 ///////////////////////////////////////////////////////////////////////////////
+/// @brief Function-pointer for zeKernelGetAllocationPropertiesExp 
+typedef ze_result_t (ZE_APICALL *ze_pfnKernelGetAllocationPropertiesExp_t)(
+    ze_kernel_handle_t,
+    uint32_t*,
+    ze_kernel_allocation_exp_properties_t*
+    );
+
+///////////////////////////////////////////////////////////////////////////////
 /// @brief Table of KernelExp functions pointers
 typedef struct _ze_kernel_exp_dditable_t
 {
     ze_pfnKernelSetGlobalOffsetExp_t                            pfnSetGlobalOffsetExp;
     ze_pfnKernelSchedulingHintExp_t                             pfnSchedulingHintExp;
     ze_pfnKernelGetBinaryExp_t                                  pfnGetBinaryExp;
+    ze_pfnKernelGetAllocationPropertiesExp_t                    pfnGetAllocationPropertiesExp;
 } ze_kernel_exp_dditable_t;
 
 ///////////////////////////////////////////////////////////////////////////////

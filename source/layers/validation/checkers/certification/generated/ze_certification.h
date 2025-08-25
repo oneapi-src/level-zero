@@ -69,6 +69,12 @@ public:
         }
         return ZE_RESULT_SUCCESS;
     }
+    virtual ze_result_t zeDriverGetDefaultContextPrologue( ze_driver_handle_t hDriver ) override {
+        if (GlobalCertificationState::getInstance().certification_version < ZE_API_VERSION_1_14) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
     virtual ze_result_t zeDeviceGetPrologue( ze_driver_handle_t hDriver, uint32_t* pCount, ze_device_handle_t* phDevices ) override {
         if (GlobalCertificationState::getInstance().certification_version < ZE_API_VERSION_1_0) {
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
@@ -161,6 +167,12 @@ public:
     }
     virtual ze_result_t zeDeviceGetGlobalTimestampsPrologue( ze_device_handle_t hDevice, uint64_t* hostTimestamp, uint64_t* deviceTimestamp ) override {
         if (GlobalCertificationState::getInstance().certification_version < ZE_API_VERSION_1_1) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zeDeviceSynchronizePrologue( ze_device_handle_t hDevice ) override {
+        if (GlobalCertificationState::getInstance().certification_version < ZE_API_VERSION_1_14) {
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
         }
         return ZE_RESULT_SUCCESS;
@@ -777,6 +789,18 @@ public:
         }
         return ZE_RESULT_SUCCESS;
     }
+    virtual ze_result_t zeCommandListAppendLaunchKernelWithParametersPrologue( ze_command_list_handle_t hCommandList, ze_kernel_handle_t hKernel, const ze_group_count_t* pGroupCounts, const void * pNext, ze_event_handle_t hSignalEvent, uint32_t numWaitEvents, ze_event_handle_t* phWaitEvents ) override {
+        if (GlobalCertificationState::getInstance().certification_version < ZE_API_VERSION_1_14) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zeCommandListAppendLaunchKernelWithArgumentsPrologue( ze_command_list_handle_t hCommandList, ze_kernel_handle_t hKernel, const ze_group_count_t groupCounts, const ze_group_size_t groupSizes, void ** pArguments, const void * pNext, ze_event_handle_t hSignalEvent, uint32_t numWaitEvents, ze_event_handle_t* phWaitEvents ) override {
+        if (GlobalCertificationState::getInstance().certification_version < ZE_API_VERSION_1_14) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
     virtual ze_result_t zeCommandListAppendLaunchCooperativeKernelPrologue( ze_command_list_handle_t hCommandList, ze_kernel_handle_t hKernel, const ze_group_count_t* pLaunchFuncArgs, ze_event_handle_t hSignalEvent, uint32_t numWaitEvents, ze_event_handle_t* phWaitEvents ) override {
         if (GlobalCertificationState::getInstance().certification_version < ZE_API_VERSION_1_0) {
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
@@ -983,6 +1007,12 @@ public:
     }
     virtual ze_result_t zeDeviceGetVectorWidthPropertiesExtPrologue( ze_device_handle_t hDevice, uint32_t* pCount, ze_device_vector_width_properties_ext_t* pVectorWidthProperties ) override {
         if (GlobalCertificationState::getInstance().certification_version < ZE_API_VERSION_1_13) {
+            return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    virtual ze_result_t zeKernelGetAllocationPropertiesExpPrologue( ze_kernel_handle_t hKernel, uint32_t* pCount, ze_kernel_allocation_exp_properties_t* pAllocationProperties ) override {
+        if (GlobalCertificationState::getInstance().certification_version < ZE_API_VERSION_1_14) {
             return ZE_RESULT_ERROR_UNSUPPORTED_VERSION;
         }
         return ZE_RESULT_SUCCESS;

@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (C) 2024 Intel Corporation
+ * Copyright (C) 2024-2025 Intel Corporation
  *
  * SPDX-License-Identifier: MIT
  *
@@ -87,6 +87,7 @@ class __zedlllocal eventsChecker : public validationChecker {
     };
     class ZESeventsChecker : public ZESValidationEntryPoints {};
     class ZETeventsChecker : public ZETValidationEntryPoints {};
+    class ZEReventsChecker : public ZERValidationEntryPoints {};
 
     bool enableEvents = false;
 };

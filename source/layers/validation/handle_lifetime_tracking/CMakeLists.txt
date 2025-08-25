@@ -7,4 +7,6 @@ target_sources(${TARGET_NAME}
     ${CMAKE_CURRENT_LIST_DIR}/zes_handle_lifetime.h
     ${CMAKE_CURRENT_LIST_DIR}/zet_handle_lifetime.cpp
     ${CMAKE_CURRENT_LIST_DIR}/zet_handle_lifetime.h
+    ${CMAKE_CURRENT_LIST_DIR}/zer_handle_lifetime.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/zer_handle_lifetime.h
 )

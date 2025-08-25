@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (C) 2019-2024 Intel Corporation
+ * Copyright (C) 2019-2025 Intel Corporation
  *
  * SPDX-License-Identifier: MIT
  *
@@ -478,7 +478,7 @@ zetDebugResume(
 ///         + `nullptr == desc`
 ///         + `nullptr == buffer`
 ///     - ::ZE_RESULT_ERROR_INVALID_ENUMERATION
-///         + `::ZET_DEBUG_MEMORY_SPACE_TYPE_ELF < desc->type`
+///         + `::ZET_DEBUG_MEMORY_SPACE_TYPE_BARRIER < desc->type`
 ///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
 ///         + the thread is running or unavailable
 ///         + the memory cannot be accessed from the supplied thread
@@ -543,7 +543,7 @@ zetDebugReadMemory(
 ///         + `nullptr == desc`
 ///         + `nullptr == buffer`
 ///     - ::ZE_RESULT_ERROR_INVALID_ENUMERATION
-///         + `::ZET_DEBUG_MEMORY_SPACE_TYPE_ELF < desc->type`
+///         + `::ZET_DEBUG_MEMORY_SPACE_TYPE_BARRIER < desc->type`
 ///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
 ///         + the thread is running or unavailable
 ///         + the memory cannot be accessed from the supplied thread
@@ -2073,6 +2073,9 @@ zetKernelGetProfileInfo(
 /// @brief Creates a tracer on the context.
 /// 
 /// @details
+///     - @deprecated This function is not supported in L0 drivers and has been
+///       replaced by the Loader Tracing Layer. See the Loader Tracing
+///       documentation for more details.
 ///     - The application must only use the tracer for the context which was
 ///       provided during creation.
 ///     - The tracer is created in the disabled state.
@@ -2135,6 +2138,9 @@ zetTracerExpCreate(
 /// @brief Destroys a tracer.
 /// 
 /// @details
+///     - @deprecated This function is not supported in L0 drivers and has been
+///       replaced by the Loader Tracing Layer. See the Loader Tracing
+///       documentation for more details.
 ///     - The application must **not** call this function from simultaneous
 ///       threads with the same tracer handle.
 ///     - The implementation of this function must be thread-safe.
@@ -2194,6 +2200,9 @@ zetTracerExpDestroy(
 ///        execution.
 /// 
 /// @details
+///     - @deprecated This function is not supported in L0 drivers and has been
+///       replaced by the Loader Tracing Layer. See the Loader Tracing
+///       documentation for more details.
 ///     - The application only needs to set the function pointers it is
 ///       interested in receiving; all others should be 'nullptr'
 ///     - The application must ensure that no other threads are executing
@@ -2255,6 +2264,9 @@ zetTracerExpSetPrologues(
 ///        execution.
 /// 
 /// @details
+///     - @deprecated This function is not supported in L0 drivers and has been
+///       replaced by the Loader Tracing Layer. See the Loader Tracing
+///       documentation for more details.
 ///     - The application only needs to set the function pointers it is
 ///       interested in receiving; all others should be 'nullptr'
 ///     - The application must ensure that no other threads are executing
@@ -2315,6 +2327,9 @@ zetTracerExpSetEpilogues(
 /// @brief Enables (or disables) the tracer
 /// 
 /// @details
+///     - @deprecated This function is not supported in L0 drivers and has been
+///       replaced by the Loader Tracing Layer. See the Loader Tracing
+///       documentation for more details.
 ///     - The application must **not** call this function from simultaneous
 ///       threads with the same tracer handle.
 /// 

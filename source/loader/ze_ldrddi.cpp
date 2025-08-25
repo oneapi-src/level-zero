@@ -22,7 +22,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         bool atLeastOneDriverValid = false;
         for( auto& drv : loader::context->zeDrivers )
         {
@@ -55,7 +55,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         uint32_t total_driver_handle_count = 0;
 
         {
@@ -63,6 +63,8 @@ namespace loader
             if (!loader::context->sortingInProgress.exchange(true) && !loader::context->instrumentationEnabled) {
                 std::call_once(loader::context->coreDriverSortOnce, []() {
                     loader::context->driverSorting(&loader::context->zeDrivers, nullptr, false);
+                    loader::context->defaultZerDriverHandle = &loader::context->zeDrivers.front().zerDriverHandle;
+                    loader::defaultZerDdiTable = &loader::context->zeDrivers.front().dditable.zer;
                 });
                 loader::context->sortingInProgress.store(false);
             }
@@ -101,7 +103,35 @@ namespace loader
                 {
                     for( uint32_t i = 0; i < library_driver_handle_count; ++i ) {
                         uint32_t driver_index = total_driver_handle_count + i;
+                        drv.zerDriverHandle = phDrivers[ driver_index ];
                         if (drv.driverDDIHandleSupportQueried == false) {
+                            uint32_t extensionCount = 0;
+                            ze_result_t res = drv.dditable.ze.Driver.pfnGetExtensionProperties(phDrivers[ driver_index ], &extensionCount, nullptr);
+                            if (res != ZE_RESULT_SUCCESS) {
+                                if (loader::context->debugTraceEnabled) {
+                                    std::string message = drv.name + " failed zeDriverGetExtensionProperties query, returned ";
+                                    loader::context->debug_trace_message(message, loader::to_string(res));
+                                }
+                                return res;
+                            }
+                            std::vector<ze_driver_extension_properties_t> extensionProperties(extensionCount);
+                            res = drv.dditable.ze.Driver.pfnGetExtensionProperties(phDrivers[ driver_index ], &extensionCount, extensionProperties.data());
+                            if (res != ZE_RESULT_SUCCESS) {
+                                if (loader::context->debugTraceEnabled) {
+                                    std::string message = drv.name + " failed zeDriverGetExtensionProperties query, returned ";
+                                    loader::context->debug_trace_message(message, loader::to_string(res));
+                                }
+                                return res;
+                            }
+                            if (extensionCount > 0) {
+                                for (uint32_t extIndex = 0; extIndex < extensionCount; extIndex++) {
+                                    if (strcmp(extensionProperties[extIndex].name, ZE_DRIVER_DDI_HANDLES_EXT_NAME) == 0 && (!(extensionProperties[extIndex].version >= ZE_DRIVER_DDI_HANDLES_EXT_VERSION_1_1))) {
+                                        // Driver supports DDI Handles but not the required version for ZER APIs so set the driverHandle to nullptr
+                                        drv.zerDriverHandle = nullptr;
+                                        break;
+                                    }
+                                }
+                            }
                             drv.properties = {};
                             drv.properties.stype = ZE_STRUCTURE_TYPE_DRIVER_DDI_HANDLES_EXT_PROPERTIES;
                             drv.properties.pNext = nullptr;
@@ -109,7 +139,7 @@ namespace loader
                             driverProperties.stype = ZE_STRUCTURE_TYPE_DRIVER_PROPERTIES;
                             driverProperties.pNext = nullptr;
                             driverProperties.pNext = &drv.properties;
-                            ze_result_t res = drv.dditable.ze.Driver.pfnGetProperties(phDrivers[ driver_index ], &driverProperties);
+                            res = drv.dditable.ze.Driver.pfnGetProperties(phDrivers[ driver_index ], &driverProperties);
                             if (res != ZE_RESULT_SUCCESS) {
                                 if (loader::context->debugTraceEnabled) {
                                     std::string message = drv.name + " failed zeDriverGetProperties query, returned ";
@@ -170,7 +200,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         uint32_t total_driver_handle_count = 0;
 
         {
@@ -178,6 +208,8 @@ namespace loader
             if (!loader::context->sortingInProgress.exchange(true) && !loader::context->instrumentationEnabled) {
                 std::call_once(loader::context->coreDriverSortOnce, [desc]() {
                     loader::context->driverSorting(&loader::context->zeDrivers, desc, false);
+                    loader::context->defaultZerDriverHandle = &loader::context->zeDrivers.front().zerDriverHandle;
+                    loader::defaultZerDdiTable = &loader::context->zeDrivers.front().dditable.zer;
                 });
                 loader::context->sortingInProgress.store(false);
             }
@@ -218,7 +250,35 @@ namespace loader
                 {
                     for( uint32_t i = 0; i < library_driver_handle_count; ++i ) {
                         uint32_t driver_index = total_driver_handle_count + i;
+                        drv.zerDriverHandle = phDrivers[ driver_index ];
                         if (drv.driverDDIHandleSupportQueried == false) {
+                            uint32_t extensionCount = 0;
+                            ze_result_t res = drv.dditable.ze.Driver.pfnGetExtensionProperties(phDrivers[ driver_index ], &extensionCount, nullptr);
+                            if (res != ZE_RESULT_SUCCESS) {
+                                if (loader::context->debugTraceEnabled) {
+                                    std::string message = drv.name + " failed zeDriverGetExtensionProperties query, returned ";
+                                    loader::context->debug_trace_message(message, loader::to_string(res));
+                                }
+                                return res;
+                            }
+                            std::vector<ze_driver_extension_properties_t> extensionProperties(extensionCount);
+                            res = drv.dditable.ze.Driver.pfnGetExtensionProperties(phDrivers[ driver_index ], &extensionCount, extensionProperties.data());
+                            if (res != ZE_RESULT_SUCCESS) {
+                                if (loader::context->debugTraceEnabled) {
+                                    std::string message = drv.name + " failed zeDriverGetExtensionProperties query, returned ";
+                                    loader::context->debug_trace_message(message, loader::to_string(res));
+                                }
+                                return res;
+                            }
+                            if (extensionCount > 0) {
+                                for (uint32_t extIndex = 0; extIndex < extensionCount; extIndex++) {
+                                    if (strcmp(extensionProperties[extIndex].name, ZE_DRIVER_DDI_HANDLES_EXT_NAME) == 0 && (!(extensionProperties[extIndex].version >= ZE_DRIVER_DDI_HANDLES_EXT_VERSION_1_1))) {
+                                        // Driver supports DDI Handles but not the required version for ZER APIs so set the driverHandle to nullptr
+                                        drv.zerDriverHandle = nullptr;
+                                        break;
+                                    }
+                                }
+                            }
                             drv.properties = {};
                             drv.properties.stype = ZE_STRUCTURE_TYPE_DRIVER_DDI_HANDLES_EXT_PROPERTIES;
                             drv.properties.pNext = nullptr;
@@ -226,7 +286,7 @@ namespace loader
                             driverProperties.stype = ZE_STRUCTURE_TYPE_DRIVER_PROPERTIES;
                             driverProperties.pNext = nullptr;
                             driverProperties.pNext = &drv.properties;
-                            ze_result_t res = drv.dditable.ze.Driver.pfnGetProperties(phDrivers[ driver_index ], &driverProperties);
+                            res = drv.dditable.ze.Driver.pfnGetProperties(phDrivers[ driver_index ], &driverProperties);
                             if (res != ZE_RESULT_SUCCESS) {
                                 if (loader::context->debugTraceEnabled) {
                                     std::string message = drv.name + " failed zeDriverGetProperties query, returned ";
@@ -279,7 +339,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_driver_object_t*>( hDriver )->dditable;
         auto pfnGetApiVersion = dditable->ze.Driver.pfnGetApiVersion;
@@ -304,7 +364,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_driver_object_t*>( hDriver )->dditable;
         auto pfnGetProperties = dditable->ze.Driver.pfnGetProperties;
@@ -329,7 +389,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_driver_object_t*>( hDriver )->dditable;
         auto pfnGetIpcProperties = dditable->ze.Driver.pfnGetIpcProperties;
@@ -363,7 +423,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_driver_object_t*>( hDriver )->dditable;
         auto pfnGetExtensionProperties = dditable->ze.Driver.pfnGetExtensionProperties;
@@ -389,7 +449,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_driver_object_t*>( hDriver )->dditable;
         auto pfnGetExtensionFunctionAddress = dditable->ze.Driver.pfnGetExtensionFunctionAddress;
@@ -415,7 +475,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_driver_object_t*>( hDriver )->dditable;
         auto pfnGetLastErrorDescription = dditable->ze.Driver.pfnGetLastErrorDescription;
@@ -427,6 +487,30 @@ namespace loader
 
         // forward to device-driver
         result = pfnGetLastErrorDescription( hDriver, ppString );
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeDriverGetDefaultContext
+    __zedlllocal ze_context_handle_t ZE_APICALL
+    zeDriverGetDefaultContext(
+        ze_driver_handle_t hDriver                      ///< [in] handle of the driver instance
+        )
+    {
+        ze_context_handle_t result {};
+        
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<ze_driver_object_t*>( hDriver )->dditable;
+        auto pfnGetDefaultContext = dditable->ze.Driver.pfnGetDefaultContext;
+        if( nullptr == pfnGetDefaultContext )
+            return nullptr;
+
+        // convert loader handle to driver handle
+        hDriver = reinterpret_cast<ze_driver_object_t*>( hDriver )->handle;
+
+        // forward to device-driver
+        result = pfnGetDefaultContext( hDriver );
 
         return result;
     }
@@ -447,7 +531,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_driver_object_t*>( hDriver )->dditable;
         auto pfnGet = dditable->ze.Device.pfnGet;
@@ -487,7 +571,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_device_object_t*>( hDevice )->dditable;
         auto pfnGetRootDevice = dditable->ze.Device.pfnGetRootDevice;
@@ -533,7 +617,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_device_object_t*>( hDevice )->dditable;
         auto pfnGetSubDevices = dditable->ze.Device.pfnGetSubDevices;
@@ -573,7 +657,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_device_object_t*>( hDevice )->dditable;
         auto pfnGetProperties = dditable->ze.Device.pfnGetProperties;
@@ -598,7 +682,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_device_object_t*>( hDevice )->dditable;
         auto pfnGetComputeProperties = dditable->ze.Device.pfnGetComputeProperties;
@@ -623,7 +707,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_device_object_t*>( hDevice )->dditable;
         auto pfnGetModuleProperties = dditable->ze.Device.pfnGetModuleProperties;
@@ -658,7 +742,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_device_object_t*>( hDevice )->dditable;
         auto pfnGetCommandQueueGroupProperties = dditable->ze.Device.pfnGetCommandQueueGroupProperties;
@@ -692,7 +776,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_device_object_t*>( hDevice )->dditable;
         auto pfnGetMemoryProperties = dditable->ze.Device.pfnGetMemoryProperties;
@@ -717,7 +801,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_device_object_t*>( hDevice )->dditable;
         auto pfnGetMemoryAccessProperties = dditable->ze.Device.pfnGetMemoryAccessProperties;
@@ -750,7 +834,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_device_object_t*>( hDevice )->dditable;
         auto pfnGetCacheProperties = dditable->ze.Device.pfnGetCacheProperties;
@@ -775,7 +859,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_device_object_t*>( hDevice )->dditable;
         auto pfnGetImageProperties = dditable->ze.Device.pfnGetImageProperties;
@@ -800,7 +884,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_device_object_t*>( hDevice )->dditable;
         auto pfnGetExternalMemoryProperties = dditable->ze.Device.pfnGetExternalMemoryProperties;
@@ -826,7 +910,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_device_object_t*>( hDevice )->dditable;
         auto pfnGetP2PProperties = dditable->ze.Device.pfnGetP2PProperties;
@@ -855,7 +939,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_device_object_t*>( hDevice )->dditable;
         auto pfnCanAccessPeer = dditable->ze.Device.pfnCanAccessPeer;
@@ -882,7 +966,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_device_object_t*>( hDevice )->dditable;
         auto pfnGetStatus = dditable->ze.Device.pfnGetStatus;
@@ -910,7 +994,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_device_object_t*>( hDevice )->dditable;
         auto pfnGetGlobalTimestamps = dditable->ze.Device.pfnGetGlobalTimestamps;
@@ -927,6 +1011,30 @@ namespace loader
     }
 
     ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeDeviceSynchronize
+    __zedlllocal ze_result_t ZE_APICALL
+    zeDeviceSynchronize(
+        ze_device_handle_t hDevice                      ///< [in] handle of the device
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+        
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<ze_device_object_t*>( hDevice )->dditable;
+        auto pfnSynchronize = dditable->ze.Device.pfnSynchronize;
+        if( nullptr == pfnSynchronize )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hDevice = reinterpret_cast<ze_device_object_t*>( hDevice )->handle;
+
+        // forward to device-driver
+        result = pfnSynchronize( hDevice );
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
     /// @brief Intercept function for zeContextCreate
     __zedlllocal ze_result_t ZE_APICALL
     zeContextCreate(
@@ -936,7 +1044,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_driver_object_t*>( hDriver )->dditable;
         auto pfnCreate = dditable->ze.Context.pfnCreate;
@@ -986,7 +1094,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_driver_object_t*>( hDriver )->dditable;
         auto pfnCreateEx = dditable->ze.Context.pfnCreateEx;
@@ -1030,7 +1138,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_context_object_t*>( hContext )->dditable;
         auto pfnDestroy = dditable->ze.Context.pfnDestroy;
@@ -1060,7 +1168,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_context_object_t*>( hContext )->dditable;
         auto pfnGetStatus = dditable->ze.Context.pfnGetStatus;
@@ -1087,7 +1195,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_context_object_t*>( hContext )->dditable;
         auto pfnCreate = dditable->ze.CommandQueue.pfnCreate;
@@ -1128,7 +1236,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_command_queue_object_t*>( hCommandQueue )->dditable;
         auto pfnDestroy = dditable->ze.CommandQueue.pfnDestroy;
@@ -1162,7 +1270,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_command_queue_object_t*>( hCommandQueue )->dditable;
         auto pfnExecuteCommandLists = dditable->ze.CommandQueue.pfnExecuteCommandLists;
@@ -1202,7 +1310,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_command_queue_object_t*>( hCommandQueue )->dditable;
         auto pfnSynchronize = dditable->ze.CommandQueue.pfnSynchronize;
@@ -1227,7 +1335,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_command_queue_object_t*>( hCommandQueue )->dditable;
         auto pfnGetOrdinal = dditable->ze.CommandQueue.pfnGetOrdinal;
@@ -1252,7 +1360,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_command_queue_object_t*>( hCommandQueue )->dditable;
         auto pfnGetIndex = dditable->ze.CommandQueue.pfnGetIndex;
@@ -1279,7 +1387,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_context_object_t*>( hContext )->dditable;
         auto pfnCreate = dditable->ze.CommandList.pfnCreate;
@@ -1323,7 +1431,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_context_object_t*>( hContext )->dditable;
         auto pfnCreateImmediate = dditable->ze.CommandList.pfnCreateImmediate;
@@ -1364,7 +1472,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_command_list_object_t*>( hCommandList )->dditable;
         auto pfnDestroy = dditable->ze.CommandList.pfnDestroy;
@@ -1394,7 +1502,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_command_list_object_t*>( hCommandList )->dditable;
         auto pfnClose = dditable->ze.CommandList.pfnClose;
@@ -1418,7 +1526,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_command_list_object_t*>( hCommandList )->dditable;
         auto pfnReset = dditable->ze.CommandList.pfnReset;
@@ -1449,7 +1557,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_command_list_object_t*>( hCommandList )->dditable;
         auto pfnAppendWriteGlobalTimestamp = dditable->ze.CommandList.pfnAppendWriteGlobalTimestamp;
@@ -1489,7 +1597,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_command_list_object_t*>( hCommandList )->dditable;
         auto pfnHostSynchronize = dditable->ze.CommandList.pfnHostSynchronize;
@@ -1514,7 +1622,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_command_list_object_t*>( hCommandList )->dditable;
         auto pfnGetDeviceHandle = dditable->ze.CommandList.pfnGetDeviceHandle;
@@ -1553,7 +1661,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_command_list_object_t*>( hCommandList )->dditable;
         auto pfnGetContextHandle = dditable->ze.CommandList.pfnGetContextHandle;
@@ -1592,7 +1700,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_command_list_object_t*>( hCommandList )->dditable;
         auto pfnGetOrdinal = dditable->ze.CommandList.pfnGetOrdinal;
@@ -1618,7 +1726,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_command_list_object_t*>( hCommandListImmediate )->dditable;
         auto pfnImmediateGetIndex = dditable->ze.CommandList.pfnImmediateGetIndex;
@@ -1644,7 +1752,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_command_list_object_t*>( hCommandList )->dditable;
         auto pfnIsImmediate = dditable->ze.CommandList.pfnIsImmediate;
@@ -1673,7 +1781,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_command_list_object_t*>( hCommandList )->dditable;
         auto pfnAppendBarrier = dditable->ze.CommandList.pfnAppendBarrier;
@@ -1714,7 +1822,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_command_list_object_t*>( hCommandList )->dditable;
         auto pfnAppendMemoryRangesBarrier = dditable->ze.CommandList.pfnAppendMemoryRangesBarrier;
@@ -1748,7 +1856,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_context_object_t*>( hContext )->dditable;
         auto pfnSystemBarrier = dditable->ze.Context.pfnSystemBarrier;
@@ -1783,7 +1891,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_command_list_object_t*>( hCommandList )->dditable;
         auto pfnAppendMemoryCopy = dditable->ze.CommandList.pfnAppendMemoryCopy;
@@ -1825,7 +1933,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_command_list_object_t*>( hCommandList )->dditable;
         auto pfnAppendMemoryFill = dditable->ze.CommandList.pfnAppendMemoryFill;
@@ -1875,7 +1983,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_command_list_object_t*>( hCommandList )->dditable;
         auto pfnAppendMemoryCopyRegion = dditable->ze.CommandList.pfnAppendMemoryCopyRegion;
@@ -1917,7 +2025,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_command_list_object_t*>( hCommandList )->dditable;
         auto pfnAppendMemoryCopyFromContext = dditable->ze.CommandList.pfnAppendMemoryCopyFromContext;
@@ -1960,7 +2068,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_command_list_object_t*>( hCommandList )->dditable;
         auto pfnAppendImageCopy = dditable->ze.CommandList.pfnAppendImageCopy;
@@ -2008,7 +2116,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_command_list_object_t*>( hCommandList )->dditable;
         auto pfnAppendImageCopyRegion = dditable->ze.CommandList.pfnAppendImageCopyRegion;
@@ -2055,7 +2163,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_command_list_object_t*>( hCommandList )->dditable;
         auto pfnAppendImageCopyToMemory = dditable->ze.CommandList.pfnAppendImageCopyToMemory;
@@ -2099,7 +2207,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_command_list_object_t*>( hCommandList )->dditable;
         auto pfnAppendImageCopyFromMemory = dditable->ze.CommandList.pfnAppendImageCopyFromMemory;
@@ -2137,7 +2245,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_command_list_object_t*>( hCommandList )->dditable;
         auto pfnAppendMemoryPrefetch = dditable->ze.CommandList.pfnAppendMemoryPrefetch;
@@ -2165,7 +2273,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_command_list_object_t*>( hCommandList )->dditable;
         auto pfnAppendMemAdvise = dditable->ze.CommandList.pfnAppendMemAdvise;
@@ -2200,7 +2308,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_context_object_t*>( hContext )->dditable;
         auto pfnCreate = dditable->ze.EventPool.pfnCreate;
@@ -2244,7 +2352,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_event_pool_object_t*>( hEventPool )->dditable;
         auto pfnDestroy = dditable->ze.EventPool.pfnDestroy;
@@ -2276,7 +2384,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_event_pool_object_t*>( hEventPool )->dditable;
         auto pfnCreate = dditable->ze.Event.pfnCreate;
@@ -2314,7 +2422,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_event_object_t*>( hEvent )->dditable;
         auto pfnDestroy = dditable->ze.Event.pfnDestroy;
@@ -2345,7 +2453,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_event_pool_object_t*>( hEventPool )->dditable;
         auto pfnGetIpcHandle = dditable->ze.EventPool.pfnGetIpcHandle;
@@ -2371,7 +2479,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_context_object_t*>( hContext )->dditable;
         auto pfnPutIpcHandle = dditable->ze.EventPool.pfnPutIpcHandle;
@@ -2398,7 +2506,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_context_object_t*>( hContext )->dditable;
         auto pfnOpenIpcHandle = dditable->ze.EventPool.pfnOpenIpcHandle;
@@ -2436,7 +2544,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_event_pool_object_t*>( hEventPool )->dditable;
         auto pfnCloseIpcHandle = dditable->ze.EventPool.pfnCloseIpcHandle;
@@ -2467,7 +2575,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_command_list_object_t*>( hCommandList )->dditable;
         auto pfnAppendSignalEvent = dditable->ze.CommandList.pfnAppendSignalEvent;
@@ -2497,7 +2605,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_command_list_object_t*>( hCommandList )->dditable;
         auto pfnAppendWaitOnEvents = dditable->ze.CommandList.pfnAppendWaitOnEvents;
@@ -2527,7 +2635,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_event_object_t*>( hEvent )->dditable;
         auto pfnHostSignal = dditable->ze.Event.pfnHostSignal;
@@ -2558,7 +2666,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_event_object_t*>( hEvent )->dditable;
         auto pfnHostSynchronize = dditable->ze.Event.pfnHostSynchronize;
@@ -2582,7 +2690,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_event_object_t*>( hEvent )->dditable;
         auto pfnQueryStatus = dditable->ze.Event.pfnQueryStatus;
@@ -2607,7 +2715,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_command_list_object_t*>( hCommandList )->dditable;
         auto pfnAppendEventReset = dditable->ze.CommandList.pfnAppendEventReset;
@@ -2634,7 +2742,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_event_object_t*>( hEvent )->dditable;
         auto pfnHostReset = dditable->ze.Event.pfnHostReset;
@@ -2659,7 +2767,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_event_object_t*>( hEvent )->dditable;
         auto pfnQueryKernelTimestamp = dditable->ze.Event.pfnQueryKernelTimestamp;
@@ -2695,7 +2803,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_command_list_object_t*>( hCommandList )->dditable;
         auto pfnAppendQueryKernelTimestamps = dditable->ze.CommandList.pfnAppendQueryKernelTimestamps;
@@ -2735,7 +2843,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_event_object_t*>( hEvent )->dditable;
         auto pfnGetEventPool = dditable->ze.Event.pfnGetEventPool;
@@ -2776,7 +2884,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_event_object_t*>( hEvent )->dditable;
         auto pfnGetSignalScope = dditable->ze.Event.pfnGetSignalScope;
@@ -2803,7 +2911,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_event_object_t*>( hEvent )->dditable;
         auto pfnGetWaitScope = dditable->ze.Event.pfnGetWaitScope;
@@ -2828,7 +2936,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_event_pool_object_t*>( hEventPool )->dditable;
         auto pfnGetContextHandle = dditable->ze.EventPool.pfnGetContextHandle;
@@ -2868,7 +2976,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_event_pool_object_t*>( hEventPool )->dditable;
         auto pfnGetFlags = dditable->ze.EventPool.pfnGetFlags;
@@ -2894,7 +3002,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_command_queue_object_t*>( hCommandQueue )->dditable;
         auto pfnCreate = dditable->ze.Fence.pfnCreate;
@@ -2932,7 +3040,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_fence_object_t*>( hFence )->dditable;
         auto pfnDestroy = dditable->ze.Fence.pfnDestroy;
@@ -2969,7 +3077,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_fence_object_t*>( hFence )->dditable;
         auto pfnHostSynchronize = dditable->ze.Fence.pfnHostSynchronize;
@@ -2993,7 +3101,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_fence_object_t*>( hFence )->dditable;
         auto pfnQueryStatus = dditable->ze.Fence.pfnQueryStatus;
@@ -3017,7 +3125,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_fence_object_t*>( hFence )->dditable;
         auto pfnReset = dditable->ze.Fence.pfnReset;
@@ -3043,7 +3151,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_device_object_t*>( hDevice )->dditable;
         auto pfnGetProperties = dditable->ze.Image.pfnGetProperties;
@@ -3070,7 +3178,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_context_object_t*>( hContext )->dditable;
         auto pfnCreate = dditable->ze.Image.pfnCreate;
@@ -3117,7 +3225,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_image_object_t*>( hImage )->dditable;
         auto pfnDestroy = dditable->ze.Image.pfnDestroy;
@@ -3160,7 +3268,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_context_object_t*>( hContext )->dditable;
         auto pfnAllocShared = dditable->ze.Mem.pfnAllocShared;
@@ -3194,7 +3302,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_context_object_t*>( hContext )->dditable;
         auto pfnAllocDevice = dditable->ze.Mem.pfnAllocDevice;
@@ -3227,7 +3335,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_context_object_t*>( hContext )->dditable;
         auto pfnAllocHost = dditable->ze.Mem.pfnAllocHost;
@@ -3252,7 +3360,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_context_object_t*>( hContext )->dditable;
         auto pfnFree = dditable->ze.Mem.pfnFree;
@@ -3279,7 +3387,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_context_object_t*>( hContext )->dditable;
         auto pfnGetAllocProperties = dditable->ze.Mem.pfnGetAllocProperties;
@@ -3321,7 +3429,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_context_object_t*>( hContext )->dditable;
         auto pfnGetAddressRange = dditable->ze.Mem.pfnGetAddressRange;
@@ -3347,7 +3455,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_context_object_t*>( hContext )->dditable;
         auto pfnGetIpcHandle = dditable->ze.Mem.pfnGetIpcHandle;
@@ -3373,7 +3481,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_context_object_t*>( hContext )->dditable;
         auto pfnGetIpcHandleFromFileDescriptorExp = dditable->ze.MemExp.pfnGetIpcHandleFromFileDescriptorExp;
@@ -3399,7 +3507,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_context_object_t*>( hContext )->dditable;
         auto pfnGetFileDescriptorFromIpcHandleExp = dditable->ze.MemExp.pfnGetFileDescriptorFromIpcHandleExp;
@@ -3424,7 +3532,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_context_object_t*>( hContext )->dditable;
         auto pfnPutIpcHandle = dditable->ze.Mem.pfnPutIpcHandle;
@@ -3453,7 +3561,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_context_object_t*>( hContext )->dditable;
         auto pfnOpenIpcHandle = dditable->ze.Mem.pfnOpenIpcHandle;
@@ -3481,7 +3589,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_context_object_t*>( hContext )->dditable;
         auto pfnCloseIpcHandle = dditable->ze.Mem.pfnCloseIpcHandle;
@@ -3510,7 +3618,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_context_object_t*>( hContext )->dditable;
         auto pfnSetAtomicAccessAttributeExp = dditable->ze.MemExp.pfnSetAtomicAccessAttributeExp;
@@ -3541,7 +3649,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_context_object_t*>( hContext )->dditable;
         auto pfnGetAtomicAccessAttributeExp = dditable->ze.MemExp.pfnGetAtomicAccessAttributeExp;
@@ -3572,7 +3680,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_context_object_t*>( hContext )->dditable;
         auto pfnCreate = dditable->ze.Module.pfnCreate;
@@ -3625,7 +3733,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_module_object_t*>( hModule )->dditable;
         auto pfnDestroy = dditable->ze.Module.pfnDestroy;
@@ -3658,7 +3766,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_module_object_t*>( phModules[ 0 ] )->dditable;
         auto pfnDynamicLink = dditable->ze.Module.pfnDynamicLink;
@@ -3700,7 +3808,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_module_build_log_object_t*>( hModuleBuildLog )->dditable;
         auto pfnDestroy = dditable->ze.ModuleBuildLog.pfnDestroy;
@@ -3732,7 +3840,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_module_build_log_object_t*>( hModuleBuildLog )->dditable;
         auto pfnGetString = dditable->ze.ModuleBuildLog.pfnGetString;
@@ -3758,7 +3866,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_module_object_t*>( hModule )->dditable;
         auto pfnGetNativeBinary = dditable->ze.Module.pfnGetNativeBinary;
@@ -3785,7 +3893,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_module_object_t*>( hModule )->dditable;
         auto pfnGetGlobalPointer = dditable->ze.Module.pfnGetGlobalPointer;
@@ -3817,7 +3925,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_module_object_t*>( hModule )->dditable;
         auto pfnGetKernelNames = dditable->ze.Module.pfnGetKernelNames;
@@ -3842,7 +3950,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_module_object_t*>( hModule )->dditable;
         auto pfnGetProperties = dditable->ze.Module.pfnGetProperties;
@@ -3868,7 +3976,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_module_object_t*>( hModule )->dditable;
         auto pfnCreate = dditable->ze.Kernel.pfnCreate;
@@ -3906,7 +4014,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_kernel_object_t*>( hKernel )->dditable;
         auto pfnDestroy = dditable->ze.Kernel.pfnDestroy;
@@ -3938,7 +4046,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_module_object_t*>( hModule )->dditable;
         auto pfnGetFunctionPointer = dditable->ze.Module.pfnGetFunctionPointer;
@@ -3965,7 +4073,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_kernel_object_t*>( hKernel )->dditable;
         auto pfnSetGroupSize = dditable->ze.Kernel.pfnSetGroupSize;
@@ -3995,7 +4103,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_kernel_object_t*>( hKernel )->dditable;
         auto pfnSuggestGroupSize = dditable->ze.Kernel.pfnSuggestGroupSize;
@@ -4020,7 +4128,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_kernel_object_t*>( hKernel )->dditable;
         auto pfnSuggestMaxCooperativeGroupCount = dditable->ze.Kernel.pfnSuggestMaxCooperativeGroupCount;
@@ -4048,7 +4156,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_kernel_object_t*>( hKernel )->dditable;
         auto pfnSetArgumentValue = dditable->ze.Kernel.pfnSetArgumentValue;
@@ -4089,7 +4197,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_kernel_object_t*>( hKernel )->dditable;
         auto pfnSetIndirectAccess = dditable->ze.Kernel.pfnSetIndirectAccess;
@@ -4114,7 +4222,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_kernel_object_t*>( hKernel )->dditable;
         auto pfnGetIndirectAccess = dditable->ze.Kernel.pfnGetIndirectAccess;
@@ -4151,7 +4259,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_kernel_object_t*>( hKernel )->dditable;
         auto pfnGetSourceAttributes = dditable->ze.Kernel.pfnGetSourceAttributes;
@@ -4177,7 +4285,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_kernel_object_t*>( hKernel )->dditable;
         auto pfnSetCacheConfig = dditable->ze.Kernel.pfnSetCacheConfig;
@@ -4202,7 +4310,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_kernel_object_t*>( hKernel )->dditable;
         auto pfnGetProperties = dditable->ze.Kernel.pfnGetProperties;
@@ -4229,7 +4337,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_kernel_object_t*>( hKernel )->dditable;
         auto pfnGetName = dditable->ze.Kernel.pfnGetName;
@@ -4260,7 +4368,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_command_list_object_t*>( hCommandList )->dditable;
         auto pfnAppendLaunchKernel = dditable->ze.CommandList.pfnAppendLaunchKernel;
@@ -4289,6 +4397,96 @@ namespace loader
     }
 
     ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeCommandListAppendLaunchKernelWithParameters
+    __zedlllocal ze_result_t ZE_APICALL
+    zeCommandListAppendLaunchKernelWithParameters(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
+        ze_kernel_handle_t hKernel,                     ///< [in] handle of the kernel object
+        const ze_group_count_t* pGroupCounts,           ///< [in] thread group launch arguments
+        const void * pNext,                             ///< [in][optional] additional parameters passed to the function
+        ze_event_handle_t hSignalEvent,                 ///< [in][optional] handle of the event to signal on completion
+        uint32_t numWaitEvents,                         ///< [in][optional] number of events to wait on before launching; must be 0
+                                                        ///< if `nullptr == phWaitEvents`
+        ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
+                                                        ///< on before launching
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+        
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<ze_command_list_object_t*>( hCommandList )->dditable;
+        auto pfnAppendLaunchKernelWithParameters = dditable->ze.CommandList.pfnAppendLaunchKernelWithParameters;
+        if( nullptr == pfnAppendLaunchKernelWithParameters )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hCommandList = reinterpret_cast<ze_command_list_object_t*>( hCommandList )->handle;
+
+        // convert loader handle to driver handle
+        hKernel = reinterpret_cast<ze_kernel_object_t*>( hKernel )->handle;
+
+        // convert loader handle to driver handle
+        hSignalEvent = ( hSignalEvent ) ? reinterpret_cast<ze_event_object_t*>( hSignalEvent )->handle : nullptr;
+
+        // convert loader handles to driver handles
+        auto phWaitEventsLocal = new ze_event_handle_t [numWaitEvents];
+        for( size_t i = 0; ( nullptr != phWaitEvents ) && ( i < numWaitEvents ); ++i )
+            phWaitEventsLocal[ i ] = reinterpret_cast<ze_event_object_t*>( phWaitEvents[ i ] )->handle;
+
+        // forward to device-driver
+        result = pfnAppendLaunchKernelWithParameters( hCommandList, hKernel, pGroupCounts, pNext, hSignalEvent, numWaitEvents, phWaitEventsLocal );
+        delete []phWaitEventsLocal;
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeCommandListAppendLaunchKernelWithArguments
+    __zedlllocal ze_result_t ZE_APICALL
+    zeCommandListAppendLaunchKernelWithArguments(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
+        ze_kernel_handle_t hKernel,                     ///< [in] handle of the kernel object
+        const ze_group_count_t groupCounts,             ///< [in] thread group counts
+        const ze_group_size_t groupSizes,               ///< [in] thread group sizes
+        void ** pArguments,                             ///< [in]pointer to an array of pointers
+        const void * pNext,                             ///< [in][optional] additional extensions passed to the function
+        ze_event_handle_t hSignalEvent,                 ///< [in][optional] handle of the event to signal on completion
+        uint32_t numWaitEvents,                         ///< [in][optional] number of events to wait on before launching; must be 0
+                                                        ///< if `nullptr == phWaitEvents`
+        ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
+                                                        ///< on before launching
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+        
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<ze_command_list_object_t*>( hCommandList )->dditable;
+        auto pfnAppendLaunchKernelWithArguments = dditable->ze.CommandList.pfnAppendLaunchKernelWithArguments;
+        if( nullptr == pfnAppendLaunchKernelWithArguments )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hCommandList = reinterpret_cast<ze_command_list_object_t*>( hCommandList )->handle;
+
+        // convert loader handle to driver handle
+        hKernel = reinterpret_cast<ze_kernel_object_t*>( hKernel )->handle;
+
+        // convert loader handle to driver handle
+        hSignalEvent = ( hSignalEvent ) ? reinterpret_cast<ze_event_object_t*>( hSignalEvent )->handle : nullptr;
+
+        // convert loader handles to driver handles
+        auto phWaitEventsLocal = new ze_event_handle_t [numWaitEvents];
+        for( size_t i = 0; ( nullptr != phWaitEvents ) && ( i < numWaitEvents ); ++i )
+            phWaitEventsLocal[ i ] = reinterpret_cast<ze_event_object_t*>( phWaitEvents[ i ] )->handle;
+
+        // forward to device-driver
+        result = pfnAppendLaunchKernelWithArguments( hCommandList, hKernel, groupCounts, groupSizes, pArguments, pNext, hSignalEvent, numWaitEvents, phWaitEventsLocal );
+        delete []phWaitEventsLocal;
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
     /// @brief Intercept function for zeCommandListAppendLaunchCooperativeKernel
     __zedlllocal ze_result_t ZE_APICALL
     zeCommandListAppendLaunchCooperativeKernel(
@@ -4303,7 +4501,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_command_list_object_t*>( hCommandList )->dditable;
         auto pfnAppendLaunchCooperativeKernel = dditable->ze.CommandList.pfnAppendLaunchCooperativeKernel;
@@ -4347,7 +4545,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_command_list_object_t*>( hCommandList )->dditable;
         auto pfnAppendLaunchKernelIndirect = dditable->ze.CommandList.pfnAppendLaunchKernelIndirect;
@@ -4395,7 +4593,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_command_list_object_t*>( hCommandList )->dditable;
         auto pfnAppendLaunchMultipleKernelsIndirect = dditable->ze.CommandList.pfnAppendLaunchMultipleKernelsIndirect;
@@ -4437,7 +4635,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_context_object_t*>( hContext )->dditable;
         auto pfnMakeMemoryResident = dditable->ze.Context.pfnMakeMemoryResident;
@@ -4467,7 +4665,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_context_object_t*>( hContext )->dditable;
         auto pfnEvictMemory = dditable->ze.Context.pfnEvictMemory;
@@ -4496,7 +4694,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_context_object_t*>( hContext )->dditable;
         auto pfnMakeImageResident = dditable->ze.Context.pfnMakeImageResident;
@@ -4528,7 +4726,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_context_object_t*>( hContext )->dditable;
         auto pfnEvictImage = dditable->ze.Context.pfnEvictImage;
@@ -4561,7 +4759,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_context_object_t*>( hContext )->dditable;
         auto pfnCreate = dditable->ze.Sampler.pfnCreate;
@@ -4608,7 +4806,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_sampler_object_t*>( hSampler )->dditable;
         auto pfnDestroy = dditable->ze.Sampler.pfnDestroy;
@@ -4647,7 +4845,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_context_object_t*>( hContext )->dditable;
         auto pfnReserve = dditable->ze.VirtualMem.pfnReserve;
@@ -4673,7 +4871,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_context_object_t*>( hContext )->dditable;
         auto pfnFree = dditable->ze.VirtualMem.pfnFree;
@@ -4701,7 +4899,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_context_object_t*>( hContext )->dditable;
         auto pfnQueryPageSize = dditable->ze.VirtualMem.pfnQueryPageSize;
@@ -4732,7 +4930,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_context_object_t*>( hContext )->dditable;
         auto pfnCreate = dditable->ze.PhysicalMem.pfnCreate;
@@ -4774,7 +4972,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_context_object_t*>( hContext )->dditable;
         auto pfnDestroy = dditable->ze.PhysicalMem.pfnDestroy;
@@ -4815,7 +5013,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_context_object_t*>( hContext )->dditable;
         auto pfnMap = dditable->ze.VirtualMem.pfnMap;
@@ -4844,7 +5042,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_context_object_t*>( hContext )->dditable;
         auto pfnUnmap = dditable->ze.VirtualMem.pfnUnmap;
@@ -4872,7 +5070,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_context_object_t*>( hContext )->dditable;
         auto pfnSetAccessAttribute = dditable->ze.VirtualMem.pfnSetAccessAttribute;
@@ -4901,7 +5099,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_context_object_t*>( hContext )->dditable;
         auto pfnGetAccessAttribute = dditable->ze.VirtualMem.pfnGetAccessAttribute;
@@ -4928,7 +5126,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_kernel_object_t*>( hKernel )->dditable;
         auto pfnSetGlobalOffsetExp = dditable->ze.KernelExp.pfnSetGlobalOffsetExp;
@@ -4954,7 +5152,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_kernel_object_t*>( hKernel )->dditable;
         auto pfnGetBinaryExp = dditable->ze.KernelExp.pfnGetBinaryExp;
@@ -4980,7 +5178,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_device_object_t*>( hDevice )->dditable;
         auto pfnImportExternalSemaphoreExt = dditable->ze.Device.pfnImportExternalSemaphoreExt;
@@ -5018,7 +5216,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_external_semaphore_ext_object_t*>( hSemaphore )->dditable;
         auto pfnReleaseExternalSemaphoreExt = dditable->ze.Device.pfnReleaseExternalSemaphoreExt;
@@ -5051,7 +5249,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_command_list_object_t*>( hCommandList )->dditable;
         auto pfnAppendSignalExternalSemaphoreExt = dditable->ze.CommandList.pfnAppendSignalExternalSemaphoreExt;
@@ -5099,7 +5297,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_command_list_object_t*>( hCommandList )->dditable;
         auto pfnAppendWaitExternalSemaphoreExt = dditable->ze.CommandList.pfnAppendWaitExternalSemaphoreExt;
@@ -5140,7 +5338,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_driver_object_t*>( hDriver )->dditable;
         auto pfnCreateExt = dditable->ze.RTASBuilder.pfnCreateExt;
@@ -5180,7 +5378,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_rtas_builder_ext_object_t*>( hBuilder )->dditable;
         auto pfnGetBuildPropertiesExt = dditable->ze.RTASBuilder.pfnGetBuildPropertiesExt;
@@ -5206,7 +5404,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_driver_object_t*>( hDriver )->dditable;
         auto pfnRTASFormatCompatibilityCheckExt = dditable->ze.Driver.pfnRTASFormatCompatibilityCheckExt;
@@ -5242,7 +5440,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_rtas_builder_ext_object_t*>( hBuilder )->dditable;
         auto pfnBuildExt = dditable->ze.RTASBuilder.pfnBuildExt;
@@ -5279,7 +5477,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_command_list_object_t*>( hCommandList )->dditable;
         auto pfnCommandListAppendCopyExt = dditable->ze.RTASBuilder.pfnCommandListAppendCopyExt;
@@ -5312,7 +5510,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_rtas_builder_ext_object_t*>( hBuilder )->dditable;
         auto pfnDestroyExt = dditable->ze.RTASBuilder.pfnDestroyExt;
@@ -5343,7 +5541,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_driver_object_t*>( hDriver )->dditable;
         auto pfnCreateExt = dditable->ze.RTASParallelOperation.pfnCreateExt;
@@ -5382,7 +5580,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_rtas_parallel_operation_ext_object_t*>( hParallelOperation )->dditable;
         auto pfnGetPropertiesExt = dditable->ze.RTASParallelOperation.pfnGetPropertiesExt;
@@ -5406,7 +5604,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_rtas_parallel_operation_ext_object_t*>( hParallelOperation )->dditable;
         auto pfnJoinExt = dditable->ze.RTASParallelOperation.pfnJoinExt;
@@ -5430,7 +5628,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_rtas_parallel_operation_ext_object_t*>( hParallelOperation )->dditable;
         auto pfnDestroyExt = dditable->ze.RTASParallelOperation.pfnDestroyExt;
@@ -5469,7 +5667,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_device_object_t*>( hDevice )->dditable;
         auto pfnGetVectorWidthPropertiesExt = dditable->ze.Device.pfnGetVectorWidthPropertiesExt;
@@ -5481,6 +5679,40 @@ namespace loader
 
         // forward to device-driver
         result = pfnGetVectorWidthPropertiesExt( hDevice, pCount, pVectorWidthProperties );
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeKernelGetAllocationPropertiesExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zeKernelGetAllocationPropertiesExp(
+        ze_kernel_handle_t hKernel,                     ///< [in] Kernel handle.
+        uint32_t* pCount,                               ///< [in,out] pointer to the number of kernel allocation properties.
+                                                        ///< if count is zero, then the driver shall update the value with the
+                                                        ///< total number of kernel allocation properties available.
+                                                        ///< if count is greater than the number of kernel allocation properties
+                                                        ///< available, then the driver shall update the value with the correct
+                                                        ///< number of kernel allocation properties.
+        ze_kernel_allocation_exp_properties_t* pAllocationProperties///< [in,out][optional][range(0, *pCount)] array of kernel allocation properties.
+                                                        ///< if count is less than the number of kernel allocation properties
+                                                        ///< available, then driver shall only retrieve that number of kernel
+                                                        ///< allocation properties.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+        
+        // extract driver's function pointer table
+        auto dditable = reinterpret_cast<ze_kernel_object_t*>( hKernel )->dditable;
+        auto pfnGetAllocationPropertiesExp = dditable->ze.KernelExp.pfnGetAllocationPropertiesExp;
+        if( nullptr == pfnGetAllocationPropertiesExp )
+            return ZE_RESULT_ERROR_UNINITIALIZED;
+
+        // convert loader handle to driver handle
+        hKernel = reinterpret_cast<ze_kernel_object_t*>( hKernel )->handle;
+
+        // forward to device-driver
+        result = pfnGetAllocationPropertiesExp( hKernel, pCount, pAllocationProperties );
 
         return result;
     }
@@ -5498,7 +5730,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_device_object_t*>( hDevice )->dditable;
         auto pfnReserveCacheExt = dditable->ze.Device.pfnReserveCacheExt;
@@ -5525,7 +5757,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_device_object_t*>( hDevice )->dditable;
         auto pfnSetCacheAdviceExt = dditable->ze.Device.pfnSetCacheAdviceExt;
@@ -5558,7 +5790,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_event_object_t*>( hEvent )->dditable;
         auto pfnQueryTimestampsExp = dditable->ze.EventExp.pfnQueryTimestampsExp;
@@ -5586,7 +5818,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_image_object_t*>( hImage )->dditable;
         auto pfnGetMemoryPropertiesExp = dditable->ze.ImageExp.pfnGetMemoryPropertiesExp;
@@ -5614,7 +5846,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_context_object_t*>( hContext )->dditable;
         auto pfnViewCreateExt = dditable->ze.Image.pfnViewCreateExt;
@@ -5662,7 +5894,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_context_object_t*>( hContext )->dditable;
         auto pfnViewCreateExp = dditable->ze.ImageExp.pfnViewCreateExp;
@@ -5713,7 +5945,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_kernel_object_t*>( hKernel )->dditable;
         auto pfnSchedulingHintExp = dditable->ze.KernelExp.pfnSchedulingHintExp;
@@ -5738,7 +5970,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_device_object_t*>( hDevice )->dditable;
         auto pfnPciGetPropertiesExt = dditable->ze.Device.pfnPciGetPropertiesExt;
@@ -5774,7 +6006,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_command_list_object_t*>( hCommandList )->dditable;
         auto pfnAppendImageCopyToMemoryExt = dditable->ze.CommandList.pfnAppendImageCopyToMemoryExt;
@@ -5822,7 +6054,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_command_list_object_t*>( hCommandList )->dditable;
         auto pfnAppendImageCopyFromMemoryExt = dditable->ze.CommandList.pfnAppendImageCopyFromMemoryExt;
@@ -5860,7 +6092,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_context_object_t*>( hContext )->dditable;
         auto pfnGetAllocPropertiesExt = dditable->ze.Image.pfnGetAllocPropertiesExt;
@@ -5892,7 +6124,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_module_object_t*>( phModules[ 0 ] )->dditable;
         auto pfnInspectLinkageExt = dditable->ze.Module.pfnInspectLinkageExt;
@@ -5935,7 +6167,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_context_object_t*>( hContext )->dditable;
         auto pfnFreeExt = dditable->ze.Mem.pfnFreeExt;
@@ -5968,7 +6200,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_driver_object_t*>( hDriver )->dditable;
         auto pfnGetExp = dditable->ze.FabricVertexExp.pfnGetExp;
@@ -6016,7 +6248,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_fabric_vertex_object_t*>( hVertex )->dditable;
         auto pfnGetSubVerticesExp = dditable->ze.FabricVertexExp.pfnGetSubVerticesExp;
@@ -6056,7 +6288,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_fabric_vertex_object_t*>( hVertex )->dditable;
         auto pfnGetPropertiesExp = dditable->ze.FabricVertexExp.pfnGetPropertiesExp;
@@ -6081,7 +6313,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_fabric_vertex_object_t*>( hVertex )->dditable;
         auto pfnGetDeviceExp = dditable->ze.FabricVertexExp.pfnGetDeviceExp;
@@ -6120,7 +6352,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_device_object_t*>( hDevice )->dditable;
         auto pfnGetFabricVertexExp = dditable->ze.DeviceExp.pfnGetFabricVertexExp;
@@ -6168,7 +6400,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_fabric_vertex_object_t*>( hVertexA )->dditable;
         auto pfnGetExp = dditable->ze.FabricEdgeExp.pfnGetExp;
@@ -6212,7 +6444,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_fabric_edge_object_t*>( hEdge )->dditable;
         auto pfnGetVerticesExp = dditable->ze.FabricEdgeExp.pfnGetVerticesExp;
@@ -6262,7 +6494,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_fabric_edge_object_t*>( hEdge )->dditable;
         auto pfnGetPropertiesExp = dditable->ze.FabricEdgeExp.pfnGetPropertiesExp;
@@ -6302,7 +6534,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_event_object_t*>( hEvent )->dditable;
         auto pfnQueryKernelTimestampsExt = dditable->ze.Event.pfnQueryKernelTimestampsExt;
@@ -6331,7 +6563,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_driver_object_t*>( hDriver )->dditable;
         auto pfnCreateExp = dditable->ze.RTASBuilderExp.pfnCreateExp;
@@ -6371,7 +6603,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_rtas_builder_exp_object_t*>( hBuilder )->dditable;
         auto pfnGetBuildPropertiesExp = dditable->ze.RTASBuilderExp.pfnGetBuildPropertiesExp;
@@ -6397,7 +6629,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_driver_object_t*>( hDriver )->dditable;
         auto pfnRTASFormatCompatibilityCheckExp = dditable->ze.DriverExp.pfnRTASFormatCompatibilityCheckExp;
@@ -6433,7 +6665,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_rtas_builder_exp_object_t*>( hBuilder )->dditable;
         auto pfnBuildExp = dditable->ze.RTASBuilderExp.pfnBuildExp;
@@ -6460,7 +6692,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_rtas_builder_exp_object_t*>( hBuilder )->dditable;
         auto pfnDestroyExp = dditable->ze.RTASBuilderExp.pfnDestroyExp;
@@ -6491,7 +6723,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_driver_object_t*>( hDriver )->dditable;
         auto pfnCreateExp = dditable->ze.RTASParallelOperationExp.pfnCreateExp;
@@ -6530,7 +6762,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_rtas_parallel_operation_exp_object_t*>( hParallelOperation )->dditable;
         auto pfnGetPropertiesExp = dditable->ze.RTASParallelOperationExp.pfnGetPropertiesExp;
@@ -6554,7 +6786,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_rtas_parallel_operation_exp_object_t*>( hParallelOperation )->dditable;
         auto pfnJoinExp = dditable->ze.RTASParallelOperationExp.pfnJoinExp;
@@ -6578,7 +6810,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_rtas_parallel_operation_exp_object_t*>( hParallelOperation )->dditable;
         auto pfnDestroyExp = dditable->ze.RTASParallelOperationExp.pfnDestroyExp;
@@ -6613,7 +6845,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_context_object_t*>( hContext )->dditable;
         auto pfnGetPitchFor2dImage = dditable->ze.Mem.pfnGetPitchFor2dImage;
@@ -6641,7 +6873,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_image_object_t*>( hImage )->dditable;
         auto pfnGetDeviceOffsetExp = dditable->ze.ImageExp.pfnGetDeviceOffsetExp;
@@ -6666,7 +6898,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_command_list_object_t*>( hCommandList )->dditable;
         auto pfnCreateCloneExp = dditable->ze.CommandListExp.pfnCreateCloneExp;
@@ -6715,7 +6947,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_command_list_object_t*>( hCommandListImmediate )->dditable;
         auto pfnImmediateAppendCommandListsExp = dditable->ze.CommandListExp.pfnImmediateAppendCommandListsExp;
@@ -6756,7 +6988,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_command_list_object_t*>( hCommandList )->dditable;
         auto pfnGetNextCommandIdExp = dditable->ze.CommandListExp.pfnGetNextCommandIdExp;
@@ -6786,7 +7018,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_command_list_object_t*>( hCommandList )->dditable;
         auto pfnGetNextCommandIdWithKernelsExp = dditable->ze.CommandListExp.pfnGetNextCommandIdWithKernelsExp;
@@ -6818,7 +7050,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_command_list_object_t*>( hCommandList )->dditable;
         auto pfnUpdateMutableCommandsExp = dditable->ze.CommandListExp.pfnUpdateMutableCommandsExp;
@@ -6844,7 +7076,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_command_list_object_t*>( hCommandList )->dditable;
         auto pfnUpdateMutableCommandSignalEventExp = dditable->ze.CommandListExp.pfnUpdateMutableCommandSignalEventExp;
@@ -6875,7 +7107,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_command_list_object_t*>( hCommandList )->dditable;
         auto pfnUpdateMutableCommandWaitEventsExp = dditable->ze.CommandListExp.pfnUpdateMutableCommandWaitEventsExp;
@@ -6909,7 +7141,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_command_list_object_t*>( hCommandList )->dditable;
         auto pfnUpdateMutableCommandKernelsExp = dditable->ze.CommandListExp.pfnUpdateMutableCommandKernelsExp;
@@ -7009,6 +7241,7 @@ zeGetDriverProcAddrTableLegacy()
     loader::loaderDispatch->pCore->Driver->pfnGetExtensionProperties                   = loader::zeDriverGetExtensionProperties;
     loader::loaderDispatch->pCore->Driver->pfnGetExtensionFunctionAddress              = loader::zeDriverGetExtensionFunctionAddress;
     loader::loaderDispatch->pCore->Driver->pfnRTASFormatCompatibilityCheckExt          = loader::zeDriverRTASFormatCompatibilityCheckExt;
+    loader::loaderDispatch->pCore->Driver->pfnGetDefaultContext                        = loader::zeDriverGetDefaultContext;
     loader::loaderDispatch->pCore->Driver->pfnGetLastErrorDescription                  = loader::zeDriverGetLastErrorDescription;
 }
 
@@ -7045,6 +7278,7 @@ zeGetDeviceProcAddrTableLegacy()
     loader::loaderDispatch->pCore->Device->pfnImportExternalSemaphoreExt               = loader::zeDeviceImportExternalSemaphoreExt;
     loader::loaderDispatch->pCore->Device->pfnReleaseExternalSemaphoreExt              = loader::zeDeviceReleaseExternalSemaphoreExt;
     loader::loaderDispatch->pCore->Device->pfnGetVectorWidthPropertiesExt              = loader::zeDeviceGetVectorWidthPropertiesExt;
+    loader::loaderDispatch->pCore->Device->pfnSynchronize                              = loader::zeDeviceSynchronize;
     loader::loaderDispatch->pCore->Device->pfnReserveCacheExt                          = loader::zeDeviceReserveCacheExt;
     loader::loaderDispatch->pCore->Device->pfnSetCacheAdviceExt                        = loader::zeDeviceSetCacheAdviceExt;
     loader::loaderDispatch->pCore->Device->pfnPciGetPropertiesExt                      = loader::zeDevicePciGetPropertiesExt;
@@ -7125,6 +7359,8 @@ zeGetCommandListProcAddrTableLegacy()
     loader::loaderDispatch->pCore->CommandList->pfnAppendLaunchMultipleKernelsIndirect      = loader::zeCommandListAppendLaunchMultipleKernelsIndirect;
     loader::loaderDispatch->pCore->CommandList->pfnAppendSignalExternalSemaphoreExt         = loader::zeCommandListAppendSignalExternalSemaphoreExt;
     loader::loaderDispatch->pCore->CommandList->pfnAppendWaitExternalSemaphoreExt           = loader::zeCommandListAppendWaitExternalSemaphoreExt;
+    loader::loaderDispatch->pCore->CommandList->pfnAppendLaunchKernelWithParameters         = loader::zeCommandListAppendLaunchKernelWithParameters;
+    loader::loaderDispatch->pCore->CommandList->pfnAppendLaunchKernelWithArguments          = loader::zeCommandListAppendLaunchKernelWithArguments;
     loader::loaderDispatch->pCore->CommandList->pfnAppendImageCopyToMemoryExt               = loader::zeCommandListAppendImageCopyToMemoryExt;
     loader::loaderDispatch->pCore->CommandList->pfnAppendImageCopyFromMemoryExt             = loader::zeCommandListAppendImageCopyFromMemoryExt;
     loader::loaderDispatch->pCore->CommandList->pfnHostSynchronize                          = loader::zeCommandListHostSynchronize;
@@ -7260,6 +7496,7 @@ zeGetKernelExpProcAddrTableLegacy()
     // return pointers to the Loader's Functions.
     loader::loaderDispatch->pCore->KernelExp->pfnSetGlobalOffsetExp                       = loader::zeKernelSetGlobalOffsetExp;
     loader::loaderDispatch->pCore->KernelExp->pfnGetBinaryExp                             = loader::zeKernelGetBinaryExp;
+    loader::loaderDispatch->pCore->KernelExp->pfnGetAllocationPropertiesExp               = loader::zeKernelGetAllocationPropertiesExp;
     loader::loaderDispatch->pCore->KernelExp->pfnSchedulingHintExp                        = loader::zeKernelSchedulingHintExp;
 }
 
@@ -8060,6 +8297,13 @@ zeGetDriverProcAddrTable(
                 pDdiTable->pfnRTASFormatCompatibilityCheckExt          = loader::zeDriverRTASFormatCompatibilityCheckExt;
             }
             }
+            if (version >= ZE_API_VERSION_1_14) {
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnGetDefaultContext                        = loader_driver_ddi::zeDriverGetDefaultContext;
+            } else {
+                pDdiTable->pfnGetDefaultContext                        = loader::zeDriverGetDefaultContext;
+            }
+            }
             if (version >= ZE_API_VERSION_1_6) {
             if (loader::context->driverDDIPathDefault) {
                 pDdiTable->pfnGetLastErrorDescription                  = loader_driver_ddi::zeDriverGetLastErrorDescription;
@@ -8376,6 +8620,13 @@ zeGetDeviceProcAddrTable(
                 pDdiTable->pfnGetVectorWidthPropertiesExt              = loader_driver_ddi::zeDeviceGetVectorWidthPropertiesExt;
             } else {
                 pDdiTable->pfnGetVectorWidthPropertiesExt              = loader::zeDeviceGetVectorWidthPropertiesExt;
+            }
+            }
+            if (version >= ZE_API_VERSION_1_14) {
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnSynchronize                              = loader_driver_ddi::zeDeviceSynchronize;
+            } else {
+                pDdiTable->pfnSynchronize                              = loader::zeDeviceSynchronize;
             }
             }
             if (version >= ZE_API_VERSION_1_2) {
@@ -9078,6 +9329,20 @@ zeGetCommandListProcAddrTable(
                 pDdiTable->pfnAppendWaitExternalSemaphoreExt           = loader_driver_ddi::zeCommandListAppendWaitExternalSemaphoreExt;
             } else {
                 pDdiTable->pfnAppendWaitExternalSemaphoreExt           = loader::zeCommandListAppendWaitExternalSemaphoreExt;
+            }
+            }
+            if (version >= ZE_API_VERSION_1_14) {
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnAppendLaunchKernelWithParameters         = loader_driver_ddi::zeCommandListAppendLaunchKernelWithParameters;
+            } else {
+                pDdiTable->pfnAppendLaunchKernelWithParameters         = loader::zeCommandListAppendLaunchKernelWithParameters;
+            }
+            }
+            if (version >= ZE_API_VERSION_1_14) {
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnAppendLaunchKernelWithArguments          = loader_driver_ddi::zeCommandListAppendLaunchKernelWithArguments;
+            } else {
+                pDdiTable->pfnAppendLaunchKernelWithArguments          = loader::zeCommandListAppendLaunchKernelWithArguments;
             }
             }
             if (version >= ZE_API_VERSION_1_3) {
@@ -10325,6 +10590,13 @@ zeGetKernelExpProcAddrTable(
                 pDdiTable->pfnGetBinaryExp                             = loader_driver_ddi::zeKernelGetBinaryExp;
             } else {
                 pDdiTable->pfnGetBinaryExp                             = loader::zeKernelGetBinaryExp;
+            }
+            }
+            if (version >= ZE_API_VERSION_1_14) {
+            if (loader::context->driverDDIPathDefault) {
+                pDdiTable->pfnGetAllocationPropertiesExp               = loader_driver_ddi::zeKernelGetAllocationPropertiesExp;
+            } else {
+                pDdiTable->pfnGetAllocationPropertiesExp               = loader::zeKernelGetAllocationPropertiesExp;
             }
             }
             if (version >= ZE_API_VERSION_1_2) {

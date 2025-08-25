@@ -1,4 +1,4 @@
-# Copyright (C) 2020-2023 Intel Corporation
+# Copyright (C) 2020-2025 Intel Corporation
 # SPDX-License-Identifier: MIT
 set(TARGET_NAME ze_validation_layer)
 
@@ -14,6 +14,7 @@ add_library(${TARGET_NAME}
         ${CMAKE_CURRENT_SOURCE_DIR}/ze_valddi.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/zet_valddi.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/zes_valddi.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/zer_valddi.cpp
         ${CMAKE_CURRENT_BINARY_DIR}/ZeValidationLayerVersion.rc
 )
 

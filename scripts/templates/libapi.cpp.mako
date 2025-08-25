@@ -17,7 +17,7 @@ def define_dbg(obj, tags):
     X=x.upper()
 %>/*
  *
- * Copyright (C) 2019-2024 Intel Corporation
+ * Copyright (C) 2019-2025 Intel Corporation
  *
  * SPDX-License-Identifier: MIT
  *
@@ -27,13 +27,21 @@ def define_dbg(obj, tags):
  *
  */
 #include "${x}_lib.h"
+%if n == 'zer':
+#include "error_state.h"
+%endif
 
 extern "C" {
 
 %for s in specs:
 ## FUNCTION ###################################################################
 %for obj in th.filter_items(s['objects'], 'type', 'function'):
-///////////////////////////////////////////////////////////////////////////////
+<%
+    ret_type = obj['return_type']
+    failure_return = None
+    if ret_type != 'ze_result_t':
+        failure_return = th.get_first_failure_return(obj)
+%>///////////////////////////////////////////////////////////////////////////////
 %if 'condition' in obj:
 #if ${th.subt(n, tags, obj['condition'])}
 %endif
@@ -47,7 +55,7 @@ extern "C" {
 %for line in th.make_returns_lines(n, tags, obj, meta=meta):
 /// ${line}
 %endfor
-${x}_result_t ${X}_APICALL
+${ret_type} ${X}_APICALL
 ${th.make_func_name(n, tags, obj)}(
     %for line in th.make_param_lines(n, tags, obj):
     ${line}
@@ -161,15 +169,32 @@ ${th.make_func_name(n, tags, obj)}(
 %endif
 %else:
     #ifdef L0_STATIC_LOADER_BUILD
+    %if ret_type == 'ze_result_t':
     ze_result_t result = ${X}_RESULT_SUCCESS;
+    %endif
     if(ze_lib::destruction) {
+        %if ret_type == 'ze_result_t':
         return ${X}_RESULT_ERROR_UNINITIALIZED;
+        %else:
+        %if n == 'zer':
+        error_state::setErrorDesc("ERROR UNINITIALIZED");
+        %endif
+        return ${failure_return};
+        %endif
     }
 %if re.match(r"\w+DriverGet$", th.make_func_name(n, tags, obj)):
     if (!${x}_lib::context || ${x}_lib::context->${n}DdiTable == nullptr) {
         return ${X}_RESULT_ERROR_UNINITIALIZED;
     }
 %endif
+    %if re.match(r"\w+GetLastErrorDescription", th.make_func_name(n, tags, obj)) and n == 'zer':
+    error_state::getErrorDesc(ppString);
+    if (ppString && *ppString && strlen(*ppString) > 0)
+    {
+        return ZE_RESULT_SUCCESS;
+    }
+    %endif
+    %if ret_type == 'ze_result_t':
     static const ${th.make_pfn_type(n, tags, obj)} ${th.make_pfn_name(n, tags, obj)} = [&result] {
         auto ${th.make_pfn_name(n, tags, obj)} = ${x}_lib::context->${n}DdiTable.load()->${th.get_table_name(n, tags, obj)}.${th.make_pfn_name(n, tags, obj)};
         if( nullptr == ${th.make_pfn_name(n, tags, obj)} ) {
@@ -180,10 +205,29 @@ ${th.make_func_name(n, tags, obj)}(
     if (result != ${X}_RESULT_SUCCESS) {
         return result;
     }
+    %else:
+    static const ${th.make_pfn_type(n, tags, obj)} ${th.make_pfn_name(n, tags, obj)} = [] {
+        auto ${th.make_pfn_name(n, tags, obj)} = ${x}_lib::context->${n}DdiTable.load()->${th.get_table_name(n, tags, obj)}.${th.make_pfn_name(n, tags, obj)};
+        return ${th.make_pfn_name(n, tags, obj)};
+    }();
+    if (nullptr == ${th.make_pfn_name(n, tags, obj)}) {
+        %if n == 'zer':
+        error_state::setErrorDesc("ERROR UNSUPPORTED FEATURE");
+        %endif
+        return ${failure_return};
+    }    
+    %endif
     return ${th.make_pfn_name(n, tags, obj)}( ${", ".join(th.make_param_lines(n, tags, obj, format=["name"]))} );
     #else
     if(ze_lib::destruction) {
+        %if ret_type == 'ze_result_t':
         return ${X}_RESULT_ERROR_UNINITIALIZED;
+        %else:
+        %if n == 'zer':
+        error_state::setErrorDesc("ERROR UNINITIALIZED");
+        %endif
+        return ${failure_return};
+        %endif
     }
 
 %if re.match(r"\w+DriverGet$", th.make_func_name(n, tags, obj)):
@@ -192,12 +236,29 @@ ${th.make_func_name(n, tags, obj)}(
     }
 
 %endif
+    %if re.match(r"\w+GetLastErrorDescription", th.make_func_name(n, tags, obj)) and n == 'zer':
+    error_state::getErrorDesc(ppString);
+    if (ppString && *ppString && strlen(*ppString) > 0)
+    {
+        return ZE_RESULT_SUCCESS;
+    }
+    %endif
     auto ${th.make_pfn_name(n, tags, obj)} = ${x}_lib::context->${n}DdiTable.load()->${th.get_table_name(n, tags, obj)}.${th.make_pfn_name(n, tags, obj)};
     if( nullptr == ${th.make_pfn_name(n, tags, obj)} ) {
+        %if ret_type == 'ze_result_t':
         if(!ze_lib::context->isInitialized)
             return ${X}_RESULT_ERROR_UNINITIALIZED;
         else
             return ${X}_RESULT_ERROR_UNSUPPORTED_FEATURE;
+        %elif ret_type != 'ze_result_t' and n == 'zer':
+        if(!ze_lib::context->isInitialized)
+            error_state::setErrorDesc("ERROR UNINITIALIZED");
+        else
+            error_state::setErrorDesc("ERROR UNSUPPORTED FEATURE");
+        return ${failure_return};
+        %else:
+        return ${failure_return};
+        %endif
     }
 %if re.match(r"\w+DriverGet$", th.make_func_name(n, tags, obj)):
     ze_lib::context->${n}Inuse = true;

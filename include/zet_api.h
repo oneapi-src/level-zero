@@ -1,11 +1,11 @@
 /*
  *
- * Copyright (C) 2019-2021 Intel Corporation
+ * Copyright (C) 2019-2025 Intel Corporation
  *
  * SPDX-License-Identifier: MIT
  *
  * @file zet_api.h
- * @version v1.13-r1.13.1
+ * @version v1.14-r1.14.33
  *
  */
 #ifndef _ZET_API_H
@@ -102,7 +102,8 @@ typedef enum _zet_structure_type_t
     ZET_STRUCTURE_TYPE_METRIC_GROUP_TYPE_EXP = 0x00010006,                  ///< ::zet_metric_group_type_exp_t
     ZET_STRUCTURE_TYPE_EXPORT_DMA_EXP_PROPERTIES = 0x00010007,              ///< ::zet_export_dma_buf_exp_properties_t
     ZET_STRUCTURE_TYPE_METRIC_TRACER_EXP_DESC = 0x00010008,                 ///< ::zet_metric_tracer_exp_desc_t
-    ZET_STRUCTURE_TYPE_FORCE_UINT32 = 0x7fffffff, ///< Value marking end of ZET_STRUCTURE_TYPE_* ENUMs
+    ZET_STRUCTURE_TYPE_METRIC_SOURCE_ID_EXP = 0x00010009,                   ///< ::zet_metric_source_id_exp_t
+    ZET_STRUCTURE_TYPE_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZET_STRUCTURE_TYPE_* ENUMs
 
 } zet_structure_type_t;
 
@@ -138,7 +139,7 @@ typedef enum _zet_value_type_t
     ZET_VALUE_TYPE_STRING = 5,                                              ///< C string
     ZET_VALUE_TYPE_UINT8 = 6,                                               ///< 8-bit unsigned-integer
     ZET_VALUE_TYPE_UINT16 = 7,                                              ///< 16-bit unsigned-integer
-    ZET_VALUE_TYPE_FORCE_UINT32 = 0x7fffffff, ///< Value marking end of ZET_VALUE_TYPE_* ENUMs
+    ZET_VALUE_TYPE_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZET_VALUE_TYPE_* ENUMs
 
 } zet_value_type_t;
 
@@ -339,7 +340,7 @@ typedef struct _zet_metric_programmable_param_value_exp_t zet_metric_programmabl
 typedef enum _zet_module_debug_info_format_t
 {
     ZET_MODULE_DEBUG_INFO_FORMAT_ELF_DWARF = 0,                             ///< Format is ELF/DWARF
-    ZET_MODULE_DEBUG_INFO_FORMAT_FORCE_UINT32 = 0x7fffffff, ///< Value marking end of ZET_MODULE_DEBUG_INFO_FORMAT_* ENUMs
+    ZET_MODULE_DEBUG_INFO_FORMAT_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZET_MODULE_DEBUG_INFO_FORMAT_* ENUMs
 
 } zet_module_debug_info_format_t;
 
@@ -387,7 +388,7 @@ typedef uint32_t zet_device_debug_property_flags_t;
 typedef enum _zet_device_debug_property_flag_t
 {
     ZET_DEVICE_DEBUG_PROPERTY_FLAG_ATTACH = ZE_BIT(0),                      ///< the device supports attaching for debug
-    ZET_DEVICE_DEBUG_PROPERTY_FLAG_FORCE_UINT32 = 0x7fffffff, ///< Value marking end of ZET_DEVICE_DEBUG_PROPERTY_FLAG_* ENUMs
+    ZET_DEVICE_DEBUG_PROPERTY_FLAG_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZET_DEVICE_DEBUG_PROPERTY_FLAG_* ENUMs
 
 } zet_device_debug_property_flag_t;
 
@@ -484,7 +485,7 @@ typedef enum _zet_debug_event_flag_t
 {
     ZET_DEBUG_EVENT_FLAG_NEED_ACK = ZE_BIT(0),                              ///< The event needs to be acknowledged by calling
                                                                             ///< ::zetDebugAcknowledgeEvent.
-    ZET_DEBUG_EVENT_FLAG_FORCE_UINT32 = 0x7fffffff, ///< Value marking end of ZET_DEBUG_EVENT_FLAG_* ENUMs
+    ZET_DEBUG_EVENT_FLAG_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZET_DEBUG_EVENT_FLAG_* ENUMs
 
 } zet_debug_event_flag_t;
 
@@ -501,7 +502,7 @@ typedef enum _zet_debug_event_type_t
     ZET_DEBUG_EVENT_TYPE_THREAD_STOPPED = 6,                                ///< The thread stopped due to a device exception
     ZET_DEBUG_EVENT_TYPE_THREAD_UNAVAILABLE = 7,                            ///< The thread is not available to be stopped
     ZET_DEBUG_EVENT_TYPE_PAGE_FAULT = 8,                                    ///< A page request could not be completed on the device
-    ZET_DEBUG_EVENT_TYPE_FORCE_UINT32 = 0x7fffffff, ///< Value marking end of ZET_DEBUG_EVENT_TYPE_* ENUMs
+    ZET_DEBUG_EVENT_TYPE_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZET_DEBUG_EVENT_TYPE_* ENUMs
 
 } zet_debug_event_type_t;
 
@@ -511,7 +512,7 @@ typedef enum _zet_debug_detach_reason_t
 {
     ZET_DEBUG_DETACH_REASON_INVALID = 0,                                    ///< The detach reason is not valid
     ZET_DEBUG_DETACH_REASON_HOST_EXIT = 1,                                  ///< The host process exited
-    ZET_DEBUG_DETACH_REASON_FORCE_UINT32 = 0x7fffffff, ///< Value marking end of ZET_DEBUG_DETACH_REASON_* ENUMs
+    ZET_DEBUG_DETACH_REASON_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZET_DEBUG_DETACH_REASON_* ENUMs
 
 } zet_debug_detach_reason_t;
 
@@ -551,7 +552,7 @@ typedef enum _zet_debug_page_fault_reason_t
     ZET_DEBUG_PAGE_FAULT_REASON_INVALID = 0,                                ///< The page fault reason is not valid
     ZET_DEBUG_PAGE_FAULT_REASON_MAPPING_ERROR = 1,                          ///< The address is not mapped
     ZET_DEBUG_PAGE_FAULT_REASON_PERMISSION_ERROR = 2,                       ///< Invalid access permissions
-    ZET_DEBUG_PAGE_FAULT_REASON_FORCE_UINT32 = 0x7fffffff, ///< Value marking end of ZET_DEBUG_PAGE_FAULT_REASON_* ENUMs
+    ZET_DEBUG_PAGE_FAULT_REASON_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZET_DEBUG_PAGE_FAULT_REASON_* ENUMs
 
 } zet_debug_page_fault_reason_t;
 
@@ -680,7 +681,8 @@ typedef enum _zet_debug_memory_space_type_t
     ZET_DEBUG_MEMORY_SPACE_TYPE_DEFAULT = 0,                                ///< default memory space (attribute may be omitted)
     ZET_DEBUG_MEMORY_SPACE_TYPE_SLM = 1,                                    ///< shared local memory space (GPU-only)
     ZET_DEBUG_MEMORY_SPACE_TYPE_ELF = 2,                                    ///< ELF file memory space
-    ZET_DEBUG_MEMORY_SPACE_TYPE_FORCE_UINT32 = 0x7fffffff, ///< Value marking end of ZET_DEBUG_MEMORY_SPACE_TYPE_* ENUMs
+    ZET_DEBUG_MEMORY_SPACE_TYPE_BARRIER = 3,                                ///< Barrier memory space
+    ZET_DEBUG_MEMORY_SPACE_TYPE_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZET_DEBUG_MEMORY_SPACE_TYPE_* ENUMs
 
 } zet_debug_memory_space_type_t;
 
@@ -715,7 +717,7 @@ typedef struct _zet_debug_memory_space_desc_t
 ///         + `nullptr == desc`
 ///         + `nullptr == buffer`
 ///     - ::ZE_RESULT_ERROR_INVALID_ENUMERATION
-///         + `::ZET_DEBUG_MEMORY_SPACE_TYPE_ELF < desc->type`
+///         + `::ZET_DEBUG_MEMORY_SPACE_TYPE_BARRIER < desc->type`
 ///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
 ///         + the thread is running or unavailable
 ///         + the memory cannot be accessed from the supplied thread
@@ -747,7 +749,7 @@ zetDebugReadMemory(
 ///         + `nullptr == desc`
 ///         + `nullptr == buffer`
 ///     - ::ZE_RESULT_ERROR_INVALID_ENUMERATION
-///         + `::ZET_DEBUG_MEMORY_SPACE_TYPE_ELF < desc->type`
+///         + `::ZET_DEBUG_MEMORY_SPACE_TYPE_BARRIER < desc->type`
 ///     - ::ZE_RESULT_ERROR_NOT_AVAILABLE
 ///         + the thread is running or unavailable
 ///         + the memory cannot be accessed from the supplied thread
@@ -767,7 +769,7 @@ typedef enum _zet_debug_regset_flag_t
 {
     ZET_DEBUG_REGSET_FLAG_READABLE = ZE_BIT(0),                             ///< register set is readable
     ZET_DEBUG_REGSET_FLAG_WRITEABLE = ZE_BIT(1),                            ///< register set is writeable
-    ZET_DEBUG_REGSET_FLAG_FORCE_UINT32 = 0x7fffffff, ///< Value marking end of ZET_DEBUG_REGSET_FLAG_* ENUMs
+    ZET_DEBUG_REGSET_FLAG_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZET_DEBUG_REGSET_FLAG_* ENUMs
 
 } zet_debug_regset_flag_t;
 
@@ -961,7 +963,7 @@ typedef enum _zet_metric_group_sampling_type_flag_t
     ZET_METRIC_GROUP_SAMPLING_TYPE_FLAG_EVENT_BASED = ZE_BIT(0),            ///< Event based sampling
     ZET_METRIC_GROUP_SAMPLING_TYPE_FLAG_TIME_BASED = ZE_BIT(1),             ///< Time based sampling
     ZET_METRIC_GROUP_SAMPLING_TYPE_FLAG_EXP_TRACER_BASED = ZE_BIT(2),       ///< Experimental Tracer based sampling
-    ZET_METRIC_GROUP_SAMPLING_TYPE_FLAG_FORCE_UINT32 = 0x7fffffff, ///< Value marking end of ZET_METRIC_GROUP_SAMPLING_TYPE_FLAG_* ENUMs
+    ZET_METRIC_GROUP_SAMPLING_TYPE_FLAG_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZET_METRIC_GROUP_SAMPLING_TYPE_FLAG_* ENUMs
 
 } zet_metric_group_sampling_type_flag_t;
 
@@ -1026,7 +1028,7 @@ typedef enum _zet_metric_type_t
     ZET_METRIC_TYPE_IP_EXP = 0x7ffffffe,                                    ///< Metric type: instruction pointer. Deprecated, use
                                                                             ///< ::ZET_METRIC_TYPE_IP.
     ZET_METRIC_TYPE_IP = 0x7ffffffe,                                        ///< Metric type: instruction pointer
-    ZET_METRIC_TYPE_FORCE_UINT32 = 0x7fffffff, ///< Value marking end of ZET_METRIC_TYPE_* ENUMs
+    ZET_METRIC_TYPE_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZET_METRIC_TYPE_* ENUMs
 
 } zet_metric_type_t;
 
@@ -1036,7 +1038,7 @@ typedef enum _zet_metric_group_calculation_type_t
 {
     ZET_METRIC_GROUP_CALCULATION_TYPE_METRIC_VALUES = 0,                    ///< Calculated metric values from raw data.
     ZET_METRIC_GROUP_CALCULATION_TYPE_MAX_METRIC_VALUES = 1,                ///< Maximum metric values.
-    ZET_METRIC_GROUP_CALCULATION_TYPE_FORCE_UINT32 = 0x7fffffff, ///< Value marking end of ZET_METRIC_GROUP_CALCULATION_TYPE_* ENUMs
+    ZET_METRIC_GROUP_CALCULATION_TYPE_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZET_METRIC_GROUP_CALCULATION_TYPE_* ENUMs
 
 } zet_metric_group_calculation_type_t;
 
@@ -1352,7 +1354,7 @@ typedef enum _zet_metric_query_pool_type_t
 {
     ZET_METRIC_QUERY_POOL_TYPE_PERFORMANCE = 0,                             ///< Performance metric query pool.
     ZET_METRIC_QUERY_POOL_TYPE_EXECUTION = 1,                               ///< Skips workload execution between begin/end calls.
-    ZET_METRIC_QUERY_POOL_TYPE_FORCE_UINT32 = 0x7fffffff, ///< Value marking end of ZET_METRIC_QUERY_POOL_TYPE_* ENUMs
+    ZET_METRIC_QUERY_POOL_TYPE_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZET_METRIC_QUERY_POOL_TYPE_* ENUMs
 
 } zet_metric_query_pool_type_t;
 
@@ -1630,7 +1632,7 @@ typedef enum _zet_profile_flag_t
     ZET_PROFILE_FLAG_REGISTER_REALLOCATION = ZE_BIT(0),                     ///< request the compiler attempt to minimize register usage as much as
                                                                             ///< possible to allow for instrumentation
     ZET_PROFILE_FLAG_FREE_REGISTER_INFO = ZE_BIT(1),                        ///< request the compiler generate free register info
-    ZET_PROFILE_FLAG_FORCE_UINT32 = 0x7fffffff, ///< Value marking end of ZET_PROFILE_FLAG_* ENUMs
+    ZET_PROFILE_FLAG_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZET_PROFILE_FLAG_* ENUMs
 
 } zet_profile_flag_t;
 
@@ -1652,7 +1654,7 @@ typedef struct _zet_profile_properties_t
 typedef enum _zet_profile_token_type_t
 {
     ZET_PROFILE_TOKEN_TYPE_FREE_REGISTER = 0,                               ///< GRF info
-    ZET_PROFILE_TOKEN_TYPE_FORCE_UINT32 = 0x7fffffff, ///< Value marking end of ZET_PROFILE_TOKEN_TYPE_* ENUMs
+    ZET_PROFILE_TOKEN_TYPE_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZET_PROFILE_TOKEN_TYPE_* ENUMs
 
 } zet_profile_token_type_t;
 
@@ -1725,7 +1727,7 @@ typedef enum _zet_api_tracing_exp_version_t
 {
     ZET_API_TRACING_EXP_VERSION_1_0 = ZE_MAKE_VERSION( 1, 0 ),              ///< version 1.0
     ZET_API_TRACING_EXP_VERSION_CURRENT = ZE_MAKE_VERSION( 1, 0 ),          ///< latest known version
-    ZET_API_TRACING_EXP_VERSION_FORCE_UINT32 = 0x7fffffff, ///< Value marking end of ZET_API_TRACING_EXP_VERSION_* ENUMs
+    ZET_API_TRACING_EXP_VERSION_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZET_API_TRACING_EXP_VERSION_* ENUMs
 
 } zet_api_tracing_exp_version_t;
 
@@ -1748,6 +1750,9 @@ typedef struct _zet_tracer_exp_desc_t
 /// @brief Creates a tracer on the context.
 /// 
 /// @details
+///     - @deprecated This function is not supported in L0 drivers and has been
+///       replaced by the Loader Tracing Layer. See the Loader Tracing
+///       documentation for more details.
 ///     - The application must only use the tracer for the context which was
 ///       provided during creation.
 ///     - The tracer is created in the disabled state.
@@ -1777,6 +1782,9 @@ zetTracerExpCreate(
 /// @brief Destroys a tracer.
 /// 
 /// @details
+///     - @deprecated This function is not supported in L0 drivers and has been
+///       replaced by the Loader Tracing Layer. See the Loader Tracing
+///       documentation for more details.
 ///     - The application must **not** call this function from simultaneous
 ///       threads with the same tracer handle.
 ///     - The implementation of this function must be thread-safe.
@@ -1803,6 +1811,9 @@ zetTracerExpDestroy(
 ///        execution.
 /// 
 /// @details
+///     - @deprecated This function is not supported in L0 drivers and has been
+///       replaced by the Loader Tracing Layer. See the Loader Tracing
+///       documentation for more details.
 ///     - The application only needs to set the function pointers it is
 ///       interested in receiving; all others should be 'nullptr'
 ///     - The application must ensure that no other threads are executing
@@ -1831,6 +1842,9 @@ zetTracerExpSetPrologues(
 ///        execution.
 /// 
 /// @details
+///     - @deprecated This function is not supported in L0 drivers and has been
+///       replaced by the Loader Tracing Layer. See the Loader Tracing
+///       documentation for more details.
 ///     - The application only needs to set the function pointers it is
 ///       interested in receiving; all others should be 'nullptr'
 ///     - The application must ensure that no other threads are executing
@@ -1858,6 +1872,9 @@ zetTracerExpSetEpilogues(
 /// @brief Enables (or disables) the tracer
 /// 
 /// @details
+///     - @deprecated This function is not supported in L0 drivers and has been
+///       replaced by the Loader Tracing Layer. See the Loader Tracing
+///       documentation for more details.
 ///     - The application must **not** call this function from simultaneous
 ///       threads with the same tracer handle.
 /// 
@@ -1894,7 +1911,7 @@ typedef enum _zet_concurrent_metric_groups_exp_version_t
 {
     ZET_CONCURRENT_METRIC_GROUPS_EXP_VERSION_1_0 = ZE_MAKE_VERSION( 1, 0 ), ///< version 1.0
     ZET_CONCURRENT_METRIC_GROUPS_EXP_VERSION_CURRENT = ZE_MAKE_VERSION( 1, 0 ), ///< latest known version
-    ZET_CONCURRENT_METRIC_GROUPS_EXP_VERSION_FORCE_UINT32 = 0x7fffffff, ///< Value marking end of ZET_CONCURRENT_METRIC_GROUPS_EXP_VERSION_* ENUMs
+    ZET_CONCURRENT_METRIC_GROUPS_EXP_VERSION_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZET_CONCURRENT_METRIC_GROUPS_EXP_VERSION_* ENUMs
 
 } zet_concurrent_metric_groups_exp_version_t;
 
@@ -1946,7 +1963,7 @@ typedef enum _zet_metric_tracer_exp_version_t
 {
     ZET_METRIC_TRACER_EXP_VERSION_1_0 = ZE_MAKE_VERSION( 1, 0 ),            ///< version 1.0
     ZET_METRIC_TRACER_EXP_VERSION_CURRENT = ZE_MAKE_VERSION( 1, 0 ),        ///< latest known version
-    ZET_METRIC_TRACER_EXP_VERSION_FORCE_UINT32 = 0x7fffffff, ///< Value marking end of ZET_METRIC_TRACER_EXP_VERSION_* ENUMs
+    ZET_METRIC_TRACER_EXP_VERSION_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZET_METRIC_TRACER_EXP_VERSION_* ENUMs
 
 } zet_metric_tracer_exp_version_t;
 
@@ -2298,7 +2315,7 @@ typedef enum _zet_metric_group_type_exp_flag_t
     ZET_METRIC_GROUP_TYPE_EXP_FLAG_USER_CREATED = ZE_BIT(1),                ///< Metric group created using ::zetDeviceCreateMetricGroupsFromMetricsExp
     ZET_METRIC_GROUP_TYPE_EXP_FLAG_OTHER = ZE_BIT(2),                       ///< Metric group which has a collection of metrics
     ZET_METRIC_GROUP_TYPE_EXP_FLAG_MARKER = ZE_BIT(3),                      ///< Metric group is capable of generating Marker metric
-    ZET_METRIC_GROUP_TYPE_EXP_FLAG_FORCE_UINT32 = 0x7fffffff, ///< Value marking end of ZET_METRIC_GROUP_TYPE_EXP_FLAG_* ENUMs
+    ZET_METRIC_GROUP_TYPE_EXP_FLAG_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZET_METRIC_GROUP_TYPE_EXP_FLAG_* ENUMs
 
 } zet_metric_group_type_exp_flag_t;
 
@@ -2348,7 +2365,7 @@ typedef enum _zet_metric_group_marker_exp_version_t
 {
     ZET_METRIC_GROUP_MARKER_EXP_VERSION_1_0 = ZE_MAKE_VERSION( 1, 0 ),      ///< version 1.0
     ZET_METRIC_GROUP_MARKER_EXP_VERSION_CURRENT = ZE_MAKE_VERSION( 1, 0 ),  ///< latest known version
-    ZET_METRIC_GROUP_MARKER_EXP_VERSION_FORCE_UINT32 = 0x7fffffff, ///< Value marking end of ZET_METRIC_GROUP_MARKER_EXP_VERSION_* ENUMs
+    ZET_METRIC_GROUP_MARKER_EXP_VERSION_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZET_METRIC_GROUP_MARKER_EXP_VERSION_* ENUMs
 
 } zet_metric_group_marker_exp_version_t;
 
@@ -2409,7 +2426,7 @@ typedef enum _zet_metrics_runtime_enable_disable_exp_version_t
 {
     ZET_METRICS_RUNTIME_ENABLE_DISABLE_EXP_VERSION_1_0 = ZE_MAKE_VERSION( 1, 0 ),   ///< version 1.0
     ZET_METRICS_RUNTIME_ENABLE_DISABLE_EXP_VERSION_CURRENT = ZE_MAKE_VERSION( 1, 0 ),   ///< latest known version
-    ZET_METRICS_RUNTIME_ENABLE_DISABLE_EXP_VERSION_FORCE_UINT32 = 0x7fffffff, ///< Value marking end of ZET_METRICS_RUNTIME_ENABLE_DISABLE_EXP_VERSION_* ENUMs
+    ZET_METRICS_RUNTIME_ENABLE_DISABLE_EXP_VERSION_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZET_METRICS_RUNTIME_ENABLE_DISABLE_EXP_VERSION_* ENUMs
 
 } zet_metrics_runtime_enable_disable_exp_version_t;
 
@@ -2487,7 +2504,7 @@ typedef enum _ze_calculate_multiple_metrics_exp_version_t
 {
     ZE_CALCULATE_MULTIPLE_METRICS_EXP_VERSION_1_0 = ZE_MAKE_VERSION( 1, 0 ),///< version 1.0
     ZE_CALCULATE_MULTIPLE_METRICS_EXP_VERSION_CURRENT = ZE_MAKE_VERSION( 1, 0 ),///< latest known version
-    ZE_CALCULATE_MULTIPLE_METRICS_EXP_VERSION_FORCE_UINT32 = 0x7fffffff, ///< Value marking end of ZE_CALCULATE_MULTIPLE_METRICS_EXP_VERSION_* ENUMs
+    ZE_CALCULATE_MULTIPLE_METRICS_EXP_VERSION_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_CALCULATE_MULTIPLE_METRICS_EXP_VERSION_* ENUMs
 
 } ze_calculate_multiple_metrics_exp_version_t;
 
@@ -2565,7 +2582,7 @@ typedef enum _ze_metric_global_timestamps_exp_version_t
 {
     ZE_METRIC_GLOBAL_TIMESTAMPS_EXP_VERSION_1_0 = ZE_MAKE_VERSION( 1, 0 ),  ///< version 1.0
     ZE_METRIC_GLOBAL_TIMESTAMPS_EXP_VERSION_CURRENT = ZE_MAKE_VERSION( 1, 0 ),  ///< latest known version
-    ZE_METRIC_GLOBAL_TIMESTAMPS_EXP_VERSION_FORCE_UINT32 = 0x7fffffff, ///< Value marking end of ZE_METRIC_GLOBAL_TIMESTAMPS_EXP_VERSION_* ENUMs
+    ZE_METRIC_GLOBAL_TIMESTAMPS_EXP_VERSION_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZE_METRIC_GLOBAL_TIMESTAMPS_EXP_VERSION_* ENUMs
 
 } ze_metric_global_timestamps_exp_version_t;
 
@@ -2634,7 +2651,7 @@ typedef enum _zet_export_metric_data_exp_version_t
 {
     ZET_EXPORT_METRIC_DATA_EXP_VERSION_1_0 = ZE_MAKE_VERSION( 1, 0 ),       ///< version 1.0
     ZET_EXPORT_METRIC_DATA_EXP_VERSION_CURRENT = ZE_MAKE_VERSION( 1, 0 ),   ///< latest known version
-    ZET_EXPORT_METRIC_DATA_EXP_VERSION_FORCE_UINT32 = 0x7fffffff, ///< Value marking end of ZET_EXPORT_METRIC_DATA_EXP_VERSION_* ENUMs
+    ZET_EXPORT_METRIC_DATA_EXP_VERSION_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZET_EXPORT_METRIC_DATA_EXP_VERSION_* ENUMs
 
 } zet_export_metric_data_exp_version_t;
 
@@ -2772,7 +2789,7 @@ typedef enum _zet_metric_programmable_exp_version_t
 {
     ZET_METRIC_PROGRAMMABLE_EXP_VERSION_1_1 = ZE_MAKE_VERSION( 1, 1 ),      ///< version 1.1
     ZET_METRIC_PROGRAMMABLE_EXP_VERSION_CURRENT = ZE_MAKE_VERSION( 1, 1 ),  ///< latest known version
-    ZET_METRIC_PROGRAMMABLE_EXP_VERSION_FORCE_UINT32 = 0x7fffffff, ///< Value marking end of ZET_METRIC_PROGRAMMABLE_EXP_VERSION_* ENUMs
+    ZET_METRIC_PROGRAMMABLE_EXP_VERSION_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZET_METRIC_PROGRAMMABLE_EXP_VERSION_* ENUMs
 
 } zet_metric_programmable_exp_version_t;
 
@@ -2867,7 +2884,7 @@ typedef enum _zet_metric_programmable_param_type_exp_t
     ZET_METRIC_PROGRAMMABLE_PARAM_TYPE_EXP_NORMALIZATION_RATE = 4,          ///< Produces normalization average using raw_metric / timestamp.
     ZET_METRIC_PROGRAMMABLE_PARAM_TYPE_EXP_NORMALIZATION_BYTES = 5,         ///< Produces normalization average using raw_metric * n bytes.
     ZET_METRIC_PROGRAMMABLE_PARAM_TYPE_EXP_GENERIC = 6,                     ///< Generic Parameter type. Please refer the parameter's description.
-    ZET_METRIC_PROGRAMMABLE_PARAM_TYPE_EXP_FORCE_UINT32 = 0x7fffffff, ///< Value marking end of ZET_METRIC_PROGRAMMABLE_PARAM_TYPE_EXP_* ENUMs
+    ZET_METRIC_PROGRAMMABLE_PARAM_TYPE_EXP_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZET_METRIC_PROGRAMMABLE_PARAM_TYPE_EXP_* ENUMs
 
 } zet_metric_programmable_param_type_exp_t;
 
@@ -2884,7 +2901,7 @@ typedef enum _zet_value_info_type_exp_t
     ZET_VALUE_INFO_TYPE_EXP_UINT16 = 6,                                     ///< 16-bit unsigned-integer
     ZET_VALUE_INFO_TYPE_EXP_UINT64_RANGE = 7,                               ///< 64-bit unsigned-integer range (minimum and maximum)
     ZET_VALUE_INFO_TYPE_EXP_FLOAT64_RANGE = 8,                              ///< 64-bit floating point range (minimum and maximum)
-    ZET_VALUE_INFO_TYPE_EXP_FORCE_UINT32 = 0x7fffffff, ///< Value marking end of ZET_VALUE_INFO_TYPE_EXP_* ENUMs
+    ZET_VALUE_INFO_TYPE_EXP_FORCE_UINT32 = 0x7fffffff ///< Value marking end of ZET_VALUE_INFO_TYPE_EXP_* ENUMs
 
 } zet_value_info_type_exp_t;
 

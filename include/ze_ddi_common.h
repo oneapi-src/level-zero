@@ -5,7 +5,7 @@
  * SPDX-License-Identifier: MIT
  *
  * @file ze_ddi_common.h
- * @version v1.13-r1.13.1
+ * @version v1.14-r1.14.33
  *
  */
 #ifndef _ZE_DDI_COMMON_H
@@ -16,6 +16,7 @@
 #include "ze_ddi.h"
 #include "zet_ddi.h"
 #include "zes_ddi.h"
+#include "zer_ddi.h"
 
 #if defined(__cplusplus)
 extern "C" {
@@ -27,6 +28,7 @@ typedef struct _ze_handle_t
     ze_dditable_driver_t *pCore; // [in] pointer to _ze_dditable_t_ object related to this handle
     zet_dditable_driver_t *pTools; // [in] pointer to _zet_dditable_t_ object related to this handle
     zes_dditable_driver_t *pSysman; // [in] pointer to _zes_dditable_t_ object related to this handle
+    zer_dditable_driver_t *pRuntime; // [in] pointer to _zer_dditable_t_ object related to this handle
 } ze_handle_t;
 
 #if defined(__cplusplus)

@@ -29,10 +29,12 @@ from templates import helper as th
 #include "ze_ldrddi.h"
 #include "zet_ldrddi.h"
 #include "zes_ldrddi.h"
+#include "zer_ldrddi.h"
 
 #include "loader/ze_loader.h"
 #include "../utils/logging.h"
 #include "spdlog/spdlog.h"
+#include "source/lib/error_state.h"
 namespace loader
 {
     ///////////////////////////////////////////////////////////////////////////////
@@ -66,6 +68,7 @@ namespace loader
         bool pciOrderingRequested = false;
         bool legacyInitAttempted = false;
         bool driverDDIHandleSupportQueried = false;
+        ze_driver_handle_t zerDriverHandle = nullptr;
     };
 
     using driver_vector_t = std::vector< driver_t >;
@@ -128,11 +131,13 @@ namespace loader
         bool instrumentationEnabled = false;
         dditable_t tracing_dditable = {};
         std::shared_ptr<Logger> zel_logger;
+        ze_driver_handle_t* defaultZerDriverHandle = nullptr;
     };
 
     extern ze_handle_t* loaderDispatch;
     extern ze_dditable_t* loaderZeDdiTable;
     extern zet_dditable_t* loaderZetDdiTable;
     extern zes_dditable_t* loaderZesDdiTable;
+    extern zer_dditable_t* defaultZerDdiTable;
     extern context_t *context;
 }

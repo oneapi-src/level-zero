@@ -1,10 +1,10 @@
 """
- Copyright (C) 2019-2021 Intel Corporation
+ Copyright (C) 2019-2025 Intel Corporation
 
  SPDX-License-Identifier: MIT
 
  @file zet.py
- @version v1.13-r1.13.1
+ @version v1.14-r1.14.33
 
  """
 import platform
@@ -103,6 +103,7 @@ class zet_structure_type_v(IntEnum):
     METRIC_GROUP_TYPE_EXP = 0x00010006                                      ## ::zet_metric_group_type_exp_t
     EXPORT_DMA_EXP_PROPERTIES = 0x00010007                                  ## ::zet_export_dma_buf_exp_properties_t
     METRIC_TRACER_EXP_DESC = 0x00010008                                     ## ::zet_metric_tracer_exp_desc_t
+    METRIC_SOURCE_ID_EXP = 0x00010009                                       ## ::zet_metric_source_id_exp_t
 
 class zet_structure_type_t(c_int):
     def __str__(self):
@@ -325,6 +326,7 @@ class zet_debug_memory_space_type_v(IntEnum):
     DEFAULT = 0                                                             ## default memory space (attribute may be omitted)
     SLM = 1                                                                 ## shared local memory space (GPU-only)
     ELF = 2                                                                 ## ELF file memory space
+    BARRIER = 3                                                             ## Barrier memory space
 
 class zet_debug_memory_space_type_t(c_int):
     def __str__(self):

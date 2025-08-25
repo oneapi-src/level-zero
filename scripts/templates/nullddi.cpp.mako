@@ -9,7 +9,7 @@ from templates import helper as th
     X=x.upper()
 %>/*
  *
- * Copyright (C) 2019-2024 Intel Corporation
+ * Copyright (C) 2019-2025 Intel Corporation
  *
  * SPDX-License-Identifier: MIT
  *
@@ -25,18 +25,23 @@ namespace driver
     ///////////////////////////////////////////////////////////////////////////////
     <%
         fname = th.make_func_name(n, tags, obj)
+        ret_type = obj['return_type']
     %>/// @brief Intercept function for ${fname}
     %if 'condition' in obj:
     #if ${th.subt(n, tags, obj['condition'])}
     %endif
-    __${x}dlllocal ${x}_result_t ${X}_APICALL
+    __${x}dlllocal ${ret_type} ${X}_APICALL
     ${fname}(
         %for line in th.make_param_lines(n, tags, obj):
         ${line}
         %endfor
         )
     {
+        %if ret_type == 'ze_result_t':
         ${x}_result_t result = ${X}_RESULT_SUCCESS;
+        %else:
+        ${ret_type} result {};
+        %endif
 
         // if the driver has created a custom function, then call it instead of using the generic path
         auto ${th.make_pfn_name(n, tags, obj)} = context.${n}DdiTable.${th.get_table_name(n, tags, obj)}.${th.make_pfn_name(n, tags, obj)};

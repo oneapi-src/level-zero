@@ -9,7 +9,7 @@ from templates import helper as th
     X=x.upper()
 %>/*
  *
- * Copyright (C) 2021-2022 Intel Corporation
+ * Copyright (C) 2021-2025 Intel Corporation
  *
  * SPDX-License-Identifier: MIT
  *
@@ -21,11 +21,11 @@ from templates import helper as th
 #include "layers/zel_tracing_api.h"
 #include "layers/zel_tracing_ddi.h"
 #include "layers/zel_tracing_register_cb.h"
-#include "${x}_api.h"
+#include "${n}_api.h"
 
 extern "C" { 
 
-/// APIs to register callbacks for each core API
+/// APIs to register callbacks for each ${n} API
 %for s in specs:
 %for obj in th.filter_items(s['objects'], 'type', 'function'):
 

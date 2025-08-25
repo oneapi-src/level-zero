@@ -1,4 +1,6 @@
 # Level zero loader changelog
+## v1.25.0
+* Support for v1.14.33 of the L0 Spec
 ## v1.24.3
 * Use compiler ID check for /guard:cf and /GL flags on MSVC
 * Support for ZEL_DRIVERS_ORDER to order based off user input

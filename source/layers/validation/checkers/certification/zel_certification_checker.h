@@ -13,6 +13,7 @@
 #include "generated/ze_certification.h"
 #include "generated/zes_certification.h"
 #include "generated/zet_certification.h"
+#include "generated/zer_certification.h"
 #include "ze_api.h"
 #include "ze_validation_layer.h"
 #include "zel_global_certification_state.h"
@@ -30,6 +31,7 @@ public:
   };
   class ZEScertificationChecker : public ZEScertificationCheckerGenerated {};
   class ZETcertificationChecker : public ZETcertificationCheckerGenerated {};
+  class ZERcertificationChecker : public ZERcertificationCheckerGenerated {};
 
   bool enablecertification = false;
 

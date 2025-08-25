@@ -22,7 +22,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         bool atLeastOneDriverValid = false;
         for( auto& drv : *loader::context->sysmanInstanceDrivers )
         {
@@ -59,7 +59,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         uint32_t total_driver_handle_count = 0;
 
         {
@@ -105,6 +105,7 @@ namespace loader
                 {
                     for( uint32_t i = 0; i < library_driver_handle_count; ++i ) {
                         uint32_t driver_index = total_driver_handle_count + i;
+                        drv.zerDriverHandle = phDrivers[ driver_index ];
                         phDrivers[ driver_index ] = reinterpret_cast<zes_driver_handle_t>(
                             context->zes_driver_factory.getInstance( phDrivers[ driver_index ], &drv.dditable ) );
                     }
@@ -146,7 +147,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zes_driver_object_t*>( hDriver )->dditable;
         auto pfnGetExtensionProperties = dditable->zes.Driver.pfnGetExtensionProperties;
@@ -172,7 +173,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zes_driver_object_t*>( hDriver )->dditable;
         auto pfnGetExtensionFunctionAddress = dditable->zes.Driver.pfnGetExtensionFunctionAddress;
@@ -205,7 +206,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zes_driver_object_t*>( hDriver )->dditable;
         auto pfnGet = dditable->zes.Device.pfnGet;
@@ -245,7 +246,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zes_device_object_t*>( hDevice )->dditable;
         auto pfnGetProperties = dditable->zes.Device.pfnGetProperties;
@@ -270,7 +271,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zes_device_object_t*>( hDevice )->dditable;
         auto pfnGetState = dditable->zes.Device.pfnGetState;
@@ -296,7 +297,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zes_device_object_t*>( hDevice )->dditable;
         auto pfnReset = dditable->zes.Device.pfnReset;
@@ -321,7 +322,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zes_device_object_t*>( hDevice )->dditable;
         auto pfnResetExt = dditable->zes.Device.pfnResetExt;
@@ -355,7 +356,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zes_device_object_t*>( hDevice )->dditable;
         auto pfnProcessesGetState = dditable->zes.Device.pfnProcessesGetState;
@@ -380,7 +381,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zes_device_object_t*>( hDevice )->dditable;
         auto pfnPciGetProperties = dditable->zes.Device.pfnPciGetProperties;
@@ -405,7 +406,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zes_device_object_t*>( hDevice )->dditable;
         auto pfnPciGetState = dditable->zes.Device.pfnPciGetState;
@@ -438,7 +439,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zes_device_object_t*>( hDevice )->dditable;
         auto pfnPciGetBars = dditable->zes.Device.pfnPciGetBars;
@@ -463,7 +464,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zes_device_object_t*>( hDevice )->dditable;
         auto pfnPciGetStats = dditable->zes.Device.pfnPciGetStats;
@@ -487,7 +488,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zes_device_object_t*>( hDevice )->dditable;
         auto pfnSetOverclockWaiver = dditable->zes.Device.pfnSetOverclockWaiver;
@@ -514,7 +515,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zes_device_object_t*>( hDevice )->dditable;
         auto pfnGetOverclockDomains = dditable->zes.Device.pfnGetOverclockDomains;
@@ -542,7 +543,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zes_device_object_t*>( hDevice )->dditable;
         auto pfnGetOverclockControls = dditable->zes.Device.pfnGetOverclockControls;
@@ -568,7 +569,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zes_device_object_t*>( hDevice )->dditable;
         auto pfnResetOverclockSettings = dditable->zes.Device.pfnResetOverclockSettings;
@@ -598,7 +599,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zes_device_object_t*>( hDevice )->dditable;
         auto pfnReadOverclockState = dditable->zes.Device.pfnReadOverclockState;
@@ -633,7 +634,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zes_device_object_t*>( hDevice )->dditable;
         auto pfnEnumOverclockDomains = dditable->zes.Device.pfnEnumOverclockDomains;
@@ -673,7 +674,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zes_overclock_object_t*>( hDomainHandle )->dditable;
         auto pfnGetDomainProperties = dditable->zes.Overclock.pfnGetDomainProperties;
@@ -698,7 +699,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zes_overclock_object_t*>( hDomainHandle )->dditable;
         auto pfnGetDomainVFProperties = dditable->zes.Overclock.pfnGetDomainVFProperties;
@@ -724,7 +725,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zes_overclock_object_t*>( hDomainHandle )->dditable;
         auto pfnGetDomainControlProperties = dditable->zes.Overclock.pfnGetDomainControlProperties;
@@ -750,7 +751,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zes_overclock_object_t*>( hDomainHandle )->dditable;
         auto pfnGetControlCurrentValue = dditable->zes.Overclock.pfnGetControlCurrentValue;
@@ -777,7 +778,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zes_overclock_object_t*>( hDomainHandle )->dditable;
         auto pfnGetControlPendingValue = dditable->zes.Overclock.pfnGetControlPendingValue;
@@ -805,7 +806,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zes_overclock_object_t*>( hDomainHandle )->dditable;
         auto pfnSetControlUserValue = dditable->zes.Overclock.pfnSetControlUserValue;
@@ -832,7 +833,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zes_overclock_object_t*>( hDomainHandle )->dditable;
         auto pfnGetControlState = dditable->zes.Overclock.pfnGetControlState;
@@ -861,7 +862,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zes_overclock_object_t*>( hDomainHandle )->dditable;
         auto pfnGetVFPointValues = dditable->zes.Overclock.pfnGetVFPointValues;
@@ -889,7 +890,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zes_overclock_object_t*>( hDomainHandle )->dditable;
         auto pfnSetVFPointValues = dditable->zes.Overclock.pfnSetVFPointValues;
@@ -924,7 +925,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zes_device_object_t*>( hDevice )->dditable;
         auto pfnEnumDiagnosticTestSuites = dditable->zes.Device.pfnEnumDiagnosticTestSuites;
@@ -965,7 +966,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zes_diag_object_t*>( hDiagnostics )->dditable;
         auto pfnGetProperties = dditable->zes.Diagnostics.pfnGetProperties;
@@ -998,7 +999,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zes_diag_object_t*>( hDiagnostics )->dditable;
         auto pfnGetTests = dditable->zes.Diagnostics.pfnGetTests;
@@ -1027,7 +1028,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zes_diag_object_t*>( hDiagnostics )->dditable;
         auto pfnRunTests = dditable->zes.Diagnostics.pfnRunTests;
@@ -1052,7 +1053,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zes_device_object_t*>( hDevice )->dditable;
         auto pfnEccAvailable = dditable->zes.Device.pfnEccAvailable;
@@ -1077,7 +1078,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zes_device_object_t*>( hDevice )->dditable;
         auto pfnEccConfigurable = dditable->zes.Device.pfnEccConfigurable;
@@ -1102,7 +1103,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zes_device_object_t*>( hDevice )->dditable;
         auto pfnGetEccState = dditable->zes.Device.pfnGetEccState;
@@ -1128,7 +1129,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zes_device_object_t*>( hDevice )->dditable;
         auto pfnSetEccState = dditable->zes.Device.pfnSetEccState;
@@ -1163,7 +1164,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zes_device_object_t*>( hDevice )->dditable;
         auto pfnEnumEngineGroups = dditable->zes.Device.pfnEnumEngineGroups;
@@ -1203,7 +1204,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zes_engine_object_t*>( hEngine )->dditable;
         auto pfnGetProperties = dditable->zes.Engine.pfnGetProperties;
@@ -1229,7 +1230,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zes_engine_object_t*>( hEngine )->dditable;
         auto pfnGetActivity = dditable->zes.Engine.pfnGetActivity;
@@ -1254,7 +1255,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zes_device_object_t*>( hDevice )->dditable;
         auto pfnEventRegister = dditable->zes.Device.pfnEventRegister;
@@ -1295,7 +1296,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_driver_object_t*>( hDriver )->dditable;
         auto pfnEventListen = dditable->zes.Driver.pfnEventListen;
@@ -1342,7 +1343,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<ze_driver_object_t*>( hDriver )->dditable;
         auto pfnEventListenEx = dditable->zes.Driver.pfnEventListenEx;
@@ -1383,7 +1384,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zes_device_object_t*>( hDevice )->dditable;
         auto pfnEnumFabricPorts = dditable->zes.Device.pfnEnumFabricPorts;
@@ -1423,7 +1424,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zes_fabric_port_object_t*>( hPort )->dditable;
         auto pfnGetProperties = dditable->zes.FabricPort.pfnGetProperties;
@@ -1449,7 +1450,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zes_fabric_port_object_t*>( hPort )->dditable;
         auto pfnGetLinkType = dditable->zes.FabricPort.pfnGetLinkType;
@@ -1474,7 +1475,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zes_fabric_port_object_t*>( hPort )->dditable;
         auto pfnGetConfig = dditable->zes.FabricPort.pfnGetConfig;
@@ -1499,7 +1500,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zes_fabric_port_object_t*>( hPort )->dditable;
         auto pfnSetConfig = dditable->zes.FabricPort.pfnSetConfig;
@@ -1524,7 +1525,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zes_fabric_port_object_t*>( hPort )->dditable;
         auto pfnGetState = dditable->zes.FabricPort.pfnGetState;
@@ -1549,7 +1550,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zes_fabric_port_object_t*>( hPort )->dditable;
         auto pfnGetThroughput = dditable->zes.FabricPort.pfnGetThroughput;
@@ -1574,7 +1575,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zes_fabric_port_object_t*>( hPort )->dditable;
         auto pfnGetFabricErrorCounters = dditable->zes.FabricPort.pfnGetFabricErrorCounters;
@@ -1603,7 +1604,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zes_device_object_t*>( hDevice )->dditable;
         auto pfnGetMultiPortThroughput = dditable->zes.FabricPort.pfnGetMultiPortThroughput;
@@ -1644,7 +1645,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zes_device_object_t*>( hDevice )->dditable;
         auto pfnEnumFans = dditable->zes.Device.pfnEnumFans;
@@ -1684,7 +1685,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zes_fan_object_t*>( hFan )->dditable;
         auto pfnGetProperties = dditable->zes.Fan.pfnGetProperties;
@@ -1709,7 +1710,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zes_fan_object_t*>( hFan )->dditable;
         auto pfnGetConfig = dditable->zes.Fan.pfnGetConfig;
@@ -1733,7 +1734,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zes_fan_object_t*>( hFan )->dditable;
         auto pfnSetDefaultMode = dditable->zes.Fan.pfnSetDefaultMode;
@@ -1758,7 +1759,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zes_fan_object_t*>( hFan )->dditable;
         auto pfnSetFixedSpeedMode = dditable->zes.Fan.pfnSetFixedSpeedMode;
@@ -1783,7 +1784,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zes_fan_object_t*>( hFan )->dditable;
         auto pfnSetSpeedTableMode = dditable->zes.Fan.pfnSetSpeedTableMode;
@@ -1811,7 +1812,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zes_fan_object_t*>( hFan )->dditable;
         auto pfnGetState = dditable->zes.Fan.pfnGetState;
@@ -1846,7 +1847,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zes_device_object_t*>( hDevice )->dditable;
         auto pfnEnumFirmwares = dditable->zes.Device.pfnEnumFirmwares;
@@ -1887,7 +1888,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zes_firmware_object_t*>( hFirmware )->dditable;
         auto pfnGetProperties = dditable->zes.Firmware.pfnGetProperties;
@@ -1913,7 +1914,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zes_firmware_object_t*>( hFirmware )->dditable;
         auto pfnFlash = dditable->zes.Firmware.pfnFlash;
@@ -1938,7 +1939,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zes_firmware_object_t*>( hFirmware )->dditable;
         auto pfnGetFlashProgress = dditable->zes.Firmware.pfnGetFlashProgress;
@@ -1964,7 +1965,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zes_firmware_object_t*>( hFirmware )->dditable;
         auto pfnGetConsoleLogs = dditable->zes.Firmware.pfnGetConsoleLogs;
@@ -1999,7 +2000,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zes_device_object_t*>( hDevice )->dditable;
         auto pfnEnumFrequencyDomains = dditable->zes.Device.pfnEnumFrequencyDomains;
@@ -2039,7 +2040,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zes_freq_object_t*>( hFrequency )->dditable;
         auto pfnGetProperties = dditable->zes.Frequency.pfnGetProperties;
@@ -2072,7 +2073,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zes_freq_object_t*>( hFrequency )->dditable;
         auto pfnGetAvailableClocks = dditable->zes.Frequency.pfnGetAvailableClocks;
@@ -2098,7 +2099,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zes_freq_object_t*>( hFrequency )->dditable;
         auto pfnGetRange = dditable->zes.Frequency.pfnGetRange;
@@ -2124,7 +2125,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zes_freq_object_t*>( hFrequency )->dditable;
         auto pfnSetRange = dditable->zes.Frequency.pfnSetRange;
@@ -2149,7 +2150,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zes_freq_object_t*>( hFrequency )->dditable;
         auto pfnGetState = dditable->zes.Frequency.pfnGetState;
@@ -2175,7 +2176,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zes_freq_object_t*>( hFrequency )->dditable;
         auto pfnGetThrottleTime = dditable->zes.Frequency.pfnGetThrottleTime;
@@ -2200,7 +2201,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zes_freq_object_t*>( hFrequency )->dditable;
         auto pfnOcGetCapabilities = dditable->zes.Frequency.pfnOcGetCapabilities;
@@ -2228,7 +2229,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zes_freq_object_t*>( hFrequency )->dditable;
         auto pfnOcGetFrequencyTarget = dditable->zes.Frequency.pfnOcGetFrequencyTarget;
@@ -2256,7 +2257,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zes_freq_object_t*>( hFrequency )->dditable;
         auto pfnOcSetFrequencyTarget = dditable->zes.Frequency.pfnOcSetFrequencyTarget;
@@ -2286,7 +2287,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zes_freq_object_t*>( hFrequency )->dditable;
         auto pfnOcGetVoltageTarget = dditable->zes.Frequency.pfnOcGetVoltageTarget;
@@ -2316,7 +2317,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zes_freq_object_t*>( hFrequency )->dditable;
         auto pfnOcSetVoltageTarget = dditable->zes.Frequency.pfnOcSetVoltageTarget;
@@ -2341,7 +2342,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zes_freq_object_t*>( hFrequency )->dditable;
         auto pfnOcSetMode = dditable->zes.Frequency.pfnOcSetMode;
@@ -2366,7 +2367,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zes_freq_object_t*>( hFrequency )->dditable;
         auto pfnOcGetMode = dditable->zes.Frequency.pfnOcGetMode;
@@ -2392,7 +2393,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zes_freq_object_t*>( hFrequency )->dditable;
         auto pfnOcGetIccMax = dditable->zes.Frequency.pfnOcGetIccMax;
@@ -2417,7 +2418,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zes_freq_object_t*>( hFrequency )->dditable;
         auto pfnOcSetIccMax = dditable->zes.Frequency.pfnOcSetIccMax;
@@ -2443,7 +2444,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zes_freq_object_t*>( hFrequency )->dditable;
         auto pfnOcGetTjMax = dditable->zes.Frequency.pfnOcGetTjMax;
@@ -2468,7 +2469,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zes_freq_object_t*>( hFrequency )->dditable;
         auto pfnOcSetTjMax = dditable->zes.Frequency.pfnOcSetTjMax;
@@ -2503,7 +2504,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zes_device_object_t*>( hDevice )->dditable;
         auto pfnEnumLeds = dditable->zes.Device.pfnEnumLeds;
@@ -2543,7 +2544,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zes_led_object_t*>( hLed )->dditable;
         auto pfnGetProperties = dditable->zes.Led.pfnGetProperties;
@@ -2568,7 +2569,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zes_led_object_t*>( hLed )->dditable;
         auto pfnGetState = dditable->zes.Led.pfnGetState;
@@ -2593,7 +2594,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zes_led_object_t*>( hLed )->dditable;
         auto pfnSetState = dditable->zes.Led.pfnSetState;
@@ -2618,7 +2619,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zes_led_object_t*>( hLed )->dditable;
         auto pfnSetColor = dditable->zes.Led.pfnSetColor;
@@ -2653,7 +2654,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zes_device_object_t*>( hDevice )->dditable;
         auto pfnEnumMemoryModules = dditable->zes.Device.pfnEnumMemoryModules;
@@ -2693,7 +2694,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zes_mem_object_t*>( hMemory )->dditable;
         auto pfnGetProperties = dditable->zes.Memory.pfnGetProperties;
@@ -2718,7 +2719,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zes_mem_object_t*>( hMemory )->dditable;
         auto pfnGetState = dditable->zes.Memory.pfnGetState;
@@ -2744,7 +2745,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zes_mem_object_t*>( hMemory )->dditable;
         auto pfnGetBandwidth = dditable->zes.Memory.pfnGetBandwidth;
@@ -2779,7 +2780,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zes_device_object_t*>( hDevice )->dditable;
         auto pfnEnumPerformanceFactorDomains = dditable->zes.Device.pfnEnumPerformanceFactorDomains;
@@ -2820,7 +2821,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zes_perf_object_t*>( hPerf )->dditable;
         auto pfnGetProperties = dditable->zes.PerformanceFactor.pfnGetProperties;
@@ -2846,7 +2847,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zes_perf_object_t*>( hPerf )->dditable;
         auto pfnGetConfig = dditable->zes.PerformanceFactor.pfnGetConfig;
@@ -2871,7 +2872,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zes_perf_object_t*>( hPerf )->dditable;
         auto pfnSetConfig = dditable->zes.PerformanceFactor.pfnSetConfig;
@@ -2906,7 +2907,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zes_device_object_t*>( hDevice )->dditable;
         auto pfnEnumPowerDomains = dditable->zes.Device.pfnEnumPowerDomains;
@@ -2946,7 +2947,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zes_device_object_t*>( hDevice )->dditable;
         auto pfnGetCardPowerDomain = dditable->zes.Device.pfnGetCardPowerDomain;
@@ -2985,7 +2986,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zes_pwr_object_t*>( hPower )->dditable;
         auto pfnGetProperties = dditable->zes.Power.pfnGetProperties;
@@ -3011,7 +3012,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zes_pwr_object_t*>( hPower )->dditable;
         auto pfnGetEnergyCounter = dditable->zes.Power.pfnGetEnergyCounter;
@@ -3041,7 +3042,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zes_pwr_object_t*>( hPower )->dditable;
         auto pfnGetLimits = dditable->zes.Power.pfnGetLimits;
@@ -3071,7 +3072,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zes_pwr_object_t*>( hPower )->dditable;
         auto pfnSetLimits = dditable->zes.Power.pfnSetLimits;
@@ -3097,7 +3098,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zes_pwr_object_t*>( hPower )->dditable;
         auto pfnGetEnergyThreshold = dditable->zes.Power.pfnGetEnergyThreshold;
@@ -3122,7 +3123,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zes_pwr_object_t*>( hPower )->dditable;
         auto pfnSetEnergyThreshold = dditable->zes.Power.pfnSetEnergyThreshold;
@@ -3157,7 +3158,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zes_device_object_t*>( hDevice )->dditable;
         auto pfnEnumPsus = dditable->zes.Device.pfnEnumPsus;
@@ -3197,7 +3198,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zes_psu_object_t*>( hPsu )->dditable;
         auto pfnGetProperties = dditable->zes.Psu.pfnGetProperties;
@@ -3222,7 +3223,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zes_psu_object_t*>( hPsu )->dditable;
         auto pfnGetState = dditable->zes.Psu.pfnGetState;
@@ -3257,7 +3258,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zes_device_object_t*>( hDevice )->dditable;
         auto pfnEnumRasErrorSets = dditable->zes.Device.pfnEnumRasErrorSets;
@@ -3297,7 +3298,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zes_ras_object_t*>( hRas )->dditable;
         auto pfnGetProperties = dditable->zes.Ras.pfnGetProperties;
@@ -3323,7 +3324,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zes_ras_object_t*>( hRas )->dditable;
         auto pfnGetConfig = dditable->zes.Ras.pfnGetConfig;
@@ -3348,7 +3349,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zes_ras_object_t*>( hRas )->dditable;
         auto pfnSetConfig = dditable->zes.Ras.pfnSetConfig;
@@ -3374,7 +3375,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zes_ras_object_t*>( hRas )->dditable;
         auto pfnGetState = dditable->zes.Ras.pfnGetState;
@@ -3409,7 +3410,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zes_device_object_t*>( hDevice )->dditable;
         auto pfnEnumSchedulers = dditable->zes.Device.pfnEnumSchedulers;
@@ -3449,7 +3450,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zes_sched_object_t*>( hScheduler )->dditable;
         auto pfnGetProperties = dditable->zes.Scheduler.pfnGetProperties;
@@ -3474,7 +3475,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zes_sched_object_t*>( hScheduler )->dditable;
         auto pfnGetCurrentMode = dditable->zes.Scheduler.pfnGetCurrentMode;
@@ -3501,7 +3502,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zes_sched_object_t*>( hScheduler )->dditable;
         auto pfnGetTimeoutModeProperties = dditable->zes.Scheduler.pfnGetTimeoutModeProperties;
@@ -3528,7 +3529,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zes_sched_object_t*>( hScheduler )->dditable;
         auto pfnGetTimesliceModeProperties = dditable->zes.Scheduler.pfnGetTimesliceModeProperties;
@@ -3555,7 +3556,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zes_sched_object_t*>( hScheduler )->dditable;
         auto pfnSetTimeoutMode = dditable->zes.Scheduler.pfnSetTimeoutMode;
@@ -3582,7 +3583,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zes_sched_object_t*>( hScheduler )->dditable;
         auto pfnSetTimesliceMode = dditable->zes.Scheduler.pfnSetTimesliceMode;
@@ -3608,7 +3609,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zes_sched_object_t*>( hScheduler )->dditable;
         auto pfnSetExclusiveMode = dditable->zes.Scheduler.pfnSetExclusiveMode;
@@ -3634,7 +3635,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zes_sched_object_t*>( hScheduler )->dditable;
         auto pfnSetComputeUnitDebugMode = dditable->zes.Scheduler.pfnSetComputeUnitDebugMode;
@@ -3669,7 +3670,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zes_device_object_t*>( hDevice )->dditable;
         auto pfnEnumStandbyDomains = dditable->zes.Device.pfnEnumStandbyDomains;
@@ -3709,7 +3710,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zes_standby_object_t*>( hStandby )->dditable;
         auto pfnGetProperties = dditable->zes.Standby.pfnGetProperties;
@@ -3734,7 +3735,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zes_standby_object_t*>( hStandby )->dditable;
         auto pfnGetMode = dditable->zes.Standby.pfnGetMode;
@@ -3759,7 +3760,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zes_standby_object_t*>( hStandby )->dditable;
         auto pfnSetMode = dditable->zes.Standby.pfnSetMode;
@@ -3794,7 +3795,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zes_device_object_t*>( hDevice )->dditable;
         auto pfnEnumTemperatureSensors = dditable->zes.Device.pfnEnumTemperatureSensors;
@@ -3834,7 +3835,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zes_temp_object_t*>( hTemperature )->dditable;
         auto pfnGetProperties = dditable->zes.Temperature.pfnGetProperties;
@@ -3859,7 +3860,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zes_temp_object_t*>( hTemperature )->dditable;
         auto pfnGetConfig = dditable->zes.Temperature.pfnGetConfig;
@@ -3884,7 +3885,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zes_temp_object_t*>( hTemperature )->dditable;
         auto pfnSetConfig = dditable->zes.Temperature.pfnSetConfig;
@@ -3910,7 +3911,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zes_temp_object_t*>( hTemperature )->dditable;
         auto pfnGetState = dditable->zes.Temperature.pfnGetState;
@@ -3943,7 +3944,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zes_pwr_object_t*>( hPower )->dditable;
         auto pfnGetLimitsExt = dditable->zes.Power.pfnGetLimitsExt;
@@ -3969,7 +3970,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zes_pwr_object_t*>( hPower )->dditable;
         auto pfnSetLimitsExt = dditable->zes.Power.pfnSetLimitsExt;
@@ -4007,7 +4008,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zes_engine_object_t*>( hEngine )->dditable;
         auto pfnGetActivityExt = dditable->zes.Engine.pfnGetActivityExt;
@@ -4040,7 +4041,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zes_ras_object_t*>( hRas )->dditable;
         auto pfnGetStateExp = dditable->zes.RasExp.pfnGetStateExp;
@@ -4065,7 +4066,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zes_ras_object_t*>( hRas )->dditable;
         auto pfnClearStateExp = dditable->zes.RasExp.pfnClearStateExp;
@@ -4091,7 +4092,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zes_firmware_object_t*>( hFirmware )->dditable;
         auto pfnGetSecurityVersionExp = dditable->zes.FirmwareExp.pfnGetSecurityVersionExp;
@@ -4115,7 +4116,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zes_firmware_object_t*>( hFirmware )->dditable;
         auto pfnSetSecurityVersionExp = dditable->zes.FirmwareExp.pfnSetSecurityVersionExp;
@@ -4148,7 +4149,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zes_device_object_t*>( hDevice )->dditable;
         auto pfnGetSubDevicePropertiesExp = dditable->zes.DeviceExp.pfnGetSubDevicePropertiesExp;
@@ -4177,7 +4178,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zes_driver_object_t*>( hDriver )->dditable;
         auto pfnGetDeviceByUuidExp = dditable->zes.DriverExp.pfnGetDeviceByUuidExp;
@@ -4226,7 +4227,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zes_device_object_t*>( hDevice )->dditable;
         auto pfnEnumActiveVFExp = dditable->zes.DeviceExp.pfnEnumActiveVFExp;
@@ -4266,7 +4267,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zes_vf_object_t*>( hVFhandle )->dditable;
         auto pfnGetVFPropertiesExp = dditable->zes.VFManagementExp.pfnGetVFPropertiesExp;
@@ -4303,7 +4304,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zes_vf_object_t*>( hVFhandle )->dditable;
         auto pfnGetVFMemoryUtilizationExp = dditable->zes.VFManagementExp.pfnGetVFMemoryUtilizationExp;
@@ -4340,7 +4341,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zes_vf_object_t*>( hVFhandle )->dditable;
         auto pfnGetVFEngineUtilizationExp = dditable->zes.VFManagementExp.pfnGetVFEngineUtilizationExp;
@@ -4367,7 +4368,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zes_vf_object_t*>( hVFhandle )->dditable;
         auto pfnSetVFTelemetryModeExp = dditable->zes.VFManagementExp.pfnSetVFTelemetryModeExp;
@@ -4394,7 +4395,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zes_vf_object_t*>( hVFhandle )->dditable;
         auto pfnSetVFTelemetrySamplingIntervalExp = dditable->zes.VFManagementExp.pfnSetVFTelemetrySamplingIntervalExp;
@@ -4429,7 +4430,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zes_device_object_t*>( hDevice )->dditable;
         auto pfnEnumEnabledVFExp = dditable->zes.DeviceExp.pfnEnumEnabledVFExp;
@@ -4469,7 +4470,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zes_vf_object_t*>( hVFhandle )->dditable;
         auto pfnGetVFCapabilitiesExp = dditable->zes.VFManagementExp.pfnGetVFCapabilitiesExp;
@@ -4504,7 +4505,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zes_vf_object_t*>( hVFhandle )->dditable;
         auto pfnGetVFMemoryUtilizationExp2 = dditable->zes.VFManagementExp.pfnGetVFMemoryUtilizationExp2;
@@ -4539,7 +4540,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zes_vf_object_t*>( hVFhandle )->dditable;
         auto pfnGetVFEngineUtilizationExp2 = dditable->zes.VFManagementExp.pfnGetVFEngineUtilizationExp2;
@@ -4564,7 +4565,7 @@ namespace loader
         )
     {
         ze_result_t result = ZE_RESULT_SUCCESS;
-
+        
         // extract driver's function pointer table
         auto dditable = reinterpret_cast<zes_vf_object_t*>( hVFhandle )->dditable;
         auto pfnGetVFCapabilitiesExp2 = dditable->zes.VFManagementExp.pfnGetVFCapabilitiesExp2;

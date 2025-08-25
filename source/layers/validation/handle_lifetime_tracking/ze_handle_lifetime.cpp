@@ -2,7 +2,7 @@
  * ***THIS FILE IS GENERATED. ***
  * See handle_lifetime.cpp.mako for modifications
  *
- * Copyright (C) 2019-2023 Intel Corporation
+ * Copyright (C) 2019-2025 Intel Corporation
  *
  * SPDX-License-Identifier: MIT
  *
@@ -89,6 +89,17 @@ namespace validation_layer
         ze_driver_handle_t hDriver,                     ///< [in] handle of the driver instance
         const char** ppString                           ///< [in,out] pointer to a null-terminated array of characters describing
                                                         ///< cause of error.
+        )
+    { 
+        
+        if ( !context.handleLifetime->isHandleValid( hDriver )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    ze_result_t
+    ZEHandleLifetimeValidation::zeDriverGetDefaultContextPrologue(
+        ze_driver_handle_t hDriver                      ///< [in] handle of the driver instance
         )
     { 
         
@@ -332,6 +343,17 @@ namespace validation_layer
                                                         ///< Device's global timestamp value.
         uint64_t* deviceTimestamp                       ///< [out] value of the Device's global timestamp that correlates with the
                                                         ///< Host's global timestamp value.
+        )
+    { 
+        
+        if ( !context.handleLifetime->isHandleValid( hDevice )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    ze_result_t
+    ZEHandleLifetimeValidation::zeDeviceSynchronizePrologue(
+        ze_device_handle_t hDevice                      ///< [in] handle of the device
         )
     { 
         
@@ -2120,6 +2142,74 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t
+    ZEHandleLifetimeValidation::zeCommandListAppendLaunchKernelWithParametersPrologue(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
+        ze_kernel_handle_t hKernel,                     ///< [in] handle of the kernel object
+        const ze_group_count_t* pGroupCounts,           ///< [in] thread group launch arguments
+        const void * pNext,                             ///< [in][optional] additional parameters passed to the function
+        ze_event_handle_t hSignalEvent,                 ///< [in][optional] handle of the event to signal on completion
+        uint32_t numWaitEvents,                         ///< [in][optional] number of events to wait on before launching; must be 0
+                                                        ///< if `nullptr == phWaitEvents`
+        ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
+                                                        ///< on before launching
+        )
+    { 
+        
+        if ( !context.handleLifetime->isHandleValid( hCommandList )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        if (!context.handleLifetime->isOpen( hCommandList )){
+            return ZE_RESULT_ERROR_INVALID_ARGUMENT;
+        }
+        if ( !context.handleLifetime->isHandleValid( hKernel )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        if (hSignalEvent && !context.handleLifetime->isHandleValid( hSignalEvent )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        for (size_t i = 0; ( nullptr != phWaitEvents) && (i < numWaitEvents); ++i){
+            if (!context.handleLifetime->isHandleValid( phWaitEvents[i] )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+            }
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    ze_result_t
+    ZEHandleLifetimeValidation::zeCommandListAppendLaunchKernelWithArgumentsPrologue(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
+        ze_kernel_handle_t hKernel,                     ///< [in] handle of the kernel object
+        const ze_group_count_t groupCounts,             ///< [in] thread group counts
+        const ze_group_size_t groupSizes,               ///< [in] thread group sizes
+        void ** pArguments,                             ///< [in]pointer to an array of pointers
+        const void * pNext,                             ///< [in][optional] additional extensions passed to the function
+        ze_event_handle_t hSignalEvent,                 ///< [in][optional] handle of the event to signal on completion
+        uint32_t numWaitEvents,                         ///< [in][optional] number of events to wait on before launching; must be 0
+                                                        ///< if `nullptr == phWaitEvents`
+        ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
+                                                        ///< on before launching
+        )
+    { 
+        
+        if ( !context.handleLifetime->isHandleValid( hCommandList )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        if (!context.handleLifetime->isOpen( hCommandList )){
+            return ZE_RESULT_ERROR_INVALID_ARGUMENT;
+        }
+        if ( !context.handleLifetime->isHandleValid( hKernel )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        if (hSignalEvent && !context.handleLifetime->isHandleValid( hSignalEvent )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        for (size_t i = 0; ( nullptr != phWaitEvents) && (i < numWaitEvents); ++i){
+            if (!context.handleLifetime->isHandleValid( phWaitEvents[i] )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+            }
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    ze_result_t
     ZEHandleLifetimeValidation::zeCommandListAppendLaunchCooperativeKernelPrologue(
         ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
         ze_kernel_handle_t hKernel,                     ///< [in] handle of the kernel object
@@ -2779,6 +2869,27 @@ namespace validation_layer
     { 
         
         if ( !context.handleLifetime->isHandleValid( hDevice )){
+                return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
+        }
+        return ZE_RESULT_SUCCESS;
+    }
+    ze_result_t
+    ZEHandleLifetimeValidation::zeKernelGetAllocationPropertiesExpPrologue(
+        ze_kernel_handle_t hKernel,                     ///< [in] Kernel handle.
+        uint32_t* pCount,                               ///< [in,out] pointer to the number of kernel allocation properties.
+                                                        ///< if count is zero, then the driver shall update the value with the
+                                                        ///< total number of kernel allocation properties available.
+                                                        ///< if count is greater than the number of kernel allocation properties
+                                                        ///< available, then the driver shall update the value with the correct
+                                                        ///< number of kernel allocation properties.
+        ze_kernel_allocation_exp_properties_t* pAllocationProperties///< [in,out][optional][range(0, *pCount)] array of kernel allocation properties.
+                                                        ///< if count is less than the number of kernel allocation properties
+                                                        ///< available, then driver shall only retrieve that number of kernel
+                                                        ///< allocation properties.
+        )
+    { 
+        
+        if ( !context.handleLifetime->isHandleValid( hKernel )){
                 return ZE_RESULT_ERROR_INVALID_NULL_HANDLE;
         }
         return ZE_RESULT_SUCCESS;

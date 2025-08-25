@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (C) 2019-2024 Intel Corporation
+ * Copyright (C) 2019-2025 Intel Corporation
  *
  * SPDX-License-Identifier: MIT
  *
@@ -298,6 +298,32 @@ namespace driver
         }
         
         char *env_str = context.setenv_var_with_driver_id("zeDriverGetLastErrorDescription", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeDriverGetDefaultContext
+    __zedlllocal ze_context_handle_t ZE_APICALL
+    zeDriverGetDefaultContext(
+        ze_driver_handle_t hDriver                      ///< [in] handle of the driver instance
+        )
+    {
+        ze_context_handle_t result {};
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnGetDefaultContext = context.zeDdiTable.Driver.pfnGetDefaultContext;
+        if( nullptr != pfnGetDefaultContext )
+        {
+            result = pfnGetDefaultContext( hDriver );
+        }
+        else
+        {
+            // generic implementation
+        }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeDriverGetDefaultContext", ZEL_NULL_DRIVER_ID);
         context.env_vars.push_back(env_str);
 
         return result;
@@ -783,6 +809,32 @@ namespace driver
         }
         
         char *env_str = context.setenv_var_with_driver_id("zeDeviceGetGlobalTimestamps", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeDeviceSynchronize
+    __zedlllocal ze_result_t ZE_APICALL
+    zeDeviceSynchronize(
+        ze_device_handle_t hDevice                      ///< [in] handle of the device
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnSynchronize = context.zeDdiTable.Device.pfnSynchronize;
+        if( nullptr != pfnSynchronize )
+        {
+            result = pfnSynchronize( hDevice );
+        }
+        else
+        {
+            // generic implementation
+        }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeDeviceSynchronize", ZEL_NULL_DRIVER_ID);
         context.env_vars.push_back(env_str);
 
         return result;
@@ -3826,6 +3878,76 @@ namespace driver
     }
 
     ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeCommandListAppendLaunchKernelWithParameters
+    __zedlllocal ze_result_t ZE_APICALL
+    zeCommandListAppendLaunchKernelWithParameters(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
+        ze_kernel_handle_t hKernel,                     ///< [in] handle of the kernel object
+        const ze_group_count_t* pGroupCounts,           ///< [in] thread group launch arguments
+        const void * pNext,                             ///< [in][optional] additional parameters passed to the function
+        ze_event_handle_t hSignalEvent,                 ///< [in][optional] handle of the event to signal on completion
+        uint32_t numWaitEvents,                         ///< [in][optional] number of events to wait on before launching; must be 0
+                                                        ///< if `nullptr == phWaitEvents`
+        ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
+                                                        ///< on before launching
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnAppendLaunchKernelWithParameters = context.zeDdiTable.CommandList.pfnAppendLaunchKernelWithParameters;
+        if( nullptr != pfnAppendLaunchKernelWithParameters )
+        {
+            result = pfnAppendLaunchKernelWithParameters( hCommandList, hKernel, pGroupCounts, pNext, hSignalEvent, numWaitEvents, phWaitEvents );
+        }
+        else
+        {
+            // generic implementation
+        }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeCommandListAppendLaunchKernelWithParameters", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeCommandListAppendLaunchKernelWithArguments
+    __zedlllocal ze_result_t ZE_APICALL
+    zeCommandListAppendLaunchKernelWithArguments(
+        ze_command_list_handle_t hCommandList,          ///< [in] handle of the command list
+        ze_kernel_handle_t hKernel,                     ///< [in] handle of the kernel object
+        const ze_group_count_t groupCounts,             ///< [in] thread group counts
+        const ze_group_size_t groupSizes,               ///< [in] thread group sizes
+        void ** pArguments,                             ///< [in]pointer to an array of pointers
+        const void * pNext,                             ///< [in][optional] additional extensions passed to the function
+        ze_event_handle_t hSignalEvent,                 ///< [in][optional] handle of the event to signal on completion
+        uint32_t numWaitEvents,                         ///< [in][optional] number of events to wait on before launching; must be 0
+                                                        ///< if `nullptr == phWaitEvents`
+        ze_event_handle_t* phWaitEvents                 ///< [in][optional][range(0, numWaitEvents)] handle of the events to wait
+                                                        ///< on before launching
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnAppendLaunchKernelWithArguments = context.zeDdiTable.CommandList.pfnAppendLaunchKernelWithArguments;
+        if( nullptr != pfnAppendLaunchKernelWithArguments )
+        {
+            result = pfnAppendLaunchKernelWithArguments( hCommandList, hKernel, groupCounts, groupSizes, pArguments, pNext, hSignalEvent, numWaitEvents, phWaitEvents );
+        }
+        else
+        {
+            // generic implementation
+        }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeCommandListAppendLaunchKernelWithArguments", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
     /// @brief Intercept function for zeCommandListAppendLaunchCooperativeKernel
     __zedlllocal ze_result_t ZE_APICALL
     zeCommandListAppendLaunchCooperativeKernel(
@@ -4882,6 +5004,42 @@ namespace driver
         }
         
         char *env_str = context.setenv_var_with_driver_id("zeDeviceGetVectorWidthPropertiesExt", ZEL_NULL_DRIVER_ID);
+        context.env_vars.push_back(env_str);
+
+        return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zeKernelGetAllocationPropertiesExp
+    __zedlllocal ze_result_t ZE_APICALL
+    zeKernelGetAllocationPropertiesExp(
+        ze_kernel_handle_t hKernel,                     ///< [in] Kernel handle.
+        uint32_t* pCount,                               ///< [in,out] pointer to the number of kernel allocation properties.
+                                                        ///< if count is zero, then the driver shall update the value with the
+                                                        ///< total number of kernel allocation properties available.
+                                                        ///< if count is greater than the number of kernel allocation properties
+                                                        ///< available, then the driver shall update the value with the correct
+                                                        ///< number of kernel allocation properties.
+        ze_kernel_allocation_exp_properties_t* pAllocationProperties///< [in,out][optional][range(0, *pCount)] array of kernel allocation properties.
+                                                        ///< if count is less than the number of kernel allocation properties
+                                                        ///< available, then driver shall only retrieve that number of kernel
+                                                        ///< allocation properties.
+        )
+    {
+        ze_result_t result = ZE_RESULT_SUCCESS;
+
+        // if the driver has created a custom function, then call it instead of using the generic path
+        auto pfnGetAllocationPropertiesExp = context.zeDdiTable.KernelExp.pfnGetAllocationPropertiesExp;
+        if( nullptr != pfnGetAllocationPropertiesExp )
+        {
+            result = pfnGetAllocationPropertiesExp( hKernel, pCount, pAllocationProperties );
+        }
+        else
+        {
+            // generic implementation
+        }
+        
+        char *env_str = context.setenv_var_with_driver_id("zeKernelGetAllocationPropertiesExp", ZEL_NULL_DRIVER_ID);
         context.env_vars.push_back(env_str);
 
         return result;
@@ -6366,6 +6524,8 @@ zeGetDriverProcAddrTable(
 
     pDdiTable->pfnRTASFormatCompatibilityCheckExt        = driver::zeDriverRTASFormatCompatibilityCheckExt;
 
+    pDdiTable->pfnGetDefaultContext                      = driver::zeDriverGetDefaultContext;
+
     pDdiTable->pfnGetLastErrorDescription                = driver::zeDriverGetLastErrorDescription;
 
     return result;
@@ -6455,6 +6615,8 @@ zeGetDeviceProcAddrTable(
     pDdiTable->pfnReleaseExternalSemaphoreExt            = driver::zeDeviceReleaseExternalSemaphoreExt;
 
     pDdiTable->pfnGetVectorWidthPropertiesExt            = driver::zeDeviceGetVectorWidthPropertiesExt;
+
+    pDdiTable->pfnSynchronize                            = driver::zeDeviceSynchronize;
 
     pDdiTable->pfnReserveCacheExt                        = driver::zeDeviceReserveCacheExt;
 
@@ -6651,6 +6813,10 @@ zeGetCommandListProcAddrTable(
     pDdiTable->pfnAppendSignalExternalSemaphoreExt       = driver::zeCommandListAppendSignalExternalSemaphoreExt;
 
     pDdiTable->pfnAppendWaitExternalSemaphoreExt         = driver::zeCommandListAppendWaitExternalSemaphoreExt;
+
+    pDdiTable->pfnAppendLaunchKernelWithParameters       = driver::zeCommandListAppendLaunchKernelWithParameters;
+
+    pDdiTable->pfnAppendLaunchKernelWithArguments        = driver::zeCommandListAppendLaunchKernelWithArguments;
 
     pDdiTable->pfnAppendImageCopyToMemoryExt             = driver::zeCommandListAppendImageCopyToMemoryExt;
 
@@ -7002,6 +7168,8 @@ zeGetKernelExpProcAddrTable(
     pDdiTable->pfnSetGlobalOffsetExp                     = driver::zeKernelSetGlobalOffsetExp;
 
     pDdiTable->pfnGetBinaryExp                           = driver::zeKernelGetBinaryExp;
+
+    pDdiTable->pfnGetAllocationPropertiesExp             = driver::zeKernelGetAllocationPropertiesExp;
 
     pDdiTable->pfnSchedulingHintExp                      = driver::zeKernelSchedulingHintExp;
 

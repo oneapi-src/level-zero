@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (C) 2019-2024 Intel Corporation
+ * Copyright (C) 2019-2025 Intel Corporation
  *
  * SPDX-License-Identifier: MIT
  *
@@ -117,6 +117,8 @@ namespace ze_lib
                 GET_FUNCTION_PTR(loader, "zeDriverGetExtensionFunctionAddress") );
             initialzeDdiTable.Driver.pfnRTASFormatCompatibilityCheckExt = reinterpret_cast<ze_pfnDriverRTASFormatCompatibilityCheckExt_t>(
                 GET_FUNCTION_PTR(loader, "zeDriverRTASFormatCompatibilityCheckExt") );
+            initialzeDdiTable.Driver.pfnGetDefaultContext = reinterpret_cast<ze_pfnDriverGetDefaultContext_t>(
+                GET_FUNCTION_PTR(loader, "zeDriverGetDefaultContext") );
             initialzeDdiTable.Driver.pfnGetLastErrorDescription = reinterpret_cast<ze_pfnDriverGetLastErrorDescription_t>(
                 GET_FUNCTION_PTR(loader, "zeDriverGetLastErrorDescription") );
         }
@@ -172,6 +174,8 @@ namespace ze_lib
                 GET_FUNCTION_PTR(loader, "zeDeviceReleaseExternalSemaphoreExt") );
             initialzeDdiTable.Device.pfnGetVectorWidthPropertiesExt = reinterpret_cast<ze_pfnDeviceGetVectorWidthPropertiesExt_t>(
                 GET_FUNCTION_PTR(loader, "zeDeviceGetVectorWidthPropertiesExt") );
+            initialzeDdiTable.Device.pfnSynchronize = reinterpret_cast<ze_pfnDeviceSynchronize_t>(
+                GET_FUNCTION_PTR(loader, "zeDeviceSynchronize") );
             initialzeDdiTable.Device.pfnReserveCacheExt = reinterpret_cast<ze_pfnDeviceReserveCacheExt_t>(
                 GET_FUNCTION_PTR(loader, "zeDeviceReserveCacheExt") );
             initialzeDdiTable.Device.pfnSetCacheAdviceExt = reinterpret_cast<ze_pfnDeviceSetCacheAdviceExt_t>(
@@ -297,6 +301,10 @@ namespace ze_lib
                 GET_FUNCTION_PTR(loader, "zeCommandListAppendSignalExternalSemaphoreExt") );
             initialzeDdiTable.CommandList.pfnAppendWaitExternalSemaphoreExt = reinterpret_cast<ze_pfnCommandListAppendWaitExternalSemaphoreExt_t>(
                 GET_FUNCTION_PTR(loader, "zeCommandListAppendWaitExternalSemaphoreExt") );
+            initialzeDdiTable.CommandList.pfnAppendLaunchKernelWithParameters = reinterpret_cast<ze_pfnCommandListAppendLaunchKernelWithParameters_t>(
+                GET_FUNCTION_PTR(loader, "zeCommandListAppendLaunchKernelWithParameters") );
+            initialzeDdiTable.CommandList.pfnAppendLaunchKernelWithArguments = reinterpret_cast<ze_pfnCommandListAppendLaunchKernelWithArguments_t>(
+                GET_FUNCTION_PTR(loader, "zeCommandListAppendLaunchKernelWithArguments") );
             initialzeDdiTable.CommandList.pfnAppendImageCopyToMemoryExt = reinterpret_cast<ze_pfnCommandListAppendImageCopyToMemoryExt_t>(
                 GET_FUNCTION_PTR(loader, "zeCommandListAppendImageCopyToMemoryExt") );
             initialzeDdiTable.CommandList.pfnAppendImageCopyFromMemoryExt = reinterpret_cast<ze_pfnCommandListAppendImageCopyFromMemoryExt_t>(
@@ -490,6 +498,8 @@ namespace ze_lib
                 GET_FUNCTION_PTR(loader, "zeKernelSetGlobalOffsetExp") );
             initialzeDdiTable.KernelExp.pfnGetBinaryExp = reinterpret_cast<ze_pfnKernelGetBinaryExp_t>(
                 GET_FUNCTION_PTR(loader, "zeKernelGetBinaryExp") );
+            initialzeDdiTable.KernelExp.pfnGetAllocationPropertiesExp = reinterpret_cast<ze_pfnKernelGetAllocationPropertiesExp_t>(
+                GET_FUNCTION_PTR(loader, "zeKernelGetAllocationPropertiesExp") );
             initialzeDdiTable.KernelExp.pfnSchedulingHintExp = reinterpret_cast<ze_pfnKernelSchedulingHintExp_t>(
                 GET_FUNCTION_PTR(loader, "zeKernelSchedulingHintExp") );
         }

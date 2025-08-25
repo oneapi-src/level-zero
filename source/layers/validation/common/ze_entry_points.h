@@ -2,7 +2,7 @@
  * ***THIS FILE IS GENERATED. ***
  * See entry_points.h.mako for modifications
  *
- * Copyright (C) 2019-2024 Intel Corporation
+ * Copyright (C) 2019-2025 Intel Corporation
  *
  * SPDX-License-Identifier: MIT
  *
@@ -35,6 +35,8 @@ public:
     virtual ze_result_t zeDriverGetExtensionFunctionAddressEpilogue( ze_driver_handle_t hDriver, const char* name, void** ppFunctionAddress , ze_result_t result) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zeDriverGetLastErrorDescriptionPrologue( ze_driver_handle_t hDriver, const char** ppString ) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zeDriverGetLastErrorDescriptionEpilogue( ze_driver_handle_t hDriver, const char** ppString , ze_result_t result) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zeDriverGetDefaultContextPrologue( ze_driver_handle_t hDriver ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zeDriverGetDefaultContextEpilogue( ze_driver_handle_t hDriver , ze_context_handle_t result) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zeDeviceGetPrologue( ze_driver_handle_t hDriver, uint32_t* pCount, ze_device_handle_t* phDevices ) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zeDeviceGetEpilogue( ze_driver_handle_t hDriver, uint32_t* pCount, ze_device_handle_t* phDevices , ze_result_t result) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zeDeviceGetRootDevicePrologue( ze_device_handle_t hDevice, ze_device_handle_t* phRootDevice ) {return ZE_RESULT_SUCCESS;}
@@ -67,6 +69,8 @@ public:
     virtual ze_result_t zeDeviceGetStatusEpilogue( ze_device_handle_t hDevice , ze_result_t result) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zeDeviceGetGlobalTimestampsPrologue( ze_device_handle_t hDevice, uint64_t* hostTimestamp, uint64_t* deviceTimestamp ) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zeDeviceGetGlobalTimestampsEpilogue( ze_device_handle_t hDevice, uint64_t* hostTimestamp, uint64_t* deviceTimestamp , ze_result_t result) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zeDeviceSynchronizePrologue( ze_device_handle_t hDevice ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zeDeviceSynchronizeEpilogue( ze_device_handle_t hDevice , ze_result_t result) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zeContextCreatePrologue( ze_driver_handle_t hDriver, const ze_context_desc_t* desc, ze_context_handle_t* phContext ) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zeContextCreateEpilogue( ze_driver_handle_t hDriver, const ze_context_desc_t* desc, ze_context_handle_t* phContext , ze_result_t result) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zeContextCreateExPrologue( ze_driver_handle_t hDriver, const ze_context_desc_t* desc, uint32_t numDevices, ze_device_handle_t* phDevices, ze_context_handle_t* phContext ) {return ZE_RESULT_SUCCESS;}
@@ -271,6 +275,10 @@ public:
     virtual ze_result_t zeKernelGetNameEpilogue( ze_kernel_handle_t hKernel, size_t* pSize, char* pName , ze_result_t result) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zeCommandListAppendLaunchKernelPrologue( ze_command_list_handle_t hCommandList, ze_kernel_handle_t hKernel, const ze_group_count_t* pLaunchFuncArgs, ze_event_handle_t hSignalEvent, uint32_t numWaitEvents, ze_event_handle_t* phWaitEvents ) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zeCommandListAppendLaunchKernelEpilogue( ze_command_list_handle_t hCommandList, ze_kernel_handle_t hKernel, const ze_group_count_t* pLaunchFuncArgs, ze_event_handle_t hSignalEvent, uint32_t numWaitEvents, ze_event_handle_t* phWaitEvents , ze_result_t result) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zeCommandListAppendLaunchKernelWithParametersPrologue( ze_command_list_handle_t hCommandList, ze_kernel_handle_t hKernel, const ze_group_count_t* pGroupCounts, const void * pNext, ze_event_handle_t hSignalEvent, uint32_t numWaitEvents, ze_event_handle_t* phWaitEvents ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zeCommandListAppendLaunchKernelWithParametersEpilogue( ze_command_list_handle_t hCommandList, ze_kernel_handle_t hKernel, const ze_group_count_t* pGroupCounts, const void * pNext, ze_event_handle_t hSignalEvent, uint32_t numWaitEvents, ze_event_handle_t* phWaitEvents , ze_result_t result) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zeCommandListAppendLaunchKernelWithArgumentsPrologue( ze_command_list_handle_t hCommandList, ze_kernel_handle_t hKernel, const ze_group_count_t groupCounts, const ze_group_size_t groupSizes, void ** pArguments, const void * pNext, ze_event_handle_t hSignalEvent, uint32_t numWaitEvents, ze_event_handle_t* phWaitEvents ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zeCommandListAppendLaunchKernelWithArgumentsEpilogue( ze_command_list_handle_t hCommandList, ze_kernel_handle_t hKernel, const ze_group_count_t groupCounts, const ze_group_size_t groupSizes, void ** pArguments, const void * pNext, ze_event_handle_t hSignalEvent, uint32_t numWaitEvents, ze_event_handle_t* phWaitEvents , ze_result_t result) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zeCommandListAppendLaunchCooperativeKernelPrologue( ze_command_list_handle_t hCommandList, ze_kernel_handle_t hKernel, const ze_group_count_t* pLaunchFuncArgs, ze_event_handle_t hSignalEvent, uint32_t numWaitEvents, ze_event_handle_t* phWaitEvents ) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zeCommandListAppendLaunchCooperativeKernelEpilogue( ze_command_list_handle_t hCommandList, ze_kernel_handle_t hKernel, const ze_group_count_t* pLaunchFuncArgs, ze_event_handle_t hSignalEvent, uint32_t numWaitEvents, ze_event_handle_t* phWaitEvents , ze_result_t result) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zeCommandListAppendLaunchKernelIndirectPrologue( ze_command_list_handle_t hCommandList, ze_kernel_handle_t hKernel, const ze_group_count_t* pLaunchArgumentsBuffer, ze_event_handle_t hSignalEvent, uint32_t numWaitEvents, ze_event_handle_t* phWaitEvents ) {return ZE_RESULT_SUCCESS;}
@@ -341,6 +349,8 @@ public:
     virtual ze_result_t zeRTASParallelOperationDestroyExtEpilogue( ze_rtas_parallel_operation_ext_handle_t hParallelOperation , ze_result_t result) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zeDeviceGetVectorWidthPropertiesExtPrologue( ze_device_handle_t hDevice, uint32_t* pCount, ze_device_vector_width_properties_ext_t* pVectorWidthProperties ) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zeDeviceGetVectorWidthPropertiesExtEpilogue( ze_device_handle_t hDevice, uint32_t* pCount, ze_device_vector_width_properties_ext_t* pVectorWidthProperties , ze_result_t result) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zeKernelGetAllocationPropertiesExpPrologue( ze_kernel_handle_t hKernel, uint32_t* pCount, ze_kernel_allocation_exp_properties_t* pAllocationProperties ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zeKernelGetAllocationPropertiesExpEpilogue( ze_kernel_handle_t hKernel, uint32_t* pCount, ze_kernel_allocation_exp_properties_t* pAllocationProperties , ze_result_t result) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zeDeviceReserveCacheExtPrologue( ze_device_handle_t hDevice, size_t cacheLevel, size_t cacheReservationSize ) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zeDeviceReserveCacheExtEpilogue( ze_device_handle_t hDevice, size_t cacheLevel, size_t cacheReservationSize , ze_result_t result) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zeDeviceSetCacheAdviceExtPrologue( ze_device_handle_t hDevice, void* ptr, size_t regionSize, ze_cache_ext_region_t cacheRegion ) {return ZE_RESULT_SUCCESS;}

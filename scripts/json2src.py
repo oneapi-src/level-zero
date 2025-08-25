@@ -1,6 +1,6 @@
 #! /usr/bin/env python3
 """
- Copyright (C) 2019-2021 Intel Corporation
+ Copyright (C) 2019-2025 Intel Corporation
 
  SPDX-License-Identifier: MIT
 
@@ -11,6 +11,7 @@ import generate_code
 import os, sys
 import time
 import json
+import re
 
 """
     helper for adding mutually-exclusive boolean arguments "--name" and "--skip-name"
@@ -89,7 +90,8 @@ if __name__ == '__main__':
     header_files = [
         'source/loader/ze_loader_internal_tmp.h',
         'source/loader/zet_loader_internal_tmp.h',
-        'source/loader/zes_loader_internal_tmp.h'
+        'source/loader/zes_loader_internal_tmp.h',
+        'source/loader/zer_loader_internal_tmp.h'
     ]
     output_file = 'source/loader/ze_loader_internal_factories.h'
     merge_header_files(header_files, output_file)
@@ -135,12 +137,94 @@ if __name__ == '__main__':
     output_file = 'source/loader/ze_loader_internal.h'
     replace_factory_section(input_file, factory_file, output_file)
 
+    def region_start_regex(name):
+        # Matches:
+        #   #if !defined(__GNUC__)
+        #   #pragma region <name>
+        #   #endif
+        return re.compile(
+            rf'(?m)^\s*#if\s*!defined\(__GNUC__\)\s*\r?\n'
+            rf'^\s*#pragma\s+region\s+{re.escape(name)}\s*\r?\n'
+            rf'^\s*#endif\s*'
+        )
+
+    def region_end_regex():
+        # Matches:
+        #   #if !defined(__GNUC__)
+        #   #pragma endregion
+        #   #endif
+        return re.compile(
+            r'(?m)^\s*#if\s*!defined\(__GNUC__\)\s*\r?\n'
+            r'^\s*#pragma\s+endregion\s*\r?\n'
+            r'^\s*#endif\s*'
+        )
+
+    def find_region_span(text, name):
+        """
+        Return (region_body_start, region_body_end) character indices for region <name>.
+        region_body_start: after region opening marker
+        region_body_end: start of region closing marker
+        """
+        open_m = region_start_regex(name).search(text)
+        if not open_m:
+            return None
+        close_m = region_end_regex().search(text, open_m.end())
+        if not close_m:
+            return None
+        return (open_m.end(), close_m.start())
+
+    def extract_region_body(text, name):
+        region_span = find_region_span(text, name)
+        if not region_span:
+            return ""
+        region_body_start, region_body_end = region_span
+        return text[region_body_start:region_body_end]
+
+    def replace_region_body(text, name, new_body):
+        region_span = find_region_span(text, name)
+        if not region_span:
+            return text
+        region_body_start, region_body_end = region_span
+        # Keep opening and closing markers exactly as-is; replace only body.
+        return text[:region_body_start] + new_body + text[region_body_end:]
+
+    # Merge ze/zer tracing tmp headers into a single final header
+    ze_tracing_tmp = os.path.join(args.out_dir, 'include', 'layers', 'ze_tracing_register_cb_tmp.h')
+    zer_tracing_tmp = os.path.join(args.out_dir, 'include', 'layers', 'zer_tracing_register_cb_tmp.h')
+    final_tracing_hdr = os.path.join(args.out_dir, 'include', 'layers', 'zel_tracing_register_cb.h')
+
+    if os.path.exists(ze_tracing_tmp):
+        with open(ze_tracing_tmp, 'r') as f: ze_txt = f.read()
+        zer_txt = ""
+        if os.path.exists(zer_tracing_tmp):
+            with open(zer_tracing_tmp, 'r') as f: zer_txt = f.read()
+        else:
+            print("zer_tracing_register_cb_tmp.h not found!")
+
+        # Merge region bodies in order (ze then zer)
+        callbacks_body = extract_region_body(ze_txt, 'callbacks') + "\n" + extract_region_body(zer_txt, 'callbacks')
+        reg_callbacks_body = extract_region_body(ze_txt, 'register_callbacks') + "\n" + extract_region_body(zer_txt, 'register_callbacks')
+
+        # Replace in base (ze) while preserving wrappers
+        merged = replace_region_body(ze_txt, 'callbacks', callbacks_body)
+        merged = replace_region_body(merged, 'register_callbacks', reg_callbacks_body)
+
+        os.makedirs(os.path.dirname(final_tracing_hdr), exist_ok=True)
+        with open(final_tracing_hdr, 'w') as f: f.write(merged)
+
+        print(f"Successfully merged tracing header contents in: {final_tracing_hdr}")
+    else:
+        print("ze_tracing_register_cb_tmp.h not found!")
+
     # Delete temporary and factory files
     files_to_delete = [
         'source/loader/ze_loader_internal_tmp.h',
         'source/loader/zet_loader_internal_tmp.h',
         'source/loader/zes_loader_internal_tmp.h',
-        'source/loader/ze_loader_internal_factories.h'
+        'source/loader/zer_loader_internal_tmp.h',
+        'source/loader/ze_loader_internal_factories.h',
+        'include/layers/ze_tracing_register_cb_tmp.h',
+        'include/layers/zer_tracing_register_cb_tmp.h'
     ]
 
     for file_path in files_to_delete:
