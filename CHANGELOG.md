@@ -1,4 +1,8 @@
 # Level zero loader changelog
+## v1.24.2
+* Fix scorecard CI
+* Add build instructions for windows
+* Check if compile flags are supported: /GL, /QSpectre, /guard:cf
 ## v1.24.1
 * Changes to get ze_loader loaded for Android
 ## v1.24.0
