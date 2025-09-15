@@ -38,6 +38,7 @@ namespace loader
         ZEL_DRIVER_TYPE_INTEGRATED_GPU = 2,       ///< The driver has Integrated GPUs only
         ZEL_DRIVER_TYPE_MIXED = 3,                ///< The driver has Heterogenous driver types not limited to GPU or NPU.
         ZEL_DRIVER_TYPE_OTHER = 4,                ///< The driver has No GPU Devices and has other device types only
+        ZEL_DRIVER_TYPE_NPU = 5,                  ///< The driver has NPU devices only
         ZEL_DRIVER_TYPE_FORCE_UINT32 = 0x7fffffff
 
     } zel_driver_type_t;
@@ -150,6 +151,7 @@ namespace loader
         ze_result_t init_driver(driver_t &driver, ze_init_flags_t flags, ze_init_driver_type_desc_t* desc, ze_global_dditable_t *globalInitStored, zes_global_dditable_t *sysmanGlobalInitStored, bool sysmanOnly);
         void add_loader_version();
         bool driverSorting(driver_vector_t *drivers, ze_init_driver_type_desc_t* desc, bool sysmanOnly);
+        void driverOrdering(driver_vector_t *drivers);
         ~context_t();
         bool intercept_enabled = false;
         bool debugTraceEnabled = false;

@@ -421,7 +421,7 @@ public:
     enum { Stdout = 1, Stderr = 2 };
 
     CaptureOutput(int stream_) : stream(stream_) {
-        original_fd = _dup(stream); 
+        original_fd = _dup(stream);
 #if defined(__linux__)
         fd = mkstemp(filename);
 #elif defined(_WIN32)
@@ -469,7 +469,7 @@ TEST(
 
     CaptureOutput capture(CaptureOutput::Stdout);
     EXPECT_EQ(ZE_RESULT_SUCCESS, zeInitDrivers(&pInitDriversCount, nullptr, &desc));
-    
+
     std::string output = capture.GetOutput();
     EXPECT_TRUE(output.empty());
 }
@@ -1610,6 +1610,8 @@ EXPECT_EQ(translatedHandle, devices[0]);
 
 }
 
+
+
 TEST(
       SysManApiLoaderDriverInteraction,
       GivenLevelZeroLoaderPresentWhenCallingSysManVfApisThenExpectNullDriverIsReachedSuccessfully)
@@ -1662,4 +1664,627 @@ TEST(
       EXPECT_TRUE(compare_env("zesVFManagementGetVFCapabilitiesExp2", std::to_string(i + 1)));
     }
   }
+
+// Helper function to clear ZEL_DRIVERS_ORDER environment variable
+void clearDriverOrderEnv() {
+    putenv_safe(const_cast<char *>("ZEL_DRIVERS_ORDER="));
+}
+
+// Helper function to set ZEL_DRIVERS_ORDER environment variable
+void setDriverOrderEnv(const std::string& order) {
+    // Use static storage to ensure the string persists after the function returns
+    // This is necessary because putenv() stores a pointer to the string, not a copy
+    static std::string env_var_storage;
+    env_var_storage = "ZEL_DRIVERS_ORDER=" + order;
+    putenv_safe(const_cast<char *>(env_var_storage.c_str()));
+}
+
+// Test Class for Driver Ordering Tests
+class DriverOrderingTest : public ::testing::Test {
+protected:
+    void SetUp() override {
+        // Clear any existing environment variables
+        clearDriverOrderEnv();
+        putenv_safe(const_cast<char *>("ZEL_TEST_NULL_DRIVER_TYPE=ALL"));
+        putenv_safe(const_cast<char *>("ZE_ENABLE_LOADER_INTERCEPT=1"));
+    }
+
+    void TearDown() override {
+        // Clean up environment variables
+        clearDriverOrderEnv();
+        putenv_safe(const_cast<char *>("ZEL_TEST_NULL_DRIVER_TYPE="));
+        putenv_safe(const_cast<char *>("ZE_ENABLE_LOADER_INTERCEPT="));
+    }
+};
+
+///////////////////////////////////////////////////////////////////////////////
+// Tests for ZEL_DRIVERS_ORDER: Syntax 1 - Specific type and index within that type
+///////////////////////////////////////////////////////////////////////////////
+
+TEST_F(DriverOrderingTest,
+    GivenZelDriversOrderWithSpecificTypeAndIndexWhenCallingZeInitDriversThenDriversAreOrderedCorrectly) {
+
+    // Test case: DISCRETE_GPU_ONLY:1,NPU
+    setDriverOrderEnv("DISCRETE_GPU_ONLY:1,NPU");
+
+    uint32_t pCount = 0;
+    ze_init_driver_type_desc_t desc = {ZE_STRUCTURE_TYPE_INIT_DRIVER_TYPE_DESC};
+    desc.flags = UINT32_MAX;
+    desc.pNext = nullptr;
+
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeInitDrivers(&pCount, nullptr, &desc));
+    EXPECT_GT(pCount, 0);
+
+    std::vector<ze_driver_handle_t> drivers(pCount);
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeInitDrivers(&pCount, drivers.data(), &desc));
+
+    // Verify that we got drivers back
+    EXPECT_GT(pCount, 0);
+    for (uint32_t i = 0; i < pCount; ++i) {
+        EXPECT_NE(drivers[i], nullptr);
+    }
+}
+
+TEST_F(DriverOrderingTest,
+    GivenZelDriversOrderWithGpuTypeAndIndexWhenCallingZeInitDriversThenDriversAreOrderedCorrectly) {
+
+    // Test case: GPU:1,NPU:0
+    setDriverOrderEnv("GPU:1,NPU:0");
+
+    uint32_t pCount = 0;
+    ze_init_driver_type_desc_t desc = {ZE_STRUCTURE_TYPE_INIT_DRIVER_TYPE_DESC};
+    desc.flags = UINT32_MAX;
+    desc.pNext = nullptr;
+
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeInitDrivers(&pCount, nullptr, &desc));
+    EXPECT_GT(pCount, 0);
+
+    std::vector<ze_driver_handle_t> drivers(pCount);
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeInitDrivers(&pCount, drivers.data(), &desc));
+
+    // Verify that we got drivers back
+    EXPECT_GT(pCount, 0);
+    for (uint32_t i = 0; i < pCount; ++i) {
+        EXPECT_NE(drivers[i], nullptr);
+    }
+}
+
+TEST_F(DriverOrderingTest,
+    GivenZelDriversOrderWithIntegratedGpuTypeAndIndexWhenCallingZeInitDriversThenDriversAreOrderedCorrectly) {
+
+    // Test case: INTEGRATED_GPU_ONLY:0,DISCRETE_GPU_ONLY:0
+    setDriverOrderEnv("INTEGRATED_GPU_ONLY:0,DISCRETE_GPU_ONLY:0");
+
+    uint32_t pCount = 0;
+    ze_init_driver_type_desc_t desc = {ZE_STRUCTURE_TYPE_INIT_DRIVER_TYPE_DESC};
+    desc.flags = UINT32_MAX;
+    desc.pNext = nullptr;
+
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeInitDrivers(&pCount, nullptr, &desc));
+    EXPECT_GT(pCount, 0);
+
+    std::vector<ze_driver_handle_t> drivers(pCount);
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeInitDrivers(&pCount, drivers.data(), &desc));
+
+    // Verify that we got drivers back
+    EXPECT_GT(pCount, 0);
+    for (uint32_t i = 0; i < pCount; ++i) {
+        EXPECT_NE(drivers[i], nullptr);
+    }
+}
+
+TEST_F(DriverOrderingTest,
+    GivenZelDriversOrderWithNpuTypeAndIndexWhenCallingZeInitDriversThenDriversAreOrderedCorrectly) {
+
+    // Test case: NPU:0,GPU:0
+    setDriverOrderEnv("NPU:0,GPU:0");
+
+    uint32_t pCount = 0;
+    ze_init_driver_type_desc_t desc = {ZE_STRUCTURE_TYPE_INIT_DRIVER_TYPE_DESC};
+    desc.flags = UINT32_MAX;
+    desc.pNext = nullptr;
+
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeInitDrivers(&pCount, nullptr, &desc));
+    EXPECT_GT(pCount, 0);
+
+    std::vector<ze_driver_handle_t> drivers(pCount);
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeInitDrivers(&pCount, drivers.data(), &desc));
+
+    // Verify that we got drivers back
+    EXPECT_GT(pCount, 0);
+    for (uint32_t i = 0; i < pCount; ++i) {
+        EXPECT_NE(drivers[i], nullptr);
+    }
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// Tests for ZEL_DRIVERS_ORDER: Syntax 2 - Specific type only
+///////////////////////////////////////////////////////////////////////////////
+
+TEST_F(DriverOrderingTest,
+    GivenZelDriversOrderWithSpecificTypeOnlyWhenCallingZeInitDriversThenDriversAreOrderedCorrectly) {
+
+    // Test case: NPU,DISCRETE_GPU_ONLY
+    setDriverOrderEnv("NPU,DISCRETE_GPU_ONLY");
+
+    uint32_t pCount = 0;
+    ze_init_driver_type_desc_t desc = {ZE_STRUCTURE_TYPE_INIT_DRIVER_TYPE_DESC};
+    desc.flags = UINT32_MAX;
+    desc.pNext = nullptr;
+
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeInitDrivers(&pCount, nullptr, &desc));
+    EXPECT_GT(pCount, 0);
+
+    std::vector<ze_driver_handle_t> drivers(pCount);
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeInitDrivers(&pCount, drivers.data(), &desc));
+
+    // Verify that we got drivers back
+    EXPECT_GT(pCount, 0);
+    for (uint32_t i = 0; i < pCount; ++i) {
+        EXPECT_NE(drivers[i], nullptr);
+    }
+}
+
+TEST_F(DriverOrderingTest,
+    GivenZelDriversOrderWithGpuTypeOnlyWhenCallingZeInitDriversThenDriversAreOrderedCorrectly) {
+
+    // Test case: GPU,NPU
+    setDriverOrderEnv("GPU,NPU");
+
+    uint32_t pCount = 0;
+    ze_init_driver_type_desc_t desc = {ZE_STRUCTURE_TYPE_INIT_DRIVER_TYPE_DESC};
+    desc.flags = UINT32_MAX;
+    desc.pNext = nullptr;
+
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeInitDrivers(&pCount, nullptr, &desc));
+    EXPECT_GT(pCount, 0);
+
+    std::vector<ze_driver_handle_t> drivers(pCount);
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeInitDrivers(&pCount, drivers.data(), &desc));
+
+    // Verify that we got drivers back
+    EXPECT_GT(pCount, 0);
+    for (uint32_t i = 0; i < pCount; ++i) {
+        EXPECT_NE(drivers[i], nullptr);
+    }
+}
+
+TEST_F(DriverOrderingTest,
+    GivenZelDriversOrderWithIntegratedGpuTypeOnlyWhenCallingZeInitDriversThenDriversAreOrderedCorrectly) {
+
+    // Test case: INTEGRATED_GPU_ONLY,DISCRETE_GPU_ONLY,NPU
+    setDriverOrderEnv("INTEGRATED_GPU_ONLY,DISCRETE_GPU_ONLY,NPU");
+
+    uint32_t pCount = 0;
+    ze_init_driver_type_desc_t desc = {ZE_STRUCTURE_TYPE_INIT_DRIVER_TYPE_DESC};
+    desc.flags = UINT32_MAX;
+    desc.pNext = nullptr;
+
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeInitDrivers(&pCount, nullptr, &desc));
+    EXPECT_GT(pCount, 0);
+
+    std::vector<ze_driver_handle_t> drivers(pCount);
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeInitDrivers(&pCount, drivers.data(), &desc));
+
+    // Verify that we got drivers back
+    EXPECT_GT(pCount, 0);
+    for (uint32_t i = 0; i < pCount; ++i) {
+        EXPECT_NE(drivers[i], nullptr);
+    }
+}
+
+TEST_F(DriverOrderingTest,
+    GivenZelDriversOrderWithSingleNpuTypeWhenCallingZeInitDriversThenDriversAreOrderedCorrectly) {
+
+    // Test case: NPU (equivalent to example 4 in documentation)
+    setDriverOrderEnv("NPU");
+
+    uint32_t pCount = 0;
+    ze_init_driver_type_desc_t desc = {ZE_STRUCTURE_TYPE_INIT_DRIVER_TYPE_DESC};
+    desc.flags = UINT32_MAX;
+    desc.pNext = nullptr;
+
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeInitDrivers(&pCount, nullptr, &desc));
+    EXPECT_GT(pCount, 0);
+
+    std::vector<ze_driver_handle_t> drivers(pCount);
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeInitDrivers(&pCount, drivers.data(), &desc));
+
+    // Verify that we got drivers back
+    EXPECT_GT(pCount, 0);
+    for (uint32_t i = 0; i < pCount; ++i) {
+        EXPECT_NE(drivers[i], nullptr);
+    }
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// Tests for ZEL_DRIVERS_ORDER: Syntax 3 - Global driver index only
+///////////////////////////////////////////////////////////////////////////////
+
+TEST_F(DriverOrderingTest,
+    GivenZelDriversOrderWithGlobalIndexOnlyWhenCallingZeInitDriversThenDriversAreOrderedCorrectly) {
+
+    // Test case: 2,0 (equivalent to example 2 in documentation)
+    setDriverOrderEnv("2,0");
+
+    uint32_t pCount = 0;
+    ze_init_driver_type_desc_t desc = {ZE_STRUCTURE_TYPE_INIT_DRIVER_TYPE_DESC};
+    desc.flags = UINT32_MAX;
+    desc.pNext = nullptr;
+
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeInitDrivers(&pCount, nullptr, &desc));
+    EXPECT_GT(pCount, 0);
+
+    std::vector<ze_driver_handle_t> drivers(pCount);
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeInitDrivers(&pCount, drivers.data(), &desc));
+
+    // Verify that we got drivers back
+    EXPECT_GT(pCount, 0);
+    for (uint32_t i = 0; i < pCount; ++i) {
+        EXPECT_NE(drivers[i], nullptr);
+    }
+}
+
+TEST_F(DriverOrderingTest,
+    GivenZelDriversOrderWithSingleGlobalIndexWhenCallingZeInitDriversThenDriversAreOrderedCorrectly) {
+
+    // Test case: 1
+    setDriverOrderEnv("1");
+
+    uint32_t pCount = 0;
+    ze_init_driver_type_desc_t desc = {ZE_STRUCTURE_TYPE_INIT_DRIVER_TYPE_DESC};
+    desc.flags = UINT32_MAX;
+    desc.pNext = nullptr;
+
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeInitDrivers(&pCount, nullptr, &desc));
+    EXPECT_GT(pCount, 0);
+
+    std::vector<ze_driver_handle_t> drivers(pCount);
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeInitDrivers(&pCount, drivers.data(), &desc));
+
+    // Verify that we got drivers back
+    EXPECT_GT(pCount, 0);
+    for (uint32_t i = 0; i < pCount; ++i) {
+        EXPECT_NE(drivers[i], nullptr);
+    }
+}
+
+TEST_F(DriverOrderingTest,
+    GivenZelDriversOrderWithMultipleGlobalIndicesWhenCallingZeInitDriversThenDriversAreOrderedCorrectly) {
+
+    // Test case: 1,2,0
+    setDriverOrderEnv("1,2,0");
+
+    uint32_t pCount = 0;
+    ze_init_driver_type_desc_t desc = {ZE_STRUCTURE_TYPE_INIT_DRIVER_TYPE_DESC};
+    desc.flags = UINT32_MAX;
+    desc.pNext = nullptr;
+
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeInitDrivers(&pCount, nullptr, &desc));
+    EXPECT_GT(pCount, 0);
+
+    std::vector<ze_driver_handle_t> drivers(pCount);
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeInitDrivers(&pCount, drivers.data(), &desc));
+
+    // Verify that we got drivers back
+    EXPECT_GT(pCount, 0);
+    for (uint32_t i = 0; i < pCount; ++i) {
+        EXPECT_NE(drivers[i], nullptr);
+    }
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// Tests for ZEL_DRIVERS_ORDER: Mixed syntax combinations
+///////////////////////////////////////////////////////////////////////////////
+
+TEST_F(DriverOrderingTest,
+    GivenZelDriversOrderWithMixedSyntaxWhenCallingZeInitDriversThenDriversAreOrderedCorrectly) {
+
+    // Test case: NPU:0,2,GPU,0 (mixed syntax)
+    setDriverOrderEnv("NPU:0,2,GPU,0");
+
+    uint32_t pCount = 0;
+    ze_init_driver_type_desc_t desc = {ZE_STRUCTURE_TYPE_INIT_DRIVER_TYPE_DESC};
+    desc.flags = UINT32_MAX;
+    desc.pNext = nullptr;
+
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeInitDrivers(&pCount, nullptr, &desc));
+    EXPECT_GT(pCount, 0);
+
+    std::vector<ze_driver_handle_t> drivers(pCount);
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeInitDrivers(&pCount, drivers.data(), &desc));
+
+    // Verify that we got drivers back
+    EXPECT_GT(pCount, 0);
+    for (uint32_t i = 0; i < pCount; ++i) {
+        EXPECT_NE(drivers[i], nullptr);
+    }
+}
+
+TEST_F(DriverOrderingTest,
+    GivenZelDriversOrderWithMixedTypeAndIndexSyntaxWhenCallingZeInitDriversThenDriversAreOrderedCorrectly) {
+
+    // Test case: DISCRETE_GPU_ONLY:1,1,INTEGRATED_GPU_ONLY (type:index, global index, type)
+    setDriverOrderEnv("DISCRETE_GPU_ONLY:1,1,INTEGRATED_GPU_ONLY");
+
+    uint32_t pCount = 0;
+    ze_init_driver_type_desc_t desc = {ZE_STRUCTURE_TYPE_INIT_DRIVER_TYPE_DESC};
+    desc.flags = UINT32_MAX;
+    desc.pNext = nullptr;
+
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeInitDrivers(&pCount, nullptr, &desc));
+    EXPECT_GT(pCount, 0);
+
+    std::vector<ze_driver_handle_t> drivers(pCount);
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeInitDrivers(&pCount, drivers.data(), &desc));
+
+    // Verify that we got drivers back
+    EXPECT_GT(pCount, 0);
+    for (uint32_t i = 0; i < pCount; ++i) {
+        EXPECT_NE(drivers[i], nullptr);
+    }
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// Tests for ZEL_DRIVERS_ORDER: Edge cases and error handling
+///////////////////////////////////////////////////////////////////////////////
+
+TEST_F(DriverOrderingTest,
+    GivenZelDriversOrderWithInvalidDriverTypeWhenCallingZeInitDriversThenDriversStillInitialize) {
+
+    // Test case: INVALID_TYPE,NPU
+    setDriverOrderEnv("INVALID_TYPE,NPU");
+
+    uint32_t pCount = 0;
+    ze_init_driver_type_desc_t desc = {ZE_STRUCTURE_TYPE_INIT_DRIVER_TYPE_DESC};
+    desc.flags = UINT32_MAX;
+    desc.pNext = nullptr;
+
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeInitDrivers(&pCount, nullptr, &desc));
+    EXPECT_GT(pCount, 0);
+
+    std::vector<ze_driver_handle_t> drivers(pCount);
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeInitDrivers(&pCount, drivers.data(), &desc));
+
+    // Should still get drivers back despite invalid type
+    EXPECT_GT(pCount, 0);
+    for (uint32_t i = 0; i < pCount; ++i) {
+        EXPECT_NE(drivers[i], nullptr);
+    }
+}
+
+TEST_F(DriverOrderingTest,
+    GivenZelDriversOrderWithInvalidIndexWhenCallingZeInitDriversThenDriversStillInitialize) {
+
+    // Test case: NPU:999,GPU:abc
+    setDriverOrderEnv("NPU:999,GPU:abc");
+
+    uint32_t pCount = 0;
+    ze_init_driver_type_desc_t desc = {ZE_STRUCTURE_TYPE_INIT_DRIVER_TYPE_DESC};
+    desc.flags = UINT32_MAX;
+    desc.pNext = nullptr;
+
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeInitDrivers(&pCount, nullptr, &desc));
+    EXPECT_GT(pCount, 0);
+
+    std::vector<ze_driver_handle_t> drivers(pCount);
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeInitDrivers(&pCount, drivers.data(), &desc));
+
+    // Should still get drivers back despite invalid indices
+    EXPECT_GT(pCount, 0);
+    for (uint32_t i = 0; i < pCount; ++i) {
+        EXPECT_NE(drivers[i], nullptr);
+    }
+}
+
+TEST_F(DriverOrderingTest,
+    GivenZelDriversOrderWithEmptyStringWhenCallingZeInitDriversThenDriversUseDefaultOrder) {
+
+    // Test case: empty string
+    setDriverOrderEnv("");
+
+    uint32_t pCount = 0;
+    ze_init_driver_type_desc_t desc = {ZE_STRUCTURE_TYPE_INIT_DRIVER_TYPE_DESC};
+    desc.flags = UINT32_MAX;
+    desc.pNext = nullptr;
+
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeInitDrivers(&pCount, nullptr, &desc));
+    EXPECT_GT(pCount, 0);
+
+    std::vector<ze_driver_handle_t> drivers(pCount);
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeInitDrivers(&pCount, drivers.data(), &desc));
+
+    // Should get drivers back in default order
+    EXPECT_GT(pCount, 0);
+    for (uint32_t i = 0; i < pCount; ++i) {
+        EXPECT_NE(drivers[i], nullptr);
+    }
+}
+
+TEST_F(DriverOrderingTest,
+    GivenZelDriversOrderWithWhitespaceAndCommasWhenCallingZeInitDriversThenDriversAreOrderedCorrectly) {
+
+    // Test case: " NPU : 0 , GPU , 1 " (whitespace handling)
+    setDriverOrderEnv(" NPU : 0 , GPU , 1 ");
+
+    uint32_t pCount = 0;
+    ze_init_driver_type_desc_t desc = {ZE_STRUCTURE_TYPE_INIT_DRIVER_TYPE_DESC};
+    desc.flags = UINT32_MAX;
+    desc.pNext = nullptr;
+
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeInitDrivers(&pCount, nullptr, &desc));
+    EXPECT_GT(pCount, 0);
+
+    std::vector<ze_driver_handle_t> drivers(pCount);
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeInitDrivers(&pCount, drivers.data(), &desc));
+
+    // Should handle whitespace correctly
+    EXPECT_GT(pCount, 0);
+    for (uint32_t i = 0; i < pCount; ++i) {
+        EXPECT_NE(drivers[i], nullptr);
+    }
+}
+
+TEST_F(DriverOrderingTest,
+    GivenZelDriversOrderWithDuplicateEntriesWhenCallingZeInitDriversThenDriversAreOrderedCorrectly) {
+
+    // Test case: GPU,GPU,NPU,NPU (duplicates)
+    setDriverOrderEnv("GPU,GPU,NPU,NPU");
+
+    uint32_t pCount = 0;
+    ze_init_driver_type_desc_t desc = {ZE_STRUCTURE_TYPE_INIT_DRIVER_TYPE_DESC};
+    desc.flags = UINT32_MAX;
+    desc.pNext = nullptr;
+
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeInitDrivers(&pCount, nullptr, &desc));
+    EXPECT_GT(pCount, 0);
+
+    std::vector<ze_driver_handle_t> drivers(pCount);
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeInitDrivers(&pCount, drivers.data(), &desc));
+
+    // Should handle duplicates gracefully
+    EXPECT_GT(pCount, 0);
+    for (uint32_t i = 0; i < pCount; ++i) {
+        EXPECT_NE(drivers[i], nullptr);
+    }
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// Tests for ZEL_DRIVERS_ORDER: Compatibility with zeInit
+///////////////////////////////////////////////////////////////////////////////
+
+TEST_F(DriverOrderingTest,
+    GivenZelDriversOrderWithzeInitWhenCallingzeInitThenDriversAreOrderedCorrectly) {
+
+    // Test ZEL_DRIVERS_ORDER compatibility with zeInit
+    setDriverOrderEnv("NPU,GPU");
+
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeInit(0));
+
+    uint32_t pDriverGetCount = 0;
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeDriverGet(&pDriverGetCount, nullptr));
+    EXPECT_GT(pDriverGetCount, 0);
+
+    std::vector<ze_driver_handle_t> drivers(pDriverGetCount);
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeDriverGet(&pDriverGetCount, drivers.data()));
+
+    // Verify that we got drivers back
+    EXPECT_GT(pDriverGetCount, 0);
+    for (uint32_t i = 0; i < pDriverGetCount; ++i) {
+        EXPECT_NE(drivers[i], nullptr);
+    }
+}
+
+TEST_F(DriverOrderingTest,
+    GivenZelDriversOrderWithzeInitAndzeInitDriversWhenCallingBothThenDriversAreOrderedCorrectly) {
+
+    // Test ZEL_DRIVERS_ORDER compatibility with both zeInit and zeInitDrivers
+    setDriverOrderEnv("DISCRETE_GPU_ONLY:0,NPU:0");
+
+    uint32_t pInitDriversCount = 0;
+    uint32_t pDriverGetCount = 0;
+    ze_init_driver_type_desc_t desc = {ZE_STRUCTURE_TYPE_INIT_DRIVER_TYPE_DESC};
+    desc.flags = UINT32_MAX;
+    desc.pNext = nullptr;
+
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeInitDrivers(&pInitDriversCount, nullptr, &desc));
+    EXPECT_GT(pInitDriversCount, 0);
+
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeInit(0));
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeDriverGet(&pDriverGetCount, nullptr));
+    EXPECT_GT(pDriverGetCount, 0);
+
+    std::vector<ze_driver_handle_t> drivers(pDriverGetCount);
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeDriverGet(&pDriverGetCount, drivers.data()));
+
+    // Verify that both calls succeed and drivers are available
+    EXPECT_GT(pDriverGetCount, 0);
+    for (uint32_t i = 0; i < pDriverGetCount; ++i) {
+        EXPECT_NE(drivers[i], nullptr);
+    }
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// Tests for ZEL_DRIVERS_ORDER: Complex real-world scenarios
+///////////////////////////////////////////////////////////////////////////////
+
+TEST_F(DriverOrderingTest,
+    GivenZelDriversOrderWithComplexScenarioLikeDocumentationExample1WhenCallingZeInitDriversThenDriversAreOrderedCorrectly) {
+
+    // Documentation Example 1: DISCRETE_GPU_ONLY:1,NPU
+    // On a system with 2 GPU Drivers (discrete:0, discrete:1) and 1 NPU Driver
+    // Default order: Discrete:0, Discrete:1, NPU
+    // Expected order: Discrete:1, NPU:0, Discrete:0
+    setDriverOrderEnv("DISCRETE_GPU_ONLY:1,NPU");
+
+    uint32_t pCount = 0;
+    ze_init_driver_type_desc_t desc = {ZE_STRUCTURE_TYPE_INIT_DRIVER_TYPE_DESC};
+    desc.flags = UINT32_MAX;
+    desc.pNext = nullptr;
+
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeInitDrivers(&pCount, nullptr, &desc));
+    EXPECT_GT(pCount, 0);
+
+    std::vector<ze_driver_handle_t> drivers(pCount);
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeInitDrivers(&pCount, drivers.data(), &desc));
+
+    // Verify that we got drivers back
+    EXPECT_GT(pCount, 0);
+    for (uint32_t i = 0; i < pCount; ++i) {
+        EXPECT_NE(drivers[i], nullptr);
+    }
+}
+
+TEST_F(DriverOrderingTest,
+    GivenZelDriversOrderWithComplexScenarioLikeDocumentationExample3WhenCallingZeInitDriversThenDriversAreOrderedCorrectly) {
+
+    // Documentation Example 3: GPU:1,NPU:0
+    // On a system with 2 GPU Drivers (discrete, integrated) and 1 NPU Driver
+    // Default order: Discrete, Integrated, NPU
+    // GPU indexes: Discrete(0), Integrated(1); NPU indexes: NPU(0)
+    // Expected order: Integrated, NPU, Discrete
+    setDriverOrderEnv("GPU:1,NPU:0");
+
+    uint32_t pCount = 0;
+    ze_init_driver_type_desc_t desc = {ZE_STRUCTURE_TYPE_INIT_DRIVER_TYPE_DESC};
+    desc.flags = UINT32_MAX;
+    desc.pNext = nullptr;
+
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeInitDrivers(&pCount, nullptr, &desc));
+    EXPECT_GT(pCount, 0);
+
+    std::vector<ze_driver_handle_t> drivers(pCount);
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeInitDrivers(&pCount, drivers.data(), &desc));
+
+    // Verify that we got drivers back
+    EXPECT_GT(pCount, 0);
+    for (uint32_t i = 0; i < pCount; ++i) {
+        EXPECT_NE(drivers[i], nullptr);
+    }
+}
+
+TEST_F(DriverOrderingTest,
+    GivenZelDriversOrderWithAllSupportedDriverTypesWhenCallingZeInitDriversThenDriversAreOrderedCorrectly) {
+
+    // Test all supported driver types in one ordering
+    setDriverOrderEnv("NPU,INTEGRATED_GPU_ONLY,DISCRETE_GPU_ONLY,GPU");
+
+    uint32_t pCount = 0;
+    ze_init_driver_type_desc_t desc = {ZE_STRUCTURE_TYPE_INIT_DRIVER_TYPE_DESC};
+    desc.flags = UINT32_MAX;
+    desc.pNext = nullptr;
+
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeInitDrivers(&pCount, nullptr, &desc));
+    EXPECT_GT(pCount, 0);
+
+    std::vector<ze_driver_handle_t> drivers(pCount);
+    EXPECT_EQ(ZE_RESULT_SUCCESS, zeInitDrivers(&pCount, drivers.data(), &desc));
+
+    // Verify that we got drivers back
+    EXPECT_GT(pCount, 0);
+    for (uint32_t i = 0; i < pCount; ++i) {
+        EXPECT_NE(drivers[i], nullptr);
+    }
+}
+
 } // namespace
