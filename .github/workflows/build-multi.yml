@@ -106,12 +106,23 @@ jobs:
       run: |
         echo ${{ secrets.GITHUB_TOKEN }} |
         docker login -u sys-lzdev --password-stdin ghcr.io
+    - name: Verify Docker configuration
+      run: |
+        docker version
+        docker info
     - name: Build image
       run: |
         docker info
+        # Force Docker to use the correct container type
+        ${{ matrix.os.name == 'windows' && 'docker context use default' || '' }}
         docker build \
         ${{ runner.os == 'Windows' && '  \
           --memory 16G ' || '  '
+        }}\
+        ${{ matrix.os.name == 'windows' && '  \
+          --platform windows/amd64 \
+          --isolation process ' || '  \
+          --platform linux/amd64 '
         }}\
         ${{ matrix.os.vmaj != '' && format('  \
           --build-arg VMAJ={0} \
@@ -127,6 +138,11 @@ jobs:
         docker run \
           --rm \
           --interactive \
+        ${{ matrix.os.name == 'windows' && '  \
+          --platform windows/amd64 \
+          --isolation process ' || '  \
+          --platform linux/amd64 '
+        }}\
           -v '${{ github.workspace }}':${MOUNT_TARGET} \
           -w ${MOUNT_TARGET}/build \
           -e CCACHE_BASEDIR=${MOUNT_TARGET} \
