@@ -50,7 +50,6 @@ jobs:
           {name: ubuntu, vmaj: 20, vmin: '04'},
           {name: ubuntu, vmaj: 22, vmin: '04'},
           {name: ubuntu, vmaj: 24, vmin: '04'},
-          {name: ubuntu, vmaj: 24, vmin: '10'},
           {name: sles, vmaj: 15, vmin: 2},
           {name: sles, vmaj: 15, vmin: 3},
           {name: sles, vmaj: 15, vmin: 4},
