@@ -13,7 +13,7 @@ if(MSVC AND (MSVC_VERSION LESS 1900))
 endif()
 
 # This project follows semantic versioning (https://semver.org/)
-project(level-zero VERSION 1.24.1)
+project(level-zero VERSION 1.24.2)
 
 include(GNUInstallDirs)
 
@@ -99,10 +99,10 @@ include(CheckCXXCompilerFlag)
 function(add_cxx_flag_if_supported flag)
     mangle_name("${flag}" flagname)
     check_cxx_compiler_flag("${flag}" "CXX_SUPPORTS_${flagname}_FLAG")
-	if (CXX_SUPPORTS_${flagname}_FLAG)
-		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${flag}")
-		set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${flag}")
-	endif()
+    if (CXX_SUPPORTS_${flagname}_FLAG)
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${flag}" PARENT_SCOPE)
+        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${flag}" PARENT_SCOPE)
+    endif()
 endfunction()
 
 if(MSVC)

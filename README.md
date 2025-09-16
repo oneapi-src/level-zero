@@ -28,7 +28,7 @@ Project is defined using [CMake](https://cmake.org/).
 mkdir build
 cd build
 cmake .. -D CMAKE_BUILD_TYPE=Release
-cmake --build . --target package
+cmake --build . --target package --parallel $(nproc)
 cmake --build . --target install
 ```
 
