@@ -8,13 +8,59 @@ add_executable(
   driver_ordering_unit_tests.cpp
   driver_ordering_helper_tests.cpp
 )
+
+# For static builds, we need to include the loader source files directly
+# since they are not built into the library when BUILD_STATIC=1
+if(BUILD_STATIC)
+  target_sources(tests PRIVATE
+    ${CMAKE_SOURCE_DIR}/source/loader/ze_loader.cpp
+    ${CMAKE_SOURCE_DIR}/source/loader/ze_loader_api.cpp
+    ${CMAKE_SOURCE_DIR}/source/loader/ze_ldrddi.cpp
+    ${CMAKE_SOURCE_DIR}/source/loader/ze_ldrddi_driver_ddi.cpp
+    ${CMAKE_SOURCE_DIR}/source/loader/zet_ldrddi.cpp
+    ${CMAKE_SOURCE_DIR}/source/loader/zet_ldrddi_driver_ddi.cpp
+    ${CMAKE_SOURCE_DIR}/source/loader/zes_ldrddi.cpp
+    ${CMAKE_SOURCE_DIR}/source/loader/zes_ldrddi_driver_ddi.cpp
+    ${CMAKE_SOURCE_DIR}/source/loader/zel_tracing_ldrddi.cpp
+  )
+  
+  # Platform-specific source files
+  if(WIN32)
+    target_sources(tests PRIVATE
+      ${CMAKE_SOURCE_DIR}/source/loader/windows/driver_discovery_win.cpp
+      ${CMAKE_SOURCE_DIR}/source/loader/windows/loader_init.cpp
+    )
+  else()
+    target_sources(tests PRIVATE
+      ${CMAKE_SOURCE_DIR}/source/loader/linux/driver_discovery_lin.cpp
+      ${CMAKE_SOURCE_DIR}/source/loader/linux/loader_init.cpp
+    )
+  endif()
+  
+  # Add the same definitions as the source CMakeLists.txt
+  target_compile_definitions(tests PRIVATE
+    L0_LOADER_VERSION="${PROJECT_VERSION_MAJOR}"
+    L0_VALIDATION_LAYER_SUPPORTED_VERSION="${PROJECT_VERSION_MAJOR}"
+    L0_STATIC_LOADER_BUILD="1"
+  )
+endif()
+
 target_include_directories(tests PRIVATE ${CMAKE_SOURCE_DIR}/include ${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/source/inc)
 target_link_libraries(
   tests
+  PRIVATE
   GTest::gtest_main
   ${TARGET_LOADER_NAME}
   level_zero_utils
 )
+
+# For static builds, we need additional system libraries
+if(BUILD_STATIC)
+  target_link_libraries(tests PRIVATE ${CMAKE_DL_LIBS})
+  if(UNIX AND NOT APPLE)
+    target_link_libraries(tests PRIVATE pthread)
+  endif()
+endif()
 
 add_test(NAME tests_api COMMAND tests --gtest_filter=*GivenLevelZeroLoaderPresentWhenCallingzeGetLoaderVersionsAPIThenValidVersionIsReturned*)
 set_property(TEST tests_api PROPERTY ENVIRONMENT "ZE_ENABLE_LOADER_DEBUG_TRACE=1;ZE_ENABLE_NULL_DRIVER=1")
