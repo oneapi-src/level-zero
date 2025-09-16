@@ -50,7 +50,6 @@ jobs:
           {name: ubuntu, vmaj: 20, vmin: '04'},
           {name: ubuntu, vmaj: 22, vmin: '04'},
           {name: ubuntu, vmaj: 24, vmin: '04'},
-          {name: ubuntu, vmaj: 24, vmin: '10'},
           {name: sles, vmaj: 15, vmin: 2},
           {name: sles, vmaj: 15, vmin: 3},
           {name: sles, vmaj: 15, vmin: 4},
@@ -104,16 +103,21 @@ jobs:
     - name: Compute image name
       run: echo "DOCKER_IMAGE=localhost/${{ github.repository }}/${{ steps.const.outputs.os-string }}" >> ${GITHUB_ENV}
     - name: "Registry login: ghcr.io"
+      if: matrix.os.name != 'windows'
       run: |
         echo ${{ secrets.GITHUB_TOKEN }} |
         docker login -u sys-lzdev --password-stdin ghcr.io
+    - name: Verify Docker configuration
+      if: matrix.os.name != 'windows'
+      run: |
+        docker version
+        docker info
     - name: Build image
+      if: matrix.os.name != 'windows'
       run: |
         docker info
         docker build \
-        ${{ runner.os == 'Windows' && '  \
-          --memory 16G ' || '  '
-        }}\
+          --platform linux/amd64 \
         ${{ matrix.os.vmaj != '' && format('  \
           --build-arg VMAJ={0} \
           --build-arg VMIN={1} ', matrix.os.vmaj, matrix.os.vmin) || '  '
@@ -121,13 +125,35 @@ jobs:
           --pull \
           --tag ${DOCKER_IMAGE}:${{ needs.config.outputs.ref-slug }} \
           - < .github/docker/${{ matrix.os.name }}.Dockerfile
-    - name: Build
+    - name: Setup Windows build environment
+      if: matrix.os.name == 'windows'
+      uses: ilammy/msvc-dev-cmd@v1
+      with:
+        arch: x64
+    - name: Build (Windows)
+      if: matrix.os.name == 'windows'
+      run: |
+        mkdir build
+        cd build
+        cmake `
+          -G "Visual Studio 17 2022" `
+          -A x64 `
+          -D CMAKE_BUILD_TYPE=Release `
+          -D CMAKE_INSTALL_PREFIX="${{ matrix.target == 'install' && '../level-zero-install' || matrix.target == 'package' && 'C:/Program Files' || '' }}" `
+          -D CPACK_OUTPUT_FILE_PREFIX="${{ github.workspace }}/level-zero-package" `
+          ..
+        cmake --build . --config Release --target ${{ matrix.target }}
+      shell: powershell
+    - name: Build (Linux)
+      if: matrix.os.name != 'windows'
       id: build
       run: |
         mkdir build
+        # Container-based build for Linux
         docker run \
           --rm \
           --interactive \
+          --platform linux/amd64 \
           -v '${{ github.workspace }}':${MOUNT_TARGET} \
           -w ${MOUNT_TARGET}/build \
           -e CCACHE_BASEDIR=${MOUNT_TARGET} \
@@ -137,9 +163,7 @@ jobs:
           bash -e -x <<-EOF
 
         	cmake \
-        ${{ matrix.os.name != 'windows' && '	  \
-        	  -G Ninja ' || '	  '
-        }}\
+        	  -G Ninja \
         ${{ matrix.arch == 'arm64' && '	  \
         	  -D CMAKE_C_COMPILER=aarch64-linux-gnu-gcc \
         	  -D CMAKE_CXX_COMPILER=aarch64-linux-gnu-g++ \
@@ -152,7 +176,7 @@ jobs:
         	  -D CPACK_OUTPUT_FILE_PREFIX=${MOUNT_TARGET}/level-zero-package \
         	  ..
         	
-        	cmake --build . ${PARALLEL} --target ${{ matrix.target }} ${{ matrix.os.name == 'windows' && '--config Release' || '' }}
+        	cmake --build . ${PARALLEL} --target ${{ matrix.target }}
         	
         	ccache --show-stats
         	
