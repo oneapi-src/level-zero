@@ -5,9 +5,14 @@ add_executable(
   tests
   loader_api.cpp
   loader_validation_layer.cpp
-  driver_ordering_unit_tests.cpp
   driver_ordering_helper_tests.cpp
 )
+
+# Only include driver_ordering_unit_tests for static builds or non-Windows platforms
+# as it requires internal loader symbols that are not exported in Windows DLLs
+if(BUILD_STATIC OR NOT WIN32)
+  target_sources(tests PRIVATE driver_ordering_unit_tests.cpp)
+endif()
 
 # For static builds, we need to include the loader source files directly
 # since they are not built into the library when BUILD_STATIC=1
