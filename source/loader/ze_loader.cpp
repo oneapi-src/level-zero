@@ -5,17 +5,10 @@
  * SPDX-License-Identifier: MIT
  *
  */
-#include "ze_loader_internal.h"
+#include "ze_loader_utils.h"
 
 #include "driver_discovery.h"
 #include <iostream>
-#include <string>
-#include <vector>
-#include <map>
-#include <set>
-#include <sstream>
-#include <cstdlib>
-#include <algorithm>
 
 #ifdef __linux__
 #include <unistd.h>
@@ -77,92 +70,6 @@ namespace loader
             return a.driverType > b.driverType;
         }
         return a.driverType < b.driverType;
-    }
-
-    // Helper function to map driver type string to enum
-    zel_driver_type_t stringToDriverType(const std::string& typeStr) {
-        if (typeStr == "DISCRETE_GPU_ONLY") {
-            return ZEL_DRIVER_TYPE_DISCRETE_GPU;
-        } else if (typeStr == "GPU") {
-            return ZEL_DRIVER_TYPE_GPU;
-        } else if (typeStr == "INTEGRATED_GPU_ONLY") {
-            return ZEL_DRIVER_TYPE_INTEGRATED_GPU;
-        } else if (typeStr == "NPU") {
-            return ZEL_DRIVER_TYPE_NPU;
-        }
-        return ZEL_DRIVER_TYPE_FORCE_UINT32; // Invalid
-    }
-
-    // Helper function to trim whitespace
-    std::string trim(const std::string& str) {
-        const std::string whitespace = " \t\n\r\f\v";
-        size_t start = str.find_first_not_of(whitespace);
-        if (start == std::string::npos) return "";
-        size_t end = str.find_last_not_of(whitespace);
-        return str.substr(start, end - start + 1);
-    }
-
-    // Structure to hold parsed ordering instructions
-    struct DriverOrderSpec {
-        enum Type { BY_GLOBAL_INDEX, BY_TYPE, BY_TYPE_AND_INDEX } type;
-        uint32_t globalIndex = 0;
-        zel_driver_type_t driverType = ZEL_DRIVER_TYPE_FORCE_UINT32;
-        uint32_t typeIndex = 0;
-    };
-
-    // Parse ZEL_DRIVERS_ORDER environment variable
-    std::vector<DriverOrderSpec> parseDriverOrder(const std::string& orderStr) {
-        std::vector<DriverOrderSpec> specs;
-
-        // Split by comma
-        std::vector<std::string> tokens;
-        std::stringstream ss(orderStr);
-        std::string token;
-
-        while (std::getline(ss, token, ',')) {
-            token = trim(token);
-            if (token.empty()) continue;
-
-            DriverOrderSpec spec;
-
-            // Check if it contains a colon (type:index format)
-            size_t colonPos = token.find(':');
-            if (colonPos != std::string::npos) {
-                // Format: <driver_type>:<driver_index>
-                std::string typeStr = trim(token.substr(0, colonPos));
-                std::string indexStr = trim(token.substr(colonPos + 1));
-
-                spec.driverType = stringToDriverType(typeStr);
-                if (spec.driverType == ZEL_DRIVER_TYPE_FORCE_UINT32) {
-                    continue; // Invalid driver type, skip
-                }
-
-                try {
-                    spec.typeIndex = std::stoul(indexStr);
-                    spec.type = DriverOrderSpec::BY_TYPE_AND_INDEX;
-                    specs.push_back(spec);
-                } catch (const std::exception&) {
-                    // Invalid index, skip
-                    continue;
-                }
-            } else {
-                // Check if it's a pure number (global index) or driver type
-                try {
-                    spec.globalIndex = std::stoul(token);
-                    spec.type = DriverOrderSpec::BY_GLOBAL_INDEX;
-                    specs.push_back(spec);
-                } catch (const std::exception&) {
-                    // Not a number, try as driver type
-                    spec.driverType = stringToDriverType(token);
-                    if (spec.driverType != ZEL_DRIVER_TYPE_FORCE_UINT32) {
-                        spec.type = DriverOrderSpec::BY_TYPE;
-                        specs.push_back(spec);
-                    }
-                }
-            }
-        }
-
-        return specs;
     }
 
     void context_t::driverOrdering(driver_vector_t *drivers) {
@@ -241,7 +148,7 @@ namespace loader
         // Apply ordering specifications
         for (const auto& spec : specs) {
             switch (spec.type) {
-                case DriverOrderSpec::BY_GLOBAL_INDEX:
+                case DriverOrderSpecType::BY_GLOBAL_INDEX:
                     if (spec.globalIndex < originalDrivers.size() &&
                         usedGlobalIndices.find(spec.globalIndex) == usedGlobalIndices.end()) {
                         orderedDrivers.push_back(originalDrivers[spec.globalIndex]);
@@ -249,7 +156,7 @@ namespace loader
                     }
                     break;
 
-                case DriverOrderSpec::BY_TYPE:
+                case DriverOrderSpecType::BY_TYPE:
                     // Add all drivers of this type that haven't been used
                     {
                         std::vector<uint32_t>* typeIndices = nullptr;
@@ -282,7 +189,7 @@ namespace loader
                     }
                     break;
 
-                case DriverOrderSpec::BY_TYPE_AND_INDEX:
+                case DriverOrderSpecType::BY_TYPE_AND_INDEX:
                     {
                         std::vector<uint32_t>* typeIndices = nullptr;
                         switch (spec.driverType) {

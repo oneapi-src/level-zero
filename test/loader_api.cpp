@@ -1702,7 +1702,7 @@ protected:
 ///////////////////////////////////////////////////////////////////////////////
 
 TEST_F(DriverOrderingTest,
-    GivenZelDriversOrderWithSpecificTypeAndIndexWhenCallingZeInitDriversThenDriversAreOrderedCorrectly) {
+    GivenZelDriversOrderWithSpecificTypeAndIndexWhenCallingZeInitDriversThenSuccessfulReturn) {
 
     // Test case: DISCRETE_GPU_ONLY:1,NPU
     setDriverOrderEnv("DISCRETE_GPU_ONLY:1,NPU");
@@ -1726,7 +1726,7 @@ TEST_F(DriverOrderingTest,
 }
 
 TEST_F(DriverOrderingTest,
-    GivenZelDriversOrderWithGpuTypeAndIndexWhenCallingZeInitDriversThenDriversAreOrderedCorrectly) {
+    GivenZelDriversOrderWithGpuTypeAndIndexWhenCallingZeInitDriversThenSuccessfulReturn) {
 
     // Test case: GPU:1,NPU:0
     setDriverOrderEnv("GPU:1,NPU:0");
@@ -1750,7 +1750,7 @@ TEST_F(DriverOrderingTest,
 }
 
 TEST_F(DriverOrderingTest,
-    GivenZelDriversOrderWithIntegratedGpuTypeAndIndexWhenCallingZeInitDriversThenDriversAreOrderedCorrectly) {
+    GivenZelDriversOrderWithIntegratedGpuTypeAndIndexWhenCallingZeInitDriversThenSuccessfulReturn) {
 
     // Test case: INTEGRATED_GPU_ONLY:0,DISCRETE_GPU_ONLY:0
     setDriverOrderEnv("INTEGRATED_GPU_ONLY:0,DISCRETE_GPU_ONLY:0");
@@ -1774,7 +1774,7 @@ TEST_F(DriverOrderingTest,
 }
 
 TEST_F(DriverOrderingTest,
-    GivenZelDriversOrderWithNpuTypeAndIndexWhenCallingZeInitDriversThenDriversAreOrderedCorrectly) {
+    GivenZelDriversOrderWithNpuTypeAndIndexWhenCallingZeInitDriversThenSuccessfulReturn) {
 
     // Test case: NPU:0,GPU:0
     setDriverOrderEnv("NPU:0,GPU:0");
@@ -1802,7 +1802,7 @@ TEST_F(DriverOrderingTest,
 ///////////////////////////////////////////////////////////////////////////////
 
 TEST_F(DriverOrderingTest,
-    GivenZelDriversOrderWithSpecificTypeOnlyWhenCallingZeInitDriversThenDriversAreOrderedCorrectly) {
+    GivenZelDriversOrderWithSpecificTypeOnlyWhenCallingZeInitDriversThenSuccessfulReturn) {
 
     // Test case: NPU,DISCRETE_GPU_ONLY
     setDriverOrderEnv("NPU,DISCRETE_GPU_ONLY");
@@ -1826,7 +1826,7 @@ TEST_F(DriverOrderingTest,
 }
 
 TEST_F(DriverOrderingTest,
-    GivenZelDriversOrderWithGpuTypeOnlyWhenCallingZeInitDriversThenDriversAreOrderedCorrectly) {
+    GivenZelDriversOrderWithGpuTypeOnlyWhenCallingZeInitDriversThenSuccessfulReturn) {
 
     // Test case: GPU,NPU
     setDriverOrderEnv("GPU,NPU");
@@ -1850,7 +1850,7 @@ TEST_F(DriverOrderingTest,
 }
 
 TEST_F(DriverOrderingTest,
-    GivenZelDriversOrderWithIntegratedGpuTypeOnlyWhenCallingZeInitDriversThenDriversAreOrderedCorrectly) {
+    GivenZelDriversOrderWithIntegratedGpuTypeOnlyWhenCallingZeInitDriversThenSuccessfulReturn) {
 
     // Test case: INTEGRATED_GPU_ONLY,DISCRETE_GPU_ONLY,NPU
     setDriverOrderEnv("INTEGRATED_GPU_ONLY,DISCRETE_GPU_ONLY,NPU");
@@ -1874,7 +1874,7 @@ TEST_F(DriverOrderingTest,
 }
 
 TEST_F(DriverOrderingTest,
-    GivenZelDriversOrderWithSingleNpuTypeWhenCallingZeInitDriversThenDriversAreOrderedCorrectly) {
+    GivenZelDriversOrderWithSingleNpuTypeWhenCallingZeInitDriversThenSuccessfulReturn) {
 
     // Test case: NPU (equivalent to example 4 in documentation)
     setDriverOrderEnv("NPU");
@@ -1902,7 +1902,7 @@ TEST_F(DriverOrderingTest,
 ///////////////////////////////////////////////////////////////////////////////
 
 TEST_F(DriverOrderingTest,
-    GivenZelDriversOrderWithGlobalIndexOnlyWhenCallingZeInitDriversThenDriversAreOrderedCorrectly) {
+    GivenZelDriversOrderWithGlobalIndexOnlyWhenCallingZeInitDriversThenSuccessfulReturn) {
 
     // Test case: 2,0 (equivalent to example 2 in documentation)
     setDriverOrderEnv("2,0");
@@ -1926,7 +1926,7 @@ TEST_F(DriverOrderingTest,
 }
 
 TEST_F(DriverOrderingTest,
-    GivenZelDriversOrderWithSingleGlobalIndexWhenCallingZeInitDriversThenDriversAreOrderedCorrectly) {
+    GivenZelDriversOrderWithSingleGlobalIndexWhenCallingZeInitDriversThenSuccessfulReturn) {
 
     // Test case: 1
     setDriverOrderEnv("1");
@@ -1950,7 +1950,7 @@ TEST_F(DriverOrderingTest,
 }
 
 TEST_F(DriverOrderingTest,
-    GivenZelDriversOrderWithMultipleGlobalIndicesWhenCallingZeInitDriversThenDriversAreOrderedCorrectly) {
+    GivenZelDriversOrderWithMultipleGlobalIndicesWhenCallingZeInitDriversThenSuccessfulReturn) {
 
     // Test case: 1,2,0
     setDriverOrderEnv("1,2,0");
@@ -1978,7 +1978,7 @@ TEST_F(DriverOrderingTest,
 ///////////////////////////////////////////////////////////////////////////////
 
 TEST_F(DriverOrderingTest,
-    GivenZelDriversOrderWithMixedSyntaxWhenCallingZeInitDriversThenDriversAreOrderedCorrectly) {
+    GivenZelDriversOrderWithMixedSyntaxWhenCallingZeInitDriversThenSuccessfulReturn) {
 
     // Test case: NPU:0,2,GPU,0 (mixed syntax)
     setDriverOrderEnv("NPU:0,2,GPU,0");
@@ -2002,7 +2002,7 @@ TEST_F(DriverOrderingTest,
 }
 
 TEST_F(DriverOrderingTest,
-    GivenZelDriversOrderWithMixedTypeAndIndexSyntaxWhenCallingZeInitDriversThenDriversAreOrderedCorrectly) {
+    GivenZelDriversOrderWithMixedTypeAndIndexSyntaxWhenCallingZeInitDriversThenSuccessfulReturn) {
 
     // Test case: DISCRETE_GPU_ONLY:1,1,INTEGRATED_GPU_ONLY (type:index, global index, type)
     setDriverOrderEnv("DISCRETE_GPU_ONLY:1,1,INTEGRATED_GPU_ONLY");
@@ -2102,7 +2102,7 @@ TEST_F(DriverOrderingTest,
 }
 
 TEST_F(DriverOrderingTest,
-    GivenZelDriversOrderWithWhitespaceAndCommasWhenCallingZeInitDriversThenDriversAreOrderedCorrectly) {
+    GivenZelDriversOrderWithWhitespaceAndCommasWhenCallingZeInitDriversThenSuccessfulReturn) {
 
     // Test case: " NPU : 0 , GPU , 1 " (whitespace handling)
     setDriverOrderEnv(" NPU : 0 , GPU , 1 ");
@@ -2126,7 +2126,7 @@ TEST_F(DriverOrderingTest,
 }
 
 TEST_F(DriverOrderingTest,
-    GivenZelDriversOrderWithDuplicateEntriesWhenCallingZeInitDriversThenDriversAreOrderedCorrectly) {
+    GivenZelDriversOrderWithDuplicateEntriesWhenCallingZeInitDriversThenSuccessfulReturn) {
 
     // Test case: GPU,GPU,NPU,NPU (duplicates)
     setDriverOrderEnv("GPU,GPU,NPU,NPU");
@@ -2154,7 +2154,7 @@ TEST_F(DriverOrderingTest,
 ///////////////////////////////////////////////////////////////////////////////
 
 TEST_F(DriverOrderingTest,
-    GivenZelDriversOrderWithzeInitWhenCallingzeInitThenDriversAreOrderedCorrectly) {
+    GivenZelDriversOrderWithzeInitWhenCallingzeInitThenSuccessfulReturn) {
 
     // Test ZEL_DRIVERS_ORDER compatibility with zeInit
     setDriverOrderEnv("NPU,GPU");
@@ -2176,7 +2176,7 @@ TEST_F(DriverOrderingTest,
 }
 
 TEST_F(DriverOrderingTest,
-    GivenZelDriversOrderWithzeInitAndzeInitDriversWhenCallingBothThenDriversAreOrderedCorrectly) {
+    GivenZelDriversOrderWithzeInitAndzeInitDriversWhenCallingBothThenSuccessfulReturn) {
 
     // Test ZEL_DRIVERS_ORDER compatibility with both zeInit and zeInitDrivers
     setDriverOrderEnv("DISCRETE_GPU_ONLY:0,NPU:0");
@@ -2209,7 +2209,7 @@ TEST_F(DriverOrderingTest,
 ///////////////////////////////////////////////////////////////////////////////
 
 TEST_F(DriverOrderingTest,
-    GivenZelDriversOrderWithComplexScenarioLikeDocumentationExample1WhenCallingZeInitDriversThenDriversAreOrderedCorrectly) {
+    GivenZelDriversOrderWithComplexScenarioLikeDocumentationExample1WhenCallingZeInitDriversThenSuccessfulReturn) {
 
     // Documentation Example 1: DISCRETE_GPU_ONLY:1,NPU
     // On a system with 2 GPU Drivers (discrete:0, discrete:1) and 1 NPU Driver
@@ -2236,7 +2236,7 @@ TEST_F(DriverOrderingTest,
 }
 
 TEST_F(DriverOrderingTest,
-    GivenZelDriversOrderWithComplexScenarioLikeDocumentationExample3WhenCallingZeInitDriversThenDriversAreOrderedCorrectly) {
+    GivenZelDriversOrderWithComplexScenarioLikeDocumentationExample3WhenCallingZeInitDriversThenSuccessfulReturn) {
 
     // Documentation Example 3: GPU:1,NPU:0
     // On a system with 2 GPU Drivers (discrete, integrated) and 1 NPU Driver
@@ -2264,7 +2264,7 @@ TEST_F(DriverOrderingTest,
 }
 
 TEST_F(DriverOrderingTest,
-    GivenZelDriversOrderWithAllSupportedDriverTypesWhenCallingZeInitDriversThenDriversAreOrderedCorrectly) {
+    GivenZelDriversOrderWithAllSupportedDriverTypesWhenCallingZeInitDriversThenSuccessfulReturn) {
 
     // Test all supported driver types in one ordering
     setDriverOrderEnv("NPU,INTEGRATED_GPU_ONLY,DISCRETE_GPU_ONLY,GPU");
