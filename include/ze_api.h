@@ -256,6 +256,7 @@ typedef enum _ze_result_t
                                                                             ///< deferred to parallel operation join
     ZE_RESULT_EXT_ERROR_OPERANDS_INCOMPATIBLE = 0x7800001f,                 ///< [Core, Extension] operands of comparison are not compatible
     ZE_RESULT_ERROR_SURVIVABILITY_MODE_DETECTED = 0x78000020,               ///< [Sysman] device is in survivability mode, firmware update needed
+    ZE_RESULT_ERROR_INCOMPATIBLE_RESOURCE = 0x78000021,                     ///< [Core] memory is not compatible for mapping
     ZE_RESULT_ERROR_UNKNOWN = 0x7ffffffe,                                   ///< [Core] unknown or internal error
     ZE_RESULT_FORCE_UINT32 = 0x7fffffff, ///< Value marking end of ZE_RESULT_* ENUMs
 
