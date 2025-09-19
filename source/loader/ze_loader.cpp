@@ -5,7 +5,7 @@
  * SPDX-License-Identifier: MIT
  *
  */
-#include "ze_loader_internal.h"
+#include "ze_loader_utils.h"
 
 #include "driver_discovery.h"
 #include <iostream>
@@ -70,6 +70,179 @@ namespace loader
             return a.driverType > b.driverType;
         }
         return a.driverType < b.driverType;
+    }
+
+    void context_t::driverOrdering(driver_vector_t *drivers) {
+        std::string orderStr = getenv_string("ZEL_DRIVERS_ORDER");
+        if (orderStr.empty()) {
+            return; // No ordering specified
+        }
+
+        std::vector<DriverOrderSpec> specs = parseDriverOrder(orderStr);
+
+        if (specs.empty()) {
+            if (debugTraceEnabled) {
+                std::string message = "driverOrdering: ZEL_DRIVERS_ORDER parsing failed or empty: " + orderStr;
+                debug_trace_message(message, "");
+            }
+            return;
+        }
+
+        if (debugTraceEnabled) {
+            std::string message = "driverOrdering:ZEL_DRIVERS_ORDER parsing successful: " + orderStr + ", specs count: " + std::to_string(specs.size());
+            debug_trace_message(message, "");
+        }
+
+        // Create a copy of the original driver vector for reference
+        driver_vector_t originalDrivers = *drivers;
+
+        driver_vector_t discreteGPUDrivers;
+        driver_vector_t integratedGPUDrivers;
+        driver_vector_t npuDrivers;
+        driver_vector_t gpuDrivers;
+
+        std::vector<uint32_t> discreteGPUIndices;
+        std::vector<uint32_t> integratedGPUIndices;
+        std::vector<uint32_t> npuIndices;
+        std::vector<uint32_t> gpuIndices;
+
+        // Group drivers by type and track their original indices
+        for (uint32_t i = 0; i < originalDrivers.size(); ++i) {
+            const auto& driver = originalDrivers[i];
+            switch (driver.driverType) {
+                case ZEL_DRIVER_TYPE_DISCRETE_GPU:
+                    discreteGPUDrivers.push_back(driver);
+                    discreteGPUIndices.push_back(i);
+                    break;
+                case ZEL_DRIVER_TYPE_INTEGRATED_GPU:
+                    integratedGPUDrivers.push_back(driver);
+                    integratedGPUIndices.push_back(i);
+                    break;
+                case ZEL_DRIVER_TYPE_GPU:
+                    gpuDrivers.push_back(driver);
+                    gpuIndices.push_back(i);
+                    break;
+                case ZEL_DRIVER_TYPE_NPU:
+                    npuDrivers.push_back(driver);
+                    npuIndices.push_back(i);
+                    break;
+                case ZEL_DRIVER_TYPE_OTHER:
+                    npuDrivers.push_back(driver);
+                    npuIndices.push_back(i);
+                    break;
+                case ZEL_DRIVER_TYPE_MIXED:
+                    // Mixed drivers go to gpuDrivers
+                    gpuDrivers.push_back(driver);
+                    gpuIndices.push_back(i);
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        // Create new ordered driver vector
+        driver_vector_t orderedDrivers;
+        std::set<uint32_t> usedGlobalIndices;
+        std::set<std::pair<zel_driver_type_t, uint32_t>> usedTypeIndices;
+
+        // Apply ordering specifications
+        for (const auto& spec : specs) {
+            switch (spec.type) {
+                case DriverOrderSpecType::BY_GLOBAL_INDEX:
+                    if (spec.globalIndex < originalDrivers.size() &&
+                        usedGlobalIndices.find(spec.globalIndex) == usedGlobalIndices.end()) {
+                        orderedDrivers.push_back(originalDrivers[spec.globalIndex]);
+                        usedGlobalIndices.insert(spec.globalIndex);
+                    }
+                    break;
+
+                case DriverOrderSpecType::BY_TYPE:
+                    // Add all drivers of this type that haven't been used
+                    {
+                        std::vector<uint32_t>* typeIndices = nullptr;
+                        switch (spec.driverType) {
+                            case ZEL_DRIVER_TYPE_DISCRETE_GPU:
+                                typeIndices = &discreteGPUIndices;
+                                break;
+                            case ZEL_DRIVER_TYPE_INTEGRATED_GPU:
+                                typeIndices = &integratedGPUIndices;
+                                break;
+                            case ZEL_DRIVER_TYPE_GPU:
+                                typeIndices = &gpuIndices;
+                                break;
+                            case ZEL_DRIVER_TYPE_NPU:
+                            case ZEL_DRIVER_TYPE_OTHER:
+                                typeIndices = &npuIndices;
+                                break;
+                            default:
+                                break;
+                        }
+
+                        if (typeIndices) {
+                            for (uint32_t globalIdx : *typeIndices) {
+                                if (usedGlobalIndices.find(globalIdx) == usedGlobalIndices.end()) {
+                                    orderedDrivers.push_back(originalDrivers[globalIdx]);
+                                    usedGlobalIndices.insert(globalIdx);
+                                }
+                            }
+                        }
+                    }
+                    break;
+
+                case DriverOrderSpecType::BY_TYPE_AND_INDEX:
+                    {
+                        std::vector<uint32_t>* typeIndices = nullptr;
+                        switch (spec.driverType) {
+                            case ZEL_DRIVER_TYPE_DISCRETE_GPU:
+                                typeIndices = &discreteGPUIndices;
+                                break;
+                            case ZEL_DRIVER_TYPE_INTEGRATED_GPU:
+                                typeIndices = &integratedGPUIndices;
+                                break;
+                            case ZEL_DRIVER_TYPE_GPU:
+                                typeIndices = &gpuIndices;
+                                break;
+                            case ZEL_DRIVER_TYPE_NPU:
+                            case ZEL_DRIVER_TYPE_OTHER:
+                                typeIndices = &npuIndices;
+                                break;
+                            default:
+                                break;
+                        }
+
+                        if (typeIndices && spec.typeIndex < typeIndices->size()) {
+                            auto typeIndexPair = std::make_pair(spec.driverType, spec.typeIndex);
+                            if (usedTypeIndices.find(typeIndexPair) == usedTypeIndices.end()) {
+                                uint32_t globalIdx = (*typeIndices)[spec.typeIndex];
+                                if (usedGlobalIndices.find(globalIdx) == usedGlobalIndices.end()) {
+                                    orderedDrivers.push_back(originalDrivers[globalIdx]);
+                                    usedGlobalIndices.insert(globalIdx);
+                                    usedTypeIndices.insert(typeIndexPair);
+                                }
+                            }
+                        }
+                    }
+                    break;
+            }
+        }
+
+        // Add remaining drivers in their original order
+        for (uint32_t i = 0; i < originalDrivers.size(); ++i) {
+            if (usedGlobalIndices.find(i) == usedGlobalIndices.end()) {
+                orderedDrivers.push_back(originalDrivers[i]);
+            }
+        }
+
+        // Replace the original driver vector with the ordered one
+        *drivers = orderedDrivers;
+
+        if (debugTraceEnabled) {
+            std::string message = "driverOrdering: Drivers after ZEL_DRIVERS_ORDER:";
+            for (uint32_t i = 0; i < drivers->size(); ++i) {
+                message += "\n[" + std::to_string(i) + "] Driver Type: " + std::to_string((*drivers)[i].driverType) + " Driver Name: " + (*drivers)[i].name;
+            }
+            debug_trace_message(message, "");
+        }
     }
 
     bool context_t::driverSorting(driver_vector_t *drivers, ze_init_driver_type_desc_t* desc, bool sysmanOnly) {
@@ -246,6 +419,10 @@ namespace loader
             }
             debug_trace_message(message, "");
         }
+
+        // Apply driver ordering based on ZEL_DRIVERS_ORDER environment variable
+        driverOrdering(drivers);
+
         return true;
     }
 
@@ -577,7 +754,7 @@ namespace loader
                     GET_FUNCTION_PTR(validationLayer, "zelLoaderGetVersion"));
                 zel_component_version_t compVersion;
                 if(getVersion && ZE_RESULT_SUCCESS == getVersion(&compVersion))
-                {   
+                {
                     compVersions.push_back(compVersion);
                 }
             } else if (debugTraceEnabled) {
@@ -602,7 +779,7 @@ namespace loader
                 GET_FUNCTION_PTR(tracingLayer, "zelLoaderGetVersion"));
             zel_component_version_t compVersion;
             if(getVersion && ZE_RESULT_SUCCESS == getVersion(&compVersion))
-            {   
+            {
                 compVersions.push_back(compVersion);
             }
         } else if (debugTraceEnabled) {
