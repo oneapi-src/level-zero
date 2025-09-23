@@ -1,4 +1,8 @@
 # Level zero loader changelog
+## v1.24.3
+* Use compiler ID check for /guard:cf and /GL flags on MSVC
+* Support for ZEL_DRIVERS_ORDER to order based off user input
+* Remove Ubuntu 24.10 and fix windows docker config and add install check in CI
 ## v1.24.2
 * Fix scorecard CI
 * Add build instructions for windows
