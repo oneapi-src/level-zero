@@ -84,40 +84,25 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 #Define a path for custom commands to work around MSVC
 set(CUSTOM_COMMAND_BINARY_DIR ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
 
-macro(mangle_name str output)
-  string(STRIP "${str}" strippedStr)
-  string(REGEX REPLACE "^/" "" strippedStr "${strippedStr}")
-  string(REGEX REPLACE "^-+" "" strippedStr "${strippedStr}")
-  string(REGEX REPLACE "-+$" "" strippedStr "${strippedStr}")
-  string(REPLACE "-" "_" strippedStr "${strippedStr}")
-  string(REPLACE "=" "_EQ_" strippedStr "${strippedStr}")
-  string(REPLACE "+" "X" strippedStr "${strippedStr}")
-  string(TOUPPER "${strippedStr}" ${output})
-endmacro()
-
-include(CheckCXXCompilerFlag)
-function(add_cxx_flag_if_supported flag)
-    mangle_name("${flag}" flagname)
-    check_cxx_compiler_flag("${flag}" "CXX_SUPPORTS_${flagname}_FLAG")
-    if (CXX_SUPPORTS_${flagname}_FLAG)
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${flag}" PARENT_SCOPE)
-        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${flag}" PARENT_SCOPE)
-    endif()
-endfunction()
-
 if(MSVC)
     #MSVC implicitly adds $<CONFIG> to the output path
     set(CUSTOM_COMMAND_BINARY_DIR ${CUSTOM_COMMAND_BINARY_DIR}/$<CONFIG>)
-    #enabling Control Flow Guard
-    add_cxx_flag_if_supported(/guard:cf)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /DYNAMICBASE")
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /DYNAMICBASE")
-    add_cxx_flag_if_supported(/GL)
     set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} ${CMAKE_CXX_LINKER_WRAPPER_FLAG}/DYNAMICBASE")
     set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} ${CMAKE_CXX_LINKER_WRAPPER_FLAG}/guard:cf")
     set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} ${CMAKE_CXX_LINKER_WRAPPER_FLAG}/LTCG /INCREMENTAL:NO")
-    # enable Spectre Mitigation, not supported by clang-cl
-    add_cxx_flag_if_supported(/Qspectre)
+    # enable flags, that are not supported or unused by clang-cl
+    if((NOT CMAKE_CXX_COMPILER_ID STREQUAL Clang) AND (NOT CMAKE_CXX_COMPILER_ID STREQUAL IntelLLVM))
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Qspectre")
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /guard:cf")
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /GL")
+    endif()
+    if((NOT CMAKE_C_COMPILER_ID STREQUAL Clang) AND NOT (CMAKE_C_COMPILER_ID STREQUAL IntelLLVM))
+        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /Qspectre")
+	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /guard:cf")
+	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /GL")
+    endif()
 endif()
 
 #CXX compiler support
