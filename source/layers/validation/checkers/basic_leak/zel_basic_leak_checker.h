@@ -80,6 +80,8 @@ namespace validation_layer
                 ze_result_t zeMemAllocSharedEpilogue(ze_context_handle_t, const ze_device_mem_alloc_desc_t *, const ze_host_mem_alloc_desc_t *, size_t, size_t, ze_device_handle_t, void **, ze_result_t result) override;
                 ze_result_t zeMemFreeEpilogue(ze_context_handle_t, void *, ze_result_t result) override;
                 ze_result_t zeMemFreeExtEpilogue(ze_context_handle_t, const ze_memory_free_ext_desc_t*, void *, ze_result_t result) override;
+                // Experimental function for Intel counter-based events
+                ze_result_t zexCounterBasedEventCreate2Epilogue(ze_context_handle_t, ze_device_handle_t, const void *, ze_event_handle_t *, ze_result_t result) override;
             private:
                 void countFunctionCall(const std::string &functionName);
                 std::unordered_map<std::string, std::atomic<int64_t>> counts;
