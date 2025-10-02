@@ -38,6 +38,10 @@ ${line} \
 %endfor
 ) override;
     %endfor
+%if n == 'ze':
+        // Experimental function for Intel counter-based events
+        ze_result_t zexCounterBasedEventCreate2Prologue(ze_context_handle_t hContext, ze_device_handle_t hDevice, const void *desc, ze_event_handle_t *phEvent) override;
+%endif
     };
 
 }

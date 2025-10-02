@@ -3495,10 +3495,10 @@ namespace validation_layer
         return ZE_RESULT_SUCCESS;
     }
     ze_result_t ZEHandleLifetimeValidation::zexCounterBasedEventCreate2Prologue(
-        ze_context_handle_t hContext, ///< [in] handle of the context object
-        ze_device_handle_t hDevice,   ///< [in] handle of the device
-        const void *desc, ///< [in] pointer to counter-based event descriptor
-        ze_event_handle_t *phEvent ///< [out] pointer to handle of event object created
+        ze_context_handle_t hContext,   ///< [in] handle of the context object
+        ze_device_handle_t hDevice,     ///< [in] handle of the device
+        const void *desc,               ///< [in] pointer to counter-based event descriptor
+        ze_event_handle_t *phEvent      ///< [out] pointer to handle of event object created
         )
     {
         if (!context.handleLifetime->isHandleValid(hContext)) {
