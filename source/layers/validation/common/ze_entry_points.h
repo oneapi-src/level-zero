@@ -423,6 +423,9 @@ public:
     virtual ze_result_t zeCommandListUpdateMutableCommandWaitEventsExpEpilogue( ze_command_list_handle_t hCommandList, uint64_t commandId, uint32_t numWaitEvents, ze_event_handle_t* phWaitEvents , ze_result_t result) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zeCommandListUpdateMutableCommandKernelsExpPrologue( ze_command_list_handle_t hCommandList, uint32_t numKernels, uint64_t* pCommandId, ze_kernel_handle_t* phKernels ) {return ZE_RESULT_SUCCESS;}
     virtual ze_result_t zeCommandListUpdateMutableCommandKernelsExpEpilogue( ze_command_list_handle_t hCommandList, uint32_t numKernels, uint64_t* pCommandId, ze_kernel_handle_t* phKernels , ze_result_t result) {return ZE_RESULT_SUCCESS;}
+    // Experimental Intel extension for counter-based events
+    virtual ze_result_t zexCounterBasedEventCreate2Prologue( ze_context_handle_t hContext, ze_device_handle_t hDevice, const void* desc, ze_event_handle_t* phEvent ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zexCounterBasedEventCreate2Epilogue( ze_context_handle_t hContext, ze_device_handle_t hDevice, const void* desc, ze_event_handle_t* phEvent , ze_result_t result) {return ZE_RESULT_SUCCESS;}
     virtual ~ZEValidationEntryPoints() {}
 };
 }

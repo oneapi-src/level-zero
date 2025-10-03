@@ -22,6 +22,17 @@ from templates import helper as th
 
 namespace validation_layer
 {
+%if n == 'ze':
+    // Forward declaration for Intel experimental extension
+    // This is needed because zeDriverGetExtensionFunctionAddress needs to reference zexCounterBasedEventCreate2
+    __zedlllocal ze_result_t ZE_APICALL zexCounterBasedEventCreate2(
+        ze_context_handle_t hContext,
+        ze_device_handle_t hDevice,
+        const void *desc,
+        ze_event_handle_t *phEvent
+    );
+
+%endif
     static ze_result_t logAndPropagateResult(const char* fname, ze_result_t result) {
         if (result != ${X}_RESULT_SUCCESS) {
             context.logger->log_trace("Error (" + loader::to_string(result) + ") in " + std::string(fname));
@@ -78,6 +89,17 @@ ${line} \
         }
 
         auto driver_result = ${th.make_pfn_name(n, tags, obj)}( ${", ".join(th.make_param_lines(n, tags, obj, format=["name"]))} );
+%if 'ppFunctionAddress' in [p.get('name', '') for p in obj.get('params', [])] and n == 'ze':
+
+        // For Intel experimental extensions, we need to return our validation layer function
+        // instead of the raw driver function so that validation/leak tracking works
+        if (driver_result == ZE_RESULT_SUCCESS && ppFunctionAddress && name) {
+            if (strcmp(name, "zexCounterBasedEventCreate2") == 0) {
+                // Return our validation layer intercept function instead of the raw driver function
+                *ppFunctionAddress = (void*)zexCounterBasedEventCreate2;
+            }
+        }
+%endif
 
         for (size_t i = 0; i < numValHandlers; i++) {
             auto result = context.validationHandlers[i]->${n}Validation->${th.make_func_name(n, tags, obj)}Epilogue( \
@@ -127,6 +149,89 @@ ${line} \
     %endif
 
     %endfor
+%if n == 'ze':
+    ///////////////////////////////////////////////////////////////////////////////
+    /// @brief Intercept function for zexCounterBasedEventCreate2
+    __zedlllocal ze_result_t ZE_APICALL zexCounterBasedEventCreate2(
+        ze_context_handle_t hContext,                   ///< [in] handle of the context object
+        ze_device_handle_t hDevice,                     ///< [in] handle of the device
+        const void* desc,                               ///< [in] pointer to counter-based event descriptor
+        ze_event_handle_t* phEvent                      ///< [out] pointer to handle of event object created
+        )
+    {
+        context.logger->log_trace("zexCounterBasedEventCreate2(hContext, hDevice, desc, phEvent)");
+
+        // Note: This is an experimental function that may not have a DDI table entry.
+        // For now, we'll return unsupported feature as this function should be
+        // accessed through zeDriverGetExtensionFunctionAddress mechanism, but we
+        // still want to track it in the validation layers for leak checking purposes.
+
+        auto numValHandlers = context.validationHandlers.size();
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zexCounterBasedEventCreate2Prologue( hContext, hDevice, desc, phEvent );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zexCounterBasedEventCreate2", result);
+        }
+
+        if(context.enableThreadingValidation){
+            //Unimplemented
+        }
+
+        if(context.enableHandleLifetime){
+            auto result = context.handleLifetime->zeHandleLifetime.zexCounterBasedEventCreate2Prologue( hContext, hDevice, desc, phEvent );
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zexCounterBasedEventCreate2", result);
+        }
+
+        // This is an experimental function that must be accessed through the extension mechanism
+        // We need to get the function pointer through zeDriverGetExtensionFunctionAddress
+        ze_result_t driver_result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+
+        // Get the real Intel experimental function through the extension mechanism
+        auto pfnGetExtensionFunctionAddress = context.zeDdiTable.Driver.pfnGetExtensionFunctionAddress;
+
+        if (pfnGetExtensionFunctionAddress) {
+            // Get the driver handle - use the first available driver
+            ze_driver_handle_t hDriver = nullptr;
+
+            if (context.zeDdiTable.Driver.pfnGet) {
+                uint32_t driverCount = 1;
+                ze_driver_handle_t drivers[1] = {nullptr};
+                auto result = context.zeDdiTable.Driver.pfnGet(&driverCount, drivers);
+                if (result == ZE_RESULT_SUCCESS && driverCount > 0) {
+                    hDriver = drivers[0];
+                }
+            }
+
+            if (hDriver) {
+                // Get the real Intel experimental function
+                typedef ze_result_t (*zexCounterBasedEventCreate2_t)(ze_context_handle_t, ze_device_handle_t, const void*, ze_event_handle_t*);
+                zexCounterBasedEventCreate2_t pfnRealFunction = nullptr;
+
+                auto ext_result = pfnGetExtensionFunctionAddress(hDriver, "zexCounterBasedEventCreate2", (void**)&pfnRealFunction);
+
+                if (ext_result == ZE_RESULT_SUCCESS && pfnRealFunction) {
+                    // Call the real Intel experimental function
+                    driver_result = pfnRealFunction(hContext, hDevice, desc, phEvent);
+                } else {
+                    // Extension not available in this driver
+                    driver_result = ZE_RESULT_ERROR_UNSUPPORTED_FEATURE;
+                }
+            }
+        }
+
+        for (size_t i = 0; i < numValHandlers; i++) {
+            auto result = context.validationHandlers[i]->zeValidation->zexCounterBasedEventCreate2Epilogue( hContext, hDevice, desc, phEvent, driver_result);
+            if(result!=ZE_RESULT_SUCCESS) return logAndPropagateResult("zexCounterBasedEventCreate2", result);
+        }
+
+        if(driver_result == ZE_RESULT_SUCCESS && context.enableHandleLifetime){
+            if (phEvent){
+                context.handleLifetime->addHandle( *phEvent );
+                // Note: counter-based events may not have a traditional event pool dependency
+            }
+        }
+        return logAndPropagateResult("zexCounterBasedEventCreate2", driver_result);
+    }
+%endif
 } // namespace validation_layer
 
 #if defined(__cplusplus)

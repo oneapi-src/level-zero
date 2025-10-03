@@ -38,6 +38,11 @@ ${line} \
 %endfor
 , ze_result_t result) {return ZE_RESULT_SUCCESS;}
     %endfor
+%if n == 'ze':
+    // Experimental Intel extension for counter-based events
+    virtual ze_result_t zexCounterBasedEventCreate2Prologue( ze_context_handle_t hContext, ze_device_handle_t hDevice, const void* desc, ze_event_handle_t* phEvent ) {return ZE_RESULT_SUCCESS;}
+    virtual ze_result_t zexCounterBasedEventCreate2Epilogue( ze_context_handle_t hContext, ze_device_handle_t hDevice, const void* desc, ze_event_handle_t* phEvent , ze_result_t result) {return ZE_RESULT_SUCCESS;}
+%endif
     virtual ~${N}ValidationEntryPoints() {}
 };
 }

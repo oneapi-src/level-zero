@@ -51,7 +51,7 @@ namespace validation_layer
             {{"zeKernelCreate"}, {"zeKernelDestroy"}},
             {{"zeEventPoolCreate"}, {"zeEventPoolDestroy"}},
             {{"zeCommandListCreateImmediate", "zeCommandListCreate"}, {"zeCommandListDestroy"}},
-            {{"zeEventCreate"}, {"zeEventDestroy"}},
+            {{"zeEventCreate", "zexCounterBasedEventCreate2"}, {"zeEventDestroy"}},
             {{"zeFenceCreate"}, {"zeFenceDestroy"}},
             {{"zeImageCreate", "zeImageViewCreateExt"}, {"zeImageDestroy"}},
             {{"zeSamplerCreate"}, {"zeSamplerDestroy"}},
@@ -173,6 +173,13 @@ namespace validation_layer
     ze_result_t basic_leakChecker::ZEbasic_leakChecker::zeEventDestroyEpilogue(ze_event_handle_t, ze_result_t result) {
         if (result == ZE_RESULT_SUCCESS) {
             countFunctionCall("zeEventDestroy");
+        }
+        return result;
+    }
+
+    ze_result_t basic_leakChecker::ZEbasic_leakChecker::zexCounterBasedEventCreate2Epilogue(ze_context_handle_t, ze_device_handle_t, const void *, ze_event_handle_t *, ze_result_t result) {
+        if (result == ZE_RESULT_SUCCESS) {
+            countFunctionCall("zexCounterBasedEventCreate2");
         }
         return result;
     }
